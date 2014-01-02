@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -258,42 +259,42 @@ public class Scheduler extends ViewComponent {
 
 		for (Schedule item : data) {
 
-			Object num = result.addItem();
+			Object id = result.addItem();
 
 			if (item.getFirstExecution() == null) {
-				result.getContainerProperty(num, "next").setValue(null);
+				result.getContainerProperty(id, "next").setValue(null);
 			} else {
-				result.getContainerProperty(num, "next").setValue(
+				result.getContainerProperty(id, "next").setValue(
 						item.getNextExecutionTimeInfo());
 			}
 
 			if (item.getLastExecution() == null) {
-				result.getContainerProperty(num, "last").setValue(null);
+				result.getContainerProperty(id, "last").setValue(null);
 			} else {
 
-				result.getContainerProperty(num, "last").setValue(
+				result.getContainerProperty(id, "last").setValue(
 						item.getLastExecution());
 			}
 
 
-			result.getContainerProperty(num, "status").setValue(item.isEnabled());
+			result.getContainerProperty(id, "status").setValue(item.isEnabled());
 
 
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 				if (item.isJustOnce()) {
-					result.getContainerProperty(num, "rule").setValue(
+					result.getContainerProperty(id, "rule").setValue(
 							"Run on " + df.format(item.getFirstExecution()));
 				} else {
 					if (item.getPeriod().equals((Integer) 1)) {
-						result.getContainerProperty(num, "rule").setValue(
+						result.getContainerProperty(id, "rule").setValue(
 								"Run on "
 								+ df.format(item.getFirstExecution())
 								+ " and then repeat every "
 								+ item.getPeriodUnit().toString()
 								.toLowerCase());
 					} else {
-						result.getContainerProperty(num, "rule").setValue(
+						result.getContainerProperty(id, "rule").setValue(
 								"Run on "
 								+ df.format(item.getFirstExecution())
 								+ " and then repeat every "
@@ -318,33 +319,26 @@ public class Scheduler extends ViewComponent {
 					}
 				}
 				if (after.size() > 1) {
-					result.getContainerProperty(num,
+					result.getContainerProperty(id,
 							"rule").setValue("Run after pipelines: " + afterPipelines);
 				} else {
-					result.getContainerProperty(num,
+					result.getContainerProperty(id,
 							"rule").setValue("Run after pipeline: " + afterPipelines);
 				}
 			}
 
-			result.getContainerProperty(num, "schid").setValue(item.getId().toString());
+			result.getContainerProperty(id, "schid").setValue(item.getId().toString());
 			if (item.getOwner() == null) {
-				result.getContainerProperty(num, "user").setValue(" ");
+				result.getContainerProperty(id, "user").setValue(" ");
 			} else {
-				result.getContainerProperty(num, "user").setValue(item.getOwner().getUsername());
+				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
 			}
-			result.getContainerProperty(num, "pipeline").setValue(item.getPipeline().getName());
-			String description = item.getDescription();
-			if (description == null ){
-				// no text, no need for any updates
-			} else {
-				// we have the description make sure it's not too long
-				description = description.length() > utils.getColumnMaxLenght() ? 
-						description.substring(0, utils.getColumnMaxLenght() - 3) + "..." : description;
-			}
-			result.getContainerProperty(num, "description").setValue(description);
+			result.getContainerProperty(id, "pipeline").setValue(item.getPipeline().getName());
+			String description = StringUtils.abbreviate(item.getDescription(), Utils.getColumnMaxLenght());
+			result.getContainerProperty(id, "description").setValue(description);
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
-			result.getContainerProperty(num, "duration").setValue(DecorationHelper.getDuration(exec));
+			result.getContainerProperty(id, "duration").setValue(DecorationHelper.getDuration(exec));
 		}
 
 		return result;
@@ -359,7 +353,7 @@ public class Scheduler extends ViewComponent {
 		tableData = getTableData(scheduleFacade.getAllSchedules());
 		schedulerTable.setContainerDataSource(tableData);
 		schedulerTable.setCurrentPage(page);
-		schedulerTable.setVisibleColumns(visibleCols);
+		schedulerTable.setVisibleColumns((Object[]) visibleCols);
 		schedulerTable.setFilterFieldVisible("commands", false);
 		schedulerTable.setFilterFieldVisible("duration", false);
 
