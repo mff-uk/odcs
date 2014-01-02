@@ -71,9 +71,9 @@ public class Scheduler extends ViewComponent {
 	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-	static String[] visibleCols = new String[]{"pipeline", "description", "rule", "user",
+	static String[] visibleCols = new String[]{"schid", "pipeline", "description", "rule", "user",
 		"last", "next", "duration", "status", "commands"};
-	static String[] headers = new String[]{"pipeline", "Description", "Rule", "User",
+	static String[] headers = new String[]{"ID", "Pipeline", "Description", "Rule", "User",
 		"Last", "Next", "Last run time", "Status", "Commands"};
 	int style = DateFormat.MEDIUM;
 	static String filter;
@@ -189,7 +189,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setWidth("100%");
 		schedulerTable.setHeight("100%");
 		schedulerTable.setImmediate(true);
-		schedulerTable.setVisibleColumns(visibleCols); // Set visible columns
+		schedulerTable.setVisibleColumns((Object[]) visibleCols);
 		schedulerTable.setColumnHeaders(headers);
 		schedulerTable.setFilterBarVisible(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
@@ -326,7 +326,7 @@ public class Scheduler extends ViewComponent {
 				}
 			}
 
-			result.getContainerProperty(num, "schid").setValue(item.getId());
+			result.getContainerProperty(num, "schid").setValue(item.getId().toString());
 			if (item.getOwner() == null) {
 				result.getContainerProperty(num, "user").setValue(" ");
 			} else {
@@ -405,7 +405,7 @@ public class Scheduler extends ViewComponent {
 		@Override
 		public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
 			Property propStatus = source.getItem(itemId).getItemProperty("status");
-			final Long schId = (Long) tableData.getContainerProperty(itemId, "schid").getValue();
+			final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
 			HorizontalLayout layout = new HorizontalLayout();
 
 			if (propStatus.getType().equals(Boolean.class)) {
