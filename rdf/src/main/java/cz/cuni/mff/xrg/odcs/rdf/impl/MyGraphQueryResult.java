@@ -31,7 +31,7 @@ public class MyGraphQueryResult implements GraphQueryResult {
 	/**
 	 * Retrieves relevant namespaces from the query result.
 	 *
-	 * @return
+	 * @return namespaces from the query result.
 	 * @throws QueryEvaluationException An exception indicating that the
 	 *                                  evaluation of a query failed.
 	 */
