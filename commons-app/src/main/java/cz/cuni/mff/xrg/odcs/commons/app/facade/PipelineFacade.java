@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import java.sql.SQLException;
 
 import java.util.Date;
 import java.util.List;
@@ -105,8 +106,9 @@ public interface PipelineFacade extends Facade {
 	 * authentication context (currently logged in user).
 	 * 
 	 * @param pipeline which is open
+	 * @throws java.sql.SQLException
 	 */
-	void createOpenEvent(Pipeline pipeline);
+	void createOpenEvent(Pipeline pipeline) throws SQLException;
 	
 	/**
 	 * Lists all open events representing a list of pipeline that are currently

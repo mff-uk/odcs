@@ -51,6 +51,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import java.sql.SQLException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,13 +160,13 @@ public class PipelineEdit extends ViewComponent {
 			@Override
 			public void refresh(Refresher source) {
 				if (pipeline != null) {
-//					try {
+					try {
 						pipelineFacade.createOpenEvent(pipeline);
-//					} catch (VirtuosoException ex) {
-//						// ignore DB errors
-//						// TODO remove this try-catch block once VirtuosoSequenceSanitizerAspect works
-//						LOG.error("Could not create pipeline open-event because of DB error.", ex);
-//					}
+					} catch (SQLException ex) {
+						// ignore DB errors
+						// TODO remove this try-catch block once VirtuosoSequenceSanitizerAspect works
+						LOG.error("Could not create pipeline open-event because of DB error.", ex);
+					}
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
 					if (!pipelineFacade.isUpToDate(pipeline)) {
 						editConflicts.setValue("Another user made changes to the version you are editing, please refresh the pipeline detail!");

@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.Date;
@@ -228,7 +229,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	 */
 	@Transactional
 	@Override
-	public void createOpenEvent(Pipeline pipeline) {
+	public void createOpenEvent(Pipeline pipeline) throws SQLException {
 		
 		if (pipeline.getId() == null) {
 			// pipeline has not been persisted yet
