@@ -27,7 +27,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	
 	private final List<String> sortable = Arrays.asList("id", "name");
 	
-	private final List<String> filtrable = Arrays.asList("id", "name", "owner.username", "description");
+	private final List<String> filterable = Arrays.asList("id", "name", "owner.username", "description");
 	
 	private final List<String> toFetch = Arrays.asList("owner");
 	
@@ -51,8 +51,8 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	}
 
 	@Override
-	public List<String> filtrable() {
-		return filtrable;
+	public List<String> filterable() {
+		return filterable;
 	}
 
 	@Override

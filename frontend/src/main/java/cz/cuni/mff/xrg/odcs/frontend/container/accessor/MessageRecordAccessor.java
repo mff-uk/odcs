@@ -17,7 +17,7 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	
 	private final List<String> sortable = Arrays.asList("time", "type", "dpuInstance.name");
 	
-	private final List<String> filtrable = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
+	private final List<String> filterable = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
 	
 	private final List<String> visible = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
 	
@@ -34,8 +34,8 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	}
 
 	@Override
-	public List<String> filtrable() {
-		return filtrable;
+	public List<String> filterable() {
+		return filterable;
 	}
 
 	@Override

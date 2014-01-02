@@ -360,7 +360,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	public List<String> getFilterables() {
 		if (source instanceof ContainerSource.Sortable) {
 			// ok return list from accessor
-			return classAccessor.filtrable();
+			return classAccessor.filterable();
 		} else {
 			if (!classAccessor.sortable().isEmpty()) {			
 				LOG.warn("Container has non-filterable source but "

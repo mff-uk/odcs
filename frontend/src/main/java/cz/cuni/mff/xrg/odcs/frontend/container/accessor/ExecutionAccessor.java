@@ -13,7 +13,7 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
 	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "owner.username", "duration", "status", "isDebugging", "schedule");
 	private final List<String> sortable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
-	private final List<String> filtrable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
+	private final List<String> filterable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
 	private final List<String> toFetch = Arrays.asList("pipeline", "owner");
 
 	@Override
@@ -27,8 +27,8 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	}
 
 	@Override
-	public List<String> filtrable() {
-		return filtrable;
+	public List<String> filterable() {
+		return filterable;
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public interface ClassAccessor<T extends DataObject> {
 	 * filtering.
 	 * @return
 	 */
-	public List<String> filtrable();
+	public List<String> filterable();
 	
 	/**
 	 * Return subset of {@link all()}. This subset will be visible.

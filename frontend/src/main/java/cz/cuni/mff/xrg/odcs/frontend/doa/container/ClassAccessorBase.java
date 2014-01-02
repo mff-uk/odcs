@@ -40,7 +40,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 		final ColumnGetter<U> columnGetter;
 
 		/**
-		 * Register non-filtrable/sortable column. The data are obtained by
+		 * Register non-filterable/sortable column. The data are obtained by
 		 * columnGetter and not by
 		 * {@link #getValue(cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject, java.lang.String)}.
 		 *
@@ -253,7 +253,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	}
 
 	@Override
-	public List<String> filtrable() {
+	public List<String> filterable() {
 		return filterable;
 	}
 
