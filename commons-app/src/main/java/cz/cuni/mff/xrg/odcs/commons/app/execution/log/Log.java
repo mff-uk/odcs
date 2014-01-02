@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.io.Serializable;
 import javax.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents log message loaded from database. 
@@ -113,7 +113,7 @@ public class Log implements Serializable, DataObject {
 	 * @return the message
 	 */
 	public String getMessage() {
-		return StringUtils.nullToEmpty(message);
+		return StringUtils.defaultString(message);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class Log implements Serializable, DataObject {
 	 * @return 
 	 */
 	public String getStackTrace() {
-		return StringUtils.nullToEmpty(stackTrace);
+		return StringUtils.defaultString(stackTrace);
 	}
 	
 }

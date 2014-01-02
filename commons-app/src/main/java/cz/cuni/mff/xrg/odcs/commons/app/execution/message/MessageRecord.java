@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Date;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -11,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.sql.Timestamp;
 
 import javax.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represent a single message created during DPURecord execution.
@@ -96,8 +96,8 @@ public class MessageRecord implements DataObject {
 		this.type = type;
 		this.dpuInstance = dpuInstance;
 		this.execution = execution;
-		this.shortMessage = StringUtils.secureLenght(shortMessage, LenghtLimits.SHORT_MESSAGE);
-		this.fullMessage = StringUtils.emptyToNull(fullMessage);
+		this.shortMessage = StringUtils.abbreviate(shortMessage, LenghtLimits.SHORT_MESSAGE.limit());
+		this.fullMessage = fullMessage;
 	}
 
 	@Override
@@ -122,11 +122,11 @@ public class MessageRecord implements DataObject {
 	}
 
 	public String getShortMessage() {
-		return shortMessage;
+		return StringUtils.defaultString(shortMessage);
 	}
 
 	public String getFullMessage() {
-		return StringUtils.nullToEmpty(fullMessage);
+		return StringUtils.defaultString(fullMessage);
 	}
 	
 	public Timestamp getTimestamp() {

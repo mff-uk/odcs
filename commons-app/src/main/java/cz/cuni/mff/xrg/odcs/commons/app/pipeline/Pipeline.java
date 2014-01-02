@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -16,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a fixed workflow composed of one or several {@link Extract}s,
@@ -144,15 +144,15 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	}
 
 	public void setName(String newName) {
-		this.name = StringUtils.secureLenght(newName, LenghtLimits.PIPELINE_NAME);
+		this.name = StringUtils.abbreviate(newName, LenghtLimits.PIPELINE_NAME.limit());
 	}
 
 	public String getDescription() {
-		return StringUtils.nullToEmpty(description);
+		return StringUtils.defaultString(description);
 	}
 
 	public void setDescription(String newDescription) {
-		this.description = StringUtils.emptyToNull(newDescription);
+		this.description = newDescription;
 	}
 
 	public PipelineGraph getGraph() {

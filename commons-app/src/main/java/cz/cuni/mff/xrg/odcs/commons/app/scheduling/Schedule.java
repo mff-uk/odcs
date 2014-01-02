@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -13,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.
@@ -146,15 +146,15 @@ public class Schedule implements DataObject, OwnedEntity {
 	}
 
 	public void setName(String newName) {
-		this.name = StringUtils.secureLenght(newName, LenghtLimits.SCHEDULE_NAME);
+		this.name = StringUtils.abbreviate(newName, LenghtLimits.SCHEDULE_NAME.limit());
 	}
 
 	public String getDescription() {
-		return StringUtils.nullToEmpty(description);
+		return StringUtils.defaultString(description);
 	}
 
 	public void setDescription(String newDescription) {
-		this.description = StringUtils.emptyToNull(newDescription);
+		this.description = newDescription;
 	}
 
 	public Pipeline getPipeline() {

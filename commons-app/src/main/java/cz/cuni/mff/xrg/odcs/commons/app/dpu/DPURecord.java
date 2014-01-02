@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import java.util.Objects;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public abstract class DPURecord {
     }
 
     public void setName(String newName) {
-        this.name = StringUtils.secureLenght(newName, LenghtLimits.DPU_NAME);
+        this.name = StringUtils.abbreviate(newName, LenghtLimits.DPU_NAME.limit());
     }
 
     public boolean useDPUDescription() {
@@ -116,11 +116,11 @@ public abstract class DPURecord {
     }
     
     public String getDescription() {
-		return StringUtils.nullToEmpty(description);
+		return StringUtils.defaultString(description);
     }
 
     public void setDescription(String newDescription)  {
-		this.description = StringUtils.emptyToNull(newDescription);
+		this.description = newDescription;
     }
 
     public Long getId() {

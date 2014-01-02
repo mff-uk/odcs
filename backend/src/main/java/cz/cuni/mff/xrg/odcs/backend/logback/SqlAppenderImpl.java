@@ -9,7 +9,6 @@ import ch.qos.logback.core.db.DBHelper;
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.StringUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -320,22 +320,17 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		 */
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
-		Long timeStamp = event.getTimeStamp();
-		String logger = StringUtils.secureLenght(event.getLoggerName(),
-				LenghtLimits.LOGGER_NAME);
+		long timeStamp = event.getTimeStamp();
+		String logger = StringUtils.abbreviate(event.getLoggerName(), LenghtLimits.LOGGER_NAME.limit());
 		String message = event.getFormattedMessage();
 
 		// null check
 		if (logLevel == null) {
 			logLevel = Level.INFO_INTEGER;
 		}
-		if (timeStamp == null) {
-			timeStamp = (new Date()).getTime();
-		}
 		if (logger == null) {
 			logger = "unknown";
 		}
-		message = StringUtils.emptyToNull(message);
 
 		// bind
 		stmt.setInt(1, logLevel);
@@ -371,7 +366,6 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			stackTrace = sb.toString();
 		}
 
-		stackTrace = StringUtils.emptyToNull(stackTrace);
 		stmt.setString(7, stackTrace);
 	}
 
