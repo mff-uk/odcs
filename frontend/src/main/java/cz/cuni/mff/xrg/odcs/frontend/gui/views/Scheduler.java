@@ -62,10 +62,9 @@ import ru.xpoft.vaadin.VaadinView;
 @Address(url = "Scheduler")
 public class Scheduler extends ViewComponent {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(
-            Scheduler.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(
+			Scheduler.class);
 
-    
 	/**
 	 * View name.
 	 */
@@ -157,12 +156,12 @@ public class Scheduler extends ViewComponent {
 		addRuleButton.setCaption("Add new scheduling rule");
 		addRuleButton
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// open scheduler dialog
-				showSchedulePipeline(null);
-			}
-		});
+					@Override
+					public void buttonClick(ClickEvent event) {
+						// open scheduler dialog
+						showSchedulePipeline(null);
+					}
+				});
 		topLine.addComponent(addRuleButton);
 		//topLine.setComponentAlignment(addRuleButton, Alignment.MIDDLE_RIGHT);
 
@@ -172,11 +171,11 @@ public class Scheduler extends ViewComponent {
 		buttonDeleteFilters.setWidth("110px");
 		buttonDeleteFilters
 				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				schedulerTable.resetFilters();
-			}
-		});
+					@Override
+					public void buttonClick(ClickEvent event) {
+						schedulerTable.resetFilters();
+					}
+				});
 		topLine.addComponent(buttonDeleteFilters);
 		//topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 
@@ -221,23 +220,20 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setPageLength(utils.getPageLength());
 		schedulerTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (!schedulerTable.isSelected(event.getItemId())) {
-					try {
-                                            Long schId = (Long) event.getItem().getItemProperty("schid").getValue();
-                                            showSchedulePipeline(schId);
-                                        } catch (ClassCastException e) {
-                                            log.error(e.getLocalizedMessage());
-                                            //cannot cast String to Long probably
-                                            String schIdString = (String) event.getItem().getItemProperty("schid").getValue();
-                                            Long schId = Long.valueOf(schIdString);
-                                            showSchedulePipeline(schId);
-                                            
-                                        }
-				}
-			}
-		});
+					@Override
+					public void itemClick(ItemClickEvent event) {
+						if (!schedulerTable.isSelected(event.getItemId())) {
+							try {
+								Long schId = Long.parseLong(event.getItem().getItemProperty("schid").getValue().toString());
+								showSchedulePipeline(schId);
+							} catch (NumberFormatException e) {
+								log.error(e.getLocalizedMessage());
+								// cannot cast String to Long probably
+								// sorry no action ..
+							}
+						}
+					}
+				});
 
 		return mainLayout;
 	}
@@ -289,9 +285,7 @@ public class Scheduler extends ViewComponent {
 						item.getLastExecution());
 			}
 
-
 			result.getContainerProperty(id, "status").setValue(item.isEnabled());
-
 
 			if (item.getType().equals(ScheduleType.PERIODICALLY)) {
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
@@ -473,16 +467,16 @@ public class Scheduler extends ViewComponent {
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
 							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?", "Delete", "Cancel",
 							new ConfirmDialog.Listener() {
-						private static final long serialVersionUID = 1L;
+								private static final long serialVersionUID = 1L;
 
-						@Override
-						public void onClose(ConfirmDialog cd) {
-							if (cd.isConfirmed()) {
-								scheduleFacade.delete(scheduleDel);
-								refreshData();
-							}
-						}
-					});
+								@Override
+								public void onClose(ConfirmDialog cd) {
+									if (cd.isConfirmed()) {
+										scheduleFacade.delete(scheduleDel);
+										refreshData();
+									}
+								}
+							});
 				}
 			});
 			layout.addComponent(deleteButton);
