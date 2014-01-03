@@ -62,6 +62,10 @@ import ru.xpoft.vaadin.VaadinView;
 @Address(url = "Scheduler")
 public class Scheduler extends ViewComponent {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(
+            Scheduler.class);
+
+    
 	/**
 	 * View name.
 	 */
@@ -220,8 +224,17 @@ public class Scheduler extends ViewComponent {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (!schedulerTable.isSelected(event.getItemId())) {
-					Long schId = (Long) event.getItem().getItemProperty("schid").getValue();
-					showSchedulePipeline(schId);
+					try {
+                                            Long schId = (Long) event.getItem().getItemProperty("schid").getValue();
+                                            showSchedulePipeline(schId);
+                                        } catch (ClassCastException e) {
+                                            log.error(e.getLocalizedMessage());
+                                            //cannot cast String to Long probably
+                                            String schIdString = (String) event.getItem().getItemProperty("schid").getValue();
+                                            Long schId = Long.valueOf(schIdString);
+                                            showSchedulePipeline(schId);
+                                            
+                                        }
 				}
 			}
 		});
