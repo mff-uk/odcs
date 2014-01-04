@@ -257,20 +257,29 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 
 	@Override
 	public void setParserConfig(ParserConfig config) {
-		try {
-			repoConnection().setParserConfig(config);
-		} catch (RepositoryException e) {
-			LOG.debug(e.getMessage());
+		int attempts = 0;
+		while (true) {
+			try {
+				attempts++;
+				repoConnection().setParserConfig(config);
+			} catch (RepositoryException e) {
+				LOG.debug(e.getMessage());
+				handleRetries(attempts, e, "setParserConfig");
+			}
 		}
 	}
 
 	@Override
 	public ParserConfig getParserConfig() {
-		try {
-			return repoConnection().getParserConfig();
-		} catch (RepositoryException e) {
-			LOG.debug(e.getMessage());
-			return null;
+		int attempts = 0;
+		while (true) {
+			try {
+				attempts++;
+				return repoConnection().getParserConfig();
+			} catch (RepositoryException e) {
+				LOG.debug(e.getMessage());
+				handleRetries(attempts, e, "getParserConfig");
+			}
 		}
 	}
 
