@@ -43,7 +43,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 	@Override
 	public List<Schedule> getFollowers(Pipeline pipeline, boolean enabled) {
 		final String sringQuery = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
-				+ " WHERE p.id = :pipeline"
+				+ " WHERE p = :pipeline"
 				+ " AND s.type = :type"
 				+ " AND s.enabled = :enabled";
 		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
