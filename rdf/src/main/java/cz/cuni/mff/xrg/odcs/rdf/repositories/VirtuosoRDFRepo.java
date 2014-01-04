@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.impl.FailureSharedRepositoryConnection;
 import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
@@ -72,7 +73,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		this.useExtension = repoWrapper.useVirtuosoExtension();
 		this.repository = repoWrapper;
-		this.repoConnection = repoWrapper;
+		this.repoConnection = new FailureSharedRepositoryConnection(repoWrapper);
 
 		try {
 			repository.initialize();
