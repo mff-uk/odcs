@@ -141,11 +141,31 @@ public class SchedulePipeline extends Window {
 	 * table in which has been pressed the button Scheduler.
 	 */
 	public void setSelectePipeline(Pipeline selectedPipeline) {
+		tabSheet.setSelectedTab(0);
+		
 		comboPipeline.setValue(selectedPipeline.getId());
+		scheduleDescription.setValue("");
 		scheduleType.setValue(ScheduleType.PERIODICALLY);
+		date.setValue(new Date());
+		justOnce.setValue(false);
+		intervalOption.setValue(PeriodUnit.DAY);
+		strictlyTimed.setValue(false);
+		comboEvery.setValue(PeriodUnit.DAY);
+		valueInt.setValue(1);
+		valueTol.setValue(1);
+		notifyThis.setValue(true);
+		emailNotifications.getDefaultScheduleNotificationRecord();
+		email.getUserEmailNotification(authCtx.getUser());
+		emailNotifications.setDisableComponents();
+		
 		source.loadData(dbPipeline);
 		sourceCombo.loadData(dbPipeline);
 		source.hide(selectedPipeline.getId());
+		if(selectPipe != null) {
+			selectPipe.setValue(null);
+		}
+		
+		
 	}
 
 	/**
@@ -171,7 +191,7 @@ public class SchedulePipeline extends Window {
 			valueInt.setValue(1);
 			valueTol.setValue(1);
 			notifyThis.setValue(true);
-			emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
+			emailNotifications.getDefaultScheduleNotificationRecord();
 			email.getUserEmailNotification(authCtx.getUser());
 			emailNotifications.setDisableComponents();
 			source.loadData(dbPipeline);
@@ -245,7 +265,7 @@ public class SchedulePipeline extends Window {
 			}
 			else{
 				notifyThis.setValue(true);
-				emailNotifications.getDefaultScheduleNotificationRecord(selectedSchedule);
+				emailNotifications.getDefaultScheduleNotificationRecord();
 				email.getUserEmailNotification(authCtx.getUser());
 				emailNotifications.setDisableComponents();
 			
