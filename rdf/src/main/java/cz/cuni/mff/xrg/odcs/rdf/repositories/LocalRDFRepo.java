@@ -158,8 +158,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		final String suffix = "";
 		final String baseURI = "";
 		final boolean useSuffix = false;
-		final HandlerExtractType handlerExtractType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
-
+		final HandlerExtractType handlerExtractType = HandlerExtractType.STANDARD_HANDLER;
 		try {
 			extractFromFile(FileExtractType.PATH_TO_FILE, null,
 					file.getAbsolutePath(), suffix,

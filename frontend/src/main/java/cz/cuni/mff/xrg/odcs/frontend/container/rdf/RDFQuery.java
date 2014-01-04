@@ -43,16 +43,20 @@ public class RDFQuery implements Query {
 
 	private ArrayList<Item> cachedItems;
 
+	private RDFDataUnit repository;
+
 	public RDFQuery(RDFQueryDefinition qd) {
 		this.baseQuery = qd.getBaseQuery();
 		this.batchSize = qd.getBatchSize();
 		this.qd = qd;
+		this.repository = RDFDataUnitHelper.getRepository(qd.getInfo(), qd
+				.getDpu(), qd.getDataUnit());
 	}
 
 	@Override
 	public int size() {
-		RDFDataUnit repository = RDFDataUnitHelper
-				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+//		RDFDataUnit repository = RDFDataUnitHelper
+//				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
@@ -73,9 +77,10 @@ public class RDFQuery implements Query {
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
 			LOG.debug("Size query exception", ex);
-		} finally {
-			repository.shutDown();
 		}
+//		finally {
+//			repository.shutDown();
+//		}
 		return 0;
 	}
 
@@ -87,19 +92,20 @@ public class RDFQuery implements Query {
 	 * Load batch of items.
 	 *
 	 * @param startIndex Starting index of the item list.
-	 * @param count Count of the items to be retrieved.
+	 * @param count      Count of the items to be retrieved.
 	 * @return List of items.
 	 */
 	@Override
 	public List<Item> loadItems(int startIndex, int count) {
-		LOG.debug(String.format("Loading %d items from %d started...", count, startIndex));
+		LOG.debug(String.format("Loading %d items from %d started...", count,
+				startIndex));
 		if (cachedItems != null) {
 			LOG.debug("Using cached items.");
 			return cachedItems.subList(startIndex, startIndex + count);
 		}
 
-		RDFDataUnit repository = RDFDataUnitHelper
-				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+//		RDFDataUnit repository = RDFDataUnitHelper
+//				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			LOG.debug("Unable to load RDFDataUnit.");
 			throw new RuntimeException("Unable to load RDFDataUnit.");
@@ -160,7 +166,8 @@ public class RDFQuery implements Query {
 					for (RDFTriple triple : (List<RDFTriple>) data) {
 						cachedItems.add(toItem(triple));
 					}
-					LOG.debug("Loading of items finished, whole result preloaded and cached.");
+					LOG.debug(
+							"Loading of items finished, whole result preloaded and cached.");
 					return cachedItems.subList(startIndex, startIndex + count);
 			}
 			LOG.debug("Loading of items finished.");
@@ -175,10 +182,11 @@ public class RDFQuery implements Query {
 					"Error in query evaluation: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
-		} finally {
-			// close reporistory
-			repository.shutDown();
 		}
+//		finally {
+//			// close reporistory
+//			repository.shutDown();
+//		}
 		return null;
 	}
 
