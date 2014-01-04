@@ -93,7 +93,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	private static final String STOP = "Stop pipeline execution if extractor "
 			+ "extracted some triples with an error.";
 
-	private static final String CONTINUE = "Extract only triples with no errors.";
+	private static final String CONTINUE = "Extract only triples with no errors. "
+			+ "If fatal error is discovered, pipeline is stopped";
 
 	private static final String FILE_SKIP = "When there is a problem parsing a file, it is skipped";
 

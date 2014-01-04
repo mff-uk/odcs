@@ -104,7 +104,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private OptionGroup failsWhenErrors; // How to solve errors for Statistical handler
 
 	private static final String STOP = "Stop pipeline execution if extractor "
-			+ "extracted some triples with an error.";
+			+ "extracted some triples with an error. "
+			+ "If fatal error is discovered, pipeline is stopped";
 
 	private static final String CONTINUE = "Extract only triples with no errors.";
 
@@ -743,7 +744,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
 	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
+	 *                         null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
     * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
