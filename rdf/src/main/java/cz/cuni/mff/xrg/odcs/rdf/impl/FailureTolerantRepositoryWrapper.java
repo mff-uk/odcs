@@ -140,7 +140,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		}
 	}
 
-	private RepositoryConnection repoConnection() throws RepositoryException {
+	private synchronized RepositoryConnection repoConnection() throws RepositoryException {
 		if (connection == null || !connection.isOpen() || hasConnectionInterupted) {
 			connection = getRepoConnection();
 			hasConnectionInterupted = false;
@@ -148,7 +148,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		return connection;
 	}
 
-	private RepositoryConnection getRepoConnection() {
+	private synchronized RepositoryConnection getRepoConnection() {
 		int attempts = 0;
 		while (true) {
 			try {
@@ -262,6 +262,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 			try {
 				attempts++;
 				repoConnection().setParserConfig(config);
+				return;
 			} catch (RepositoryException e) {
 				LOG.debug(e.getMessage());
 				handleRetries(attempts, e, "setParserConfig");
