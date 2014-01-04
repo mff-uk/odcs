@@ -140,7 +140,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		}
 	}
 
-	private synchronized RepositoryConnection repoConnection() throws RepositoryException {
+	private RepositoryConnection repoConnection() throws RepositoryException {
 		if (connection == null || !connection.isOpen() || hasConnectionInterupted) {
 			connection = getRepoConnection();
 			hasConnectionInterupted = false;
@@ -148,7 +148,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		return connection;
 	}
 
-	private synchronized RepositoryConnection getRepoConnection() {
+	private RepositoryConnection getRepoConnection() {
 		int attempts = 0;
 		while (true) {
 			try {
@@ -162,7 +162,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 
 	@Override
 	public RepositoryConnection getConnection() throws RepositoryException {
-		return repoConnection();
+		return repository.getConnection();
 	}
 
 	@Override
@@ -302,7 +302,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.repoConnection().close();
+				repoConnection().close();
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex, "close()");
@@ -702,7 +702,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().add(url, baseURI, dataFormat, contexts);
+				repoConnection().add(url, baseURI, dataFormat, contexts);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex,
@@ -904,7 +904,7 @@ public class FailureTolerantRepositoryWrapper implements Repository, RepositoryC
 		while (true) {
 			try {
 				attempts++;
-				this.getConnection().setNamespace(prefix, name);
+				repoConnection().setNamespace(prefix, name);
 				return;
 			} catch (RepositoryException ex) {
 				handleRetries(attempts, ex, "setNamespace()");
