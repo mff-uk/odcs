@@ -177,7 +177,7 @@ public class EmailNotifications {
 
 	}
 	
-	public void getDefaultScheduleNotificationRecord(Schedule schedule) {
+	public void getDefaultScheduleNotificationRecord() {
 
 		errorExec.setValue(NotificationRecordType.INSTANT);
 		successfulExec.setValue(NotificationRecordType.DAILY);
