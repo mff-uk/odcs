@@ -189,13 +189,11 @@
         </dependency>
 		
         <!-- Spring aspects so we can reference them in AspectJ aspects -->
-        <!-- Careful when upgrading, 3.2.5.RELEASE did not work for me. :( -->
-        <!--
         <dependency>
                  <groupId>org.springframework</groupId>
                  <artifactId>spring-aspects</artifactId>
-                 <version>3.1.2.RELEASE</version>
-        </dependency> -->
+                 <version>${org.springframework.version}</version>
+        </dependency>
 		
         <!-- CGLIB is required for proxying classes without interface -->
         <dependency>
@@ -335,6 +333,53 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<!-- AspecJ maven plugin used for compile-time bytecode weaving.
+				Needed for aspects to work. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.5</version>
+				<configuration>
+					<source>${project.java.version}</source>
+					<target>${project.java.version}</target>
+					<complianceLevel>${project.java.version}</complianceLevel>
+					<showWeaveInfo>true</showWeaveInfo>
+					<verbose>true</verbose>
+					<weaveDependencies>
+						<!-- We need to weave bytecode to EclipseLink
+							dependency when catching exceptions thrown
+							because corrupted sequences in db.
+							See VirtuosoSequenceSanitizerAspect. -->
+						<weaveDependency>
+							<groupId>org.eclipse.persistence</groupId>
+							<artifactId>eclipselink</artifactId>
+						</weaveDependency>
+					</weaveDependencies>
+					<aspectLibraries>
+						<!-- Spring aspects are here so aspects defined
+							therein are picked up by AspectJ and weaved
+							properly (e.g. @Transactional, ...). -->
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+					<!-- This will get rid of "can't find superclass" errors
+						when checking pointcut candidates for missing
+						superclasses/interfaces in weaveDependencies (see above). -->
+					<Xlint>ignore</Xlint>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+				</dependencies>
+			</plugin>
 			
         </plugins>
     </build>

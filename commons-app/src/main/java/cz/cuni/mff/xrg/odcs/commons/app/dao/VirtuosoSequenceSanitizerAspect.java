@@ -42,8 +42,9 @@ import virtuoso.jdbc4.VirtuosoException;
  *
  * @author Jan Vojt
  */
-//@Aspect
-@DeclarePrecedence("VirtuosoSequenceSanitizerAspect,AnnotationTransactionAspect")
+@Aspect
+@DeclarePrecedence("cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect"
+		+ ",org.springframework.transaction.aspectj.AnnotationTransactionAspect")
 public class VirtuosoSequenceSanitizerAspect {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoSequenceSanitizerAspect.class);
@@ -120,7 +121,12 @@ public class VirtuosoSequenceSanitizerAspect {
 		if (REMEMBER_SEQ_ASSIGN.get() != null && REMEMBER_SEQ_ASSIGN.get()) {
 			Object[] args = jp.getArgs();
 			DataObject obj = (DataObject) args[0];
-			SEQ_ASSIGNMENTS.get().put(obj, obj.getId());
+			
+			// remember only assignments to null, as existent
+			// IDs should always be preserved by EclipseLink.
+			if (obj.getId() == null) {
+				SEQ_ASSIGNMENTS.get().put(obj, obj.getId());
+			}
 		}
 	}
 	
@@ -142,8 +148,8 @@ public class VirtuosoSequenceSanitizerAspect {
 				// retry after rollback won't hurt anything.
 				LOG.error("Virtuoso SQLERROR encountered. Will update sequences and retry.", ex);
 				updateSequences();
-				forget();
 				resetArgumentState();
+				forget();
 				
 				LOG.info("Retrying operation after sequence update.");
 				return pjp.proceed();
