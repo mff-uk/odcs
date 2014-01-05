@@ -64,7 +64,8 @@ public class FailureSharedRepositoryConnection implements RepositoryConnection {
 
 		LOG.warn("Database is down after {} attempts while calling method {}.",
 				attempts, methodName);
-		LOG.debug("The reson is: {}", ex.getLocalizedMessage());
+		LOG.debug("The reson is: {} Stack trace: {}", ex.getLocalizedMessage(),
+				ex.fillInStackTrace());
 
 		hasConnectionInterupted = true;
 	}

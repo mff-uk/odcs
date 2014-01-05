@@ -195,7 +195,8 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 
 		LOG.warn("Database is down after {} attempts while calling method {}.",
 				attempts, methodName);
-		LOG.debug("The reson is: {}", ex.getLocalizedMessage());
+		LOG.debug("The reson is: {} Stack trace: {}", ex.getLocalizedMessage(),
+				ex.fillInStackTrace());
 
 		if (attempts == 1) {
 			// TODO send notification after first error only
