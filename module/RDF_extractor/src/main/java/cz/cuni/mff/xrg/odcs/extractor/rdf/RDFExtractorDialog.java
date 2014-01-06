@@ -104,10 +104,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private OptionGroup failsWhenErrors; // How to solve errors for Statistical handler
 
 	private static final String STOP = "Stop pipeline execution if extractor "
-			+ "extracted some triples with an error. "
-			+ "If fatal error is discovered, pipeline is stopped";
+			+ "extracted some triples with an error.";
 
-	private static final String CONTINUE = "Extract only triples with no errors.";
+	private static final String CONTINUE = "Extract only triples with no errors. "
+			+ "\nIf fatal error is discovered, pipeline is stopped.";
 
 	/**
 	 * Set Count of attempts to reconnect if the connection fails. For infinite
