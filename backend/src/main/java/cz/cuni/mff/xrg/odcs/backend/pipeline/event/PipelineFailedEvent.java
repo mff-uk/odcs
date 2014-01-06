@@ -150,7 +150,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 		
 		return new PipelineFailedEvent(
 				"Pipeline execution failed.",
-				"Loading of DPURecord implementation thrown fallowing exception: ",
+				"Loading of DPURecord implementation threw the following exception: ",
 				exception, dpuInstance, pipelineExec, source);
 	}
 

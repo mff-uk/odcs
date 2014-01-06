@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -114,7 +115,7 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 			typedQuery.setMaxResults(1);
 			T result = (T) typedQuery.getSingleResult();
 			return result;
-		} catch(javax.persistence.NoResultException e) {
+		} catch(EmptyResultDataAccessException e) {
 			// getSingleResult throws if it has no results 
 			return null;
 		}

@@ -10,7 +10,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
     <!-- transactions by annotations -->
-    <tx:annotation-driven />	
+    <tx:annotation-driven mode="aspectj" />	
     
     <context:annotation-config />
     
@@ -35,6 +35,11 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="emf" />
     </bean>
+	
+	<!-- Injects dependencies into aspect for fixing corrupted database sequences. -->
+	<bean id="sequenceAspect"
+		  class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect"
+		  factory-method="aspectOf" />
 
     <!-- support for loading DPUs -->
     <bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade"
