@@ -68,7 +68,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		FailureTolerantRepositoryWrapper repoWrapper = new FailureTolerantRepositoryWrapper(
 				new VirtuosoRepository(URL_Host_List, user, password,
-				defaultGraph),
+				getDefaultGraph()),
 				config);
 
 		this.useExtension = repoWrapper.useVirtuosoExtension();
@@ -97,8 +97,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 */
 	@Override
 	public void setDataGraph(String newStringDataGraph) {
-		this.defaultGraph = newStringDataGraph;
-		setDataGraph(createNewGraph(defaultGraph));
+		setDataGraph(createNewGraph(newStringDataGraph));
+		this.defaultGraph=getDataGraph().toString();
 	}
 
 	@Override
