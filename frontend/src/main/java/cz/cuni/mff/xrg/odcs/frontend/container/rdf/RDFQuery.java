@@ -155,6 +155,7 @@ public class RDFQuery implements Query {
 								toItem(result.getBindingNames(), result.next(),
 								++id));
 					}
+					result.close();
 					break;
 				case CONSTRUCT:
 					for (RDFTriple triple : (List<RDFTriple>) data) {

@@ -631,6 +631,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					}
 				}
 			}
+			tupleResult.close();
 		} catch (InvalidQueryException | QueryEvaluationException e) {
 			logger.debug(e.getMessage());
 		}
@@ -1175,6 +1176,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				Model model = QueryResults.asModel(result);
 				size = model.size();
+				result.close();
 
 			} catch (QueryEvaluationException ex) {
 
@@ -1228,6 +1230,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 					String selectSize = tupleResult.next()
 							.getValue(sizeVar).stringValue();
 					long resultSize = Long.parseLong(selectSize);
+					
+					tupleResult.close();
 					return resultSize;
 				}
 				throw new InvalidQueryException(

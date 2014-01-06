@@ -563,6 +563,7 @@ public class SPARQLoader {
 					count++;
 					if (count == sizeSplit) {
 						builder.append(insertStop);
+						lazy.close();
 						return builder.toString();
 
 					}
@@ -570,6 +571,7 @@ public class SPARQLoader {
 
 				if (count > 0) {
 					builder.append(insertStop);
+					lazy.close();
 					return builder.toString();
 				}
 

@@ -165,6 +165,11 @@ public class OrderTupleQueryResult implements TupleQueryResult {
 				atempts++;
 				logger.debug("{}. atempt to fill bindins", atempts);
 			}
+			finally {
+				if (tupleResult!=null) {
+					tupleResult.close();
+				}
+			}
 
 			bindings.clear();
 			repository.restartConnection();
