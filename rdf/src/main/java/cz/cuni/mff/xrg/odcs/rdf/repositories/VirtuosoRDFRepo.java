@@ -13,6 +13,7 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
@@ -23,6 +24,10 @@ import virtuoso.sesame2.driver.VirtuosoRepository;
  * @author Jiri Tomes
  */
 public final class VirtuosoRDFRepo extends BaseRDFRepo {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+
+	private static final String VIRTUOSO_SYNTAX_KEY = "useExtension";
 
 	private String URL_Host_List;
 
@@ -31,8 +36,20 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	private String password;
 
 	private String defaultGraph;
+	
+	/**
+	 * Virtuoso allows setting log level explicitly in a query.
+	 * If {@link #virtuosoSyntax Virtuoso specific syntax} is enabled, we set the
+	 * log level explicitly.
+	 */
+	private static final int LOG_LEVEL = 2;
 
-	private boolean useExtension;
+	/**
+	 * Use Virtuoso specific syntax for SPARQL if true. Parameter log-enable
+	 * with value {@value #LOG_LEVEL} disables logging and enables row-by-row
+	 * autocommit.
+	 */
+	private boolean virtuosoSyntax;
 
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
@@ -71,7 +88,8 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				getDefaultGraph()),
 				config);
 
-		this.useExtension = repoWrapper.useVirtuosoExtension();
+		this.configureVirtuosoSyntax(config);
+		
 		this.repository = repoWrapper;
 		this.repoConnection = new FailureSharedRepositoryConnection(repoWrapper);
 
@@ -167,15 +185,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 				String mergeQuery;
 
-				if (useExtension) {
-					/**
-					 * Virtuoso specific syntax for SPARQL. Parameter log-enable
-					 * with value 2 disables logging and enables row-by-row
-					 * autocommit.
-					 */
-					mergeQuery = String
-							.format("DEFINE sql:log-enable 2 \n"
-							+ "ADD <%s> TO <%s>", sourceGraphName,
+				if (virtuosoSyntax) {
+					mergeQuery = String.format("DEFINE sql:log-enable %d \n"
+							+ "ADD <%s> TO <%s>",
+							LOG_LEVEL,
+							sourceGraphName,
 							targetGraphName);
 				} else {
 					mergeQuery = String
@@ -244,15 +258,11 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 				String mergeQuery;
 
-				if (useExtension) {
-					/**
-					 * Virtuoso specific syntax for SPARQL. Parameter log-enable
-					 * with value 2 disables logging and enables row-by-row
-					 * autocommit.
-					 */
-					mergeQuery = String
-							.format("DEFINE sql:log-enable 2 \n"
-							+ "ADD <%s> TO <%s>", sourceGraphName,
+				if (virtuosoSyntax) {
+					mergeQuery = String.format("DEFINE sql:log-enable %d \n"
+							+ "ADD <%s> TO <%s>",
+							LOG_LEVEL,
+							sourceGraphName,
 							targetGraphName);
 				} else {
 					mergeQuery = String
@@ -303,12 +313,15 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	}
 
 	/**
+	 * Tells whether Virtuoso specific syntax for SPARQL is used. In such case
+	 * parameter log-enable with value {@value #LOG_LEVEL} disables logging and
+	 * enables row-by-row autocommit.
 	 *
-	 * @return if is used Virtuoso specifix syntax for SPARQL or not.
+	 * @return whether Virtuoso specific syntax for SPARQL is used.
 	 *
 	 */
 	public boolean isUsedExtension() {
-		return useExtension;
+		return virtuosoSyntax;
 	}
 
 	/**
@@ -333,5 +346,16 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 */
 	public String getDefaultGraph() {
 		return defaultGraph;
+	}
+	
+	
+	private void configureVirtuosoSyntax(Properties config) {
+		String sExtension = config.getProperty(VIRTUOSO_SYNTAX_KEY);
+		if (sExtension == null) {
+			LOG.info("Missing config property {}, using default value {}.",
+					VIRTUOSO_SYNTAX_KEY, virtuosoSyntax);
+		} else {
+			virtuosoSyntax = Boolean.parseBoolean(sExtension);
+		}
 	}
 }

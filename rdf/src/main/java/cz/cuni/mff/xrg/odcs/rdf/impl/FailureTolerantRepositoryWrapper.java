@@ -23,8 +23,6 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 
 	private static final String WAIT_KEY = "wait";
 
-	private static final String EXTENSION_KEY = "useExtension";
-
 	/**
 	 * Wrapped RDF repository.
 	 */
@@ -42,14 +40,10 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	private int wait = 2000;
 
 	/**
-	 * If can be use virtuoso extension specific syntax, or not.
-	 */
-	private boolean extension = false;
-
-	/**
 	 * Wrapper constructor with configuration.
 	 *
 	 * @param repository to wrap
+	 * @param properties reconnect configuration
 	 */
 	public FailureTolerantRepositoryWrapper(Repository repository,
 			Properties properties) {
@@ -162,22 +156,6 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		} else {
 			wait = Integer.parseInt(sWait);
 		}
-
-		String sExtension = properties.getProperty(EXTENSION_KEY);
-		if (sExtension == null) {
-			LOG.info("Missing config property {}, using default value {}.",
-					EXTENSION_KEY, extension);
-		} else {
-			extension = Boolean.parseBoolean(sExtension);
-		}
-	}
-
-	/**
-	 *
-	 * @return If is used virtuoso extension specific syntax, or not.
-	 */
-	public boolean useVirtuosoExtension() {
-		return extension;
 	}
 
 	/**
