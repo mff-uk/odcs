@@ -586,6 +586,7 @@ public class SPARQLoader {
 				}
 
 				rdfDataUnit.restartConnection();
+				builder.delete(0, builder.length());
 				retryCount++;
 				String error = String.format("Problem by creating %s"
 						+ ". data part - ATTEMPT number %s: ", loadedPartsCount,
