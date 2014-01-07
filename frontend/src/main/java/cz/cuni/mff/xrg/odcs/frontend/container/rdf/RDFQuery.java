@@ -43,20 +43,17 @@ public class RDFQuery implements Query {
 
 	private ArrayList<Item> cachedItems;
 
-	private RDFDataUnit repository;
-
 	public RDFQuery(RDFQueryDefinition qd) {
 		this.baseQuery = qd.getBaseQuery();
 		this.batchSize = qd.getBatchSize();
 		this.qd = qd;
-		this.repository = RDFDataUnitHelper.getRepository(qd.getInfo(), qd
-				.getDpu(), qd.getDataUnit());
+
 	}
 
 	@Override
 	public int size() {
-//		RDFDataUnit repository = RDFDataUnitHelper
-//				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+		RDFDataUnit repository = RDFDataUnitHelper
+				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
@@ -77,10 +74,9 @@ public class RDFQuery implements Query {
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
 			LOG.debug("Size query exception", ex);
+		} finally {
+			repository.shutDown();
 		}
-//		finally {
-//			repository.shutDown();
-//		}
 		return 0;
 	}
 
@@ -104,8 +100,8 @@ public class RDFQuery implements Query {
 			return cachedItems.subList(startIndex, startIndex + count);
 		}
 
-//		RDFDataUnit repository = RDFDataUnitHelper
-//				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+		RDFDataUnit repository = RDFDataUnitHelper
+				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 		if (repository == null) {
 			LOG.debug("Unable to load RDFDataUnit.");
 			throw new RuntimeException("Unable to load RDFDataUnit.");
@@ -183,11 +179,10 @@ public class RDFQuery implements Query {
 					"Error in query evaluation: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
+		} finally {
+			// close reporistory
+			repository.shutDown();
 		}
-//		finally {
-//			// close reporistory
-//			repository.shutDown();
-//		}
 		return null;
 	}
 
