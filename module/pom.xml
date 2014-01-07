@@ -21,7 +21,8 @@
 		<module>SPARQL_transformer</module>
 		<module>RDF_Data_Validator</module>
 		<module>Silk_Linker</module>
-		<module>File_csv_extractor</module>
+		
+		
 	</modules>
 
 	<properties>
