@@ -33,7 +33,7 @@ public class RDFDataUnitHelper {
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
-	 * @param executionInfo       The pipelineExecution context.
+	 * @param executionInfo The pipelineExecution context.
 	 * @param dpuInstance   Owner of DataUnit.
 	 * @param info
 	 * @return Repository or null if there is no browser for given type.
@@ -57,16 +57,21 @@ public class RDFDataUnitHelper {
 			case RDF_Local:
 				try {
 					// storage directory
-					AppConfig appConfig = ((AppEntry)UI.getCurrent()).getBean(AppConfig.class);
+					AppConfig appConfig = ((AppEntry) UI.getCurrent()).getBean(
+							AppConfig.class);
 					File dpuStorage =
 							new File(appConfig.getString(
 							ConfigProperty.GENERAL_WORKINGDIR),
 							executionInfo.dpu(dpuInstance).getStoragePath(info
 							.getIndex()));
+
+					String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
+
 					LocalRDFRepo repository = RDFDataUnitFactory
-							.createLocalRDFRepo("");
-					// load data from storage
-					repository.load(dpuStorage);
+							.createLocalRDFRepo(dpuStorage.getAbsolutePath(),
+							dataUnitId,
+							info.getName(), namedGraph);
+
 					return repository;
 
 				} catch (RuntimeException e) {
@@ -92,7 +97,8 @@ public class RDFDataUnitHelper {
 	 *         file placed on home directory path.
 	 */
 	public static VirtuosoRDFRepo getVirtuosoRepository(String namedGraph) {
-		AppConfig appConfig = ((AppEntry)UI.getCurrent()).getBean(AppConfig.class).getSubConfiguration(
+		AppConfig appConfig = ((AppEntry) UI.getCurrent()).getBean(
+				AppConfig.class).getSubConfiguration(
 				ConfigProperty.RDF);
 
 		// load configuration from appConfig
