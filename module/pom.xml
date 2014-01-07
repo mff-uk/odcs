@@ -21,6 +21,9 @@
 		<module>SPARQL_transformer</module>
 		<module>RDF_Data_Validator</module>
 		<module>Silk_Linker</module>
+		<module>CSV_Organization_extractor</module>
+		<module>CSV_Procurements_extractor</module>
+		<module>CSV_Political_extractor</module>
 		
 		
 	</modules>
