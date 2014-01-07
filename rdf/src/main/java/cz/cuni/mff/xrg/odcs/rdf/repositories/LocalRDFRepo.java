@@ -1,11 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 
@@ -19,7 +14,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.*;
 import org.openrdf.sail.nativerdf.NativeStore;
 import org.slf4j.LoggerFactory;
 
@@ -143,60 +137,63 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	}
 
 	/**
-	 * Load data from given file into repository.
+	 * Empty implementation - NativeStorage with file is already set.
 	 *
 	 * @param directory directory where repository file is stored.
 	 */
 	@Override
 	public void load(File directory) {
-		logger.info(
-				"LOAD INPUT graph <{}> in dir: {}",
-				graph.stringValue(), directory.toString());
+		/*
+		 logger.info(
+		 "LOAD INPUT graph <{}> in dir: {}",
+		 graph.stringValue(), directory.toString());
 
-		File file = getFileForDirectory(directory);
+		 File file = getFileForDirectory(directory);
 
-		final String suffix = "";
-		final String baseURI = "";
-		final boolean useSuffix = false;
-		final HandlerExtractType handlerExtractType = HandlerExtractType.STANDARD_HANDLER;
-		try {
-			extractFromFile(FileExtractType.PATH_TO_FILE, null,
-					file.getAbsolutePath(), suffix,
-					baseURI,
-					useSuffix,
-					handlerExtractType);
+		 final String suffix = "";
+		 final String baseURI = "";
+		 final boolean useSuffix = false;
+		 final HandlerExtractType handlerExtractType = HandlerExtractType.STANDARD_HANDLER;
+		 try {
+		 extractFromFile(FileExtractType.PATH_TO_FILE, null,
+		 file.getAbsolutePath(), suffix,
+		 baseURI,
+		 useSuffix,
+		 handlerExtractType);
 
-		} catch (RDFException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
+		 } catch (RDFException e) {
+		 throw new RuntimeException(e.getMessage(), e);
+		 }*/
 	}
 
 	/**
-	 * Save data from repository into given file.
+	 * Save data from repository into given file. Empty implementation -
+	 * creating file is not neccasary for futher using.
 	 *
 	 * @param directory
 	 */
 	@Override
 	public void save(File directory) {
 
-		logger.info(
-				"Save OUTPUT graph <{}> in dir: {}",
-				graph.stringValue(), directory.toString());
+		/*
+		 logger.info(
+		 "Save OUTPUT graph <{}> in dir: {}",
+		 graph.stringValue(), directory.toString());
 
-		File file = getFileForDirectory(directory);
+		 File file = getFileForDirectory(directory);
 
-		RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
-				RDFFormat.RDFXML);
+		 RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
+		 RDFFormat.RDFXML);
 
-		RDFFormatType formatType = RDFFormatType.getTypeByRDFFormat(format);
+		 RDFFormatType formatType = RDFFormatType.getTypeByRDFFormat(format);
 
-		logger.debug("saving to directory: {}", directory.getAbsolutePath());
+		 logger.debug("saving to directory: {}", directory.getAbsolutePath());
 
-		try {
-			loadToFile(file.getAbsolutePath(), formatType, true, false);
-		} catch (CannotOverwriteFileException | RDFException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
+		 try {
+		 loadToFile(file.getAbsolutePath(), formatType, true, false);
+		 } catch (CannotOverwriteFileException | RDFException e) {
+		 throw new RuntimeException(e.getMessage(), e);
+		 }*/
 	}
 
 	/**
