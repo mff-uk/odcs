@@ -31,7 +31,6 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import ch.qos.logback.classic.Level;
@@ -378,5 +377,9 @@ public class LogTable extends CustomComponent {
 		if (cmpLevel != null && cmpLevel.getClass() == ComboBox.class) {
 			((ComboBox) cmpLevel).setValue(Level.ALL);
 		}
+	}
+
+	public void setPageLength(int pageLength) {
+		table.setPageLength(pageLength);
 	}
 }
