@@ -220,7 +220,9 @@ public class DPUDetail extends Window {
 			if (!validate()) {
 				return false;
 			}
-
+			//Can cause Exception, so should be before any actual saving.
+			dpuInstance.saveConfig();
+			
 			String userDescription = dpuDescription.getValue().trim();
 			if (userDescription.isEmpty()) {
 				String dialogDescription = confDialog.getDescription();
@@ -242,7 +244,7 @@ public class DPUDetail extends Window {
 			}
 
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
-			dpuInstance.saveConfig();
+			
 		} catch (Exception ce) {
 			if (ce instanceof SPARQLValidationException) {
 
