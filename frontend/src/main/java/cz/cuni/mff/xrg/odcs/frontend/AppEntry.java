@@ -197,6 +197,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 			@Override
 			public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
+				main.setActiveMenuItem(event.getViewName());
 			}
 		});
 

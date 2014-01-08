@@ -26,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresen
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,42 +39,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MenuLayout extends CustomComponent {
 
 	private static final long serialVersionUID = 1L;
-
 	private ClassNavigator navigator;
-
 	/**
 	 * Authentication context used to render menu with respect to currently
 	 * logged in user.
 	 */
 	@Autowired
 	private AuthenticationContext authCtx;
-
 	/**
 	 * Authentication service handling logging in and out.
 	 */
 	@Autowired
 	private AuthenticationService authService;
-
 	/**
 	 * Used layout.
 	 */
 	private VerticalLayout mainLayout;
-
 	/**
 	 * Menu bar.
 	 */
 	private MenuBar menuBar;
-
 	/**
 	 * Layout for application views.
 	 */
 	private Panel viewLayout;
-
 	Label userName;
-
 	Button logOutButton;
-
 	Embedded backendStatus;
+	
+	HashMap<String, MenuItem> menuItems = new HashMap<>();
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -172,13 +166,21 @@ public class MenuLayout extends CustomComponent {
 	public void setNavigation(ClassNavigatorHolder navigatorHolder) {
 		this.navigator = navigatorHolder;
 		// init menuBar
-		menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator));
-		menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator));
-		menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator));
-		menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator));
-//		menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
-		menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator));
-		menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator));
+		menuItems.put("", menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator)));
+		menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
+		menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
+		menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
+//		menuItems.put("", menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
+		menuItems.put("Scheduler", menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator)));
+		menuItems.put("Administrator", menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator)));
+	}
+
+	public void setActiveMenuItem(String viewName) {
+		for (MenuItem item : menuBar.getItems()) {
+			item.setCheckable(true);
+			item.setChecked(false);
+		}
+		menuItems.get(viewName).setChecked(true);
 	}
 
 	/**
@@ -189,11 +191,9 @@ public class MenuLayout extends CustomComponent {
 	private class NavigateToCommand implements Command {
 
 		private static final long serialVersionUID = 1L;
-		
 		private Class<?> clazz;
-
 		private ClassNavigator navigator;
-		
+
 		public NavigateToCommand(Class<?> clazz, ClassNavigator navigator) {
 			this.clazz = clazz;
 			this.navigator = navigator;

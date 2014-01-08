@@ -285,6 +285,9 @@ public class DebuggingView extends CustomComponent {
 		msgCoreFilters.add(new Compare.Equal("execution.id", execution.getId()));
 		logCoreFilters.add(new Compare.Equal("execution", execution.getId()));
 
+		//set page lenght
+		logTable.setPageLength(utils.getPageLength());
+		msgTable.setPageLength(utils.getPageLength());
 		// update the log table
 		logTable.setExecution(pipelineExec, instance);
 		msgTable.setExecution(execution);

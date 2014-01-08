@@ -224,6 +224,10 @@ public class RecordsTable extends CustomComponent {
 		}
 	}
 
+	public void setPageLength(int pageLength) {
+		messageTable.setPageLength(pageLength);
+	}
+
 	/**
 	 * Class for filter enchanting.
 	 */
