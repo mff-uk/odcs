@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 import java.util.Date;
 import org.apache.log4j.Level;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Shows detail of selected log message.
@@ -104,10 +105,10 @@ public class LogMessageDetail extends Window {
 		fullMessageContent.setReadOnly(false);
 		// set the of main text box
 		if (log.getStackTrace() == null) {
-			fullMessageContent.setValue(log.getMessage());
+			fullMessageContent.setValue(HtmlUtils.htmlEscape(log.getMessage()));
 		} else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(log.getMessage());
+			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
 			sb.append("<br/><br/>Stack trace:<br/>");
 			// just do replace in stack trace
 			final String stackTrace = 
