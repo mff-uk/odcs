@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import ch.qos.logback.classic.Level;
+import com.vaadin.ui.AbstractSelect;
 import java.util.LinkedList;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
@@ -96,6 +97,7 @@ public class LogTable extends CustomComponent {
 
 		table = new IntlibPagedTable();
 		table.setSelectable(true);
+		table.setImmediate(true);
 		table.setSizeFull();
 
 		table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
@@ -128,6 +130,19 @@ public class LogTable extends CustomComponent {
 				return Level.toLevel(level);
 			}
 		});
+//		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+//
+//			@Override
+//			public String generateDescription(Component source, Object itemId, Object propertyId) {
+//				if(itemId != null && "message".equals(propertyId)) {
+//					Object fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty(propertyId).getValue();
+//					if(fullMessage != null) {
+//						return "TEST";//(String)fullMessage;
+//					}
+//				}
+//				return "TEST";
+//			}
+//		});
 
 		// add filter generation
 		ComboBox levelSelector = new ComboBox();

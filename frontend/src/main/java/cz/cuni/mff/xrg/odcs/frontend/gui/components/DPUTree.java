@@ -4,6 +4,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.data.util.ItemSorter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
@@ -225,6 +227,23 @@ public class DPUTree extends CustomComponent {
 				}
 			}
 		});
+		((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
+			@Override
+			public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
+				//Ignore
+			}
+
+			@Override
+			public int compare(Object itemId1, Object itemId2) {
+				DPUTemplateRecord first = (DPUTemplateRecord)itemId1;
+				DPUTemplateRecord second = (DPUTemplateRecord)itemId2;
+				if(first.getId() == null && second.getId() == null) {
+					return 0;
+				} else {
+					return first.getName().compareTo(second.getName());
+				}
+			}
+		});
 
 		layoutTree.addComponent(dpuTree);
 		layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
@@ -315,6 +334,7 @@ public class DPUTree extends CustomComponent {
 				tree.expandItemsRecursively(itemId);
 			}
 		}
+		((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
 	}
 
 	private void setTreeState(boolean isStateExpanded) {
