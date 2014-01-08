@@ -380,6 +380,9 @@ public class PipelineGraph implements DataObject {
 		Position bounds = new Position(0, 0);
 		for(Node node : nodes) {
 			Position nodePosition = node.getPosition();
+                        if(nodePosition == null) {
+                            continue;
+                        }
 			if(nodePosition.getX() > bounds.getX()) {
 				bounds.setX(nodePosition.getX());
 			}
