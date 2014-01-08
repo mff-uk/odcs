@@ -15,8 +15,17 @@
 	background-color: black !important;
 	line-height: 50px; 
 	text-align: left;
-	margin-top: -5px;
 	/*color: red;*/
+}
+
+.v-menubar-menuitem {
+	height: 50px !important;
+	line-height: 40px !important;
+}
+
+.v-menubar-menuitem-checked {
+	background-color: #444;
+	color: #fff;
 }
 
 .backendStatus {
