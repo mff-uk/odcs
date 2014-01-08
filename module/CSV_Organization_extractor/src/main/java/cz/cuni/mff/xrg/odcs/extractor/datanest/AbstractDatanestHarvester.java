@@ -3,20 +3,16 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
 import au.com.bytecode.opencsv.CSVReader;
 import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvOrganizationExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Properties;
 import java.util.Vector;
 
 public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecord> extends AbstractHarvester<RecordType> {
@@ -25,7 +21,15 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
     public final static String DATANEST_DATE_FORMAT = "yyyy-MM-dd";
     protected final static SimpleDateFormat sdf = new SimpleDateFormat(DATANEST_DATE_FORMAT);
     private static Logger LOG = LoggerFactory.getLogger(AbstractDatanestHarvester.class);
+    public int debugProcessOnlyNItems = 2;
 
+    public int getDebugProcessOnlyNItems() {
+        return debugProcessOnlyNItems;
+    }
+
+    public void setDebugProcessOnlyNItems(int debugProcessOnlyNItems) {
+        this.debugProcessOnlyNItems = debugProcessOnlyNItems;
+    }
 
     /**
      * @param sourceUrlKey key used to get the source URL from Datanest properties
@@ -46,15 +50,18 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
      *
      * @param sourceFile temporary file holding freshly obtained data to harvest from
      *                   when some repository error occurs
+     * @param batchSize
      */
     @Override
-    public Vector<RecordType> performEtl(File sourceFile) throws Exception {
+    public Vector<RecordType> performEtl(File sourceFile, Integer batchSize) throws Exception {
 
         Vector<RecordType> records = new Vector<RecordType>();
         try {
-            // "open" the CSV dump
+            Charset charset = Charset.forName("UTF8");
             CSVReader csvReader = new CSVReader(new BufferedReader(
-                    new FileReader(sourceFile)));
+                    new InputStreamReader(
+                            new FileInputStream(sourceFile),charset)));
+
             // TODO: If we store also the original copy of the data (say in
             // Jacrabbit) and perform a "diff" on that and previous version we can:
             // a) determine also removed records (which current implementation
@@ -71,22 +78,8 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
             int recordCounter = 0;
             long timeCurrent = -1;
             long timeStart = Calendar.getInstance().getTimeInMillis();
-            int debugProcessOnlyNItems = 2;
-
-            Properties prop = new Properties();
-
-            try {
-                //load a properties file from class path, inside static method
-                prop.load(CsvOrganizationExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-                //get the property value and print it out
-                debugProcessOnlyNItems = Integer.valueOf(prop.getProperty("debugProcessOnlyNItems"));
-
-            } catch (IOException e) {
-                LOG.error("error was occoured while it was reading property file", e);
-            }
 
             LOG.debug("value of debugProcessOnlyNItems: " + debugProcessOnlyNItems);
-
 
             // read the rows
             String[] row;
@@ -95,8 +88,6 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
 
                     RecordType record = scrapOneRecord(row);
                     recordCounter++;
-
-                    // clean-up data related to old record, if necessary
 
                     // add new data
                     records.add(record);
@@ -112,6 +103,20 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                     LOG.warn("skipping following record: "
                             + Arrays.deepToString(row));
                 }
+
+                if (records.size() >= batchSize) {
+                    store(records);
+
+                    // report current harvesting status
+                    timeCurrent = Calendar.getInstance().getTimeInMillis();
+                    float harvestingSpeed = 1000f * (float) recordCounter
+                            / (float) (timeCurrent - timeStart);
+                    LOG.info("harvested " + recordCounter + " records ("
+                            + harvestingSpeed + "/s) so far ...");
+
+                    records.clear();
+                }
+
 
                 if (debugProcessOnlyNItems > 0 &&
                         recordCounter >= debugProcessOnlyNItems)

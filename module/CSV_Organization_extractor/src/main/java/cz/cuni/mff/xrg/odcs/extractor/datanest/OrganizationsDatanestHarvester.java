@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
 
 import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
+import cz.cuni.mff.xrg.odcs.extractor.file.CsvOrganizationExtractorConfig;
 import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
 import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -30,18 +31,21 @@ public class OrganizationsDatanestHarvester extends
     private static Logger logger = LoggerFactory.getLogger(OrganizationsDatanestHarvester.class);
 
 
-    public OrganizationsDatanestHarvester() throws ParserConfigurationException, TransformerConfigurationException, IOException {
+    public OrganizationsDatanestHarvester(String targetRdf, int debugProcessOnlyNItems) throws ParserConfigurationException, TransformerConfigurationException, IOException {
 
         super(KEY_DATANEST_ORGANIZATIONS_URL_KEY);
-        OrganizationRdfSerializer rdfSerializer = new OrganizationRdfSerializer(SesameRepository.getInstance());
+        this.setDebugProcessOnlyNItems(debugProcessOnlyNItems);
+        SesameRepository sesameRepository = SesameRepository.getInstance();
+        sesameRepository.setTargetRDF(targetRdf);
+        OrganizationRdfSerializer rdfSerializer = new OrganizationRdfSerializer(sesameRepository);
         addSerializer(rdfSerializer);
 
     }
 
+
     @Override
     public OrganizationRecord scrapOneRecord(String[] row) throws ParseException {
         OrganizationRecord record = new OrganizationRecord();
-
         record.setId("org_" + row[ATTR_INDEX_ID]);
         record.setDatanestId(row[ATTR_INDEX_ID]);
         record.setSource(row[ATTR_INDEX_SOURCE]);

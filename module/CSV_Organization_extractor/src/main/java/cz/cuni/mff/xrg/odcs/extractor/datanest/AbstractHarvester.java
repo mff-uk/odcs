@@ -101,8 +101,9 @@ public abstract class AbstractHarvester<RecordType extends AbstractRecord> {
      * Extract, transform and load the data.
      *
      * @param sourceFile temporary file holding freshly obtained data to harvest from
+     * @param batchSize
      */
-    abstract public Vector<RecordType> performEtl(File sourceFile) throws Exception;
+    abstract public Vector<RecordType> performEtl(File sourceFile, Integer batchSize) throws Exception;
 
     /**
      * Loop through all serializers and pass given records to them. Serializers

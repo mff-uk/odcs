@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.Vector;
 
 /**
@@ -49,20 +47,10 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
         final String baseURI = "";
         final FileExtractType extractType = config.fileExtractType;
 
-        String path = null;
-        Properties prop = new Properties();
-        try {
-            //load a properties file from class path, inside static method
-            prop.load(CsvOrganizationExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            //get the property value and print it out
-            path = prop.getProperty("sourceCSV");
-            LOG.debug("sourceCSV is: " + path);
-
-        } catch (IOException e) {
-            LOG.error("error was occoured while it was reading property file", e);
-        }
-
-
+        String sourceCSV = config.Path;
+        String targetRdf = config.TargetRDF;
+        Integer batchSize = config.BatchSize;
+        Integer debugProcessOnlyNItems = config.DebugProcessOnlyNItems;
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
 
@@ -75,21 +63,23 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
 
         RDFFormatType formatType = config.RDFFormatValue;
 
-        File file = new File(path);
+        File file = new File(sourceCSV);
         String filename = file.getName();
+
 
         AbstractDatanestHarvester<?> harvester = null;
 
         LOG.info("create ORGANIZATION harvester");
         try {
-            harvester = new OrganizationsDatanestHarvester();
+            harvester = new OrganizationsDatanestHarvester(targetRdf, debugProcessOnlyNItems);
         } catch (Exception e) {
             LOG.error("Problem.", e);
         }
 
         if (harvester != null) {
             try {
-                Vector<? extends AbstractRecord> records = harvester.performEtl(file);
+                // TODO mozno odstranit records
+                Vector<? extends AbstractRecord> records = harvester.performEtl(file, batchSize);
             } catch (Exception e) {
                 LOG.error("Problem while transforming csv to rdf", e);
             }

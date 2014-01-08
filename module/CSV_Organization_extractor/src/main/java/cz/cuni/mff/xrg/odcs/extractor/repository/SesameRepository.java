@@ -6,10 +6,8 @@ import org.openrdf.repository.http.HTTPRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
@@ -32,19 +30,7 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
      * @throws java.io.IOException when error occurs while loading properties
      */
     private SesameRepository() throws IOException {
-
-        Properties prop = new Properties();
-        try {
-            //load a properties file from class path, inside static method
-            prop.load(CsvOrganizationExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            //get the property value and print it out
-            String target = prop.getProperty("targetRDF");
-            setTargetRDF(target);
-            logger.debug("targetRDF is: " + target);
-
-        } catch (IOException e) {
-            logger.error("error was occoured while it was reading property file", e);
-        }
+        logger.debug("SesameRepository targetRDF is: " + this.getTargetRDF());
 
     }
 
@@ -65,7 +51,11 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
     private void debugRdfDump(String rdfData) {
         try {
             File dumpFile = File.createTempFile("odn-", ".rdf");
-            BufferedWriter out = new BufferedWriter(new FileWriter(dumpFile));
+            dumpFile = File.createTempFile("odn-", ".rdf");
+            FileWriter writer = new FileWriter(dumpFile);
+            BufferedWriter out = new BufferedWriter(writer);
+
+
             out.write(rdfData);
             out.close();
             logger.info("RDF dump saved to file " + dumpFile);
@@ -108,8 +98,10 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
             }
 
             File fileRdf = File.createTempFile("odn-", ".rdf", directory);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(fileRdf), Charset.forName("UTF-8")));
 
-            BufferedWriter out = new BufferedWriter(new FileWriter(fileRdf));
+            BufferedWriter out = new BufferedWriter(writer);
             out.write(rdfData);
             out.close();
             logger.info("RDF saved to file " + fileRdf);
