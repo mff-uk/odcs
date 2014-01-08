@@ -13,8 +13,9 @@
     <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
     <task:executor id="taskExecutor" pool-size="16" />
     <task:scheduler id="taskScheduler" pool-size="8" />
-		 
-    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.facade.DatabaseReconnectAspect" />
+	
+	<!-- Define aspects for managing DB reconnects. -->
+    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect" />
 	
     <!-- module configuration needs to be defined here, because it differs from 
     frontend -->

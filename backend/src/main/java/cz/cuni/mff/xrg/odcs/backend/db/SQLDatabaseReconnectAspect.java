@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.backend.facade;
+package cz.cuni.mff.xrg.odcs.backend.db;
 
 import javax.annotation.PostConstruct;
 
@@ -28,9 +28,9 @@ import org.springframework.core.annotation.Order;
  */
 @Aspect
 @Order(1)
-class DatabaseReconnectAspect {
+class SQLDatabaseReconnectAspect {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DatabaseReconnectAspect.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SQLDatabaseReconnectAspect.class);
 
 	/**
 	 * Configuration how many subsequent failures must occur before sending
