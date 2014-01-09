@@ -21,8 +21,8 @@ public class CsvOrganizationExtractorConfig extends DPUConfigObjectBase {
     public boolean OnlyThisSuffix = false;
     public boolean UseStatisticalHandler = true;
     public boolean failWhenErrors = false;
-    public Integer DebugProcessOnlyNItems = new Integer(10000);
-    public Integer BatchSize = new Integer(10000);
+    public Integer DebugProcessOnlyNItems = 10000;
+    public Integer BatchSize = 10000;
 
     @Override
     public boolean isValid() {
