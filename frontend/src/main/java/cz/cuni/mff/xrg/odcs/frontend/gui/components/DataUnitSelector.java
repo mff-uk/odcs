@@ -217,7 +217,7 @@ public class DataUnitSelector extends CustomComponent {
 				}
 			}
 		}
-		if(dpuSelector.getValue() == null) {
+		if(dpuSelector.getValue() == null && dataUnitGraph != null) {
 			dataUnitGraph.setValue("");
 		}
 	}
