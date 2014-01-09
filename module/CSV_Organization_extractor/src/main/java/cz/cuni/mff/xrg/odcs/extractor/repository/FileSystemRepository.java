@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.repository;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import org.openrdf.repository.http.HTTPRepository;
+import java.io.*;
+import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
 
 public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData> {
 
@@ -14,11 +14,11 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
     private static FileSystemRepository instance = null;
     public String targetRDF = "";
 
-
     /**
      * Initialize FileSystem back-end.
-     *
-     * @throws java.io.IOException when error occurs while loading properties
+     * 
+     * @throws java.io.IOException
+     *             when error occurs while loading properties
      */
     private FileSystemRepository() throws IOException {
         logger.debug("FileSystemRepository targetRDF is: " + this.getTargetRDF());
@@ -27,9 +27,10 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
 
     /**
      * Get the instance of FileSystem repository singleton.
-     *
+     * 
      * @return instance of FileSystem repository
-     * @throws java.io.IOException when error occurs while loading properties
+     * @throws java.io.IOException
+     *             when error occurs while loading properties
      */
     public static FileSystemRepository getInstance() throws IOException {
 
@@ -46,7 +47,6 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
             FileWriter writer = new FileWriter(dumpFile);
             BufferedWriter out = new BufferedWriter(writer);
 
-
             out.write(rdfData);
             out.close();
             logger.info("RDF dump saved to file " + dumpFile);
@@ -57,12 +57,12 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
 
     /**
      * Store given record into FileSystem repository with given name.
-     *
-     * @param records records to store (in RDF format with additional info)
+     * 
+     * @param records
+     *            records to store (in RDF format with additional info)
      */
     @Override
-    public void store(RdfData records)
-            throws IllegalArgumentException {
+    public void store(RdfData records) throws IllegalArgumentException {
         saveRdf(records.getRdfData());
     }
 
@@ -73,7 +73,6 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
     public void setTargetRDF(String targetRDF) {
         this.targetRDF = targetRDF;
     }
-
 
     private void saveRdf(String rdfData) {
         try {
@@ -86,8 +85,7 @@ public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData
             }
 
             File fileRdf = File.createTempFile("odn-", ".rdf", directory);
-            Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(fileRdf), Charset.forName("UTF-8")));
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileRdf), Charset.forName("UTF-8")));
 
             BufferedWriter out = new BufferedWriter(writer);
             out.write(rdfData);

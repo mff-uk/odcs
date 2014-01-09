@@ -1,11 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
-
-import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -15,8 +9,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Vector;
 
-public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecord> extends AbstractHarvester<RecordType> {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import au.com.bytecode.opencsv.CSVReader;
+import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
+
+public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecord> extends AbstractHarvester<RecordType> {
 
     public final static String DATANEST_DATE_FORMAT = "yyyy-MM-dd";
     protected final static SimpleDateFormat sdf = new SimpleDateFormat(DATANEST_DATE_FORMAT);
@@ -32,11 +31,12 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
     }
 
     /**
-     * @param sourceUrlKey key used to get the source URL from Datanest properties
-     * @throws java.io.IOException when initialization of primary repository fails
+     * @param sourceUrlKey
+     *            key used to get the source URL from Datanest properties
+     * @throws java.io.IOException
+     *             when initialization of primary repository fails
      */
-    public AbstractDatanestHarvester(String sourceUrlKey)
-          {
+    public AbstractDatanestHarvester(String sourceUrlKey) {
 
         super();
 
@@ -45,14 +45,13 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
     abstract public RecordType scrapOneRecord(String[] row) throws ParseException;
 
     /**
-     * Most common implementation of harvesting code in our current Datanest
-     * harvesters.
-     *
-     * @param sourceFile temporary file holding freshly obtained data to harvest from
-     *                   when some repository error occurs
-     *
+     * Most common implementation of harvesting code in our current Datanest harvesters.
+     * 
+     * @param sourceFile
+     *            temporary file holding freshly obtained data to harvest from when some repository error occurs
+     * 
      */
-    //TODO Now it reads from a csv file. In next step, it could be great to reaad the csv files from a directory.
+    // TODO Now it reads from a csv file. In next step, it could be great to reaad the csv files from a directory.
     @Override
     public Vector<RecordType> performEtl(File sourceFile) throws Exception {
         LOG.info("start performEtl on the path sourceFile");
@@ -60,19 +59,17 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
         Vector<RecordType> records = new Vector<RecordType>();
         try {
             Charset charset = Charset.forName("UTF8");
-            CSVReader csvReader = new CSVReader(new BufferedReader(
-                    new InputStreamReader(
-                            new FileInputStream(sourceFile),charset)));
+            CSVReader csvReader = new CSVReader(new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), charset)));
 
             // TODO: If we store also the original copy of the data (say in
             // Jacrabbit) and perform a "diff" on that and previous version we can:
             // a) determine also removed records (which current implementation
-            //    does not know to do)
+            // does not know to do)
             // b) determine new and updated records without downloading records
-            //    for all IDs ...
+            // for all IDs ...
             // c) ... instead noting only changed records in say vectors and
-            //    processing only those (thus saving a LOT of resources assuming
-            //    changes and additions are small and infrequent)
+            // processing only those (thus saving a LOT of resources assuming
+            // changes and additions are small and infrequent)
 
             // TODO: check the header - for now we simply skip it
             csvReader.readNext();
@@ -80,12 +77,10 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
             long timeCurrent = -1;
             long timeStart = Calendar.getInstance().getTimeInMillis();
 
-
             Integer batchSize = getBatchSize();
             Integer processOnlyNItems = getDebugProcessOnlyNItems();
             LOG.debug("process only " + processOnlyNItems + " Items");
             LOG.debug("process only " + batchSize + "  Items");
-
 
             // read the rows
             String[] row;
@@ -102,12 +97,10 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                     // prematurely - this will cause last fetched line of CSV to
                     // be incomplete
                     LOG.warn("index out of bound exception (broken connection?)", e);
-                    LOG.warn("skipping following record: "
-                            + Arrays.deepToString(row));
+                    LOG.warn("skipping following record: " + Arrays.deepToString(row));
                 } catch (ParseException e) {
                     LOG.warn("parse exception", e);
-                    LOG.warn("skipping following record: "
-                            + Arrays.deepToString(row));
+                    LOG.warn("skipping following record: " + Arrays.deepToString(row));
                 }
 
                 if (records.size() >= batchSize) {
@@ -115,17 +108,13 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
 
                     // report current harvesting status
                     timeCurrent = Calendar.getInstance().getTimeInMillis();
-                    float harvestingSpeed = 1000f * (float) recordCounter
-                            / (float) (timeCurrent - timeStart);
-                    LOG.info("harvested " + recordCounter + " records ("
-                            + harvestingSpeed + "/s) so far ...");
+                    float harvestingSpeed = 1000f * (float) recordCounter / (float) (timeCurrent - timeStart);
+                    LOG.info("harvested " + recordCounter + " records (" + harvestingSpeed + "/s) so far ...");
 
                     records.clear();
                 }
 
-
-                if (processOnlyNItems > 0 &&
-                        recordCounter >= processOnlyNItems)
+                if (processOnlyNItems > 0 && recordCounter >= processOnlyNItems)
                     break;
             }
 
@@ -143,6 +132,5 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
         }
         return records;
     }
-
 
 }

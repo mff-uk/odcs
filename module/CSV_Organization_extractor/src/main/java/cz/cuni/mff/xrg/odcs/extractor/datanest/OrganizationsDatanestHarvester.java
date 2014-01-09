@@ -1,21 +1,21 @@
 package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
-
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.FileSystemRepository;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
-public class OrganizationsDatanestHarvester extends
-        AbstractDatanestHarvester<OrganizationRecord>  {
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
+import cz.cuni.mff.xrg.odcs.extractor.repository.FileSystemRepository;
+import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
+
+public class OrganizationsDatanestHarvester extends AbstractDatanestHarvester<OrganizationRecord> {
     public final static String KEY_DATANEST_ORGANIZATIONS_URL_KEY = "datanest.organizations.url";
     protected final static int ATTR_INDEX_ID = 0;
     protected final static int ATTR_INDEX_NAME = 1;
@@ -27,7 +27,6 @@ public class OrganizationsDatanestHarvester extends
     protected final static int ATTR_INDEX_SOURCE = 14;
     private static Logger logger = LoggerFactory.getLogger(OrganizationsDatanestHarvester.class);
 
-
     public OrganizationsDatanestHarvester(String targetRdf) throws ParserConfigurationException, TransformerConfigurationException, IOException {
 
         super(KEY_DATANEST_ORGANIZATIONS_URL_KEY);
@@ -37,7 +36,6 @@ public class OrganizationsDatanestHarvester extends
         addSerializer(rdfSerializer);
 
     }
-
 
     @Override
     public OrganizationRecord scrapOneRecord(String[] row) throws ParseException {

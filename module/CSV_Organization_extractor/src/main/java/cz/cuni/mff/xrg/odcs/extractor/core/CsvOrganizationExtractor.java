@@ -1,5 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.core;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
@@ -9,32 +16,20 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.file.FileManager;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
 import cz.cuni.mff.xrg.odcs.extractor.datanest.AbstractDatanestHarvester;
 import cz.cuni.mff.xrg.odcs.extractor.datanest.OrganizationsDatanestHarvester;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Vector;
 
 /**
  * @author Jan Marcek
  */
-//TODO change name of a class. Replace the "extractor" with something more appropriate
+// TODO change name of a class. Replace the "extractor" with something more appropriate
 
 @AsExtractor
-public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationExtractorConfig>
-        implements ConfigDialogProvider<CsvOrganizationExtractorConfig> {
+public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationExtractorConfig> implements ConfigDialogProvider<CsvOrganizationExtractorConfig> {
 
     public final static String ORGANIZATIONS_BASE_URI = "http://data.gov.sk/id/interior/organization/";
     public final static String OPENDATA_ORGANIZATIONS_CONTEXTS_KEY = "organizations";
@@ -62,9 +57,7 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
         boolean useStatisticHandler = config.UseStatisticalHandler;
         boolean failWhenErrors = config.failWhenErrors;
 
-        final HandlerExtractType handlerExtractType = HandlerExtractType
-                .getHandlerType(useStatisticHandler, failWhenErrors);
-
+        final HandlerExtractType handlerExtractType = HandlerExtractType.getHandlerType(useStatisticHandler, failWhenErrors);
 
         AbstractDatanestHarvester<?> harvester = null;
         URL url = null;

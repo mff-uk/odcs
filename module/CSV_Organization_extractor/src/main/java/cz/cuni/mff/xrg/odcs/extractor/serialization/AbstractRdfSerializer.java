@@ -1,11 +1,8 @@
 package cz.cuni.mff.xrg.odcs.extractor.serialization;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,12 +10,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.List;
 
-public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> extends
-        AbstractSerializer<RecordType, String, RdfData>  {
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+
+public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> extends AbstractSerializer<RecordType, String, RdfData> {
 
     public final static String NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public final static String NS_DC = "http://purl.org/dc/elements/1.1/";
@@ -37,16 +38,15 @@ public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> e
 
     public final static String ERR_CONVERSION = "unable to convert the data into RDF";
 
-    protected final static SimpleDateFormat sdf = new SimpleDateFormat(
-            OPENDATA_DATE_FORMAT);
+    protected final static SimpleDateFormat sdf = new SimpleDateFormat(OPENDATA_DATE_FORMAT);
 
     protected DocumentBuilder docBuilder;
     protected Transformer transformer;
 
     /**
      * Initialize serializer to use given repository.
-     *
-     *
+     * 
+     * 
      * @throws IllegalArgumentException
      *             if repository is {@code null}
      * @throws javax.xml.parsers.ParserConfigurationException
@@ -54,18 +54,15 @@ public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> e
      * @throws javax.xml.transform.TransformerConfigurationException
      *             when XML document transformer fails to initialize
      */
-    public AbstractRdfSerializer(OdnRepositoryStoreInterface<RdfData> repository)
-            throws IllegalArgumentException, ParserConfigurationException,
+    public AbstractRdfSerializer(OdnRepositoryStoreInterface<RdfData> repository) throws IllegalArgumentException, ParserConfigurationException,
             TransformerConfigurationException {
 
         super(repository);
 
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
-                .newInstance();
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
 
-        TransformerFactory transformerFactory = TransformerFactory
-                .newInstance();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformer = transformerFactory.newTransformer();
         // TODO: nice for debugging, but might hurt performance in production
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -78,8 +75,7 @@ public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> e
         return element;
     }
 
-    protected Element appendResourceNode(Document doc, String name,
-                                         String attr, String value) {
+    protected Element appendResourceNode(Document doc, String name, String attr, String value) {
 
         Element element = doc.createElement(name);
         element.setAttribute(attr, value);
@@ -87,24 +83,20 @@ public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> e
     }
 
     /**
-     * Serialize one given record into RDF and store the result in given
-     * 'concept' (which in turn is in given 'doc').
-     *
+     * Serialize one given record into RDF and store the result in given 'concept' (which in turn is in given 'doc').
+     * 
      * @param doc
      *            XML document we are serializing into
      * @param rdfElement
-     *            XML document element into which to append the serialization of
-     *            given record
+     *            XML document element into which to append the serialization of given record
      * @param record
      *            record to serialize into RDF
      */
-    public abstract void serializeRecord(Document doc, Element rdfElement,
-                                         RecordType record);
+    public abstract void serializeRecord(Document doc, Element rdfElement, RecordType record);
 
     /**
-     * Override this method if you need to add custom RDF NS elements to the XML
-     * document.
-     *
+     * Override this method if you need to add custom RDF NS elements to the XML document.
+     * 
      * @param rdfElement
      *            RDF element of the XML document
      */
