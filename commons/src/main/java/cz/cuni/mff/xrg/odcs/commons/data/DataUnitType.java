@@ -21,5 +21,9 @@ public enum DataUnitType {
 	 * RDF data unit type.
 	 * see @{link RDFDataRepository}
 	 */
-	RDF_Virtuoso	
+	RDF_Virtuoso,
+	/**
+	 * Represent file data unit.
+	 */
+	FILE
 }
