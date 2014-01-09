@@ -180,7 +180,10 @@ public class MenuLayout extends CustomComponent {
 			item.setCheckable(true);
 			item.setChecked(false);
 		}
-		menuItems.get(viewName).setChecked(true);
+		MenuItem activeMenu = menuItems.get(viewName);
+		if (activeMenu != null) {
+			activeMenu.setChecked(true);
+		}
 	}
 
 	/**
