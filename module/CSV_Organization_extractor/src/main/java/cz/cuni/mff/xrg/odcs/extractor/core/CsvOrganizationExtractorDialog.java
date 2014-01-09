@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.file;
+package cz.cuni.mff.xrg.odcs.extractor.core;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.*;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
@@ -34,7 +34,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  *
  */
 public class CsvOrganizationExtractorDialog extends BaseConfigDialog<CsvOrganizationExtractorConfig> {
-    //TODO: It hasn't done yet
 	private GridLayout mainLayout;
 
 	/**
@@ -130,10 +129,11 @@ public class CsvOrganizationExtractorDialog extends BaseConfigDialog<CsvOrganiza
 				FileExtractType.UPLOAD_FILE));
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.PATH_TO_FILE));
-		pathType.addItem(FileExtractType.getDescriptionByType(
-				FileExtractType.PATH_TO_DIRECTORY));
-		pathType.addItem(FileExtractType.getDescriptionByType(
-				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
+// TODO to extend this functionality
+//		pathType.addItem(FileExtractType.getDescriptionByType(
+//				FileExtractType.PATH_TO_DIRECTORY));
+//		pathType.addItem(FileExtractType.getDescriptionByType(
+//				FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.HTTP_URL));
 
@@ -484,25 +484,26 @@ public class CsvOrganizationExtractorDialog extends BaseConfigDialog<CsvOrganiza
 
 					extractType = FileExtractType.PATH_TO_FILE;
 
-					textFieldPath.setInputPrompt("C:\\ted\\test.ttl");
+					textFieldPath.setInputPrompt("file:\\C:\\ted\\test.ttl");
 
 					//Adding component for specify path to file
 					gridLayoutCore.addComponent(textFieldPath, 0, 1);
 
 
 					//If selected "Extract file based on the path to the directory" option
-				} else if (event.getProperty().getValue().equals(FileExtractType
-						.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
-
-					extractType = FileExtractType.PATH_TO_DIRECTORY;
-					prepareDirectoryForm();
-
-				} else if (event.getProperty().getValue().equals(FileExtractType
-						.getDescriptionByType(
-						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-
-					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
-					prepareDirectoryForm();
+                    // TODO need to be extend
+//				} else if (event.getProperty().getValue().equals(FileExtractType
+//						.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
+//
+//					extractType = FileExtractType.PATH_TO_DIRECTORY;
+//					prepareDirectoryForm();
+//
+//				} else if (event.getProperty().getValue().equals(FileExtractType
+//						.getDescriptionByType(
+//						FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
+//
+//					extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+//					prepareDirectoryForm();
 
 					//If selected "Extract file from the given HTTP URL" option
 				} else if (event.getProperty().getValue().equals(
@@ -544,14 +545,11 @@ public class CsvOrganizationExtractorDialog extends BaseConfigDialog<CsvOrganiza
         horizontalLayoutFormat.setSpacing(true);
 
 
-        // A FormLayout used outside the context of a Form
         FormLayout fl = new FormLayout();
-
-        // Make the FormLayout shrink to its contents
         fl.setWidth("100%");
 
         textFieldTargetPath = new TextField("RDF Format save to directory:");
-        textFieldTargetPath.setInputPrompt("C:\\janci\\");
+        textFieldTargetPath.setInputPrompt("file:\\C:\\");
         textFieldTargetPath.setNullRepresentation("");
         textFieldTargetPath.setWidth("100%");
         textFieldTargetPath.setHeight("-1px");
@@ -576,7 +574,7 @@ public class CsvOrganizationExtractorDialog extends BaseConfigDialog<CsvOrganiza
 	}
 
 	private void prepareDirectoryForm() {
-		textFieldPath.setInputPrompt("C:\\ted\\");
+		textFieldPath.setInputPrompt("file:\\C:\\ted\\");
 
 		//Adding component for specify path to directory
 		gridLayoutCore.addComponent(textFieldPath, 0, 1);

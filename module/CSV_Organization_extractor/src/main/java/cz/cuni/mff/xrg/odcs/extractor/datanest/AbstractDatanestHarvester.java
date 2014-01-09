@@ -21,9 +21,9 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
     public final static String DATANEST_DATE_FORMAT = "yyyy-MM-dd";
     protected final static SimpleDateFormat sdf = new SimpleDateFormat(DATANEST_DATE_FORMAT);
     private static Logger LOG = LoggerFactory.getLogger(AbstractDatanestHarvester.class);
-    public int debugProcessOnlyNItems = 2;
+    public Integer debugProcessOnlyNItems = new Integer(0);
 
-    public int getDebugProcessOnlyNItems() {
+    public Integer getDebugProcessOnlyNItems() {
         return debugProcessOnlyNItems;
     }
 
@@ -50,10 +50,11 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
      *
      * @param sourceFile temporary file holding freshly obtained data to harvest from
      *                   when some repository error occurs
-     * @param batchSize
+     *
      */
+    //TODO Now it reads from a csv file. In next step, it could be great to reaad the csv files from a directory.
     @Override
-    public Vector<RecordType> performEtl(File sourceFile, Integer batchSize) throws Exception {
+    public Vector<RecordType> performEtl(File sourceFile) throws Exception {
 
         Vector<RecordType> records = new Vector<RecordType>();
         try {
@@ -104,7 +105,7 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                             + Arrays.deepToString(row));
                 }
 
-                if (records.size() >= batchSize) {
+                if (records.size() >= getBatchSize()) {
                     store(records);
 
                     // report current harvesting status

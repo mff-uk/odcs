@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.file;
+package cz.cuni.mff.xrg.odcs.extractor.core;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
@@ -20,6 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Vector;
 
 /**
@@ -60,26 +65,33 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
         final HandlerExtractType handlerExtractType = HandlerExtractType
                 .getHandlerType(useStatisticHandler, failWhenErrors);
 
-
         RDFFormatType formatType = config.RDFFormatValue;
 
-        File file = new File(sourceCSV);
-        String filename = file.getName();
-
-
         AbstractDatanestHarvester<?> harvester = null;
+        URL url = null;
+        try {
+            url = new URL(sourceCSV);
+        } catch (MalformedURLException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        } catch (IOException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        }
 
         LOG.info("create ORGANIZATION harvester");
+
         try {
-            harvester = new OrganizationsDatanestHarvester(targetRdf, debugProcessOnlyNItems);
+            harvester = new OrganizationsDatanestHarvester(targetRdf);
+            harvester.setDebugProcessOnlyNItems(debugProcessOnlyNItems);
+            harvester.setBatchSize(batchSize);
+            harvester.setSourceUrl(url);
+
         } catch (Exception e) {
             LOG.error("Problem.", e);
         }
 
         if (harvester != null) {
             try {
-                // TODO mozno odstranit records
-                Vector<? extends AbstractRecord> records = harvester.performEtl(file, batchSize);
+                harvester.update();
             } catch (Exception e) {
                 LOG.error("Problem while transforming csv to rdf", e);
             }

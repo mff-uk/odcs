@@ -2,12 +2,9 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
 
 import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvOrganizationExtractorConfig;
 import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
 import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +28,9 @@ public class OrganizationsDatanestHarvester extends
     private static Logger logger = LoggerFactory.getLogger(OrganizationsDatanestHarvester.class);
 
 
-    public OrganizationsDatanestHarvester(String targetRdf, int debugProcessOnlyNItems) throws ParserConfigurationException, TransformerConfigurationException, IOException {
+    public OrganizationsDatanestHarvester(String targetRdf) throws ParserConfigurationException, TransformerConfigurationException, IOException {
 
         super(KEY_DATANEST_ORGANIZATIONS_URL_KEY);
-        this.setDebugProcessOnlyNItems(debugProcessOnlyNItems);
         SesameRepository sesameRepository = SesameRepository.getInstance();
         sesameRepository.setTargetRDF(targetRdf);
         OrganizationRdfSerializer rdfSerializer = new OrganizationRdfSerializer(sesameRepository);

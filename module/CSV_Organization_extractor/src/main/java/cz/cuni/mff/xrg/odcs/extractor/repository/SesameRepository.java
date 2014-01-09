@@ -1,14 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.repository;
 
 import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvOrganizationExtractor;
 import org.openrdf.repository.http.HTTPRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Properties;
 
 public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
 

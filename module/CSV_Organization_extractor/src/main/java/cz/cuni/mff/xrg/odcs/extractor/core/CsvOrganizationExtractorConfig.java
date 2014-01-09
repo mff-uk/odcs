@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.file;
+package cz.cuni.mff.xrg.odcs.extractor.core;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
@@ -12,8 +12,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class CsvOrganizationExtractorConfig extends DPUConfigObjectBase {
 
-    public String Path = "e:/eea/comsode/dataset/organisations-dump.csv";
     public String TargetRDF = "e:/eea/comsode/rdf";
+    public String Path = "file:/e:/eea/comsode/rdf/source/organisations-dump.csv";
     public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
 	public String FileSuffix = "";
 
