@@ -11,21 +11,35 @@
 /* Menubar */
 .v-menubar {
 	background-image: none !important;
-	font-size: 13pt;
+	font-size: 17px;
+	font-weight: bold;
 	background-color: black !important;
 	line-height: 50px; 
 	text-align: left;
-	/*color: red;*/
 }
 
-.v-menubar-menuitem {
+.v-menubar .v-menubar-menuitem {
+	cursor: pointer;
 	height: 50px !important;
 	line-height: 40px !important;
 }
 
-.v-menubar-menuitem-checked {
-	background-color: #444;
+.v-menubar > .v-menubar-menuitem:first-child {
 	color: #fff;
+	margin-right: 25px;
+}
+
+.v-menubar > .v-menubar-menuitem-unchecked:first-child {
+	text-shadow: 1px 1px 8px #d1d3d6;
+}
+
+.v-menubar-menuitem-checked {
+	font-weight: bold;
+	background-color: #575757;
+	color: #fff;
+	border-right: 1px solid;
+	border-left: 1px solid;
+	border-color: #666;
 }
 
 .backendStatus {
@@ -56,6 +70,8 @@
 
 .loginPanel {
 	background-color: #000000;
+	box-shadow: 0 2px 5px #999;
+	z-index: 1;
 }
 
 .username {

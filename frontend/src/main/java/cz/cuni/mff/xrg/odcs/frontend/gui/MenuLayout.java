@@ -166,7 +166,7 @@ public class MenuLayout extends CustomComponent {
 	public void setNavigation(ClassNavigatorHolder navigatorHolder) {
 		this.navigator = navigatorHolder;
 		// init menuBar
-		menuItems.put("", menuBar.addItem("<b>ODCleanStore</b>", new NavigateToCommand(Initial.class, navigator)));
+		menuItems.put("", menuBar.addItem("ODCleanStore", new NavigateToCommand(Initial.class, navigator)));
 		menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
 		menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
 		menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
