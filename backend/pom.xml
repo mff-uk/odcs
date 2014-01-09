@@ -54,6 +54,12 @@
 			<type>jar</type>
 		</dependency>
 
+        <dependency> <!-- file dataunit project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-file-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 		<dependency> <!-- commons-web project -->
                         <!-- presented because of OSGI export packages
                             it's not nice, but if we wan't to remove this

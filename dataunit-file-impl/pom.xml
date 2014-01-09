@@ -6,9 +6,9 @@
         <artifactId>odcs</artifactId> 
         <version>1.0.0</version> 
     </parent>	
-    <artifactId>dataunit-file</artifactId>
-	<name>FileDataUnit</name>
-	<description>Definition of FileDataUnit.</description>	
+    <artifactId>dataunit-file-impl</artifactId>
+	<name>FileDataUnit-impl</name>
+	<description>Implementation of FileDataUnit.</description>	
 	
     <dependencies>
 
@@ -22,6 +22,18 @@
         <dependency> <!-- commons project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency> <!-- dataunit project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency> <!-- file dataunit project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-file</artifactId>
             <version>${project.version}</version>
         </dependency>
         
