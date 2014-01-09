@@ -55,6 +55,7 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
     //TODO Now it reads from a csv file. In next step, it could be great to reaad the csv files from a directory.
     @Override
     public Vector<RecordType> performEtl(File sourceFile) throws Exception {
+        LOG.info("start performEtl on the path sourceFile");
 
         Vector<RecordType> records = new Vector<RecordType>();
         try {
@@ -73,14 +74,18 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
             //    processing only those (thus saving a LOT of resources assuming
             //    changes and additions are small and infrequent)
 
-
             // TODO: check the header - for now we simply skip it
             csvReader.readNext();
             int recordCounter = 0;
             long timeCurrent = -1;
             long timeStart = Calendar.getInstance().getTimeInMillis();
 
-            LOG.debug("value of debugProcessOnlyNItems: " + debugProcessOnlyNItems);
+
+            Integer batchSize = getBatchSize();
+            Integer processOnlyNItems = getDebugProcessOnlyNItems();
+            LOG.debug("process only " + processOnlyNItems + " Items");
+            LOG.debug("process only " + batchSize + "  Items");
+
 
             // read the rows
             String[] row;
@@ -105,7 +110,7 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                             + Arrays.deepToString(row));
                 }
 
-                if (records.size() >= getBatchSize()) {
+                if (records.size() >= batchSize) {
                     store(records);
 
                     // report current harvesting status
@@ -119,8 +124,8 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                 }
 
 
-                if (debugProcessOnlyNItems > 0 &&
-                        recordCounter >= debugProcessOnlyNItems)
+                if (processOnlyNItems > 0 &&
+                        recordCounter >= processOnlyNItems)
                     break;
             }
 

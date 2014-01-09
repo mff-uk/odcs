@@ -26,10 +26,10 @@ public class RdfData {
 	private String rdfData;
 	private String rdfBaseURI;
 	private String rdfContextsKey;
-	
+
 	/**
 	 * Construct contained holding data necessary to perform storage operation.
-	 * 
+	 *
 	 * @param rdfData
 	 *            RDF data to store
 	 * @param rdfBaseURI
@@ -40,7 +40,7 @@ public class RdfData {
 	 */
 	public RdfData(String rdfData, String rdfBaseURI,
                    String rdfContextsKey) {
-		
+
 		this.rdfData = rdfData;
 		this.rdfBaseURI = rdfBaseURI;
 		this.rdfContextsKey = rdfContextsKey;

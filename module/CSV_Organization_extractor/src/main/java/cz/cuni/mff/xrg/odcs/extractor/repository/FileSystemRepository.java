@@ -8,40 +8,33 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
+public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData> {
 
-    public final static String SESAME_REPOSITORY_PROPERTIES_NAME = "/repo-sesame.properties";
-    public final static String KEY_DEBUG_DUMP_RDF = "sesame.debug.dump_rdf";
-    public final static String PREFIX_KEY_REPO = "sesame.repo.";
-    public final static String KEY_SERVER = PREFIX_KEY_REPO + "server";
-    public final static String KEY_ID = PREFIX_KEY_REPO + "id";
-    public final static String PREFIX_KEY_CONTEXTS = PREFIX_KEY_REPO + "contexts.";
-    private static Logger logger = LoggerFactory.getLogger(SesameRepository.class);
-    private static SesameRepository instance = null;
+    private static Logger logger = LoggerFactory.getLogger(FileSystemRepository.class);
+    private static FileSystemRepository instance = null;
     public String targetRDF = "";
-    private HTTPRepository sesameRepo = null;
 
 
     /**
-     * Initialize Sesame back-end.
+     * Initialize FileSystem back-end.
      *
      * @throws java.io.IOException when error occurs while loading properties
      */
-    private SesameRepository() throws IOException {
-        logger.debug("SesameRepository targetRDF is: " + this.getTargetRDF());
+    private FileSystemRepository() throws IOException {
+        logger.debug("FileSystemRepository targetRDF is: " + this.getTargetRDF());
 
     }
 
     /**
-     * Get the instance of Sesame repository singleton.
+     * Get the instance of FileSystem repository singleton.
      *
-     * @return instance of Sesame repository
+     * @return instance of FileSystem repository
      * @throws java.io.IOException when error occurs while loading properties
      */
-    public static SesameRepository getInstance() throws IOException {
+    public static FileSystemRepository getInstance() throws IOException {
 
         if (instance == null)
-            instance = new SesameRepository();
+            instance = new FileSystemRepository();
 
         return instance;
     }
@@ -63,12 +56,9 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
     }
 
     /**
-     * Store given record into Sesame repository with given name.
+     * Store given record into FileSystem repository with given name.
      *
      * @param records records to store (in RDF format with additional info)
-     * @throws IllegalArgumentException if repository with given name does not exists
-     * @throws org.openrdf.repository.RepositoryException
-     *                                  when initialization fails
      */
     @Override
     public void store(RdfData records)

@@ -142,17 +142,19 @@ public abstract class AbstractHarvester<RecordType extends AbstractRecord> {
      * Update our data using data harvested from source.
      *
      */
-     public void update(){
+     public void update() {
          try {
              // 1) download the source data into local temporary file using 'sourceUrl'
              //    (or, if requested on admin console, retrieve latest copy from Jackrabbit
              //    and use that instead of downloading fresh copy - in that case skip [2]
              //    and [3] of course)
+             URL url = getSourceUrl();
+             logger.info("start read from the path: " + url.toString());
              File tempFile = File.createTempFile(ODN_HARVESTER_TMP_PREF,
                      ODN_HARVESTER_TMP_SUFF);
              tempFile.deleteOnExit();
 
-             URLConnection csvConnection = getSourceUrl().openConnection();
+             URLConnection csvConnection = url.openConnection();
              csvConnection.setRequestProperty("User-Agent",
                      "Open Data Node (http://opendata.sk/liferay/open-data-node)");
 

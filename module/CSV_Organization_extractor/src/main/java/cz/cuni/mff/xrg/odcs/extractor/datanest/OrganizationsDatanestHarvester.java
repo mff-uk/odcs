@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
 
 import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
+import cz.cuni.mff.xrg.odcs.extractor.repository.FileSystemRepository;
 import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -31,9 +31,9 @@ public class OrganizationsDatanestHarvester extends
     public OrganizationsDatanestHarvester(String targetRdf) throws ParserConfigurationException, TransformerConfigurationException, IOException {
 
         super(KEY_DATANEST_ORGANIZATIONS_URL_KEY);
-        SesameRepository sesameRepository = SesameRepository.getInstance();
-        sesameRepository.setTargetRDF(targetRdf);
-        OrganizationRdfSerializer rdfSerializer = new OrganizationRdfSerializer(sesameRepository);
+        FileSystemRepository fileSystemRepository = FileSystemRepository.getInstance();
+        fileSystemRepository.setTargetRDF(targetRdf);
+        OrganizationRdfSerializer rdfSerializer = new OrganizationRdfSerializer(fileSystemRepository);
         addSerializer(rdfSerializer);
 
     }

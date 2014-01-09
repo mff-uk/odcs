@@ -51,13 +51,13 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
     public void execute(DPUContext context) throws DataUnitException, DPUException {
         final String baseURI = "";
         final FileExtractType extractType = config.fileExtractType;
-
-        String sourceCSV = config.Path;
-        String targetRdf = config.TargetRDF;
-        Integer batchSize = config.BatchSize;
-        Integer debugProcessOnlyNItems = config.DebugProcessOnlyNItems;
+        final String sourceCSV = config.Path;
+        final String targetRdf = config.TargetRDF;
+        final Integer batchSize = config.BatchSize;
+        final Integer debugProcessOnlyNItems = config.DebugProcessOnlyNItems;
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
+        final RDFFormatType formatType = config.RDFFormatValue;
 
         boolean useStatisticHandler = config.UseStatisticalHandler;
         boolean failWhenErrors = config.failWhenErrors;
@@ -65,7 +65,6 @@ public class CsvOrganizationExtractor extends ConfigurableBase<CsvOrganizationEx
         final HandlerExtractType handlerExtractType = HandlerExtractType
                 .getHandlerType(useStatisticHandler, failWhenErrors);
 
-        RDFFormatType formatType = config.RDFFormatValue;
 
         AbstractDatanestHarvester<?> harvester = null;
         URL url = null;
