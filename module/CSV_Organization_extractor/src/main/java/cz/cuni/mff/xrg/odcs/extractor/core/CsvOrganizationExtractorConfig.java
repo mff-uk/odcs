@@ -7,7 +7,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 /**
  * File extractor configuration.
  * 
- * @author Petyr
+ * @author Jan Marcek
  * 
  */
 public class CsvOrganizationExtractorConfig extends DPUConfigObjectBase {
