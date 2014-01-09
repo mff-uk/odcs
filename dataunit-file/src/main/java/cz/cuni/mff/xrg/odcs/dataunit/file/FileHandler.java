@@ -18,7 +18,7 @@ public interface FileHandler {
 	File asFile();
 	
 	/**
-	 * Return content of given file as string.
+	 * Return content of given file as string. In case of error return null.
 	 * @return 
 	 */
 	String asString();

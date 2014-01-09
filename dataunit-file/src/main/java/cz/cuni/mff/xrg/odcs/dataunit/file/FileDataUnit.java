@@ -14,10 +14,11 @@ public interface FileDataUnit extends DataUnit, Iterable<FileHandler> {
 	 * If the {@link FileDataUnit} is input, then nothing happened and null is 
 	 * returned.
 	 * @param name
+	 * @param create If false the file is not physically created.
 	 * @return Can be null. 
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException 
 	 */
-	FileHandler add(final String name)throws DataUnitException;
+	FileHandler add(final String name, boolean create) throws DataUnitException;
 	
 	/**
 	 * Remove given file from {@link FileDataUnit}. If the {@link FileDataUnit}
