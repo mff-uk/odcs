@@ -40,10 +40,9 @@ public class UsersList {
 
 	private IntlibPagedTable usersTable;
 	private VerticalLayout usersListLayout;
-	private static String[] visibleCols = new String[]{"id", "fullname", "user", "role",
-		"total_pipelines", "actions"};
+	private static String[] visibleCols = new String[]{"id", "fullname", "user", "role", "actions"};
 	private static String[] headers = new String[]{"Id", "Full User Name", "User Name", "Role(s)",
-		"Total Pipelines", "Actions"};
+		 "Actions"};
 	private IndexedContainer tableData;
 	private Long userId;
 	private User userDel;
@@ -165,9 +164,6 @@ public class UsersList {
 				case "id":
 					result.addContainerProperty(p, Long.class, null);
 					break;
-				case "total_pipelines":
-					result.addContainerProperty(p, Integer.class, 0);
-					break;
 				default:
 					result.addContainerProperty(p, String.class, "");
 					break;
@@ -195,8 +191,6 @@ public class UsersList {
 			result.getContainerProperty(num, "fullname").setValue(item.getFullName());
 			result.getContainerProperty(num, "user").setValue(item.getUsername());
 			result.getContainerProperty(num, "role").setValue(roleStr);
-			result.getContainerProperty(num, "total_pipelines").setValue(0);
-
 
 		}
 
