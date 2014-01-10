@@ -1,14 +1,10 @@
-package cz.cuni.mff.xrg.odcs.extractor.file;
+package cz.cuni.mff.xrg.odcs.procurementExtractor.core;
 
-
-import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,11 +13,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import au.com.bytecode.opencsv.CSVReader;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.OrganizationRecord;
 
 public class TransformCsvToRdf {
 
@@ -55,8 +56,7 @@ public class TransformCsvToRdf {
     public final static String IDENTIFIERS_TYPE_URI = "http://data.gov.sk/def/interior/identifier/ico";
     public final static String KEY_DATANEST_ORGANIZATIONS_URL_KEY = "datanest.organizations.url";
     public final static String DATANEST_DATE_FORMAT = "yyyy-MM-dd";
-    protected final static SimpleDateFormat sdf = new SimpleDateFormat(
-            OPENDATA_DATE_FORMAT);
+    protected final static SimpleDateFormat sdf = new SimpleDateFormat(OPENDATA_DATE_FORMAT);
     protected final static int ATTR_INDEX_ID = 0;
     protected final static int ATTR_INDEX_NAME = 1;
     protected final static int ATTR_INDEX_SEAT = 4;
@@ -68,9 +68,7 @@ public class TransformCsvToRdf {
     private static final int KEY_DATANEST_BATCH_SIZE = 1000;
     private final Logger LOG = LoggerFactory.getLogger(TransformCsvToRdf.class);
 
-
     TransformCsvToRdf() {
-
 
     }
 
@@ -86,8 +84,7 @@ public class TransformCsvToRdf {
         return element;
     }
 
-    private Element appendResourceNode(Document doc, String name,
-                                       String attr, String value) {
+    private Element appendResourceNode(Document doc, String name, String attr, String value) {
 
         Element element = doc.createElement(name);
         element.setAttribute(attr, value);
@@ -110,7 +107,7 @@ public class TransformCsvToRdf {
             String dateTo = sdf.format(record.getDateTo());
             concept1.appendChild(appendTextNode(doc, "opendata:dateTo", dateTo));
         }
-        //concept.appendChild(appendTextNode(doc, "opendata:seat", record.getSeat()));
+        // concept.appendChild(appendTextNode(doc, "opendata:seat", record.getSeat()));
         Element fullAddress = appendTextNode(doc, "locn:fullAddress", record.getSeat());
         fullAddress.setAttribute("rdf:datatype", "xsd:string");
         Element address = doc.createElement("locn:address");
@@ -118,15 +115,11 @@ public class TransformCsvToRdf {
         // (i.e. is it as written on envelope)?public final static String
         address.appendChild(fullAddress);
         // TODO: parse out PSC from full address
-        //address.appendChild(appendTextNode(doc, "locn:postCode", record.getSeat()));
+        // address.appendChild(appendTextNode(doc, "locn:postCode", record.getSeat()));
         Element primarySite = doc.createElement("org:registeredSite");
         primarySite.appendChild(address);
         concept1.appendChild(primarySite);
-        concept1.appendChild(appendResourceNode(
-                doc,
-                "opendata:ico",
-                "rdf:resource",
-                IDENTIFIERS_BASE_URI + record.getIco()));
+        concept1.appendChild(appendResourceNode(doc, "opendata:ico", "rdf:resource", IDENTIFIERS_BASE_URI + record.getIco()));
 
         rdfElement.appendChild(concept1);
 
@@ -151,18 +144,16 @@ public class TransformCsvToRdf {
         Vector<OrganizationRecord> records = new Vector<OrganizationRecord>();
         try {
             // "open" the CSV dump
-            CSVReader csvReader = new CSVReader(new BufferedReader(
-                    new FileReader(sourceFile)));
+            CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(sourceFile)));
             // TODO: If we store also the original copy of the data (say in
             // Jacrabbit) and perform a "diff" on that and previous version we can:
             // a) determine also removed records (which current implementation
-            //    does not know to do)
+            // does not know to do)
             // b) determine new and updated records without downloading records
-            //    for all IDs ...
+            // for all IDs ...
             // c) ... instead noting only changed records in say vectors and
-            //    processing only those (thus saving a LOT of resources assuming
-            //    changes and additions are small and infrequent)
-
+            // processing only those (thus saving a LOT of resources assuming
+            // changes and additions are small and infrequent)
 
             // TODO: check the header - for now we simply skip it
             csvReader.readNext();
@@ -174,9 +165,9 @@ public class TransformCsvToRdf {
             Properties prop = new Properties();
 
             try {
-                //load a properties file from class path, inside static method
+                // load a properties file from class path, inside static method
                 prop.load(CsvProcurementsExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-                //get the property value and print it out
+                // get the property value and print it out
                 debugProcessOnlyNItems = Integer.valueOf(prop.getProperty("debugProcessOnlyNItems"));
 
             } catch (IOException e) {
@@ -184,7 +175,6 @@ public class TransformCsvToRdf {
             }
 
             LOG.debug("value of debugProcessOnlyNItems: " + debugProcessOnlyNItems);
-
 
             // read the rows
             String[] row;
@@ -203,16 +193,13 @@ public class TransformCsvToRdf {
                     // prematurely - this will cause last fetched line of CSV to
                     // be incomplete
                     LOG.warn("index out of bound exception (broken connection?)", e);
-                    LOG.warn("skipping following record: "
-                            + Arrays.deepToString(row));
+                    LOG.warn("skipping following record: " + Arrays.deepToString(row));
                 } catch (ParseException e) {
                     LOG.warn("parse exception", e);
-                    LOG.warn("skipping following record: "
-                            + Arrays.deepToString(row));
+                    LOG.warn("skipping following record: " + Arrays.deepToString(row));
                 }
 
-                if (debugProcessOnlyNItems > 0 &&
-                        recordCounter >= debugProcessOnlyNItems)
+                if (debugProcessOnlyNItems > 0 && recordCounter >= debugProcessOnlyNItems)
                     break;
             }
 
@@ -278,19 +265,14 @@ public class TransformCsvToRdf {
         return dumpFile;
     }
 
+    public String serializeRepository(List<OrganizationRecord> records) throws Exception {
 
-    public String serializeRepository(List<OrganizationRecord> records)
-            throws Exception {
-
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
-                .newInstance();
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
 
-        TransformerFactory transformerFactory = TransformerFactory
-                .newInstance();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
-
 
         Element rdfElement = doc.createElementNS(NS_RDF, "rdf:RDF");
         rdfElement.setAttribute("xmlns:rdf", NS_RDF);

@@ -1,8 +1,6 @@
-package cz.cuni.mff.xrg.odcs.extractor.data;
-
+package cz.cuni.mff.xrg.odcs.procurementExtractor.data;
 
 public enum DatanestType {
-
 
     ORGANIZATION("org"), POLITICAL("pol"), PROCUREMENT("pro");
     private String datanestCode;
@@ -21,8 +19,6 @@ public enum DatanestType {
 
     @Override
     public String toString() {
-        return "DatanestType{" +
-                "datanestCode='" + datanestCode + '\'' +
-                '}';
+        return "DatanestType{" + "datanestCode='" + datanestCode + '\'' + '}';
     }
 }

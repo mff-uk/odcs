@@ -1,23 +1,24 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.procurementExtractor.datanest;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.Currency;
-import cz.cuni.mff.xrg.odcs.extractor.data.ProcurementRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.ProcurementRdfSerializer;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 
-public class ProcurementsDatanestHarvester extends
-        AbstractDatanestHarvester<ProcurementRecord> {
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.Currency;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.ProcurementRecord;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.repository.SesameRepository;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.serialization.ProcurementRdfSerializer;
+
+public class ProcurementsDatanestHarvester extends AbstractDatanestHarvester<ProcurementRecord> {
 
     public final static String KEY_DATANEST_PROCUREMENTS_URL_KEY = "datanest.procurements.url";
 
@@ -41,20 +42,16 @@ public class ProcurementsDatanestHarvester extends
     private static Logger logger = LoggerFactory.getLogger(ProcurementsDatanestHarvester.class);
     private DecimalFormat priceFormat = null;
 
-
-    public ProcurementsDatanestHarvester() throws IOException,
-            RepositoryConfigException, RepositoryException,
-            ParserConfigurationException, TransformerConfigurationException {
+    public ProcurementsDatanestHarvester() throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
+            TransformerConfigurationException {
 
         super(KEY_DATANEST_PROCUREMENTS_URL_KEY);
 
-        ProcurementRdfSerializer rdfSerializer = new ProcurementRdfSerializer(
-                SesameRepository.getInstance());
+        ProcurementRdfSerializer rdfSerializer = new ProcurementRdfSerializer(SesameRepository.getInstance());
         addSerializer(rdfSerializer);
 
-
         // note: Following would be "clean":
-        //	NumberFormat.getNumberInstance(new Locale("sk", "SK"))
+        // NumberFormat.getNumberInstance(new Locale("sk", "SK"))
         // but it requires source data to use non-breaking space instead of
         // regular space.
         priceFormat = new DecimalFormat();
@@ -82,20 +79,17 @@ public class ProcurementsDatanestHarvester extends
             // for price
             record.addScrapNote(SC_MISSING_PRICE);
         else
-            record.setPrice(priceFormat.parse(row[ATTR_INDEX_PRICE])
-                    .floatValue());
+            record.setPrice(priceFormat.parse(row[ATTR_INDEX_PRICE]).floatValue());
 
         if (!row[ATTR_INDEX_CURRENCY].isEmpty()) {
             try {
                 Currency currency = Currency.parse(row[ATTR_INDEX_CURRENCY]);
                 record.setCurrency(currency);
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 // unknown currencies
                 record.addScrapNote(SC_UNKNOWN_CURRENCY + row[ATTR_INDEX_CURRENCY]);
             }
-        }
-        else {
+        } else {
             // sometimes the currency is not filled in the source (so far only
             // for cases where the price was 0)
             record.setCurrency(Currency.UNDEFINED);

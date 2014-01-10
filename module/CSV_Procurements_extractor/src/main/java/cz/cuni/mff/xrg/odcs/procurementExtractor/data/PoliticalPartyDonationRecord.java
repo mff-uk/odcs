@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.data;
+package cz.cuni.mff.xrg.odcs.procurementExtractor.data;
 
 import java.util.Date;
 
@@ -7,8 +7,8 @@ public class PoliticalPartyDonationRecord extends AbstractRecord {
     private String donorName;
     private String donorSurname;
     private String donorTitle;
-    private String name;	// donor company
-    private String ico;		// donor ICO
+    private String name; // donor company
+    private String ico; // donor ICO
     private float donationValue;
     private Currency currency;
     private String donorAddress;
@@ -33,90 +33,119 @@ public class PoliticalPartyDonationRecord extends AbstractRecord {
     public String getDatanestId() {
         return datanestId;
     }
+
     public void setDatanestId(String datanestId) {
         this.datanestId = datanestId;
     }
+
     public String getDonorName() {
         return donorName;
     }
+
     public void setDonorName(String donorName) {
         this.donorName = donorName;
     }
+
     public String getDonorSurname() {
         return donorSurname;
     }
+
     public void setDonorSurname(String donorSurname) {
         this.donorSurname = donorSurname;
     }
+
     public String getDonorTitle() {
         return donorTitle;
     }
+
     public void setDonorTitle(String donorTitle) {
         this.donorTitle = donorTitle;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getIco() {
         return ico;
     }
+
     public void setIco(String ico) {
         this.ico = ico;
     }
+
     public float getDonationValue() {
         return donationValue;
     }
+
     public void setDonationValue(float donationValue) {
         this.donationValue = donationValue;
     }
+
     public Currency getCurrency() {
         return currency;
     }
+
     public void setCurrency(Currency currency) {
         this.currency = currency;
     }
+
     public String getDonorAddress() {
         return donorAddress;
     }
+
     public void setDonorAddress(String donorAddress) {
         this.donorAddress = donorAddress;
     }
+
     public String getDonorPsc() {
         return donorPsc;
     }
+
     public void setDonorPsc(String donorPsc) {
         this.donorPsc = donorPsc;
     }
+
     public String getDonorCity() {
         return donorCity;
     }
+
     public void setDonorCity(String donorCity) {
         this.donorCity = donorCity;
     }
+
     public String getRecipientParty() {
         return recipientParty;
     }
+
     public void setRecipientParty(String recipientParty) {
         this.recipientParty = recipientParty;
     }
+
     public String getYear() {
         return year;
     }
+
     public void setYear(String year) {
         this.year = year;
     }
+
     public Date getAcceptDate() {
         return acceptDate;
     }
+
     public void setAcceptDate(Date acceptDate) {
         this.acceptDate = acceptDate;
     }
+
     public String getNote() {
         return note;
     }
+
     public void setNote(String note) {
         this.note = note;
     }

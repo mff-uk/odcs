@@ -1,21 +1,21 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.procurementExtractor.serialization;
 
-
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.File;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import java.io.File;
-import java.util.List;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.OrganizationRecord;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.repository.OdnRepositoryStoreInterface;
 
 public class OrganizationRdfSerializer extends AbstractRdfSerializer<OrganizationRecord> {
-
 
     public final static String NS_ADMS = "http://www.w3.org/ns/adms#";
     public final static String NS_DCTERMS = "http://purl.org/dc/terms/";
@@ -36,21 +36,20 @@ public class OrganizationRdfSerializer extends AbstractRdfSerializer<Organizatio
 
     /**
      * Initialize serializer to use given repository.
-     *
-     * @throws IllegalArgumentException if repository is {@code null}
+     * 
+     * @throws IllegalArgumentException
+     *             if repository is {@code null}
      * @throws javax.xml.parsers.ParserConfigurationException
-     *                                  when XML document builder fails to initialize
+     *             when XML document builder fails to initialize
      * @throws javax.xml.transform.TransformerConfigurationException
-     *                                  when XML document transformer fails to initialize
+     *             when XML document transformer fails to initialize
      */
-    public OrganizationRdfSerializer(OdnRepositoryStoreInterface<RdfData> repository)
-            throws IllegalArgumentException, ParserConfigurationException,
+    public OrganizationRdfSerializer(OdnRepositoryStoreInterface<RdfData> repository) throws IllegalArgumentException, ParserConfigurationException,
             TransformerConfigurationException {
 
         super(repository);
 
-        TransformerFactory transformerFactory = TransformerFactory
-                .newInstance();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformer = transformerFactory.newTransformer();
         // TODO: nice for debugging, but might hurt performance in production
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -79,7 +78,7 @@ public class OrganizationRdfSerializer extends AbstractRdfSerializer<Organizatio
             String dateTo = sdf.format(record.getDateTo());
             concept1.appendChild(appendTextNode(doc, "opendata:dateTo", dateTo));
         }
-        //concept.appendChild(appendTextNode(doc, "opendata:seat", record.getSeat()));
+        // concept.appendChild(appendTextNode(doc, "opendata:seat", record.getSeat()));
         Element fullAddress = appendTextNode(doc, "locn:fullAddress", record.getSeat());
         fullAddress.setAttribute("rdf:datatype", "xsd:string");
         Element address = doc.createElement("locn:address");
@@ -87,15 +86,11 @@ public class OrganizationRdfSerializer extends AbstractRdfSerializer<Organizatio
         // (i.e. is it as written on envelope)?public final static String
         address.appendChild(fullAddress);
         // TODO: parse out PSC from full address
-        //address.appendChild(appendTextNode(doc, "locn:postCode", record.getSeat()));
+        // address.appendChild(appendTextNode(doc, "locn:postCode", record.getSeat()));
         Element primarySite = doc.createElement("org:registeredSite");
         primarySite.appendChild(address);
         concept1.appendChild(primarySite);
-        concept1.appendChild(appendResourceNode(
-                doc,
-                "opendata:ico",
-                "rdf:resource",
-                IDENTIFIERS_BASE_URI + record.getIco()));
+        concept1.appendChild(appendResourceNode(doc, "opendata:ico", "rdf:resource", IDENTIFIERS_BASE_URI + record.getIco()));
 
         rdfElement.appendChild(concept1);
 
@@ -117,21 +112,16 @@ public class OrganizationRdfSerializer extends AbstractRdfSerializer<Organizatio
     }
 
     @Override
-    public void store(List<OrganizationRecord> records)
-            throws IllegalArgumentException {
+    public void store(List<OrganizationRecord> records) throws IllegalArgumentException {
 
         RdfData rdfData = null;
         File fileRdf = null;
 
         try {
-            rdfData = new RdfData(
-                    serialize(records),
-                    ORGANIZATIONS_BASE_URI,
-                    OPENDATA_ORGANIZATIONS_CONTEXTS_KEY);
+            rdfData = new RdfData(serialize(records), ORGANIZATIONS_BASE_URI, OPENDATA_ORGANIZATIONS_CONTEXTS_KEY);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         getRepository().store(rdfData);
     }

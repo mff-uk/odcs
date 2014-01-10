@@ -1,17 +1,19 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.procurementExtractor.serialization;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.ProcurementRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.ProcurementRecord;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.procurementExtractor.repository.OdnRepositoryStoreInterface;
 
 public class ProcurementRdfSerializer extends AbstractRdfSerializer<ProcurementRecord> {
 
@@ -23,16 +25,14 @@ public class ProcurementRdfSerializer extends AbstractRdfSerializer<ProcurementR
     public final static String OPENDATA_PROCUREMENTS_BASE_URI = "http://opendata.sk/dataset/procurements/";
     public final static String OPENDATA_PROCUREMENTS_CONTEXTS_KEY = "procurements";
 
-    private final static DecimalFormat priceFormat = new DecimalFormat(
-            "#.##", new DecimalFormatSymbols(Locale.US));
-
+    private final static DecimalFormat priceFormat = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
     /**
      * Initialize serializer to use given repository.
-     *
+     * 
      * @param repository
      *            repository to use for storage of record
-     *
+     * 
      * @throws IllegalArgumentException
      *             if repository is {@code null}
      * @throws javax.xml.parsers.ParserConfigurationException
@@ -40,9 +40,7 @@ public class ProcurementRdfSerializer extends AbstractRdfSerializer<ProcurementR
      * @throws javax.xml.transform.TransformerConfigurationException
      *             when XML document transformer fails to initialize
      */
-    public ProcurementRdfSerializer(
-            OdnRepositoryStoreInterface<RdfData> repository)
-            throws IllegalArgumentException, ParserConfigurationException,
+    public ProcurementRdfSerializer(OdnRepositoryStoreInterface<RdfData> repository) throws IllegalArgumentException, ParserConfigurationException,
             TransformerConfigurationException {
 
         super(repository);
@@ -62,49 +60,33 @@ public class ProcurementRdfSerializer extends AbstractRdfSerializer<ProcurementR
         // single procurement
         concept.appendChild(appendTextNode(doc, "skos:prefLabel", record.getProcurementId()));
         // TODO: hardcoded strings are not nice ... meaning the URL mainly but ...
-        concept.appendChild(appendResourceNode(doc, "dc:source", "rdf:resource",
-                "http://datanest.fair-play.sk/datasets/2/records/" + record.getDatanestId()));
-        concept.appendChild(appendTextNode(doc,
-                "opendata:procurementSubject", record.getProcurementSubject()));
-        concept.appendChild(appendTextNode(doc, "pc:price",
-                priceFormat.format(record.getPrice())));
+        concept.appendChild(appendResourceNode(doc, "dc:source", "rdf:resource", "http://datanest.fair-play.sk/datasets/2/records/" + record.getDatanestId()));
+        concept.appendChild(appendTextNode(doc, "opendata:procurementSubject", record.getProcurementSubject()));
+        concept.appendChild(appendTextNode(doc, "pc:price", priceFormat.format(record.getPrice())));
         // sometimes the currency is not filled in the source (so far only for
         // cases where the price was 0)
         if (record.getCurrency() != null)
-            concept.appendChild(appendTextNode(doc, "opendata:currency",
-                    record.getCurrency().getCurrencyCode()));
-        concept.appendChild(appendTextNode(doc, "opendata:xIsVatIncluded",
-                Boolean.toString(record.isVatIncluded())));
+            concept.appendChild(appendTextNode(doc, "opendata:currency", record.getCurrency().getCurrencyCode()));
+        concept.appendChild(appendTextNode(doc, "opendata:xIsVatIncluded", Boolean.toString(record.isVatIncluded())));
         // TODO: use 'opendata:customer' child inside 'pc:buyerProfile' instead
-        concept.appendChild(appendResourceNode(
-                doc,
-                "opendata:customer",
-                "rdf:resource",
-                //TODO: nie je toto bug? nema to byt ProcurementRdfSerializer?
-                OrganizationRdfSerializer.ORGANIZATIONS_BASE_URI  + record.getCustomerIco()));
+        concept.appendChild(appendResourceNode(doc, "opendata:customer", "rdf:resource",
+        // TODO: nie je toto bug? nema to byt ProcurementRdfSerializer?
+                OrganizationRdfSerializer.ORGANIZATIONS_BASE_URI + record.getCustomerIco()));
         // TODO: use 'opendata:customer' child inside 'pc:Supplier' instead
-        concept.appendChild(appendResourceNode(
-                doc,
-                "opendata:supplier",
-                "rdf:resource",
-                //TODO: nie je toto bug? nema to byt ProcurementRdfSerializer?
-                OrganizationRdfSerializer.ORGANIZATIONS_BASE_URI  + record.getSupplierIco()));
+        concept.appendChild(appendResourceNode(doc, "opendata:supplier", "rdf:resource",
+        // TODO: nie je toto bug? nema to byt ProcurementRdfSerializer?
+                OrganizationRdfSerializer.ORGANIZATIONS_BASE_URI + record.getSupplierIco()));
 
         for (String scrapNote : record.getScrapNotes())
-            concept.appendChild(appendTextNode(doc, "opendata:xScrapNote",
-                    scrapNote));
+            concept.appendChild(appendTextNode(doc, "opendata:xScrapNote", scrapNote));
 
         rdfElement.appendChild(concept);
     }
 
     @Override
-    public void store(List<ProcurementRecord> records)
-            throws Exception {
+    public void store(List<ProcurementRecord> records) throws Exception {
 
-        RdfData rdfData = new RdfData(
-                serialize(records),
-                OPENDATA_PROCUREMENTS_BASE_URI,
-                OPENDATA_PROCUREMENTS_CONTEXTS_KEY);
+        RdfData rdfData = new RdfData(serialize(records), OPENDATA_PROCUREMENTS_BASE_URI, OPENDATA_PROCUREMENTS_CONTEXTS_KEY);
         getRepository().store(rdfData);
     }
 
