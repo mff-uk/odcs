@@ -70,12 +70,12 @@ public class IntlibFilterDecorator implements FilterDecorator {
 
 	@Override
 	public Resolution getDateFieldResolution(Object propertyId) {
-		return Resolution.DAY;
+		return Resolution.SECOND;
 	}
 
 	@Override
 	public String getDateFormatPattern(Object propertyId) {
-		return "dd.MM.yyyy";
+		return "dd.MM.yyyy HH:mm";
 	}
 
 	@Override
