@@ -65,8 +65,6 @@ public class Settings extends ViewComponent {
 
 	private VerticalLayout usersLayout;
 
-	private VerticalLayout recordsLayout;
-
 	private VerticalLayout pipelinesLayout;
 
 	private VerticalLayout prefixesLayout;
@@ -78,8 +76,6 @@ public class Settings extends ViewComponent {
 	private Button accountButton;
 
 	private Button usersButton;
-
-	private Button recordsButton;
 
 	private Button pipelinesButton;
 
@@ -188,15 +184,6 @@ public class Settings extends ViewComponent {
 		usersLayout.setHeight("100%");
 		usersLayout = usersList.buildUsersListLayout();
 		usersLayout.setStyleName("settings");
-
-		//layout with Prune execution records
-		recordsLayout = new VerticalLayout();
-		recordsLayout.setMargin(true);
-		recordsLayout.setSpacing(true);
-		recordsLayout.setImmediate(true);
-		recordsLayout.setStyleName("settings");
-		recordsLayout.setWidth("100%");
-		recordsLayout.addComponent(new Label("Records"));
 
 		//layout for Delete debug resources
 		pipelinesLayout = new VerticalLayout();
@@ -351,33 +338,6 @@ public class Settings extends ViewComponent {
 		tabsLayout.addComponent(usersButton);
 		tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
 
-		//Prune execution records tab
-		recordsButton = new NativeButton("Prune execution records");
-		recordsButton.setHeight("40px");
-		recordsButton.setWidth("170px");
-		recordsButton.setStyleName("multiline");
-		recordsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
-		recordsButton.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				//if before click was pushed My account tab
-				if (shownTab.equals(accountButton)) {
-					myAccountSaveConfirmation(recordsButton, recordsLayout);
-				} else {
-					//if before click was pushed Schedule notification tab
-					if (shownTab.equals(notificationsButton)) {
-						notificationSaveConfirmation(recordsButton,
-								recordsLayout);
-					} else {
-						buttonPush(recordsButton, recordsLayout);
-					}
-				}
-			}
-		});
-		tabsLayout.addComponent(recordsButton);
-		tabsLayout.setComponentAlignment(recordsButton, Alignment.TOP_RIGHT);
 
 		//Delete debug resources tab
 		pipelinesButton = new NativeButton("Delete debug resources");
@@ -610,7 +570,6 @@ public class Settings extends ViewComponent {
 
 		accountButton.setStyleName("multiline");
 		usersButton.setStyleName("multiline");
-		recordsButton.setStyleName("multiline");
 		pipelinesButton.setStyleName("multiline");
 		prefixesButton.setStyleName("multiline");
 		notificationsButton.setStyleName("multiline");

@@ -140,7 +140,7 @@ public class LogTable extends CustomComponent {
 //						return "TEST";//(String)fullMessage;
 //					}
 //				}
-//				return "TEST";
+//				return null;
 //			}
 //		});
 
