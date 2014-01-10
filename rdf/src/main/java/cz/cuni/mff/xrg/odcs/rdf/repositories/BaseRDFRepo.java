@@ -1512,13 +1512,45 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
 
-		try {
-			try (InputStreamReader inputStreamReader = getEndpointStreamReader(
-					endpointURL, "", deleteQuery, RDFFormat.RDFXML)) {
+		int retryCount = 0;
+
+		while (true) {
+			try {
+				try (InputStreamReader inputStreamReader = getEndpointStreamReader(
+						endpointURL, "", deleteQuery, RDFFormat.RDFXML)) {
+				}
+
+				//Clear graph successfuly - stop the infinity loop
+				break;
+
+			} catch (IOException e) {
+				logger.error("InputStreamReader was not closed {}",
+						e.getMessage(), e);
+			} catch (RDFException e) {
+				restartConnection();
+				retryCount++;
+
+				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
+					final String errorMessage = String.format(
+							"Count of retryConnection for CLEAR GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
+							endpointGraph, retryCount);
+					logger.debug(errorMessage);
+
+					throw new RDFException(errorMessage + e.getMessage(), e);
+				} else {
+					logger.debug(
+							"Attempt {} to CLEAR GRAPH<{}> failed. Reason:{}",
+							retryCount,
+							endpointGraph, e.getMessage());
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(RETRY_CONNECTION_TIME);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
+				}
 			}
-		} catch (IOException e) {
-			logger.error("InputStreamReader was not closed {}",
-					e.getMessage(), e);
 		}
 
 
