@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.datanest;
 
 /* Copyright (C) 2011 Peter Hanecak <hanecak@opendata.sk>
  *
@@ -31,8 +31,8 @@ import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.AbstractSerializer;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.serialization.AbstractSerializer;
 
 /**
  * Stuff common to all harvesters. Harvesters (along with serializers) perform ETL (http://en.wikipedia.org/wiki/Extract,_transform,_load).

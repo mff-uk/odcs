@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.core;
 
 import java.io.*;
 import java.nio.file.Files;

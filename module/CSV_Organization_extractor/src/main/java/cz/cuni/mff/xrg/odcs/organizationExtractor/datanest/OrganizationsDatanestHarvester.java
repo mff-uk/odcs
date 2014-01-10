@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.datanest;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -7,13 +7,13 @@ import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
+import cz.cuni.mff.xrg.odcs.organizationExtractor.repository.FileSystemRepository;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.FileSystemRepository;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.OrganizationRdfSerializer;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.OrganizationRecord;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.serialization.OrganizationRdfSerializer;
 
 public class OrganizationsDatanestHarvester extends AbstractDatanestHarvester<OrganizationRecord> {
     public final static String KEY_DATANEST_ORGANIZATIONS_URL_KEY = "datanest.organizations.url";

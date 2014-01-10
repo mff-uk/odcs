@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.datanest;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.AbstractRecord;
 
 public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecord> extends AbstractHarvester<RecordType> {
 

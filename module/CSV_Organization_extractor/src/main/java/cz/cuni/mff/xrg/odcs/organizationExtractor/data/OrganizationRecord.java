@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.data;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.data;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.core;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;

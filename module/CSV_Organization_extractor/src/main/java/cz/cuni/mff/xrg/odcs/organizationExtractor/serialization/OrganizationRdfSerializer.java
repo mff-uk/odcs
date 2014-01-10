@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.serialization;
 
 import java.io.File;
 import java.util.List;
@@ -8,14 +8,14 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.OrganizationRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.repository.OdnRepositoryStoreInterface;
 
 public class OrganizationRdfSerializer extends AbstractRdfSerializer<OrganizationRecord> {
 

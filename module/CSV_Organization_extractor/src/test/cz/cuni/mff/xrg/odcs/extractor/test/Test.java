@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.extractor.test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.extractor.core.CsvOrganizationExtractor;
-import cz.cuni.mff.xrg.odcs.extractor.core.CsvOrganizationExtractorConfig;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.core.CsvOrganizationExtractor;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.core.CsvOrganizationExtractorConfig;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class Test {

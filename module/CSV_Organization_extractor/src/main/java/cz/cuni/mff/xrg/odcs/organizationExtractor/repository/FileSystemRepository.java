@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.repository;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.repository;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.RdfData;
 
 public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData> {
 

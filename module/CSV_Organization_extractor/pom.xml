@@ -15,7 +15,7 @@
     <description>Extracts RDF data from a file.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.extractor.core</dpu.package>
+        <dpu.package>cz.cuni.mff.xrg.odcs.organizationExtractor.core</dpu.package>
         <dpu.mainClass>CsvOrganizationExtractor</dpu.mainClass>
     </properties>
 

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.core;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -16,8 +16,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.file.FileManager;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.extractor.datanest.AbstractDatanestHarvester;
-import cz.cuni.mff.xrg.odcs.extractor.datanest.OrganizationsDatanestHarvester;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.datanest.AbstractDatanestHarvester;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.datanest.OrganizationsDatanestHarvester;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;

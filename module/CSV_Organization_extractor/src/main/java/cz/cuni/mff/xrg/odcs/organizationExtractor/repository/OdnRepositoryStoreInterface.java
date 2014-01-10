@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.repository;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.repository;
 
 /**
  * This is a Open Data Node Repository interface defining "internal API" between "serialization" and "repository" classes.

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.organizationExtractor.serialization;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -15,9 +15,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.organizationExtractor.repository.OdnRepositoryStoreInterface;
 
 public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> extends AbstractSerializer<RecordType, String, RdfData> {
 
