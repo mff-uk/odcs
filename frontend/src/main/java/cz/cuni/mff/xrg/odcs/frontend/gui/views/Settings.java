@@ -549,6 +549,7 @@ public class Settings extends ViewComponent {
 
 				email.saveEditedTexts();
 				saveEmailNotifications();
+				
 
 			}
 		});
@@ -628,6 +629,10 @@ public class Settings extends ViewComponent {
 		userFacade.save(loggedUser);
 		Notification.show("My account settings were successfully saved",
 				Notification.Type.HUMANIZED_MESSAGE);
+		if(buttonNotificationBar!=null)
+			buttonNotificationBar.setEnabled(false);
+		if(buttonMyAccountBar!=null)
+		buttonMyAccountBar.setEnabled(false);
 
 		if (shownTab.equals(accountButton)) {
 			accountLayout = buildMyAccountLayout();
