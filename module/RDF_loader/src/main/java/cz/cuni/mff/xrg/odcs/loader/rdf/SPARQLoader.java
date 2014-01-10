@@ -426,22 +426,52 @@ public class SPARQLoader {
 
 		logger.debug(start);
 
-		try {
-			try (InputStreamReader result = rdfDataUnit.getEndpointStreamReader(
-					endpointURL,
-					"", moveQuery, RDFFormat.RDFXML)) {
+		int retryCount = 0;
+
+		while (true) {
+			try {
+				try (InputStreamReader result = rdfDataUnit
+						.getEndpointStreamReader(
+						endpointURL,
+						"", moveQuery, RDFFormat.RDFXML)) {
+				}
+
+				//Move data to target graph successfuly - stop the infinity loop
+				break;
+
+
+			} catch (IOException e) {
+				throw new RDFException(e.getMessage(), e);
+
+			} catch (RDFException e) {
+				rdfDataUnit.restartConnection();
+				retryCount++;
+
+				if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+					final String errorMessage = String.format(
+							"Count of retryConnection for MOVE data FROM TEMP GRAPH <%s> TO GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
+							tempGraph, targetGraph, retryCount);
+					logger.debug(errorMessage);
+
+					throw new RDFException(errorMessage + e.getMessage(), e);
+				} else {
+
+					final String errorMessage = String.format(
+							"Attempt %s for MOVE data FROM TEMP GRAPH <%s> TO GRAPH <%s> failed. Reason of cause :%s",
+							tempGraph, targetGraph, retryCount, e.getMessage());
+
+					logger.debug(errorMessage);
+
+
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(retryTime);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
+				}
 			}
-
-		} catch (IOException e) {
-			throw new RDFException(e.getMessage(), e);
-
-		} catch (RDFException e) {
-			String exception = String.format(
-					"Moving from temp GRAPH <%s> to target GRAPH <%s> FAILED.",
-					tempGraph, targetGraph);
-
-			logger.error(exception);
-			throw new RDFException(e.getMessage(), e);
 		}
 
 		String finish = String.format(
@@ -449,6 +479,7 @@ public class SPARQLoader {
 				tempGraph, targetGraph);
 
 		logger.debug(finish);
+
 	}
 
 	private long getSPARQLEnpointGraphSize(URL endpointURL, String endpointGraph)
