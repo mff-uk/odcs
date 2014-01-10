@@ -8,6 +8,7 @@ import java.text.ParseException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
+import cz.cuni.mff.xrg.odcs.procurementExtractor.repository.FileSystemRepository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.procurementExtractor.data.Currency;
 import cz.cuni.mff.xrg.odcs.procurementExtractor.data.ProcurementRecord;
-import cz.cuni.mff.xrg.odcs.procurementExtractor.repository.SesameRepository;
 import cz.cuni.mff.xrg.odcs.procurementExtractor.serialization.ProcurementRdfSerializer;
 
 public class ProcurementsDatanestHarvester extends AbstractDatanestHarvester<ProcurementRecord> {
@@ -42,12 +42,13 @@ public class ProcurementsDatanestHarvester extends AbstractDatanestHarvester<Pro
     private static Logger logger = LoggerFactory.getLogger(ProcurementsDatanestHarvester.class);
     private DecimalFormat priceFormat = null;
 
-    public ProcurementsDatanestHarvester() throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
+    public ProcurementsDatanestHarvester(String targetRdf) throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
             TransformerConfigurationException {
 
         super(KEY_DATANEST_PROCUREMENTS_URL_KEY);
-
-        ProcurementRdfSerializer rdfSerializer = new ProcurementRdfSerializer(SesameRepository.getInstance());
+        FileSystemRepository fileSystemRepository = FileSystemRepository.getInstance();
+        fileSystemRepository.setTargetRDF(targetRdf);
+        ProcurementRdfSerializer rdfSerializer = new ProcurementRdfSerializer(fileSystemRepository);
         addSerializer(rdfSerializer);
 
         // note: Following would be "clean":

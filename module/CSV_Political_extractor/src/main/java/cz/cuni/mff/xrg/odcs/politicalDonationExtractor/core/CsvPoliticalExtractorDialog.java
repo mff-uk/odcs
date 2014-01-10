@@ -444,6 +444,7 @@ public class CsvPoliticalExtractorDialog extends BaseConfigDialog<CsvPoliticalEx
 
                     // Adding component for specify path to file
                     gridLayoutCore.addComponent(textFieldPath, 0, 1);
+                    // TODO to extend this functionality
 
                     // If selected "Extract file based on the path to the directory" option
                     // } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {

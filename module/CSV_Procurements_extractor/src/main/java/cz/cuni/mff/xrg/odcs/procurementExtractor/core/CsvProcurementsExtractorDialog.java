@@ -31,7 +31,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  * 
  */
 public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurementsExtractorConfig> {
-    // TODO: It hasn't done yet
     private GridLayout mainLayout;
 
     /**
@@ -56,6 +55,13 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
     private HorizontalLayout horizontalLayoutOnly;
 
     private HorizontalLayout horizontalLayoutFormat;
+
+    private TextField textFieldTargetPath;
+
+    private TextField textFieldDebugProcessOnlyNItems;
+
+    private TextField textFieldBatchSize;
+
 
     /**
      * OptionGroup for path type definition
@@ -115,8 +121,10 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.UPLOAD_FILE));
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_FILE));
-        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY));
-        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
+        // TODO to extend this functionality
+
+//        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY));
+//        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.HTTP_URL));
 
         pathType.setValue(FileExtractType.getDescriptionByType(extractType));
@@ -126,7 +134,7 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
     /**
      * Set values from from dialog where the configuration object may be edited to configuration object implementing {@link DPUConfigObject} interface and
      * configuring DPU
-     * 
+     *
      * @throws ConfigException
      *             Exception which might be thrown when field {@link #textFieldPath} contains null value. // * @return conf Object holding configuration which
      *             is used in {@link #setConfiguration} to initialize fields in the configuration dialog.
@@ -167,6 +175,12 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
             conf.fileExtractType = extractType;
 
+            conf.TargetRDF = textFieldTargetPath.getValue().trim();
+
+            conf.DebugProcessOnlyNItems = Integer.parseInt(textFieldDebugProcessOnlyNItems.getValue().trim());
+
+            conf.BatchSize = Integer.parseInt(textFieldBatchSize.getValue().trim());
+
             return conf;
         }
     }
@@ -174,7 +188,7 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
     /**
      * Load values from configuration object implementing {@link DPUConfigObject} interface and configuring DPU into the dialog where the configuration object
      * may be edited.
-     * 
+     *
      * @throws ConfigException
      *             Exception not used in current implementation of this method.
      * @param conf
@@ -207,6 +221,9 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
         comboBoxFormat.setValue(conf.RDFFormatValue);
         useHandler.setValue(conf.UseStatisticalHandler);
         failWhenErrors.setValue(conf.failWhenErrors);
+        textFieldTargetPath.setValue(conf.TargetRDF);
+        textFieldDebugProcessOnlyNItems.setValue(String.valueOf(conf.DebugProcessOnlyNItems));
+        textFieldBatchSize.setValue(String.valueOf(conf.BatchSize));
 
     }
 
@@ -227,7 +244,7 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
     /**
      * Builds main layout contains {@link #tabSheet} with all dialog components.
-     * 
+     *
      * @return mainLayout GridLayout with all components of configuration dialog.
      */
     private GridLayout buildMainLayout() {
@@ -265,7 +282,7 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
     /**
      * Return message to {@link #pathType} in accordance with file extract type of the item.
-     * 
+     *
      * @param type
      *            FileExtractType of {@link #pathType} item
      * @return message. String that assign to the {@link #pathType} item
@@ -296,12 +313,12 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
     /**
      * Builds layout contains Core tab components of {@link #tabSheet}. Calls from {@link #buildMainLayout}
-     * 
+     *
      * @return gridLayoutCore. GridLayout with components located at the Core tab.
      */
     private GridLayout buildGridLayoutCore() {
         // common part: create layout
-        gridLayoutCore = new GridLayout(1, 4);
+        gridLayoutCore = new GridLayout(1, 7);
         gridLayoutCore.setImmediate(false);
         gridLayoutCore.setWidth("100%");
         gridLayoutCore.setHeight("100%");
@@ -424,22 +441,24 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
                     extractType = FileExtractType.PATH_TO_FILE;
 
-                    textFieldPath.setInputPrompt("C:\\ted\\test.ttl");
+                    textFieldPath.setInputPrompt("file:\\C:\\ted\\test.ttl");
 
                     // Adding component for specify path to file
                     gridLayoutCore.addComponent(textFieldPath, 0, 1);
+                    // TODO to extend this functionality
 
                     // If selected "Extract file based on the path to the directory" option
-                } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
-
-                    extractType = FileExtractType.PATH_TO_DIRECTORY;
-                    prepareDirectoryForm();
-
-                } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-
-                    extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
-                    prepareDirectoryForm();
-
+                    // } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
+                    //
+                    // extractType = FileExtractType.PATH_TO_DIRECTORY;
+                    // prepareDirectoryForm();
+                    //
+                    // } else if
+                    // (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
+                    //
+                    // extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+                    // prepareDirectoryForm();
+                    //
                     // If selected "Extract file from the given HTTP URL" option
                 } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.HTTP_URL))) {
 
@@ -470,6 +489,29 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
         gridLayoutCore.addComponent(horizontalLayoutFormat, 0, 3);
 
+        FormLayout fl = new FormLayout();
+        fl.setWidth("100%");
+
+        textFieldTargetPath = new TextField("RDF Format save to directory:");
+        textFieldTargetPath.setInputPrompt("C:\\");
+        textFieldTargetPath.setNullRepresentation("");
+        textFieldTargetPath.setWidth("100%");
+        textFieldTargetPath.setHeight("-1px");
+
+        textFieldDebugProcessOnlyNItems = new TextField("Process only N items");
+        textFieldDebugProcessOnlyNItems.setInputPrompt("10");
+        textFieldDebugProcessOnlyNItems.setWidth("100%");
+        textFieldDebugProcessOnlyNItems.setHeight("-1px");
+
+        textFieldBatchSize = new TextField("Size of batch");
+        textFieldBatchSize.setInputPrompt("10");
+        textFieldBatchSize.setWidth("100%");
+        textFieldBatchSize.setHeight("-1px");
+
+        fl.addComponent(textFieldTargetPath);
+        fl.addComponent(textFieldDebugProcessOnlyNItems);
+        fl.addComponent(textFieldBatchSize);
+        gridLayoutCore.addComponent(fl, 0, 4);
         return gridLayoutCore;
     }
 
@@ -502,7 +544,7 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 
     /**
      * Builds layout contains Details tab components of {@link #tabSheet}. Calls from {@link #buildMainLayout}
-     * 
+     *
      * @return verticalLayoutDetails. VerticalLayout with components located at the Details tab.
      */
     private VerticalLayout buildVerticalLayoutDetails() {
@@ -546,9 +588,9 @@ public class CsvProcurementsExtractorDialog extends BaseConfigDialog<CsvProcurem
 // commons-web for enable to use it also from fronted
 /**
  * Dialog for uploading status. Appear automatically after file upload start.
- * 
+ *
  * @author Maria Kukhar
- * 
+ *
  */
 class UploadInfoWindow extends Window implements Upload.StartedListener, Upload.ProgressListener, Upload.FinishedListener {
 
@@ -568,7 +610,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener, Upload.
 
     /**
      * Basic constructor
-     * 
+     *
      * @param upload
      *            . Upload component
      */
@@ -674,9 +716,9 @@ class UploadInfoWindow extends Window implements Upload.StartedListener, Upload.
 
 /**
  * Upload selected file to template directory
- * 
+ *
  * @author Maria Kukhar
- * 
+ *
  */
 class FileUploadReceiver implements Receiver {
 

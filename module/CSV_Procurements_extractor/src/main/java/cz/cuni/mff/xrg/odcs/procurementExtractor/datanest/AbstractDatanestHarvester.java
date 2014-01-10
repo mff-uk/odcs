@@ -1,10 +1,8 @@
 package cz.cuni.mff.xrg.odcs.procurementExtractor.datanest;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -36,6 +34,15 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
         super();
 
     }
+    public Integer debugProcessOnlyNItems = new Integer(0);
+
+    public Integer getDebugProcessOnlyNItems() {
+        return debugProcessOnlyNItems;
+    }
+
+    public void setDebugProcessOnlyNItems(int debugProcessOnlyNItems) {
+        this.debugProcessOnlyNItems = debugProcessOnlyNItems;
+    }
 
     abstract public RecordType scrapOneRecord(String[] row) throws ParseException;
 
@@ -47,11 +54,13 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
      */
     @Override
     public Vector<RecordType> performEtl(File sourceFile) throws Exception {
+        LOG.info("start performEtl on the path sourceFile");
 
         Vector<RecordType> records = new Vector<RecordType>();
         try {
-            // "open" the CSV dump
-            CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(sourceFile)));
+            Charset charset = Charset.forName("UTF8");
+            CSVReader csvReader = new CSVReader(new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), charset)));
+
             // TODO: If we store also the original copy of the data (say in
             // Jacrabbit) and perform a "diff" on that and previous version we can:
             // a) determine also removed records (which current implementation
@@ -67,21 +76,11 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
             int recordCounter = 0;
             long timeCurrent = -1;
             long timeStart = Calendar.getInstance().getTimeInMillis();
-            int debugProcessOnlyNItems = 2;
 
-            Properties prop = new Properties();
-
-            try {
-                // load a properties file from class path, inside static method
-                prop.load(CsvProcurementsExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-                // get the property value and print it out
-                debugProcessOnlyNItems = Integer.valueOf(prop.getProperty("debugProcessOnlyNItems"));
-
-            } catch (IOException e) {
-                LOG.error("error was occoured while it was reading property file", e);
-            }
-
-            LOG.debug("value of debugProcessOnlyNItems: " + debugProcessOnlyNItems);
+            Integer batchSize = getBatchSize();
+            Integer processOnlyNItems = getDebugProcessOnlyNItems();
+            LOG.debug("process only " + processOnlyNItems + " Items");
+            LOG.debug("process only " + batchSize + "  Items");
 
             // read the rows
             String[] row;
@@ -90,8 +89,6 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
 
                     RecordType record = scrapOneRecord(row);
                     recordCounter++;
-
-                    // clean-up data related to old record, if necessary
 
                     // add new data
                     records.add(record);
@@ -106,7 +103,18 @@ public abstract class AbstractDatanestHarvester<RecordType extends AbstractRecor
                     LOG.warn("skipping following record: " + Arrays.deepToString(row));
                 }
 
-                if (debugProcessOnlyNItems > 0 && recordCounter >= debugProcessOnlyNItems)
+                if (records.size() >= batchSize) {
+                    store(records);
+
+                    // report current harvesting status
+                    timeCurrent = Calendar.getInstance().getTimeInMillis();
+                    float harvestingSpeed = 1000f * (float) recordCounter / (float) (timeCurrent - timeStart);
+                    LOG.info("harvested " + recordCounter + " records (" + harvestingSpeed + "/s) so far ...");
+
+                    records.clear();
+                }
+
+                if (processOnlyNItems > 0 && recordCounter >= processOnlyNItems)
                     break;
             }
 

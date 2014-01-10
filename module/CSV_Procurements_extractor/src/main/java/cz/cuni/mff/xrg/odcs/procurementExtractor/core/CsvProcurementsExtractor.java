@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.procurementExtractor.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -46,44 +48,44 @@ public class CsvProcurementsExtractor extends ConfigurableBase<CsvProcurementsEx
     public void execute(DPUContext context) throws DataUnitException, DPUException {
         final String baseURI = "";
         final FileExtractType extractType = config.fileExtractType;
-
-        String path = null;
-        Properties prop = new Properties();
-        try {
-            // load a properties file from class path, inside static method
-            prop.load(CsvProcurementsExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            // get the property value and print it out
-            path = prop.getProperty("sourceCSV");
-            LOG.debug("sourceCSV is: " + path);
-
-        } catch (IOException e) {
-            LOG.error("error was occoured while it was reading property file", e);
-        }
-
+        final String sourceCSV = config.Path;
+        final String targetRdf = config.TargetRDF;
+        final Integer batchSize = config.BatchSize;
+        final Integer debugProcessOnlyNItems = config.DebugProcessOnlyNItems;
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
+        final RDFFormatType formatType = config.RDFFormatValue;
 
         boolean useStatisticHandler = config.UseStatisticalHandler;
         boolean failWhenErrors = config.failWhenErrors;
 
         final HandlerExtractType handlerExtractType = HandlerExtractType.getHandlerType(useStatisticHandler, failWhenErrors);
 
-        RDFFormatType formatType = config.RDFFormatValue;
-
-        File file = new File(path);
-        String filename = file.getName();
-
         AbstractDatanestHarvester<?> harvester = null;
-        LOG.info("create PROCUREMENT harvester");
+        URL url = null;
         try {
-            harvester = new ProcurementsDatanestHarvester();
+            url = new URL(sourceCSV);
+        } catch (MalformedURLException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        } catch (IOException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        }
+
+        LOG.info("create ORGANIZATION harvester");
+
+        try {
+            harvester = new ProcurementsDatanestHarvester(targetRdf);
+            harvester.setDebugProcessOnlyNItems(debugProcessOnlyNItems);
+            harvester.setBatchSize(batchSize);
+            harvester.setSourceUrl(url);
+
         } catch (Exception e) {
-            LOG.error("Problem", e);
+            LOG.error("Problem.", e);
         }
 
         if (harvester != null) {
             try {
-                Vector<? extends AbstractRecord> records = harvester.performEtl(file);
+                harvester.update();
             } catch (Exception e) {
                 LOG.error("Problem while transforming csv to rdf", e);
             }
