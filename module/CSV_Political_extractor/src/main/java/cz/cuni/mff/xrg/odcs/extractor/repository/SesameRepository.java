@@ -1,16 +1,17 @@
 package cz.cuni.mff.xrg.odcs.extractor.repository;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvPoliticalExtractor;
-import org.openrdf.repository.http.HTTPRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
+
+import org.openrdf.repository.http.HTTPRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.extractor.file.CsvPoliticalExtractor;
 
 public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
 
@@ -25,19 +26,19 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
     public String targetRDF = "";
     private HTTPRepository sesameRepo = null;
 
-
     /**
      * Initialize Sesame back-end.
-     *
-     * @throws java.io.IOException when error occurs while loading properties
+     * 
+     * @throws java.io.IOException
+     *             when error occurs while loading properties
      */
     private SesameRepository() throws IOException {
 
         Properties prop = new Properties();
         try {
-            //load a properties file from class path, inside static method
+            // load a properties file from class path, inside static method
             prop.load(CsvPoliticalExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            //get the property value and print it out
+            // get the property value and print it out
             String target = prop.getProperty("targetRDF");
             setTargetRDF(target);
             logger.debug("targetRDF is: " + target);
@@ -50,9 +51,10 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
 
     /**
      * Get the instance of Sesame repository singleton.
-     *
+     * 
      * @return instance of Sesame repository
-     * @throws java.io.IOException when error occurs while loading properties
+     * @throws java.io.IOException
+     *             when error occurs while loading properties
      */
     public static SesameRepository getInstance() throws IOException {
 
@@ -76,15 +78,16 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
 
     /**
      * Store given record into Sesame repository with given name.
-     *
-     * @param records records to store (in RDF format with additional info)
-     * @throws IllegalArgumentException if repository with given name does not exists
+     * 
+     * @param records
+     *            records to store (in RDF format with additional info)
+     * @throws IllegalArgumentException
+     *             if repository with given name does not exists
      * @throws org.openrdf.repository.RepositoryException
-     *                                  when initialization fails
+     *             when initialization fails
      */
     @Override
-    public void store(RdfData records)
-            throws IllegalArgumentException {
+    public void store(RdfData records) throws IllegalArgumentException {
         saveRdf(records.getRdfData());
     }
 
@@ -95,7 +98,6 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
     public void setTargetRDF(String targetRDF) {
         this.targetRDF = targetRDF;
     }
-
 
     private void saveRdf(String rdfData) {
         try {

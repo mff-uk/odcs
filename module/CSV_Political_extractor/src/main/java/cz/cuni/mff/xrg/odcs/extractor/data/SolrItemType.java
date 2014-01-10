@@ -18,46 +18,40 @@
 
 package cz.cuni.mff.xrg.odcs.extractor.data;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SOLR item type, used to distinguish between "data sets" stored
- * in one SOLR index.
+ * SOLR item type, used to distinguish between "data sets" stored in one SOLR index.
  * 
  * Each type maps to one record type in 'sk.opendata.odn.model'.
  */
 public enum SolrItemType {
-	ORGANIZATION_RECORD,
-	POLITICAL_PARTY_DONATION_RECORD,
-	PROCUREMENT_RECORD;
+    ORGANIZATION_RECORD, POLITICAL_PARTY_DONATION_RECORD, PROCUREMENT_RECORD;
 
-	private final static Map<Class<?>, SolrItemType> classLookup = new HashMap<Class<?>, SolrItemType>();
-	
-	
-	static {
-		classLookup.put(OrganizationRecord.class, ORGANIZATION_RECORD);
-//		classLookup.put(PoliticalPartyDonationRecord.class, POLITICAL_PARTY_DONATION_RECORD);
-//		classLookup.put(ProcurementRecord.class, PROCUREMENT_RECORD);
-	}
-	
-	
-	/**
-	 * Determine record type for given class.
-	 * 
-	 * @param recordClass
-	 *            class of the record
-	 * @return enum value corresponding to given record
-	 * @throws IllegalArgumentException
-	 *             when given record is not known
-	 */
-	public static SolrItemType getType(Class<?> recordClass) throws IllegalArgumentException {
-		SolrItemType result = classLookup.get(recordClass);
-		
-		if (result == null)
-			throw new IllegalArgumentException(recordClass.getCanonicalName());
-		
-		return result;
-	}
+    private final static Map<Class<?>, SolrItemType> classLookup = new HashMap<Class<?>, SolrItemType>();
+
+    static {
+        classLookup.put(OrganizationRecord.class, ORGANIZATION_RECORD);
+        // classLookup.put(PoliticalPartyDonationRecord.class, POLITICAL_PARTY_DONATION_RECORD);
+        // classLookup.put(ProcurementRecord.class, PROCUREMENT_RECORD);
+    }
+
+    /**
+     * Determine record type for given class.
+     * 
+     * @param recordClass
+     *            class of the record
+     * @return enum value corresponding to given record
+     * @throws IllegalArgumentException
+     *             when given record is not known
+     */
+    public static SolrItemType getType(Class<?> recordClass) throws IllegalArgumentException {
+        SolrItemType result = classLookup.get(recordClass);
+
+        if (result == null)
+            throw new IllegalArgumentException(recordClass.getCanonicalName());
+
+        return result;
+    }
 }

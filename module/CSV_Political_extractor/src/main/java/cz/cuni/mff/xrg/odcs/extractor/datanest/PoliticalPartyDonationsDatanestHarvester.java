@@ -1,30 +1,27 @@
 package cz.cuni.mff.xrg.odcs.extractor.datanest;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.Currency;
-import cz.cuni.mff.xrg.odcs.extractor.data.PoliticalPartyDonationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.PoliticalPartyDonationRdfSerializer;
-import cz.cuni.mff.xrg.odcs.extractor.utils.PscUtil;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
+import cz.cuni.mff.xrg.odcs.extractor.data.Currency;
+import cz.cuni.mff.xrg.odcs.extractor.data.PoliticalPartyDonationRecord;
+import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
+import cz.cuni.mff.xrg.odcs.extractor.serialization.PoliticalPartyDonationRdfSerializer;
+import cz.cuni.mff.xrg.odcs.extractor.utils.PscUtil;
 
 /**
- * Created with IntelliJ IDEA.
- * User: janci
- * Date: 4.12.2013
- * Time: 13:35
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: janci Date: 4.12.2013 Time: 13:35 To change this template use File | Settings | File Templates.
  */
-public class PoliticalPartyDonationsDatanestHarvester extends
-        AbstractDatanestHarvester<PoliticalPartyDonationRecord>  {
+public class PoliticalPartyDonationsDatanestHarvester extends AbstractDatanestHarvester<PoliticalPartyDonationRecord> {
 
     public final static String KEY_DATANEST_PPD_URL_KEY = "datanest.political_party_donors.url";
 
@@ -46,15 +43,12 @@ public class PoliticalPartyDonationsDatanestHarvester extends
 
     private static Logger logger = LoggerFactory.getLogger(PoliticalPartyDonationsDatanestHarvester.class);
 
-
-    public PoliticalPartyDonationsDatanestHarvester() throws IOException,
-            RepositoryConfigException, RepositoryException,
-            ParserConfigurationException, TransformerConfigurationException {
+    public PoliticalPartyDonationsDatanestHarvester() throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
+            TransformerConfigurationException {
 
         super(KEY_DATANEST_PPD_URL_KEY);
 
-        PoliticalPartyDonationRdfSerializer rdfSerializer = new PoliticalPartyDonationRdfSerializer(
-                SesameRepository.getInstance());
+        PoliticalPartyDonationRdfSerializer rdfSerializer = new PoliticalPartyDonationRdfSerializer(SesameRepository.getInstance());
         addSerializer(rdfSerializer);
 
     }

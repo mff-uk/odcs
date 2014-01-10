@@ -19,54 +19,51 @@
 package cz.cuni.mff.xrg.odcs.extractor.data;
 
 /**
- * This class holds everything what is necessary to push some RDF data into
- * Sesame repository.
+ * This class holds everything what is necessary to push some RDF data into Sesame repository.
  */
 public class RdfData {
-	private String rdfData;
-	private String rdfBaseURI;
-	private String rdfContextsKey;
-	
-	/**
-	 * Construct contained holding data necessary to perform storage operation.
-	 * 
-	 * @param rdfData
-	 *            RDF data to store
-	 * @param rdfBaseURI
-	 *            base URI of the RDF data
-	 * @param rdfContextsKey
-	 *            property name used to retrieve context(s) of the RDF data,
-	 *            {@code null} means "no context"
-	 */
-	public RdfData(String rdfData, String rdfBaseURI,
-                   String rdfContextsKey) {
-		
-		this.rdfData = rdfData;
-		this.rdfBaseURI = rdfBaseURI;
-		this.rdfContextsKey = rdfContextsKey;
-	}
+    private String rdfData;
+    private String rdfBaseURI;
+    private String rdfContextsKey;
 
-	public String getRdfData() {
-		return rdfData;
-	}
+    /**
+     * Construct contained holding data necessary to perform storage operation.
+     * 
+     * @param rdfData
+     *            RDF data to store
+     * @param rdfBaseURI
+     *            base URI of the RDF data
+     * @param rdfContextsKey
+     *            property name used to retrieve context(s) of the RDF data, {@code null} means "no context"
+     */
+    public RdfData(String rdfData, String rdfBaseURI, String rdfContextsKey) {
 
-	public void setRdfData(String rdfData) {
-		this.rdfData = rdfData;
-	}
+        this.rdfData = rdfData;
+        this.rdfBaseURI = rdfBaseURI;
+        this.rdfContextsKey = rdfContextsKey;
+    }
 
-	public String getRdfBaseURI() {
-		return rdfBaseURI;
-	}
+    public String getRdfData() {
+        return rdfData;
+    }
 
-	public void setRdfBaseURI(String rdfBaseURI) {
-		this.rdfBaseURI = rdfBaseURI;
-	}
+    public void setRdfData(String rdfData) {
+        this.rdfData = rdfData;
+    }
 
-	public String getRdfContextsKey() {
-		return rdfContextsKey;
-	}
+    public String getRdfBaseURI() {
+        return rdfBaseURI;
+    }
 
-	public void setRdfContextsKey(String rdfContextsKey) {
-		this.rdfContextsKey = rdfContextsKey;
-	}
+    public void setRdfBaseURI(String rdfBaseURI) {
+        this.rdfBaseURI = rdfBaseURI;
+    }
+
+    public String getRdfContextsKey() {
+        return rdfContextsKey;
+    }
+
+    public void setRdfContextsKey(String rdfContextsKey) {
+        this.rdfContextsKey = rdfContextsKey;
+    }
 }

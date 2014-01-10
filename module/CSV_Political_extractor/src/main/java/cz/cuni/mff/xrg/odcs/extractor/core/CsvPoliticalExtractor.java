@@ -1,4 +1,12 @@
-package cz.cuni.mff.xrg.odcs.extractor.file;
+package cz.cuni.mff.xrg.odcs.extractor.core;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Vector;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
@@ -16,20 +24,12 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Vector;
 
 /**
  * @author Jan Marcek
  */
 @AsExtractor
-public class CsvPoliticalExtractor extends ConfigurableBase<CsvPoliticalExtractorConfig>
-        implements ConfigDialogProvider<CsvPoliticalExtractorConfig> {
+public class CsvPoliticalExtractor extends ConfigurableBase<CsvPoliticalExtractorConfig> implements ConfigDialogProvider<CsvPoliticalExtractorConfig> {
 
     public final static String ORGANIZATIONS_BASE_URI = "http://data.gov.sk/id/interior/organization/";
     public final static String OPENDATA_ORGANIZATIONS_CONTEXTS_KEY = "organizations";
@@ -50,9 +50,9 @@ public class CsvPoliticalExtractor extends ConfigurableBase<CsvPoliticalExtracto
         String path = null;
         Properties prop = new Properties();
         try {
-            //load a properties file from class path, inside static method
+            // load a properties file from class path, inside static method
             prop.load(CsvPoliticalExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            //get the property value and print it out
+            // get the property value and print it out
             path = prop.getProperty("sourceCSV");
             LOG.debug("sourceCSV is: " + path);
 
@@ -60,16 +60,13 @@ public class CsvPoliticalExtractor extends ConfigurableBase<CsvPoliticalExtracto
             LOG.error("error was occoured while it was reading property file", e);
         }
 
-
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
 
         boolean useStatisticHandler = config.UseStatisticalHandler;
         boolean failWhenErrors = config.failWhenErrors;
 
-        final HandlerExtractType handlerExtractType = HandlerExtractType
-                .getHandlerType(useStatisticHandler, failWhenErrors);
-
+        final HandlerExtractType handlerExtractType = HandlerExtractType.getHandlerType(useStatisticHandler, failWhenErrors);
 
         RDFFormatType formatType = config.RDFFormatValue;
 
