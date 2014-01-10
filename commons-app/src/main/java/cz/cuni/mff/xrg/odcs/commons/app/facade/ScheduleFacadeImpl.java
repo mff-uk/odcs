@@ -222,7 +222,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 				if (item == null) {
 					// no successfull execution so far .. 
 					execute = false;
-				} else if (schedule == null) {
+				} else if (schedule.getLastExecution() == null) {
 					// schedule has never started any pipeline so far
 					// -> consider execution dependency satisfied
 					execute = true;
