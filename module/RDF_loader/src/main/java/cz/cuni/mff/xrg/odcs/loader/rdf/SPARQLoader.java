@@ -457,40 +457,85 @@ public class SPARQLoader {
 
 		long count = -1;
 
-		try {
-			try (InputStreamReader inputStreamReader = rdfDataUnit
-					.getEndpointStreamReader(
-					endpointURL, endpointGraph,
-					countQuery, RDFFormat.RDFXML)) {
+		int retryCount = 0;
 
-				Scanner scanner = new Scanner(inputStreamReader);
+		while (true) {
+			try {
+				try (InputStreamReader inputStreamReader = rdfDataUnit
+						.getEndpointStreamReader(
+						endpointURL, endpointGraph,
+						countQuery, RDFFormat.RDFXML)) {
 
-				String regexp = ">[0-9]+<";
-				Pattern pattern = Pattern.compile(regexp);
-				boolean find = false;
+					Scanner scanner = new Scanner(inputStreamReader);
 
-				while (scanner.hasNext() & !find) {
-					String line = scanner.next();
-					Matcher matcher = pattern.matcher(line);
+					String regexp = ">[0-9]+<";
+					Pattern pattern = Pattern.compile(regexp);
+					boolean find = false;
 
-					if (matcher.find()) {
-						String number = line.substring(matcher.start() + 1,
-								matcher
-								.end() - 1);
-						count = Long.parseLong(number);
-						find = true;
+					while (scanner.hasNext() & !find) {
+						String line = scanner.next();
+						Matcher matcher = pattern.matcher(line);
+
+						if (matcher.find()) {
+							String number = line.substring(matcher.start() + 1,
+									matcher
+									.end() - 1);
+							count = Long.parseLong(number);
+							find = true;
+
+						}
 
 					}
+				}
 
+				//Finding graph size successfuly - stop the infinity loop
+				break;
+
+			} catch (IOException e) {
+				throw new RDFException(e.getMessage(), e);
+
+			} catch (RDFException e) {
+				rdfDataUnit.restartConnection();
+				retryCount++;
+
+				if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+					final String errorMessage = String.format(
+							"Count of retryConnection for FINDING SIZE for ENDPOINT GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
+							endpointGraph, retryCount);
+					logger.debug(errorMessage);
+
+					throw new RDFException(errorMessage + e.getMessage(), e);
+				} else {
+
+					final String errorMessage = String.format(
+							"Attempt %s FINDING SIZE for ENDPOINT GRAPH <%s> failed. Reason of cause :%s",
+							retryCount, endpointGraph, e.getMessage());
+
+					logger.debug(errorMessage);
+
+
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(retryTime);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage());
+					}
 				}
 			}
-		} catch (IOException e) {
-			throw new RDFException(e.getMessage(), e);
 		}
 
 
 		return count;
 
+	}
+
+	private boolean hasInfinityRetryConnection() {
+		if (retrySize < 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private GraphQueryResult getTriplesPart(String constructQuery) throws InvalidQueryException {
