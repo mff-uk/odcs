@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbSchedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotification;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import java.util.*;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -207,10 +208,9 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 	}
 	
 	/**
-	 * Return schedules that are of run after type and that should be executed
-	 * as all after-pipelines already has already been executed.
-	 * 
-	 * @return 
+	 * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE}
+	 * and that should be executed (all their
+	 * {@link Schedule#afterPipelines after-pipeline} executions finished).
 	 */
 	private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
 		List<Schedule> result = new LinkedList<>();
@@ -220,23 +220,22 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 			boolean execute = true;
 			for (Date item : times) {
 				if (item == null) {
-					// no sucesfull execution so far .. 
+					// no successfull execution so far .. 
 					execute = false;
-					break;
-				}
-				if (item.before(schedule.getLastExecution())) {
+				} else if (schedule == null) {
+					// schedule has never started any pipeline so far
+					// -> consider execution dependency satisfied
+					execute = true;
+				} else if (item.before(schedule.getLastExecution())) {
 					// was executed before, but not atfer 
 					execute = false;
-					break;
 				}
 			}
 			
 			if (execute) {
 				// add to the result list
 				result.add(schedule);
-			} else {
-				// no execution
-			}			
+			}
 		}
 		
 		return result;
