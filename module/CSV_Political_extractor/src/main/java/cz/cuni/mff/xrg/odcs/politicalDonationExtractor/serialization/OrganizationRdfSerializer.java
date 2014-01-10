@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization;
 
 import java.io.File;
 import java.util.List;
@@ -8,12 +8,12 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository.OdnRepositoryStoreInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.OrganizationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.OrganizationRecord;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.RdfData;
 
 public class OrganizationRdfSerializer extends AbstractRdfSerializer<OrganizationRecord> {
 

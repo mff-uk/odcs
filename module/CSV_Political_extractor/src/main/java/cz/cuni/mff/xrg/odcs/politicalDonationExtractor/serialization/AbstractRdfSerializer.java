@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -11,13 +11,12 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.RdfData;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository.OdnRepositoryStoreInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
-
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
 
 public abstract class AbstractRdfSerializer<RecordType extends AbstractRecord> extends AbstractSerializer<RecordType, String, RdfData> {
 

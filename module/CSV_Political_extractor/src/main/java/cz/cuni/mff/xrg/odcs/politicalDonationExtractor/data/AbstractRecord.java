@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.data;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data;
 
 /**
  * Attributes and methods common to all records harvested by Open Data Node.

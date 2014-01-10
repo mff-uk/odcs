@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class CsvPoliticalExtractorConfig extends DPUConfigObjectBase {
 
-    public String Path = "e:/eea/comsode/dataset/procurements-dump.csv";
+    public String Path = "file:/e:/eea/comsode/dataset/political-dump.csv";
     public String TargetRDF = "e:/eea/comsode/rdf";
     public RDFFormatType RDFFormatValue = RDFFormatType.AUTO;
     public String FileSuffix = "";

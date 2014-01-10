@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -8,12 +8,12 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository.OdnRepositoryStoreInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.PoliticalPartyDonationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.PoliticalPartyDonationRecord;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.RdfData;
 
 /**
  * Created with IntelliJ IDEA. User: janci Date: 4.12.2013 Time: 13:36 To change this template use File | Settings | File Templates.
@@ -88,6 +88,7 @@ public class PoliticalPartyDonationRdfSerializer extends AbstractRdfSerializer<P
             concept.appendChild(appendResourceNode(doc, "opendata:donorCompany", "rdf:resource",
             // TODO: nie je toto bug? nema to byt Political..RdfSerializer?
                     OrganizationRdfSerializer.ORGANIZATIONS_BASE_URI + record.getIco()));
+
         }
         // TODO: adresa, mesto a PSC darcu
 

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -121,8 +121,9 @@ public class CsvPoliticalExtractorDialog extends BaseConfigDialog<CsvPoliticalEx
 
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.UPLOAD_FILE));
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_FILE));
-        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY));
-        pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
+        // TODO to extend this functionality
+        // pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY));
+        // pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES));
         pathType.addItem(FileExtractType.getDescriptionByType(FileExtractType.HTTP_URL));
 
         pathType.setValue(FileExtractType.getDescriptionByType(extractType));
@@ -445,16 +446,17 @@ public class CsvPoliticalExtractorDialog extends BaseConfigDialog<CsvPoliticalEx
                     gridLayoutCore.addComponent(textFieldPath, 0, 1);
 
                     // If selected "Extract file based on the path to the directory" option
-                } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
-
-                    extractType = FileExtractType.PATH_TO_DIRECTORY;
-                    prepareDirectoryForm();
-
-                } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
-
-                    extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
-                    prepareDirectoryForm();
-
+                    // } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY))) {
+                    //
+                    // extractType = FileExtractType.PATH_TO_DIRECTORY;
+                    // prepareDirectoryForm();
+                    //
+                    // } else if
+                    // (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES))) {
+                    //
+                    // extractType = FileExtractType.PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES;
+                    // prepareDirectoryForm();
+                    //
                     // If selected "Extract file from the given HTTP URL" option
                 } else if (event.getProperty().getValue().equals(FileExtractType.getDescriptionByType(FileExtractType.HTTP_URL))) {
 

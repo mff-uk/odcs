@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.datanest;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -7,16 +7,15 @@ import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.Currency;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.PoliticalPartyDonationRecord;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository.FileSystemRepository;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization.PoliticalPartyDonationRdfSerializer;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.utils.PscUtil;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.cuni.mff.xrg.odcs.extractor.data.Currency;
-import cz.cuni.mff.xrg.odcs.extractor.data.PoliticalPartyDonationRecord;
-import cz.cuni.mff.xrg.odcs.extractor.repository.SesameRepository;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.PoliticalPartyDonationRdfSerializer;
-import cz.cuni.mff.xrg.odcs.extractor.utils.PscUtil;
 
 /**
  * Created with IntelliJ IDEA. User: janci Date: 4.12.2013 Time: 13:35 To change this template use File | Settings | File Templates.
@@ -43,12 +42,13 @@ public class PoliticalPartyDonationsDatanestHarvester extends AbstractDatanestHa
 
     private static Logger logger = LoggerFactory.getLogger(PoliticalPartyDonationsDatanestHarvester.class);
 
-    public PoliticalPartyDonationsDatanestHarvester() throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
+    public PoliticalPartyDonationsDatanestHarvester(String targetRdf) throws IOException, RepositoryConfigException, RepositoryException, ParserConfigurationException,
             TransformerConfigurationException {
 
         super(KEY_DATANEST_PPD_URL_KEY);
-
-        PoliticalPartyDonationRdfSerializer rdfSerializer = new PoliticalPartyDonationRdfSerializer(SesameRepository.getInstance());
+        FileSystemRepository fileSystemRepository = FileSystemRepository.getInstance();
+        fileSystemRepository.setTargetRDF(targetRdf);
+        PoliticalPartyDonationRdfSerializer rdfSerializer = new PoliticalPartyDonationRdfSerializer(fileSystemRepository);
         addSerializer(rdfSerializer);
 
     }

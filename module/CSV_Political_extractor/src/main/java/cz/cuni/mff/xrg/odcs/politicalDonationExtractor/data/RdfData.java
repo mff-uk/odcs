@@ -16,7 +16,7 @@
  * along with Open Data Node.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cz.cuni.mff.xrg.odcs.extractor.data;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data;
 
 /**
  * This class holds everything what is necessary to push some RDF data into Sesame repository.

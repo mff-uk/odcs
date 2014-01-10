@@ -15,7 +15,7 @@
     <description>Extracts RDF data from a file.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.extractor.file</dpu.package>
+        <dpu.package>cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core</dpu.package>
         <dpu.mainClass>CsvPoliticalExtractor</dpu.mainClass>
         <solr.version>3.6.1</solr.version>
     </properties>

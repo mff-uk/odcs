@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.datanest;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.datanest;
 
 /* Copyright (C) 2011 Peter Hanecak <hanecak@opendata.sk>
  *
@@ -19,15 +19,19 @@ package cz.cuni.mff.xrg.odcs.extractor.datanest;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 import java.util.Vector;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.AbstractRecord;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization.AbstractSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.serialization.AbstractSerializer;
 
 /**
  * Stuff common to all harvesters. Harvesters (along with serializers) perform ETL (http://en.wikipedia.org/wiki/Extract,_transform,_load).
@@ -63,7 +67,15 @@ public abstract class AbstractHarvester<RecordType extends AbstractRecord> {
         this.primaryRepository = null;
         this.serializers = new Vector<AbstractSerializer<RecordType, ?, ?>>();
     }
+    public Integer getBatchSize() {
+        return batchSize;
+    }
 
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    private Integer batchSize = new Integer(100);
     // TODO remove this primaryRepository
     public Object getPrimaryRepository() {
         return primaryRepository;
@@ -115,5 +127,53 @@ public abstract class AbstractHarvester<RecordType extends AbstractRecord> {
 
         for (AbstractSerializer<RecordType, ?, ?> serializer : serializers)
             serializer.store(records);
+    }
+
+
+    /**
+     * Update our data using data harvested from source.
+     *
+     */
+    public void update() {
+        try {
+            // 1) download the source data into local temporary file using 'sourceUrl'
+            // (or, if requested on admin console, retrieve latest copy from Jackrabbit
+            // and use that instead of downloading fresh copy - in that case skip [2]
+            // and [3] of course)
+            URL url = getSourceUrl();
+            logger.info("start read from the path: " + url.toString());
+            File tempFile = File.createTempFile(ODN_HARVESTER_TMP_PREF, ODN_HARVESTER_TMP_SUFF);
+            tempFile.deleteOnExit();
+
+            URLConnection csvConnection = url.openConnection();
+            csvConnection.setRequestProperty("User-Agent", "Open Data Node (http://opendata.sk/liferay/open-data-node)");
+
+            ReadableByteChannel rbc = Channels.newChannel(csvConnection.getInputStream());
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            long count = fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            logger.debug("downloaded " + Long.toString(count) + " bytes from " + sourceUrl.toExternalForm() + " to " + tempFile.getAbsolutePath());
+            fos.close();
+            rbc.close();
+
+            // 2) use 'storeOriginalData()' to store that file into Jackrabbit
+            // TODO
+
+            // 3) determine, whether source file has been changed, if not stop
+            // TODO
+
+            // 4) extract data (for now done in 'genericUpate()', but renamed that
+            // to 'performEtl()' or 'processData()' or something
+            performEtl(tempFile);
+
+            // 5) clean-up: delete temporary files
+            // TODO
+            if (!tempFile.delete())
+                logger.error("failed to delete temporary file " + tempFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("IO exception", e);
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+
     }
 }

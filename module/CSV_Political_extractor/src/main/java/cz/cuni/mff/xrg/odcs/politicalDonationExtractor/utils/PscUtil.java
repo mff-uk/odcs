@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.extractor.utils;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.utils;
 
 public class PscUtil {
     /**

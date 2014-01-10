@@ -1,19 +1,16 @@
-package cz.cuni.mff.xrg.odcs.extractor.repository;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core.CsvPoliticalExtractor;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.data.RdfData;
 import org.openrdf.repository.http.HTTPRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.extractor.data.RdfData;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvPoliticalExtractor;
-
-public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
+public class FileSystemRepository implements OdnRepositoryStoreInterface<RdfData> {
 
     public final static String SESAME_REPOSITORY_PROPERTIES_NAME = "/repo-sesame.properties";
     public final static String KEY_DEBUG_DUMP_RDF = "sesame.debug.dump_rdf";
@@ -21,8 +18,8 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
     public final static String KEY_SERVER = PREFIX_KEY_REPO + "server";
     public final static String KEY_ID = PREFIX_KEY_REPO + "id";
     public final static String PREFIX_KEY_CONTEXTS = PREFIX_KEY_REPO + "contexts.";
-    private static Logger logger = LoggerFactory.getLogger(SesameRepository.class);
-    private static SesameRepository instance = null;
+    private static Logger logger = LoggerFactory.getLogger(FileSystemRepository.class);
+    private static FileSystemRepository instance = null;
     public String targetRDF = "";
     private HTTPRepository sesameRepo = null;
 
@@ -32,7 +29,7 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
      * @throws java.io.IOException
      *             when error occurs while loading properties
      */
-    private SesameRepository() throws IOException {
+    private FileSystemRepository() throws IOException {
 
         Properties prop = new Properties();
         try {
@@ -56,10 +53,10 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
      * @throws java.io.IOException
      *             when error occurs while loading properties
      */
-    public static SesameRepository getInstance() throws IOException {
+    public static FileSystemRepository getInstance() throws IOException {
 
         if (instance == null)
-            instance = new SesameRepository();
+            instance = new FileSystemRepository();
 
         return instance;
     }
@@ -110,8 +107,9 @@ public class SesameRepository implements OdnRepositoryStoreInterface<RdfData> {
             }
 
             File fileRdf = File.createTempFile("odn-", ".rdf", directory);
+            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileRdf), Charset.forName("UTF-8")));
 
-            BufferedWriter out = new BufferedWriter(new FileWriter(fileRdf));
+            BufferedWriter out = new BufferedWriter(writer);
             out.write(rdfData);
             out.close();
             logger.info("RDF saved to file " + fileRdf);

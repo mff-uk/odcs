@@ -1,8 +1,8 @@
-package cz.cuni.mff.xrg.odcs.extractor.serialization;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.serialization;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.extractor.repository.OdnRepositoryStoreInterface;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.repository.OdnRepositoryStoreInterface;
 
 /**
  * Stuff common to all OpenData.sk serializers.

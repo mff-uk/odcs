@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.extractor;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvPoliticalExtractor;
-import cz.cuni.mff.xrg.odcs.extractor.file.CsvPoliticalExtractorConfig;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core.CsvPoliticalExtractor;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core.CsvPoliticalExtractorConfig;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class Test {

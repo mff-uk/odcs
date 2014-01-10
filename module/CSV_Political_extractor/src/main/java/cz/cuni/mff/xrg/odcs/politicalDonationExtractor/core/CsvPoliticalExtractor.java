@@ -1,9 +1,8 @@
-package cz.cuni.mff.xrg.odcs.extractor.core;
+package cz.cuni.mff.xrg.odcs.politicalDonationExtractor.core;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
-import java.util.Vector;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +16,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.file.FileManager;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.extractor.data.AbstractRecord;
-import cz.cuni.mff.xrg.odcs.extractor.datanest.AbstractDatanestHarvester;
-import cz.cuni.mff.xrg.odcs.extractor.datanest.PoliticalPartyDonationsDatanestHarvester;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.datanest.AbstractDatanestHarvester;
+import cz.cuni.mff.xrg.odcs.politicalDonationExtractor.datanest.PoliticalPartyDonationsDatanestHarvester;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
@@ -46,45 +44,44 @@ public class CsvPoliticalExtractor extends ConfigurableBase<CsvPoliticalExtracto
     public void execute(DPUContext context) throws DataUnitException, DPUException {
         final String baseURI = "";
         final FileExtractType extractType = config.fileExtractType;
-
-        String path = null;
-        Properties prop = new Properties();
-        try {
-            // load a properties file from class path, inside static method
-            prop.load(CsvPoliticalExtractor.class.getClassLoader().getResourceAsStream("config.properties"));
-            // get the property value and print it out
-            path = prop.getProperty("sourceCSV");
-            LOG.debug("sourceCSV is: " + path);
-
-        } catch (IOException e) {
-            LOG.error("error was occoured while it was reading property file", e);
-        }
-
+        final String sourceCSV = config.Path;
+        final String targetRdf = config.TargetRDF;
+        final Integer batchSize = config.BatchSize;
+        final Integer debugProcessOnlyNItems = config.DebugProcessOnlyNItems;
         final String fileSuffix = config.FileSuffix;
         final boolean onlyThisSuffix = config.OnlyThisSuffix;
+        final RDFFormatType formatType = config.RDFFormatValue;
 
         boolean useStatisticHandler = config.UseStatisticalHandler;
         boolean failWhenErrors = config.failWhenErrors;
 
         final HandlerExtractType handlerExtractType = HandlerExtractType.getHandlerType(useStatisticHandler, failWhenErrors);
 
-        RDFFormatType formatType = config.RDFFormatValue;
-
-        File file = new File(path);
-        String filename = file.getName();
-
         AbstractDatanestHarvester<?> harvester = null;
-
-        LOG.info("create PROCUREMENT harvester");
+        URL url = null;
         try {
-            harvester = new PoliticalPartyDonationsDatanestHarvester();
+            url = new URL(sourceCSV);
+        } catch (MalformedURLException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        } catch (IOException e) {
+            LOG.error("Error occoured when path: " + sourceCSV + " was parsing.", e);
+        }
+
+        LOG.info("create ORGANIZATION harvester");
+
+        try {
+            harvester = new PoliticalPartyDonationsDatanestHarvester(targetRdf);
+            harvester.setDebugProcessOnlyNItems(debugProcessOnlyNItems);
+            harvester.setBatchSize(batchSize);
+            harvester.setSourceUrl(url);
+
         } catch (Exception e) {
-            LOG.error("Problem", e);
+            LOG.error("Problem.", e);
         }
 
         if (harvester != null) {
             try {
-                Vector<? extends AbstractRecord> records = harvester.performEtl(file);
+                harvester.update();
             } catch (Exception e) {
                 LOG.error("Problem while transforming csv to rdf", e);
             }
