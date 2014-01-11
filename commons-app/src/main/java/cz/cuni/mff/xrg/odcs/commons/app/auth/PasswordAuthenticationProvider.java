@@ -21,9 +21,9 @@ import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.validatePasswor
  *
  * @author Jan Vojt
  */
-public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-	private static final Logger LOG = LoggerFactory.getLogger(IntlibAuthenticationProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
 	
 	private final UserFacade userFacade;
 
@@ -32,7 +32,7 @@ public class IntlibAuthenticationProvider extends AbstractUserDetailsAuthenticat
 	 * 
 	 * @param userFacade 
 	 */
-	public IntlibAuthenticationProvider(UserFacade userFacade) {
+	public PasswordAuthenticationProvider(UserFacade userFacade) {
 		this.userFacade = userFacade;
 	}
 	

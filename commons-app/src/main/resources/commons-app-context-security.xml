@@ -14,7 +14,7 @@
 		<expression-handler ref="expressionHandler"/>
 	</global-method-security>
 	
-	<b:bean id="authenticationProvider" class="cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibAuthenticationProvider">
+	<b:bean id="authenticationProvider" class="cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordAuthenticationProvider">
 		<b:constructor-arg ref="userFacade" />
 	</b:bean>
 	
