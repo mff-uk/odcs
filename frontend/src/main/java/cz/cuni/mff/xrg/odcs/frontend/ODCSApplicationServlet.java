@@ -26,9 +26,9 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
  * @see {@link RequestHolder}
  * @author Jan Vojt
  */
-public class IntlibApplicationServlet extends SpringVaadinServlet {
+public class ODCSApplicationServlet extends SpringVaadinServlet {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(IntlibApplicationServlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
 	@Override
 	protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
