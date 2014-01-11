@@ -212,13 +212,20 @@ public class SPARQLoader {
 				prepareGraphTargetForLoading(endpointURL, endpointGraph,
 						graphType);
 
+				if (context.canceled()) {
+					logger.error(
+							"Loading data to SPARQL endpoint " + endpointURL + " was canceled by user");
+					break;
+				}
+
 				//starting to load data to target SPARQL endpoint
 				loadGraphDataToEndpoint(endpointURL, endpointGraph, chunkSize,
 						insertType);
 
 				if (context.canceled()) {
-					throw new InsertPartException(
+					logger.error(
 							"Loading data to SPARQL endpoint " + endpointURL + " was canceled by user");
+					break;
 				}
 			}
 
@@ -260,7 +267,8 @@ public class SPARQLoader {
 				} catch (InsertPartException e) {
 					throw new RDFException(e.getMessage(), e);
 				} finally {
-					rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph);
+					rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph,
+							context);
 				}
 				break;
 			case SKIP_BAD_PARTS:
@@ -282,7 +290,8 @@ public class SPARQLoader {
 						//log message with destription of insert part problem.
 						logger.debug(e.getMessage());
 					} finally {
-						rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph);
+						rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph,
+								context);
 					}
 				}
 				break;
@@ -299,7 +308,8 @@ public class SPARQLoader {
 					break;
 				case OVERRIDE: {
 					// clear graph
-					rdfDataUnit.clearEndpointGraph(endpointURL, endpointGraph);
+					rdfDataUnit.clearEndpointGraph(endpointURL, endpointGraph,
+							context);
 				}
 				break;
 				case FAIL: {
@@ -444,6 +454,11 @@ public class SPARQLoader {
 				throw new RDFException(e.getMessage(), e);
 
 			} catch (RDFException e) {
+				if (context.canceled()) {
+					//stop moving data
+					logger.error("Moving data was canceled by user !!!");
+					break;
+				}
 				rdfDataUnit.restartConnection();
 				retryCount++;
 
@@ -526,6 +541,12 @@ public class SPARQLoader {
 				throw new RDFException(e.getMessage(), e);
 
 			} catch (RDFException e) {
+				if (context.canceled()) {
+					//stop finding graph size.
+					logger.error(
+							"Finding enpoint graph size was canceled by user !!!");
+					break;
+				}
 				rdfDataUnit.restartConnection();
 				retryCount++;
 

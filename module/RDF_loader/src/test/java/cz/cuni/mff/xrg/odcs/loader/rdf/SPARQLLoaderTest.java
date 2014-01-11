@@ -146,7 +146,8 @@ public class SPARQLLoaderTest {
 
 		} finally {
 			try {
-				repository.clearEndpointGraph(endpoint, goalGraphName);
+				repository.clearEndpointGraph(endpoint, goalGraphName,
+						getTestContext());
 			} catch (RDFException e) {
 				logger.error(
 						"TEMP graph <" + goalGraphName + "> was not delete");

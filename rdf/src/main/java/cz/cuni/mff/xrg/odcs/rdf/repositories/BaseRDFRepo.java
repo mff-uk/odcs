@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.enums.*;
 
@@ -1503,11 +1504,14 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *
 	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
+	 * @param context       DPU context for checking manual canceling in case of
+	 *                      infinite loop (no recovery error).
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
 	 */
 	@Override
-	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
+	public void clearEndpointGraph(URL endpointURL, String endpointGraph,
+			DPUContext context)
 			throws RDFException {
 
 		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
@@ -1527,6 +1531,12 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				logger.error("InputStreamReader was not closed {}",
 						e.getMessage(), e);
 			} catch (RDFException e) {
+				if (context.canceled()) {
+					//stop clear graph
+					logger.error("CLEAR GRAPH<{}> was canceled by user !!!",
+							endpointGraph);
+					break;
+				}
 				restartConnection();
 				retryCount++;
 

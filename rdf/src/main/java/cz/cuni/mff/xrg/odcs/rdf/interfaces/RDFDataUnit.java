@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
@@ -152,10 +153,13 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *
 	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
+	 * @param context       DPU context for checking manual canceling in case of
+	 *                      infinite loop (no recovery error).
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
 	 */
-	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
+	public void clearEndpointGraph(URL endpointURL, String endpointGraph,
+			DPUContext context)
 			throws RDFException;
 
 	/**
