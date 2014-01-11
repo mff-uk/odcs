@@ -5,7 +5,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
@@ -59,7 +59,8 @@ public class DPUPresenterImpl implements DPUPresenter {
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
-	private IntlibPermissionEvaluator permissions = ((AppEntry) UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
+	@Autowired
+	private AuthAwarePermissionEvaluator permissions;
 	private DPUTemplateRecord selectedDpu = null;
 	@Autowired
 	private PipelineFacade pipelineFacade;

@@ -8,7 +8,7 @@ import java.util.EnumSet;
  * implementing {@link SharedEntity}.
  * 
  * @see SharedEntity
- * @see IntlibPermissionEvaluator
+ * @see AuthAwarePermissionEvaluator
  * @see cz.cuni.mff.xrg.odcs.commons.app.dao.db.Authorizator
  * 
  * @author Jan Vojt

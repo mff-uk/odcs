@@ -24,6 +24,6 @@
 	
 	<b:bean id="authenticationContext" class="cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext" />
 	
-	<b:bean id="permissionEvaluator"  class="cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator"/>
+	<b:bean id="permissionEvaluator"  class="cz.cuni.mff.xrg.odcs.commons.app.auth.DefaultPermissionEvaluator"/>
 
 </b:beans>

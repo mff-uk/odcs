@@ -9,7 +9,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -19,9 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
  *
  * @author Jan Vojt
  */
-public class IntlibPermissionEvaluator implements PermissionEvaluator {
+public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(IntlibPermissionEvaluator.class);
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 	
 	/**
 	 * Authorization logic for permissions on entities.
@@ -111,6 +110,7 @@ public class IntlibPermissionEvaluator implements PermissionEvaluator {
 	 * @return true	if authenticated user has a given permission on target,
 	 *		   false otherwise
 	 */
+	@Override
 	public boolean hasPermission(Object target, Object perm) {
 		return hasPermission(SecurityContextHolder.getContext().getAuthentication(), target, perm);
 	}

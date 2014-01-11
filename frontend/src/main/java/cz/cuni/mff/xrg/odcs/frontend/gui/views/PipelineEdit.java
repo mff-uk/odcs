@@ -22,7 +22,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.IntlibPermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
@@ -51,7 +51,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import java.sql.SQLException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import virtuoso.jdbc4.VirtuosoException;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -119,7 +117,8 @@ public class PipelineEdit extends ViewComponent {
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
-	private IntlibPermissionEvaluator permissions = ((AppEntry) UI.getCurrent()).getBean(IntlibPermissionEvaluator.class);
+	@Autowired
+	private AuthAwarePermissionEvaluator permissions;
 	/**
 	 * Access to the application context in order to provide possiblity to
 	 * create dialogs. TODO: This is give us more power then we need, we should
