@@ -13,6 +13,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -491,6 +492,11 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonRevert);
+		
+		HorizontalLayout leftPartOfButtonBar = new HorizontalLayout();
+		leftPartOfButtonBar.setSpacing(true);
+		leftPartOfButtonBar.setMargin(new MarginInfo(false,true,false,false));
+
 
 		Button buttonValidate = new Button("Validate");
 		buttonValidate.setHeight("25px");
@@ -501,7 +507,7 @@ public class PipelineEdit extends ViewComponent {
 				pipelineCanvas.validateGraph();
 			}
 		});
-		buttonBar.addComponent(buttonValidate);
+		leftPartOfButtonBar.addComponent(buttonValidate);
 
 		buttonConflicts = new Button("Conflicts");
 		buttonConflicts.setHeight("25px");
@@ -515,7 +521,8 @@ public class PipelineEdit extends ViewComponent {
 
 			}
 		});
-		buttonBar.addComponent(buttonConflicts);
+		leftPartOfButtonBar.addComponent(buttonConflicts);
+		buttonBar.addComponent(leftPartOfButtonBar);
 
 		Button buttonCommit = new Button("Save & Commit");
 		buttonCommit.setHeight("25px");
@@ -530,33 +537,13 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonCommit);
-
-		buttonSave = new Button("Save");
-		buttonSave.setHeight("25px");
-		buttonSave.setWidth("100px");
-		buttonSave.setImmediate(true);
-		buttonSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// save current pipeline
-				savePipeline("reload");
-			}
-		});
-		buttonBar.addComponent(buttonSave);
-
-		buttonSaveAndClose = new Button("Save & Close");
-		buttonSaveAndClose.setHeight("25px");
-		buttonSaveAndClose.setWidth("100px");
-		buttonSaveAndClose.setImmediate(true);
-		buttonSaveAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// save current pipeline
-				savePipeline("close");
-			}
-		});
-		buttonBar.addComponent(buttonSaveAndClose);
-
+		
+		HorizontalLayout rightPartOfButtonBar = new HorizontalLayout();
+		rightPartOfButtonBar.setSpacing(true);
+		rightPartOfButtonBar.setMargin(new MarginInfo(false,false,false,true));
+		
+		HorizontalLayout copyLayout = new HorizontalLayout();
+		
 		buttonCopy = new Button("Copy");
 		buttonCopy.setHeight("25px");
 		buttonCopy.setWidth("100px");
@@ -580,7 +567,7 @@ public class PipelineEdit extends ViewComponent {
 				}
 			}
 		});
-		buttonBar.addComponent(buttonCopy);
+		copyLayout.addComponent(buttonCopy);
 		buttonCopyAndClose = new Button("Copy & Close");
 
 		buttonCopyAndClose.setHeight("25px");
@@ -605,7 +592,38 @@ public class PipelineEdit extends ViewComponent {
 				}
 			}
 		});
-		buttonBar.addComponent(buttonCopyAndClose);
+		copyLayout.addComponent(buttonCopyAndClose);
+		rightPartOfButtonBar.addComponent(copyLayout);
+		
+		HorizontalLayout saveLayout = new HorizontalLayout();
+
+		buttonSave = new Button("Save");
+		buttonSave.setHeight("25px");
+		buttonSave.setWidth("100px");
+		buttonSave.setImmediate(true);
+		buttonSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline("reload");
+			}
+		});
+		saveLayout.addComponent(buttonSave);
+
+		buttonSaveAndClose = new Button("Save & Close");
+		buttonSaveAndClose.setHeight("25px");
+		buttonSaveAndClose.setWidth("100px");
+		buttonSaveAndClose.setImmediate(true);
+		buttonSaveAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline("close");
+			}
+		});
+		saveLayout.addComponent(buttonSaveAndClose);
+		rightPartOfButtonBar.addComponent(saveLayout);
+
 		buttonCancel = new Button("Close");
 
 		buttonCancel.setHeight(
@@ -622,8 +640,9 @@ public class PipelineEdit extends ViewComponent {
 				closeView();
 			}
 		});
-		buttonBar.addComponent(buttonCancel);
-
+		rightPartOfButtonBar.addComponent(buttonCancel);
+	    buttonBar.addComponent(rightPartOfButtonBar);
+	    
 		buttonBar.setSpacing(
 				true);
 		layout.addComponent(buttonBar);
