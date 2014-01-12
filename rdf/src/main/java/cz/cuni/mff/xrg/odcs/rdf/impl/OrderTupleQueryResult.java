@@ -96,13 +96,18 @@ public class OrderTupleQueryResult implements TupleQueryResult {
 				TupleQueryResult result = tupleQuery.evaluate();
 				return result;
 
+			} catch (QueryEvaluationException e) {
+				logger.error(
+						"Connection to RDF repositored failed during evaluation. " + e
+						.getMessage());
+				repository.restartConnection();
 			} catch (MalformedQueryException ex) {
 
 				throw new QueryEvaluationException(
 						"This query is not valid. " + ex.getMessage(), ex);
 
 			} catch (RepositoryException ex) {
-				logger.debug("Connection to RDF repository failed. {}",
+				logger.error("Connection to RDF repository failed. {}",
 						ex.getMessage(), ex);
 				repository.restartConnection();
 			}
@@ -164,9 +169,8 @@ public class OrderTupleQueryResult implements TupleQueryResult {
 			} catch (Exception e) {
 				atempts++;
 				logger.debug("{}. atempt to fill bindins", atempts);
-			}
-			finally {
-				if (tupleResult!=null) {
+			} finally {
+				if (tupleResult != null) {
 					tupleResult.close();
 				}
 			}
