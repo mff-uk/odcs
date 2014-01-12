@@ -4,6 +4,7 @@ import com.github.wolfie.refresher.Refresher;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -45,41 +46,33 @@ import org.vaadin.dialogs.ConfirmDialog;
 public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
-		
 	@Autowired
 	private PipelineFacade pipelineFacade;
-	
 	@Autowired
 	private DbPipeline dbPipeline;
-	
 	@Autowired
 	private PipelineAccessor pipelineAccessor;
-	
 	@Autowired
 	private PipelineListView view;
-	
-	@Autowired	
+	@Autowired
 	private SchedulePipeline schedulePipeline;
-	
 	@Autowired
 	private ScheduleFacade scheduleFacade;
-	
 	@Autowired
 	private PipelineHelper pipelineHelper;
-
 	@Autowired
-	private Utils utils;	
-	
+	private Utils utils;
 	private ClassNavigator navigator;
-
 	private PipelineListData dataObject;
-	
 	private CachedSource<Pipeline> cachedSource;
-	
 	private RefreshManager refreshManager;
-	
-	private Date lastLoad = new Date(0L);	
-	
+	private Date lastLoad = new Date(0L);
+	/**
+	 * Evaluates permissions of currently logged in user.
+	 */
+	@Autowired
+	private AuthAwarePermissionEvaluator permissions;
+
 	@Override
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
@@ -105,10 +98,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 		// set data object
 		view.setDisplay(dataObject);
-		
+
 		// add initial name filter
 		view.setFilter("owner.username", utils.getUserName());
-		
+
 		// return main component
 		return viewObject;
 	}
@@ -131,7 +124,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 						break;
 				}
 			}
-			if(pageNumber != 0) {
+			if (pageNumber != 0) {
 				//Page number is set as last, because filtering automatically moves table to first page.
 				view.setPage(pageNumber);
 			}
@@ -163,6 +156,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		}
 		if (!executions.isEmpty()) {
 			Notification.show("Pipeline " + pipeline.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+			return;
+		}
+		if (!permissions.hasPermission(pipeline, "delete")) {
+			Notification.show("Pipeline " + pipeline.getName() + " cannot be deleted. Public pipelne may be deleted only by pipeline authors and administrators", Notification.Type.WARNING_MESSAGE);
 			return;
 		}
 		String message = "Would you really like to delete the \"" + pipeline.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
