@@ -11,8 +11,7 @@
 /* Menubar */
 .v-menubar {
 	background-image: none !important;
-	font-size: 17px;
-	font-weight: bold;
+	font-size: 15px;
 	background-color: black !important;
 	line-height: 50px; 
 	text-align: left;
@@ -25,21 +24,22 @@
 }
 
 .v-menubar > .v-menubar-menuitem:first-child {
-	color: #fff;
+	/* color: #fff; */
+        font-weight: bold;
 	margin-right: 25px;
 }
 
 .v-menubar > .v-menubar-menuitem-unchecked:first-child {
-	text-shadow: 1px 1px 8px #d1d3d6;
+	/*text-shadow: 1px 1px 8px #d1d3d6;*/
 }
 
 .v-menubar-menuitem-checked {
-	font-weight: bold;
+	/* font-weight: bold; */
 	background-color: #575757;
 	color: #fff;
-	border-right: 1px solid;
+	/* border-right: 1px solid;
 	border-left: 1px solid;
-	border-color: #666;
+	border-color: #666; */
 }
 
 .backendStatus {
@@ -70,7 +70,7 @@
 
 .loginPanel {
 	background-color: #000000;
-	box-shadow: 0 2px 5px #999;
+	/*box-shadow: 0 2px 5px #999; */
 	z-index: 1;
 }
 
