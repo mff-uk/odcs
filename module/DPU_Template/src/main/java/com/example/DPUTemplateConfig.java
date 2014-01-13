@@ -16,7 +16,7 @@ public class DPUTemplateConfig extends DPUConfigObjectBase {
     
     private int height;	
 	
-	// DPUTemplateConfig must provide public non-parametric constructor
+	// FileCsvTemplateConfig must provide public non-parametric constructor
     public DPUTemplateConfig() {
         width = 100;
         height = 100;

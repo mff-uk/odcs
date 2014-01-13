@@ -21,6 +21,11 @@
 		<module>SPARQL_transformer</module>
 		<module>RDF_Data_Validator</module>
 		<module>Silk_Linker</module>
+		<module>CSV_Organization_extractor</module>
+		<module>CSV_Procurements_extractor</module>
+		<module>CSV_Political_extractor</module>
+		
+		
 	</modules>
 
 	<properties>
@@ -29,7 +34,8 @@
 	</properties>
 
 	<profiles>
-		<profile> <!-- copy the plugin to the DPU's directory by default -->
+		<profile>
+			<!-- copy the plugin to the DPU's directory by default -->
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -44,6 +50,7 @@
 								<phase>install</phase>
 								<goals>
 									<goal>copy-resources</goal>
+
 								</goals>
 								<configuration>
 									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
