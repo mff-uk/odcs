@@ -85,8 +85,12 @@ class InstantReportEmailBuilder {
 			// ...
 			body.append("</tr>");
 		}
-		
 		body.append("</table>");
+		
+		// add the working directory
+		body.append("<br>");
+		body.append("ODCS's working directory: ");
+		body.append(System.getProperty("user.dir"));
 		
 		return body.toString();
 	}
