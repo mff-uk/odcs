@@ -72,11 +72,11 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 * Time in miliseconds how long to wait before trying to reconnect.
 	 */
 	protected static long RETRY_CONNECTION_TIME = 1000;
-
-	/**
-	 * Represents successful connection using HTTP.
+        
+        /**
+	 * Represents prefix of the OK response code (could be 200, but also 204, etc)
 	 */
-	protected static final int HTTP_OK_RESPONSE = 200;
+	protected static final int HTTP_OK_RESPONSE_PREFIX = 2;
 
 	/**
 	 * Represent http error code needed authorisation for connection using HTTP.
@@ -1588,6 +1588,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 		final String endpointGraph = getEncodedString(endpointGraphURI);
 		final String myquery = getEncodedString(query);
+                
+                logger.debug("Target: {}", myquery);
 
 		final String encoder = getEncoder(format);
 
@@ -1600,6 +1602,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
                     parameters += "&update=" + myquery;
                 } 
                 parameters += "&format=" + encoder;
+                
+                logger.debug("Content: {}", parameters);
 
 		URL call = null;
 		try {
@@ -1634,8 +1638,15 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				}
 
 				int httpResponseCode = httpConnection.getResponseCode();
-
-				if (httpResponseCode != HTTP_OK_RESPONSE) {
+                                String httpResponseMessage = httpConnection.getResponseMessage();
+                                
+                                
+                                logger.debug("HTTP Response code: {}", httpResponseCode);
+                                logger.debug("HTTP Response message: {}", httpResponseMessage);
+                                
+                                 int firstNumberResponseCode = getFirstNumber(httpResponseCode);
+                                
+				if (firstNumberResponseCode != HTTP_OK_RESPONSE_PREFIX) {
 
 					StringBuilder message = new StringBuilder(
 							httpConnection.getHeaderField(0));
@@ -2423,4 +2434,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			repoConnection.close();
 		}
 	}
+
+    // returns the first digit o the http response code
+    private int getFirstNumber(int httpResponseCode) {
+        
+        int firstNumberResponseCode;
+        try {
+            
+            firstNumberResponseCode = Integer.valueOf((String.valueOf(httpResponseCode)).substring(0, 1)); 
+           
+        } catch (NumberFormatException e) {
+            logger.error(e.getLocalizedMessage());
+            logger.debug("Strange response code. First char of response code set to 0");
+            firstNumberResponseCode = 0;
+        }
+        return firstNumberResponseCode;
+        
+    }
 }
