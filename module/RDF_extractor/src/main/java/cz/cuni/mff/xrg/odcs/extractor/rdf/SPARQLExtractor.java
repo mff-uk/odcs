@@ -261,7 +261,7 @@ public class SPARQLExtractor {
 			HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException {
 
 		InputStreamReader inputStreamReader = dataUnit.getEndpointStreamReader(
-				endpointURL, endpointGraph, query, format);
+				endpointURL, endpointGraph, query, format, RDFDataUnit.SPARQL_ENDPOINT_MODE.QUERY);
 
 		TripleCountHandler handler;
 

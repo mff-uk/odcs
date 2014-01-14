@@ -376,7 +376,7 @@ public class SPARQLoader {
 				try (InputStreamReader inputStreamReader = rdfDataUnit
 						.getEndpointStreamReader(
 						endpointURL, endpointGraph, query,
-						RDFFormat.RDFXML)) {
+						RDFFormat.RDFXML, RDFDataUnit.SPARQL_ENDPOINT_MODE.UPDATE)) {
 				}
 
 				logger.debug(
@@ -443,7 +443,7 @@ public class SPARQLoader {
 				try (InputStreamReader result = rdfDataUnit
 						.getEndpointStreamReader(
 						endpointURL,
-						"", moveQuery, RDFFormat.RDFXML)) {
+						"", moveQuery, RDFFormat.RDFXML, RDFDataUnit.SPARQL_ENDPOINT_MODE.UPDATE)) {
 				}
 
 				//Move data to target graph successfuly - stop the infinity loop
@@ -510,7 +510,7 @@ public class SPARQLoader {
 				try (InputStreamReader inputStreamReader = rdfDataUnit
 						.getEndpointStreamReader(
 						endpointURL, endpointGraph,
-						countQuery, RDFFormat.RDFXML)) {
+						countQuery, RDFFormat.RDFXML, RDFDataUnit.SPARQL_ENDPOINT_MODE.UPDATE)) {
 
 					Scanner scanner = new Scanner(inputStreamReader);
 

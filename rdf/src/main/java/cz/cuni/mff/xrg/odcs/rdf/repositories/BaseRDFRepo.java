@@ -141,6 +141,8 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public static long getDefaultChunkSize() {
 		return DEFAULT_CHUNK_SIZE;
 	}
+        
+       
 
 	/**
 	 *
@@ -1521,7 +1523,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		while (true) {
 			try {
 				try (InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, "", deleteQuery, RDFFormat.RDFXML)) {
+						endpointURL, "", deleteQuery, RDFFormat.RDFXML, SPARQL_ENDPOINT_MODE.UPDATE)) {
 				}
 
 				//Clear graph successfuly - stop the infinity loop
@@ -1573,6 +1575,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	 *                         extract/load RDF data.
 	 * @param query            SPARQL query to execute on sparql endpoint
 	 * @param format           RDF data format for given returned RDF data.
+         * @param mode             Determines the mode in which the method is called - QUERY if called by SPARQL Extractor, UPDATE if called by SPARQL Loader
 	 * @return Result of given SPARQL query apply to given graph. If it produce
 	 *         some RDF data, there are in specified RDF format.
 	 * @throws RDFException if unknown host, connection problems, no permission
@@ -1581,16 +1584,22 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	@Override
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
-			RDFFormat format) throws RDFException {
+			RDFFormat format, SPARQL_ENDPOINT_MODE mode) throws RDFException {
 
 		final String endpointGraph = getEncodedString(endpointGraphURI);
 		final String myquery = getEncodedString(query);
 
 		final String encoder = getEncoder(format);
 
-		String parameters = "default-graph-uri=" + endpointGraph
-				+ "&query=" + myquery
-				+ "&format=" + encoder;
+		String parameters = "default-graph-uri=" + endpointGraph;
+                
+                if (mode == SPARQL_ENDPOINT_MODE.QUERY) {
+                    parameters += "&query=" + myquery;
+                }
+                else if (mode == SPARQL_ENDPOINT_MODE.UPDATE) {
+                    parameters += "&update=" + myquery;
+                } 
+                parameters += "&format=" + encoder;
 
 		URL call = null;
 		try {

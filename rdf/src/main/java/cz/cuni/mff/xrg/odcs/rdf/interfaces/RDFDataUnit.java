@@ -38,6 +38,21 @@ import org.openrdf.rio.RDFParser;
  */
 public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHelper {
 
+     /**
+         * Mode in which the application works with the target SPARQL endpoint. 
+         * Used to distinguish whether param query or update should be used when POSTing to target endpoint
+         */
+        public enum SPARQL_ENDPOINT_MODE {
+            /**
+             * SPARQL Query is executed 
+             */
+            QUERY,
+            /**
+             * SPARQL Update QUery is executed
+             */
+            UPDATE
+        }
+    
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
@@ -264,6 +279,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 *                         extract/load RDF data.
 	 * @param query            SPARQL query to execute on sparql endpoint
 	 * @param format           RDF data format for given returned RDF data.
+         * @param mode             Determines the mode in which the method is called - QUERY if called by SPARQL Extractor, UPDATE if called by SPARQL Loader
 	 * @return Result of given SPARQL query apply to given graph. If it produce
 	 *         some RDF data, there are in specified RDF format.
 	 * @throws RDFException if unknown host, connection problems, no permission
@@ -271,7 +287,7 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 */
 	public InputStreamReader getEndpointStreamReader(URL endpointURL,
 			String endpointGraphURI, String query,
-			RDFFormat format) throws RDFException;
+			RDFFormat format, SPARQL_ENDPOINT_MODE mode) throws RDFException;
 
 	/**
 	 * Create RDF parser for given RDF format and set RDF handler where are data
