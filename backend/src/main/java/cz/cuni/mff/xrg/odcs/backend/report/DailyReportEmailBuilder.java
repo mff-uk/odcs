@@ -17,7 +17,7 @@ class DailyReportEmailBuilder {
 		
 		body.append("<table border=2 cellpadding=2 >");
 		body.append("<tr bgcolor=\"#C0C0C0\">");
-		body.append("<th>pipeline</th><th>start</th><th>end</th><th>result</th>");
+		body.append("<th>pipeline</th><th>execution</th><th>start</th><th>end</th><th>result</th>");
 		body.append("</tr>");
 		
 		for (PipelineExecution exec : executions) {
@@ -26,6 +26,10 @@ class DailyReportEmailBuilder {
 			body.append("<td>");
 			body.append(exec.getPipeline().getName());
 			body.append("</td>");
+			// execution id
+			body.append("<td>");
+			body.append(exec.getId().toString());
+			body.append("</td>");			
 			// start
 			body.append("<td>");
 			body.append(exec.getStart().toString());
