@@ -25,6 +25,9 @@ class InstantReportEmailBuilder {
 		body.append("<b>Report for pipeline: </b>");
 		body.append(execution.getPipeline().getName());
 		body.append("<br/>");
+		body.append("<b>Execution id: </b>");
+		body.append(execution.getId());
+		body.append("<br/>");		
 		body.append("<b>Execution starts at: </b>");
 		body.append(execution.getStart().toString());
 		body.append("<br/>");
