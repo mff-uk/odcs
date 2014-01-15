@@ -98,6 +98,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		},
 		setDpuValidity: function(id, isValid) {
 			setDpuValidity(id, isValid);
+		},
+		formatDPUs: function(action) {
+			formatDPUs(action);
 		}
 	});
 
@@ -153,7 +156,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	var backgroundRect = null;
 
 	var tooltip = null;
-	var formattingActionBar = null;
+	//var formattingActionBar = null;
 
 	var visibleActionBar = null;
 
@@ -273,8 +276,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		tooltip = createTooltip('Tooltip');
 		dpuLayer.add(tooltip);
 
-		formattingActionBar = createFormattingActionBar();
-		dpuLayer.add(formattingActionBar);
+//		formattingActionBar = createFormattingActionBar();
+//		dpuLayer.add(formattingActionBar);
 	}
 
 	/** 
@@ -746,13 +749,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				writeMessage(messageLayer, 'mouseentered');
 				evt.cancelBubble = true;
 			} else if (stageMode === MULTISELECT_MODE && dpu.isInMultiselect && !evt.ctrlKey) {
-				formattingActionBar.setVisible(true);
-				formattingActionBar.moveToTop();
-				var pos = stage.getPointerPosition();
-				pos.x = (pos.x) / scale;
-				pos.y = (pos.y) / scale;
-				formattingActionBar.setPosition(pos);
-				dpuLayer.draw();
+//				formattingActionBar.setVisible(true);
+//				formattingActionBar.moveToTop();
+//				var pos = stage.getPointerPosition();
+//				pos.x = (pos.x) / scale;
+//				pos.y = (pos.y) / scale;
+//				formattingActionBar.setPosition(pos);
+//				dpuLayer.draw();
 			}
 		});
 
@@ -892,6 +895,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	 * 
 	 */
 	function multiselect(id) {
+		rpcProxy.onMultipleDPUsSelected(true);
 		var dpu = dpus[id];
 		dpu.isInMultiselect = !dpu.isInMultiselect;
 		var rect = dpu.group.get('Rect')[0];
@@ -935,8 +939,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				dpu.group.get('Rect')[0].setStrokeWidth(2);
 			}
 		}
-		formattingActionBar.setVisible(false);
+		//formattingActionBar.setVisible(false);
 		dpuLayer.draw();
+		rpcProxy.onMultipleDPUsSelected(false);
 		stageMode = DEVELOP_MODE;
 	}
 
@@ -1111,6 +1116,30 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		actionBar.add(cmdVertical);
 
 		return actionBar;
+	}
+
+	function formatDPUs(action) {
+		switch (action) {
+			case 'align_top':
+				multiselectAlign('top');
+				break;
+			case 'align_bottom':
+				multiselectAlign('bottom');
+				break;
+			case 'align_left':
+				multiselectAlign('left');
+				break;
+			case 'align_right':
+				multiselectAlign('right');
+				break;
+			case 'distribute_horizontal':
+				multiselectDistribute('horizontal');
+				break;
+			case 'distribute_vertical':
+				multiselectDistribute('vertical');
+				break;
+		}
+
 	}
 
 	/**

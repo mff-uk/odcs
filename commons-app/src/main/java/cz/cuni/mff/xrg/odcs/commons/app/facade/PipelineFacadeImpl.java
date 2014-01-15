@@ -183,6 +183,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return pipelines using DPU template
      */
     @PreAuthorize("hasPermission(#dpu, 'view')")
+    @PostFilter("hasPermission(filterObject,'view')")
 	@Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
 		return pipelineDao.getPipelinesUsingDPU(dpu);
