@@ -53,7 +53,9 @@
         <module>module</module>
         <module>ontology</module>
         <module>dataunit</module>
-    </modules>
+		<module>dataunit-file</module>
+    <module>dataunit-file-impl</module>
+  </modules>
 
     <scm>
         <url/>

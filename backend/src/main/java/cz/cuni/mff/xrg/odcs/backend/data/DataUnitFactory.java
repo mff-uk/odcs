@@ -79,6 +79,8 @@ public class DataUnitFactory {
 				);
 				
 				return virtosoRepository;
+			case FILE:
+				throw new DataUnitCreateException("FileDataUnit not supported yet.");
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}

@@ -62,6 +62,14 @@
 			<type>jar</type>
 		</dependency>
 
+        <dependency> <!-- file data unit -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-file</artifactId>
+            <!-- the version has to be specify -->
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>  
+
 		<dependency> <!-- ontology -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ontology</artifactId>
