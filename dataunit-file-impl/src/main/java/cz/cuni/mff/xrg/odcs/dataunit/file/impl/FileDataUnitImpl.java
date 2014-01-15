@@ -132,11 +132,23 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 		if (asLink) {
 			// ok just add
 		} else {
-			// copy the file to the local repository and create handler to it
+			// Crete new file 
+			final File newFile = new File(mainDirectory, file.getName());
+			try {
+				FileUtils.copyFile(file, newFile);
+			} catch (IOException ex) {
+				LOG.error("Failed to copy file.", ex);
+				throw new FileCreationException(ex);
+			}
+			// update file variable
+			file = newFile;
 		}
-		return null;
+		// add record
+		final FileHandler fileHandler = new FileHandlerImpl(file, file.getName());
+		this.fileHandlers.add(fileHandler);
+		return fileHandler;
 	}
-	
+
 	@Override
 	public void delete(FileHandler handler) throws DataUnitException {
 		if (isReadOnly) {
@@ -149,9 +161,18 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 			fileHandlers.remove(handler);
 		}
 
-		if (!handler.asFile().exists()) {
+		final File fileToDelete = handler.asFile();
+		if (!fileToDelete.exists()) {
 			// the file does not exist
 		} else {
+			// is the file in our directory ?
+			if ((new File(mainDirectory, fileToDelete.getName()).exists())) {
+				// file exist in our directory, we can delete it 
+			} else {
+				// file is not in our main directory
+				return;
+			}
+			
 			// delete the file
 			try {
 				FileUtils.forceDelete(handler.asFile());
@@ -185,7 +206,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 		if (unit instanceof FileDataUnitImpl) {
-			FileDataUnitImpl fileUnit = (FileDataUnitImpl)unit;
+			FileDataUnitImpl fileUnit = (FileDataUnitImpl) unit;
 			// add every data unit
 			for (File directory : fileUnit.directories) {
 				addDirectory(directory);
