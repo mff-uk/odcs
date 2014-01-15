@@ -32,14 +32,14 @@ public class FileDataUnitImplTest {
 	}
 	
 	@Test
-	public void testAddCreate() throws DataUnitException {
+	public void testCreateCreate() throws DataUnitException {
 		// the temp directory will be created, the test sub directory will be not
 		final File directory = new File(FileUtils.getTempDirectory(), "test-create");
 		Assert.assertFalse(directory.exists());
 		// create data unit
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
-		FileHandler holder = dataUnit.add("first", true);
+		FileHandler holder = dataUnit.create("first", true);
 		// the file should have been created
 		Assert.assertTrue(directory.exists());
 		Assert.assertTrue(holder.asFile().exists());		
@@ -48,14 +48,14 @@ public class FileDataUnitImplTest {
 	}
 
 	@Test
-	public void testAddNotCreate() throws DataUnitException {
+	public void testCreateNotCreate() throws DataUnitException {
 		// the temp directory will be created, the test sub directory will be not
 		final File directory = new File(FileUtils.getTempDirectory(), "test-not-create");
 		Assert.assertFalse(directory.exists());
 		// create data unit
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
-		FileHandler holder = dataUnit.add("first", false);
+		FileHandler holder = dataUnit.create("first", false);
 		// no file should be created, just the folder
 		Assert.assertTrue(directory.exists());
 		Assert.assertFalse(holder.asFile().exists());		
@@ -71,8 +71,8 @@ public class FileDataUnitImplTest {
 		// create data unit
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
-		FileHandler first = dataUnit.add("first", true);
-		FileHandler second = dataUnit.add("second", false);
+		FileHandler first = dataUnit.create("first", true);
+		FileHandler second = dataUnit.create("second", false);
 		// the file should have been created
 		Assert.assertTrue(directory.exists());
 		Assert.assertTrue(first.asFile().exists());
@@ -98,9 +98,9 @@ public class FileDataUnitImplTest {
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
 		LinkedList<FileHandler> handlers = new LinkedList<>();
-		handlers.add(dataUnit.add("1", true));
-		handlers.add(dataUnit.add("2", false));
-		handlers.add(dataUnit.add("3", false));		
+		handlers.add(dataUnit.create("1", true));
+		handlers.add(dataUnit.create("2", false));
+		handlers.add(dataUnit.create("3", false));		
 		// check that the directory exists
 		Assert.assertTrue(directory.exists());
 		// test the content of data unit
@@ -133,7 +133,7 @@ public class FileDataUnitImplTest {
 		// create data unit
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
-		dataUnit.add("first", true);
+		dataUnit.create("first", true);
 		// check that the directory exists
 		Assert.assertTrue(directory.exists());
 		// delete the dataunit
@@ -150,7 +150,7 @@ public class FileDataUnitImplTest {
 		// create data unit
 		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
 		// add some data, that will create the directory
-		dataUnit.add("first", true);
+		dataUnit.create("first", true);
 		// check that the directory exists
 		Assert.assertTrue(directory.exists());
 		// check that something is in the data unit

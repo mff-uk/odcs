@@ -101,7 +101,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
-	public FileHandler add(final String name, boolean create) throws DataUnitException {
+	public FileHandler create(final String name, boolean create) throws DataUnitException {
 		if (isReadOnly) {
 			// read only, no action
 			return null;
@@ -127,6 +127,16 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 		return handler;
 	}
 
+	@Override
+	public FileHandler add(File file, boolean asLink) throws DataUnitException {
+		if (asLink) {
+			// ok just add
+		} else {
+			// copy the file to the local repository and create handler to it
+		}
+		return null;
+	}
+	
 	@Override
 	public void delete(FileHandler handler) throws DataUnitException {
 		if (isReadOnly) {

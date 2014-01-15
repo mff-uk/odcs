@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import java.io.File;
 
 /**
  * Implementation of {@link DataUnit} that enable storing files.
@@ -18,7 +19,16 @@ public interface FileDataUnit extends DataUnit, Iterable<FileHandler> {
 	 * @return Can be null. 
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException 
 	 */
-	FileHandler add(final String name, boolean create) throws DataUnitException;
+	FileHandler create(final String name, boolean create) throws DataUnitException;
+	
+	/**
+	 * Add given existing file to the {@link FileDataUnit}.
+	 * @param file
+	 * @param asLink True if add as link, false to copy the file.
+	 * @return
+	 * @throws DataUnitException 
+	 */
+	FileHandler add(File file, boolean asLink) throws DataUnitException;
 	
 	/**
 	 * Remove given file from {@link FileDataUnit}. If the {@link FileDataUnit}
