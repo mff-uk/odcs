@@ -200,7 +200,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 		dpuLayout = new GridLayout(3, 1);
 		dpuLayout.setSpacing(true);
-		dpuLayout.setHeight(630, Unit.PIXELS);
 		dpuLayout.setRowExpandRatio(0, 0.01f);
 		dpuLayout.setRowExpandRatio(1, 0.99f);
 

@@ -266,7 +266,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 		distributeIcon = new Image();
 		distributeIcon.src = basePath + "distribute.png";
-		
+
 		invalidIcon = new Image();
 		invalidIcon.src = basePath + "exclamation.png";
 
@@ -345,11 +345,11 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpu.rect.setHeight(dpu.text.getHeight());
 		dpuLayer.draw();
 	}
-	
+
 	function setDpuValidity(id, isValid) {
 		var dpu = dpus[id];
 		dpu.invalidIcon.setVisible(!isValid);
-		if(!isValid) {
+		if (!isValid) {
 			dpu.invalidIcon.moveToTop();
 		}
 		dpuLayer.draw();
@@ -1744,31 +1744,35 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	jQuery(document).ready(function() {
 		$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
-		
+
 		$("#container").mousemove(function(e) {
 			lastPositionX = e.pageX;
 			lastPositionY = e.pageY;
 		});
 
 		$(".v-scrollable").scroll(function() {
-			$(".changingposition").css("top", Math.max(0, $("#container").offset().top));
+			var container = $("#container");
+			var cp = $(".changingposition");
+			if (container.length > 0 && cp.length > 0) {
+				cp.css("top", Math.max(0, container.offset().top));
+			}
 		});
-		
+
 		$(window).mousemove(function() {
 			var tree = $(".changingposition");
-			if(tree.length === 0) {
+			if (tree.length === 0) {
 				return;
 			}
 			tree.css("top", Math.max(0, $("#container").offset().top));
 		});
-		
-		$(window).resize(function(){
+
+		$(window).resize(function() {
 			var tree = $(".changingposition");
-			if(tree.length === 0) {
+			if (tree.length === 0) {
 				return;
 			}
-           tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
-        });
+			tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+		});
 	});
 
 };
