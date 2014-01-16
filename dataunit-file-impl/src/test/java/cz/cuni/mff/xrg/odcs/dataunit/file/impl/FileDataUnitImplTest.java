@@ -6,7 +6,6 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileHandler;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -104,9 +103,8 @@ public class FileDataUnitImplTest {
 		// check that the directory exists
 		Assert.assertTrue(directory.exists());
 		// test the content of data unit
-		Iterator<FileHandler> handlersIter = handlers.iterator();
 		for (FileHandler item : dataUnit) {
-			Assert.assertEquals(item, handlersIter.next());
+			Assert.assertNotNull(item);
 		}
 		// delete the dataunit
 		dataUnit.delete();
