@@ -122,7 +122,8 @@ CREATE TABLE `EXEC_PIPELINE`
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `EXEC_PIPELINE` (`status`);
 CREATE INDEX `ix_EXEC_PIPELINE_pipeline_id` ON `EXEC_PIPELINE` (`pipeline_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_debug_mode` ON `EXEC_PIPELINE` (`debug_mode`);
-CREATE INDEX `ix_EXEC_PIPELINE_t_start` ON `EXEC_PIPELINE` (`t_start`);
+-- Virtuoso 7 cannot handle the following index for some reason, see GH-952.
+-- CREATE INDEX `ix_EXEC_PIPELINE_t_start` ON `EXEC_PIPELINE` (`t_start`);
 CREATE INDEX `ix_EXEC_PIPELINE_context_id` ON `EXEC_PIPELINE` (`context_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_schedule_id` ON `EXEC_PIPELINE` (`schedule_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `EXEC_PIPELINE` (`owner_id`);
