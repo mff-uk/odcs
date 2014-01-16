@@ -143,7 +143,7 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	private void configure(Properties properties) {
 		String sRetries = properties.getProperty(RETRIES_KEY);
 		if (sRetries == null) {
-			LOG.info("Missing config property {}, using default value {}.",
+			LOG.info("Missing config property {}, using default value '{}'.",
 					RETRIES_KEY, retries);
 		} else {
 			retries = Integer.parseInt(sRetries);
@@ -151,7 +151,7 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 
 		String sWait = properties.getProperty(WAIT_KEY);
 		if (sWait == null) {
-			LOG.info("Missing config property {}, using default value {}.",
+			LOG.info("Missing config property {}, using default value '{}'.",
 					WAIT_KEY, wait);
 		} else {
 			wait = Integer.parseInt(sWait);
