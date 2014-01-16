@@ -4,16 +4,21 @@
 
 
 
+-- dev. note:
+-- when updating size of limits for fields update also the limitations
+-- in given class as well in commons.app.constants.LenghtLimits
+
+
 CREATE SEQUENCE `seq_dpu_record` START WITH 100;
 CREATE TABLE `DPU_INSTANCE`
 (
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(2048),
+  `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
-  `description` TEXT NOT NULL DEFAULT '',
-  `tool_tip` TEXT,
-  `configuration` BLOB,
+  `description` TEXT,
+  `tool_tip` VARCHAR (512),
+  `configuration` TEXT,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
@@ -25,10 +30,10 @@ CREATE TABLE `DPU_TEMPLATE`
 (
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(2048),
+  `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
-  `description` TEXT NOT NULL DEFAULT '',  
-  `configuration` BLOB,
+  `description` TEXT,  
+  `configuration` TEXT,
   `parent_id` INTEGER,
   `config_valid` SMALLINT,
 -- DPUTemplateRecord
@@ -36,8 +41,8 @@ CREATE TABLE `DPU_TEMPLATE`
   `visibility` SMALLINT,
   `type` SMALLINT,
   `jar_directory` VARCHAR(255),
-  `jar_name` VARCHAR(255),  
-  `jar_description` VARCHAR(512),  
+  `jar_name` VARCHAR(255),
+  `jar_description` VARCHAR(1024),  
   PRIMARY KEY (`id`)
 );
 CREATE INDEX `ix_DPU_TEMPLATE_jar_directory` ON `DPU_TEMPLATE` (`jar_directory`);
@@ -87,7 +92,7 @@ CREATE TABLE `EXEC_RECORD`
   `r_type` SMALLINT,
   `dpu_id` INTEGER,
   `execution_id` INTEGER,
-  `short_message` TEXT,
+  `short_message` VARCHAR(128),
   `full_message` TEXT,
   PRIMARY KEY (`id`)
 );
@@ -126,7 +131,7 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(2048),
+  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -158,7 +163,7 @@ CREATE SEQUENCE `seq_ppl_model` START WITH 100;
 CREATE TABLE `PPL_MODEL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(2048),
+  `name` VARCHAR(1024),
   `description` TEXT,
   `user_id` INTEGER,
   `visibility` SMALLINT,
@@ -538,6 +543,7 @@ ALTER TABLE `PPL_OPEN_EVENT`
 -- workaround for bug in virtuoso's implementation of cascades on delete
 -- see https://github.com/openlink/virtuoso-opensource/issues/56
 
+
 -- TABLE FOR LOGS
 
 CREATE TABLE `LOGGING`
@@ -546,7 +552,7 @@ CREATE TABLE `LOGGING`
   `logLevel` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
-  `message` TEXT NOT NULL,
+  `message` TEXT,
   `dpu` INTEGER,
   `execution` INTEGER,
   `stack_trace` TEXT,
