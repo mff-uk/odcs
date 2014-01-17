@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link ContainerSource}. The data are all loaded and hold
@@ -21,20 +19,38 @@ import org.slf4j.LoggerFactory;
  * @author Petyr
  * @param <T>
  */
-public class InMemorySource<T extends DataObject> implements ContainerSource<T> {
+public final class InMemorySource<T extends DataObject> implements ContainerSource<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(InMemorySource.class);
-
+	/**
+	 * Enable data in-memory filtering (hide, show). 
+	 * @param <T> 
+	 */
+	public abstract class Filter<T extends DataObject> {
+		
+		/**
+		 * Check the object and decide if show it or not.
+		 * @param object
+		 * @return True if object pass the filter false otherwise.
+		 */
+		public abstract boolean filter(T object);
+		
+	}
+	
 	/**
 	 * Store data.
 	 */
 	protected final Map<Long, T> data = new HashMap<>();
 
 	/**
-	 * Id's in order.
+	 * List of all IDs.
 	 */
 	protected final List<Long> ids = new ArrayList<>();
 
+	/**
+	 * List of filtered-active IDs.
+	 */
+	protected final List<Long> idsVisible = new ArrayList<>();
+	
 	protected final ClassAccessor<T> classAccessor;
 
 	public InMemorySource(ClassAccessor<T> classAccessor) {
@@ -74,6 +90,8 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 		}
 		// sort, so we get same order based on id every time
 		Collections.sort(ids);
+		// all visible
+		idsVisible.addAll(ids);
 	}
 
 	/**
@@ -89,7 +107,9 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 			// add to ids and sort them, so we get the same
 			// id's every time
 			ids.add(object.getId());
+			idsVisible.add(object.getId());
 			Collections.sort(ids);
+			Collections.sort(idsVisible);
 		}
 	}
 
@@ -100,6 +120,7 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 	 */
 	public void remove(Long id) {
 		ids.remove(id);
+		idsVisible.remove(id);
 		data.remove(id);
 	}
 
@@ -111,9 +132,31 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 	 * @param id
 	 */
 	public void hide(Long id) {
-		ids.remove(id);
+		idsVisible.remove(id);
 	}
 
+	/**
+	 * Apply filter.
+	 * @param filter 
+	 * @param useAll If true all data are made visible and then filtered,
+	 *		otherwise the visible data are filtered.
+	 */
+	public void filter(Filter<T> filter, boolean useAll) {
+		List<Long> newIdsVisible = new ArrayList<>(ids.size());
+		List<Long> toFilter = useAll ? ids : idsVisible;
+		for (Long id : toFilter) {
+			if (filter.filter(data.get(id))) {
+				newIdsVisible.add(id);
+			}
+		}		
+		// add the new ids to the visble collection
+		idsVisible.clear();
+		idsVisible.addAll(newIdsVisible);
+		// as we start with sorted colleciton we also 
+		// end up with sorted colleciton so we do not have to 
+		// resort again
+	}
+	
 	/**
 	 * Show object of given id if it has been previously hidden.
 	 *
@@ -130,15 +173,22 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 
 		// add to ids and sort them, so we get the same
 		// id's every time
-		ids.add(id);
+		idsVisible.add(id);
 		Collections.sort(ids);
 		return true;
 	}
 
+	/**
+	 * Show all data.
+	 */
+	public void showAll() {
+		idsVisible.clear();
+		idsVisible.addAll(ids);
+	}
+	
 	@Override
 	public int size() {
-		LOG.info("size() -> {}", ids.size());
-		return ids.size();
+		return idsVisible.size();
 	}
 
 	@Override
@@ -163,11 +213,9 @@ public class InMemorySource<T extends DataObject> implements ContainerSource<T> 
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-		LOG.info("getItemIds({}, {})", startIndex, numberOfItems);
-
 		List<Long> result = new ArrayList<>(numberOfItems);
 		for (int i = 0; i < numberOfItems; ++i) {
-			result.add(i, ids.get(i + startIndex));
+			result.add(i, idsVisible.get(i + startIndex));
 		}
 		return result;
 	}
