@@ -80,7 +80,8 @@ public class DataUnitFactory {
 				
 				return virtosoRepository;
 			case FILE:
-				throw new DataUnitCreateException("FileDataUnit not supported yet.");
+				// create the DataUnit and return it
+				return cz.cuni.mff.xrg.odcs.dataunit.file.impl.Factory.create(name, directory);
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}
