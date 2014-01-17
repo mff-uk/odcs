@@ -22,20 +22,22 @@ import java.util.Map;
 public final class InMemorySource<T extends DataObject> implements ContainerSource<T> {
 
 	/**
-	 * Enable data in-memory filtering (hide, show). 
-	 * @param <T> 
+	 * Enable data in-memory filtering (hide, show).
+	 *
+	 * @param <T>
 	 */
-	public abstract class Filter<T extends DataObject> {
-		
+	public interface Filter<T extends DataObject> {
+
 		/**
 		 * Check the object and decide if show it or not.
+		 *
 		 * @param object
 		 * @return True if object pass the filter false otherwise.
 		 */
-		public abstract boolean filter(T object);
-		
+		boolean filter(T object);
+
 	}
-	
+
 	/**
 	 * Store data.
 	 */
@@ -50,7 +52,7 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 	 * List of filtered-active IDs.
 	 */
 	protected final List<Long> idsVisible = new ArrayList<>();
-	
+
 	protected final ClassAccessor<T> classAccessor;
 
 	public InMemorySource(ClassAccessor<T> classAccessor) {
@@ -131,25 +133,32 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 	 * returned by {@link #getItemIds(int, int) }.
 	 *
 	 * @param id
+	 * @param hard If true then the item can be bring back only by call
+	 * of {@link #show(java.lang.Long)} with it's id.
 	 */
-	public void hide(Long id) {
+	public void hide(Long id, boolean hard) {
 		idsVisible.remove(id);
+		if (hard) {
+			ids.remove(id);
+		}
 	}
 
 	/**
 	 * Apply filter.
-	 * @param filter 
+	 *
+	 *
 	 * @param useAll If true all data are made visible and then filtered,
-	 *		otherwise the visible data are filtered.
+	 * otherwise the visible data are filtered.
+	 * @param filter
 	 */
-	public void filter(Filter<T> filter, boolean useAll) {
+	public void filter(boolean useAll, Filter<T> filter) {
 		List<Long> newIdsVisible = new ArrayList<>(ids.size());
 		List<Long> toFilter = useAll ? ids : idsVisible;
 		for (Long id : toFilter) {
 			if (filter.filter(data.get(id))) {
 				newIdsVisible.add(id);
 			}
-		}		
+		}
 		// add the new ids to the visble collection
 		idsVisible.clear();
 		idsVisible.addAll(newIdsVisible);
@@ -157,7 +166,7 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 		// end up with sorted colleciton so we do not have to 
 		// resort again
 	}
-	
+
 	/**
 	 * Show object of given id if it has been previously hidden.
 	 *
@@ -186,7 +195,7 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 		idsVisible.clear();
 		idsVisible.addAll(ids);
 	}
-	
+
 	@Override
 	public int size() {
 		return idsVisible.size();
