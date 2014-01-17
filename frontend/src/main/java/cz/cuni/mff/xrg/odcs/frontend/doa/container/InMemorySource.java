@@ -83,6 +83,7 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 		// clear lists
 		data.clear();
 		ids.clear();
+		idsVisible.clear();
 		// load new data
 		for (T item : newData) {
 			data.put(item.getId(), item);
