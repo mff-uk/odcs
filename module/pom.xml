@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>module-core</artifactId>
 	<packaging>pom</packaging>
-	<name>core module' parent project.</name>
+	<name>dpu-core</name>
 	<description>Maven parent project for core modules-DPU implementations.</description>
 
 	<!-- list of core modules -->

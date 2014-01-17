@@ -47,6 +47,15 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency> <!-- file data unit -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-file</artifactId>
+			<!-- the version has to be specify -->
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency> <!-- ontology -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ontology</artifactId>

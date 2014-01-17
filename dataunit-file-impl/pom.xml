@@ -7,7 +7,7 @@
         <version>1.0.0</version> 
     </parent>	
     <artifactId>dataunit-file-impl</artifactId>
-	<name>FileDataUnit-impl</name>
+	<name>dataunit-file-impl</name>
 	<description>Implementation of FileDataUnit.</description>	
 	
     <dependencies>
