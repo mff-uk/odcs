@@ -68,7 +68,6 @@ public class DPUPresenterImpl implements DPUPresenter {
 	private DPUFacade dpuFacade;
 	private Window.CloseListener createDPUCloseListener;
 	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
-	
 	/**
 	 * Cache for pipelines using currently selected DPU template.
 	 */
@@ -191,18 +190,20 @@ public class DPUPresenterImpl implements DPUPresenter {
 		} else {
 			pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
 		}
-		
+
 		pipelinesWithDPU = new HashMap<>();
 		for (Pipeline pipeline : pipelines) {
-			
+
 			// add pipeline to cache
 			pipelinesWithDPU.put(pipeline.getId(), pipeline);
-			
+
 			Item item = result.addItem(pipeline.getId());
-			item.getItemProperty("id").setValue(pipeline.getId());
-			item.getItemProperty("name").setValue(pipeline.getName());
-			item.getItemProperty("description").setValue(pipeline.getDescription());
-			item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
+			if (item != null) {
+				item.getItemProperty("id").setValue(pipeline.getId());
+				item.getItemProperty("name").setValue(pipeline.getName());
+				item.getItemProperty("description").setValue(pipeline.getDescription());
+				item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
+			}
 		}
 
 		return result;
@@ -393,5 +394,4 @@ public class DPUPresenterImpl implements DPUPresenter {
 		Pipeline pipe = getPipeline(pipelineId);
 		return permissions.hasPermission(pipe, "view");
 	}
-	
 }
