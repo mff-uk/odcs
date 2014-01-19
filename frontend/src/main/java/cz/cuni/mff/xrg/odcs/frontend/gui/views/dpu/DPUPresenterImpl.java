@@ -370,6 +370,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 			Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
 			return;
 		}
+		pipelinesWithDPU.remove(pipe.getId());
 		pipelineFacade.delete(pipe);
 	}
 

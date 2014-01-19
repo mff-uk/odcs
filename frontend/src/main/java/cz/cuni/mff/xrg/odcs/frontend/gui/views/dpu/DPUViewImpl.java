@@ -863,6 +863,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineDeleteEventHandler(id);
+				tableData.removeItem(id);
 			}
 		};
 		ActionColumnGenerator.ButtonShowCondition deleteShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
