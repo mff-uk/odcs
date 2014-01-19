@@ -2146,4 +2146,21 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			repoConnection.close();
 		}
 	}
+
+    // returns the first digit o the http response code
+    private int getFirstNumber(int httpResponseCode) {
+        
+        int firstNumberResponseCode;
+        try {
+            
+            firstNumberResponseCode = Integer.valueOf((String.valueOf(httpResponseCode)).substring(0, 1)); 
+           
+        } catch (NumberFormatException e) {
+            logger.error(e.getLocalizedMessage());
+            logger.debug("Strange response code. First char of response code set to 0");
+            firstNumberResponseCode = 0;
+        }
+        return firstNumberResponseCode;
+        
+    }
 }

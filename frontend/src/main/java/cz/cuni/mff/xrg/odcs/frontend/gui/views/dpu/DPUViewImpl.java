@@ -6,21 +6,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.RichTextArea;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -200,7 +186,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 		dpuLayout = new GridLayout(3, 1);
 		dpuLayout.setSpacing(true);
-		dpuLayout.setHeight(630, Unit.PIXELS);
 		dpuLayout.setRowExpandRatio(0, 0.01f);
 		dpuLayout.setRowExpandRatio(1, 0.99f);
 
@@ -858,23 +843,39 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 */
 	private ActionColumnGenerator createActionColumn() {
 		ActionColumnGenerator generator = new ActionColumnGenerator();
-
-		generator.addButton("Detail", "70px", new ActionColumnGenerator.Action() {
+		
+		// prepare pipeline detail button
+		ActionColumnGenerator.Action detailAction = new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineDetailEventHandler(id);
 			}
-		});
-
-		//Delete button. Delete pipeline.
-		generator.addButton("Delete", "70px", new ActionColumnGenerator.Action() {
+		};
+		ActionColumnGenerator.ButtonShowCondition detailShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.showPipelineDetailButton(id);
+			}
+		};
+		
+		// prepare pipeline delete button
+		ActionColumnGenerator.Action deleteAction = new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineDeleteEventHandler(id);
+				tableData.removeItem(id);
 			}
-		});
-
-		//Status button
+		};
+		ActionColumnGenerator.ButtonShowCondition deleteShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.showPipelineDeleteButton(id);
+			}
+		};
+		
+		// add buttons to column generator
+		generator.addButton("Detail", "70px", detailAction, detailShowCondition);
+		generator.addButton("Delete", "70px", deleteAction, deleteShowCondition);
 		generator.addButton("Status", "70px", new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {

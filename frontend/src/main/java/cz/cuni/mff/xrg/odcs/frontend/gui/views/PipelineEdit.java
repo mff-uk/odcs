@@ -17,6 +17,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
 import com.vaadin.ui.TabSheet.Tab;
@@ -41,6 +42,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.FormattingEnabledEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
@@ -60,7 +62,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
-
 /**
  * Page for creating new pipeline or editing existing pipeline.
  *
@@ -73,6 +74,7 @@ public class PipelineEdit extends ViewComponent {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 	private VerticalLayout mainLayout;
+	private GridLayout formattingBar;
 	private Label label;
 	private Label readOnlyLabel;
 	private TextField pipelineName;
@@ -272,9 +274,9 @@ public class PipelineEdit extends ViewComponent {
 						return "position: fixed; bottom: 17px; left: 20px; background: #eee; padding: 3px";
 					} else if (c.equals(paralelInfoLayout)) {
 						return "position: fixed; left:400px; top: 300px;";
-					} else {
-						return "position: fixed; right: 20px; top: 300px;";
 					}
+				} else if (c instanceof VerticalLayout) {
+					return "position: fixed; right: 20px; top: 300px;";
 				}
 				return null;
 			}
@@ -322,11 +324,20 @@ public class PipelineEdit extends ViewComponent {
 					return;
 				}
 
-				if (((GraphChangedEvent) event).getIsUndoable()) {
+				if (((GraphChangedEvent) event).isUndoable()) {
 					undo.setEnabled(true);
 				}
 				setupButtons();
 
+			}
+		});
+		pipelineCanvas.addListener(new Listener() {
+			@Override
+			public void componentEvent(Event event) {
+				if (event.getClass() != FormattingEnabledEvent.class) {
+					return;
+				}
+				formattingBar.setEnabled(((FormattingEnabledEvent) event).isEnabled());
 			}
 		});
 
@@ -473,9 +484,15 @@ public class PipelineEdit extends ViewComponent {
 		undo.setDescription("Undo");
 		undo.setIcon(new ThemeResource("icons/undo.png"), "Undo");
 		//undo.setWidth("110px");
-		HorizontalLayout actionBar = new HorizontalLayout(zoomIn, zoomOut, undo);
+		HorizontalLayout topActions = new HorizontalLayout(zoomIn, zoomOut, undo);
+
+
+		formattingBar = createFormattingBar();
+		formattingBar.setEnabled(false);
+		VerticalLayout actionBar = new VerticalLayout(topActions, formattingBar);
 		actionBar.setStyleName("changingposition");
 		actionBar.setSizeUndefined();
+
 		layout.addComponent(actionBar);
 
 
@@ -492,10 +509,10 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonRevert);
-		
+
 		HorizontalLayout leftPartOfButtonBar = new HorizontalLayout();
 		leftPartOfButtonBar.setSpacing(true);
-		leftPartOfButtonBar.setMargin(new MarginInfo(false,true,false,false));
+		leftPartOfButtonBar.setMargin(new MarginInfo(false, true, false, false));
 
 
 		Button buttonValidate = new Button("Validate");
@@ -537,13 +554,13 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		buttonBar.addComponent(buttonCommit);
-		
+
 		HorizontalLayout rightPartOfButtonBar = new HorizontalLayout();
 		rightPartOfButtonBar.setSpacing(true);
-		rightPartOfButtonBar.setMargin(new MarginInfo(false,false,false,true));
-		
+		rightPartOfButtonBar.setMargin(new MarginInfo(false, false, false, true));
+
 		HorizontalLayout copyLayout = new HorizontalLayout();
-		
+
 		buttonCopy = new Button("Copy");
 		buttonCopy.setHeight("25px");
 		buttonCopy.setWidth("100px");
@@ -594,7 +611,7 @@ public class PipelineEdit extends ViewComponent {
 		});
 		copyLayout.addComponent(buttonCopyAndClose);
 		rightPartOfButtonBar.addComponent(copyLayout);
-		
+
 		HorizontalLayout saveLayout = new HorizontalLayout();
 
 		buttonSave = new Button("Save");
@@ -641,8 +658,8 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		rightPartOfButtonBar.addComponent(buttonCancel);
-	    buttonBar.addComponent(rightPartOfButtonBar);
-	    
+		buttonBar.addComponent(rightPartOfButtonBar);
+
 		buttonBar.setSpacing(
 				true);
 		layout.addComponent(buttonBar);
@@ -1186,5 +1203,60 @@ public class PipelineEdit extends ViewComponent {
 			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
 		}
 		setupButtons(false);
+	}
+
+	private GridLayout createFormattingBar() {
+
+		ClickListener listener = new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				pipelineCanvas.formatAction((String) event.getButton().getData());
+			}
+		};
+
+		GridLayout bar = new GridLayout(3, 3);
+		Button topAlign = new Button();
+		topAlign.setData("align_top");
+		topAlign.setDescription("Align top");
+		topAlign.setIcon(new ThemeResource("icons/arrow_top.png"), "Align top");
+		topAlign.addClickListener(listener);
+		bar.addComponent(topAlign, 1, 0);
+
+		Button bottomAlign = new Button();
+		bottomAlign.setData("align_bottom");
+		bottomAlign.setDescription("Align bottom");
+		bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.png"), "Align bottom");
+		bottomAlign.addClickListener(listener);
+		bar.addComponent(bottomAlign, 1, 2);
+
+		Button leftAlign = new Button();
+		leftAlign.setData("align_left");
+		leftAlign.setDescription("Align left");
+		leftAlign.setIcon(new ThemeResource("icons/arrow_left.png"), "Align left");
+		leftAlign.addClickListener(listener);
+		bar.addComponent(leftAlign, 0, 1);
+
+		Button rightAlign = new Button();
+		rightAlign.setData("align_right");
+		rightAlign.setDescription("Align right");
+		rightAlign.setIcon(new ThemeResource("icons/arrow_right.png"), "Align right");
+		rightAlign.addClickListener(listener);
+		bar.addComponent(rightAlign, 2, 1);
+
+		Button distributeHorizontal = new Button();
+		distributeHorizontal.setData("distribute_horizontal");
+		distributeHorizontal.setDescription("Distribute horizontally");
+		distributeHorizontal.setIcon(new ThemeResource("icons/distribute.png"), "Distribute horizontally");
+		distributeHorizontal.addClickListener(listener);
+		bar.addComponent(distributeHorizontal, 2, 0);
+
+		Button distributeVertical = new Button();
+		distributeVertical.setData("distribute_vertical");
+		distributeVertical.setDescription("Distribute vertically");
+		distributeVertical.setIcon(new ThemeResource("icons/distribute_v.png"), "Distribute vertically");
+		distributeVertical.addClickListener(listener);
+		bar.addComponent(distributeVertical, 2, 2);
+
+		return bar;
 	}
 }

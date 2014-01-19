@@ -25,7 +25,7 @@ public class GraphChangedEvent extends Event {
 		isUndo = isUndoable;
 	}
 
-	public boolean getIsUndoable() {
+	public boolean isUndoable() {
 		return isUndo;
 	}
 }

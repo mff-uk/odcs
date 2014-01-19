@@ -352,7 +352,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	private void configureVirtuosoSyntax(Properties config) {
 		String sExtension = config.getProperty(VIRTUOSO_SYNTAX_KEY);
 		if (sExtension == null) {
-			LOG.info("Missing config property {}, using default value {}.",
+			LOG.info("Missing config property {}, using default value '{}'.",
 					VIRTUOSO_SYNTAX_KEY, virtuosoSyntax);
 		} else {
 			virtuosoSyntax = Boolean.parseBoolean(sExtension);

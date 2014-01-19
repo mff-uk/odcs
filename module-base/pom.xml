@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>module-base</artifactId>
 	<packaging>pom</packaging>
-	<name>module' parent project</name>
+	<name>dpu-base</name>
 	<!-- the description is used as default for DPUs -->
 	<description>No description available.</description>
 
@@ -61,6 +61,14 @@
 			<version>${odcs.version}</version>
 			<type>jar</type>
 		</dependency>
+
+        <dependency> <!-- file data unit -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-file</artifactId>
+            <!-- the version has to be specify -->
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>  
 
 		<dependency> <!-- ontology -->
 			<groupId>${project.groupId}</groupId>

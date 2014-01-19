@@ -130,6 +130,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				storeHistoryGraph();
 				copyDpu(dpuId, x, y);
 			}
+
+			@Override
+			public void onMultipleDPUsSelected(boolean selected) {
+				fireEvent(new FormattingEnabledEvent(PipelineCanvas.this, selected));
+			}
 		});
 
 	}
@@ -458,5 +463,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		} catch (PipelineValidationException ex) {
 			Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
 		}
+	}
+
+	public void formatAction(String action) {
+		getRpcProxy(PipelineCanvasClientRpc.class).formatDPUs(action);
 	}
 }
