@@ -76,11 +76,15 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 
 		if (validateDataBefore) {
+
+			context.sendMessage(MessageType.INFO,
+					"Starting RDF data VALIDATION");
+
 			DataValidator dataValidator = new RepositoryDataValidator(
 					rdfDataUnit);
 
 			if (!dataValidator.areDataValid()) {
-				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
+				final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
 				LOG.error(dataValidator.getErrorMessage());
 
 				context.sendMessage(MessageType.INFO, message, dataValidator
@@ -89,7 +93,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 				throw new RDFException(message);
 			} else {
 				context.sendMessage(MessageType.INFO,
-						"RDF Data for loading are valid");
+						"RDF Data VALIDATION SUCCESFULL");
 				context.sendMessage(MessageType.INFO,
 						"Loading data to SPARQL endpoint STARTS JUST NOW");
 			}
