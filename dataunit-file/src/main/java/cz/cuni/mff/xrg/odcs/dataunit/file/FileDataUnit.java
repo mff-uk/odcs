@@ -38,4 +38,9 @@ public interface FileDataUnit extends DataUnit, Iterable<FileHandler> {
 	 */
 	void delete(final FileHandler handler) throws DataUnitException;
 
+	/**
+	 * Return number of files in {@link FileDataUnit}.
+	 * @return 
+	 */
+	int getNumberOfFiles();
 }

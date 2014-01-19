@@ -183,6 +183,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
+	public int getNumberOfFiles() {
+		return this.fileHandlers.size();
+	}
+	
+	@Override
 	public DataUnitType getType() {
 		return DataUnitType.FILE;
 	}
