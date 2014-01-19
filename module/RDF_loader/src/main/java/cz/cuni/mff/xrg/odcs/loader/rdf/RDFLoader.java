@@ -61,6 +61,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final InsertType insertType = config.getInsertOption();
 		final long chunkSize = config.getChunkSize();
 		final boolean validateDataBefore = config.isValidDataBefore();
+		final LoaderEndpointParams endpointParams = config.getEndpointParams();
 
 		Integer retrySize = config.getRetrySize();
 		if (retrySize == null) {
@@ -82,7 +83,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
 				LOG.error(dataValidator.getErrorMessage());
 
-				context.sendMessage(MessageType.WARNING, message, dataValidator
+				context.sendMessage(MessageType.INFO, message, dataValidator
 						.getErrorMessage());
 
 				throw new RDFException(message);
@@ -98,7 +99,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime);
+					retryTime, endpointParams);
 
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
