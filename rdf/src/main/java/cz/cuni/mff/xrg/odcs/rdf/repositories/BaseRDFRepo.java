@@ -1,12 +1,10 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.enums.*;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
@@ -74,21 +72,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	protected static long RETRY_CONNECTION_TIME = 1000;
 
 	/**
-	 * Represents successful connection using HTTP.
-	 */
-	protected static final int HTTP_OK_RESPONSE = 200;
-
-	/**
-	 * Represent http error code needed authorisation for connection using HTTP.
-	 */
-	protected static final int HTTP_UNAUTORIZED_RESPONSE = 401;
-
-	/**
-	 * Represent http error code returns when inserting data in bad format.
-	 */
-	protected static final int HTTP_BAD_RESPONSE = 400;
-
-	/**
 	 * Default name for graph using for store RDF data.
 	 */
 	protected static final String DEFAULT_GRAPH_NAME = "http://default";
@@ -141,8 +124,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 	public static long getDefaultChunkSize() {
 		return DEFAULT_CHUNK_SIZE;
 	}
-        
-       
 
 	/**
 	 *
@@ -1497,264 +1478,6 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 		return updateQuery;
 
 
-	}
-
-	/**
-	 * Removes all RDF data in defined graph using connecion to SPARQL endpoint
-	 * address. For data deleting is necessarry to have endpoint with update
-	 * rights.
-	 *
-	 * @param endpointURL   URL address of update endpoint connect to.
-	 * @param endpointGraph Graph name in URI format.
-	 * @param context       DPU context for checking manual canceling in case of
-	 *                      infinite loop (no recovery error).
-	 * @throws RDFException When you dont have update right for this action, or
-	 *                      connection is lost before succesfully ending.
-	 */
-	@Override
-	public void clearEndpointGraph(URL endpointURL, String endpointGraph,
-			DPUContext context)
-			throws RDFException {
-
-		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
-
-		int retryCount = 0;
-
-		while (true) {
-			try {
-				try (InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, "", deleteQuery, RDFFormat.RDFXML, SPARQL_ENDPOINT_MODE.UPDATE)) {
-				}
-
-				//Clear graph successfuly - stop the infinity loop
-				break;
-
-			} catch (IOException e) {
-				logger.error("InputStreamReader was not closed {}",
-						e.getMessage(), e);
-			} catch (RDFException e) {
-				if (context.canceled()) {
-					//stop clear graph
-					logger.error("CLEAR GRAPH<{}> was canceled by user !!!",
-							endpointGraph);
-					break;
-				}
-				restartConnection();
-				retryCount++;
-
-				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
-					final String errorMessage = String.format(
-							"Count of retryConnection for CLEAR GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
-							endpointGraph, retryCount);
-					logger.debug(errorMessage);
-
-					throw new RDFException(errorMessage + e.getMessage(), e);
-				} else {
-					logger.debug(
-							"Attempt {} to CLEAR GRAPH<{}> failed. Reason:{}",
-							retryCount,
-							endpointGraph, e.getMessage());
-					try {
-						//sleep and attempt to reconnect
-						Thread.sleep(RETRY_CONNECTION_TIME);
-
-					} catch (InterruptedException ex) {
-						logger.debug(ex.getMessage());
-					}
-				}
-			}
-		}
-
-
-	}
-
-	/**
-	 *
-	 * @param endpointURL      URL of endpoint we can to connect to.
-	 * @param endpointGraphURI Name of graph as URI string we want to
-	 *                         extract/load RDF data.
-	 * @param query            SPARQL query to execute on sparql endpoint
-	 * @param format           RDF data format for given returned RDF data.
-         * @param mode             Determines the mode in which the method is called - QUERY if called by SPARQL Extractor, UPDATE if called by SPARQL Loader
-	 * @return Result of given SPARQL query apply to given graph. If it produce
-	 *         some RDF data, there are in specified RDF format.
-	 * @throws RDFException if unknown host, connection problems, no permission
-	 *                      for this action.
-	 */
-	@Override
-	public InputStreamReader getEndpointStreamReader(URL endpointURL,
-			String endpointGraphURI, String query,
-			RDFFormat format, SPARQL_ENDPOINT_MODE mode) throws RDFException {
-
-		final String endpointGraph = getEncodedString(endpointGraphURI);
-		final String myquery = getEncodedString(query);
-
-		final String encoder = getEncoder(format);
-
-		String parameters = "default-graph-uri=" + endpointGraph;
-                
-                if (mode == SPARQL_ENDPOINT_MODE.QUERY) {
-                    parameters += "&query=" + myquery;
-                }
-                else if (mode == SPARQL_ENDPOINT_MODE.UPDATE) {
-                    parameters += "&update=" + myquery;
-                } 
-                parameters += "&format=" + encoder;
-
-		URL call = null;
-		try {
-			call = new URL(endpointURL.toString());
-		} catch (MalformedURLException e) {
-			final String message = "Malfolmed URL exception by construct extract URL. ";
-			logger.debug(message);
-			throw new RDFException(message + e.getMessage(), e);
-		}
-
-		HttpURLConnection httpConnection = null;
-
-		int retryCount = 0;
-
-		while (true) {
-			try {
-				httpConnection = (HttpURLConnection) call.openConnection();
-				httpConnection.setRequestMethod("POST");
-				httpConnection.setRequestProperty("Content-Type",
-						"application/x-www-form-urlencoded");
-
-				httpConnection.setRequestProperty("Content-Length", ""
-						+ Integer.toString(parameters.getBytes().length));
-
-				httpConnection.setUseCaches(false);
-				httpConnection.setDoInput(true);
-				httpConnection.setDoOutput(true);
-
-				try (OutputStream os = httpConnection.getOutputStream()) {
-					os.write(parameters.getBytes());
-					os.flush();
-				}
-
-				int httpResponseCode = httpConnection.getResponseCode();
-
-				if (httpResponseCode != HTTP_OK_RESPONSE) {
-
-					StringBuilder message = new StringBuilder(
-							httpConnection.getHeaderField(0));
-
-
-					if (httpResponseCode == HTTP_UNAUTORIZED_RESPONSE) {
-						message.append(
-								". Your USERNAME and PASSWORD for connection is wrong.");
-					} else if (httpResponseCode == HTTP_BAD_RESPONSE) {
-						message.append(
-								". Inserted data has wrong format.");
-					} else {
-						try (InputStream errorStream = httpConnection
-								.getErrorStream()) {
-
-							try (BufferedReader reader = new BufferedReader(
-									new InputStreamReader(
-									errorStream, Charset.forName(encode)))) {
-
-								StringBuilder inputStringBuilder = new StringBuilder();
-								String line = reader.readLine();
-								while (line != null) {
-									inputStringBuilder.append(line);
-									inputStringBuilder.append('\n');
-									line = reader.readLine();
-								}
-
-								String cause = ". Caused by " + inputStringBuilder
-										.toString();
-
-								message.append(cause);
-
-							}
-						}
-
-					}
-
-					throw new InsertPartException(
-							message.toString() + "\n\n" + "URL endpoint: " + endpointURL
-							.toString() + " POST content: " + parameters);
-				} else {
-
-					InputStreamReader inputStreamReader = new InputStreamReader(
-							httpConnection.getInputStream(), Charset.forName(
-							encode));
-
-					return inputStreamReader;
-				}
-
-			} catch (UnknownHostException e) {
-				final String message = "Unknown host: ";
-				throw new RDFException(message + e.getMessage(), e);
-			} catch (IOException e) {
-
-				retryCount++;
-
-				final String message = String.format(
-						"%s/%s attempt to reconnect %s FAILED", retryCount,
-						getRetryConnectionSizeAsString(), call
-						.toString());
-
-				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
-					final String errorMessage = "Count of retryConnection is OVER (TOTAL " + retryCount + " ATTEMPTS). "
-							+ "Endpoint HTTP connection stream cannot be opened. ";
-					logger.debug(errorMessage);
-					if (httpConnection != null) {
-						httpConnection.disconnect();
-					}
-					throw new RDFException(errorMessage + e.getMessage(), e);
-				} else {
-					logger.debug(message);
-					try {
-						//sleep and attempt to reconnect
-						Thread.sleep(RETRY_CONNECTION_TIME);
-
-					} catch (InterruptedException ex) {
-						logger.debug(ex.getMessage());
-					}
-				}
-			}
-		}
-	}
-
-	private String getRetryConnectionSizeAsString() {
-		if (hasInfinityRetryConnection()) {
-			return "infinity";
-		} else {
-			if (RETRY_CONNECTION_SIZE == 0) {
-				return "only 1";
-			} else {
-				return String.valueOf(RETRY_CONNECTION_SIZE);
-			}
-		}
-	}
-
-	private boolean hasInfinityRetryConnection() {
-		if (RETRY_CONNECTION_SIZE < 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private String getEncodedString(String text) throws RDFException {
-		String result = null;
-		try {
-			result = URLEncoder.encode(text, encode);
-
-		} catch (UnsupportedEncodingException e) {
-			String message = "Encode " + encode + " is not supported. ";
-			logger.debug(message);
-			throw new RDFException(message + e.getMessage(), e);
-		}
-		return result;
-	}
-
-	private String getEncoder(RDFFormat format) throws RDFException {
-		String encoder = getEncodedString(format.getDefaultMIMEType());
-		return encoder;
 	}
 
 	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
