@@ -55,6 +55,7 @@
         <module>dataunit</module>
 		<module>dataunit-file</module>
     <module>dataunit-file-impl</module>
+    <module>dataunit-rdf</module>
   </modules>
 
     <scm>
