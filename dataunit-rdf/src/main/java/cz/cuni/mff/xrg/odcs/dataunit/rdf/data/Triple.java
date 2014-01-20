@@ -8,16 +8,43 @@ import java.net.URI;
  */
 public interface Triple {
 	
-	Value getSubject();
+	/**
+	 * Current value of subject.
+	 * @return 
+	 */
+	Value s();
 	
-	URI getPredicate();
+	/**
+	 * Current value of predicate. 
+	 * @return 
+	 */
+	URI p();
 	
-	Value getObject();
+	/**
+	 * Current value of object.
+	 * @return 
+	 */
+	Value o();
 
-	void getSubject(Value newSubject);
+	/**
+	 * Set subject to given value and return this instance.
+	 * @param newSubject
+	 * @return 
+	 */
+	Triple s(Value newSubject);
 	
-	void getPredicate(URI newPredicate);
+	/**
+	 * Set predicate to given value and return this instance.
+	 * @param newPredicate
+	 * @return 
+	 */
+	Triple p(URI newPredicate);
 	
-	void getObject(Value newObject);
+	/**
+	 * Set object to given value and return this instance.
+	 * @param newObject
+	 * @return 
+	 */
+	Triple o(Value newObject);
 		
 }
