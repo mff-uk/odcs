@@ -16,7 +16,6 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +73,13 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			}
 
 			ExtractorEndpointParams endpointParams = config.getEndpointParams();
+
+			if (endpointParams == null) {
+				endpointParams = new ExtractorEndpointParams();
+				LOG.info(
+						"Extractor endpoint params is null, used default values instead without setting ");
+			}
+
 
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime, endpointParams);
