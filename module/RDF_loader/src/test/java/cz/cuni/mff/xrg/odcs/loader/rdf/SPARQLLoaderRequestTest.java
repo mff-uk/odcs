@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
@@ -12,6 +13,7 @@ import java.net.URL;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -23,6 +25,7 @@ import static org.junit.Assert.*;
  *
  * @author Jiri Tomes
  */
+@Category(IntegrationTest.class)
 public class SPARQLLoaderRequestTest {
 
 	private final Logger logger = LoggerFactory.getLogger(
