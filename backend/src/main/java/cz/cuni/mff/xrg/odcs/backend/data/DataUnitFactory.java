@@ -55,7 +55,7 @@ public class DataUnitFactory {
 						+ "be created.");
 			case RDF_Local:
 				// create DataUnit
-				RDFDataUnit localRepository = RDFDataUnitFactory
+				ManagableDataUnit localRepository = RDFDataUnitFactory
 						.createLocalRDFRepo(directory.getAbsolutePath(), id,
 						name, GraphUrl.translateDataUnitId(id));
 
@@ -68,7 +68,7 @@ public class DataUnitFactory {
 				);
 
 				// create repository
-				RDFDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
+				ManagableDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
 						config .getString(ConfigProperty.DATABASE_HOSTNAME),
 						config.getString(ConfigProperty.DATABASE_PORT),
 						config.getString(ConfigProperty.DATABASE_USER),

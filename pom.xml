@@ -36,9 +36,14 @@
     <modules>
         <!-- commons -->
         <module>commons</module>
-        <!-- odcs libraries -->
+		<!-- dataunits -->
+        <module>dataunit</module>
+		<module>dataunit-file</module>
+		<module>dataunit-file-impl</module>
+		<module>dataunit-rdf</module>
+		<module>dataunit-rdf-impl</module>
+		<!-- odcs libraries -->
         <module>commons-app</module>
-        <module>rdf</module>
         <module>commons-module</module>
         <module>commons-web</module>		
         <!-- application -->
@@ -52,10 +57,6 @@
         <module>module-base</module>
         <module>module</module>
         <module>ontology</module>
-        <module>dataunit</module>
-		<module>dataunit-file</module>
-    <module>dataunit-file-impl</module>
-    <module>dataunit-rdf</module>
   </modules>
 
     <scm>

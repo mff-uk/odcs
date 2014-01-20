@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class RDFQuery implements Query {
 
 	private ArrayList<Item> cachedItems;
 
-	private RDFDataUnit repository;
+	private ManagableRdfDataUnit repository;
 
 	public RDFQuery(RDFQueryDefinition qd) {
 		this.baseQuery = qd.getBaseQuery();

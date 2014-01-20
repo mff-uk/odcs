@@ -24,7 +24,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.rdf.RDFDataUnit;
 
 /**
  * Examine the given DPU instance for annotations. If there is

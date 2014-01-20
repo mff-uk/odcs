@@ -29,7 +29,7 @@
             <!-- the version has to be specify -->
             <version>${project.version}</version>
             <type>jar</type>
-        </dependency>        
+        </dependency>
         
         <dependency> <!-- dataunit base project -->
             <groupId>${project.groupId}</groupId>
@@ -38,7 +38,15 @@
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
-                
+
+        <dependency> <!-- commons project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-rdf</artifactId>
+            <!-- the version has to be specify -->
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>				
+								                
         <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-config</artifactId>

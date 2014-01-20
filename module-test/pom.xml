@@ -34,7 +34,7 @@
 
         <dependency> <!-- RDF project -->
             <groupId>${project.groupId}</groupId>
-            <artifactId>RDF</artifactId>
+            <artifactId>dataunit-rdf-impl</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>

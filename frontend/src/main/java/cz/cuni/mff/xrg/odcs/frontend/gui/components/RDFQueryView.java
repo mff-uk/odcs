@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
@@ -78,8 +78,7 @@ public class RDFQueryView extends CustomComponent {
 	/**
 	 * Constructor with parent view.
 	 *
-	 * @param parent {@link DebuggingView} which is parent to this
-	 * {@link RDFQueryView}.
+	 * @param execution
 	 */
 	public RDFQueryView(PipelineExecution execution) {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -157,7 +156,7 @@ public class RDFQueryView extends CustomComponent {
 
 			@Override
 			public InputStream getStream() {
-				RDFDataUnit repository = getRepository(selector.getSelectedDPU(),
+				ManagableRdfDataUnit repository = getRepository(selector.getSelectedDPU(),
 						selector.getSelectedDataUnit());
 				String query = getQuery();
 				if (repository == null || query == null) {
@@ -291,7 +290,7 @@ public class RDFQueryView extends CustomComponent {
 					}
 				}
 
-				RDFDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
+				ManagableRdfDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
 				return getDownloadData(tableRepo, tableQuery,
 						downloadFormatSelect.getValue(), filters);
 			}
@@ -313,7 +312,7 @@ public class RDFQueryView extends CustomComponent {
 	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
 	 *
 	 */
-	RDFDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
+	ManagableRdfDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
 		return RDFDataUnitHelper.getRepository(selector.getInfo(), dpu,
 				dataUnit);
 	}
@@ -442,7 +441,7 @@ public class RDFQueryView extends CustomComponent {
 	 * @param query {@link String} containing query to execute on repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
-	private InputStream getDownloadData(RDFDataUnit repository, String query,
+	private InputStream getDownloadData(ManagableRdfDataUnit repository, String query,
 			Object format, Collection<Filter> filters) {
 		try {
 			boolean isSelectQuery = isSelectQuery(query);
