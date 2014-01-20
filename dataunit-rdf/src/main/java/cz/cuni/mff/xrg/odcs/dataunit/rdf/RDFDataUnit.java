@@ -57,9 +57,10 @@ public interface RDFDataUnit extends DataUnit, Collection<Triple> {
 	 * the {@link RDFErrorHandler} is used to sanitize the problem.
 	 * 
 	 * @param file
+	 * @return Number of loaded triples.
 	 * @throws RDFException 
 	 */
-	void extract(File file) throws RDFException;
+	Long extract(File file) throws RDFException;
 	
 	/**
 	 * Extract triples from given file. In case of error
@@ -67,9 +68,10 @@ public interface RDFDataUnit extends DataUnit, Collection<Triple> {
 	 * 
 	 * @param file
 	 * @param type
+	 * @return Number of loaded triples.
 	 * @throws RDFException 
 	 */
-	void extract(File file, RDFFileType type) throws RDFException;
+	Long extract(File file, RDFFileType type) throws RDFException;
 	
 	/**
 	 * Load the content of this {@link RDFDataUnit} into given file.
