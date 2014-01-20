@@ -1,5 +1,5 @@
 
-package virtuoso;
+package cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -12,7 +12,7 @@ import org.apache.commons.dbcp.BasicDataSource;
  * 
  * @author Jan Vojt
  */
-public class ConfigurableDataSource extends BasicDataSource {
+public class VirtuosoDataSource extends BasicDataSource {
 	
 	/**
 	 * Class name to be used as JDBC driver.
@@ -24,7 +24,7 @@ public class ConfigurableDataSource extends BasicDataSource {
 	 * 
 	 * @param config application configuration
 	 */
-	public ConfigurableDataSource(AppConfig config) {
+	public VirtuosoDataSource(AppConfig config) {
 		setUrl(buildUrl(config));
 		setUsername(config.getString(ConfigProperty.DATABASE_USER));
 		setPassword(config.getString(ConfigProperty.DATABASE_PASSWORD));

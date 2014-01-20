@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
-import virtuoso.ConfigurableDataSource;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.VirtuosoDataSource;
 
 /**
  * Connection source for logback. Uses {@link BasicDataSource} as connection
@@ -33,7 +33,7 @@ public class PooledConnectionSource extends DriverManagerConnectionSource {
 	 */
 	@Override
 	public void start() {
-		BasicDataSource dataSource = new ConfigurableDataSource(
+		BasicDataSource dataSource = new VirtuosoDataSource(
 				appConfig.getSubConfiguration(ConfigProperty.RDBMS)
 		);
 		setDriverClass(dataSource.getDriverClassName());
