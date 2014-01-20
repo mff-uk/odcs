@@ -1,18 +1,21 @@
-package cz.cuni.mff.xrg.odcs.dataunit.rdf;
+package cz.cuni.mff.xrg.odcs.dataunit.rdf.data;
 
-import cz.cuni.mff.xrg.odcs.dataunit.rdf.data.Triple;
+import cz.cuni.mff.xrg.odcs.dataunit.rdf.RDFException;
+import cz.cuni.mff.xrg.odcs.dataunit.rdf.RDFFileType;
 import java.io.File;
 import java.util.Collection;
 
 /**
- * Represent the RDF graph.
+ * Represents the RDF graph.
+ * 
  * @author Petyr
  */
-public interface RDFGraph extends Collection<Triple> {
+public interface Graph extends Collection<Triple> {
 	
 	/**
 	 * Load the content of this {@link RDFDataUnit} into given file.
 	 * If the file exists then the load method fails.
+	 * 
 	 * @param file
 	 * @param type
 	 * @throws RDFException 
