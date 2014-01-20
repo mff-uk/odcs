@@ -122,7 +122,22 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& Password != null
 				&& GraphsUri != null
 				&& graphOption != null
+				&& retrySize != null
 				&& retryTime != null
-				&& retryTime > 0;
+				&& retryTime > 0
+				&& endpointParams != null;
+	}
+
+	@Override
+	public void onDeserialize() {
+		if (retrySize == null) {
+			retrySize = -1;
+		}
+		if (retryTime == null) {
+			retryTime = 1000L;
+		}
+		if (endpointParams == null) {
+			endpointParams = new LoaderEndpointParams();
+		}
 	}
 }
