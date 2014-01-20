@@ -99,6 +99,14 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 						problems);
 			}
 
+			final long triplesCount = rdfDataUnit.getTripleCount();
+
+			String tripleInfoMessage = String.format(
+					"Extracted %s triples from SPARQL endpoint %s",
+					triplesCount, endpointURL.toString());
+
+			context.sendMessage(MessageType.INFO, tripleInfoMessage);
+
 		} catch (MalformedURLException ex) {
 			LOG.debug("RDFDataUnitException", ex);
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
@@ -109,8 +117,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 					.fillInStackTrace().toString());
 		}
 
-		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Extracted {} triples", triplesCount);
+
 	}
 
 	@Override
