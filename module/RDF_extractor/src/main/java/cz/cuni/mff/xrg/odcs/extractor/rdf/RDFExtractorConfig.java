@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
+import java.util.List;
 
 /**
  * Enum for naming setting values.
@@ -30,6 +31,8 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 	private Integer retrySize;
 
 	private ExtractorEndpointParams endpointParams;
+
+	private List<String> GraphsUri;
 
 	public RDFExtractorConfig() {
 		this.SPARQL_endpoint = "";
@@ -106,6 +109,31 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		return SPARQL_endpoint != null
 				&& Host_name != null
 				&& Password != null
-				&& SPARQL_query != null;
+				&& SPARQL_query != null
+				&& retrySize != null
+				&& retryTime != null
+				&& retryTime > 0
+				&& endpointParams != null;
+	}
+
+	@Override
+	public void onDeserialize() {
+
+		if (retrySize == null) {
+			retrySize = -1;
+		}
+		if (retryTime == null) {
+			retryTime = 1000L;
+		}
+
+		if (endpointParams == null) {
+			endpointParams = new ExtractorEndpointParams();
+
+			if (GraphsUri != null) {
+				for (String defaultGraph : GraphsUri) {
+					endpointParams.addDefaultGraph(defaultGraph);
+				}
+			}
+		}
 	}
 }
