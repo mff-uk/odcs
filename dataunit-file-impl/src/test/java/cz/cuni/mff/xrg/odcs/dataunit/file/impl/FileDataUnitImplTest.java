@@ -31,6 +31,19 @@ public class FileDataUnitImplTest {
 	}
 	
 	@Test
+	public void testEmptyClear() {
+		// the temp directory will be created, the test sub directory will be not
+		final File directory = new File(FileUtils.getTempDirectory(), "test-empty");
+		Assert.assertFalse(directory.exists());
+		// create data unit
+		ManageableFileDataUnit dataUnit = new FileDataUnitImpl("", directory);
+		// test clean
+		dataUnit.clean();
+		// delete
+		dataUnit.delete();
+	}
+	
+	@Test
 	public void testCreateCreate() throws DataUnitException {
 		// the temp directory will be created, the test sub directory will be not
 		final File directory = new File(FileUtils.getTempDirectory(), "test-create");

@@ -35,6 +35,8 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
 	private Integer retrySize;
 
+	private LoaderEndpointParams endpointParams;
+
 	public RDFLoaderConfig() {
 		this.SPARQL_endpoint = "";
 		this.Host_name = "";
@@ -45,14 +47,16 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.chunkSize = 100;
 		this.validDataBefore = false;
 		this.retrySize = -1;
-		this.retryTime = (long)1000;
+		this.retryTime = 1000L;
+		this.endpointParams = new LoaderEndpointParams();
+
 	}
 
 	public RDFLoaderConfig(String SPARQL_endpoint, String Host_name,
 			String Password,
 			List<String> GraphsUri, WriteGraphType graphOption,
 			InsertType insertOption, long chunkSize, boolean validDataBefore,
-			long retryTime, int retrySize) {
+			long retryTime, int retrySize, LoaderEndpointParams endpointParams) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
@@ -64,10 +68,15 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.validDataBefore = validDataBefore;
 		this.retryTime = retryTime;
 		this.retrySize = retrySize;
+		this.endpointParams = endpointParams;
 	}
 
 	public String getSPARQLEndpoint() {
 		return SPARQL_endpoint;
+	}
+
+	public LoaderEndpointParams getEndpointParams() {
+		return endpointParams;
 	}
 
 	public String getHostName() {

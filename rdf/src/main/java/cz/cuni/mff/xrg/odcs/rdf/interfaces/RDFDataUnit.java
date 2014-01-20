@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
@@ -12,8 +11,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.openrdf.model.Graph;
@@ -38,21 +35,6 @@ import org.openrdf.rio.RDFParser;
  */
 public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHelper {
 
-     /**
-         * Mode in which the application works with the target SPARQL endpoint. 
-         * Used to distinguish whether param query or update should be used when POSTing to target endpoint
-         */
-        public enum SPARQL_ENDPOINT_MODE {
-            /**
-             * SPARQL Query is executed 
-             */
-            QUERY,
-            /**
-             * SPARQL Update QUery is executed
-             */
-            UPDATE
-        }
-    
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
@@ -162,22 +144,6 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	public void cleanAllData();
 
 	/**
-	 * Removes all RDF data in defined graph using connecion to SPARQL endpoint
-	 * address. For data deleting is necessarry to have endpoint with update
-	 * rights.
-	 *
-	 * @param endpointURL   URL address of update endpoint connect to.
-	 * @param endpointGraph Graph name in URI format.
-	 * @param context       DPU context for checking manual canceling in case of
-	 *                      infinite loop (no recovery error).
-	 * @throws RDFException When you dont have update right for this action, or
-	 *                      connection is lost before succesfully ending.
-	 */
-	public void clearEndpointGraph(URL endpointURL, String endpointGraph,
-			DPUContext context)
-			throws RDFException;
-
-	/**
 	 * Make RDF data merge over repository - data in repository merge with data
 	 * in second defined repository.
 	 *
@@ -271,23 +237,6 @@ public interface RDFDataUnit extends DataUnit, ManagableDataUnit, RDFDataUnitHel
 	 * @return Count of parts as split data in reposioty by defined chunkSize .
 	 */
 	public long getPartsCount(long chunkSize);
-
-	/**
-	 *
-	 * @param endpointURL      URL of endpoint we can to connect to.
-	 * @param endpointGraphURI Name of graph as URI string we want to
-	 *                         extract/load RDF data.
-	 * @param query            SPARQL query to execute on sparql endpoint
-	 * @param format           RDF data format for given returned RDF data.
-         * @param mode             Determines the mode in which the method is called - QUERY if called by SPARQL Extractor, UPDATE if called by SPARQL Loader
-	 * @return Result of given SPARQL query apply to given graph. If it produce
-	 *         some RDF data, there are in specified RDF format.
-	 * @throws RDFException if unknown host, connection problems, no permission
-	 *                      for this action.
-	 */
-	public InputStreamReader getEndpointStreamReader(URL endpointURL,
-			String endpointGraphURI, String query,
-			RDFFormat format, SPARQL_ENDPOINT_MODE mode) throws RDFException;
 
 	/**
 	 * Create RDF parser for given RDF format and set RDF handler where are data

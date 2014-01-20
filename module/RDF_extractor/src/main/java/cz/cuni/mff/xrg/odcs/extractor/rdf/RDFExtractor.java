@@ -16,7 +16,6 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +47,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final URL endpointURL = new URL(config.getSPARQLEndpoint());
 			final String hostName = config.getHostName();
 			final String password = config.getPassword();
-			final List<String> defaultGraphsUri = config.getGraphsUri();
 			String constructQuery = config.getSPARQLQuery();
+
 			if (constructQuery.isEmpty()) {
 				constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
 			}
@@ -69,16 +68,24 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			}
 			Long retryTime = config.getRetryTime();
 			if (retryTime == null) {
-				retryTime = (long) 1000;
+				retryTime = 1000L;
 				LOG.info("retryTime is null, using 1000 instead");
 			}
 
-			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
-					retrySize, retryTime);
+			ExtractorEndpointParams endpointParams = config.getEndpointParams();
 
-			extractor.extractFromSPARQLEndpoint(endpointURL,
-					defaultGraphsUri,
-					constructQuery, hostName, password, RDFFormat.NTRIPLES,
+			if (endpointParams == null) {
+				endpointParams = new ExtractorEndpointParams();
+				LOG.info(
+						"Extractor endpoint params is null, used default values instead without setting ");
+			}
+
+
+			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
+					retrySize, retryTime, endpointParams);
+
+			extractor.extractFromSPARQLEndpoint(endpointURL, constructQuery,
+					hostName, password, RDFFormat.NTRIPLES,
 					handlerExtractType, extractFail);
 
 			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {

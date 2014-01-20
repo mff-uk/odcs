@@ -1,14 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Enum for naming setting values.
  *
  * @author Petyr
+ * @author Jiri Tomes
  *
  */
 public class RDFExtractorConfig extends DPUConfigObjectBase {
@@ -18,8 +16,6 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 	private String Host_name;
 
 	private String Password;
-
-	private List<String> GraphsUri;
 
 	private String SPARQL_query;
 
@@ -33,35 +29,40 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	private Integer retrySize;
 
+	private ExtractorEndpointParams endpointParams;
+
 	public RDFExtractorConfig() {
 		this.SPARQL_endpoint = "";
 		this.Host_name = "";
 		this.Password = "";
-		this.GraphsUri = new LinkedList<>();
 		this.SPARQL_query = "";
 		this.ExtractFail = true;
 		this.UseStatisticalHandler = true;
 		this.failWhenErrors = false;
 		this.retrySize = -1;
-		this.retryTime = (long)1000;
+		this.retryTime = 1000L;
+		this.endpointParams = new ExtractorEndpointParams();
 	}
 
 	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
-			String Password,
-			List<String> GraphsUri, String SPARQL_query, boolean ExtractFail,
+			String Password, String SPARQL_query, boolean ExtractFail,
 			boolean UseStatisticalHandler, boolean failWhenErrors, int retrySize,
-			long retryTime) {
+			long retryTime, ExtractorEndpointParams endpointParams) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
 		this.Password = Password;
-		this.GraphsUri = GraphsUri;
 		this.SPARQL_query = SPARQL_query;
 		this.ExtractFail = ExtractFail;
 		this.UseStatisticalHandler = UseStatisticalHandler;
 		this.failWhenErrors = failWhenErrors;
 		this.retrySize = retrySize;
 		this.retryTime = retryTime;
+		this.endpointParams = endpointParams;
+	}
+
+	public ExtractorEndpointParams getEndpointParams() {
+		return endpointParams;
 	}
 
 	public String getSPARQLEndpoint() {
@@ -74,10 +75,6 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	public String getPassword() {
 		return Password;
-	}
-
-	public List<String> getGraphsUri() {
-		return GraphsUri;
 	}
 
 	public String getSPARQLQuery() {
@@ -109,7 +106,6 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		return SPARQL_endpoint != null
 				&& Host_name != null
 				&& Password != null
-				&& GraphsUri != null
 				&& SPARQL_query != null;
 	}
 }

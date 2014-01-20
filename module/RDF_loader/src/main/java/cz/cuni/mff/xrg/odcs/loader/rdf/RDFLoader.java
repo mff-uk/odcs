@@ -30,30 +30,30 @@ import org.slf4j.LoggerFactory;
 @AsLoader
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		implements ConfigDialogProvider<RDFLoaderConfig> {
-
+	
 	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
-
+	
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
-
+	
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
-
+	
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
 			DataUnitException {
-
+		
 		final String endpoint = config.getSPARQLEndpoint();
 		URL endpointURL = null;
 		try {
 			endpointURL = new URL(endpoint);
 		} catch (MalformedURLException ex) {
-
+			
 			throw new DPUException(ex);
 		}
-
+		
 		final List<String> defaultGraphsURI = config.getGraphsUri();
 		final String hostName = config.getHostName();
 		final String password = config.getPassword();
@@ -61,7 +61,15 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final InsertType insertType = config.getInsertOption();
 		final long chunkSize = config.getChunkSize();
 		final boolean validateDataBefore = config.isValidDataBefore();
-
+		
+		LoaderEndpointParams endpointParams = config.getEndpointParams();
+		
+		if (endpointParams == null) {
+			endpointParams = new LoaderEndpointParams();
+			LOG.info(
+					"Loader endpoint params is null, used default values instead");
+		}
+		
 		Integer retrySize = config.getRetrySize();
 		if (retrySize == null) {
 			retrySize = -1;
@@ -72,46 +80,50 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			retryTime = (long) 1000;
 			LOG.info("retryTime is null, using 1000 instead");
 		}
-
-
+		
+		
 		if (validateDataBefore) {
+			
+			context.sendMessage(MessageType.INFO,
+					"Starting RDF data VALIDATION");
+			
 			DataValidator dataValidator = new RepositoryDataValidator(
 					rdfDataUnit);
-
+			
 			if (!dataValidator.areDataValid()) {
-				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
+				final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
 				LOG.error(dataValidator.getErrorMessage());
-
-				context.sendMessage(MessageType.WARNING, message, dataValidator
+				
+				context.sendMessage(MessageType.INFO, message, dataValidator
 						.getErrorMessage());
-
+				
 				throw new RDFException(message);
 			} else {
 				context.sendMessage(MessageType.INFO,
-						"RDF Data for loading are valid");
+						"RDF Data VALIDATION SUCCESFULL");
 				context.sendMessage(MessageType.INFO,
 						"Loading data to SPARQL endpoint STARTS JUST NOW");
 			}
 		}
 		final long triplesCount = rdfDataUnit.getTripleCount();
 		LOG.info("Loading {} triples", triplesCount);
-
+		
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime);
-
+					retryTime, endpointParams);
+			
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
-
+			
 			context.sendMessage(MessageType.INFO,
 					"Loading data to SPARQL endpoint ends SUCCESSFULLY");
-
+			
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
 		}
 	}
-
+	
 	@Override
 	public AbstractConfigDialog<RDFLoaderConfig> getConfigurationDialog() {
 		return new RDFLoaderDialog();
