@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -307,4 +308,60 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param retrySizeValue as interger with count of attemts to reconnect.
 	 */
 	public void setRetryConnectionSize(int retrySizeValue);
+        
+        
+        /**
+	 * TODO it should be directly a method of file extractor
+         * 
+         * Extract RDF triples from RDF file to repository.
+	 *
+	 * @param extractType        One of defined enum type for extraction data
+	 *                           from file.
+	 * @param format             One of RDFFormat value for parsing triples, if
+	 *                           value is null RDFFormat is selected by
+	 *                           filename.
+	 * @param path               String path to file/directory
+	 * @param suffix             String suffix of fileName (example: ".ttl",
+	 *                           ".xml", etc)
+	 * @param baseURI            String name of defined used URI prefix
+	 *                           namespace used by all triples.
+	 * @param useSuffix          boolean value, if extract files only with
+	 *                           defined suffix or not.
+	 * @param handlerExtractType Possibilies how to choose handler for data
+	 *                           extraction and how to solve finded problems
+	 *                           with no valid data.
+	 * @throws RDFException when extraction fail.
+	 */
+        @Deprecated
+	public void extractFromFile(FileExtractType extractType,
+			RDFFormat format,
+			String path, String suffix,
+			String baseURI,
+			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
+
+        
+        
+        /**
+         * TODO should be moved out of rdf-interfaces
+         * 
+	 * Return URI representation of graph where RDF data are stored.
+	 *
+	 * @return graph with stored data as URI.
+	 */
+        @Deprecated
+	public URI getDataGraph();
+        
+        
+        /**
+         * 
+         * TODO should be in SPARQL Transformer DPU
+         * 
+	 * Add all RDF triples in defined graph to reposiotory.
+	 *
+	 * @param graphInstance Concrete graph contains RDF triples.
+	 */
+        @Deprecated
+	public void addTriplesFromGraph(Graph graphInstance);
+        
+        
 }
