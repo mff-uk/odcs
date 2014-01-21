@@ -10,7 +10,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
-import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 import java.io.File;
 import java.io.InputStreamReader;
