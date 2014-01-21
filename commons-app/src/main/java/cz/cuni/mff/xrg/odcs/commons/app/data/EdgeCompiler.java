@@ -108,25 +108,11 @@ public final class EdgeCompiler {
             }
 
             // add mapping
-            boolean added = false;
-            for (MutablePair<List<Integer>, Integer> mapping : mappings) {
-                if (mapping.right == targetIndex) {
-                    mapping.left.add(sourceIndex);
-                    added = true;
-                    break;
-                }
-            }
-            if (added) {
-                // mapping added
-            } else {
-                // this is the first mapping for targetIndex
-                MutablePair<List<Integer>, Integer> mapping = new MutablePair<>();
-                mapping.left = new LinkedList<>();
-                mapping.left.add(sourceIndex);
-                mapping.right = targetIndex;
-                // add to mapping
-                mappings.add(mapping);
-            }
+            MutablePair<List<Integer>, Integer> mapping = new MutablePair<>();
+            mapping.left = new LinkedList<>();
+            mapping.left.add(sourceIndex);
+            mapping.right = targetIndex;
+            mappings.add(mapping);
         }
         return mappings;
     }
