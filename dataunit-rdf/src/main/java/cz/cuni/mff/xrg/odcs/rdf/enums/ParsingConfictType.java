@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.exceptions;
+package cz.cuni.mff.xrg.odcs.rdf.enums;
 
 /**
  *

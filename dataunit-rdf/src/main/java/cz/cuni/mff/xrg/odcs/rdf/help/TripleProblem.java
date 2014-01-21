@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.ParsingConfictType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import org.openrdf.model.Statement;
 
 /**

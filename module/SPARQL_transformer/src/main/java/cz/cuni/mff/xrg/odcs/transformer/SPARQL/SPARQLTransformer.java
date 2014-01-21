@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,10 +103,10 @@ public class SPARQLTransformer
 				Dataset dataSet = createGraphDataSet(inputs);
 				Graph graph = intputDataUnit.executeConstructQuery(
 						constructQuery, dataSet);
-				outputDataUnit.addTriplesFromGraph(graph);
+				((ManagableRdfDataUnit)outputDataUnit).addTriplesFromGraph(graph);
 
 			} else {
-				outputDataUnit.merge(intputDataUnit);
+				((ManagableRdfDataUnit)outputDataUnit).merge(intputDataUnit);
 				outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
 			}
 

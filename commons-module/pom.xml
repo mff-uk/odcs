@@ -40,7 +40,7 @@
 
 		<dependency> <!-- RDF project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dataunit-rdf-impl</artifactId>
+			<artifactId>dataunit-rdf</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>

@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
@@ -267,7 +268,7 @@ public class SPARQLoader {
 				} catch (InsertPartException e) {
 					throw new RDFException(e.getMessage(), e);
 				} finally {
-					rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph,
+					((ManagableRdfDataUnit)rdfDataUnit).clearEndpointGraph(endpointURL, tempGraph,
 							context);
 				}
 				break;
@@ -290,7 +291,7 @@ public class SPARQLoader {
 						//log message with destription of insert part problem.
 						logger.debug(e.getMessage());
 					} finally {
-						rdfDataUnit.clearEndpointGraph(endpointURL, tempGraph,
+						((ManagableRdfDataUnit)rdfDataUnit).clearEndpointGraph(endpointURL, tempGraph,
 								context);
 					}
 				}
@@ -308,7 +309,7 @@ public class SPARQLoader {
 					break;
 				case OVERRIDE: {
 					// clear graph
-					rdfDataUnit.clearEndpointGraph(endpointURL, endpointGraph,
+					((ManagableRdfDataUnit)rdfDataUnit).clearEndpointGraph(endpointURL, endpointGraph,
 							context);
 				}
 				break;

@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.dataunit.file.impl.ManageableFileDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,7 +58,7 @@ public class SPARQLLoaderTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		repository.delete();
+		((ManagableDataUnit)repository).delete();
 	}
 
 	@Test
@@ -146,7 +149,7 @@ public class SPARQLLoaderTest {
 
 		} finally {
 			try {
-				repository.clearEndpointGraph(endpoint, goalGraphName,
+				((ManagableRdfDataUnit)repository).clearEndpointGraph(endpoint, goalGraphName,
 						getTestContext());
 			} catch (RDFException e) {
 				logger.error(

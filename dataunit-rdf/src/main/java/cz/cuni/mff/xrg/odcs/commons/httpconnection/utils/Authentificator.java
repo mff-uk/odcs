@@ -1,4 +1,4 @@
-package commons.httpconnection.utils;
+package cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;

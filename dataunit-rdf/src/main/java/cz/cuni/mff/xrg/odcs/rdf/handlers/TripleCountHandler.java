@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.ParsingConfictType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import java.util.ArrayList;
