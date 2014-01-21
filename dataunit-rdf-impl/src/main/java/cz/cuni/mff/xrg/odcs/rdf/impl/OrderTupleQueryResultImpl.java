@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.impl;
 
+import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.LinkedList;
@@ -42,10 +43,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
-public class OrderTupleQueryResult implements TupleQueryResult {
+public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
 	private static Logger logger = LoggerFactory.getLogger(
-			OrderTupleQueryResult.class);
+			OrderTupleQueryResultImpl.class);
 
 	private static long SLEEP_TIME = 1000;
 
@@ -78,7 +79,7 @@ public class OrderTupleQueryResult implements TupleQueryResult {
 	 * @param repository       instance of {@link RDFDataUnit} as repository
 	 *                         where query will be executed.
 	 */
-	public OrderTupleQueryResult(String orderSelectQuery, RDFDataUnit repository) {
+	public OrderTupleQueryResultImpl(String orderSelectQuery, RDFDataUnit repository) {
 		this.orderSelectQuery = orderSelectQuery;
 		this.repository = (ManagableRdfDataUnit)repository;
 		this.bindings = new LinkedList<>();

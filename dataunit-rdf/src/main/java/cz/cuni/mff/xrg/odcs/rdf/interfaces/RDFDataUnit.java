@@ -5,9 +5,11 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
+import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 import java.io.File;
 import java.util.List;
@@ -362,6 +364,46 @@ public interface RDFDataUnit extends DataUnit {
 	 */
         @Deprecated
 	public void addTriplesFromGraph(Graph graphInstance);
+        
+        
+        /**
+         * 
+         * TODO create just one method "executeQuery"
+         * 
+	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
+	 * repository data and return {@link OrderTupleQueryResult} class as result.
+	 *
+	 * This ordered select query don´t have to containt LIMIT nad OFFSET
+	 * keywords.
+	 *
+	 * For no problem behavior check you setting "MaxSortedRows" param in your
+	 * virtuoso.ini file before using. For more info
+	 *
+	 * @see OrderTupleQueryResult class description.
+	 *
+	 * @param orderSelectQuery String representation of SPARQL select query.
+	 * @return {@link OrderTupleQueryResult} representation of ordered select
+	 *         query.
+	 * @throws InvalidQueryException when query is not valid or containst LIMIT
+	 *                               or OFFSET keyword.
+	 */
+        @Deprecated
+	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
+			String orderSelectQuery) throws InvalidQueryException;
+        
+        
+         /**
+	 * Load all triples in repository to defined file in defined RDF format.
+	 *
+	 * @param filePath   Path to file, where RDF data will be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 *                   RDF/XML,etc.)
+	 * @throws CannotOverwriteFileException when file is protected for
+	 *                                      overwritting.
+	 * @throws RDFException                 when loading data to file fail.
+	 */
+	public void loadToFile(String filePath,
+			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
         
         
 }

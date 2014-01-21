@@ -10,7 +10,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -107,18 +107,7 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 			String baseURI,
 			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath   Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fail.
-	 */
-	public void loadToFile(String filePath,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
+
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -325,26 +314,7 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 */
 	public String deleteApplicationGraphs();
 	
-	/**
-	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
-	 * repository data and return {@link OrderTupleQueryResult} class as result.
-	 *
-	 * This ordered select query don´t have to containt LIMIT nad OFFSET
-	 * keywords.
-	 *
-	 * For no problem behavior check you setting "MaxSortedRows" param in your
-	 * virtuoso.ini file before using. For more info
-	 *
-	 * @see OrderTupleQueryResult class description.
-	 *
-	 * @param orderSelectQuery String representation of SPARQL select query.
-	 * @return {@link OrderTupleQueryResult} representation of ordered select
-	 *         query.
-	 * @throws InvalidQueryException when query is not valid or containst LIMIT
-	 *                               or OFFSET keyword.
-	 */
-	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
-			String orderSelectQuery) throws InvalidQueryException;
+	
 
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult

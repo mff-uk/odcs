@@ -24,7 +24,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
-import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
@@ -1322,7 +1322,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 *                               or OFFSET keyword.
 	 */
 	@Override
-	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
+	public OrderTupleQueryResultImpl executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException {
 
 		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
@@ -1343,7 +1343,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
 			}
 
-			OrderTupleQueryResult result = new OrderTupleQueryResult(
+			OrderTupleQueryResultImpl result = new OrderTupleQueryResultImpl(
 					orderSelectQuery, this);
 			return result;
 		} else {
