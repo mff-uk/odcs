@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
