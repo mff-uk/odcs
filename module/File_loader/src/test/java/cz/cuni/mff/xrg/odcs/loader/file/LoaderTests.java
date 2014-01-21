@@ -28,7 +28,7 @@ import org.openrdf.rio.Rio;
 public class LoaderTests {
 	
 	// put path to the "addresses.ttl" here 
-	private static final String PATH = "d:/Temp/addresses.ttl";
+	private static final String PATH = "";
 	
 	//@Test
 	public void loadRDFDataUnit_Extract() throws RDFException {
@@ -76,7 +76,7 @@ public class LoaderTests {
 		// ?? if we ask for size on repository we get 0, why ?
 	}	
 	
-	@Test
+	//@Test
 	public void loadRDFParse() throws RDFException, RepositoryException, FileNotFoundException, IOException, RDFParseException, RDFHandlerException {
 		TestEnvironment env = TestEnvironment.create();
 		RDFDataUnit input = env.createRdfInput("input", false);		
