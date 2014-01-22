@@ -45,10 +45,10 @@ public class VirtuosoSessionCustomizer implements SessionCustomizer {
 				if (Boolean.TRUE.toString().equals(System.getProperty(TEST_ENVIRONMENT_ATTR))) {
 					// we are running in a test -> use H2 platform as RDBMS
 					session.getLogin().setPlatformClassName(H2Platform.class.getName());
-				} else {
-					// normal run -> use Virtuoso platform as RDMS
-					String platform = VirtuosoPlatform.class.getName();
-					session.getLogin().setPlatformClassName(platform);
+//				} else {
+//					// normal run -> use Virtuoso platform as RDMS
+//					String platform = VirtuosoPlatform.class.getName();
+//					session.getLogin().setPlatformClassName(platform);
 				}
 			}
 		};

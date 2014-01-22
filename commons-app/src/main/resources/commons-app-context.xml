@@ -21,8 +21,14 @@
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
 	
     <!-- data source with db login properties loaded from application configuration -->
-    <bean id="dataSource" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.VirtuosoDataSource">
+<!--    <bean id="dataSource" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.VirtuosoDataSource">
         <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).RDBMS)}" />
+    </bean>-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/odcs"/>
+        <property name="username" value="dba"/>
+        <property name="password" value="dba"/>
     </bean>
 	
     <!-- EntityManager factory -->

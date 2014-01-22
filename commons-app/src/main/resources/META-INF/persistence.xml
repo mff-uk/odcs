@@ -26,7 +26,7 @@
     <properties>
       <!-- Database connection parameters are loaded at runtime from AppConfiguration -->
       <!-- Dummy database platform needs to be specified to disable autodetection, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=383200 -->
-      <property name="eclipselink.target-database" value="HSQL"/>
+      <!--<property name="eclipselink.target-database" value="HSQL"/>-->
       <!-- Session customizer overrides selected DB platform and sets up Virtuoso platform. -->
       <property name="eclipselink.session.customizer" value="virtuoso.eclipselink.VirtuosoSessionCustomizer"/>
       <!-- We want weaving (e.g. for lazyloading). Dynamic (=runtime) weaving needs Java agent, static (=compile-time) should suffice for our needs. -->
