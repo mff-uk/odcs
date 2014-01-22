@@ -735,7 +735,7 @@ public class SPARQLoader {
 	private String getInsertQueryPart(long sizeSplit,
 			long loadedPartsCount) throws RDFException {
 
-		final String insertStart = "INSERT DATA {";
+		final String insertStart = "INSERT {";
 		final String insertStop = "} ";
 
 		StringBuilder builder = new StringBuilder();
