@@ -301,8 +301,12 @@ public class SPARQLoader {
 
 		GraphPairCollection collection = new GraphPairCollection();
 
+		int graphNumber = 0;
+
 		for (String nextGraph : graphs) {
-			String tempGraph = nextGraph + "/temp";
+			graphNumber++;
+			String tempGraph = String.format("%s/%s/temp", rdfDataUnit
+					.getDataGraph(), graphNumber);
 			collection.add(nextGraph, tempGraph);
 		}
 
