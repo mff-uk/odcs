@@ -9,7 +9,6 @@ import com.vaadin.ui.Button.ClickEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
@@ -55,10 +54,12 @@ import org.tepi.filtertable.FilterGenerator;
  *
  * @author Bogo
  */
-public class RDFQueryView extends CustomComponent {
+public class RDFQueryView extends QueryView {
+	
+	
 
 	private final String defaultQuery = "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000";
-	private DataUnitSelector selector;
+	//private DataUnitSelector selector;
 	private TextArea queryText;
 	private IntlibPagedTable resultTable;
 	private HorizontalLayout resultTableControls;
@@ -81,23 +82,8 @@ public class RDFQueryView extends CustomComponent {
 	 * @param parent {@link DebuggingView} which is parent to this
 	 * {@link RDFQueryView}.
 	 */
-	public RDFQueryView(PipelineExecution execution) {
+	public RDFQueryView() {
 		VerticalLayout mainLayout = new VerticalLayout();
-
-		selector = new DataUnitSelector(execution);
-		selector.addListener(new Listener() {
-			@Override
-			public void componentEvent(Event event) {
-				if (event.getClass() == DataUnitSelector.BrowseRequestedEvent.class) {
-					browseDataUnit();
-				} else if (event.getClass() == DataUnitSelector.EnableEvent.class) {
-					setQueryingEnabled(true);
-				} else if (event.getClass() == DataUnitSelector.DisableEvent.class) {
-					setQueryingEnabled(false);
-				}
-			}
-		});
-		mainLayout.addComponent(selector);
 
 		mainLayout.addComponent(new Label("SPARQL Query:"));
 
@@ -157,8 +143,8 @@ public class RDFQueryView extends CustomComponent {
 
 			@Override
 			public InputStream getStream() {
-				RDFDataUnit repository = getRepository(selector.getSelectedDPU(),
-						selector.getSelectedDataUnit());
+				RDFDataUnit repository = getRepository(getSelectedDpu(),
+						getDataUnitInfo());
 				String query = getQuery();
 				if (repository == null || query == null) {
 					return null;
@@ -303,7 +289,6 @@ public class RDFQueryView extends CustomComponent {
 
 
 		mainLayout.setSizeFull();
-		setQueryingEnabled(false);
 		setCompositionRoot(mainLayout);
 	}
 
@@ -314,16 +299,12 @@ public class RDFQueryView extends CustomComponent {
 	 *
 	 */
 	RDFDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(selector.getInfo(), dpu,
+		return RDFDataUnitHelper.getRepository(getExecutionInfo(), dpu,
 				dataUnit);
 	}
 
-	void setDpu(DPUInstanceRecord dpu) {
-		selector.setSelectedDPU(dpu);
-	}
-
-	void refreshDPUs(PipelineExecution exec) {
-		selector.refresh(exec);
+	@Override
+	public void reset() {
 		queryText.setValue(defaultQuery);
 		setResultVisible(false);
 	}
@@ -376,13 +357,13 @@ public class RDFQueryView extends CustomComponent {
 			return;
 		}
 
-		DPUInstanceRecord selectedDpu = selector.getSelectedDPU();
-		DataUnitInfo selectedDataUnit = selector.getSelectedDataUnit();
+		DPUInstanceRecord selectedDpu = getSelectedDpu();
+		DataUnitInfo selectedDataUnit = getDataUnitInfo();
 		setUpTableDownload(selectedDpu, selectedDataUnit, query);
 
 		//New RDFLazyQueryContainer
 		RDFLazyQueryContainer container = new RDFLazyQueryContainer(
-				new RDFQueryDefinition(15, "id", query, selector.getInfo(),
+				new RDFQueryDefinition(15, "id", query, getExecutionInfo(),
 				selectedDpu, selectedDataUnit), new RDFQueryFactory());
 		if (container.size() > 0) {
 			if (isSelectQuery(query)) {
@@ -416,7 +397,8 @@ public class RDFQueryView extends CustomComponent {
 		}
 	}
 
-	private void browseDataUnit() {
+	@Override
+	public void browseDataUnit() {
 		queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}");
 		try {
 			runQuery();
@@ -425,7 +407,8 @@ public class RDFQueryView extends CustomComponent {
 		}
 	}
 
-	private void setQueryingEnabled(boolean value) {
+	@Override
+	public void setQueryingEnabled(boolean value) {
 		if (isEnabled != value) {
 			queryText.setEnabled(value);
 			formatSelect.setEnabled(value);

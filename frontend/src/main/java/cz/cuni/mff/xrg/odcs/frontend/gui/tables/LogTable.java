@@ -130,19 +130,19 @@ public class LogTable extends CustomComponent {
 				return Level.toLevel(level);
 			}
 		});
-//		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-//
-//			@Override
-//			public String generateDescription(Component source, Object itemId, Object propertyId) {
-//				if(itemId != null && "message".equals(propertyId)) {
-//					Object fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty(propertyId).getValue();
-//					if(fullMessage != null) {
-//						return "TEST";//(String)fullMessage;
-//					}
-//				}
-//				return null;
-//			}
-//		});
+		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+
+			@Override
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if(itemId != null) {
+					//Object fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty("message").getValue();
+					//if(fullMessage != null) {
+						return "TEST";//(String)fullMessage;
+					//}
+				}
+				return null;
+			}
+		});
 
 		// add filter generation
 		ComboBox levelSelector = new ComboBox();

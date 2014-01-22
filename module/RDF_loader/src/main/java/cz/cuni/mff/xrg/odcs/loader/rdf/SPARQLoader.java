@@ -317,6 +317,7 @@ public class SPARQLoader {
 
 		switch (insertType) {
 			case STOP_WHEN_BAD_PART:
+			case SKIP_BAD_PARTS:
 				try {
 					loadDataParts(endpointURL, collection.getTempGraphs(),
 							insertType,
@@ -332,10 +333,7 @@ public class SPARQLoader {
 					clearEndpointGraphs(endpointURL, collection.getTempGraphs());
 				}
 				break;
-			case SKIP_BAD_PARTS:
-				loadDataParts(endpointURL, targetGraphs, insertType,
-						chunkSize);
-				break;
+
 			case REPEAT_IF_BAD_PART:
 				while (true) {
 					try {
