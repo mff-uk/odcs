@@ -600,7 +600,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * Save edited texts in the Named Graph component
 	 */
 	private void saveEditedTexts() {
-		defaultGraphs = new LinkedList<>();
+		defaultGraphs.clear();
 		for (TextField editText : listedEditText) {
 			defaultGraphs.add(editText.getValue().trim());
 		}
@@ -1154,7 +1154,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			postTypeOption.setValue(postDescription);
 
 			queryParamField.setValue(endpointParams.getQueryParam());
-			defaultGraphParamField.setValue(endpointParams.getQueryParam());
+			defaultGraphParamField.setValue(endpointParams
+					.getDefaultGraphParam());
 
 			try {
 				defaultGraphs = conf.getGraphsUri();
