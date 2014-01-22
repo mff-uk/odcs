@@ -1047,6 +1047,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
 
+			saveEditedTexts();
+
 			String SPARQLEndpoint = (String) textFieldSparql.getValue();
 			String hostName = textFieldNameAdm.getValue().trim();
 			String password = passwordFieldPass.getValue();
@@ -1079,7 +1081,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 			ExtractorEndpointParams endpointParams = new ExtractorEndpointParams(
 					queryParam, defaultGraphParam, namedGraphParam,
-					getNamedGraphs(), getDefaultGraphs(), requestType);
+					getDefaultGraphs(), getNamedGraphs(), requestType);
 
 			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
 					hostName, password, SPARQLQuery,
@@ -1087,6 +1089,21 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					retrySize, retryTime, endpointParams);
 
 			return config;
+		}
+	}
+
+	/**
+	 * Save edited texts in the Default an Named Graphs component
+	 */
+	private void saveEditedTexts() {
+		defaultGraphs.clear();
+		for (TextField editText : defaultGraphTexts) {
+			defaultGraphs.add(editText.getValue().trim());
+		}
+
+		namedGraphs.clear();
+		for (TextField nextField : namedGraphTexts) {
+			namedGraphs.add(nextField.getValue().trim());
 		}
 	}
 
