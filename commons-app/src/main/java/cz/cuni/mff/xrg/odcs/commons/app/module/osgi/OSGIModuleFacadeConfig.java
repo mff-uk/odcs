@@ -137,12 +137,15 @@ class OSGIModuleFacadeConfig {
 					this.rootDirectory.length() - 1);
 		}
 
+		LOG.debug("Instance: {} ", app.toString());
+		
 		StringBuilder packageList = new StringBuilder();
-		try {
+		try {			
 			String configPackages = conf.getString(Application.FRONTEND
 					.equals(app)
 					? ConfigProperty.MODULE_FRONT_EXPOSE
 					: ConfigProperty.MODULE_BACK_EXPOSE);
+			LOG.debug("Packages from config: {}", configPackages);
 			packageList.append(configPackages);
 		} catch (MissingConfigPropertyException e) {
 			// missing configuration -> use empty
