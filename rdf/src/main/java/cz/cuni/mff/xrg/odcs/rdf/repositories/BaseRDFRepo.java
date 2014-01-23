@@ -27,6 +27,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.*;
@@ -1540,7 +1541,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 				}
 
 				RepositoryConnection connection = getConnection();
-
+                                
 				switch (handlerExtractType) {
 					case STANDARD_HANDLER:
 						parseFileUsingStandardHandler(format, inputStreamReader,
@@ -1557,7 +1558,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 								baseURI, connection, true);
 						break;
 				}
-			}
+                        }
 
 		} catch (IOException ex) {
 			throw new RDFException(ex.getMessage(), ex);
@@ -1673,7 +1674,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			RepositoryConnection connection, boolean failWhenErrors) throws RDFException {
 
 		StatisticalHandler handler = new StatisticalHandler(connection);
-		parseFileUsingHandler(handler, fileFormat, is, baseURI);
+		parseFileUsingHandler(connection, handler, fileFormat, is, baseURI);
 
 		if (handler.hasFindedProblems()) {
 			String problems = handler.getFindedProblemsAsString();
@@ -1690,21 +1691,29 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 			RepositoryConnection connection) throws RDFException {
 
 		TripleCountHandler handler = new TripleCountHandler(connection);
-		parseFileUsingHandler(handler, fileFormat, is, baseURI);
+		parseFileUsingHandler(connection, handler, fileFormat, is, baseURI);
 	}
 
-	private void parseFileUsingHandler(TripleCountHandler handler,
-			RDFFormat fileFormat,
-			InputStreamReader is, String baseURI) throws RDFException {
+	private void parseFileUsingHandler(RepositoryConnection connection, TripleCountHandler handler, RDFFormat fileFormat, InputStreamReader is, String baseURI) throws RDFException {
 
 		handler.setGraphContext(graph);
 		RDFParser parser = getRDFParser(fileFormat, handler);
 
 		try {
+                                //starts the transaction
+                                connection.begin();
+                    
 			parser.parse(is, baseURI);
+                        
+                        
+                                //commits the transaction
+                                connection.commit();
 		} catch (IOException | RDFParseException | RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
-		}
+		} catch (RepositoryException ex) {
+                    logger.error(ex.getLocalizedMessage());
+                    //TODO try to reconnect if needed
+               }
 	}
 
 	private void setErrorsListenerToParser(RDFParser parser,
