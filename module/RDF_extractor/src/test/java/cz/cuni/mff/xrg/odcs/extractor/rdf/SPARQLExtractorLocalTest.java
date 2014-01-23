@@ -29,17 +29,17 @@ public class SPARQLExtractorLocalTest {
 
 	private static RDFDataUnit repository;
 
-	private static final String USER = "dba";
-
-	private static final String PASSWORD = "dba";
-
-	private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-auth";
+	private static final String QUERY_ENDPOINT = "http://localhost:8890/sparql";
 
 	@BeforeClass
 	public static void setRDFDataUnit() {
 
 		repository = RDFDataUnitFactory.createLocalRDFRepo("Local");
 
+	}
+
+	private ExtractorEndpointParams getVirtuosoEndpoint() {
+		return new ExtractorEndpointParams();
 	}
 
 	@Before
@@ -52,7 +52,7 @@ public class SPARQLExtractorLocalTest {
 		((ManagableRdfDataUnit)repository).delete();
 	}
 
-	@Test
+	//@Test
 	public void extractBigDataFromEndpoint() {
 
 		try {
@@ -62,11 +62,15 @@ public class SPARQLExtractorLocalTest {
 
 			long sizeBefore = repository.getTripleCount();
 
+			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
+			virtuoso.addDefaultGraph(defaultGraphUri);
+
 			try {
-				SPARQLExtractor extractor = new SPARQLExtractor(repository,getTestContext());
-				extractor
-						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
-						query);
+				SPARQLExtractor extractor = new SPARQLExtractor(repository,
+						getTestContext(), virtuoso);
+
+				extractor.extractFromSPARQLEndpoint(endpointURL, query);
+
 
 			} catch (RDFException e) {
 				fail(e.getMessage());
@@ -81,7 +85,7 @@ public class SPARQLExtractorLocalTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void extractDataFromSPARQLEndpointTest() {
 
 		try {
@@ -91,13 +95,15 @@ public class SPARQLExtractorLocalTest {
 
 			long sizeBefore = repository.getTripleCount();
 
+			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
+			virtuoso.addDefaultGraph(defaultGraphUri);
+
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext());
+						getTestContext(), virtuoso);
 
 				extractor
-						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
-						query);
+						.extractFromSPARQLEndpoint(endpointURL, query);
 			} catch (RDFException e) {
 				fail(e.getMessage());
 			}
@@ -118,20 +124,21 @@ public class SPARQLExtractorLocalTest {
 	@Test
 	public void extractDataFromSPARQLEndpointNamePasswordTest() {
 		try {
-			URL endpoint = new URL(UPDATE_ENDPOINT.toString());
-			String defaultGraphUri = "";
+			URL endpoint = new URL(QUERY_ENDPOINT.toString());
 			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 10";
 
 			RDFFormat format = RDFFormat.N3;
 
 			long sizeBefore = repository.getTripleCount();
 
+			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
+			virtuoso.addDefaultGraph("http://BigGraph");
+
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext());
+						getTestContext(), virtuoso);
 				extractor.extractFromSPARQLEndpoint(
-						endpoint, defaultGraphUri, query, USER, PASSWORD,
-						format);
+						endpoint, query, "", "", format);
 			} catch (RDFException e) {
 				fail(e.getMessage());
 			}

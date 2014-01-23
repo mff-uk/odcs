@@ -62,6 +62,14 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		final long chunkSize = config.getChunkSize();
 		final boolean validateDataBefore = config.isValidDataBefore();
 
+		LoaderEndpointParams endpointParams = config.getEndpointParams();
+
+		if (endpointParams == null) {
+			endpointParams = new LoaderEndpointParams();
+			LOG.info(
+					"Loader endpoint params is null, used default values instead");
+		}
+
 		Integer retrySize = config.getRetrySize();
 		if (retrySize == null) {
 			retrySize = -1;
@@ -75,36 +83,48 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 
 		if (validateDataBefore) {
+
+			context.sendMessage(MessageType.INFO,
+					"Starting RDF data VALIDATION");
+
 			DataValidator dataValidator = new RepositoryDataValidator(
 					rdfDataUnit);
 
 			if (!dataValidator.areDataValid()) {
-				final String message = "RDF Data to load are not valid - LOADING to SPARQL FAIL";
+				final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
 				LOG.error(dataValidator.getErrorMessage());
 
-				context.sendMessage(MessageType.WARNING, message, dataValidator
+				context.sendMessage(MessageType.INFO, message, dataValidator
 						.getErrorMessage());
 
 				throw new RDFException(message);
 			} else {
 				context.sendMessage(MessageType.INFO,
-						"RDF Data for loading are valid");
+						"RDF Data VALIDATION SUCCESFULL");
 				context.sendMessage(MessageType.INFO,
 						"Loading data to SPARQL endpoint STARTS JUST NOW");
 			}
 		}
+
 		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Loading {} triples", triplesCount);
+
+		String tripleInfoMessage = String.format(
+				"Prepare for loading %s triples to SPARQL endpoint %s",
+				triplesCount,
+				endpointURL.toString());
+
+		context.sendMessage(MessageType.INFO, tripleInfoMessage);
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime);
+					retryTime, endpointParams);
 
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
 
-			context.sendMessage(MessageType.INFO,
-					"Loading data to SPARQL endpoint ends SUCCESSFULLY");
+			context.sendMessage(MessageType.INFO, String.format(
+					"Loaded %s triples to SPARQL endpoint %s",
+					triplesCount, endpointURL.toString()));
 
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex

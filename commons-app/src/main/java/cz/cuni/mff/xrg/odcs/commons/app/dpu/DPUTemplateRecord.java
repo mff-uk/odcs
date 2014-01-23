@@ -117,7 +117,6 @@ public class DPUTemplateRecord extends DPURecord
 			jarName = null;
 			jarDescription = null;
 		}
-		
 	}
 
 	/**
@@ -176,22 +175,26 @@ public class DPUTemplateRecord extends DPURecord
 		return parent;
 	}
 
-	public void setParent(DPUTemplateRecord parent) {
-		if (parent == null) {
-			// we are going under someone .. we use it's name and directory
+	public void setParent(DPUTemplateRecord newParent) {
+
+		if (this.parent == null && newParent != null) {
+			// it was top, now it's not .. so it can take the values
+			// from our new parent
 			jarDirectory = null;
 			jarName = null;
 			type = null;
+		} else if (this.parent != null && newParent == null) {
+			// we was not top, now we are .. we need to take the valuse
+			// from out parent and save them as ours
+			jarDirectory = this.parent.jarDirectory;
+			jarName = this.parent.jarName;
+			jarDescription = this.parent.jarDescription;
 		} else {
-			// we will be the top one .. if we are not now,
-			// store jar name and directory etc .. 
-			if (this.parent != null) {
-				jarDirectory = parent.jarDirectory;
-				jarName = parent.jarName;
-				type = parent.type;
-			}
+			// null -> null = no change, we preserve our data
+			// not null -> not null = no change, as we have nulls before and now
 		}
-		this.parent = parent;
+		
+		this.parent = newParent;
 	}
 
 	public void setType(DPUType type) {

@@ -34,6 +34,8 @@ public class SPARQLLoaderTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLLoaderTest.class);
 
+	private LoaderEndpointParams virtuosoParams = new LoaderEndpointParams();
+
 	private static RDFDataUnit repository;
 
 	private static final String HOST_NAME = "localhost";
@@ -96,7 +98,7 @@ public class SPARQLLoaderTest {
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
-	@Test
+	//@Test
 	public void loadDataToSPARQLEndpointTest() {
 		try {
 			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -108,7 +110,7 @@ public class SPARQLLoaderTest {
 
 			try {
 				SPARQLoader loader = new SPARQLoader(repository,
-						getTestContext());
+						getTestContext(), virtuosoParams);
 
 				loader.loadToSPARQLEndpoint(endpointURL, defaultGraphUri, name,
 						password, graphType, insertType);
@@ -133,8 +135,9 @@ public class SPARQLLoaderTest {
 
 		boolean isLoaded = false;
 
+		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
+				virtuosoParams);
 		try {
-			SPARQLoader loader = new SPARQLoader(repository, getTestContext());
 
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
 					PASSWORD,

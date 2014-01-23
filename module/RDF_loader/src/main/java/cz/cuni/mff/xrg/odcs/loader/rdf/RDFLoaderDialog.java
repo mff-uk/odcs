@@ -34,6 +34,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private VerticalLayout verticalLayoutDetails;
 
+	private VerticalLayout verticalLayoutProtocol;
+
 	/**
 	 * OptionGroup to specify what should happen if the graph that was set in
 	 * Named Graph component already exists.
@@ -98,6 +100,23 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private TextField retryTimeField;
 
 	/**
+	 * For declaration what of POST method used for loading data to SPARQL
+	 * endpoint.
+	 */
+	private OptionGroup postTypeOption;
+
+	/**
+	 * For setting query parameter need for HTTP POST to SPARQL endpoint.
+	 */
+	private TextField queryParamField;
+
+	/**
+	 * For setting default graph parameter need for HTTP POST to SPARQL
+	 * endpoint.
+	 */
+	private TextField defaultGraphParamField;
+
+	/**
 	 * Button for set default chunk size.
 	 */
 	private Button chunkDefault;
@@ -107,6 +126,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private Button buttonGraphAdd;
 
 	int n = 1;
+
+	private List<PostItem> postItems = new ArrayList<>();
 
 	private List<GraphItem> graphItems = new ArrayList<>();
 
@@ -151,6 +172,31 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
+	 * Get description of chosed way, how to insert RDF data to SPARQL endpoint:
+	 * Uses in {@link #setConfiguration} for setiing {@link #postTypeOption}
+	 *
+	 * @param type Type of insert data parts:
+	 *             {@link LoaderPostType#POST_UNENCODED_QUERY} or
+	 *             {@link LoaderPostType#POST_URL_ENCODER} or
+	 *             {@link LoaderPostType#POST_VIRTUOSO_SPEFIC}.
+	 *
+	 * @return description that corresponds to specific type or ""
+	 */
+	private String getPostDescription(LoaderPostType postType) {
+		if (postItems.isEmpty()) {
+			mapPostItems();
+		}
+
+		for (PostItem item : postItems) {
+			if (item.getPostType().equals(postType)) {
+				return item.getDescription();
+			}
+		}
+
+		return "";
+	}
+
+	/**
 	 * Get description of chosed way, how to insert RDF data part to SPARQL
 	 * endpoint: Uses in {@link #setConfiguration} for setiing
 	 * {@link #dataPartsOption}
@@ -170,6 +216,32 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Get type of POST variant for loading RDF data to SPARQL endpoint:
+	 * POST_URL_ENCODER, POST_UNENCODED_QUERY or POST_VIRTUOSO_SPEFIC. Uses in
+	 * {@link #getConfiguration} for determine the type by description that
+	 * located in {@link #postTypeOption}
+	 *
+	 * @param desc String with description of chosed way, how to loading RDF
+	 *             data to SPARQL endpoint. One value from
+	 *             {@link #postTypeOption}
+	 * @return type that corresponds to desc or
+	 *         {@link LoaderPostType#POST_URL_ENCODER} in case of absence.
+	 */
+	private LoaderPostType getPostType(String desc) {
+		if (postItems.isEmpty()) {
+			mapPostItems();
+		}
+
+		for (PostItem item : postItems) {
+			if (item.getDescription().equals(desc)) {
+				return item.getPostType();
+			}
+		}
+
+		return LoaderPostType.POST_URL_ENCODER;
 	}
 
 	/**
@@ -226,6 +298,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * Set values of {@link #optionGroupDetail}
 	 */
 	private void mapData() {
+		if (postItems.isEmpty()) {
+			mapPostItems();
+		}
 
 		if (graphItems.isEmpty()) {
 			mapGraphItems();
@@ -235,6 +310,21 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			mapInsertItems();
 		}
 
+	}
+
+	private void mapPostItems() {
+		PostItem first = new PostItem(LoaderPostType.POST_URL_ENCODER,
+				"Use POST request with URL-encoded parameters (SPARQL 1.1)");
+		PostItem second = new PostItem(LoaderPostType.POST_UNENCODED_QUERY,
+				"Use POST with unencoded query in the content (SPARQL 1.1)");
+
+		postItems.add(first);
+		postItems.add(second);
+
+		postTypeOption.addItem(first.getDescription());
+		postTypeOption.addItem(second.getDescription());
+
+		postTypeOption.setValue(first.getDescription());
 	}
 
 	private void mapGraphItems() {
@@ -307,6 +397,10 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// Core tab
 		verticalLayoutCore = buildVerticalLayoutCore();
 		tabSheet.addTab(verticalLayoutCore, "Core", null);
+
+		//SPARQL protocol tab
+		verticalLayoutProtocol = buildVerticalLayoutProtokol();
+		tabSheet.addTab(verticalLayoutProtocol, "SPARQL protocol", null);
 
 		// Details tab
 		verticalLayoutDetails = buildVerticalLayoutDetails();
@@ -437,7 +531,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		labelGraph.setImmediate(true);
 		labelGraph.setWidth("-1px");
 		labelGraph.setHeight("-1px");
-		labelGraph.setValue("Named Graph:");
+		labelGraph.setValue("Default Graph:");
 		gridLayoutAdm.addComponent(labelGraph, 0, 3);
 
 		//Named Graph component
@@ -451,9 +545,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
-	 * List<String> that contains Named Graphs.
+	 * List<String> that contains Default Graphs.
 	 */
-	private List<String> griddata = initializeGridData();
+	private List<String> defaultGraphs = initializeGridData();
 
 	/**
 	 * Initializes data of the Named Graph component
@@ -466,13 +560,25 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	}
 
+	private List<String> getDefaultGraphs() {
+		List<String> result = new LinkedList<>();
+
+		for (String nextGraph : defaultGraphs) {
+			String graphURI = nextGraph.trim();
+			if (!graphURI.isEmpty()) {
+				result.add(graphURI);
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Add new data to Named Graph component
 	 *
 	 * @param newData. String that will be added
 	 */
 	private void addDataToGridData(String newData) {
-		griddata.add(newData.trim());
+		defaultGraphs.add(newData.trim());
 	}
 
 	/**
@@ -483,8 +589,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	private void removeDataFromGridData(Integer row) {
 		int index = row;
-		if (griddata.size() > 1) {
-			griddata.remove(index);
+		if (defaultGraphs.size() > 1) {
+			defaultGraphs.remove(index);
 		}
 	}
 
@@ -494,9 +600,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * Save edited texts in the Named Graph component
 	 */
 	private void saveEditedTexts() {
-		griddata = new LinkedList<>();
+		defaultGraphs.clear();
 		for (TextField editText : listedEditText) {
-			griddata.add(editText.getValue().trim());
+			defaultGraphs.add(editText.getValue().trim());
 		}
 	}
 
@@ -523,11 +629,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		gridLayoutGraph.removeAllComponents();
 		int row = 0;
 		listedEditText = new ArrayList<>();
-		if (griddata.size() < 1) {
-			griddata.add("");
+		if (defaultGraphs.size() < 1) {
+			defaultGraphs.add("");
 		}
-		gridLayoutGraph.setRows(griddata.size() + 1);
-		for (String item : griddata) {
+		gridLayoutGraph.setRows(defaultGraphs.size() + 1);
+		for (String item : defaultGraphs) {
 			textFieldGraph = new TextField();
 			listedEditText.add(textFieldGraph);
 			//text field for the graph
@@ -622,6 +728,52 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		refreshNamedGraphData();
 	}
 
+	private VerticalLayout buildVerticalLayoutProtokol() {
+
+		verticalLayoutProtocol = new VerticalLayout();
+		verticalLayoutProtocol.setImmediate(true);
+		verticalLayoutProtocol.setWidth("100.0%");
+		verticalLayoutProtocol.setHeight("100.0%");
+		verticalLayoutProtocol.setMargin(true);
+		verticalLayoutProtocol.setSpacing(true);
+
+
+		postTypeOption = new OptionGroup("HTTP POST Variant:");
+		postTypeOption.setImmediate(true);
+		postTypeOption.setWidth("-1px");
+		postTypeOption.setHeight("-1px");
+		postTypeOption.setMultiSelect(false);
+
+		verticalLayoutProtocol.addComponent(postTypeOption);
+
+		VerticalLayout params = new VerticalLayout();
+		params.setSpacing(true);
+
+		queryParamField = new TextField("Query param:");
+		queryParamField.setValue("update");
+		queryParamField.setNullRepresentation("");
+		queryParamField.setImmediate(true);
+		queryParamField.setWidth("200px");
+		queryParamField.setHeight("-1px");
+		queryParamField.setInputPrompt("Query param:");
+
+		params.addComponent(queryParamField);
+
+		defaultGraphParamField = new TextField("Default graph param:");
+		defaultGraphParamField.setValue("using-graph-uri");
+		defaultGraphParamField.setNullRepresentation("");
+		defaultGraphParamField.setImmediate(true);
+		defaultGraphParamField.setWidth("200px");
+		defaultGraphParamField.setHeight("-1px");
+		defaultGraphParamField.setInputPrompt("Default graph param:");
+
+		params.addComponent(defaultGraphParamField);
+
+		verticalLayoutProtocol.addComponent(params);
+
+		return verticalLayoutProtocol;
+	}
+
 	/**
 	 * Builds layout contains Details tab components of {@link #tabSheet}. Calls
 	 * from {@link #buildMainLayout}
@@ -653,12 +805,13 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		dataPartsOption.setMultiSelect(false);
 		verticalLayoutDetails.addComponent(dataPartsOption);
 
-		
+
 		VerticalLayout chunkSizeV = new VerticalLayout();
 		chunkSizeV.setSpacing(true);
 		chunkSizeV.setStyleName("graypanel");
-		
-		chunkSizeV.addComponent( new Label("Chunk size of triples which inserted at once"));
+
+		chunkSizeV.addComponent(new Label(
+				"Chunk size of triples which inserted at once"));
 
 		HorizontalLayout chunkSizeH = new HorizontalLayout();
 		chunkSizeH.setSpacing(true);
@@ -669,7 +822,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		chunkParts.setImmediate(true);
 		chunkParts.setWidth("100px");
 		chunkParts.setHeight("-1px");
-		
+
 		chunkParts.setInputPrompt(
 				"Chunk size of triples which inserted at once");
 		chunkParts.addValidator(new Validator() {
@@ -721,15 +874,17 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		chunkSizeH.addComponent(chunkDefault);
 		chunkSizeV.addComponent(chunkSizeH);
-		
+
 		verticalLayoutDetails.addComponent(chunkSizeV);
 
 		VerticalLayout attempts = new VerticalLayout();
 		attempts.setSpacing(true);
 		attempts.setStyleName("graypanel");
 
-		retrySizeField = new TextField("Count of attempts to reconnect if the connection to SPARQL fails");
-		retrySizeField.setDescription("(Use 0 for no reperat, negative integer for infinity)");
+		retrySizeField = new TextField(
+				"Count of attempts to reconnect if the connection to SPARQL fails");
+		retrySizeField.setDescription(
+				"(Use 0 for no reperat, negative integer for infinity)");
 		retrySizeField.setValue("-1");
 		retrySizeField.setNullRepresentation("");
 		retrySizeField.setImmediate(true);
@@ -829,9 +984,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		return areValid;
 	}
-	
-	private String validationMessage(){
-		
+
+	private String validationMessage() {
+
 		String errors = "";
 		try {
 			comboBoxSparql.validate();
@@ -839,53 +994,54 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		} catch (Validator.InvalidValueException e) {
 			errors = errors + e.getMessage();
 		}
-		
-		if(!areGraphsNameValid()){
+
+		if (!areGraphsNameValid()) {
 			if (!errors.equals("")) {
 				errors = errors + "; Graph name must start with prefix \"http://\" and contain no white spaces";
 			} else {
-				errors = errors +  "Graph name must start with prefix \"http://\" and contain no white spaces";
+				errors = errors + "Graph name must start with prefix \"http://\" and contain no white spaces";
 			}
 		}
-		
+
 		try {
 			chunkParts.validate();
 
 		} catch (Validator.InvalidValueException e) {
 			if (!errors.equals("")) {
-				errors = errors + "; "+ e.getMessage();
+				errors = errors + "; " + e.getMessage();
 			} else {
-				errors = errors +  e.getMessage();
+				errors = errors + e.getMessage();
 			}
 		}
-		
+
 		try {
 			retrySizeField.validate();
 
 		} catch (Validator.InvalidValueException e) {
 			if (!errors.equals("")) {
-				errors = errors + "; "+ e.getMessage();
+				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
 			}
 		}
-		
+
 		try {
 			retryTimeField.validate();
 
 		} catch (Validator.InvalidValueException e) {
 			if (!errors.equals("")) {
-				errors = errors + "; "+ e.getMessage();
+				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
 			}
 		}
-		
-		
-		if (!errors.equals(""))
+
+
+		if (!errors.equals("")) {
 			errors = errors + ".";
-	
-		
+		}
+
+
 		return errors;
 	}
 
@@ -904,7 +1060,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	public RDFLoaderConfig getConfiguration() throws ConfigException {
 		if (!allComponentAreValid()) {
 			String message = validationMessage();
-			
+
 			throw new ConfigException(message);
 		} else {
 			saveEditedTexts();
@@ -926,9 +1082,20 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			String password = passwordFieldPass.getValue();
 			boolean validDataBefore = validateDataBefore.getValue();
 
+			String queryParam = queryParamField.getValue().trim();
+			String defaultGraphParam = defaultGraphParamField.getValue().trim();
+
+			String postDescription = (String) postTypeOption.getValue();
+			LoaderPostType postType = getPostType(postDescription);
+
+			LoaderEndpointParams endpointParams = new LoaderEndpointParams(
+					queryParam, defaultGraphParam, postType);
+
 			RDFLoaderConfig config = new RDFLoaderConfig(SPARQLEndpoint,
-					hostName, password, griddata, graphType, insertType,
-					chunkSize, validDataBefore, retryTime, retrySize);
+					hostName, password, getDefaultGraphs(), graphType,
+					insertType,
+					chunkSize, validDataBefore, retryTime, retrySize,
+					endpointParams);
 
 			return config;
 		}
@@ -943,8 +1110,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *
 	 * {@link #comboBoxSparql}, {@link #textFieldNameAdm},
 	 * {@link #passwordFieldPass}, {@link #optionGroupDetail},
-	 * {@link #griddata}, in read-only mode or when requested operation is not
-	 * supported.
+	 * {@link #defaultGraphs}, in read-only mode or when requested operation is
+	 * not supported.
 	 * @param conf Object holding configuration which is used to initialize
 	 *             fields in the configuration dialog.
 	 */
@@ -980,14 +1147,23 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			validateDataBefore.setValue(conf.isValidDataBefore());
 
+			LoaderEndpointParams endpointParams = conf.getEndpointParams();
+
+			LoaderPostType postType = endpointParams.getPostType();
+			String postDescription = getPostDescription(postType);
+			postTypeOption.setValue(postDescription);
+
+			queryParamField.setValue(endpointParams.getQueryParam());
+			defaultGraphParamField.setValue(endpointParams
+					.getDefaultGraphParam());
 
 			try {
-				griddata = conf.getGraphsUri();
-				if (griddata == null) {
-					griddata = new LinkedList<>();
+				defaultGraphs = conf.getGraphsUri();
+				if (defaultGraphs == null) {
+					defaultGraphs = new LinkedList<>();
 				}
 			} catch (Exception e) {
-				griddata = new LinkedList<>();
+				defaultGraphs = new LinkedList<>();
 			}
 			refreshNamedGraphData();
 
@@ -1020,6 +1196,26 @@ class GraphItem {
 
 	public WriteGraphType getType() {
 		return type;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+}
+
+class PostItem {
+
+	private LoaderPostType postType;
+
+	private String description;
+
+	public PostItem(LoaderPostType postType, String description) {
+		this.postType = postType;
+		this.description = description;
+	}
+
+	public LoaderPostType getPostType() {
+		return postType;
 	}
 
 	public String getDescription() {

@@ -182,6 +182,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
+	public int getNumberOfFiles() {
+		return this.fileHandlers.size();
+	}
+	
+	@Override
 	public DataUnitType getType() {
 		return DataUnitType.FILE;
 	}
@@ -221,6 +226,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 		directories.clear();
 		fileHandlers.clear();
 		// delete file on hdd
+		if (!mainDirectory.exists()) {
+			LOG.trace("The directory '%s' doesn't exist, delete has been skipped.",
+					mainDirectory.toString());
+			return;
+		}		
 		try {
 			FileUtils.deleteDirectory(mainDirectory);
 		} catch (IOException ex) {
@@ -238,7 +248,12 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 		// delete stored handlers
 		directories.clear();
 		fileHandlers.clear();
-		// delete file on hdd
+		// clean file on hdd
+		if (!mainDirectory.exists()) {
+			LOG.trace("The directory '%s' doesn't exist, clean has been skipped.",
+					mainDirectory.toString());
+			return;
+		}
 		try {
 			FileUtils.cleanDirectory(mainDirectory);
 		} catch (IOException ex) {

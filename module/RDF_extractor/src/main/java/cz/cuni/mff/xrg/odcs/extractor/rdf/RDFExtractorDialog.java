@@ -38,12 +38,18 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private VerticalLayout verticalLayoutDetails;
 
+	private VerticalLayout verticalLayoutProtocol;
+
+	private VerticalLayout params;
+
 	/**
 	 * CheckBox to specify whether the extraction fails if there is no triple.
 	 */
 	private CheckBox extractFail;
 
 	private Label labelOpt;
+
+	private TextField last;
 
 	/**
 	 * TextArea to set SPARQL construct query.
@@ -53,8 +59,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private Label labelConstr;
 
 	private GridLayout gridLayoutCore;
-
-	private Label labelGraph;
 
 	/**
 	 * PasswordField to set password to connect to SPARQL endpoints which
@@ -73,19 +77,39 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private Label labelNameAdm;
 
 	/**
+	 * For declaration what of request method used for extracting data from
+	 * SPARQL endpoint.
+	 */
+	private OptionGroup requestTypeOption;
+
+	/**
+	 * For setting query parameter need for HTTP request need for extract from
+	 * SPARQL endpoint.
+	 */
+	private TextField queryParamField;
+
+	/**
+	 * For setting default graph parameter need for HTTP request for extract
+	 * from SPARQL endpoint.
+	 */
+	private TextField defaultGraphParamField;
+
+	/**
+	 * For setting named graph parameter need for HTTP request for extract from
+	 * SPARQL endpoint.
+	 */
+	private TextField namedGraphParamField;
+
+	/**
 	 * ComboBox to set SPARQL endpoint.
 	 */
 	private TextField textFieldSparql;
 
 	private Label labelSparql;
 
-	private GridLayout gridLayoutGraph;
+	private GridLayout namedGraphLayout;
 
-	private TextField textFieldGraph;
-
-	private Button buttonGraphRem;
-
-	private Button buttonGraphAdd;
+	private GridLayout defaultGraphLayout;
 
 	private InvalidValueException ex;
 
@@ -95,6 +119,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private boolean isQueryValid = true;
 
 	private String errorMessage = "no errors";
+
+	private List<RequestItem> requestItems = new ArrayList<>();
 
 	/**
 	 * CheckBox to setting use statistical handler
@@ -122,6 +148,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	int n = 1;
 
+	//private Map<TextField, TextField> map = new HashMap<>();
 	/**
 	 * Basic constructor.
 	 */
@@ -130,10 +157,93 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		inicialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+		mapData();
+	}
+
+	private void mapData() {
+		if (requestItems.isEmpty()) {
+			mapRequestItems();
+		}
+	}
+
+	private void mapRequestItems() {
+
+		RequestItem first = new RequestItem(ExtractorRequestType.GET_URL_ENCODER,
+				"Use GET request with URL-encoded parameters");
+
+		RequestItem second = new RequestItem(
+				ExtractorRequestType.POST_URL_ENCODER,
+				"Use POST request with URL-encoded parameters");
+
+		RequestItem third = new RequestItem(
+				ExtractorRequestType.POST_UNENCODED_QUERY,
+				"Use POST with unencoded query in the content");
+
+		requestItems.add(first);
+		requestItems.add(second);
+		requestItems.add(third);
+
+		requestTypeOption.addItem(first.getDescription());
+		requestTypeOption.addItem(second.getDescription());
+		requestTypeOption.addItem(third.getDescription());
+
+		requestTypeOption.setValue(second.getDescription());
 	}
 
 	private void inicialize() {
 		ex = new InvalidValueException("Valid");
+	}
+
+	/**
+	 * Get description of chosed way, how to extract RDF data from SPARQL
+	 * endpoint: Uses in {@link #setConfiguration} for setiing
+	 * {@link #requestTypeOption}
+	 *
+	 * @param type Type of insert data parts:
+	 *             {@link ExtractorRequestType#POST_UNENCODED_QUERY} or
+	 *             {@link ExtractorRequestType#POST_URL_ENCODER} or
+	 *             {@link ExtractorRequestType#GET_URL_ENCODER}.
+	 *
+	 * @return description that corresponds to specific type or ""
+	 */
+	private String getPostDescription(ExtractorRequestType requestType) {
+		if (requestItems.isEmpty()) {
+			mapRequestItems();
+		}
+
+		for (RequestItem item : requestItems) {
+			if (item.getRequestType().equals(requestType)) {
+				return item.getDescription();
+			}
+		}
+
+		return "";
+	}
+
+	/**
+	 * Get type of REQUEST variant for extractomg RDF data from SPARQL endpoint:
+	 * GET_URL_ENCODER,	POST_URL_ENCODER, POST_UNENCODED_QUERY. Uses in
+	 * {@link #getConfiguration} for determine the type by description that
+	 * located in {@link #requestTypeOption}
+	 *
+	 * @param desc String with description of chosed way, how to extract RDF
+	 *             data from SPARQL endpoint. One value from
+	 *             {@link #requestTypeOption}
+	 * @return type that corresponds to desc or
+	 *         {@link ExtractorRequestType#POST_URL_ENCODER} in case of absence.
+	 */
+	private ExtractorRequestType getRequestType(String desc) {
+		if (requestItems.isEmpty()) {
+			mapRequestItems();
+		}
+
+		for (RequestItem item : requestItems) {
+			if (item.getDescription().equals(desc)) {
+				return item.getRequestType();
+			}
+		}
+
+		return ExtractorRequestType.POST_URL_ENCODER;
 	}
 
 	/**
@@ -164,6 +274,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore = buildGridLayoutCore();
 		tabSheet.addTab(gridLayoutCore, "Core", null);
 
+		//SPARQL protocol tab
+		verticalLayoutProtocol = buildVerticalLayoutProtokol();
+		tabSheet.addTab(verticalLayoutProtocol, "SPARQL protocol", null);
+
 		// Details tab
 		verticalLayoutDetails = buildVerticalLayoutDetails();
 		tabSheet.addTab(verticalLayoutDetails, "Details", null);
@@ -191,7 +305,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.setHeight("100%");
 		gridLayoutCore.setMargin(true);
 		gridLayoutCore.setColumns(2);
-		gridLayoutCore.setRows(5);
+		gridLayoutCore.setRows(6);
 		gridLayoutCore.setColumnExpandRatio(0, 0.10f);
 		gridLayoutCore.setColumnExpandRatio(1, 0.90f);
 
@@ -280,18 +394,29 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		passwordFieldPass.setInputPrompt("password");
 		gridLayoutCore.addComponent(passwordFieldPass, 1, 2);
 
-		// labelGraph
-		labelGraph = new Label();
-		labelGraph.setImmediate(false);
-		labelGraph.setWidth("-1px");
-		labelGraph.setHeight("-1px");
-		labelGraph.setValue("Named Graph:");
-		gridLayoutCore.addComponent(labelGraph, 0, 3);
+		// default graph label
+		Label defaultGraphLabel = new Label();
+		defaultGraphLabel.setImmediate(false);
+		defaultGraphLabel.setWidth("-1px");
+		defaultGraphLabel.setHeight("-1px");
+		defaultGraphLabel.setValue("Default Graph:");
+		gridLayoutCore.addComponent(defaultGraphLabel, 0, 3);
 
-		//Named Graph component
-		initializeNamedGraphList();
-		gridLayoutCore.addComponent(gridLayoutGraph, 1, 3);
+		//Default Graphs component
+		initializeDefaultGraph();
+		gridLayoutCore.addComponent(defaultGraphLayout, 1, 3);
 
+		// named graph label
+		Label namedGraphLabel = new Label();
+		namedGraphLabel.setImmediate(false);
+		namedGraphLabel.setWidth("-1px");
+		namedGraphLabel.setHeight("-1px");
+		namedGraphLabel.setValue("Named Graph:");
+		gridLayoutCore.addComponent(namedGraphLabel, 0, 4);
+
+		//Named Graphs component
+		initializeNamedGraph();
+		gridLayoutCore.addComponent(namedGraphLayout, 1, 4);
 
 		// labelConstr
 		labelConstr = new Label();
@@ -299,7 +424,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		labelConstr.setWidth("100%");
 		labelConstr.setHeight("-1px");
 		labelConstr.setValue("SPARQL  Construct:");
-		gridLayoutCore.addComponent(labelConstr, 0, 4);
+		gridLayoutCore.addComponent(labelConstr, 0, 5);
 
 		// textAreaConstr
 		textAreaConstr = new TextArea();
@@ -337,61 +462,172 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			}
 		});
 
-		gridLayoutCore.addComponent(textAreaConstr, 1, 4);
-
+		gridLayoutCore.addComponent(textAreaConstr, 1, 5);
 
 
 		return gridLayoutCore;
 	}
 
+	private TextField createParamQueryField() {
+
+		queryParamField = new TextField("Query param:");
+		queryParamField.setValue("query");
+		queryParamField.setNullRepresentation("");
+		queryParamField.setImmediate(true);
+		queryParamField.setWidth("200px");
+		queryParamField.setHeight("-1px");
+		queryParamField.setInputPrompt("Query param:");
+
+
+		return queryParamField;
+	}
+
+	private TextField createParamDefaultGraph() {
+
+		defaultGraphParamField = new TextField("Default graph param:");
+		defaultGraphParamField.setValue("default-graph-uri");
+		defaultGraphParamField.setNullRepresentation("");
+		defaultGraphParamField.setImmediate(true);
+		defaultGraphParamField.setWidth("200px");
+		defaultGraphParamField.setHeight("-1px");
+		defaultGraphParamField.setInputPrompt("Default graph param:");
+
+		return defaultGraphParamField;
+	}
+
+	private TextField createParamNamedGraph() {
+
+		namedGraphParamField = new TextField("Named graph param:");
+		namedGraphParamField.setValue("named-graph-uri");
+		namedGraphParamField.setNullRepresentation("");
+		namedGraphParamField.setImmediate(true);
+		namedGraphParamField.setWidth("200px");
+		namedGraphParamField.setHeight("-1px");
+		namedGraphParamField.setInputPrompt("Named graph param:");
+
+		return namedGraphParamField;
+
+	}
+
+	private VerticalLayout buildVerticalLayoutProtokol() {
+
+		verticalLayoutProtocol = new VerticalLayout();
+		verticalLayoutProtocol.setImmediate(true);
+		verticalLayoutProtocol.setWidth("100.0%");
+		verticalLayoutProtocol.setHeight("100.0%");
+		verticalLayoutProtocol.setMargin(true);
+		verticalLayoutProtocol.setSpacing(true);
+
+
+		requestTypeOption = new OptionGroup("HTTP REQUEST Variant:");
+		requestTypeOption.setImmediate(true);
+		requestTypeOption.setWidth("-1px");
+		requestTypeOption.setHeight("-1px");
+		requestTypeOption.setMultiSelect(false);
+
+		verticalLayoutProtocol.addComponent(requestTypeOption);
+
+		params = new VerticalLayout();
+		params.setSpacing(true);
+
+		params.addComponent(createParamQueryField());
+		params.addComponent(createParamDefaultGraph());
+		params.addComponent(createParamNamedGraph());
+
+		verticalLayoutProtocol.addComponent(params);
+
+		return verticalLayoutProtocol;
+	}
+
+	/**
+	 * List<String> that contains Defaults Graphs.
+	 */
+	private List<String> defaultGraphs = new LinkedList<>();
+
 	/**
 	 * List<String> that contains Named Graphs.
 	 */
-	private List<String> griddata = initializeGridData();
+	private List<String> namedGraphs = new LinkedList<>();
 
-	/**
-	 * Initializes data of the Named Graph component
-	 */
-	private static List<String> initializeGridData() {
-		List<String> result = new LinkedList<>();
-		result.add("");
+	private List<TextField> namedGraphTexts = new LinkedList<>();
 
-		return result;
-
-	}
+	private List<TextField> defaultGraphTexts = new LinkedList<>();
 
 	/**
 	 * Add new data to Named Graph component.
 	 *
 	 * @param newData. String that will be added
 	 */
-	private void addDataToGridData(String newData) {
-		griddata.add(newData.trim());
+	private void addNamedGraph(String namedGraph) {
+		namedGraphs.add(namedGraph.trim());
+
+	}
+
+	private void addDefaultGraph(String defaultGraph) {
+		defaultGraphs.add(defaultGraph.trim());
 	}
 
 	/**
-	 * Remove data from Named Graph component. Only if component contain more
-	 * then 1 row.
+	 * Remove data from Graph component. Only if component contain more then 1
+	 * row.
 	 *
 	 * @param row Data that will be removed.
 	 */
-	private void removeDataFromGridData(Integer row) {
-		int index = row;
-		if (griddata.size() > 1) {
-			griddata.remove(index);
+	private void removeNamedGraph(Integer row) {
+		if (namedGraphs.size() > 1) {
+			namedGraphs.remove((int) row);
+
 		}
 	}
 
-	private List<TextField> listedEditText = null;
+	private void removeDefaultGraph(Integer row) {
+		if (defaultGraphs.size() > 1) {
+			defaultGraphs.remove((int) row);
+
+		}
+	}
 
 	/**
 	 * Save edited texts in the Named Graph component
 	 */
-	private void saveEditedTexts() {
-		griddata = new LinkedList<>();
-		for (TextField editText : listedEditText) {
-			griddata.add(editText.getValue().trim());
+	private void saveGraphEditedTexts(boolean isNamedGraph) {
+		if (isNamedGraph) {
+			namedGraphs.clear();
+
+			for (TextField editText : namedGraphTexts) {
+				namedGraphs.add(editText.getValue().trim());
+			}
+		} else {
+			defaultGraphs.clear();
+
+			for (TextField editText : defaultGraphTexts) {
+				defaultGraphs.add(editText.getValue().trim());
+			}
 		}
+	}
+
+	private List<String> getNamedGraphs() {
+		List<String> result = new LinkedList<>();
+
+		for (String nextGraph : namedGraphs) {
+			String graphURI = nextGraph.trim();
+			if (!graphURI.isEmpty()) {
+				result.add(graphURI);
+			}
+		}
+		return result;
+	}
+
+	private List<String> getDefaultGraphs() {
+		List<String> result = new LinkedList<>();
+
+		for (String nextGraph : defaultGraphs) {
+			String graphURI = nextGraph.trim();
+			if (!graphURI.isEmpty()) {
+				result.add(graphURI);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -399,7 +635,13 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * @return if all URI name graphs are valid or not.
 	 */
 	private boolean areGraphsNameValid() {
-		for (TextField next : listedEditText) {
+		for (TextField next : namedGraphTexts) {
+			if (!next.isValid()) {
+				return false;
+			}
+		}
+
+		for (TextField next : defaultGraphTexts) {
 			if (!next.isValid()) {
 				return false;
 			}
@@ -410,29 +652,28 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	/**
 	 * Builds Named Graph component which consists of textfields for graph name
 	 * and buttons for add and remove this textfields. Used in
-	 * {@link #initializeNamedGraphList} and also in adding and removing fields
-	 * for component refresh
+	 * {@link #initializeNamedGraph} and also in adding and removing fields for
+	 * component refresh
 	 */
 	private void refreshNamedGraphData() {
-		gridLayoutGraph.removeAllComponents();
-		int row = 0;
-		listedEditText = new ArrayList<>();
-		if (griddata.size() < 1) {
-			griddata.add("");
-		}
-		gridLayoutGraph.setRows(griddata.size() + 1);
-		for (String item : griddata) {
-			textFieldGraph = new TextField();
-			listedEditText.add(textFieldGraph);
+		namedGraphLayout.removeAllComponents();
+		namedGraphTexts.clear();
 
+		int row = 0;
+
+		if (namedGraphs.isEmpty()) {
+			namedGraphs.add("");
+		}
+		namedGraphLayout.setRows(namedGraphs.size() + 1);
+		for (String item : namedGraphs) {
+			TextField textFieldGraph = new TextField();
+			namedGraphTexts.add(textFieldGraph);
 			//text field for the graph
 			textFieldGraph.setWidth("100%");
 			textFieldGraph.setData(row);
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
 			textFieldGraph.addValidator(new Validator() {
-				private static final long serialVersionUID = 1L;
-
 				@Override
 				public void validate(Object value) throws InvalidValueException {
 					if (value != null) {
@@ -460,45 +701,47 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			});
 
 			//remove button
-			buttonGraphRem = new Button();
-			buttonGraphRem.setWidth("55px");
-			buttonGraphRem.setCaption("-");
-			buttonGraphRem.setData(row);
-			buttonGraphRem.addClickListener(new Button.ClickListener() {
-				private static final long serialVersionUID = 1L;
+			Button removeButton = new Button();
+			removeButton.setWidth("55px");
+			removeButton.setCaption("-");
+			removeButton.setData(textFieldGraph);
 
+			removeButton.addClickListener(new Button.ClickListener() {
 				@Override
 				public void buttonClick(Button.ClickEvent event) {
-					saveEditedTexts();
+					saveGraphEditedTexts(true);
 					Button senderButton = event.getButton();
-					Integer row = (Integer) senderButton.getData();
-					removeDataFromGridData(row);
+
+					TextField textField = (TextField) senderButton.getData();
+					Integer row = (Integer) textField.getData();
+
+					removeNamedGraph(row);
+
 					refreshNamedGraphData();
 				}
 			});
-			gridLayoutGraph.addComponent(textFieldGraph, 0, row);
-			gridLayoutGraph.addComponent(buttonGraphRem, 1, row);
-			gridLayoutGraph.setComponentAlignment(buttonGraphRem,
+			namedGraphLayout.addComponent(textFieldGraph, 0, row);
+			namedGraphLayout.addComponent(removeButton, 1, row);
+			namedGraphLayout.setComponentAlignment(removeButton,
 					Alignment.TOP_RIGHT);
 			row++;
 		}
 		//add button
-		buttonGraphAdd = new Button();
-		buttonGraphAdd.setCaption("+");
-		buttonGraphAdd.setImmediate(true);
-		buttonGraphAdd.setWidth("55px");
-		buttonGraphAdd.setHeight("-1px");
-		buttonGraphAdd.addClickListener(new Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
-
+		Button addButton = new Button();
+		addButton.setCaption("+");
+		addButton.setImmediate(true);
+		addButton.setWidth("55px");
+		addButton.setHeight("-1px");
+		addButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				saveEditedTexts();
-				addDataToGridData(" ");
+				saveGraphEditedTexts(true);
+				addNamedGraph("");
+
 				refreshNamedGraphData();
 			}
 		});
-		gridLayoutGraph.addComponent(buttonGraphAdd, 0, row);
+		namedGraphLayout.addComponent(addButton, 0, row);
 
 	}
 
@@ -506,18 +749,119 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * Initializes Named Graph component. Calls from
 	 * {@link #buildGridLayoutCore}
 	 */
-	private void initializeNamedGraphList() {
+	private void initializeNamedGraph() {
 
-		gridLayoutGraph = new GridLayout();
-		gridLayoutGraph.setImmediate(false);
-		gridLayoutGraph.setWidth("100%");
-		gridLayoutGraph.setHeight("100%");
-		gridLayoutGraph.setMargin(false);
-		gridLayoutGraph.setColumns(2);
-		gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
-		gridLayoutGraph.setColumnExpandRatio(1, 0.05f);
+		namedGraphLayout = new GridLayout();
+		namedGraphLayout.setImmediate(false);
+		namedGraphLayout.setWidth("100%");
+		namedGraphLayout.setHeight("100%");
+		namedGraphLayout.setMargin(false);
+		namedGraphLayout.setColumns(2);
+		namedGraphLayout.setColumnExpandRatio(0, 0.95f);
+		namedGraphLayout.setColumnExpandRatio(1, 0.05f);
 
 		refreshNamedGraphData();
+
+	}
+
+	private void initializeDefaultGraph() {
+		defaultGraphLayout = new GridLayout();
+		defaultGraphLayout.setImmediate(false);
+		defaultGraphLayout.setWidth("100%");
+		defaultGraphLayout.setHeight("100%");
+		defaultGraphLayout.setMargin(false);
+		defaultGraphLayout.setColumns(2);
+		defaultGraphLayout.setColumnExpandRatio(0, 0.95f);
+		defaultGraphLayout.setColumnExpandRatio(1, 0.05f);
+
+		refreshDefaultGraphData();
+	}
+
+	private void refreshDefaultGraphData() {
+		defaultGraphLayout.removeAllComponents();
+		defaultGraphTexts.clear();
+
+		int row = 0;
+
+		if (defaultGraphs.isEmpty()) {
+			defaultGraphs.add("");
+		}
+		defaultGraphLayout.setRows(defaultGraphs.size() + 1);
+		for (String item : defaultGraphs) {
+			TextField textFieldGraph = new TextField();
+			defaultGraphTexts.add(textFieldGraph);
+
+			//text field for the graph
+			textFieldGraph.setWidth("100%");
+			textFieldGraph.setData(row);
+			textFieldGraph.setValue(item.trim());
+			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source");
+			textFieldGraph.addValidator(new Validator() {
+				@Override
+				public void validate(Object value) throws InvalidValueException {
+					if (value != null) {
+
+						String namedGraph = value.toString().toLowerCase()
+								.trim();
+
+						if (namedGraph.isEmpty()) {
+							return;
+						}
+
+						if (namedGraph.contains(" ")) {
+							ex = new InvalidValueException(
+									"Graph name(s) must contain no white spaces");
+							throw ex;
+						} else if (!namedGraph.startsWith("http://")) {
+							ex = new InvalidValueException(
+									"Graph name must start with prefix \"http://\"");
+							throw ex;
+						}
+
+					}
+
+				}
+			});
+
+			//remove button
+			Button removeButton = new Button();
+			removeButton.setWidth("55px");
+			removeButton.setCaption("-");
+			removeButton.setData(textFieldGraph);
+			removeButton.addClickListener(new Button.ClickListener() {
+				@Override
+				public void buttonClick(Button.ClickEvent event) {
+					saveGraphEditedTexts(false);
+					Button senderButton = event.getButton();
+					TextField textField = (TextField) senderButton.getData();
+					Integer row = (Integer) textField.getData();
+					removeDefaultGraph(row);
+
+					refreshDefaultGraphData();
+				}
+			});
+			defaultGraphLayout.addComponent(textFieldGraph, 0, row);
+			defaultGraphLayout.addComponent(removeButton, 1, row);
+			defaultGraphLayout.setComponentAlignment(removeButton,
+					Alignment.TOP_RIGHT);
+			row++;
+		}
+		//add button
+		Button addButton = new Button();
+		addButton.setCaption("+");
+		addButton.setImmediate(true);
+		addButton.setWidth("55px");
+		addButton.setHeight("-1px");
+		addButton.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				saveGraphEditedTexts(false);
+				addDefaultGraph("");
+
+				refreshDefaultGraphData();
+			}
+		});
+		defaultGraphLayout.addComponent(addButton, 0, row);
 
 	}
 
@@ -702,13 +1046,14 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
+
 			saveEditedTexts();
 
 			String SPARQLEndpoint = (String) textFieldSparql.getValue();
 			String hostName = textFieldNameAdm.getValue().trim();
 			String password = passwordFieldPass.getValue();
 			String SPARQLQuery = textAreaConstr.getValue().trim();
-			List<String> GraphsUri = griddata;
+
 			boolean extractFailed = extractFail.getValue();
 			boolean useStatisticalHandler = useHandler.getValue();
 
@@ -726,11 +1071,39 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			int retrySize = Integer.parseInt(retrySizeField.getValue());
 			long retryTime = Long.parseLong(retryTimeField.getValue());
 
+			String queryParam = queryParamField.getValue().trim();
+
+			String defaultGraphParam = defaultGraphParamField.getValue().trim();
+			String namedGraphParam = namedGraphParamField.getValue().trim();
+
+			String requestDescription = (String) requestTypeOption.getValue();
+			ExtractorRequestType requestType = getRequestType(requestDescription);
+
+			ExtractorEndpointParams endpointParams = new ExtractorEndpointParams(
+					queryParam, defaultGraphParam, namedGraphParam,
+					getDefaultGraphs(), getNamedGraphs(), requestType);
+
 			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
-					hostName, password, GraphsUri, SPARQLQuery, extractFailed,
-					useStatisticalHandler, failWhenErrors, retrySize, retryTime);
+					hostName, password, SPARQLQuery,
+					extractFailed, useStatisticalHandler, failWhenErrors,
+					retrySize, retryTime, endpointParams);
 
 			return config;
+		}
+	}
+
+	/**
+	 * Save edited texts in the Default an Named Graphs component
+	 */
+	private void saveEditedTexts() {
+		defaultGraphs.clear();
+		for (TextField editText : defaultGraphTexts) {
+			defaultGraphs.add(editText.getValue().trim());
+		}
+
+		namedGraphs.clear();
+		for (TextField nextField : namedGraphTexts) {
+			namedGraphs.add(nextField.getValue().trim());
 		}
 	}
 
@@ -739,13 +1112,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
 	 * where the configuration object may be edited.
 	 *
-	 * @throws ConfigException Exception which might be thrown when components
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	null	null	null	null	null
-	 *                         null	null	null	null	null	 {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass}, 
-    * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #griddata},
+	 * @throws ConfigException Exception which might be thrown when components {@link #textFieldSparql}, {@link #textFieldNameAdm}, {@link #passwordFieldPass},
+	 * {@link #textAreaConstr}, {@link #extractFail}, {@link #useHandler}, {@link #namedGraphs},
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted. Also when
 	 *                         requested operation is not supported.
@@ -773,17 +1141,34 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			String retryTime = String.valueOf(conf.getRetryTime());
 			retryTimeField.setValue(retryTime);
 
+			ExtractorEndpointParams endpointParams = conf.getEndpointParams();
+
+			if (endpointParams != null) {
+				ExtractorRequestType requestType = endpointParams
+						.getRequestType();
+				String requestDescription = getPostDescription(requestType);
+				requestTypeOption.setValue(requestDescription);
+
+				queryParamField.setValue(endpointParams.getQueryParam());
+				defaultGraphParamField.setValue(endpointParams
+						.getDefaultGraphParam());
+				namedGraphParamField.setValue(endpointParams
+						.getNamedGraphParam());
+
+				namedGraphs = endpointParams.getNamedGraphURI();
+				defaultGraphs = endpointParams.getDefaultGraphURI();
+
+				refreshNamedGraphData();
+				refreshDefaultGraphData();
+			}
+
 			if (conf.isFailWhenErrors()) {
 				failsWhenErrors.setValue(STOP);
 			} else {
 				failsWhenErrors.setValue(CONTINUE);
 			}
 
-			griddata = conf.getGraphsUri();
-			if (griddata == null) {
-				griddata = new LinkedList<>();
-			}
-			refreshNamedGraphData();
+
 		} catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
 			throw new ConfigException(e.getMessage(), e);
@@ -796,5 +1181,25 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		description.append("Extract from SPARQL: ");
 		description.append((String) textFieldSparql.getValue());
 		return description.toString();
+	}
+}
+
+class RequestItem {
+
+	private ExtractorRequestType requestType;
+
+	private String description;
+
+	public RequestItem(ExtractorRequestType requestType, String description) {
+		this.requestType = requestType;
+		this.description = description;
+	}
+
+	public ExtractorRequestType getRequestType() {
+		return requestType;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }
