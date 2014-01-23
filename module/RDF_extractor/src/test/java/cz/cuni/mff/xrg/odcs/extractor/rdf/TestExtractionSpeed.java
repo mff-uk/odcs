@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  * @author Jiri Tomes
  */
 @Category(IntegrationTest.class)
-public class SPARQLExtractorLocalTest {
+public class TestExtractionSpeed {
 
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLExtractorLocalTest.class);
