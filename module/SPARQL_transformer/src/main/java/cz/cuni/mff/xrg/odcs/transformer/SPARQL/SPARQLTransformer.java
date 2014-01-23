@@ -86,6 +86,15 @@ public class SPARQLTransformer
 		final String updateQuery = config.getSPARQLUpdateQuery();
 		final boolean isConstructQuery = config.isConstructType();
 
+		if (updateQuery == null) {
+			context.sendMessage(MessageType.ERROR,
+					"Query for SPARQL transformer is null value");
+		} else if (updateQuery.trim().isEmpty()) {
+			context.sendMessage(MessageType.ERROR,
+					"Query for SPARQL transformer is empty",
+					"SPARQL transformer must constains text of SPARQL query");
+		}
+
 		try {
 			if (isConstructQuery) {
 
