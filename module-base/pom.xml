@@ -116,7 +116,7 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-Description>${project.description}</Bundle-Description>
 						<Export-Package>${dpu.package};version="${project.version}"</Export-Package>
-						<Import-Package>cz.cuni.mff.xrg.odcs.*;version="${odcs.version}",com.vaadin.*;version="[${vaadin.version}, ${vaadin.version.max})",*</Import-Package>
+						<Import-Package>cz.cuni.mff.xrg.odcs.*;version="${odcs.version}",com.vaadin.*;version="[${vaadin.version.min}, ${vaadin.version.max})",*</Import-Package>
 						<!-- dependencies embedding -->
 						<Embed-Dependency>*;scope=compile|system</Embed-Dependency> <!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>${embed.transitive}</Embed-Transitive> <!-- using true cause adding new imports for new packages !! -->
@@ -126,6 +126,8 @@
 						<!-- information for ODCleanStore -->
 						<DPU-Package>${dpu.package}</DPU-Package>
 						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
+						<!-- Current Vaadin version -->
+						<Vaadin-Version>${vaadin.version}</Vaadin-Version>
 						<ODCS-Version>${odcs.version}</ODCS-Version>
 					</instructions>
 				</configuration>
