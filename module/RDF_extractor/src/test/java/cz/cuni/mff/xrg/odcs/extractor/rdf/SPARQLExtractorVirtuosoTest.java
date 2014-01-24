@@ -55,6 +55,10 @@ public class SPARQLExtractorVirtuosoTest {
 		return new ExtractorEndpointParams();
 	}
 
+	private ExtractorEndpointParams getVirtuosoEndpoint() {
+		return new ExtractorEndpointParams();
+	}
+
 	@Before
 	public void cleanRepository() {
 		repository.cleanAllData();

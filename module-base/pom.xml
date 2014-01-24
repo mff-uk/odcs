@@ -66,7 +66,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>dataunit-file</artifactId>
             <!-- the version has to be specify -->
-            <version>${project.version}</version>
+            <version>${odcs.version}</version>
             <type>jar</type>
         </dependency>  
 

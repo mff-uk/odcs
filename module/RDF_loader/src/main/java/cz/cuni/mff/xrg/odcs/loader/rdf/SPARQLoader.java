@@ -448,7 +448,7 @@ public class SPARQLoader {
 
 				switch (insertType) {
 					case SKIP_BAD_PARTS: //go to next part
-						message = "Data " + processing + " part was skiped. "
+						message = "Data " + processing + " part was skipped. "
 								+ e.getMessage();
 						logger.warn(message);
 						break;

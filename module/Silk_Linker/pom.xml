@@ -11,6 +11,10 @@
 	<artifactId>Silk_Linker_Extractor</artifactId>
 	<name>Silk_Linker_Extractor</name>
 	<packaging>bundle</packaging>
+        <version>1.0.0</version>
+		<description>Module which is able to create links between two data
+			sources. Input is the configuration file for silk. The output of the
+			XSLT must be RDF data. </description>
 
 	<dependencies>
 		<dependency>
@@ -19,6 +23,12 @@
 			<version>2.5.3</version>
 			<type>jar</type>
 			<scope>provided</scope>
+		 <exclusions>
+		  <exclusion>
+		   <artifactId>slf4j-log4j12</artifactId>
+		   <groupId>org.slf4j</groupId>
+		  </exclusion>
+		 </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.fuberlin.wiwiss.silk</groupId>
@@ -36,10 +46,7 @@
 	</dependencies>
 
 	<properties>
-		<dpu.version>0.0.1</dpu.version>
-		<dpu.description>Module which is able to create links between two data
-			sources. Input is the configuration file for silk. The output of the
-			XSLT must be RDF data. </dpu.description>
+		
 		<dpu.package>cz.cuni.mff.xrg.odcs.extractor.silklinker</dpu.package>
 		<dpu.mainClass>SilkLinker</dpu.mainClass>
 	</properties>
