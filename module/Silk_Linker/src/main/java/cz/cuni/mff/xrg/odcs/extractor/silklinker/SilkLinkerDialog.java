@@ -21,6 +21,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -33,6 +36,8 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     
     private TextArea silkConfigTextArea;
     private UploadInfoWindow uploadInfoWindow;
+    
+      private Label lFileName;
     
     static int fl = 0;
     
@@ -69,9 +74,9 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         final FileUploadReceiver fileUploadReceiver = new FileUploadReceiver();
 
         //Upload component
-        Upload fileUpload = new Upload("Uploading Silk config file", fileUploadReceiver);
+        Upload fileUpload = new Upload("Silk configuration file: ", fileUploadReceiver);
         fileUpload.setImmediate(true);
-        fileUpload.setButtonCaption("Choose");
+        fileUpload.setButtonCaption("Upload");
         //Upload started event listener
         fileUpload.addStartedListener(new Upload.StartedListener() {
             @Override
@@ -101,6 +106,12 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
                     //Path to this file is setting to the textFieldPath field
                     String configText = fileUploadReceiver.getOutputStream().toString();
                     silkConfigTextArea.setValue(configText);
+                    
+                            //to get the current date: 
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date date = new Date();
+                                        
+                    lFileName.setValue("File " + fileUploadReceiver.getFileName() + " was successfully uploaded on: " + dateFormat.format(date));
 
 //                   silkConfigTextArea.setValue(
 //                            FileUploadReceiver.file
@@ -122,20 +133,11 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         uploadInfoWindow = new UploadInfoWindow(fileUpload);
 
 
-//        HorizontalLayout uploadFileLayout = new HorizontalLayout();
-//        uploadFileLayout.setWidth("100%");
-//        uploadFileLayout.setSpacing(true);
-//
-////        textFieldPath.setReadOnly(true);
-//        uploadFileLayout.addComponent(fileUpload);
-//        //uploadFileLayout.addComponent(silkConfigTextArea);
-//        uploadFileLayout.setExpandRatio(fileUpload, 0.2f);
-//        //uploadFileLayout.setExpandRatio(silkConfigTextArea, 0.8f);
-//
-//        //Adding uploading component
-//        mainLayout.addComponent(uploadFileLayout, 0, 1);
-        
          mainLayout.addComponent(fileUpload);
+         
+         
+         lFileName = new Label("File not uploaded");
+         mainLayout.addComponent(lFileName);
 
         //***************
         // TEXT AREA
@@ -242,6 +244,12 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     
     private OutputStream fos;
     
+       private String fileName;
+       
+           public String getFileName() {
+        return fileName;
+    }
+    
     public OutputStream getOutputStream() {
         return fos;
     }
@@ -282,7 +290,7 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
 //            file = new File("/" + path + "/" + filename); // path for upload file in temp directory
 
-      
+        this.fileName = filename;
         fos = new ByteArrayOutputStream();
         return fos;
         

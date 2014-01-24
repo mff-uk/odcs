@@ -13,6 +13,9 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
      * Path to the config file driving the execution of Silk.
      */
     private String confFile = null;
+    
+    private String minConfirmedLinks = "0.9";
+    private String minLinksToBeVerified = "0";
 
     public SilkLinkerConfig() {
         confFile = null;
@@ -30,4 +33,20 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
     public boolean isValid() {
         return confFile != null;
     }
+
+    public String getConfFile() {
+        return confFile;
+    }
+
+    public String getMinConfirmedLinks() {
+        return minConfirmedLinks;
+    }
+
+    public String getMinLinksToBeVerified() {
+        return minLinksToBeVerified;
+    }
+
+    
+    
+    
 }
