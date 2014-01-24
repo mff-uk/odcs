@@ -1589,7 +1589,7 @@ public abstract class BaseRDFRepo implements RDFDataUnit, Closeable {
 
 				if (skipFiles) {
 					final String message = String.format(
-							"RDF data from file <%s> was skiped", nextFile
+							"RDF data from file <%s> was skipped", nextFile
 							.getAbsolutePath());
 					logger.error(message);
 

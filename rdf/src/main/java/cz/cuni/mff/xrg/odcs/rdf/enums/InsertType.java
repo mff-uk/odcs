@@ -8,7 +8,7 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
 public enum InsertType {
 
 	/**
-	 * Load RDF data parts which have no errors. Other parts are skiped and
+	 * Load RDF data parts which have no errors. Other parts are skipped and
 	 * warning is given about it.
 	 */
 	SKIP_BAD_PARTS,
