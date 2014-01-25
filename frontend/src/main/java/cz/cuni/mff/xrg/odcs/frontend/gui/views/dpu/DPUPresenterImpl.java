@@ -258,14 +258,14 @@ public class DPUPresenterImpl implements DPUPresenter {
 						view.saveDPUTemplate();
 						view.refresh();
 					}
-					view.selectNewDPU(dpu);
 					selectedDpu = dpu;
+					view.selectNewDPU(dpu);
 				}
 			});
 
 		} else {
-			view.selectNewDPU(dpu);
 			selectedDpu = dpu;
+			view.selectNewDPU(dpu);
 		}
 	}
 
