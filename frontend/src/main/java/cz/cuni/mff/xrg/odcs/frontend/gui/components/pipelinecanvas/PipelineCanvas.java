@@ -56,7 +56,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
-	
+	private DPUDetail detailDialog;
+	private Window.CloseListener detailCloseListener;
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
 
 	/**
@@ -143,6 +144,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
+		detailDialog = new DPUDetail(dpuFacade);
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 
@@ -231,8 +233,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
-		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade, canvasMode.equals(PipelineEdit.STANDARD_MODE));
-		detailDialog.addCloseListener(new Window.CloseListener() {
+		detailDialog.showDpuDetail(dpu, canvasMode.equals(PipelineEdit.STANDARD_MODE));
+		if (detailCloseListener != null) {
+			detailDialog.removeCloseListener(detailCloseListener);
+		}
+		detailCloseListener = new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
 				DPUDetail source = (DPUDetail) e.getSource();
@@ -244,8 +249,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 					getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 				}
 			}
-		});
-		UI.getCurrent().addWindow(detailDialog);
+		};
+
+		detailDialog.addCloseListener(detailCloseListener);
+		if (!UI.getCurrent().getWindows().contains(detailDialog)) {
+			UI.getCurrent().addWindow(detailDialog);
+		}
 	}
 
 	/**
