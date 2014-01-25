@@ -222,6 +222,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			@Override
 			protected void action(long id) {
 				presenter.showDebugEventHandler(id);
+				monitorTable.select(id);
 			}
 		}, new ActionColumnGenerator.ButtonShowCondition() {
 			@Override
@@ -238,6 +239,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			@Override
 			protected void action(long id) {
 				presenter.showDebugEventHandler(id);
+				monitorTable.select(id);
 			}
 		}, new ActionColumnGenerator.ButtonShowCondition() {
 			@Override
