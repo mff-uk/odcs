@@ -62,7 +62,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 */
 	private TabSheet tabSheet;
 	private OptionGroup groupVisibility; // Visibility of DPU Template: public or private
-	private GridLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
+	private HorizontalLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
 	private HorizontalLayout buttonDpuBar; // Layout contains action buttons of DPU Template details.
 	private HorizontalLayout layoutInfo; // Layout with the information that no DPU template was selected.
 	/**
@@ -182,12 +182,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 * @return dpuLayout GridLayout contains {@link DPUTree} and
 	 * {@link #buildDPUDetailLayout}.
 	 */
-	private GridLayout buildDpuLayout() {
+	private HorizontalLayout buildDpuLayout() {
 
-		dpuLayout = new GridLayout(3, 1);
+		dpuLayout = new HorizontalLayout();
+		dpuLayout.setSizeFull();
 		dpuLayout.setSpacing(true);
-		dpuLayout.setRowExpandRatio(0, 0.01f);
-		dpuLayout.setRowExpandRatio(1, 0.99f);
+//		dpuLayout.setRowExpandRatio(0, 0.01f);
+//		dpuLayout.setRowExpandRatio(1, 0.99f);
+//		
+//		dpuLayout.setColumnExpandRatio(0, 0.2f);
+//		dpuLayout.setColumnExpandRatio(1, 1);
+//		dpuLayout.setColumnExpandRatio(2, 1);
 
 		// Layout with the information that no DPU template was selected.
 		layoutInfo = new HorizontalLayout();
@@ -215,8 +220,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			});
 		}
 
-		dpuLayout.addComponent(dpuTree, 0, 0);
-		dpuLayout.addComponent(layoutInfo, 2, 0);
+		dpuLayout.addComponent(dpuTree);
+		dpuLayout.addComponent(layoutInfo);
+		dpuLayout.setExpandRatio(layoutInfo, 5);
+		dpuTree.setSizeUndefined();
+		dpuLayout.setExpandRatio(dpuTree, 0);
 
 		return dpuLayout;
 	}
@@ -235,11 +243,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuDetailLayout.setImmediate(true);
 		dpuDetailLayout.setStyleName("dpuDetailLayout");
 		dpuDetailLayout.setMargin(true);
+		dpuDetailLayout.setSizeFull();
 
 		//DPU Details TabSheet
 		tabSheet = new TabSheet();
-		tabSheet.setWidth(630, Unit.PIXELS);
-		tabSheet.setHeight(350, Unit.PIXELS);
+		tabSheet.setSizeFull();
 		tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -740,10 +748,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			// crate new wrap
 			selectedDpuWrap = new DPUTemplateWrap(dpu);
 
-			dpuLayout.removeComponent(dpuDetailLayout);
+			if(dpuDetailLayout != null) {
+				dpuLayout.removeComponent(dpuDetailLayout);
+			}
 			dpuLayout.removeComponent(layoutInfo);
 			dpuDetailLayout = buildDPUDetailLayout();
-			dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+			dpuLayout.addComponent(dpuDetailLayout, 1);
+			dpuLayout.setExpandRatio(dpuDetailLayout, 5);
 
 			// show/hide replace button
 			reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
@@ -753,7 +764,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		} else {
 			dpuLayout.removeComponent(dpuDetailLayout);
 			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
+			dpuLayout.addComponent(layoutInfo, 1);
 		}
 	}
 
