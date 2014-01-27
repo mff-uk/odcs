@@ -40,7 +40,16 @@
 
 		<dependency> <!-- RDF project -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>RDF</artifactId>
+			<artifactId>dataunit-rdf</artifactId>
+			<!-- the version has to be specify -->
+			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency> <!-- file data unit -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-file</artifactId>
 			<!-- the version has to be specify -->
 			<version>${project.version}</version>
 			<type>jar</type>
@@ -68,7 +77,7 @@
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.4</version>
+			<version>1.4.5</version>
 			<scope>provided</scope> <!-- provided by frontend/backend -->
 		</dependency>
 

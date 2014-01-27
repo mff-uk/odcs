@@ -47,6 +47,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -64,7 +65,7 @@ public class SchedulePipeline extends Window {
 	private GridLayout coreLayout;
 	private HorizontalLayout autoLayout;
 	private GridLayout afterLayout;
-	private Container container;
+	private ReadOnlyContainer<Pipeline> container;
 	private Container containerCombo;
 	private HorizontalLayout inervalEveryLayout;
 	private VerticalLayout inervalLayout;
@@ -160,7 +161,7 @@ public class SchedulePipeline extends Window {
 		
 		source.loadData(dbPipeline);
 		sourceCombo.loadData(dbPipeline);
-		source.hide(selectedPipeline.getId());
+		source.hide(selectedPipeline.getId(), true);
 		if(selectPipe != null) {
 			selectPipe.setValue(null);
 		}
@@ -254,7 +255,7 @@ public class SchedulePipeline extends Window {
 				selectPipe.setValue(afterNames);
 				source.loadData(dbPipeline);
 				sourceCombo.loadData(dbPipeline);
-				source.hide(selectedSchedule.getPipeline().getId());
+				source.hide(selectedSchedule.getPipeline().getId(), true);
 				
 			}
 			
@@ -360,7 +361,7 @@ public class SchedulePipeline extends Window {
 					
 					if(oldPipelineId !=0)
 						source.show(oldPipelineId);
-					source.hide((long)event.getProperty().getValue());
+					source.hide((long)event.getProperty().getValue(), true);
 					oldPipelineId=(long)event.getProperty().getValue();
 				}
 				else{
@@ -750,7 +751,7 @@ public class SchedulePipeline extends Window {
 			SimpleTreeFilter filter = null;
 			
 			@Override
-			public void textChange(FieldEvents.TextChangeEvent event) {
+			public void textChange(final FieldEvents.TextChangeEvent event) {
 				Container.Filterable f = (Container.Filterable) selectPipe
 						.getContainerDataSource();
 
@@ -763,6 +764,21 @@ public class SchedulePipeline extends Window {
 				filter = new SimpleTreeFilter(event.getText(), true, false);
 				f.addContainerFilter(filter);
 				
+				// update filters 
+				source.showAll();
+				
+				source.filter(isInitialized, new InMemorySource.Filter<Pipeline>() {
+
+					@Override
+					public boolean filter(Pipeline object) {
+						return StringUtils.containsIgnoreCase(object.getName(),
+								event.getText());
+					}
+					
+				});
+				
+				// refresh the twin container
+				container.refresh();
 			}
 		});
 		
@@ -1040,8 +1056,7 @@ public class SchedulePipeline extends Window {
 		boolean dupl = true;
 		int errorNumber = 0;
 		int duplicateNumber = 0;
-		List<TextField> duplicateEmails = null;
-		duplicateEmails = new ArrayList<>();
+		List<TextField> duplicateEmails = new ArrayList<>();
 		for (TextField emailField : email.listedEditText) {
 			if (!emailField.getValue().trim().isEmpty()) {
 				notEmpty = true;

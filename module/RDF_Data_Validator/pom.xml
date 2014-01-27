@@ -21,4 +21,14 @@
 		<dpu.odcl.dir></dpu.odcl.dir>
 	</properties>
  	
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-rdf-impl</artifactId>
+			<version>${odcs.version}</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>		
+	</dependencies>		
+	
 </project>

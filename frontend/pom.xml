@@ -81,7 +81,7 @@
 
 		<dependency> <!-- RDF data unit -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>RDF</artifactId>
+			<artifactId>dataunit-rdf-impl</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>filteringtable</artifactId>
-			<version>0.9.0.v7</version>
+			<version>0.9.3.v7</version>
 		 <type>jar</type>
 		</dependency>	
 

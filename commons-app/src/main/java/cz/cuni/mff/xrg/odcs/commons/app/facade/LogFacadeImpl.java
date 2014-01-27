@@ -23,79 +23,88 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 class LogFacadeImpl implements LogFacade {
 
-	@Autowired
-	private DbLogRead logDao;
+    @Autowired
+    private DbLogRead logDao;
 
-	/**
-	 * Return true if there exist logs with given level for given dpu instance
-	 * of given pipeline execution.
-	 *
-	 * @param exec
-	 * @param level
-	 * @return
-	 */
-	@Override
-	public boolean existLogsGreaterOrEqual(PipelineExecution exec, Level level) {
-		DbQueryBuilder<Log> builder = logDao.createQueryBuilder();
-		// add filters
-		builder.addFilter(Compare.equal("execution", exec.getId()));
-		builder.addFilter(Compare.greaterEqual("logLevel", level.toInt()));
-		// execute
-		return logDao.executeSize(builder.getCountQuery()) > 0;
-	}
+    /**
+     * Return true if there exist logs with given level for given dpu instance
+     * of given pipeline execution.
+     *
+     * @param exec
+     * @param level
+     * @return
+     */
+    @Override
+    public boolean existLogsGreaterOrEqual(PipelineExecution exec, Level level) {
+        DbQueryBuilder<Log> builder = logDao.createQueryBuilder();
+        // add filters
+        builder.addFilter(Compare.equal("execution", exec.getId()));
+        builder.addFilter(Compare.greaterEqual("logLevel", level.toInt()));
+        // execute
+        return logDao.executeSize(builder.getCountQuery()) > 0;
+    }
 
-	/**
-	 * Return list of all usable log's levels without aggregations. Ordered
-	 * descending by priority.
-	 * @return 
-	 */
-	@Override
-	public ArrayList<Level> getAllLevels() {
-		ArrayList result = new ArrayList(5);
-		
-		result.add(Level.ERROR);
-		result.add(Level.WARN);
-		result.add(Level.INFO);
-		result.add(Level.DEBUG);
-		result.add(Level.TRACE);
-		
-		return result;
-	}
-	
-	@Override
-	public InputStream getLogsAsStream(List<Object> filters) {
-		// apply filters as we have them
-		DbQueryBuilder<Log> builder = logDao.createQueryBuilder();
+    /**
+     * Return list of all usable log's levels without aggregations. Ordered
+     * descending by priority.
+     *
+     * @return
+     */
+    @Override
+    public ArrayList<Level> getAllLevels() {
+        ArrayList result = new ArrayList(5);
 
-		if (filters == null) {
-			// no filters, take all the data
-		} else {
-			for (Object filter : filters) {
-				builder.addFilter(filter);
-			}
-		}
-		// get data and transform them into stream
-		List<Log> data = logDao.executeList(builder.getQuery());
+        result.add(Level.ERROR);
+        result.add(Level.WARN);
+        result.add(Level.INFO);
+        result.add(Level.DEBUG);
+        result.add(Level.TRACE);
 
-		StringBuilder sb = new StringBuilder();
+        return result;
+    }
 
-		for (Log log : data) {
-			sb.append(new Date(log.getTimestamp()));
-			sb.append(' ');
-			sb.append(Level.toLevel(log.getLogLevel()));
-			sb.append(' ');
-			sb.append(log.getSource());
-			sb.append(' ');
-			sb.append(log.getMessage());
-			sb.append('\r');
-			sb.append('\n');
-		}
+    @Override
+    public InputStream getLogsAsStream(List<Object> filters) {
+        // apply filters as we have them
+        DbQueryBuilder<Log> builder = logDao.createQueryBuilder();
 
-		if (sb.length() == 0) {
-			return null;
-		} else {
-			return new ByteArrayInputStream(sb.toString().getBytes());
-		}
-	}
+        if (filters == null) {
+            // no filters, take all the data
+        } else {
+            for (Object filter : filters) {
+                builder.addFilter(filter);
+            }
+        }
+        // get data and transform them into stream
+        List<Log> data = logDao.executeList(builder.getQuery());
 
+        StringBuilder sb = new StringBuilder();
+
+        for (Log log : data) {
+            sb.append(new Date(log.getTimestamp()));
+            sb.append(' ');
+            sb.append(Level.toLevel(log.getLogLevel()));
+            sb.append(' ');
+            sb.append(log.getSource());
+            sb.append(' ');
+            if (log.getStackTrace() == null) {
+                sb.append(log.getMessage());
+            } else {
+                sb.append(log.getMessage());
+                sb.append("\r\nStack trace:\r\n");
+                // just do replace in stack trace
+                sb.append(log.getStackTrace());
+
+
+            }
+            sb.append('\r');
+            sb.append('\n');
+        }
+
+        if (sb.length() == 0) {
+            return null;
+        } else {
+            return new ByteArrayInputStream(sb.toString().getBytes());
+        }
+    }
 }

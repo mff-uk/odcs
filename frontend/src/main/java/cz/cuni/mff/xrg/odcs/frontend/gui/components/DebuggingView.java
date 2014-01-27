@@ -63,7 +63,7 @@ public class DebuggingView extends CustomComponent {
 	
 	private TabSheet tabs;
 	
-	private RDFQueryView queryView;
+	private Browse browse;
 
 	private boolean isFromCanvas;
 	
@@ -203,13 +203,12 @@ public class DebuggingView extends CustomComponent {
 		logLayout.addComponent(logTable);
 		logLayout.setSizeFull();
 		logsTab = tabs.addTab(logLayout, "Log");
-
-// TODO if this is bind to the ctor, how it's update in setExecution ?		
-		queryView = new RDFQueryView(pipelineExec);
+		
+		browse = new Browse(pipelineExec);
 		if (debugDpu != null) {
-			queryView.setDpu(debugDpu);
+			browse.setDpu(debugDpu);
 		}
-		queryTab = tabs.addTab(queryView, "Browse/Query");
+		queryTab = tabs.addTab(browse, "Browse/Query");
 
 		mainLayout.setSizeFull();
 		mainLayout.addComponent(tabs);
@@ -246,7 +245,7 @@ public class DebuggingView extends CustomComponent {
 		// refresh of query View
 		if (isInDebugMode && isRunFinished()) {
 			queryTab.setEnabled(true);
-			queryView.refreshDPUs(pipelineExec);
+			browse.refreshDPUs(pipelineExec);
 		} else {
 			// no query possibility if we are in debug mode
 			// or the pipeline is not finished yet

@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.dataunit.file.impl.ManageableFileDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +33,8 @@ public class SPARQLLoaderTest {
 
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLLoaderTest.class);
+
+	private LoaderEndpointParams virtuosoParams = new LoaderEndpointParams();
 
 	private static RDFDataUnit repository;
 
@@ -55,7 +60,7 @@ public class SPARQLLoaderTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		repository.delete();
+		((ManagableDataUnit)repository).delete();
 	}
 
 	@Test
@@ -93,7 +98,7 @@ public class SPARQLLoaderTest {
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
-	@Test
+	//@Test
 	public void loadDataToSPARQLEndpointTest() {
 		try {
 			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
@@ -105,7 +110,7 @@ public class SPARQLLoaderTest {
 
 			try {
 				SPARQLoader loader = new SPARQLoader(repository,
-						getTestContext());
+						getTestContext(), virtuosoParams);
 
 				loader.loadToSPARQLEndpoint(endpointURL, defaultGraphUri, name,
 						password, graphType, insertType);
@@ -130,8 +135,9 @@ public class SPARQLLoaderTest {
 
 		boolean isLoaded = false;
 
+		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
+				virtuosoParams);
 		try {
-			SPARQLoader loader = new SPARQLoader(repository, getTestContext());
 
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
 					PASSWORD,
@@ -146,7 +152,7 @@ public class SPARQLLoaderTest {
 
 		} finally {
 			try {
-				repository.clearEndpointGraph(endpoint, goalGraphName,
+				((ManagableRdfDataUnit)repository).clearEndpointGraph(endpoint, goalGraphName,
 						getTestContext());
 			} catch (RDFException e) {
 				logger.error(

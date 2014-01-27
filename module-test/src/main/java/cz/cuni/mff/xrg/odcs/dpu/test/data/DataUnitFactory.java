@@ -4,7 +4,7 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import static cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment.virtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import java.io.File;
 import java.util.Properties;
 
@@ -36,7 +36,7 @@ public class DataUnitFactory {
 	 * @param useVirtuoso
 	 * @return
 	 */
-	public RDFDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
+	public ManagableRdfDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
 		if (useVirtuoso) {
 			return createVirtuosoRdfDataUnit(name);
 		} else {
@@ -50,7 +50,7 @@ public class DataUnitFactory {
 	 * @param name
 	 * @return
 	 */
-	private RDFDataUnit createLocalRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createLocalRdfDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String repoPath = workingDirectory.toString()
 				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
@@ -67,7 +67,7 @@ public class DataUnitFactory {
 	 * @param name
 	 * @return
 	 */
-	private RDFDataUnit createVirtuosoRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createVirtuosoRdfDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String id = "dpu-test_" + number + "_" + name;
 		final String namedGraph = GraphUrl.translateDataUnitId(id);

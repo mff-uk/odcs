@@ -84,9 +84,30 @@ public interface DPUPresenter extends Presenter {
 
 	/**
 	 * Get data(pipelines) for selected DPU.
+	 * @param dpu
 	 * @return 
 	 */
 	public IndexedContainer getTableData(DPUTemplateRecord dpu);
+	
+	/**
+	 * Decides whether to show pipeline delete button in the listing
+	 * of pipelines using given DPU template.
+	 * 
+	 * @param pipelineId ID of pipeline to be deleted
+	 * @return true if user has permission to delete given pipeline,
+	 *		   false otherwise
+	 */
+	public boolean showPipelineDeleteButton(long pipelineId);
+
+	/**
+	 * Decides whether to show pipeline detail button in the listing
+	 * of pipelines using given DPU template.
+	 * 
+	 * @param pipelineId ID of the pipeline to display detail of
+	 * @return true if user has permission to view given pipeline,
+	 *		   false otherwise
+	 */
+	public boolean showPipelineDetailButton(long pipelineId);
 	
 	public interface DPUView {
 	

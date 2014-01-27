@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
@@ -195,7 +196,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -217,7 +218,7 @@ public class TestEnvironment {
 			boolean useVirtuoso,
 			String resourceName,
 			RDFFormat format) throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resourceName);
@@ -244,7 +245,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
 		addOutput(name, rdf);
 		return rdf;
 	}
