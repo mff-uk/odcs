@@ -8,7 +8,7 @@ package cz.cuni.mff.xrg.odcs.commons.data;
 public class DataUnitAccessException extends RuntimeException {
 
     public DataUnitAccessException() {
-        super("Can't modify read only dataunit!");
+        super("Can't modify given object!");
     }	
 	
     public DataUnitAccessException(Throwable cause) {
