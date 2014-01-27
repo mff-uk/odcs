@@ -81,7 +81,7 @@ public class DataUnitFactory {
 				return virtosoRepository;
 			case FILE:
 				// create the DataUnit and return it
-				return cz.cuni.mff.xrg.odcs.dataunit.file.impl.Factory.create(name, directory);
+				return cz.cuni.mff.xrg.odcs.dataunit.file.impl.FileDataUnitFactory.create(name, directory);
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}
