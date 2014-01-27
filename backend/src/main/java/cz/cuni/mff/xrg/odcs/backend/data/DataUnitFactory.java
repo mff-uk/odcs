@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -81,7 +82,7 @@ public class DataUnitFactory {
 				return virtosoRepository;
 			case FILE:
 				// create the DataUnit and return it
-				return cz.cuni.mff.xrg.odcs.dataunit.file.impl.FileDataUnitFactory.create(name, directory);
+				return FileDataUnitFactory.create(name, directory);
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}
