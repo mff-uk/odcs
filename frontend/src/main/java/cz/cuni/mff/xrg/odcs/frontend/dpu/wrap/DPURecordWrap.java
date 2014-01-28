@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu;
+package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import com.vaadin.ui.UI;
 import java.io.FileNotFoundException;

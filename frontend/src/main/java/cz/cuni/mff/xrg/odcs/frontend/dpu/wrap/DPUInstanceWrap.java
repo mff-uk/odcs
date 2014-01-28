@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu;
+package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;

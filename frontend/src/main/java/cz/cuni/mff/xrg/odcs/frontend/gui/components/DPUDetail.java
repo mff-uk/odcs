@@ -22,8 +22,8 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUInstanceWrap;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import org.vaadin.dialogs.ConfirmDialog;
 
