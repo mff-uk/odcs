@@ -118,8 +118,10 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			configByte = configWrap.serialize(config);
 		} catch (ConfigException e) {
 			// exception according to definition return false
+			LOG.warn("Dialog configuration is invalid. It's assumed unchanged.", e);
 			return false;
 		} catch (Throwable e) {
+			LOG.warn("Unexpected exception. Configuration is assumed to be unchanged.", e);
 			return false;
 		}
 		
