@@ -10,6 +10,7 @@ public enum ConfigProperty {
 	
 	GENERAL_WORKINGDIR("general.workingdir"),
 
+	BACKEND_NAME("backend.name"),
 	BACKEND_HOST("backend.host"),
 	BACKEND_PORT("backend.port"),
 	BACKEND_LOG_DIR("backend.log.dir"),

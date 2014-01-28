@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend.report;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -19,9 +22,21 @@ class InstantReportEmailBuilder {
 	@Autowired
 	private DPUFacade dpuFacade;
 	
+	@Autowired
+	private AppConfig config;	
+	
 	public String build(PipelineExecution execution, Schedule schedule) {
 		StringBuilder body = new StringBuilder();
 
+		try {
+			final String name = config.getString(ConfigProperty.BACKEND_NAME);
+			body.append("<p>Instance: ");
+			body.append(name);
+			body.append("</p><br/>");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}		
+		
 		body.append("<b>Report for pipeline: </b>");
 		body.append(execution.getPipeline().getName());
 		body.append("<br/>");

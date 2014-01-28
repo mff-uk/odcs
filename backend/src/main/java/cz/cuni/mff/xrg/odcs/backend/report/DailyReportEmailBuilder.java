@@ -1,7 +1,11 @@
 package cz.cuni.mff.xrg.odcs.backend.report;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,8 +16,20 @@ import org.springframework.stereotype.Component;
 @Component
 class DailyReportEmailBuilder {
 	
+	@Autowired
+	private AppConfig config;
+	
 	public String build(List<PipelineExecution> executions) {
 		StringBuilder body = new StringBuilder();
+
+		try {
+			final String name = config.getString(ConfigProperty.BACKEND_NAME);
+			body.append("<p>Instance: ");
+			body.append(name);
+			body.append("</p><br/>");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}
 		
 		body.append("<table border=2 cellpadding=2 >");
 		body.append("<tr bgcolor=\"#C0C0C0\">");
@@ -72,8 +88,6 @@ class DailyReportEmailBuilder {
 		
 		// add the working directory
 		body.append("<br>");
-		body.append("ODCS's working directory: ");
-		body.append(System.getProperty("user.dir"));
 		
 		return body.toString();
 	}
