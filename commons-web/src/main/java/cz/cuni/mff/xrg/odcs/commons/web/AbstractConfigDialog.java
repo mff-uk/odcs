@@ -17,6 +17,14 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 		extends CustomComponent {
 
 	/**
+	 * Set context to the dialog. This method is called only once
+	 * before any other method.
+	 * 
+	 * @param newContext 
+	 */
+	public abstract void setContext(ConfigDialogContext newContext);
+	
+	/**
 	 * Deserialize configuration and call
 	 * {@link #setConfiguration(DPUConfigObject)}
 	 * 

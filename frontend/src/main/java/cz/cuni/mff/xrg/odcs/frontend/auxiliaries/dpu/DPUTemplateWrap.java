@@ -22,11 +22,12 @@ public class DPUTemplateWrap extends DPURecordWrap {
 	 * @param dpuTemplate
 	 */
 	public DPUTemplateWrap(DPUTemplateRecord dpuTemplate) {
-		super(dpuTemplate);
+		super(dpuTemplate, true);
 		this.dpuTemplate = dpuTemplate;
 	}
 
 	public DPUTemplateRecord getDPUTemplateRecord() {
 		return dpuTemplate;
 	}
+	
 }

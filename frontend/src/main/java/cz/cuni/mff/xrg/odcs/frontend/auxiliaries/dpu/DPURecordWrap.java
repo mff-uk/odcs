@@ -9,8 +9,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
+import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
 
 /**
  * Class wrap {
@@ -27,13 +29,17 @@ class DPURecordWrap {
 	 * Wrapped DPU.
 	 */
 	private DPURecord dpuRecord = null;
+		
 	/**
 	 * DPU's configuration dialog.
 	 */
 	private AbstractConfigDialog<DPUConfigObject> configDialog = null;
 
-	protected DPURecordWrap(DPURecord dpuRecord) {
+	private boolean isTemplate;
+	
+	protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
 		this.dpuRecord = dpuRecord;
+		this.isTemplate = isTemplate;
 	}
 
 	/**
@@ -124,6 +130,12 @@ class DPURecordWrap {
 			dialogProvider = (ConfigDialogProvider<DPUConfigObject>) instance;
 			// get configuration dialog
 			configDialog = dialogProvider.getConfigurationDialog();
+			if (configDialog != null) {
+				// setup the dialog
+				final ConfigDialogContext context 
+						= new ConfigDialogContextImpl(isTemplate);
+				configDialog.setContext(context);
+			}
 		} else {
 			// no configuration dialog
 			configDialog = null;

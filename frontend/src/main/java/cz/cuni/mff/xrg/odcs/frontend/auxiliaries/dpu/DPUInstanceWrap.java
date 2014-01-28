@@ -23,9 +23,10 @@ public class DPUInstanceWrap extends DPURecordWrap {
 	 * Create wrap for DPUTemplateRecord.
 	 *
 	 * @param dpuTemplate
+	 * @param dpuFacade
 	 */
 	public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade) {
-		super(dpuTemplate);
+		super(dpuTemplate, false);
 		this.dpuFacade = dpuFacade;
 		this.dpuInstance = dpuTemplate;
 	}

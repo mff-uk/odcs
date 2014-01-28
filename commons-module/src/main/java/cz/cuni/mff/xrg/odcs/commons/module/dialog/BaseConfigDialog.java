@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
+import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
 
 /**
  * 
@@ -34,11 +35,21 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 */
 	private byte[] lastSetConfig;
 	
+	/**
+	 * DPUs context. 
+	 */
+	private ConfigDialogContext context;
+	
 	public BaseConfigDialog(Class<C> configClass) {
 		this.configWrap = new ConfigWrap<>(configClass);
 		this.lastSetConfig = null;
 	}
 
+	@Override
+	public void setContext(ConfigDialogContext newContext) {
+		this.context = newContext;
+	}
+	
 	@Override
 	public void setConfig(byte[] conf) throws ConfigException {
 		C config;
@@ -130,6 +141,13 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		// the configuration is the same so return false
 		final boolean result = !Arrays.equals(configByte, lastSetConfig);
 		return result;
+	}
+	
+	/**
+	 * @return Dialog's context.
+	 */
+	protected ConfigDialogContext getContext() {
+		return this.context;
 	}
 	
 	/**
