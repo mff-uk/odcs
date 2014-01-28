@@ -15,8 +15,10 @@ import java.lang.annotation.Target;
  * If DPU contains more than one output the name should be provided for all the
  * output data units.
  * 
+ * Use only letters [a-z, A-Z], numbers [0-9] and '_' in {@link #name()}.Usage
+ * of other chars is not allowed. 
+ * 
  * @author Petyr
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
