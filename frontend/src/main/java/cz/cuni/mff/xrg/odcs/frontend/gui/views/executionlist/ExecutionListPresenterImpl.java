@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 import java.util.Date;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tepi.filtertable.datefilter.DateInterval;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
@@ -42,35 +44,27 @@ import org.tepi.filtertable.numberfilter.NumberInterval;
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
-	
 	@Autowired
 	private DbExecution dbExecution;
-	
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
-	
 	@Autowired
 	private PipelineFacade pipelineFacade;
-	
 	@Autowired
 	private PipelineHelper pipelineHelper;
-	
 	@Autowired
 	private ExecutionListView view;
-
 	@Autowired
-	private Utils utils;		
-	
+	private Utils utils;
 	private ExecutionListData dataObject;
-	
 	private CachedSource<PipelineExecution> cachedSource;
-	
 	private RefreshManager refreshManager;
-	
 	private Date lastLoad = new Date(0L);
-	
+	private ClassNavigator navigator;
+
 	@Override
 	public Object enter() {
+		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
 		cachedSource = new CachedSource<>(dbExecution, new ExecutionAccessor());
 		ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
@@ -86,13 +80,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				LOG.debug("ExecutionMonitor refreshed.");
 			}
 		});
-		
+
 		// set data object
 		view.setDisplay(dataObject);
 
 		// add initial name filter
 		view.setFilter("owner.username", utils.getUserName());
-		
+
 		// return main component
 		return viewObject;
 	}
@@ -121,6 +115,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 					case "isDebugging":
 					case "schedule":
 						view.setFilter(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
+						break;
+					case "start":
+						view.setFilter(entry.getKey(), ParametersHandler.getDateInterval(entry.getValue()));
 						break;
 					default:
 						view.setFilter(entry.getKey(), entry.getValue());
@@ -164,7 +161,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public void showDebugEventHandler(long executionId) {
 		PipelineExecution exec = getLightExecution(executionId);
-		if(exec == null) {
+		if (exec == null) {
 			Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);
 			return;
 		}
@@ -218,7 +215,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		String uriFragment = Page.getCurrent().getUriFragment();
 		ParametersHandler handler = new ParametersHandler(uriFragment);
 		handler.addParameter("page", newPageNumber.toString());
-		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 
 	@Override
@@ -234,12 +231,24 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				case "id":
 					value = ParametersHandler.getStringForInterval((NumberInterval) filterValue);
 					break;
+				case "start":
+					value = ParametersHandler.getStringForInterval((DateInterval) filterValue);
+					break;
 				default:
 					value = filterValue.toString();
 					break;
 			}
 			handler.addParameter(propertyId, value);
 		}
-		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+	}
+
+	@Override
+	public void navigateToEventHandler(Class where, Object param) {
+		if (param == null) {
+			navigator.navigateTo(where);
+		} else {
+			navigator.navigateTo(where, param.toString());
+		}
 	}
 }

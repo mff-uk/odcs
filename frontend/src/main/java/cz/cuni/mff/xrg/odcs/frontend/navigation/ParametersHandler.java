@@ -3,8 +3,11 @@ package cz.cuni.mff.xrg.odcs.frontend.navigation;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import org.tepi.filtertable.datefilter.DateInterval;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
@@ -29,6 +32,23 @@ public class ParametersHandler {
 			String min = interval.getGreaterThanValue() == null ? "" : interval.getGreaterThanValue();
 			String max = interval.getLessThanValue() == null ? "" : interval.getLessThanValue();
 			return String.format("%s-%s", min, max);
+		}
+	}
+
+	public static String getStringForInterval(DateInterval interval) {
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		String min = interval.getFrom() == null ? "" : format.format(interval.getFrom());
+		String max = interval.getTo() == null ? "" : format.format(interval.getTo());
+		return String.format("%s-%s", min, max);
+	}
+
+	public static Object getDateInterval(String value) {
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		String[] boundaries = value.split("-", -1);
+		try {
+			return new DateInterval(boundaries[0].isEmpty() ? null : format.parse(boundaries[0]), boundaries[1].isEmpty() ? null : format.parse(boundaries[1]));
+		} catch (ParseException ex) {
+			return null;
 		}
 	}
 	private String uriFragment;

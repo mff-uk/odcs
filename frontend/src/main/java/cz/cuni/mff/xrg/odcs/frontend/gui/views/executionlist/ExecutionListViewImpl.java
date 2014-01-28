@@ -36,6 +36,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator.Action;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.util.Date;
 import java.util.HashMap;
@@ -434,6 +435,22 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			}
 		});
 
+		executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
+			@Override
+			public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
+				Button btnEdit = new Button("Detail", new Button.ClickListener() {
+					@Override
+					public void buttonClick(Button.ClickEvent event) {
+						presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
+					}
+				});
+				Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
+				HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
+				colLayout.setSpacing(true);
+				return colLayout;
+			}
+		});
+
 		//Status column. Contains status icons.
 		executionTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
@@ -502,7 +519,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.addGeneratedColumn("", createColumnGenerator(presenter));
 		executionTable.setVisibleColumns();
 		executionTable.addListener(new PagedFilterTable.PageChangeListener() {
-
 			@Override
 			public void pageChanged(PagedTableChangeEvent event) {
 				int newPageNumber = event.getCurrentPage();
@@ -510,12 +526,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			}
 		});
 		executionTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
-
 			@Override
 			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-				for(Object id : event.getContainer().getContainerPropertyIds()) {
+				for (Object id : event.getContainer().getContainerPropertyIds()) {
 					Object filterValue = executionTable.getFilterFieldValue(id);
-					presenter.filterParameterEventHander((String)id, filterValue);
+					presenter.filterParameterEventHander((String) id, filterValue);
 				}
 			}
 		});

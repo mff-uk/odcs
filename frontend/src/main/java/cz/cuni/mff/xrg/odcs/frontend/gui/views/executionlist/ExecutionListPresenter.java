@@ -55,6 +55,8 @@ public interface ExecutionListPresenter extends Presenter {
 	public void pageChangedHandler(Integer newPageNumber);
 
 	public void filterParameterEventHander(String string, Object filterValue);
+	
+	public void navigateToEventHandler(Class where, Object param);
 
 	/**
 	 * View that can be used with the presenter.
