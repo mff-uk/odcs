@@ -218,7 +218,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		String uriFragment = Page.getCurrent().getUriFragment();
 		ParametersHandler handler = new ParametersHandler(uriFragment);
 		handler.addParameter("page", newPageNumber.toString());
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 
 	@Override
@@ -240,6 +240,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 			}
 			handler.addParameter(propertyId, value);
 		}
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 }

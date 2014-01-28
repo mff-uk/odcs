@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import static com.vaadin.server.DefaultErrorHandler.doDefault;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -329,5 +330,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
+	}
+
+	public void setUriFragment(String uriFragment, boolean throwEvents) {
+		Page.getCurrent().setUriFragment(uriFragment, throwEvents);
+		if(uriFragment.length() > 0) {
+			actualView = uriFragment.substring(1);
+		}
 	}
 }

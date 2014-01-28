@@ -86,6 +86,9 @@ public class Browse extends CustomComponent {
 	}
 
 	private ExecutionInfo getExecutionInfo(PipelineExecution exec) {
+		if(exec == null) {
+			return null;
+		}
 		ExecutionContextInfo context = exec.getContextReadOnly();
 		if (context != null) {
 			return new ExecutionInfo(context);
