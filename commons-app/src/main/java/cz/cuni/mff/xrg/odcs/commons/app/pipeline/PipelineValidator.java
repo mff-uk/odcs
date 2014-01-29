@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Class for validating the pipelines.
  *
+ * @author Bogo 
  * @author Petyr
  */
 public class PipelineValidator {
