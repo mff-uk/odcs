@@ -4,9 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import ch.qos.logback.classic.Level;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.FilterReply;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 /**
  * Use MDC value {@link LogMessage.MDPU_EXECUTION_KEY_NAME} to determine 
@@ -28,7 +28,8 @@ public class MdcExecutionLevelFilter extends ch.qos.logback.core.filter.Filter<I
 	
 	@Override
 	public FilterReply decide(ILoggingEvent event) {
-		String execution = event.getMDCPropertyMap().get(LogMessage.MDPU_EXECUTION_KEY_NAME);
+		final String execution 
+				= event.getMDCPropertyMap().get(Log.MDC_EXECUTION_KEY_NAME);
 		Level level = levels.get(execution);
 		if (level == null) {
 			// no restriction

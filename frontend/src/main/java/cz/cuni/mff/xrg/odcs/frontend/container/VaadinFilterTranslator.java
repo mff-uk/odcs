@@ -10,18 +10,17 @@ import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
  * Translate vaadin's filters into javax.persistence predicates.
+ * 
  * @author Petyr
  * @author bogo
  */
