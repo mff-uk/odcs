@@ -19,7 +19,7 @@ public class EdgeCompilerTest {
 	private final EdgeCompiler edgeCompiler = new EdgeCompiler(); 
 	
 	@Test
-	public void simpleTest() {
+	public void mappingToListAndBack() {
 		List<DataUnitDescription> sources = new LinkedList<>();
 		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
 		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
@@ -30,39 +30,25 @@ public class EdgeCompilerTest {
 		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_C", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_D", "", "", false));
-		// create mapping 
+		// create mapping		
+		List<MutablePair<Integer, Integer>> mappings = new LinkedList<>();
 		// out_A -> in_B
-		MutablePair<List<Integer>, Integer> mapping_A = new MutablePair<>();
-		mapping_A.left = new LinkedList<>();
-		mapping_A.left.add(0);
-		mapping_A.right = 1;
+		mappings.add(new MutablePair<>(0, 1));
 		// out_B -> in_A
-		MutablePair<List<Integer>, Integer> mapping_B = new MutablePair<>();
-		mapping_B.left = new LinkedList<>();
-		mapping_B.left.add(2);
-		mapping_B.right = 0;
+		mappings.add(new MutablePair<>(1, 0));
 		// out_C -> in_C
-		MutablePair<List<Integer>, Integer> mapping_C = new MutablePair<>();
-		mapping_C.left = new LinkedList<>();
-		mapping_C.left.add(3);
-		mapping_C.right = 3;		
-		// add to mapping
-		List<MutablePair<List<Integer>, Integer>> mappings = new LinkedList<>();
-		mappings.add(mapping_A);
-		mappings.add(mapping_B);
-		mappings.add(mapping_C);
+		mappings.add(new MutablePair<>(2, 2));
 		// convert into script ..
-		String script = edgeCompiler.compile(mappings, sources, targets);
+		String script = edgeCompiler.translate(mappings, sources, targets, null);
 		// convert back from script
-		List<MutablePair<List<Integer>, Integer>> outputMappings =
-				edgeCompiler.decompile(script, sources, targets);
+		List<MutablePair<Integer, Integer>> outputMappings =
+				edgeCompiler.translate(script, sources, targets, null);
 		// and should be the same
 		assertArrayEquals(mappings.toArray(), outputMappings.toArray());
 	}
 	
-	// TODO Enable after the EdgeCompiler update !!
-	//@Test
-	public void manyToOneTest() {
+	@Test
+	public void mappingToListAndBackManyToOne() {
 		List<DataUnitDescription> sources = new LinkedList<>();
 		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
 		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
@@ -71,24 +57,49 @@ public class EdgeCompilerTest {
 		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
 		// create mapping 
+		List<MutablePair<Integer, Integer>> mappings = new LinkedList<>();
 		// out_A -> in_A
+		mappings.add(new MutablePair<>(0, 0));
 		// out_B -> in_A
+		mappings.add(new MutablePair<>(1, 0));
 		// out_C -> in_A
-		MutablePair<List<Integer>, Integer> mapping_A = new MutablePair<>();
-		mapping_A.left = new LinkedList<>();
-		mapping_A.left.add(0);
-		mapping_A.left.add(1);
-		mapping_A.left.add(2);
-		mapping_A.right = 0;
-		// add to mapping
-		List<MutablePair<List<Integer>, Integer>> mappings = new LinkedList<>();
-		mappings.add(mapping_A);
+		mappings.add(new MutablePair<>(2, 0));
 		// convert into script ..
-		String script = edgeCompiler.compile(mappings, sources, targets);
+		String script = edgeCompiler.translate(mappings, sources, targets, null);
 		// convert back from script
-		List<MutablePair<List<Integer>, Integer>> outputMappings =
-				edgeCompiler.decompile(script, sources, targets);
+		List<MutablePair<Integer, Integer>> outputMappings =
+				edgeCompiler.translate(script, sources, targets, null);
+		// and should be the same
+		assertArrayEquals(mappings.toArray(), outputMappings.toArray());
+	}
+	
+	@Test
+	public void backCompability() {
+		List<DataUnitDescription> sources = new LinkedList<>();
+		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_C", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_D", "", ""));
+		List<DataUnitDescription> targets = new LinkedList<>();
+		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
+		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
+		targets.add(DataUnitDescription.createInput("in_C", "", "", false));
+		targets.add(DataUnitDescription.createInput("in_D", "", "", false));
+		// create mapping		
+		List<MutablePair<Integer, Integer>> mappings = new LinkedList<>();
+		// out_A -> in_B
+		mappings.add(new MutablePair<>(0, 1));
+		// out_B -> in_A
+		mappings.add(new MutablePair<>(1, 0));
+		// out_C -> in_C
+		mappings.add(new MutablePair<>(2, 2));
+		// convert into script ..
+		String script = "out_A -> in_B;out_B -> in_A;out_C -> in_C;";
+		// convert back from script
+		List<MutablePair<Integer, Integer>> outputMappings =
+				edgeCompiler.translate(script, sources, targets, null);
 		// and should be the same
 		assertArrayEquals(mappings.toArray(), outputMappings.toArray());
 	}	
+	
 }

@@ -105,19 +105,20 @@ public final class EdgeCompiler {
 		
 		final StringBuilder script = new StringBuilder();
 		// add information about version into mapping
-		script.append("#1");
-		script.append(EdgeInstructions.Separator.getValue());
+//		script.append("#1");
+//		script.append(EdgeInstructions.Separator.getValue());
 		// go through the sources
 		for (MutablePair<Integer, Integer> mapping : mappings) {
-			if (mapping.left > 0 && mapping.left < sources.size()) {
+			if (mapping.left < 0 && mapping.left >= sources.size()) {
 				handler.sourceIndexOutOfRange();
+				continue;
 			}
-			if (mapping.right > 0 && mapping.right < targets.size()) {
+			if (mapping.right < 0 && mapping.right >= targets.size()) {
 				handler.targetIndexOutOfRange();
+				continue;
 			}
-			
 			final String source = sources.get(mapping.left).getName();
-			final String target = sources.get(mapping.right).getName();
+			final String target = targets.get(mapping.right).getName();
 			// add to mapping
 			script.append(source);
 			script.append(' ');
@@ -159,7 +160,8 @@ public final class EdgeCompiler {
 		for (String item : commands) {
 			if (item.startsWith("#")) {
 				// version, does not care about it now
-			} 
+				continue;
+			}
 			
 			final String[] cmd = item.split(" ");
 			if (cmd.length != 3) {
@@ -176,7 +178,7 @@ public final class EdgeCompiler {
 			}
 			// get indexes
 			final Integer sourceIndex = getIndex(sources, cmd[0]);
-			final  Integer targetIndex = getIndex(targets, cmd[2]);
+			final Integer targetIndex = getIndex(targets, cmd[2]);
 			if (sourceIndex == null || targetIndex == null) {
 				// mapping for no longer existing DataUnitDescription
 				handler.invalidMapping(item);
