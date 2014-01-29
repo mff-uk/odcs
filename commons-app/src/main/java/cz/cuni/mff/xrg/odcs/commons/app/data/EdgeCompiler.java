@@ -356,8 +356,13 @@ public final class EdgeCompiler {
 		return null;
 	}
 
-	
-	
+	/**
+	 * 
+	 * @param graph
+	 * @param explorer
+	 * @return 
+	 * @deprecated Use pipeline.PipelineValidator instead
+	 */
 	public String checkMandatoryInputsAndOutputs(PipelineGraph graph, DPUExplorer explorer) {
 		String report = "";
 		for (Node node : graph.getNodes()) {
