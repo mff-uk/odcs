@@ -29,11 +29,7 @@ public class ConfigurableDataSource extends BasicDataSource {
 		setUsername(config.getString(ConfigProperty.DATABASE_USER));
 		setPassword(config.getString(ConfigProperty.DATABASE_PASSWORD));
 		setDriverClassName(DRIVER_CLASS_NAME);
-		
-		// Auto-commit needs to be enabled for Virtuoso, see GH-953.
-		// This prevents rollback when returning connection to the pool.
-		// See PoolableConnectionFactory#passivateObject().
-		setDefaultAutoCommit(true);
+		setDefaultAutoCommit(false);
 	}
 	
 	/**

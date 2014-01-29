@@ -14,7 +14,6 @@ toreplace=(
 '"~`'
 'LONG VARBINARY~BLOB'
 'LONG VARCHAR~TEXT'
-'LONG NVARCHAR~TEXT'
 )
 
 # read schema and data

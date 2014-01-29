@@ -142,8 +142,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_PIPELINE"
 CREATE INDEX "ix_EXEC_PIPELINE_status" ON "DB"."ODCS"."EXEC_PIPELINE" ("status");
 CREATE INDEX "ix_EXEC_PIPELINE_pipeline_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("pipeline_id");
 CREATE INDEX "ix_EXEC_PIPELINE_debug_mode" ON "DB"."ODCS"."EXEC_PIPELINE" ("debug_mode");
--- Virtuoso 7 cannot handle the following index for some reason, see GH-952.
--- CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."ODCS"."EXEC_PIPELINE" ("t_start");
+CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."ODCS"."EXEC_PIPELINE" ("t_start");
 CREATE INDEX "ix_EXEC_PIPELINE_context_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("context_id");
 CREATE INDEX "ix_EXEC_PIPELINE_schedule_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("schedule_id");
 CREATE INDEX "ix_EXEC_PIPELINE_owner_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("owner_id");

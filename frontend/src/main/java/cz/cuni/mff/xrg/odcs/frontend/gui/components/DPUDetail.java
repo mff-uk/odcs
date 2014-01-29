@@ -46,22 +46,20 @@ public class DPUDetail extends Window {
 	 */
 	private AbstractConfigDialog<DPUConfigObject> confDialog;
 	private DPUFacade dpuFacade;
-	private Button saveAsNewButton;
-	private Button saveAndCommitButton;
-	private VerticalLayout mainLayout;
 
 	/**
 	 * Basic constructor, takes DPUInstance which detail should be showed.
 	 *
 	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
 	 */
-	public DPUDetail(DPUFacade dpuFacade) {
+	public DPUDetail(DPUInstanceRecord dpu, DPUFacade dpuFacade, boolean readOnly) {
 		this.dpuFacade = dpuFacade;
 		this.setResizable(false);
 		this.setModal(true);
+		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
+		this.setCaption(String.format("%s detail%s", dpu.getName().trim(), readOnly ? " - Read only mode" : ""));
 
-
-		mainLayout = new VerticalLayout();
+		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
 		mainLayout.setMargin(true);
 
@@ -78,6 +76,7 @@ public class DPUDetail extends Window {
 		dpuName.setImmediate(false);
 		dpuName.setWidth("280px");
 		dpuName.setHeight("-1px");
+		dpuName.setValue(dpu.getName().trim());
 		dpuName.setRequired(true);
 		dpuName.setRequiredError("DPU name must be filled!");
 		dpuName.addValueChangeListener(new Property.ValueChangeListener() {
@@ -99,6 +98,11 @@ public class DPUDetail extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("500px");
 		dpuDescription.setHeight("60px");
+		if (dpu.useDPUDescription()) {
+			// leave dpuDescription blank
+		} else {
+			dpuDescription.setValue(dpu.getDescription().trim());
+		}
 		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
@@ -106,83 +110,7 @@ public class DPUDetail extends Window {
 				false));
 		mainLayout.addComponent(dpuGeneralSettingsLayout);
 
-
-
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setStyleName("dpuDetailButtonBar");
-		buttonBar.setMargin(new MarginInfo(true, false, false, false));
-
-		saveAndCommitButton = new Button("Save",
-				new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				if (saveDPUInstance()) {
-					result = true;
-					close();
-				}
-			}
-		});
-		saveAndCommitButton.setWidth("90px");
-		buttonBar.addComponent(saveAndCommitButton);
-
-		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				result = false;
-				close();
-			}
-		});
-		cancelButton.setWidth("90px");
-		buttonBar.addComponent(cancelButton);
-
-		Label placeFiller = new Label(" ");
-		buttonBar.addComponent(placeFiller);
-
-		saveAsNewButton = new Button("Save as DPU template",
-				new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				ConfirmDialog.show(UI.getCurrent(),
-						"Save as new DPU template?",
-						new ConfirmDialog.Listener() {
-					@Override
-					public void onClose(ConfirmDialog cd) {
-						if (cd.isConfirmed()) {
-							if (saveDpuAsNew()) {
-								result = true;
-								close();
-							}
-						}
-					}
-				});
-			}
-		});
-
-		buttonBar.addComponent(saveAsNewButton);
-
-		mainLayout.addComponent(buttonBar);
-
-		this.setContent(mainLayout);
-		setSizeUndefined();
-	}
-
-	public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
-		this.setCaption(String.format("%s detail%s", dpu.getName().trim(), readOnly ? " - Read only mode" : ""));
-		dpuName.setValue(dpu.getName().trim());
-		if (dpu.useDPUDescription()) {
-			// leave dpuDescription blank
-		} else {
-			dpuDescription.setValue(dpu.getDescription().trim());
-		}
-		saveAndCommitButton.setEnabled(!readOnly);
-		saveAsNewButton.setEnabled(!readOnly);
-
 		// load instance
-		if (confDialog != null) {
-			mainLayout.removeComponent(confDialog);
-		}
-
 		confDialog = null;
 		try {
 			confDialog = dpuInstance.getDialog();
@@ -220,8 +148,66 @@ public class DPUDetail extends Window {
 			confDialog.setWidth("100%");
 
 			setResizable(true);
-			mainLayout.addComponent(confDialog, mainLayout.getComponentCount() - 1);
+			mainLayout.addComponent(confDialog);
 		}
+
+		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar.setStyleName("dpuDetailButtonBar");
+		buttonBar.setMargin(new MarginInfo(true, false, false, false));
+
+		Button saveAndCommitButton = new Button("Save",
+				new Button.ClickListener() {
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				if (saveDPUInstance()) {
+					result = true;
+					close();
+				}
+			}
+		});
+		saveAndCommitButton.setWidth("90px");
+		saveAndCommitButton.setEnabled(!readOnly);
+		buttonBar.addComponent(saveAndCommitButton);
+
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				result = false;
+				close();
+			}
+		});
+		cancelButton.setWidth("90px");
+		buttonBar.addComponent(cancelButton);
+
+		Label placeFiller = new Label(" ");
+		buttonBar.addComponent(placeFiller);
+
+		Button saveAsNewButton = new Button("Save as DPU template",
+				new Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				ConfirmDialog.show(UI.getCurrent(),
+						"Save as new DPU template?",
+						new ConfirmDialog.Listener() {
+					@Override
+					public void onClose(ConfirmDialog cd) {
+						if (cd.isConfirmed()) {
+							if (saveDpuAsNew()) {
+								result = true;
+								close();
+							}
+						}
+					}
+				});
+			}
+		});
+		saveAsNewButton.setEnabled(!readOnly);
+		buttonBar.addComponent(saveAsNewButton);
+
+		mainLayout.addComponent(buttonBar);
+
+		this.setContent(mainLayout);
+		setSizeUndefined();
 	}
 
 	/**
@@ -236,7 +222,7 @@ public class DPUDetail extends Window {
 			}
 			//Can cause Exception, so should be before any actual saving.
 			dpuInstance.saveConfig();
-
+			
 			String userDescription = dpuDescription.getValue().trim();
 			if (userDescription.isEmpty()) {
 				String dialogDescription = confDialog.getDescription();
@@ -258,7 +244,7 @@ public class DPUDetail extends Window {
 			}
 
 			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
-
+			
 		} catch (Exception ce) {
 			if (ce instanceof SPARQLValidationException) {
 
@@ -306,7 +292,7 @@ public class DPUDetail extends Window {
 		}
 		return true;
 	}
-
+	
 	public boolean getResult() {
 		return result;
 	}

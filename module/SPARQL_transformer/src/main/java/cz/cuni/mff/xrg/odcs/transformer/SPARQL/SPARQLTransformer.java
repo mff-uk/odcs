@@ -11,7 +11,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,15 +86,6 @@ public class SPARQLTransformer
 		final String updateQuery = config.getSPARQLUpdateQuery();
 		final boolean isConstructQuery = config.isConstructType();
 
-		if (updateQuery == null) {
-			context.sendMessage(MessageType.ERROR,
-					"Query for SPARQL transformer is null value");
-		} else if (updateQuery.trim().isEmpty()) {
-			context.sendMessage(MessageType.ERROR,
-					"Query for SPARQL transformer is empty",
-					"SPARQL transformer must constains text of SPARQL query");
-		}
-
 		try {
 			if (isConstructQuery) {
 
@@ -112,10 +102,10 @@ public class SPARQLTransformer
 				Dataset dataSet = createGraphDataSet(inputs);
 				Graph graph = intputDataUnit.executeConstructQuery(
 						constructQuery, dataSet);
-				((ManagableRdfDataUnit)outputDataUnit).addTriplesFromGraph(graph);
+				outputDataUnit.addTriplesFromGraph(graph);
 
 			} else {
-				((ManagableRdfDataUnit)outputDataUnit).merge(intputDataUnit);
+				outputDataUnit.merge(intputDataUnit);
 				outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
 			}
 

@@ -55,7 +55,7 @@ public class DataUnitFactory {
 						+ "be created.");
 			case RDF_Local:
 				// create DataUnit
-				ManagableDataUnit localRepository = RDFDataUnitFactory
+				RDFDataUnit localRepository = RDFDataUnitFactory
 						.createLocalRDFRepo(directory.getAbsolutePath(), id,
 						name, GraphUrl.translateDataUnitId(id));
 
@@ -68,7 +68,7 @@ public class DataUnitFactory {
 				);
 
 				// create repository
-				ManagableDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
+				RDFDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
 						config .getString(ConfigProperty.DATABASE_HOSTNAME),
 						config.getString(ConfigProperty.DATABASE_PORT),
 						config.getString(ConfigProperty.DATABASE_USER),
@@ -79,9 +79,6 @@ public class DataUnitFactory {
 				);
 				
 				return virtosoRepository;
-			case FILE:
-				// create the DataUnit and return it
-				return cz.cuni.mff.xrg.odcs.dataunit.file.impl.Factory.create(name, directory);
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}

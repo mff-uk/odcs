@@ -71,12 +71,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency> <!-- file dataunit project -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>dataunit-file-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency> <!-- logback as implementation org.slf4j -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -92,7 +86,7 @@
         <dependency> <!-- xml object de-serialization -->
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.5</version>
+            <version>1.4.4</version>
         </dependency>
 
         <dependency> <!-- OSGI impelemention -->

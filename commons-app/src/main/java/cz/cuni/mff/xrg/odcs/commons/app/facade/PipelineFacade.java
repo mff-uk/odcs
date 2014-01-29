@@ -75,21 +75,12 @@ public interface PipelineFacade extends Facade {
     void delete(Pipeline pipeline);
 
     /**
-     * Fetches pipelines using given DPU template which are visible to currently
-	 * logged-in user.
+     * Fetches all pipelines using give DPU template.
      *
      * @param dpu template
      * @return pipelines using DPU template
      */
     List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu);
-	
-    /**
-     * Fetches all pipelines using given DPU template.
-     *
-     * @param dpu template
-     * @return pipelines using DPU template
-     */
-    List<Pipeline> getAllPipelinesUsingDPU(DPUTemplateRecord dpu);
 
 	/**
 	 * Checks for duplicate pipeline names. The name of pipeline in second

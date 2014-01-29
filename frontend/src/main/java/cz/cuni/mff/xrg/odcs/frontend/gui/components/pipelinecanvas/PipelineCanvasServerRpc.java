@@ -79,11 +79,4 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	 * @param dpuId Id of node, which should be copied.
 	 */
 	public void onDpuCopyRequested(int dpuId, int x, int y);
-	
-	/**
-	 * Occures when multiple DPU are selected/no longer selected.
-	 * @param selected 
-	 * 
-	 */
-	public void onMultipleDPUsSelected(boolean selected);
 }

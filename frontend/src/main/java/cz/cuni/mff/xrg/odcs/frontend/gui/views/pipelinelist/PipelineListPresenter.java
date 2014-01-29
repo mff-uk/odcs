@@ -77,8 +77,6 @@ public interface PipelineListPresenter extends Presenter {
 		public void setPage(int pageNumber);
 
 		public void setFilter(String key, Object value);
-		
-		public void refreshTableControls();
 	}
 
 	/**

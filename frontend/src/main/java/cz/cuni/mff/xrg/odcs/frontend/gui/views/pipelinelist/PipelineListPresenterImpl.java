@@ -136,7 +136,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		pipelineAccessor.clearExecCache();
 		cachedSource.invalidate();
 		dataObject.getContainer().refresh();
-		view.refreshTableControls();
 	}
 
 	@Override

@@ -13,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -40,7 +39,7 @@ public class RDFDataUnitHelper {
 	 * @return Repository or null if there is no browser for given type.
 	 *
 	 */
-	public static ManagableRdfDataUnit getRepository(ExecutionInfo executionInfo,
+	public static RDFDataUnit getRepository(ExecutionInfo executionInfo,
 			DPUInstanceRecord dpuInstance, DataUnitInfo info) {
 
 		// get type and directory

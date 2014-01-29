@@ -60,8 +60,7 @@ public class EdgeCompilerTest {
 		assertArrayEquals(mappings.toArray(), outputMappings.toArray());
 	}
 	
-	// TODO Enable after the EdgeCompiler update !!
-	//@Test
+	@Test
 	public void manyToOneTest() {
 		List<DataUnitDescription> sources = new LinkedList<>();
 		sources.add(DataUnitDescription.createOutput("out_A", "", ""));

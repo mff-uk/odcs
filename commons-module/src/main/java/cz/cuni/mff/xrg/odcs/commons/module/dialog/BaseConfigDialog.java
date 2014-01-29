@@ -21,8 +21,6 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 public abstract class BaseConfigDialog<C extends DPUConfigObject>
 		extends AbstractConfigDialog<C> {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(BaseConfigDialog.class);
-	
 	/**
 	 * Used to convert configuration object into byte array and back.
 	 */
@@ -41,22 +39,10 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 
 	@Override
 	public void setConfig(byte[] conf) throws ConfigException {
-		C config;
-		try {
-			config = configWrap.deserialize(conf);		
-		} catch (ConfigException e) {
-			LOG.error("Failed to deserialize configuration, using default instead.");
-			// failed to deserialize configuraiton, use default
-			config = configWrap.createInstance();
-			setConfiguration(config);
-			// rethrow
-			throw e;
-		}
-		
+		C config = configWrap.deserialize(conf);		
 		boolean originalConfigNull = config == null;
 		
 		if (originalConfigNull) {
-			LOG.warn("The deserialized confirugarion is null, using default instead.");
 			// null -> try to use default configuration
 			config = configWrap.createInstance();
 			if (config == null) {
@@ -74,8 +60,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			if (originalConfigNull) {
 				// newly created configuration is invalid
 				throw new ConfigException(
-						"The default configuration is invalid, there is "
-								+ "probably problem in DPU's implementation.");
+						"The default configuration is invalid, there is probably problem in DPU's implementation.");
 			} else {
 				// notify for invalid configuration
 				throw new ConfigException(

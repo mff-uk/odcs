@@ -206,9 +206,4 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	public void setFilter(String key, Object value) {
 		tablePipelines.setFilterFieldValue(key, value);
 	}
-
-	@Override
-	public void refreshTableControls() {
-		tablePipelines.setCurrentPage(tablePipelines.getCurrentPage());
-	}
 }

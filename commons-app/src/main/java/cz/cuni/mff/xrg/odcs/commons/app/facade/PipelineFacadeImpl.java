@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import java.util.Date;
@@ -174,17 +175,16 @@ class PipelineFacadeImpl implements PipelineFacade {
     public void delete(Pipeline pipeline) {
 		pipelineDao.delete(pipeline);
     }
-	
+
+    /**
+     * Fetches all pipelines using give DPU template.
+     *
+     * @param dpu template
+     * @return pipelines using DPU template
+     */
     @PreAuthorize("hasPermission(#dpu, 'view')")
-    @PostFilter("hasPermission(filterObject,'view')")
 	@Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		return pipelineDao.getPipelinesUsingDPU(dpu);
-    }
-	
-    @PreAuthorize("hasPermission(#dpu, 'delete')")
-	@Override
-    public List<Pipeline> getAllPipelinesUsingDPU(DPUTemplateRecord dpu) {
 		return pipelineDao.getPipelinesUsingDPU(dpu);
     }
 

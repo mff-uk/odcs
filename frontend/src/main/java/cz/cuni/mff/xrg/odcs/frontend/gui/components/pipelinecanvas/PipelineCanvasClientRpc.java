@@ -90,12 +90,4 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
 	 * 
 	 */
 	public void setDpuValidity(int id, boolean isValid);
-	
-	/**
-	 * Formats selected DPUs with given action.
-	 * 
-	 * @param action Formatting action
-	 */
-	public void formatDPUs(String action);
-	
 }

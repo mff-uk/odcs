@@ -33,9 +33,9 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 				+ " LEFT JOIN g.nodes n"
 				+ " LEFT JOIN n.dpuInstance i"
 				+ " LEFT JOIN i.template t"
-				+ " WHERE t.id = :dpuid";
+				+ " WHERE t = :dpu";
 		TypedQuery<Pipeline> query = createTypedQuery(sringQuery);	
-		query.setParameter("dpuid", dpu.getId());
+		query.setParameter("dpu", dpu);
 		return executeList(query);
 	}
 

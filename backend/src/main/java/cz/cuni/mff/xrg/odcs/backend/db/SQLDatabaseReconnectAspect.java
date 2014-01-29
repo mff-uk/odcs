@@ -75,13 +75,13 @@ class SQLDatabaseReconnectAspect {
 		try {
 			retries = appConfig.getInteger(ConfigProperty.DATABASE_RETRIES);
 		} catch (MissingConfigPropertyException ex) {
-			LOG.info("Missing config property {}, using default value '{}'.",
+			LOG.info("Missing config property {}, using default value {}.",
 					ex.getProperty(), retries);
 		}
 		try {
 			wait = appConfig.getInteger(ConfigProperty.DATABASE_WAIT);
 		} catch (MissingConfigPropertyException ex) {
-			LOG.info("Missing config property {}, using default value '{}'.",
+			LOG.info("Missing config property {}, using default value {}.",
 					ex.getProperty(), wait);
 		}
 	}

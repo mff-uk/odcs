@@ -29,11 +29,11 @@ public class CachedSource<T extends DataObject>
 	private static final Logger LOG = LoggerFactory.getLogger(CachedSource.class);
 
 	/**
-	 * The maximum size of cache, it this size is exceeded then the cache is
-	 * cleared.
+	 * The maximum size of cache, it this size is exceeded then the cache
+	 * is cleared.
 	 */
 	private static final int CACHE_MAX_SIZE = 200;
-
+	
 	/**
 	 * Store size of data set in database.
 	 */
@@ -111,26 +111,14 @@ public class CachedSource<T extends DataObject>
 	}
 
 	/**
-	 * Return new default instance of variable.
-	 *
-	 * @return
-	 */
-	private T getDefault() {
-		try {
-			return classAccessor.getEntityClass().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			LOG.error("Failed to create the default instance.", e);
-		}
-		throw new RuntimeException("Failed to load data.");
-	}
-
-	/**
-	 * Load data size from {@link #source} and return it. Do not store them into
-	 * any member variable.
+	 * Load data size from {@link #source} and return it. Do not 
+	 * store them into any member variable.
 	 */
 	int loadSize() {
+		LOG.trace("loadSize()");
 		applyFilters();
-		final int newSize = (int) source.executeSize(queryBuilder.getCountQuery());
+		final int newSize = (int)source.executeSize(queryBuilder.getCountQuery());
+		LOG.trace("loadSize() -> {}", newSize);
 		return newSize;
 	}
 
@@ -140,14 +128,14 @@ public class CachedSource<T extends DataObject>
 	 * @param index
 	 */
 	T loadByIndex(int index) {
+		LOG.trace("loadByIndex({})", index);
 		applyFilters();
-		try {
-			return source.execute(queryBuilder.getQuery().limit(index, 1));
-		} catch (RuntimeException e) {
-			LOG.error("Failed to load item. Try to use new instance instead.", e);
+		T item = source.execute(queryBuilder.getQuery().limit(index, 1));
+		if (item == null) {
+			return null;
 		}
-		// try to return default instead
-		return getDefault();
+		LOG.trace("loadByIndex({}) -- done", index);
+		return item;
 	}
 
 	/**
@@ -158,20 +146,12 @@ public class CachedSource<T extends DataObject>
 	 * @return
 	 */
 	List<T> loadByIndex(int startIndex, int numberOfItems) {
+		LOG.trace("loadByIndex({}, {})", startIndex, numberOfItems);
 		applyFilters();
-		try {
-			final List<T> items = source.executeList(
-					queryBuilder.getQuery().limit(startIndex, numberOfItems));
-			return items;
-		} catch (RuntimeException e) {
-			// failed to load some message
-		}
-		// let's try it by one .. 
-		final List<T> result = new LinkedList<>();
-		for (int index = 0; index < numberOfItems; ++index) {
-			result.add(loadByIndex(startIndex + index));
-		}
-		return result;
+		final List<T> items = source.executeList(
+				queryBuilder.getQuery().limit(startIndex, numberOfItems));
+		LOG.trace("loadByIndex({}, {}) --> done", startIndex, numberOfItems);
+		return items;
 	}
 
 	/**
@@ -195,14 +175,7 @@ public class CachedSource<T extends DataObject>
 				= (DataQueryBuilder.Filterable<T>) queryBuilder;
 
 		filtrableBuilder.addFilter(new Compare.Equal("id", id));
-		
-		T item;
-		try {
-			item = source.execute(queryBuilder.getQuery().limit(0, 1));
-		} catch (RuntimeException e) {
-			LOG.error("Failed to load item. Try to use new instance instead.", e);
-			item = getDefault();
-		}
+		T item = source.execute(queryBuilder.getQuery().limit(0, 1));
 		if (item == null) {
 			LOG.warn("Failed to load data with id {}", id);
 			return;
@@ -244,30 +217,29 @@ public class CachedSource<T extends DataObject>
 	/**
 	 * Add items to the cache, if there are collisions between new and old data
 	 * in ID then the old data are replaced.
-	 *
-	 * @param items
+	 * @param items 
 	 * @param startIndex
 	 */
 	void add(List<T> items, int startIndex) {
 		int index = startIndex;
-		for (T item : items) {
+		for(T item : items) {
 			data.put(item.getId(), item);
 			dataIndexes.put(index, item.getId());
 			++index;
 		}
 	}
-
+	
 	/**
-	 * Return list of used core filters, do not modify the returned list! The
-	 * core filters are not modifiable by using other {@link CachedSource}
+	 * Return list of used core filters, do not modify the returned list!
+	 * The core filters are not modifiable by using other {@link CachedSource}
 	 * methods.
-	 *
-	 * @return
+	 * 
+	 * @return 
 	 */
 	public List<Filter> getFiltersCore() {
 		return coreFilters;
 	}
-
+	
 	@Override
 	public int size() {
 		if (size == null) {
@@ -278,7 +250,7 @@ public class CachedSource<T extends DataObject>
 	}
 
 	@Override
-	public T getObject(Long id) {
+	public T getObject(Long id) {		
 		if (data.containsKey(id)) {
 			// the data are already cached
 		} else {
@@ -297,7 +269,7 @@ public class CachedSource<T extends DataObject>
 			T item = loadByIndex(index);
 			if (item != null) {
 				// add to caches
-				data.put(item.getId(), item);
+				data.put(item.getId(), item);					
 				dataIndexes.put(index, item.getId());
 			}
 			// return new item .. can be null
@@ -319,7 +291,7 @@ public class CachedSource<T extends DataObject>
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-
+		
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
@@ -327,14 +299,14 @@ public class CachedSource<T extends DataObject>
 			if (dataIndexes.containsKey(index)) {
 				// we have mapping, so use it to return the index
 				result.add(dataIndexes.get(index));
-			} else {
+			} else {		
 				// some data are mising, we have to load them
 				final int toLoad = numberOfItems - (index - startIndex);
 				List<T> newData = loadByIndex(index, toLoad);
 				// gather IDs and add data to caches
 				List<Long> newIDs = new ArrayList<>(numberOfItems);
 				for (T item : newData) {
-					data.put(item.getId(), item);
+					data.put(item.getId(), item);				
 					dataIndexes.put(index++, item.getId());
 					newIDs.add(item.getId());
 				}
@@ -343,12 +315,12 @@ public class CachedSource<T extends DataObject>
 				break;
 			}
 		}
-
+		
 		if (data.size() > CACHE_MAX_SIZE) {
 			LOG.debug("Cache cleared");
 			// we preserve indexes as we may need to use them 
 			// for some direct access
-
+			
 			// what we remove are the data .. if they are not in result one
 			List<Long> ids = new ArrayList<>(data.keySet());
 			ids.removeAll(result);
@@ -356,11 +328,11 @@ public class CachedSource<T extends DataObject>
 			for (Long item : ids) {
 				data.remove(item);
 			}
-
+			
 			// this may result in additional query for the data we drop
 			// maybe we can try to be smarter here ...
 		}
-
+				
 		return result;
 	}
 
@@ -371,6 +343,7 @@ public class CachedSource<T extends DataObject>
 				return index;
 			}
 		}
+
 		throw new RuntimeException("Can not determine the index of non cached data.");
 	}
 

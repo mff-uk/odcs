@@ -56,8 +56,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
-	private DPUDetail detailDialog;
-	private Window.CloseListener detailCloseListener;
+	
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
 
 	/**
@@ -131,11 +130,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				storeHistoryGraph();
 				copyDpu(dpuId, x, y);
 			}
-
-			@Override
-			public void onMultipleDPUsSelected(boolean selected) {
-				fireEvent(new FormattingEnabledEvent(PipelineCanvas.this, selected));
-			}
 		});
 
 	}
@@ -144,7 +138,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
-		detailDialog = new DPUDetail(dpuFacade);
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 
@@ -210,7 +203,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
 			edgeCompiler.setDefaultMapping(edge, dpuExplorer.getOutputs(from), dpuExplorer.getInputs(to.getDpuInstance()));
 
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript().replace(';', '\n'));
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript());
 		} else {
 			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
 		}
@@ -233,11 +226,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
-		detailDialog.showDpuDetail(dpu, canvasMode.equals(PipelineEdit.STANDARD_MODE));
-		if (detailCloseListener != null) {
-			detailDialog.removeCloseListener(detailCloseListener);
-		}
-		detailCloseListener = new Window.CloseListener() {
+		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade, canvasMode.equals(PipelineEdit.STANDARD_MODE));
+		detailDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
 				DPUDetail source = (DPUDetail) e.getSource();
@@ -249,12 +239,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 					getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 				}
 			}
-		};
-
-		detailDialog.addCloseListener(detailCloseListener);
-		if (!UI.getCurrent().getWindows().contains(detailDialog)) {
-			UI.getCurrent().addWindow(detailDialog);
-		}
+		});
+		UI.getCurrent().addWindow(detailDialog);
 	}
 
 	/**
@@ -377,7 +363,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				hadInvalidMappings = true;
 				message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
 			}
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript().replace(';', '\n'));
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
 		}
 		if (hadInvalidMappings) {
 			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
@@ -407,7 +393,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void windowClose(CloseEvent e) {
 				isModified = true;
 				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Edge.class));
-				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript().replace(';', '\n'));
+				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
 			}
 		});
 		UI.getCurrent().addWindow(edgeDetailDialog);
@@ -472,9 +458,5 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		} catch (PipelineValidationException ex) {
 			Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
 		}
-	}
-
-	public void formatAction(String action) {
-		getRpcProxy(PipelineCanvasClientRpc.class).formatDPUs(action);
 	}
 }

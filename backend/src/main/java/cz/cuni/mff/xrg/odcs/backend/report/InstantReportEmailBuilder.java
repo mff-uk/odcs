@@ -25,9 +25,6 @@ class InstantReportEmailBuilder {
 		body.append("<b>Report for pipeline: </b>");
 		body.append(execution.getPipeline().getName());
 		body.append("<br/>");
-		body.append("<b>Execution id: </b>");
-		body.append(execution.getId().toString());
-		body.append("<br/>");		
 		body.append("<b>Execution starts at: </b>");
 		body.append(execution.getStart().toString());
 		body.append("<br/>");
@@ -88,12 +85,8 @@ class InstantReportEmailBuilder {
 			// ...
 			body.append("</tr>");
 		}
-		body.append("</table>");
 		
-		// add the working directory
-		body.append("<br>");
-		body.append("ODCS's working directory: ");
-		body.append(System.getProperty("user.dir"));
+		body.append("</table>");
 		
 		return body.toString();
 	}

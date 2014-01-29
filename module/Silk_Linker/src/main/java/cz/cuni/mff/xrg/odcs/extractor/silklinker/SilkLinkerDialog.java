@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.silklinker;
 
-import com.vaadin.data.Validator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
@@ -8,14 +7,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,9 +21,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -39,11 +33,6 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     
     private TextArea silkConfigTextArea;
     private UploadInfoWindow uploadInfoWindow;
-    
-      private Label lFileName;
-      
-      private TextField tfMinConfidenceConfirmed; 
-      private TextField tfMinConfidenceToBeVerified; 
     
     static int fl = 0;
     
@@ -80,9 +69,9 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         final FileUploadReceiver fileUploadReceiver = new FileUploadReceiver();
 
         //Upload component
-        Upload fileUpload = new Upload("Silk configuration file: ", fileUploadReceiver);
+        Upload fileUpload = new Upload("Uploading Silk config file", fileUploadReceiver);
         fileUpload.setImmediate(true);
-        fileUpload.setButtonCaption("Upload");
+        fileUpload.setButtonCaption("Choose");
         //Upload started event listener
         fileUpload.addStartedListener(new Upload.StartedListener() {
             @Override
@@ -112,12 +101,6 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
                     //Path to this file is setting to the textFieldPath field
                     String configText = fileUploadReceiver.getOutputStream().toString();
                     silkConfigTextArea.setValue(configText);
-                    
-                            //to get the current date: 
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date date = new Date();
-                                        
-                    lFileName.setValue("File " + fileUploadReceiver.getFileName() + " was successfully uploaded on: " + dateFormat.format(date));
 
 //                   silkConfigTextArea.setValue(
 //                            FileUploadReceiver.file
@@ -139,11 +122,20 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         uploadInfoWindow = new UploadInfoWindow(fileUpload);
 
 
+//        HorizontalLayout uploadFileLayout = new HorizontalLayout();
+//        uploadFileLayout.setWidth("100%");
+//        uploadFileLayout.setSpacing(true);
+//
+////        textFieldPath.setReadOnly(true);
+//        uploadFileLayout.addComponent(fileUpload);
+//        //uploadFileLayout.addComponent(silkConfigTextArea);
+//        uploadFileLayout.setExpandRatio(fileUpload, 0.2f);
+//        //uploadFileLayout.setExpandRatio(silkConfigTextArea, 0.8f);
+//
+//        //Adding uploading component
+//        mainLayout.addComponent(uploadFileLayout, 0, 1);
+        
          mainLayout.addComponent(fileUpload);
-         
-         
-         lFileName = new Label("File not uploaded");
-         mainLayout.addComponent(lFileName);
 
         //***************
         // TEXT AREA
@@ -165,64 +157,7 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         mainLayout.setColumnExpandRatio(1, 0.99999f);
 
 
-       /*Futher settings
-        * 
-        * 
-        */
         
-          tfMinConfidenceConfirmed = new TextField();
-        tfMinConfidenceConfirmed.setCaption("Minimum score for links considered as 'confirmed links' (0.0 - 1.0):: ");
-        tfMinConfidenceConfirmed.setWidth("100%");
-        tfMinConfidenceConfirmed.addValidator(new Validator() {
-            @Override
-            public void validate(Object value) throws Validator.InvalidValueException {
-                
-                    Float min = Float.parseFloat((String)value);
-                    if (min < 0 || min > 1) {
-                        throw new Validator.InvalidValueException("Value must be between 0.0 and 1.0");
-                    }
-                
-                
-            }
-        });
-       
-        
-         tfMinConfidenceConfirmed.setImmediate(true);
-          mainLayout.addComponent(tfMinConfidenceConfirmed);
-          
-         tfMinConfidenceToBeVerified = new TextField();
-        tfMinConfidenceToBeVerified.setCaption("Minimum score for links considered as 'to be verified links' (0.0 - 1.0): ");
-        tfMinConfidenceToBeVerified.setWidth("100%");
-        tfMinConfidenceToBeVerified.addValidator(new Validator() {
-            @Override
-            public void validate(Object value) throws Validator.InvalidValueException {
-                
-                    Float min = Float.parseFloat((String)value);
-                    if (min < 0 || min > 1) {
-                      
-                        throw new Validator.InvalidValueException("Value must be between 0.0 and 1.0");
-                    }
-                    try {
-                        Float minConfirmed = Float.parseFloat(tfMinConfidenceConfirmed.getValue());
-                        if (min > minConfirmed) {
-                            throw new Validator.InvalidValueException("Value must be between 0.0 and the value set as minimum score for links considered as 'confirmed links'");
-     
-                        }
-                    } catch (ClassCastException e) {
-                        
-                    }
-                    
-                    
-                   
-                    
-                
-                
-            }
-        });
-       
-        
-         tfMinConfidenceToBeVerified.setImmediate(true);
-          mainLayout.addComponent(tfMinConfidenceToBeVerified);
 
 
       
@@ -230,6 +165,20 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         return mainLayout;
     }
     
+//     private void fillTextAreaWithConfig(File f) {
+//
+//                //read file, display it in 
+//                String configText = null;
+//                try {
+//                    configText = SilkLinkerDialog.readFile(f.getCanonicalPath(), StandardCharsets.UTF_8);
+//                } catch (IOException ex) {
+//                    java.util.logging.Logger.getLogger(SilkLinkerDialog.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//
+//                silkConfigTextArea.setValue(configText);
+//
+//
+//            }
 
     @Override
     public void setConfiguration(SilkLinkerConfig conf) throws ConfigException {
@@ -237,13 +186,10 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
         
         if (conf.getSilkConf() != null) {
             silkConfigTextArea.setValue(conf.getSilkConf());
-           
         }
         else {
              silkConfigTextArea.setValue("");
         }
-        tfMinConfidenceConfirmed.setValue(conf.getMinConfirmedLinks());
-        tfMinConfidenceToBeVerified.setValue(conf.getMinLinksToBeVerified());
         
 
     }
@@ -251,38 +197,17 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     @Override
     public SilkLinkerConfig getConfiguration() throws ConfigException {
     //get the conf from textArea
-      
-      if (!tfMinConfidenceConfirmed.isValid()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
-			throw new ConfigException("Configuration cannot be saved, because of invalid values");
-      }
-      else if (!tfMinConfidenceToBeVerified.isValid()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
-			throw new ConfigException("Configuration cannot be saved, because of invalid values");
-      }
-      else if (silkConfigTextArea.getValue().trim().isEmpty()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
-			throw new ConfigException("Configuration cannot be saved, because no Silk config file was specified");
-      }
-      else {
-            SilkLinkerConfig conf = new SilkLinkerConfig(silkConfigTextArea.getValue(), tfMinConfidenceConfirmed.getValue().trim(), tfMinConfidenceToBeVerified.getValue().trim());
-            return conf;
-      }
+       SilkLinkerConfig conf = null;
         
-//      SilkLinkerConfig conf = null;
-//        
-//       if (silkConfigTextArea.getValue().trim().isEmpty()) {
-//           //no config!
-//           conf = new SilkLinkerConfig();
-//       }
-//       else {
-//            conf = new SilkLinkerConfig(silkConfigTextArea.getValue());
-//        }
+       if (silkConfigTextArea.getValue().trim().isEmpty()) {
+           //no config!
+           conf = new SilkLinkerConfig();
+       }
+       else {
+        conf = new SilkLinkerConfig(silkConfigTextArea.getValue());
+        }
        
-       
+        return conf;
     }
 
     static String readFile(String path, Charset encoding)
@@ -316,12 +241,6 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 //    private DPUContext context;
     
     private OutputStream fos;
-    
-       private String fileName;
-       
-           public String getFileName() {
-        return fileName;
-    }
     
     public OutputStream getOutputStream() {
         return fos;
@@ -363,7 +282,7 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
 //            file = new File("/" + path + "/" + filename); // path for upload file in temp directory
 
-        this.fileName = filename;
+      
         fos = new ByteArrayOutputStream();
         return fos;
         
