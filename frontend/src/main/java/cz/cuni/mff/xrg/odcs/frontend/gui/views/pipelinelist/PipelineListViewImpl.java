@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -95,7 +96,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		// add column
 		tablePipelines.setImmediate(true);
-		tablePipelines.addGeneratedColumn("", 4, createColumnGenerator(presenter));
+		tablePipelines.addGeneratedColumn("", 0, createColumnGenerator(presenter));
 		tablePipelines.setVisibleColumns();
 
 		tablePipelines.setFilterBarVisible(true);
@@ -140,47 +141,47 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
 
-		generator.addButton("Edit", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.navigateToEventHandler(PipelineEdit.class, id);
 			}
-		});
+		}, new ThemeResource("icons/gear.png"));
 
-		generator.addButton("Copy", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.copyEventHandler(id);
 			}
-		});
+		}, new ThemeResource("img/copy.png"));
 
-		generator.addButton("Delete", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(final long id) {
 				presenter.deleteEventHandler(id);
 			}
-		});
+		}, new ThemeResource("icons/trash.png"));
 
-		generator.addButton("Run", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Run", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.runEventHandler(id, false);
 			}
-		});
+		}, new ThemeResource("icons/running.png"));
 
-		generator.addButton("Debug", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.runEventHandler(id, true);
 			}
-		});
+		}, new ThemeResource("icons/debug.png"));
 
-		generator.addButton("Schedule", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Schedule", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.scheduleEventHandler(id);
 			}
-		});
+		}, new ThemeResource("icons/scheduled.png"));
 
 		return generator;
 	}

@@ -52,11 +52,12 @@ public class IntlibPagedTable extends PagedFilterTable {
 		Label pageLabel = new Label("Page:&nbsp;", ContentMode.HTML);
 		final TextField currentPageTextField = new TextField();
 		currentPageTextField.setValue(String.valueOf(getCurrentPage()));
-		currentPageTextField.setWidth("80px");
 		currentPageTextField.setConverter(new StringToIntegerConverter() {
 			@Override
 			protected NumberFormat getFormat(Locale locale) {
-				return super.getFormat(UI.getCurrent().getLocale());
+				NumberFormat nf = super.getFormat(UI.getCurrent().getLocale());
+				nf.setGroupingUsed(false);
+				return nf;
 			}
 		});
 		Label separatorLabel = new Label("&nbsp;/&nbsp;", ContentMode.HTML);
@@ -79,7 +80,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 			}
 		});
 		pageLabel.setWidth(null);
-		currentPageTextField.setColumns(3);
+		currentPageTextField.setColumns(5);
 		separatorLabel.setWidth(null);
 		totalPagesLabel.setWidth(null);
 

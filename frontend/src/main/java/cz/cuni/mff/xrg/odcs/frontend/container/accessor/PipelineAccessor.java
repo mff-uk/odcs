@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.text.DateFormat;
+import java.util.LinkedList;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +24,15 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineAccessor.class);
 		
-	private final List<String> all = Arrays.asList("id", "name", "owner.username", "description", "duration", "lastExecTime", "lastExecStatus");
+	private final List<String> all = Arrays.asList("id", "name", "duration", "lastExecTime", "lastExecStatus");
 	
-	private final List<String> sortable = Arrays.asList("id", "name");
+	private final List<String> visible = Arrays.asList("name", "duration", "lastExecTime", "lastExecStatus");
 	
-	private final List<String> filterable = Arrays.asList("id", "name", "owner.username", "description");
+	private final List<String> sortable = Arrays.asList("name");
 	
-	private final List<String> toFetch = Arrays.asList("owner");
+	private final List<String> filterable = Arrays.asList("name");
+	
+	private final List<String> toFetch = new LinkedList<>();
 	
 	@Autowired
 	private PipelineFacade pipelineFacade;
@@ -57,7 +60,7 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
 	@Override
 	public List<String> visible() {
-		return all;
+		return visible;
 	}
 
 	@Override
@@ -77,10 +80,6 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 				return "id";
 			case "name":
 				return "name";
-			case "owner.username":
-				return "owner";
-			case "description":
-				return "description";
 			case "duration":
 				return "Last run time";
 			case "lastExecTime":
@@ -100,14 +99,6 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 			case "name":
 				String name = object.getName();
 				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
-			case "owner.username":
-				return object.getOwner().getUsername();
-			case "description":
-				String description = object.getDescription();
-				if(description == null) {
-					return null;
-				}
-				return description.length() > Utils.getColumnMaxLenght() ? description.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : description;
 			case "duration":
 				PipelineExecution latestExec = pipelineFacade.getLastExec(object, PipelineExecutionStatus.FINISHED);
 				return DecorationHelper.getDuration(latestExec);
@@ -126,8 +117,6 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 			case "id":
 				return Integer.class;
 			case "name":
-			case "owner.username":
-			case "description":
 			case "duration":
 			case "lastExecTime":
 				return String.class;

@@ -77,6 +77,7 @@ public class PipelineEdit extends ViewComponent {
 	private GridLayout formattingBar;
 	private Label label;
 	private Label readOnlyLabel;
+	private Label idValue;
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
 	private OptionGroup pipelineVisibility;
@@ -715,13 +716,18 @@ public class PipelineEdit extends ViewComponent {
 	 */
 	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
 
-		pipelineSettingsLayout = new GridLayout(3, 3);
+		pipelineSettingsLayout = new GridLayout(3, 4);
 		pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
+		Label idLabel = new Label("ID");
+		idLabel.setSizeUndefined();
+		pipelineSettingsLayout.addComponent(idLabel, 0, 0);
+		idValue = new Label("ID");
+		idValue.setSizeUndefined();
+		pipelineSettingsLayout.addComponent(idValue, 1, 0);
 		Label nameLabel = new Label("Name");
 		nameLabel.setImmediate(false);
-		nameLabel.setWidth("-1px");
-		nameLabel.setHeight("-1px");
-		pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
+		nameLabel.setSizeUndefined();
+		pipelineSettingsLayout.addComponent(nameLabel, 0, 1);
 		pipelineName = new TextField();
 		pipelineName.setImmediate(true);
 		pipelineName.setWidth("400px");
@@ -743,12 +749,12 @@ public class PipelineEdit extends ViewComponent {
 				setupButtons(true);
 			}
 		});
-		pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
+		pipelineSettingsLayout.addComponent(pipelineName, 1, 1);
 		Label descriptionLabel = new Label("Description");
 		descriptionLabel.setImmediate(false);
 		descriptionLabel.setWidth("-1px");
 		descriptionLabel.setHeight("-1px");
-		pipelineSettingsLayout.addComponent(descriptionLabel, 0, 1);
+		pipelineSettingsLayout.addComponent(descriptionLabel, 0, 2);
 		pipelineDescription = new TextArea();
 		pipelineDescription.setImmediate(true);
 		pipelineDescription.setWidth("400px");
@@ -760,10 +766,10 @@ public class PipelineEdit extends ViewComponent {
 				setupButtons(true);
 			}
 		});
-		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
+		pipelineSettingsLayout.addComponent(pipelineDescription, 1, 2);
 
 		Label visibilityLabel = new Label("Visibility");
-		pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
+		pipelineSettingsLayout.addComponent(visibilityLabel, 0, 3);
 
 		pipelineVisibility = new OptionGroup();
 		pipelineVisibility.addStyleName("horizontalgroup");
@@ -778,7 +784,7 @@ public class PipelineEdit extends ViewComponent {
 				setupButtons(true);
 			}
 		});
-		pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
+		pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 3);
 
 //		Label permissionLabel = new Label("Permissions");
 //		permissionLabel.setImmediate(false);
@@ -858,6 +864,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineCanvas.saveGraph(pipeline);
 		Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
 		pipelineName.setValue(copiedPipeline.getName());
+		idValue.setValue(copiedPipeline.getId().toString());
 		pipeline = copiedPipeline;
 		finishSavePipeline(false, ShareType.PRIVATE, "reload");
 		setMode(true);
@@ -982,6 +989,7 @@ public class PipelineEdit extends ViewComponent {
 	protected Pipeline loadPipeline(String id) {
 		// get data from DB ..
 		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+		idValue.setValue(pipeline.getId().toString());
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
@@ -1013,6 +1021,7 @@ public class PipelineEdit extends ViewComponent {
 			pipeline.setDescription("");
 			pipeline.setVisibility(ShareType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
+			idValue.setValue("New");
 			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 			pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
 			setupButtons(false);
@@ -1192,10 +1201,12 @@ public class PipelineEdit extends ViewComponent {
 
 	private void refreshPipeline() {
 		pipeline = pipelineFacade.getPipeline(pipeline.getId());
+		idValue.setValue(pipeline.getId().toString());
 		pipelineCanvas.showPipeline(pipeline);
 	}
 
 	private void setFields() {
+		idValue.setValue(pipeline.getId().toString());
 		pipelineName.setValue(this.pipeline.getName());
 		pipelineDescription.setValue(this.pipeline.getDescription());
 		pipelineVisibility.setValue(this.pipeline.getShareType());
