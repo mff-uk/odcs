@@ -84,7 +84,7 @@ public class StatisticalHandler extends TripleCountHandler {
 			addedCount += TRIPLE_LOGGED_SIZE;
 			if (checkData) {
 				logger.debug(String.format(
-						"Have been valided %s TRIPLES yet.",
+						"%s TRIPLES validated.",
 						String.valueOf(addedCount)));
 			} else {
 				logger.debug(String.format(
