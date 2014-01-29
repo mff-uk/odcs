@@ -112,11 +112,12 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param source
 	 * @return
 	 */
-	public static DPUEvent createStart(Context context, Object source) {		
-		LOG.info("DPU '{}' started", context.getDPU().getName());
-		
-		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-				"DPU started.", "");
+	public static DPUEvent createStart(Context context, Object source) {
+		final DPUInstanceRecord dpu = context.getDPU();
+		final String msg = String.format("Starting DPU {}", dpu.getId());
+
+		LOG.info(msg);
+		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
 	}
 
 	/**
@@ -127,10 +128,11 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return
 	 */
 	public static DPUEvent createComplete(Context context, Object source) {
-		LOG.info("DPU '{}' finished", context.getDPU().getName());
-		
-		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-				"DPU completed.", "");
+		final DPUInstanceRecord dpu = context.getDPU();
+		final String msg = String.format("DPU {} completed", dpu.getId());
+
+		LOG.info(msg);
+		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");	
 	}
 
 	/**

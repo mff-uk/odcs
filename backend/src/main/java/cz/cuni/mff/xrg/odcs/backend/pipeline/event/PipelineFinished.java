@@ -23,10 +23,11 @@ public final class PipelineFinished extends PipelineInfo {
 			.getLogger(PipelineFinished.class);
 
 	public PipelineFinished(PipelineExecution execution, Object source) {
-		super(execution, source, "Pipeline finished", "");
+		super(execution, source, String.format("Execution {} finished", 
+				execution.getId()), "");
 
-		LOG.info("Pipeline finished with status: {}", execution.getStatus()
-				.toString());
+		LOG.info("Execution {} finished with status: {}", execution.getId(),
+				execution.getStatus().toString());
 	}
 
 	/**
