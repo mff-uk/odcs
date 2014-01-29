@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +131,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	@Override
 	public FileHandler addNewFile(String name) throws DataUnitException {
 		accessCheck();
-		
+
 		// check existance
 		ManageableHandler existing = getManageableByName(name);
 		if (existing == null) {
@@ -158,7 +157,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public FileHandler addExistingFile(File file, OptionsAdd options)
 			throws DataUnitException {
 		accessCheck();
-		
+
 		final String newName = file.getName();
 		ManageableHandler existing = getManageableByName(newName);
 		if (existing != null) {
@@ -201,7 +200,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public DirectoryHandler addNewDirectory(String name)
 			throws DataUnitException {
 		accessCheck();
-		
+
 		// check existance
 		ManageableHandler existing = getManageableByName(name);
 		if (existing == null) {
@@ -227,7 +226,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public DirectoryHandler addExistingDirectory(File directory, OptionsAdd options)
 			throws DataUnitException {
 		accessCheck();
-		
+
 		final String newName = directory.getName();
 		ManageableHandler existing = getManageableByName(newName);
 		if (existing != null) {
@@ -335,7 +334,29 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
 	@Override
 	public Iterator<Handler> iterator() {
-		return new DirectoryHandlerIterator(this, this.handlers.iterator());
+
+		return new Iterator<Handler>() {
+
+			/**
+			 * Iterator over underlying collection.
+			 */
+			private final Iterator<ManageableHandler> iterator = handlers.iterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public Handler next() {
+				return this.iterator.next();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@Override
@@ -351,7 +372,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	@Override
 	public boolean remove(Object o) {
 		accessCheck();
-		
+
 		if (o instanceof ManageableHandler) {
 			ManageableHandler manageable = (ManageableHandler) o;
 			// is it a link ?
@@ -445,7 +466,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * Check if the modification are permitted on this directory. If not then
 	 * throw {@link DataUnitAccessException}.
 	 */
-	private void accessCheck() {		
+	private void accessCheck() {
 		if (isReadOnly) {
 			throw new DataUnitAccessException("Can't modify read only FileDataUnit.");
 		} else if (isLink) {
@@ -460,21 +481,21 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	private void scanDirectory() {
 		// we want first level files and directories
 		File[] toAdd = this.directory.listFiles();
-		
+
 		for (File file : toAdd) {
 			if (file == this.directory) {
 				// the listFilesAndDirs also return
 				// this directory .. 
 				continue;
 			}
-			
+
 			final String newName = file.getName();
 			if (file.isFile()) {
 				FileHandlerImpl fileHandler
 						= new FileHandlerImpl(file, newName, false);
 				this.handlers.add(fileHandler);
 			} else if (file.isDirectory()) {
-				
+
 				// create handler for subdir, this will 
 				// also let it scan the subdir for subdirectories
 				DirectoryHandlerImpl dirHandler
@@ -485,5 +506,5 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			}
 		}
 	}
-	
+
 }
