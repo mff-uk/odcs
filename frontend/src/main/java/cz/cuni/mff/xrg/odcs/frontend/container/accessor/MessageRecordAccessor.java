@@ -13,13 +13,13 @@ import java.util.List;
  */
 public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 
-	private final List<String> all = Arrays.asList("id","time", "type", "dpuInstance.name", "shortMessage", "dpuInstance.id");
+	private final List<String> all = Arrays.asList("id", "type", "time", "dpuInstance.name", "shortMessage", "dpuInstance.id");
 	
 	private final List<String> sortable = Arrays.asList("time", "type", "dpuInstance.name");
 	
 	private final List<String> filterable = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
 	
-	private final List<String> visible = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
+	private final List<String> visible = Arrays.asList("type", "time", "dpuInstance.name", "shortMessage");
 	
 	private final List<String> toFetch = Arrays.asList("dpuInstance");
 	

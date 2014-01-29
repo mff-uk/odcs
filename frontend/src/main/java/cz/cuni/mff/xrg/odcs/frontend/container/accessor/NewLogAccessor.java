@@ -56,12 +56,12 @@ public class NewLogAccessor extends ClassAccessorBase<Log> {
 			}
 		});
 
-		add(String.class, "source", new ColumnGetter<String>() {
-			@Override
-			public String get(Log object) {
-				return object.getSource();
-			}
-		});
+//		add(String.class, "source", new ColumnGetter<String>() {
+//			@Override
+//			public String get(Log object) {
+//				return object.getSource();
+//			}
+//		});
 
 	}
 

@@ -52,6 +52,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 		Label pageLabel = new Label("Page:&nbsp;", ContentMode.HTML);
 		final TextField currentPageTextField = new TextField();
 		currentPageTextField.setValue(String.valueOf(getCurrentPage()));
+		currentPageTextField.setWidth("80px");
 		currentPageTextField.setConverter(new StringToIntegerConverter() {
 			@Override
 			protected NumberFormat getFormat(Locale locale) {

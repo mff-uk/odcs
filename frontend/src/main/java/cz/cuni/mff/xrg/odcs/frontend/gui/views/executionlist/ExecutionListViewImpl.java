@@ -5,10 +5,10 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.IsNull;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
@@ -303,27 +303,27 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		logLayout.setExpandRatio(debugView, 1.0f);
 
 		// Layout for buttons  Close and  Export on the bottom
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setWidth("100%");
-
-		Button buttonClose = new Button();
-		buttonClose.setCaption("Close");
-		buttonClose.setHeight("25px");
-		buttonClose.setWidth("100px");
-		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				presenter.stopRefreshEventHandler();
-				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-				//hsplit.setHeight("100%");
-				hsplit.setLocked(true);
-			}
-		});
-		buttonBar.addComponent(buttonClose);
-		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
-
-		logLayout.addComponent(buttonBar);
-		logLayout.setExpandRatio(buttonBar, 0);
+//		HorizontalLayout buttonBar = new HorizontalLayout();
+//		buttonBar.setWidth("100%");
+//
+//		Button buttonClose = new Button();
+//		buttonClose.setCaption("Close");
+//		buttonClose.setHeight("25px");
+//		buttonClose.setWidth("100px");
+//		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+//			@Override
+//			public void buttonClick(Button.ClickEvent event) {
+//				presenter.stopRefreshEventHandler();
+//				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+//				//hsplit.setHeight("100%");
+//				hsplit.setLocked(true);
+//			}
+//		});
+//		buttonBar.addComponent(buttonClose);
+//		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
+//
+//		logLayout.addComponent(buttonBar);
+//		logLayout.setExpandRatio(buttonBar, 0);
 
 		if (execution.getStatus() == PipelineExecutionStatus.RUNNING
 				|| execution.getStatus() == PipelineExecutionStatus.QUEUED) {
@@ -411,12 +411,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
 
-		executionTable.setColumnWidth("schedule", 65);
-		executionTable.setColumnWidth("status", 50);
-		executionTable.setColumnWidth("isDebugging", 50);
-		executionTable.setColumnWidth("duration", 60);
+		executionTable.setColumnWidth("schedule", 32);
+		executionTable.setColumnWidth("status", 32);
+		executionTable.setColumnWidth("isDebugging", 32);
+		executionTable.setColumnWidth("duration", 50);
 		executionTable.setColumnWidth("", 200);
-		executionTable.setColumnWidth("id", 50);
+		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
+		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
+		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
 		executionTable.setSortEnabled(true);
 		executionTable.setPageLength(utils.getPageLength());
 
@@ -430,7 +432,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			public void itemClick(ItemClickEvent event) {
 				ValueItem item = (ValueItem) event.getItem();
 				final long executionId = item.getId();
-
 				presenter.showDebugEventHandler(executionId);
 			}
 		});
@@ -438,15 +439,26 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
-				Button btnEdit = new Button("Detail", new Button.ClickListener() {
+				final Button btnEdit = new Button("Detail", new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
 						presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
 					}
 				});
 				Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
+				
 				HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
 				colLayout.setSpacing(true);
+				colLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+
+					@Override
+					public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+						if(event.getClickedComponent() == btnEdit) {
+							return;
+						}
+						presenter.showDebugEventHandler((Long)itemId);
+					}
+				});
 				return colLayout;
 			}
 		});
@@ -516,7 +528,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		});
 
 		// add generated columns to the executionTable
-		executionTable.addGeneratedColumn("", createColumnGenerator(presenter));
+		executionTable.addGeneratedColumn("", 0, createColumnGenerator(presenter));
 		executionTable.setVisibleColumns();
 		executionTable.addListener(new PagedFilterTable.PageChangeListener() {
 			@Override

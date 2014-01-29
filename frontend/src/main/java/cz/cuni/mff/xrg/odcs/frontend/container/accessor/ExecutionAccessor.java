@@ -11,11 +11,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
-	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "owner.username", "duration", "status", "isDebugging", "schedule", "pipeline.id");
-	private final List<String> visible = Arrays.asList("id", "start", "pipeline.name", "owner.username", "duration", "status", "isDebugging", "schedule");
-	private final List<String> sortable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
-	private final List<String> filterable = Arrays.asList("id", "start", "pipeline.name", "owner.username", "status", "isDebugging", "schedule");
-	private final List<String> toFetch = Arrays.asList("pipeline", "owner");
+	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "duration", "status", "isDebugging", "schedule", "pipeline.id");
+	private final List<String> visible = Arrays.asList("status", "pipeline.name", "duration", "isDebugging", "schedule");
+	private final List<String> sortable = Arrays.asList("pipeline.name", "status", "isDebugging", "schedule");
+	private final List<String> filterable = Arrays.asList("pipeline.name", "status", "isDebugging", "schedule");
+	private final List<String> toFetch = Arrays.asList("pipeline");
 
 	@Override
 	public List<String> all() {
@@ -56,8 +56,6 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 				return "start";
 			case "pipeline.name":
 				return "pipeline name";
-			case "owner.username":
-				return "author";
 			case "duration":
 				return "duration";
 			case "status":
@@ -85,8 +83,6 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "pipeline.name":
 				String name = object.getPipeline().getName();
 				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
-			case "owner.username":
-				return object.getOwner().getUsername();
 			case "duration":
 				return object.getDuration();
 			case "status":
@@ -112,8 +108,6 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "start":
 				return Timestamp.class;
 			case "pipeline.name":
-				return String.class;
-			case "owner.username":
 				return String.class;
 			case "duration":
 				return Long.class;

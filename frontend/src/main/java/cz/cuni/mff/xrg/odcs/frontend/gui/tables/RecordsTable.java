@@ -114,6 +114,8 @@ public class RecordsTable extends CustomComponent {
 	 * Add generated columns and filters to the table.
 	 */
 	public void buildGeneratedColumns() {
+		messageTable.setColumnWidth("type", 32);
+		messageTable.setColumnAlignment("type", CustomTable.Align.CENTER);
 		messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId,
@@ -146,24 +148,24 @@ public class RecordsTable extends CustomComponent {
 				return emb;
 			}
 		});
-		messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
-				if (dpuId == null) {
-					return null;
-				}
-				Button logsLink = new Button("Logs");
-				logsLink.setStyleName(BaseTheme.BUTTON_LINK);
-				logsLink.addClickListener(new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
-					}
-				});
-				return logsLink;
-			}
-		});
+//		messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+//				if (dpuId == null) {
+//					return null;
+//				}
+//				Button logsLink = new Button("Logs");
+//				logsLink.setStyleName(BaseTheme.BUTTON_LINK);
+//				logsLink.addClickListener(new Button.ClickListener() {
+//					@Override
+//					public void buttonClick(Button.ClickEvent event) {
+//						fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
+//					}
+//				});
+//				return logsLink;
+//			}
+//		});
 		messageTable.setVisibleColumns();
 		messageTable.setFilterDecorator(new filterDecorator());
 	}
