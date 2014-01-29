@@ -1,11 +1,14 @@
-package cz.cuni.mff.xrg.odcs.frontend.doa.container;
+package cz.cuni.mff.xrg.odcs.frontend.doa.container.db;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,12 +24,10 @@ import org.slf4j.LoggerFactory;
  * @author Petyr
  * @param <T>
  */
-public class CachedSource<T extends DataObject>
-		implements ContainerSource<T>,
-		ContainerSource.Filterable,
-		ContainerSource.Sortable {
+public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>, 
+		ContainerSource.Filterable,	ContainerSource.Sortable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CachedSource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DbCachedSource.class);
 
 	/**
 	 * The maximum size of cache, it this size is exceeded then the cache is
@@ -52,12 +53,12 @@ public class CachedSource<T extends DataObject>
 	/**
 	 * Data source.
 	 */
-	protected final DataAccessRead<T> source;
+	protected final DbAccessRead<T> source;
 
 	/**
 	 * The query builder.
 	 */
-	protected final DataQueryBuilder<T> queryBuilder;
+	protected final DbQueryBuilder<T> queryBuilder;
 
 	/**
 	 * Filters that can be set by {@link Filterable} interface.
@@ -77,7 +78,7 @@ public class CachedSource<T extends DataObject>
 	 * @param access
 	 * @param classAccessor
 	 */
-	public CachedSource(DataAccessRead<T> access, ClassAccessor<T> classAccessor) {
+	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = null;
@@ -93,7 +94,7 @@ public class CachedSource<T extends DataObject>
 	 * @param classAccessor
 	 * @param coreFilters
 	 */
-	public CachedSource(DataAccessRead<T> access, ClassAccessor<T> classAccessor,
+	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor,
 			List<Filter> coreFilters) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
@@ -191,8 +192,8 @@ public class CachedSource<T extends DataObject>
 			return;
 		}
 
-		DataQueryBuilder.Filterable<T> filtrableBuilder
-				= (DataQueryBuilder.Filterable<T>) queryBuilder;
+		final DbQueryBuilder.Filterable filtrableBuilder
+				= (DbQueryBuilder.Filterable) queryBuilder;
 
 		filtrableBuilder.addFilter(new Compare.Equal("id", id));
 		
@@ -224,8 +225,8 @@ public class CachedSource<T extends DataObject>
 			return;
 		}
 
-		DataQueryBuilder.Filterable<T> filtrableBuilder
-				= (DataQueryBuilder.Filterable<T>) queryBuilder;
+		final DbQueryBuilder.Filterable filtrableBuilder
+				= (DbQueryBuilder.Filterable) queryBuilder;
 
 		// clear filters and build news
 		filtrableBuilder.claerFilters();
@@ -259,7 +260,7 @@ public class CachedSource<T extends DataObject>
 
 	/**
 	 * Return list of used core filters, do not modify the returned list! The
-	 * core filters are not modifiable by using other {@link CachedSource}
+	 * core filters are not modifiable by using other {@link DbCachedSource}
 	 * methods.
 	 *
 	 * @return
@@ -414,9 +415,9 @@ public class CachedSource<T extends DataObject>
 			LOG.warn("Call of sort(Objet[], boolean[]) on non sortable-source ignored.");
 			return;
 		}
-
-		final DataQueryBuilder.Sortable<T> sortableBuilder
-				= (DataQueryBuilder.Sortable<T>) queryBuilder;
+		
+		final DbQueryBuilder.Sortable sortableBuilder
+				= (DbQueryBuilder.Sortable) queryBuilder;
 
 		switch (propertyId.length) {
 			case 0: // remove sort

@@ -28,7 +28,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class LogTable extends CustomComponent {
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
-	private final CachedSource<Log> dataSouce;
+	private final DbCachedSource<Log> dataSouce;
 
 	private final ReadOnlyContainer<Log> container;
 
@@ -80,7 +80,7 @@ public class LogTable extends CustomComponent {
 	 * @param logFacade
 	 * @param pageLenght
 	 */
-	public LogTable(CachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
+	public LogTable(DbCachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
 		this.logFacade = logFacade;

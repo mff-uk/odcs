@@ -22,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
@@ -93,9 +93,9 @@ public class DebuggingView extends CustomComponent {
 	
 	// - - - - -
 	
-	private CachedSource<MessageRecord> msgSource;
+	private DbCachedSource<MessageRecord> msgSource;
 
-	private CachedSource<Log> logSource;
+	private DbCachedSource<Log> logSource;
 
 	private final List<Container.Filter> msgCoreFilters = new LinkedList<>();
 
@@ -120,8 +120,8 @@ public class DebuggingView extends CustomComponent {
 		// bind to data sources
 		{
 			// create sources
-			logSource = new CachedSource<>(dbLogs, new NewLogAccessor(), logCoreFilters);
-			msgSource = new CachedSource<>(dbMsg, new MessageRecordAccessor(), msgCoreFilters);
+			logSource = new DbCachedSource<>(dbLogs, new NewLogAccessor(), logCoreFilters);
+			msgSource = new DbCachedSource<>(dbMsg, new MessageRecordAccessor(), msgCoreFilters);
 
 			// create tables
 			logTable = new LogTable(logSource, logFacade, utils.getPageLength());

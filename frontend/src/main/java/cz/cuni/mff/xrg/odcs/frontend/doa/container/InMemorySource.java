@@ -2,6 +2,9 @@ package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryCount;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,8 +21,14 @@ import java.util.Map;
  *
  * @author Petyr
  * @param <T>
+ * @param <BUILDER>
+ * @param <QUERY>
+ * @param <QUERY_SIZE>
  */
-public final class InMemorySource<T extends DataObject> implements ContainerSource<T> {
+public class InMemorySource<T extends DataObject, 
+		BUILDER extends DataQueryBuilder<T, QUERY, QUERY_SIZE>,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > implements ContainerSource<T> {
 
 	/**
 	 * Enable data in-memory filtering (hide, show).
@@ -59,7 +68,8 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 		this.classAccessor = classAccessor;
 	}
 
-	public InMemorySource(ClassAccessor<T> classAccessor, DataAccessRead<T> source) {
+	public InMemorySource(ClassAccessor<T> classAccessor, 
+			DataAccessRead<T, BUILDER, QUERY, QUERY_SIZE> source) {
 		this.classAccessor = classAccessor;
 		loadData(source);
 	}
@@ -69,10 +79,10 @@ public final class InMemorySource<T extends DataObject> implements ContainerSour
 	 *
 	 * @param source
 	 */
-	public void loadData(DataAccessRead<T> source) {
+	public final void loadData(DataAccessRead<T, BUILDER, QUERY, QUERY_SIZE> source) {
 		// load new data
 		final List<T> newData
-				= source.executeList((DbQuery<T>) source.createQueryBuilder().getQuery());
+				= source.executeList(source.createQueryBuilder().getQuery());
 		loadData(newData);
 	}
 

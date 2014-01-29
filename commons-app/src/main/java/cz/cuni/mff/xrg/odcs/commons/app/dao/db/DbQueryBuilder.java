@@ -10,8 +10,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
  *
  * @param <T>
  */
-public interface DbQueryBuilder<T extends DataObject> extends DataQueryBuilder<T>, 
-    DataQueryBuilder.Filterable<T>, DataQueryBuilder.Sortable<T> {
+public interface DbQueryBuilder<T extends DataObject> 
+	extends DataQueryBuilder<T, DbQuery<T>, DbQueryCount<T>>, 
+    DataQueryBuilder.Filterable<T, DbQuery<T>, DbQueryCount<T>>,
+	DataQueryBuilder.Sortable<T, DbQuery<T>, DbQueryCount<T>> {
 	
 	/**
 	 * Add given property into the fetch list. Non-trivial classes

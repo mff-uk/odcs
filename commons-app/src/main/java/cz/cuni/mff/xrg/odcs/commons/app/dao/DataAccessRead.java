@@ -13,7 +13,7 @@ import java.util.List;
  * @param <QUERY_SIZE> Query used for size.
  */
 public interface DataAccessRead<T extends DataObject, 
-		BUILDER extends DataQueryBuilder<T>,
+		BUILDER extends DataQueryBuilder<T, QUERY, QUERY_SIZE>,
 		QUERY extends DataQuery<T>,
 		QUERY_SIZE extends DataQueryCount<T> > {
 

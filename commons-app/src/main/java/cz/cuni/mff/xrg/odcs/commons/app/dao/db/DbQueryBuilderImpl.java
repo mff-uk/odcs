@@ -106,19 +106,19 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
     }
 
     @Override
-    public DataQueryBuilder<T> claerFilters() {
+    public DataQueryBuilder<T, DbQuery<T>, DbQueryCount<T>> claerFilters() {
         filters.clear();
         return this;
     }
 
     @Override
-    public DataQueryBuilder<T> addFilter(Object filter) {
+    public DataQueryBuilder<T, DbQuery<T>, DbQueryCount<T>> addFilter(Object filter) {
         filters.add(filter);
         return this;
     }
 
     @Override
-    public DataQueryBuilder<T> sort(String propertyName, boolean asc) {
+    public DataQueryBuilder<T, DbQuery<T>, DbQueryCount<T>> sort(String propertyName, boolean asc) {
         sortInfo.propertyName = propertyName;
         sortInfo.asc = asc;
         return this;

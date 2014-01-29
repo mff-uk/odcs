@@ -17,7 +17,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
@@ -57,7 +57,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Autowired
 	private Utils utils;
 	private ExecutionListData dataObject;
-	private CachedSource<PipelineExecution> cachedSource;
+	private DbCachedSource<PipelineExecution> cachedSource;
 	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
 	private ClassNavigator navigator;
@@ -66,7 +66,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new CachedSource<>(dbExecution, new ExecutionAccessor());
+		cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor());
 		ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
 		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
@@ -196,7 +196,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(
-				new CachedSource<>(dbMessageRecord, new MessageRecordAccessor()));
+				new DbCachedSource<>(dbMessageRecord, new MessageRecordAccessor()));
 	}
 
 	@Override

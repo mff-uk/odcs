@@ -46,6 +46,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbInMemorySource;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +107,8 @@ public class SchedulePipeline extends Window {
 	private ScheduleFacade scheduleFacade;
 	@Autowired
 	private AuthenticationContext authCtx;
-	InMemorySource<Pipeline> source;
-	InMemorySource<Pipeline> sourceCombo;
+	DbInMemorySource<Pipeline> source;
+	DbInMemorySource<Pipeline> sourceCombo;
 	private long oldPipelineId=0;
 
 	/**
@@ -315,10 +316,10 @@ public class SchedulePipeline extends Window {
 		coreLayout.setSpacing(true);
 		coreLayout.setMargin(true);
 		
-		source = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+		source = new DbInMemorySource<>(new PipelineNameAccessor(), dbPipeline);
 		container = new ReadOnlyContainer<>(source);
 		
-		sourceCombo = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+		sourceCombo = new DbInMemorySource<>(new PipelineNameAccessor(), dbPipeline);
 		containerCombo = new ReadOnlyContainer<>(sourceCombo);
 		
 

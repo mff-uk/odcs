@@ -1,23 +1,28 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
-
 /**
  * Builder for {@link DataQuery} and {@link DataQueryCount}.
  *
  * @author Petyr
  *
  * @param <T>
+ * @param <QUERY>
+ * @param <QUERY_SIZE>
  */
-public interface DataQueryBuilder<T extends DataObject> {
+public interface DataQueryBuilder<T extends DataObject,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > {
 
     /**
      * Provide methods that can be used to apply sort in {@link DataQuery}
      *
      * @param <T>
+	 * @param <QUERY>
+	 * @param <QUERY_SIZE>
      */
-    public interface Sortable<T extends DataObject> {
+    public interface Sortable<T extends DataObject,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > {
 
         /**
          * Remove previously applied sort and set new.
@@ -25,7 +30,7 @@ public interface DataQueryBuilder<T extends DataObject> {
          * @param asc
          * @return
          */
-        DataQueryBuilder<T> sort(String propertyName, boolean asc);
+        DataQueryBuilder<T, QUERY, QUERY_SIZE> sort(String propertyName, boolean asc);
         
     }
 
@@ -33,14 +38,18 @@ public interface DataQueryBuilder<T extends DataObject> {
      * Provide possibility to filter data in {@link DataQuery}
      *
      * @param <T>
+	 * @param <QUERY>
+	 * @param <QUERY_SIZE>
      */
-    public interface Filterable<T extends DataObject> {
+    public interface Filterable<T extends DataObject,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > {
 
         /**
          * Remove all user applied filters.
          * @return 
          */
-        DataQueryBuilder<T> claerFilters();
+        DataQueryBuilder<T, QUERY, QUERY_SIZE> claerFilters();
         
         /**
          * Add given filter as AND to existing filters.
@@ -48,7 +57,7 @@ public interface DataQueryBuilder<T extends DataObject> {
          * @param filter
          * @return
          */
-        DataQueryBuilder<T> addFilter(Object filter);
+        DataQueryBuilder<T, QUERY, QUERY_SIZE> addFilter(Object filter);
 
     }
 
@@ -56,13 +65,13 @@ public interface DataQueryBuilder<T extends DataObject> {
      *
      * @return
      */
-    DbQuery<T> getQuery();
+    QUERY getQuery();
 
     /**
      * Generate query that can be used to obtain size of result data.
      *
      * @return
      */
-    DbQueryCount<T> getCountQuery();
+    QUERY_SIZE getCountQuery();
 
 }

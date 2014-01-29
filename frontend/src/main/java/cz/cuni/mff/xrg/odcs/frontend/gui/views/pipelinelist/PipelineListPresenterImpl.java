@@ -17,7 +17,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
@@ -64,7 +64,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private Utils utils;
 	private ClassNavigator navigator;
 	private PipelineListData dataObject;
-	private CachedSource<Pipeline> cachedSource;
+	private DbCachedSource<Pipeline> cachedSource;
 	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
 	/**
@@ -77,7 +77,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new CachedSource<>(dbPipeline, pipelineAccessor);
+		cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor);
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
 
 		// prepare view

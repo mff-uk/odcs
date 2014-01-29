@@ -11,7 +11,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
  * @param <QUERY_SIZE> Query used for size.
  */
 public interface DataAccess <T extends DataObject, 
-		BUILDER extends DataQueryBuilder<T>,
+		BUILDER extends DataQueryBuilder<T, QUERY, QUERY_SIZE>,
 		QUERY extends DataQuery<T>,
 		QUERY_SIZE extends DataQueryCount<T> > 
 	extends DataAccessRead<T, BUILDER, QUERY, QUERY_SIZE> {

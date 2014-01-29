@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public class RecordsTable extends CustomComponent {
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
-	private final CachedSource<MessageRecord> dataSouce;
+	private final DbCachedSource<MessageRecord> dataSouce;
 	private final ReadOnlyContainer<MessageRecord> container;
 
 	/**
@@ -51,7 +51,7 @@ public class RecordsTable extends CustomComponent {
 	 *
 	 * @param dataSouce
 	 */
-	public RecordsTable(CachedSource<MessageRecord> dataSouce, int pageLenght) {
+	public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght) {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
 		//build layout
