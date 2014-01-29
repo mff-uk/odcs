@@ -1,7 +1,9 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.server.FileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.RecordsTable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -20,12 +22,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import java.io.InputStream;
 
 import java.util.*;
 import org.slf4j.Logger;
@@ -209,6 +214,28 @@ public class DebuggingView extends CustomComponent {
 			browse.setDpu(debugDpu);
 		}
 		queryTab = tabs.addTab(browse, "Browse/Query");
+		
+		VerticalLayout options = new VerticalLayout();
+		Button download = new Button("Download all logs");
+		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
+			@Override
+			public String getFilename() {
+				return "log.txt";
+			}
+
+			@Override
+			public InputStream getStream() {
+				LinkedList<Object> filters = new LinkedList<>();
+				for(Filter f : logCoreFilters) {
+					filters.add(f);
+				}
+				return logFacade.getLogsAsStream(filters);
+			}
+		});
+		fileDownloader.extend(download);
+		options.addComponent(download);
+		options.setMargin(true);
+		tabs.addTab(options, "Options");
 
 		mainLayout.setSizeFull();
 		mainLayout.addComponent(tabs);

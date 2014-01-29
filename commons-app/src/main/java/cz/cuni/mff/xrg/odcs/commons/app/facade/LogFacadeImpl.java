@@ -87,15 +87,13 @@ class LogFacadeImpl implements LogFacade {
             sb.append(' ');
             sb.append(log.getSource());
             sb.append(' ');
-            if (log.getStackTrace() == null) {
+            if (log.getStackTrace() == null || log.getStackTrace().isEmpty()) {
                 sb.append(log.getMessage());
             } else {
                 sb.append(log.getMessage());
                 sb.append("\r\nStack trace:\r\n");
                 // just do replace in stack trace
                 sb.append(log.getStackTrace());
-
-
             }
             sb.append('\r');
             sb.append('\n');

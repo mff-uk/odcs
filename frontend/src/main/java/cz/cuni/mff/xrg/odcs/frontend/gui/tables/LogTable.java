@@ -4,9 +4,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -24,18 +22,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import ch.qos.logback.classic.Level;
 import com.vaadin.ui.AbstractSelect;
-import java.util.LinkedList;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -167,27 +161,7 @@ public class LogTable extends CustomComponent {
 		mainLayout.addComponent(table);
 		mainLayout.addComponent(table.createControls());
 
-		Button download = new Button("Download");
-		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
-			@Override
-			public String getFilename() {
-				return "log.txt";
-			}
-
-			@Override
-			public InputStream getStream() {
-				// we need used filters
-				LinkedList<Object> filters = new LinkedList<>();
-				filters.addAll(dataSouce.getFilters());
-				filters.addAll(dataSouce.getFiltersCore());
-				// and now we used them to get data ..
-				return logFacade.getLogsAsStream(filters);
-			}
-		});
-		fileDownloader.extend(download);
-		mainLayout.addComponent(download);
 		setCompositionRoot(mainLayout);
-
 	}
 
 	private ComboBox refreshDpuSelector() {
