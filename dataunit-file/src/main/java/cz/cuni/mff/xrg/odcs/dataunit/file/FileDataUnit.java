@@ -9,6 +9,26 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
  * All the files are stored and accessible by the {@link #getRootDir()} method.
  * See the {@link DirectoryHandler} class for more information about usage.
  *
+ * Sample usage, assume that all the exception are declared as throws.
+ * <pre>
+ * {@code 
+ * FileDataUnit dataUnit;
+ * DirectoryHandler root = dataUnit.getRootDir();
+ * // add subdirectory with file
+ * root.addNewDirectory("myDir").addNewFile("myFile");
+ * // examine the root
+ * for (Handler handler : root) {
+ *	final File path = handler.asFile();
+ *	if (handler instanceof FileHandler) {
+ *		// it's a file
+ *		FileHandler file = (FileHandler)handler;
+ *	} else if (handler instanceof DirectoryHandler) {
+ *		// it's a directory
+ *		DirectoryHandler file = (DirectoryHandler)handler;
+ *	}
+ * }
+ * </pre>
+ * 
  * @author Petyr
  */
 public interface FileDataUnit extends DataUnit {
