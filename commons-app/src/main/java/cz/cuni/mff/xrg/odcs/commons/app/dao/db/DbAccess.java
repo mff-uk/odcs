@@ -10,6 +10,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
  *
  * @param <T>
  */
-public interface DbAccess<T extends DataObject> extends DataAccess<T>, DbAccessRead<T> {
+public interface DbAccess<T extends DataObject> 
+	extends DataAccess<T, DbQueryBuilder<T>, DbQuery<T> , DbQueryCount<T>>, 
+		DbAccessRead<T> {
 
 }

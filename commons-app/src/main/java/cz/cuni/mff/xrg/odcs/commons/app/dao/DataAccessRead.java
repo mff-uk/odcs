@@ -2,18 +2,20 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
-
 /**
  * Read only access to data of given type.
  * 
  * @author Petyr
- * @author Jan Vojt
  * 
- * @param <T>
+ * @param <T> Data object.
+ * @param <BUILDER> Query builder.
+ * @param <QUERY> Query for list or single item.
+ * @param <QUERY_SIZE> Query used for size.
  */
-public interface DataAccessRead<T extends DataObject> {
+public interface DataAccessRead<T extends DataObject, 
+		BUILDER extends DataQueryBuilder<T>,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > {
 
 	/**
 	 * Return fully loaded instance of object with given id. This operation may
@@ -45,7 +47,7 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @param query
 	 * @return a single data object selected by query, or null if empty result
 	 */
-	public T execute(DbQuery<T> query);
+	public T execute(QUERY query);
 	
 	/**
 	 * Execute given query and return result as list of objects.
@@ -54,7 +56,7 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @return a list of data objects selected by given query, or empty list if
 	 *		   empty result
 	 */
-	public List<T> executeList(DbQuery<T> query);
+	public List<T> executeList(QUERY query);
 
 	/**
 	 * Execute count query and return result.
@@ -62,13 +64,13 @@ public interface DataAccessRead<T extends DataObject> {
 	 * @param query
 	 * @return number returned by given query
 	 */
-	public long executeSize(DbQueryCount<T> query);
+	public long executeSize(QUERY_SIZE query);
 
 	/**
 	 * Create query builder that can be used to create query for this access.
 	 * 
 	 * @return query builder
 	 */
-	public DataQueryBuilder<T> createQueryBuilder();
+	public BUILDER createQueryBuilder();
 
 }
