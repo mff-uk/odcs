@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.execution;
+package cz.cuni.mff.xrg.odcs.commons.app.data;
 
 /**
  * Contains definition of instruction that can be used on edges in the pipeline graph.
@@ -11,7 +11,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution;
  * @author Petyr
  *
  */
-public enum DataUnitMergerInstructions {
+public enum EdgeInstructions {
 	Rename("->"),
 	Separator(";");
 	
@@ -20,11 +20,12 @@ public enum DataUnitMergerInstructions {
 	 */
 	private final String command;
 	
-	private DataUnitMergerInstructions(String command) {
+	private EdgeInstructions(String command) {
 		this.command = command;
 	}
 	
 	public String getValue() {
 		return this.command;
 	}
+	
 }

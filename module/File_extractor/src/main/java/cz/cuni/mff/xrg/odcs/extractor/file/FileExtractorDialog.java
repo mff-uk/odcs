@@ -161,6 +161,10 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
 
+		if (getContext().isTemplate()) {
+			
+		}
+		
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
