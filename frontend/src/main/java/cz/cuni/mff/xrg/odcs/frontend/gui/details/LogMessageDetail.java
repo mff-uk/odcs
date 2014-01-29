@@ -52,10 +52,6 @@ public class LogMessageDetail extends Window {
 		mainLayout.addComponent(timeLabel, 0, 0);
 		mainLayout.addComponent(timeContent, 1, 0);
 
-		Label threadLabel = new Label("Thread:");
-		threadLabel.setWidth(120, Sizeable.Unit.PIXELS);
-		mainLayout.addComponent(threadLabel, 0, 1);
-
 		Label levelLabel = new Label("Level:");
 		mainLayout.addComponent(levelLabel, 0, 2);
 		mainLayout.addComponent(levelContent, 1, 2);
@@ -109,12 +105,16 @@ public class LogMessageDetail extends Window {
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
-			sb.append("<br/><br/>Stack trace:<br/>");
-			// just do replace in stack trace
-			final String stackTrace = 
-					log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
-			sb.append(stackTrace);
-			
+		
+			if (log.getStackTrace().isEmpty()) {
+				// no stack trace
+			} else {
+				sb.append("<br/><br/>Stack trace:<br/>");
+				// just do replace in stack trace
+				final String stackTrace = 
+						log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
+				sb.append(stackTrace);
+			}
 			fullMessageContent.setValue(sb.toString());
 		}
 		fullMessageContent.setReadOnly(true);

@@ -132,7 +132,7 @@ public class Log implements Serializable, DataObject {
 	
 	/**
 	 * Stack trace for given log if exist.
-	 * @return 
+	 * @return Empty string or stack trace. Never return null!
 	 */
 	public String getStackTrace() {
 		return StringUtils.defaultString(stackTrace);
