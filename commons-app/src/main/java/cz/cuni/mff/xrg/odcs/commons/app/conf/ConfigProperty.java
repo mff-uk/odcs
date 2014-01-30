@@ -27,6 +27,8 @@ public enum ConfigProperty {
 	DATABASE_USER("user"),
 	DATABASE_PASSWORD("password"),
 	DATABASE_CHARSET("charset"),
+	DATABASE_NAME("dbname"),
+	DATABASE_PLATFORM("platform"),
 	DATABASE_RETRIES("retries"),
 	DATABASE_WAIT("wait"),
 	DATABASE_EXTENSION("useExtension"),
