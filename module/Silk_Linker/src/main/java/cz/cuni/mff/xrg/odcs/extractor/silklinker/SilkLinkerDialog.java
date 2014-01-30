@@ -107,27 +107,17 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
                 uploadInfoWindow.close();
                 //If upload wasn't interrupt by user
                 if (fl == 0) {
-                    //textFieldPath.setReadOnly(false);
-                    //File was upload to the temp folder. 
-                    //Path to this file is setting to the textFieldPath field
                     String configText = fileUploadReceiver.getOutputStream().toString();
                     silkConfigTextArea.setValue(configText);
                     
-                            //to get the current date: 
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     Date date = new Date();
                                         
                     lFileName.setValue("File " + fileUploadReceiver.getFileName() + " was successfully uploaded on: " + dateFormat.format(date));
 
-//                   silkConfigTextArea.setValue(
-//                            FileUploadReceiver.file
-//                            .toString());
-                    //textFieldPath.setReadOnly(true);
                 } //If upload was interrupt by user
                 else {
-                    //textFieldPath.setReadOnly(false);
                     silkConfigTextArea.setValue("");
-                    //textFieldPath.setReadOnly(true);
                     fl = 0;
                 }
             }
@@ -151,27 +141,20 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
          silkConfigTextArea = new TextArea();
 
-//	
 
         silkConfigTextArea.setNullRepresentation("");
         silkConfigTextArea.setImmediate(false);
         silkConfigTextArea.setWidth("100%");
         silkConfigTextArea.setHeight("300px");
-//		silkConfigTextArea.setInputPrompt(
-//				"PREFIX br:<http://purl.org/business-register#>\nMODIFY\nDELETE { ?s pc:contact ?o}\nINSERT { ?s br:contact ?o}\nWHERE {\n\t     ?s a gr:BusinessEntity .\n\t      ?s pc:contact ?o\n}");
-
         mainLayout.addComponent(silkConfigTextArea);
         mainLayout.setColumnExpandRatio(0, 0.00001f);
         mainLayout.setColumnExpandRatio(1, 0.99999f);
 
 
-       /*Futher settings
-        * 
-        * 
-        */
+
         
           tfMinConfidenceConfirmed = new TextField();
-        tfMinConfidenceConfirmed.setCaption("Minimum score for links considered as 'confirmed links' (0.0 - 1.0):: ");
+        tfMinConfidenceConfirmed.setCaption("Minimum score for links considered as 'confirmed links' (0.0 - 1.0): ");
         tfMinConfidenceConfirmed.setWidth("100%");
         tfMinConfidenceConfirmed.addValidator(new Validator() {
             @Override
@@ -233,10 +216,10 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
     @Override
     public void setConfiguration(SilkLinkerConfig conf) throws ConfigException {
-    //fill the textarea 
         
-        if (conf.getSilkConf() != null) {
+        if (conf.getSilkConf() != null && !conf.getSilkConf().isEmpty()) {
             silkConfigTextArea.setValue(conf.getSilkConf());
+            lFileName.setValue(conf.getConfFileLabel());
            
         }
         else {
@@ -253,35 +236,19 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     //get the conf from textArea
       
       if (!tfMinConfidenceConfirmed.isValid()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
 			throw new ConfigException("Configuration cannot be saved, because of invalid values");
       }
       else if (!tfMinConfidenceToBeVerified.isValid()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
 			throw new ConfigException("Configuration cannot be saved, because of invalid values");
       }
       else if (silkConfigTextArea.getValue().trim().isEmpty()) {
-//			Validator.InvalidValueException ex = new Validator.EmptyValueException(
-//					"SPARQL query must be filled");
 			throw new ConfigException("Configuration cannot be saved, because no Silk config file was specified");
       }
       else {
-            SilkLinkerConfig conf = new SilkLinkerConfig(silkConfigTextArea.getValue(), tfMinConfidenceConfirmed.getValue().trim(), tfMinConfidenceToBeVerified.getValue().trim());
+            SilkLinkerConfig conf = new SilkLinkerConfig(silkConfigTextArea.getValue(), lFileName.getValue(), tfMinConfidenceConfirmed.getValue().trim(), tfMinConfidenceToBeVerified.getValue().trim());
             return conf;
       }
         
-//      SilkLinkerConfig conf = null;
-//        
-//       if (silkConfigTextArea.getValue().trim().isEmpty()) {
-//           //no config!
-//           conf = new SilkLinkerConfig();
-//       }
-//       else {
-//            conf = new SilkLinkerConfig(silkConfigTextArea.getValue());
-//        }
-       
        
     }
 

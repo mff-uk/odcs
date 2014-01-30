@@ -47,9 +47,9 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
     private static final Logger log = LoggerFactory.getLogger(
             SilkLinker.class);
-    @OutputDataUnit(name = "outputs_confirmed")
+    @OutputDataUnit(name = "links_confirmed")
     public RDFDataUnit outputConfirmed;
-    @OutputDataUnit(name = "outputs_to_verified")
+    @OutputDataUnit(name = "links_to_be_verified")
     public RDFDataUnit outputToVerify;
 
     public SilkLinker() {
@@ -312,13 +312,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             }
             in.close();
         } catch (Exception e) {
-            log.debug("Vynimka... " + e);
+            log.debug("Vyjimka... " + e);
         }
     }
 }
-//File outputFile = new File(config.getXmlFile() + ".ttl");
-//LinkSpecification ls = new LinkSpecification(, null, null, null, null, null)
-//LinkingConfig lc = new LinkingConfig(null, null, null, null, null);
-//Silk.executeLinkSpec(null, null, i, true);
-//RuntimeConfig c = new RuntimeConfig()
-        //LoadTask l = new LoadTask(null, null)

@@ -12,9 +12,10 @@
 	<name>Silk_Linker_Extractor</name>
 	<packaging>bundle</packaging>
         <version>1.0.0</version>
-		<description>Module which is able to create links between two data
-			sources. Input is the configuration file for silk. The output of the
-			XSLT must be RDF data. </description>
+		<description>Creates links between RDF resources based on the Silk Link Specification Language (LSL), https://www.assembla.com/spaces/silk/wiki/Link_Specification_Language. 
+                  The script may be uploaded/adjusted in the DPU configuration. Output section of such script is always ignored, output is written to two output data units of the DPU - "links_confirmed", "links_to_be_verified". 
+                    DPU configuration may also specify thresholds for the two outputs created. Uses 2.5.3 version of Silk. 
+                 </description>
 
 	<dependencies>
 		<dependency>
