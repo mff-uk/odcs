@@ -199,6 +199,20 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
+        /**
+	 * Load all triples in repository to defined file in defined RDF format.
+	 *
+	 * @param filePath Path to file, where RDF data will be saved.
+	 * @param formatType Type of RDF format for saving data (example: TURTLE,
+	 * RDF/XML,etc.)
+	 * @throws CannotOverwriteFileException when file is protected for
+	 * overwritting.
+	 * @throws RDFException when loading data to file fail.
+	 */
+	public void loadToFile(String filePath,
+			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
+        
+        
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
 	 *

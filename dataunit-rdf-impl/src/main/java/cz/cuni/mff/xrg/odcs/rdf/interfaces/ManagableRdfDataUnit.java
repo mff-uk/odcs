@@ -55,18 +55,7 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	public void extractFromFile(File file, RDFFormat format, String baseURI,
 			HandlerExtractType handlerExtractType) throws RDFException;
 
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 * RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 * overwritting.
-	 * @throws RDFException when loading data to file fail.
-	 */
-	public void loadToFile(String filePath,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
+	
 
 	/**
 	 * Make select query over repository data and return tables as result.
