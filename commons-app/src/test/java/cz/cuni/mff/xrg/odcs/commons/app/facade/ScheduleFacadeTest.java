@@ -1,23 +1,34 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 
 /**
  * Test suite for schedule facade interface. Each test is run in own
@@ -207,9 +218,51 @@ public class ScheduleFacadeTest {
     @Test
     public void testExecute() {
         System.out.println("execute");
-        // TODO review the generated test code and remove the default call to fail.
-        fail("Have no idea what to test here, if anything.");
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline);
+
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        scheduleFacade.save(schedule);
+        assertNotNull(schedule.getId());
+
+        scheduleFacade.execute(schedule);
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline, executions.get(0).getPipeline());
+        assertEquals(schedule, executions.get(0).getSchedule());
     }
+    
+    /**
+     * Test of execute method, of class ScheduleFacade.
+     */
+    @Test
+    public void testExecute2() {
+        System.out.println("execute");
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline);
+
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setJustOnce(true);
+        schedule.setPipeline(pipeline);
+        scheduleFacade.save(schedule);
+        assertNotNull(schedule.getId());
+
+        scheduleFacade.execute(schedule);
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertFalse(executions.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline, executions.get(0).getPipeline());
+        assertEquals(schedule, executions.get(0).getSchedule());
+    }
+    
 
     /**
      * Test of executeFollowers method, of class ScheduleFacade.
@@ -217,8 +270,42 @@ public class ScheduleFacadeTest {
     @Test
     public void testExecuteFollowers_0args() {
         System.out.println("executeFollowers");
-        // TODO review the generated test code and remove the default call to fail.
-        fail("Have no idea what to test here, if anything.");
+
+        Pipeline pipeline2 = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline2);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        scheduleFacade.execute(schedule2);
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertFalse(executions2.isEmpty());
+        PipelineExecution pipelineExecution2 = executions2.get(0);
+        pipelineExecution2.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineFacade.save(pipelineExecution2);
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline);
+
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        Set<Pipeline> afterPipelines = new HashSet<>();
+        afterPipelines.add(pipeline2);
+        schedule.setAfterPipelines(afterPipelines);
+        
+        schedule.setType(ScheduleType.AFTER_PIPELINE);
+        schedule.setPipeline(pipeline);
+        scheduleFacade.save(schedule);
+        assertNotNull(schedule.getId());
+        
+        scheduleFacade.executeFollowers();
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertFalse(executions.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline, executions.get(0).getPipeline());
+        assertEquals(schedule, executions.get(0).getSchedule());        
     }
 
     /**

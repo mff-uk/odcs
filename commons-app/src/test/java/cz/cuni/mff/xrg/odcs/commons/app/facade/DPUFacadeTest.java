@@ -8,14 +8,20 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -109,6 +115,7 @@ public class DPUFacadeTest {
         System.out.println("createTemplateFromInstance");
         DPUInstanceRecord instanceRecord = new DPUInstanceRecord();
         DPUTemplateRecord templateRecord = new DPUTemplateRecord();
+        DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate("testParent", DPUType.EXTRACTOR);
         byte[] rawConfig = "<xml><a>value</a></xml".getBytes();
 
         instanceRecord.setName("testname");
@@ -123,6 +130,16 @@ public class DPUFacadeTest {
         assertEquals(instanceRecord.getDescription(), copyTemplateRecord.getDescription());
         assertEquals(instanceRecord.getJarPath(), copyTemplateRecord.getJarPath());
         assertNotSame(instanceRecord.getRawConf(), copyTemplateRecord.getRawConf());
+
+        templateRecord.setParent(parentTemplateRecord);
+        DPUTemplateRecord copyTemplateRecord2 = dpuFacade.createTemplateFromInstance(instanceRecord);
+
+        assertNotNull(copyTemplateRecord2);
+        assertEquals(instanceRecord.getName(), copyTemplateRecord2.getName());
+        assertEquals(instanceRecord.getDescription(), copyTemplateRecord2.getDescription());
+        assertEquals(instanceRecord.getJarPath(), copyTemplateRecord2.getJarPath());
+        assertEquals(instanceRecord.getTemplate().getParent(), copyTemplateRecord2.getParent());
+        assertNotSame(instanceRecord.getRawConf(), copyTemplateRecord2.getRawConf());
     }
 
     /**
