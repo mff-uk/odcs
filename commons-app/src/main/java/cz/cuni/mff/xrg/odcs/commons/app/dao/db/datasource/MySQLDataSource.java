@@ -1,44 +1,42 @@
-
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * Customized <code>DataSource</code> for ODCS application configurable with
- * {@link AppConfig} and with prefilled Virtuoso JDBC Driver.
- * 
+ * MySQL data source.
+ *
  * @author Jan Vojt
  */
-public class VirtuosoDataSource extends BasicDataSource {
+public class MySQLDataSource extends BasicDataSource {
 	
 	/**
 	 * Class name to be used as JDBC driver.
 	 */
-	public static final String DRIVER_CLASS_NAME = "virtuoso.jdbc4.Driver";
+	public static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 	
 	/**
 	 * JDBC connection string.
 	 */
-	private static final String JDBC_URL = "jdbc:virtuoso://%s:%s/charset=%s";
+	private static final String JDBC_URL = "jdbc:mysql://%s:%s/%s"
+			+ "?autoReconnect=true&useUnicode=true&characterEncoding=%s";
 
 	/**
 	 * <code>DataSource</code> constructed from configuration.
 	 * 
 	 * @param config application configuration
 	 */
-	public VirtuosoDataSource(AppConfig config) {
+	public MySQLDataSource(AppConfig config) {
 		setUrl(buildUrl(config));
 		setUsername(config.getString(ConfigProperty.DATABASE_USER));
 		setPassword(config.getString(ConfigProperty.DATABASE_PASSWORD));
 		setDriverClassName(DRIVER_CLASS_NAME);
 		
-		// Auto-commit needs to be enabled for Virtuoso, see GH-953.
-		// This prevents rollback when returning connection to the pool.
-		// See PoolableConnectionFactory#passivateObject().
-		setDefaultAutoCommit(true);
+		// Disable autocommit so we can use transactions
+		// for business units of work. Otherwise each SQL
+		// query would be autocommited on completion.
+		setDefaultAutoCommit(false);
 	}
 	
 	/**
@@ -51,8 +49,10 @@ public class VirtuosoDataSource extends BasicDataSource {
 		return String.format(JDBC_URL,
 				config.getString(ConfigProperty.DATABASE_HOSTNAME),
 				config.getString(ConfigProperty.DATABASE_PORT),
+				config.getString(ConfigProperty.DATABASE_NAME),
 				config.getString(ConfigProperty.DATABASE_CHARSET)
 		);
 	}
+
 
 }
