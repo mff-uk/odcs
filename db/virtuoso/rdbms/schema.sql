@@ -55,7 +55,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "description" LONG VARCHAR,  
   "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
-  "config_valid" SMALLINT,
+  "config_valid" SMALLINT NOT NULL,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,

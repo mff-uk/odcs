@@ -58,7 +58,7 @@ CREATE TABLE `dpu_template`
   `description` TEXT,  
   `configuration` TEXT,
   `parent_id` INTEGER,
-  `config_valid` SMALLINT,
+  `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
   `user_id` INTEGER,
   `visibility` SMALLINT,
