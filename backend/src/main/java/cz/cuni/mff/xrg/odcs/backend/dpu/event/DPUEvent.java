@@ -114,7 +114,7 @@ public class DPUEvent extends ApplicationEvent {
 	 */
 	public static DPUEvent createStart(Context context, Object source) {
 		final DPUInstanceRecord dpu = context.getDPU();
-		final String msg = String.format("Starting DPU {}", dpu.getId());
+		final String msg = String.format("Starting DPU: %d", dpu.getId());
 
 		LOG.info(msg);
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
@@ -129,7 +129,7 @@ public class DPUEvent extends ApplicationEvent {
 	 */
 	public static DPUEvent createComplete(Context context, Object source) {
 		final DPUInstanceRecord dpu = context.getDPU();
-		final String msg = String.format("DPU {} completed", dpu.getId());
+		final String msg = String.format("DPU: %d completed", dpu.getId());
 
 		LOG.info(msg);
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");	

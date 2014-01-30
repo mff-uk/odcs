@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.pipeline.event;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,7 @@ public final class PipelineFinished extends PipelineInfo {
 			.getLogger(PipelineFinished.class);
 
 	public PipelineFinished(PipelineExecution execution, Object source) {
-		super(execution, source, String.format("Execution {} finished", 
+		super(execution, source, String.format("Execution: %d finished", 
 				execution.getId()), "");
 
 		LOG.info("Execution {} finished with status: {}", execution.getId(),
