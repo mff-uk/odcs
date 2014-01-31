@@ -31,6 +31,7 @@ public class PipelineValidator {
 					continue;
 				}
 				for (Edge e : edgesTo) {
+					// TODO Do not use the -> directly
 					if (e.getScript().contains("-> " + input.getName())) {
 						found = true;
 						break;
@@ -51,6 +52,7 @@ public class PipelineValidator {
 					continue;
 				}
 				for (Edge e : edgesFrom) {
+					// TODO Do not use the -> directly
 					if (e.getScript().contains(output.getName() + " ->")) {
 						found = true;
 						break;

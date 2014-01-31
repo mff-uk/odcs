@@ -2,12 +2,10 @@ package cz.cuni.mff.xrg.odcs.backend.logback;
 
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
-import virtuoso.ConfigurableDataSource;
 
 /**
  * Connection source for logback. Uses {@link BasicDataSource} as connection
@@ -15,30 +13,15 @@ import virtuoso.ConfigurableDataSource;
  *
  * @author Jan Vojt
  */
-public class PooledConnectionSource extends DriverManagerConnectionSource {
-	
-	private DataSource pool;
+public class LoggingConnectionSource extends DriverManagerConnectionSource {
 	
 	/**
-	 * Application configuration.
+	 * Database connection pool.
 	 */
-	private final AppConfig appConfig;
+	private DataSource dataSource;
 	
-	public PooledConnectionSource(AppConfig appConfig) {
-		this.appConfig = appConfig;
-	}
-	
-	/**
-	 * Setup connection pool.
-	 */
-	@Override
-	public void start() {
-		BasicDataSource dataSource = new ConfigurableDataSource(
-				appConfig.getSubConfiguration(ConfigProperty.RDBMS)
-		);
-		setDriverClass(dataSource.getDriverClassName());
-		pool = dataSource;
-		super.start();
+	public LoggingConnectionSource(DataSource source) {
+		dataSource = source;
 	}
 
 	/**
@@ -49,6 +32,6 @@ public class PooledConnectionSource extends DriverManagerConnectionSource {
 	 */
 	@Override
 	public Connection getConnection() throws SQLException {
-		return pool.getConnection();
+		return dataSource.getConnection();
 	}
 }

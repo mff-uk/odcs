@@ -11,7 +11,7 @@
 
     <!-- transactions by annotations -->
     <tx:annotation-driven mode="aspectj" />	
-    
+    <context:spring-configured />
     <context:annotation-config />
     
     <!-- enable aspects -->
@@ -19,11 +19,15 @@
    	
     <!-- application configuration -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome" />
+
+	<!-- factory for data source is needed to choose correct database platform -->
+	<bean id="dataSourceFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.DataSourceFactory" />
 	
-    <!-- data source with db login properties loaded from application configuration -->
-    <bean id="dataSource" class="virtuoso.ConfigurableDataSource">
-        <constructor-arg value="#{configuration.getSubConfiguration(T(cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty).RDBMS)}" />
-    </bean>
+	<!-- data source with db login properties loaded from application configuration -->
+    <bean id="dataSource"
+		  factory-bean="dataSourceFactory"
+		  factory-method="getDataSource"
+		  destroy-method="close" />
 	
     <!-- EntityManager factory -->
     <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

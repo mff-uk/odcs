@@ -1,5 +1,5 @@
 
-package virtuoso;
+package cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -12,19 +12,24 @@ import org.apache.commons.dbcp.BasicDataSource;
  * 
  * @author Jan Vojt
  */
-public class ConfigurableDataSource extends BasicDataSource {
+public class VirtuosoDataSource extends BasicDataSource {
 	
 	/**
 	 * Class name to be used as JDBC driver.
 	 */
 	public static final String DRIVER_CLASS_NAME = "virtuoso.jdbc4.Driver";
+	
+	/**
+	 * JDBC connection string.
+	 */
+	private static final String JDBC_URL = "jdbc:virtuoso://%s:%s/charset=%s";
 
 	/**
 	 * <code>DataSource</code> constructed from configuration.
 	 * 
 	 * @param config application configuration
 	 */
-	public ConfigurableDataSource(AppConfig config) {
+	public VirtuosoDataSource(AppConfig config) {
 		setUrl(buildUrl(config));
 		setUsername(config.getString(ConfigProperty.DATABASE_USER));
 		setPassword(config.getString(ConfigProperty.DATABASE_PASSWORD));
@@ -43,11 +48,11 @@ public class ConfigurableDataSource extends BasicDataSource {
 	 * @return 
 	 */
 	private static String buildUrl(AppConfig config) {
-		String url = "jdbc:virtuoso://%s:%s/charset=%s";
-		String host = config.getString(ConfigProperty.DATABASE_HOSTNAME);
-		String port = config.getString(ConfigProperty.DATABASE_PORT);
-		String charset = config.getString(ConfigProperty.DATABASE_CHARSET);
-		return String.format(url, host, port, charset);
+		return String.format(JDBC_URL,
+				config.getString(ConfigProperty.DATABASE_HOSTNAME),
+				config.getString(ConfigProperty.DATABASE_PORT),
+				config.getString(ConfigProperty.DATABASE_CHARSET)
+		);
 	}
 
 }

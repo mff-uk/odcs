@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +44,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * How many logs we can commit in single query.
 	 */
 	private static final int LOG_BATCH_SIZE = 50;
-
+	
 	@Autowired
-	protected AppConfig appConfig;
+	private DataSource dataSource;
 
 	/**
 	 * Source of database connection.
@@ -279,7 +280,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	public void start() {
 
 		// prepare and start the connection source
-		connectionSource = new PooledConnectionSource(appConfig);
+		connectionSource = new LoggingConnectionSource(dataSource);
 		connectionSource.setContext(this.getContext());
 		connectionSource.start();
 
