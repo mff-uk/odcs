@@ -51,12 +51,14 @@ public class PipelineInfo extends PipelineEvent {
 	public static PipelineInfo createStart(PipelineExecution execution,
 			Object source) {
 		// prepare message
-		final String msg 
-				= String.format("Starting execution number: {} pipeline: {}", 
+		final String msgShort
+				= String.format("Starting execution: %d", execution.getId());
+		final String msgLong
+				= String.format("Starting execution number: %d pipeline: %s", 
 						execution.getId(), execution.getPipeline().getName());
-		LOG.info(msg);
+		LOG.info(msgLong);
 		return new PipelineInfo(execution, source, 
-				"Starting execution of pipeline", msg);
+				msgShort, msgLong);
 	} 
 	
 }
