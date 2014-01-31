@@ -1,18 +1,22 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,33 +24,301 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+
 
 /**
- * Test suite for pipeline facade interface.
- * Each test is run in own transaction, which is rolled back in the end.
+ * Test suite for pipeline facade interface. Each test is run in own
+ * transaction, which is rolled back in the end.
  * 
  * @author Jan Vojt
+ * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(defaultRollback=true)
+@TransactionConfiguration(defaultRollback = true)
 public class PipelineFacadeTest {
 	
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	@Autowired
-	private PipelineFacade facade;
-	
+	private UserFacade userFacade;
+
 	@Autowired
-	private ScheduleFacade scheduler;
-	
+	private PipelineFacade pipelineFacade;
+
+	@Autowired
+	private ScheduleFacade schedulerFacade;
+
+	public PipelineFacadeTest() {
+	}
+
+	@BeforeClass
+	public static void setUpClass() {
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+	}
+
+	@Before
+	public void setUp() {
+	}
+
+	@After
+	public void tearDown() {
+	}
+
+	/**
+	 * Test of createPipeline method, of class PipelineFacade.
+	 */
 	@Test
 	@Transactional
 	public void testCreatePipeline() {
+		System.out.println("createPipeline");
+		Pipeline pipeline = pipelineFacade.createPipeline();
+
+		assertNotNull(pipeline);
+		assertNotNull(pipeline.getGraph());
+		assertNotNull(pipeline.getConflicts());
+		assertNull(pipeline.getName());
+	}
+
+	/**
+	 * Test of copyPipeline method, of class PipelineFacade.
+	 */
+	@Test
+	@Transactional
+	public void testCopyPipeline() {
+		System.out.println("copyPipeline");
+
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		pipeline.setGraph(new PipelineGraph());
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+
+		Pipeline pipeline2 = pipelineFacade.copyPipeline(pipeline);
+		assertNotNull(pipeline2);
+		assertEquals(pipeline.getId(), pipeline2.getId());
+		assertEquals(pipeline.getDescription(), pipeline2.getDescription());
+		assertEquals(pipeline.getGraph(), pipeline2.getGraph());
+		assertEquals(pipeline.getLastChange(), pipeline2.getLastChange());
+		assertEquals(pipeline.getName(), pipeline2.getName());
+		assertEquals(pipeline.getOwner(), pipeline2.getOwner());
+		assertEquals(pipeline.getShareType(), pipeline2.getShareType());
+		assertEquals(pipeline.getConflicts(), pipeline2.getConflicts());
+		assertEquals(pipeline, pipeline2);
+	}
+
+	/**
+	 * Test of getAllPipelines method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetAllPipelines() {
+		System.out.println("getAllPipelines");
+	}
+
+	/**
+	 * Test of getPipeline method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetPipeline() {
+		System.out.println("getPipeline");
+	}
+
+	/**
+	 * Test of save method, of class PipelineFacade.
+	 */
+	@Test
+	public void testSave_Pipeline() {
+		System.out.println("save");
+	}
+
+	/**
+	 * Test of delete method, of class PipelineFacade.
+	 */
+	@Test
+	public void testDelete_Pipeline() {
+		System.out.println("delete");
+	}
+
+	/**
+	 * Test of getPipelinesUsingDPU method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetPipelinesUsingDPU() {
+		System.out.println("getPipelinesUsingDPU");
+	}
+
+	/**
+	 * Test of hasPipelineWithName method, of class PipelineFacade.
+	 */
+	@Test
+	public void testHasPipelineWithName() {
+		System.out.println("hasPipelineWithName");
+	}
+
+	/**
+	 * Test of getPrivateDPUs method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetPrivateDPUs() {
+		System.out.println("getPrivateDPUs");
+	}
+
+	/**
+	 * Test of createOpenEvent method, of class PipelineFacade.
+	 */
+	@Test
+	public void testCreateOpenEvent() {
+		System.out.println("createOpenEvent");
+	}
+
+	/**
+	 * Test of getOpenPipelineEvents method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetOpenPipelineEvents() {
+		System.out.println("getOpenPipelineEvents");
+	}
+
+	/**
+	 * Test of isUpToDate method, of class PipelineFacade.
+	 */
+	@Test
+	public void testIsUpToDate() {
+		System.out.println("isUpToDate");
+	}
+
+	/**
+	 * Test of createExecution method, of class PipelineFacade.
+	 */
+	@Test
+	public void testCreateExecution() {
+		System.out.println("createExecution");
+	}
+
+	/**
+	 * Test of getAllExecutions method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetAllExecutions_0args() {
+		System.out.println("getAllExecutions");
+	}
+
+	/**
+	 * Test of getAllExecutions method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetAllExecutions_PipelineExecutionStatus() {
+		System.out.println("getAllExecutions");
+	}
+
+	/**
+	 * Test of getExecution method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetExecution() {
+		System.out.println("getExecution");
+	}
+
+	/**
+	 * Test of getExecutions method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetExecutions_Pipeline() {
+		System.out.println("getExecutions");
+	}
+
+	/**
+	 * Test of getExecutions method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetExecutions_Pipeline_PipelineExecutionStatus() {
+		System.out.println("getExecutions");
+	}
+
+	/**
+	 * Test of getLastExecTime method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetLastExecTime() {
+		System.out.println("getLastExecTime");
+	}
+
+	/**
+	 * Test of getLastExec method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetLastExec_Pipeline_Set() {
+		System.out.println("getLastExec");
+	}
+
+	/**
+	 * Test of getLastExec method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetLastExec_Pipeline() {
+		System.out.println("getLastExec");
+	}
+
+	/**
+	 * Test of getLastExec method, of class PipelineFacade.
+	 */
+	@Test
+	public void testGetLastExec_Schedule_Set() {
+		System.out.println("getLastExec");
+	}
+
+	/**
+	 * Test of hasModifiedExecutions method, of class PipelineFacade.
+	 */
+	@Test
+	public void testHasModifiedExecutions() {
+		System.out.println("hasModifiedExecutions");
+	}
+
+	/**
+	 * Test of save method, of class PipelineFacade.
+	 */
+	@Test
+	public void testSave_PipelineExecution() {
+		System.out.println("save");
+	}
+
+	/**
+	 * Test of delete method, of class PipelineFacade.
+	 */
+	@Test
+	public void testDelete_PipelineExecution() {
+		System.out.println("delete");
+	}
+
+	/**
+	 * Test of stopExecution method, of class PipelineFacade.
+	 */
+	@Test
+	public void testStopExecution() {
+		System.out.println("stopExecution");
+	}
+	
+	@Test
+	@Transactional
+	public void testCreatePipeline2() {
 		
-		Pipeline pipe = facade.createPipeline();
+		Pipeline pipe = pipelineFacade.createPipeline();
 		
 		assertNotNull(pipe);
 		assertNotNull(pipe.getGraph());
@@ -60,31 +332,31 @@ public class PipelineFacadeTest {
 		
 		Pipeline[] pipes = new Pipeline[3];
 		for (int i = 0; i<3; i++) {
-			pipes[i] = facade.createPipeline();
-			facade.save(pipes[i]);
+			pipes[i] = pipelineFacade.createPipeline();
+			pipelineFacade.save(pipes[i]);
 		}
 		
 		em.flush();
 
 		for (int i = 0; i<3; i++) {
-			assertNotNull(facade.getPipeline(pipes[i].getId()));
+			assertNotNull(pipelineFacade.getPipeline(pipes[i].getId()));
 		}
 	}
 	
 	@Test
 	@Transactional
 	public void testGetAllExecutions() {
-		List<PipelineExecution> execsPrev = facade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		List<PipelineExecution> execsPrev = pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
 		assertNotNull(execsPrev);
 		
-		Pipeline pipe = facade.createPipeline();
-		PipelineExecution exec = facade.createExecution(pipe);
+		Pipeline pipe = pipelineFacade.createPipeline();
+		PipelineExecution exec = pipelineFacade.createExecution(pipe);
 		exec.setStatus(PipelineExecutionStatus.CANCELLING);
 		
-		facade.save(pipe);
-		facade.save(exec);
+		pipelineFacade.save(pipe);
+		pipelineFacade.save(exec);
 		
-		List<PipelineExecution> execs = facade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		List<PipelineExecution> execs = pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
 		assertNotNull(execs);
 		assertEquals(execsPrev.size() + 1, execs.size());
 	}
@@ -92,13 +364,13 @@ public class PipelineFacadeTest {
 	@Test
 	@Transactional
 	public void testExecutionsOfPipeline() {
-		Pipeline pipe = facade.createPipeline();
-		PipelineExecution exec = facade.createExecution(pipe);
+		Pipeline pipe = pipelineFacade.createPipeline();
+		PipelineExecution exec = pipelineFacade.createExecution(pipe);
 		
-		facade.save(pipe);
-		facade.save(exec);
+		pipelineFacade.save(pipe);
+		pipelineFacade.save(exec);
 		
-		List<PipelineExecution> execs = facade.getExecutions(pipe);
+		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipe);
 		
 		assertNotNull(execs);
 		assertEquals(1, execs.size());
@@ -111,17 +383,17 @@ public class PipelineFacadeTest {
 		
 		Pipeline[] pipes = new Pipeline[3];
 		for (int i = 0; i<3; i++) {
-			pipes[i] = facade.createPipeline();
-			facade.save(pipes[i]);
+			pipes[i] = pipelineFacade.createPipeline();
+			pipelineFacade.save(pipes[i]);
 		}
 		
-		facade.delete(pipes[1]);
+		pipelineFacade.delete(pipes[1]);
 		
 		em.flush();
 
-		assertEquals(pipes[0], facade.getPipeline(pipes[0].getId()));
-		assertNull(facade.getPipeline(pipes[1].getId()));
-		assertEquals(pipes[2], facade.getPipeline(pipes[2].getId()));
+		assertEquals(pipes[0], pipelineFacade.getPipeline(pipes[0].getId()));
+		assertNull(pipelineFacade.getPipeline(pipes[1].getId()));
+		assertEquals(pipes[2], pipelineFacade.getPipeline(pipes[2].getId()));
 	}
 	
 	@Test
@@ -129,12 +401,12 @@ public class PipelineFacadeTest {
 	public void testDeepDeletePipeline() {
 		
 		long pid = 1;
-		Pipeline pipe = facade.getPipeline(pid);
+		Pipeline pipe = pipelineFacade.getPipeline(pid);
 		assertNotNull(pipe);
-		List<PipelineExecution> execs = facade.getExecutions(pipe);
-		List<Schedule> jobs = scheduler.getSchedulesFor(pipe);
+		List<PipelineExecution> execs = pipelineFacade.getExecutions(pipe);
+		List<Schedule> jobs = schedulerFacade.getSchedulesFor(pipe);
 		
-		facade.delete(pipe);
+		pipelineFacade.delete(pipe);
 		
 		// Cascading of deletes is happenning on DB level, so we need to flush
 		// changes to DB and clear netityManager to reread from DB.
@@ -142,16 +414,16 @@ public class PipelineFacadeTest {
 		em.clear();
 		
 		// make sure pipeline was deleted
-		assertNull(facade.getPipeline(pid));
+		assertNull(pipelineFacade.getPipeline(pid));
 		
 		// check that all pipeline executions were deleted
 		for (PipelineExecution exec : execs) {
-			assertNull(facade.getExecution(exec.getId()));
+			assertNull(pipelineFacade.getExecution(exec.getId()));
 		}
 		
 		// check that all scheduled jobs were deleted
 		for (Schedule job : jobs) {
-			assertNull(scheduler.getSchedule(job.getId()));
+			assertNull(schedulerFacade.getSchedule(job.getId()));
 		}
 	}
 	
@@ -159,16 +431,16 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testPipelineList() {
 		
-		List<Pipeline> pipes = facade.getAllPipelines();
+		List<Pipeline> pipes = pipelineFacade.getAllPipelines();
 		
 		for (int i = 0; i<3; i++) {
-			Pipeline newPpl = facade.createPipeline();
+			Pipeline newPpl = pipelineFacade.createPipeline();
 			pipes.add(newPpl);
-			facade.save(newPpl);
+			pipelineFacade.save(newPpl);
 		}
 		
 		// refetch entities
-		List<Pipeline> resPipes = facade.getAllPipelines();
+		List<Pipeline> resPipes = pipelineFacade.getAllPipelines();
 		
 		// test
 		assertEquals(pipes.size(), resPipes.size());
@@ -180,10 +452,10 @@ public class PipelineFacadeTest {
 	@Test
 	@Transactional
 	public void testExecutionsContext() {
-		Pipeline pipe = facade.createPipeline();
-		PipelineExecution exec = facade.createExecution(pipe);		
-		facade.save(pipe);
-		facade.save(exec);
+		Pipeline pipe = pipelineFacade.createPipeline();
+		PipelineExecution exec = pipelineFacade.createExecution(pipe);		
+		pipelineFacade.save(pipe);
+		pipelineFacade.save(exec);
 		em.flush();
 		
 		// create context
@@ -195,11 +467,11 @@ public class PipelineFacadeTest {
 	
 	@Test
 	@Transactional
-	public void testGetPipelinesUsingDPU() {
+	public void testGetPipelinesUsingDPU2() {
 		DPUTemplateRecord dpu = new DPUTemplateRecord();
 		dpu.setId(1L);
 		
-		List<Pipeline> pipes = facade.getPipelinesUsingDPU(dpu);
+		List<Pipeline> pipes = pipelineFacade.getPipelinesUsingDPU(dpu);
 		
 		assertNotNull(pipes);
 		assertEquals(1, pipes.size());
@@ -212,7 +484,7 @@ public class PipelineFacadeTest {
 		DPUTemplateRecord dpu = new DPUTemplateRecord();
 		dpu.setId(2L);
 		
-		List<Pipeline> pipes = facade.getPipelinesUsingDPU(dpu);
+		List<Pipeline> pipes = pipelineFacade.getPipelinesUsingDPU(dpu);
 		
 		assertNotNull(pipes);
 		assertEquals(0, pipes.size());
@@ -220,13 +492,13 @@ public class PipelineFacadeTest {
 	
 	@Test
 	@Transactional
-	public void testCopyPipeline() {
+	public void testCopyPipeline2() {
 		
 		Pipeline ppl = new Pipeline();
 		ppl.setName("pplName");
 		ppl.setDescription("pplDesc");
 		
-		Pipeline nPpl = facade.copyPipeline(ppl);
+		Pipeline nPpl = pipelineFacade.copyPipeline(ppl);
 
 		String newName = "Copy of " + ppl.getName();
 		assertNotSame(ppl, nPpl);
@@ -242,7 +514,7 @@ public class PipelineFacadeTest {
 		ppl.setName("pplName");
 		ppl.setDescription("pplDesc");
 		
-		Pipeline nPpl = facade.copyPipeline(ppl);
+		Pipeline nPpl = pipelineFacade.copyPipeline(ppl);
 
 		// test copying for the first time
 		String newName = "Copy of " + ppl.getName();
@@ -250,7 +522,7 @@ public class PipelineFacadeTest {
 		assertEquals(newName, nPpl.getName());
 		assertEquals(ppl.getDescription(), nPpl.getDescription());
 
-		Pipeline nPpl1 = facade.copyPipeline(ppl);
+		Pipeline nPpl1 = pipelineFacade.copyPipeline(ppl);
 		
 		// test copying for the second time
 		String newName1 = "Copy of " + ppl.getName() + " #1";
@@ -300,6 +572,5 @@ public class PipelineFacadeTest {
 //		facadeImpl.setAuthCtx(authCtx2);
 //		assertTrue(facade.getOpenPipelineEvents(pipe1).size() == 1);
 //		assertTrue(facade.getOpenPipelineEvents(pipe2).isEmpty());
-//	}
-	
+//	}	
 }
