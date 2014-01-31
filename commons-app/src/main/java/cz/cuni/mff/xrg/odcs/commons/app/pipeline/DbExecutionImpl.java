@@ -85,15 +85,18 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 
 	@Override
 	public boolean hasModified(Date since) {		
-		final String sringQuery = "SELECT CASE"
-								+ " WHEN MAX(e.lastChange) > :last THEN CAST(1 AS INTEGER)"
-								+ " ELSE CAST(0 AS INTEGER)"
-								+ " END "
-								+ " FROM PipelineExecution e";		
-		TypedQuery<Number> query = em.createQuery(sringQuery, Number.class);
-		query.setParameter("last", since);
-		long size = (Long) query.getSingleResult().longValue();
-		return size > 0;
+		final String sringQuery = "SELECT MAX(e.lastChange)"
+				+ " FROM PipelineExecution e";
+		
+		TypedQuery<Date> query = em.createQuery(sringQuery, Date.class);
+		Date lastModified = (Date) query.getSingleResult();
+		
+		if (lastModified == null) {
+			// there are no executions in DB
+			return false;
+		}
+		
+		return lastModified.after(since);
 	}
 
 }

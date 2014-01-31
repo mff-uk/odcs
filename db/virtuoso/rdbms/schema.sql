@@ -55,7 +55,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "description" LONG VARCHAR,  
   "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
-  "config_valid" SMALLINT,
+  "config_valid" SMALLINT NOT NULL,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,
@@ -130,7 +130,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_PIPELINE"
   "debug_mode" SMALLINT,
   "t_start" DATETIME,
   "t_end" DATETIME,
-  "context_id" INTEGER NOT NULL,
+  "context_id" INTEGER,
   "schedule_id" INTEGER,
   "silent_mode" SMALLINT,
   "debugnode_id" INTEGER,
@@ -558,7 +558,9 @@ ALTER TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- TRIGGERS      ###############################################################
+-- TRIGGERS      ######################################################
+
+-- BEGIN VIRTUOSO ONLY
 
 CREATE TRIGGER delete_instance_logs BEFORE DELETE ON "DB"."ODCS"."DPU_INSTANCE" REFERENCING old AS o
 {
@@ -590,6 +592,14 @@ CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" RE
       t_last_change=now()
     WHERE id = n.id;
 };
+
+-- END VIRTUOSO ONLY
+
+-- BEGIN MYSQL ONLY
+ -- all lines starting with comment in this section will be commented out for MySQL
+-- CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
+--  FOR EACH ROW SET NEW.t_last_change = NOW();
+-- END MYSQL ONLY
 
 -- TABLE FOR LOGS
 

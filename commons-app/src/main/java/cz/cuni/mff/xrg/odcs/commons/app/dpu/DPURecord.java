@@ -46,19 +46,19 @@ public abstract class DPURecord {
     /**
      * DPURecord description, can be provided by user or by the DPU's dialog.
      */
-	@Column(name="description", nullable = true)
+	@Column(name="description")
     private String description;
     		
 	/**
 	 * DPU's configuration in serialized version.
 	 */
-	@Column(name="configuration", nullable = true)
-	private byte[] serializedConfiguration;
+	@Column(name="configuration")
+	private String serializedConfiguration;
 	
 	/**
 	 * If true configuration is in valid state.
 	 */
-	@Column(name="config_valid")
+	@Column(name="config_valid", nullable = false)
 	private boolean configValid;
 	
 	/**
@@ -94,7 +94,7 @@ public abstract class DPURecord {
     		this.serializedConfiguration = null;
     	} else {
 			// deep copy
-			this.serializedConfiguration = dpuRecord.serializedConfiguration.clone();
+			this.serializedConfiguration = dpuRecord.serializedConfiguration;
     	}
     	this.configValid = dpuRecord.configValid;
     }
@@ -165,7 +165,7 @@ public abstract class DPURecord {
 	 */
 	public byte[] getRawConf() {
 		LOG.debug("getRawConf for: {} on: {}", this.name, this.serializedConfiguration);
-		return serializedConfiguration;
+		return serializedConfiguration.getBytes();
 	}
 
 	/**
@@ -173,7 +173,7 @@ public abstract class DPURecord {
 	 * @param conf
 	 */
 	public void setRawConf(byte[] conf) {
-		serializedConfiguration = conf;
+		serializedConfiguration = conf.toString();
 		LOG.debug("setRawConf for: {} on: {}", this.name, this.serializedConfiguration);
 	}
 	

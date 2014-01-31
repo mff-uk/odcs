@@ -5,8 +5,8 @@ fk_check_input_values(0);
 -- get_all_tables: tablepattern="db.odcs.%",9
 -- Definitions of 27 tables were read in.
 -- SELECT * FROM DB.ODCS.DPU_INSTANCE
-INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_description,description,tool_tip,configuration,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
     <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint>
     <Host__name></Host__name>
@@ -18,20 +18,20 @@ N'<object-stream>
     <ExtractFail>true</ExtractFail>
     <UseStatisticalHandler>false</UseStatisticalHandler>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
-</object-stream>',1);
-INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_description,description,tool_tip,configuration,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','',
-N'<object-stream>
+</object-stream>',1,1);
+INSERT INTO DB.ODCS.DPU_INSTANCE(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
     <FilePath>/tmp/dbpedia.rdf</FilePath>
     <RDFFileFormat>RDFXML</RDFFileFormat>
     <DiffName>false</DiffName>
   </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
-</object-stream>',5);
+</object-stream>',1,5);
 
 -- Table DB.ODCS.DPU_INSTANCE 2 rows output.
 -- SELECT * FROM DB.ODCS.DPU_TEMPLATE
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,N'Extracts RDF triples from SPARQL endpoint',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,'Extracts RDF triples from SPARQL endpoint',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
     <SPARQL__endpoint></SPARQL__endpoint>
     <Host__name></Host__name>
@@ -51,10 +51,10 @@ N'<object-stream>
       <requestType>POST_URL_ENCODER</requestType>
     </endpointParams>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
-</object-stream>',NULL,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
+</object-stream>',NULL,1,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
 
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,N'Extracts RDF data from a file',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,'Extracts RDF data from a file',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig>
     <Path></Path>
     <FileSuffix></FileSuffix>
@@ -63,18 +63,18 @@ N'<object-stream>
     <OnlyThisSuffix>false</OnlyThisSuffix>
     <UseStatisticalHandler>true</UseStatisticalHandler>
   </cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig>
-</object-stream>',NULL,1,1,0,'RDF_File_Extractor','RDF_File_Extractor-1.0.0.jar','Extracts RDF data from a file.');
+</object-stream>',NULL,1,1,1,0,'RDF_File_Extractor','RDF_File_Extractor-1.0.0.jar','Extracts RDF data from a file.');
 
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,N'Transforms RDF data based on SPARQL (update) query',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,'Transforms RDF data based on SPARQL (update) query',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig>
     <SPARQL__Update__Query></SPARQL__Update__Query>
     <isConstructType>false</isConstructType>
   </cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig>
-</object-stream>',NULL,1,1,1,'SPARQL_Transformer','SPARQL_Transformer-1.0.0.jar','SPARQL Transformer.');
+</object-stream>',NULL,1,1,1,1,'SPARQL_Transformer','SPARQL_Transformer-1.0.0.jar','SPARQL Transformer.');
 
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,N'Loads RDF data to SPARQL endpoint.',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,'Loads RDF data to SPARQL endpoint.',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig>
     <SPARQL__endpoint></SPARQL__endpoint>
     <Host__name></Host__name>
@@ -92,25 +92,25 @@ N'<object-stream>
       <postType>POST_URL_ENCODER</postType>
     </endpointParams>
   </cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig>
-</object-stream>',NULL,1,1,2,'SPARQL_Loader','SPARQL_Loader-1.0.0.jar','Loads RDF data to SPARQL endpoint.');
+</object-stream>',NULL,1,1,1,2,'SPARQL_Loader','SPARQL_Loader-1.0.0.jar','Loads RDF data to SPARQL endpoint.');
 
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,N'Loads RDF data into file.',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'Loads RDF data into file.',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
     <FilePath></FilePath>
     <RDFFileFormat>AUTO</RDFFileFormat>
     <DiffName>false</DiffName>
     <validDataBefore>false</validDataBefore>
   </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
-</object-stream>',NULL,1,1,2,'RDF_File_Loader','RDF_File_Loader-1.0.0.jar','Loads RDF data into file.');
+</object-stream>',NULL,1,1,1,2,'RDF_File_Loader','RDF_File_Loader-1.0.0.jar','Loads RDF data into file.');
 
-INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(6,'RDF Data Validator',0,N'Validates RDF data and creates a validation report.',
-N'<object-stream>
+INSERT INTO DB.ODCS.DPU_TEMPLATE(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(6,'RDF Data Validator',0,'Validates RDF data and creates a validation report.',
+'<object-stream>
   <cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig>
     <stopExecution>false</stopExecution>
     <sometimesOutput>true</sometimesOutput>
   </cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig>
-</object-stream>',NULL,1,1,1,'RDF_Data_Validator','RDF_Data_Validator-1.0.0.jar','Validate RDF data and create validation report.');
+</object-stream>',NULL,1,1,1,1,'RDF_Data_Validator','RDF_Data_Validator-1.0.0.jar','Validate RDF data and create validation report.');
 
 -- Table DB.ODCS.DPU_TEMPLATE 5 rows output.
 -- SELECT * FROM DB.ODCS.EXEC_CONTEXT_DPU
@@ -150,7 +150,7 @@ INSERT INTO DB.ODCS.PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name)
 INSERT INTO DB.ODCS.PPL_GRAPH(id,pipeline_id) VALUES(1,1);
 -- Table DB.ODCS.PPL_GRAPH 1 rows output.
 -- SELECT * FROM DB.ODCS.PPL_MODEL
-INSERT INTO DB.ODCS.PPL_MODEL(id,name,description,user_id,visibility) VALUES(1,'DBpedia',N'Loads 100 triples from DBpedia.',2,2);
+INSERT INTO DB.ODCS.PPL_MODEL(id,name,description,user_id,visibility) VALUES(1,'DBpedia','Loads 100 triples from DBpedia.',2,2);
 -- Table DB.ODCS.PPL_MODEL 1 rows output.
 -- SELECT * FROM DB.ODCS.PPL_NODE
 INSERT INTO DB.ODCS.PPL_NODE(id,graph_id,instance_id,position_id) VALUES(1,1,1,1);
