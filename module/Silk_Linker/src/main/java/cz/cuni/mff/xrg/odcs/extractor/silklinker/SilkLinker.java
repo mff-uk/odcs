@@ -235,7 +235,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         try {
            //Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/tmp/silk_2.5.2/silk.jar");
             
-           Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /data/odcs/libs/silk_2.5.2/silk.jar");
+           Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /data/odcs/libs/silk_2.5.3/silk.jar");
 
            
             printProcessOutput(p);
@@ -299,20 +299,24 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
     private static void printProcessOutput(Process process) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line = "";
+            StringBuilder errors = new StringBuilder();
+            String line;
             while ((line = in.readLine()) != null) {
-                log.debug(line);
+                errors.append(line);
             }
+            log.warn(errors.toString());
             in.close();
 
             in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            line = "";
+           StringBuilder notes = new StringBuilder();
+        
             while ((line = in.readLine()) != null) {
-                log.debug(line);
+                notes.append(line);
             }
+            log.debug(notes.toString());
             in.close();
         } catch (Exception e) {
-            log.debug("Vyjimka... " + e);
+            log.error(e.getLocalizedMessage());
         }
     }
 }

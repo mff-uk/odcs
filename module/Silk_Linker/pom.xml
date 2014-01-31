@@ -14,7 +14,7 @@
         <version>1.0.0</version>
 		<description>Creates links between RDF resources based on the Silk Link Specification Language (LSL), https://www.assembla.com/spaces/silk/wiki/Link_Specification_Language. 
                   The script may be uploaded/adjusted in the DPU configuration. Output section of such script is always ignored, output is written to two output data units of the DPU - "links_confirmed", "links_to_be_verified". 
-                    DPU configuration may also specify thresholds for the two outputs created. Uses 2.5.3 version of Silk. 
+                    DPU configuration may also specify thresholds for the two outputs created. Uses 2.5.3 version of Silk. Not supporting cancelation of DPU.
                  </description>
 
 	<dependencies>
