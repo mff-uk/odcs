@@ -17,10 +17,11 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,21 +32,29 @@ import org.openrdf.rio.*;
  */
 public class SPARQLExtractor {
 
-	private static Logger logger = Logger.getLogger(SPARQLExtractor.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(SPARQLExtractor.class);
 
 	/**
 	 * Default construct query using for extraction without query in parameter.
 	 */
 	private static final String DEFAULT_CONSTRUCT_QUERY = "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z}";
 
+	/**
+	 * Count of attempts to reconnect if the connection fails.
+	 */
 	private static final int DEFAULT_EXTRACTOR_RETRY_SIZE = -1;
 
+	/**
+	 * Time in miliseconds how long to wait before trying to reconnect.
+	 */
 	private static final long DEFAULT_EXTRACTOR_RETRY_TIME = 1000;
 
 	/**
-	 * Represents successful connection using HTTP.
+	 * Represents prefix of the OK response code (could be 200, but also 204,
+	 * etc)
 	 */
-	private static final int HTTP_OK_RESPONSE = 200;
+	private static final int HTTP_OK_RESPONSE_PREFIX = 2;
 
 	/**
 	 * Represent http error code needed authorisation for connection using HTTP.
@@ -67,14 +76,15 @@ public class SPARQLExtractor {
 	private DPUContext context;
 
 	/**
-	 * Count of reconnection if connection failed.
+	 * Count of reconnection if connection failed. For infinite loop use zero or
+	 * negative integer.
 	 */
-	private int retrySize;
+	private int RETRY_CONNECTION_SIZE;
 
 	/**
 	 * Time in ms how long wait before re-connection attempt.
 	 */
-	private long retryTime;
+	private long RETRY_CONNECTION_TIME;
 
 	/**
 	 * Request HTTP parameters neeed for setting SPARQL endpoint.
@@ -100,9 +110,10 @@ public class SPARQLExtractor {
 
 		this.dataUnit = dataUnit;
 		this.context = context;
-		this.retrySize = retrySize;
-		this.retryTime = retryTime;
 		this.endpointParams = endpointParams;
+
+		setRetryConnectionSize(retrySize);
+		setRetryConnectionTime(retryTime);
 	}
 
 	/**
@@ -119,9 +130,10 @@ public class SPARQLExtractor {
 			ExtractorEndpointParams endpointParams) {
 		this.dataUnit = dataUnit;
 		this.context = context;
-		this.retrySize = DEFAULT_EXTRACTOR_RETRY_SIZE;
-		this.retryTime = DEFAULT_EXTRACTOR_RETRY_TIME;
 		this.endpointParams = endpointParams;
+
+		setRetryConnectionSize(DEFAULT_EXTRACTOR_RETRY_SIZE);
+		setRetryConnectionTime(DEFAULT_EXTRACTOR_RETRY_TIME);
 	}
 
 	/**
@@ -251,9 +263,6 @@ public class SPARQLExtractor {
 			connection = dataUnit.getConnection();
 			Authentificator.authenticate(hostName, password);
 
-			dataUnit.setRetryConnectionSize(retrySize);
-			dataUnit.setRetryConnectionTime(retryTime);
-
 			extractDataFromEnpointGraph(endpointURL, query,
 					format, connection, handlerExtractType, extractFail);
 
@@ -278,6 +287,33 @@ public class SPARQLExtractor {
 			}
 		}
 
+	}
+
+	/**
+	 *
+	 * Set time in miliseconds how long to wait before trying to reconnect.
+	 *
+	 * @param retryTimeValue time in milisecond for waiting before trying to
+	 *                       reconnect.
+	 * @throws IllegalArgumentException if time is 0 or negative long number.
+	 */
+	public final void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException {
+		if (retryTimeValue >= 0) {
+			RETRY_CONNECTION_TIME = retryTimeValue;
+		} else {
+			throw new IllegalArgumentException(
+					"Retry connection time must be positive number or 0");
+		}
+	}
+
+	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 *
+	 * @param retrySizeValue as interger with count of attemts to reconnect.
+	 */
+	public final void setRetryConnectionSize(int retrySizeValue) {
+		RETRY_CONNECTION_SIZE = retrySizeValue;
 	}
 
 	private void extractDataFromEnpointGraph(URL endpointURL,
@@ -349,7 +385,7 @@ public class SPARQLExtractor {
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
 			logger.error(ex.getLocalizedMessage());
-			logger.debug(ex.getStackTrace());
+			logger.debug(ex.getStackTrace().toString());
 			//TODO in case of exception, try again based on the settings in the config
 		} finally {
 			if (inputStreamReader != null) {
@@ -445,6 +481,10 @@ public class SPARQLExtractor {
 
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
 
+		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("Request content: {}", parameters);
+		logger.debug("Request method: GET");
+
 		URL call = null;
 		try {
 			call = new URL(endpointURL.toString() + parameters);
@@ -470,7 +510,16 @@ public class SPARQLExtractor {
 				httpConnection.setDoInput(true);
 				httpConnection.setDoOutput(true);
 
-				if (httpConnection.getResponseCode() != HTTP_OK_RESPONSE) {
+				int httpResponseCode = httpConnection.getResponseCode();
+				String httpResponseMessage = httpConnection.getResponseMessage();
+
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstResponseNumber = getFirstResponseNumber(
+						httpResponseCode);
+
+				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
 
 					String errorMessage = getHTTPResponseErrorMessage(
 							httpConnection);
@@ -601,6 +650,11 @@ public class SPARQLExtractor {
 		String formatParam = String.format("&format=%s", getEncoder(format));
 
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
+
+		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("Request content: {}", parameters);
+		logger.debug("Request method: POST with URL encoder");
+
 		URL call = null;
 		try {
 			call = new URL(endpointURL.toString());
@@ -627,7 +681,16 @@ public class SPARQLExtractor {
 					os.flush();
 				}
 
-				if (httpConnection.getResponseCode() != HTTP_OK_RESPONSE) {
+				int httpResponseCode = httpConnection.getResponseCode();
+				String httpResponseMessage = httpConnection.getResponseMessage();
+
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstResponseNumber = getFirstResponseNumber(
+						httpResponseCode);
+
+				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
 
 					String errorMessage = getHTTPResponseErrorMessage(
 							httpConnection);
@@ -676,14 +739,14 @@ public class SPARQLExtractor {
 				.format("%s/%s attempt to reconnect %s FAILED", retryCount,
 				getRetryConnectionSizeAsString(), targetEndpoint);
 
-		if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+		if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 			return false;
 
 		} else {
 			logger.debug(message);
 			try {
 				//sleep and attempt to reconnect
-				Thread.sleep(retryTime);
+				Thread.sleep(RETRY_CONNECTION_TIME);
 
 			} catch (InterruptedException ex) {
 				logger.debug(ex.getMessage());
@@ -696,10 +759,10 @@ public class SPARQLExtractor {
 		if (hasInfinityRetryConnection()) {
 			return "infinity";
 		} else {
-			if (retrySize == 0) {
+			if (RETRY_CONNECTION_SIZE == 0) {
 				return "only 1";
 			} else {
-				return String.valueOf(retrySize);
+				return String.valueOf(RETRY_CONNECTION_SIZE);
 			}
 		}
 	}
@@ -751,9 +814,14 @@ public class SPARQLExtractor {
 
 		final String parameters = formatParam + defaultGraphParam + namedGraphParam;
 
+		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("Request query: {}", query);
+		logger.debug("Parameters in URL adress: {}", parameters);
+		logger.debug("Request method: POST with unencoded query");
+
 		URL call = null;
 		try {
-			call = new URL(endpointURL.toString()/*+parameters*/);
+			call = new URL(endpointURL.toString() + parameters);
 		} catch (MalformedURLException e) {
 			final String message = "Malfolmed URL exception by construct extract URL. ";
 			logger.debug(message);
@@ -776,7 +844,16 @@ public class SPARQLExtractor {
 					os.flush();
 				}
 
-				if (httpConnection.getResponseCode() != HTTP_OK_RESPONSE) {
+				int httpResponseCode = httpConnection.getResponseCode();
+				String httpResponseMessage = httpConnection.getResponseMessage();
+
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstResponseNumber = getFirstResponseNumber(
+						httpResponseCode);
+
+				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
 
 					String errorMessage = getHTTPResponseErrorMessage(
 							httpConnection);
@@ -820,10 +897,32 @@ public class SPARQLExtractor {
 	}
 
 	private boolean hasInfinityRetryConnection() {
-		if (retrySize < 0) {
+		if (RETRY_CONNECTION_SIZE < 0) {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * Returns the first digit of the http response code.
+	 *
+	 * @param httpResponseCode number of HTTP response code
+	 * @return The first digit of the http response code.
+	 */
+	private int getFirstResponseNumber(int httpResponseCode) {
+
+		try {
+			int firstNumberResponseCode = Integer.valueOf((String.valueOf(
+					httpResponseCode)).substring(0, 1));
+
+			return firstNumberResponseCode;
+
+		} catch (NumberFormatException e) {
+			logger.error(e.getLocalizedMessage());
+			logger.debug(
+					"Strange response code. First char of response code set to 0");
+			return 0;
 		}
 	}
 }
