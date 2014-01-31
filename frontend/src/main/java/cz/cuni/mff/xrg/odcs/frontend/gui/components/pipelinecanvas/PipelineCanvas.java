@@ -5,6 +5,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
+import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -59,7 +60,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private DPUDetail detailDialog;
 	private Window.CloseListener detailCloseListener;
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
-
+	private EdgeFormater edgeFormater = new EdgeFormater();
 	/**
 	 * Initial constructor with registering of server side RPC.
 	 */
@@ -210,7 +211,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
 			edgeCompiler.setDefaultMapping(edge, dpuExplorer.getOutputs(from), dpuExplorer.getInputs(to.getDpuInstance()));
 
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript().replace(';', '\n'));
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edgeFormater.format(edge.getScript()));
 		} else {
 			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
 		}
@@ -377,7 +378,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				hadInvalidMappings = true;
 				message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
 			}
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript().replace(';', '\n'));
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edgeFormater.format(edge.getScript()));
 		}
 		if (hadInvalidMappings) {
 			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
@@ -407,7 +408,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void windowClose(CloseEvent e) {
 				isModified = true;
 				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Edge.class));
-				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript().replace(';', '\n'));
+				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edgeFormater.format(edge.getScript()));
 			}
 		});
 		UI.getCurrent().addWindow(edgeDetailDialog);
