@@ -69,10 +69,10 @@ public class SessionPlatformCustomizer implements SessionCustomizer {
 
 					switch (dbEngine) {
 						case DataSourceFactory.MYSQL_VALUE :
-							session.getLogin().setPlatform(new MySQLPlatform());
+							session.getLogin().setPlatformClassName(MySQLPlatform.class.getName());
 							break;
 						case DataSourceFactory.VIRTUOSO_VALUE :
-							session.getLogin().setPlatform(new VirtuosoPlatform());
+							session.getLogin().setPlatformClassName(VirtuosoPlatform.class.getName());
 							break;
 						default :
 							throw new InvalidConfigPropertyException(ConfigProperty.DATABASE_PLATFORM);
