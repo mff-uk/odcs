@@ -8,7 +8,6 @@ import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,7 +58,7 @@ public class SPARQLLoaderTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableDataUnit)repository).delete();
+		((ManagableDataUnit) repository).delete();
 	}
 
 	@Test
@@ -151,8 +150,7 @@ public class SPARQLLoaderTest {
 
 		} finally {
 			try {
-				((ManagableRdfDataUnit)repository).clearEndpointGraph(endpoint, goalGraphName,
-						getTestContext());
+				loader.clearEndpointGraph(endpoint, goalGraphName);
 			} catch (RDFException e) {
 				logger.error(
 						"TEMP graph <" + goalGraphName + "> was not delete");
