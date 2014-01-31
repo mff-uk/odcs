@@ -14,7 +14,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
 import org.openrdf.model.*;
 import org.openrdf.model.URI;
 import org.openrdf.query.*;
@@ -35,6 +33,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,7 +45,12 @@ import org.openrdf.rio.RDFFormat;
  */
 public class SPARQLoader {
 
-	private static Logger logger = Logger.getLogger(SPARQLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(SPARQLoader.class);
+
+	/**
+	 * How many triples is possible to add to SPARQL endpoind at once.
+	 */
+	private static final long DEFAULT_CHUNK_SIZE = 10;
 
 	/**
 	 * Count of attempts to reconnect if the connection fails. For infinite loop
@@ -59,9 +64,10 @@ public class SPARQLoader {
 	private static final long DEFAUTL_LOADER_RETRY_TIME = 1000;
 
 	/**
-	 * Represents successful connection using HTTP.
+	 * Represents prefix of the OK response code (could be 200, but also 204,
+	 * etc)
 	 */
-	private static final int HTTP_OK_RESPONSE = 200;
+	private static final int HTTP_OK_RESPONSE_PREFIX = 2;
 
 	/**
 	 * Represent http error code needed authorisation for connection using HTTP.
@@ -81,14 +87,15 @@ public class SPARQLoader {
 	private RDFDataUnit rdfDataUnit;
 
 	/**
-	 * Count of reconnection if connection failed.
+	 * Count of reconnection if connection failed. For infinite loop use zero or
+	 * negative integer.
 	 */
-	private int retrySize;
+	private int RETRY_CONNECTION_SIZE;
 
 	/**
 	 * Time in ms how long wait before re-connection attempt.
 	 */
-	private long retryTime;
+	private long RETRY_CONNECTION_TIME;
 
 	private DPUContext context;
 
@@ -96,6 +103,14 @@ public class SPARQLoader {
 	 * Request HTTP parameters neeed for setting target SPARQL endpoint.
 	 */
 	private LoaderEndpointParams endpointParams;
+
+	/**
+	 *
+	 * @return default size of statements for chunk to load to SPARQL endpoint.
+	 */
+	public static long getDefaultChunkSize() {
+		return DEFAULT_CHUNK_SIZE;
+	}
 
 	/**
 	 * Constructor for using in DPUs calling.
@@ -115,9 +130,10 @@ public class SPARQLoader {
 			int retrySize, long retryTime, LoaderEndpointParams endpointParams) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
-		this.retrySize = retrySize;
-		this.retryTime = retryTime;
 		this.endpointParams = endpointParams;
+
+		setRetryConnectionSize(retrySize);
+		setRetryConnectionTime(retryTime);
 	}
 
 	/**
@@ -134,9 +150,37 @@ public class SPARQLoader {
 			LoaderEndpointParams endpointParams) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
-		this.retrySize = DEFAULT_LOADER_RETRY_SIZE;
-		this.retryTime = DEFAUTL_LOADER_RETRY_TIME;
 		this.endpointParams = endpointParams;
+
+		setRetryConnectionSize(DEFAULT_LOADER_RETRY_SIZE);
+		setRetryConnectionTime(DEFAUTL_LOADER_RETRY_TIME);
+	}
+
+	/**
+	 *
+	 * Set time in miliseconds how long to wait before trying to reconnect.
+	 *
+	 * @param retryTimeValue time in milisecond for waiting before trying to
+	 *                       reconnect.
+	 * @throws IllegalArgumentException if time is 0 or negative long number.
+	 */
+	public final void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException {
+		if (retryTimeValue >= 0) {
+			RETRY_CONNECTION_TIME = retryTimeValue;
+		} else {
+			throw new IllegalArgumentException(
+					"Retry connection time must be positive number or 0");
+		}
+	}
+
+	/**
+	 * Set Count of attempts to reconnect if the connection fails. For infinite
+	 * loop use zero or negative integer
+	 *
+	 * @param retrySizeValue as interger with count of attemts to reconnect.
+	 */
+	public final void setRetryConnectionSize(int retrySizeValue) {
+		RETRY_CONNECTION_SIZE = retrySizeValue;
 	}
 
 	/**
@@ -162,7 +206,7 @@ public class SPARQLoader {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, name, password,
-				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+				graphType, insertType, SPARQLoader.getDefaultChunkSize());
 	}
 
 	/**
@@ -185,7 +229,7 @@ public class SPARQLoader {
 			InsertType insertType) throws RDFException {
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+				graphType, insertType, SPARQLoader.getDefaultChunkSize());
 	}
 
 	/**
@@ -208,7 +252,7 @@ public class SPARQLoader {
 		endpointGraphsURI.add(defaultGraphURI);
 
 		loadToSPARQLEndpoint(endpointURL, endpointGraphsURI, "", "",
-				graphType, insertType, BaseRDFRepo.getDefaultChunkSize());
+				graphType, insertType, SPARQLoader.getDefaultChunkSize());
 	}
 
 	/**
@@ -370,14 +414,11 @@ public class SPARQLoader {
 			switch (graphType) {
 				case MERGE:
 					break;
-				case OVERRIDE: {
+				case OVERRIDE:
 					// clear graph
-					((ManagableRdfDataUnit) rdfDataUnit).clearEndpointGraph(
-							endpointURL, endpointGraph,
-							context);
-				}
-				break;
-				case FAIL: {
+					clearEndpointGraph(endpointURL, endpointGraph);
+					break;
+				case FAIL:
 					//if target graph is not empty, exception is thrown
 
 					long SPARQLGraphSize = getSPARQLEnpointGraphSize(
@@ -391,9 +432,7 @@ public class SPARQLoader {
 								+ " triples) - Loading to SPARQL endpoint FAILs.");
 					}
 
-				}
-
-				break;
+					break;
 
 			}
 		} catch (GraphNotEmptyException ex) {
@@ -528,7 +567,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader result = getEndpointStreamReader(
+				try (InputStreamReader result = getClearEndpointStreamReader(
 						endpointURL, moveQuery)) {
 				}
 
@@ -548,7 +587,7 @@ public class SPARQLoader {
 				rdfDataUnit.restartConnection();
 				retryCount++;
 
-				if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 					final String errorMessage = String.format(
 							"Count of retryConnection for MOVE data FROM TEMP GRAPH <%s> TO GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
 							tempGraph, targetGraph, retryCount);
@@ -566,7 +605,7 @@ public class SPARQLoader {
 
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(retryTime);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
@@ -583,11 +622,11 @@ public class SPARQLoader {
 
 	}
 
-	private InputStreamReader getEndpointStreamReader(URL endpointURL,
+	private InputStreamReader getClearEndpointStreamReader(URL endpointURL,
 			String query) throws RDFException {
 
-		return getEndpointStreamReader(endpointURL, new LinkedList<String>(),
-				query);
+		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
+				query, RDFFormat.RDFXML);
 	}
 
 	private InputStreamReader getEndpointStreamReader(URL endpointURL,
@@ -673,7 +712,7 @@ public class SPARQLoader {
 				rdfDataUnit.restartConnection();
 				retryCount++;
 
-				if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 					final String errorMessage = String.format(
 							"Count of retryConnection for FINDING SIZE for ENDPOINT GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
 							endpointGraph, retryCount);
@@ -691,7 +730,7 @@ public class SPARQLoader {
 
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(retryTime);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
@@ -706,7 +745,7 @@ public class SPARQLoader {
 	}
 
 	private boolean hasInfinityRetryConnection() {
-		if (retrySize < 0) {
+		if (RETRY_CONNECTION_SIZE < 0) {
 			return true;
 		} else {
 			return false;
@@ -812,14 +851,14 @@ public class SPARQLoader {
 						+ ". data part - ATTEMPT number %s: ", loadedPartsCount,
 						retryCount);
 
-				if (retryCount > retrySize && retrySize >= 0) {
+				if (retryCount > RETRY_CONNECTION_SIZE && RETRY_CONNECTION_SIZE >= 0) {
 					throw new RDFException(error + e.getMessage(), e);
 
 				} else {
 					logger.debug(error + e.getMessage());
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(retryTime);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage(), ex);
@@ -932,7 +971,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader inputStreamReader = getEndpointStreamReader(
+				try (InputStreamReader inputStreamReader = getClearEndpointStreamReader(
 						endpointURL, deleteQuery)) {
 				}
 
@@ -956,7 +995,7 @@ public class SPARQLoader {
 				rdfDataUnit.restartConnection();
 				retryCount++;
 
-				if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 					final String errorMessage = String.format(
 							"Count of retryConnection for CLEAR GRAPH <%s> is OVER (TOTAL %s ATTEMPTS). ",
 							endpointGraph, retryCount);
@@ -973,7 +1012,7 @@ public class SPARQLoader {
 
 					try {
 						//sleep and attempt to reconnect
-						Thread.sleep(retryTime);
+						Thread.sleep(RETRY_CONNECTION_TIME);
 
 					} catch (InterruptedException ex) {
 						logger.debug(ex.getMessage());
@@ -1102,6 +1141,10 @@ public class SPARQLoader {
 
 		final String parameters = queryParam + defaultGraphParam + formatParam;
 
+		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("Request content: {}", parameters);
+		logger.debug("Request method: POST with URL encoder");
+
 		URL call = null;
 		try {
 			call = new URL(endpointURL.toString());
@@ -1127,7 +1170,16 @@ public class SPARQLoader {
 					os.flush();
 				}
 
-				if (httpConnection.getResponseCode() != HTTP_OK_RESPONSE) {
+				int httpResponseCode = httpConnection.getResponseCode();
+				String httpResponseMessage = httpConnection.getResponseMessage();
+
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstResponseNumber = getFirstResponseNumber(
+						httpResponseCode);
+
+				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
 
 					String errorMessage = getHTTPResponseErrorMessage(
 							httpConnection);
@@ -1176,14 +1228,14 @@ public class SPARQLoader {
 				.format("%s/%s attempt to reconnect %s FAILED", retryCount,
 				getRetryConnectionSizeAsString(), targetEndpoint);
 
-		if (retryCount > retrySize && !hasInfinityRetryConnection()) {
+		if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
 			return false;
 
 		} else {
 			logger.debug(message);
 			try {
 				//sleep and attempt to reconnect
-				Thread.sleep(retryTime);
+				Thread.sleep(RETRY_CONNECTION_TIME);
 
 			} catch (InterruptedException ex) {
 				logger.debug(ex.getMessage());
@@ -1196,10 +1248,10 @@ public class SPARQLoader {
 		if (hasInfinityRetryConnection()) {
 			return "infinity";
 		} else {
-			if (retrySize == 0) {
+			if (RETRY_CONNECTION_SIZE == 0) {
 				return "only 1";
 			} else {
-				return String.valueOf(retrySize);
+				return String.valueOf(RETRY_CONNECTION_SIZE);
 			}
 		}
 	}
@@ -1242,6 +1294,11 @@ public class SPARQLoader {
 
 		final String parameters = defaultGraphParam;
 
+		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("Request query: {}", query);
+		logger.debug("Parameters in URL adress: {}", parameters);
+		logger.debug("Request method: POST with unencoded query");
+
 		URL call = null;
 		try {
 			call = new URL(endpointURL.toString() + parameters);
@@ -1268,9 +1325,16 @@ public class SPARQLoader {
 					os.flush();
 				}
 
-				int responseCode = httpConnection.getResponseCode();
+				int httpResponseCode = httpConnection.getResponseCode();
+				String httpResponseMessage = httpConnection.getResponseMessage();
 
-				if (responseCode != HTTP_OK_RESPONSE) {
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstResponseNumber = getFirstResponseNumber(
+						httpResponseCode);
+
+				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
 
 					String errorMessage = getHTTPResponseErrorMessage(
 							httpConnection);
@@ -1308,8 +1372,29 @@ public class SPARQLoader {
 					throw new RDFException(errorMessage + e.getMessage(), e);
 				}
 
-
 			}
+		}
+	}
+
+	/**
+	 * Returns the first digit of the http response code.
+	 *
+	 * @param httpResponseCode number of HTTP response code
+	 * @return The first digit of the http response code.
+	 */
+	private int getFirstResponseNumber(int httpResponseCode) {
+
+		try {
+			int firstNumberResponseCode = Integer.valueOf((String.valueOf(
+					httpResponseCode)).substring(0, 1));
+
+			return firstNumberResponseCode;
+
+		} catch (NumberFormatException e) {
+			logger.error(e.getLocalizedMessage());
+			logger.debug(
+					"Strange response code. First char of response code set to 0");
+			return 0;
 		}
 	}
 }
