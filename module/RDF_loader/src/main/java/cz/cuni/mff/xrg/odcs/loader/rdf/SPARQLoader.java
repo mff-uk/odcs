@@ -481,7 +481,7 @@ public class SPARQLoader {
 						endpointURL, endpointGraphs, query)) {
 				}
 
-				logger.debug(
+				logger.info(
 						"Data " + processing + " part loaded successful");
 
 			} catch (InsertPartException e) {
