@@ -354,7 +354,8 @@ public class SPARQLoader {
 						//log message with destription of insert part problem.
 						logger.debug(e.getMessage());
 					} finally {
-						clearEndpointGraphs(endpointURL, collection.getTempGraphs());
+						clearEndpointGraphs(endpointURL, collection
+								.getTempGraphs());
 					}
 				}
 				break;
@@ -371,7 +372,8 @@ public class SPARQLoader {
 					break;
 				case OVERRIDE: {
 					// clear graph
-					((ManagableRdfDataUnit)rdfDataUnit).clearEndpointGraph(endpointURL, endpointGraph,
+					((ManagableRdfDataUnit) rdfDataUnit).clearEndpointGraph(
+							endpointURL, endpointGraph,
 							context);
 				}
 				break;

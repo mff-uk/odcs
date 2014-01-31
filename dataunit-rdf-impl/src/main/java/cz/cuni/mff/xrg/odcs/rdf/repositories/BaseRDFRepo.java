@@ -77,9 +77,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * Time in miliseconds how long to wait before trying to reconnect.
 	 */
 	protected static long RETRY_CONNECTION_TIME = 1000;
-        
-        /**
-	 * Represents prefix of the OK response code (could be 200, but also 204, etc)
+
+	/**
+	 * Represents prefix of the OK response code (could be 200, but also 204,
+	 * etc)
 	 */
 	protected static final int HTTP_OK_RESPONSE_PREFIX = 2;
 
@@ -146,8 +147,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	public static long getDefaultChunkSize() {
 		return DEFAULT_CHUNK_SIZE;
 	}
-        
-       
 
 	/**
 	 *
@@ -1528,7 +1527,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		while (true) {
 			try {
 				try (InputStreamReader inputStreamReader = getEndpointStreamReader(
-						endpointURL, "", deleteQuery, RDFFormat.RDFXML, SPARQL_ENDPOINT_MODE.UPDATE)) {
+						endpointURL, "", deleteQuery, RDFFormat.RDFXML,
+						SPARQL_ENDPOINT_MODE.UPDATE)) {
 				}
 
 				//Clear graph successfuly - stop the infinity loop
@@ -1580,7 +1580,9 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 *                         extract/load RDF data.
 	 * @param query            SPARQL query to execute on sparql endpoint
 	 * @param format           RDF data format for given returned RDF data.
-         * @param mode             Determines the mode in which the method is called - QUERY if called by SPARQL Extractor, UPDATE if called by SPARQL Loader
+	 * @param mode             Determines the mode in which the method is called
+	 *                         - QUERY if called by SPARQL Extractor, UPDATE if
+	 *                         called by SPARQL Loader
 	 * @return Result of given SPARQL query apply to given graph. If it produce
 	 *         some RDF data, there are in specified RDF format.
 	 * @throws RDFException if unknown host, connection problems, no permission
@@ -1593,22 +1595,21 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 		final String endpointGraph = getEncodedString(endpointGraphURI);
 		final String myquery = getEncodedString(query);
-                
-                logger.debug("Target: {}", myquery);
+
+		logger.debug("Target: {}", myquery);
 
 		final String encoder = getEncoder(format);
 
 		String parameters = "default-graph-uri=" + endpointGraph;
-                
-                if (mode == SPARQL_ENDPOINT_MODE.QUERY) {
-                    parameters += "&query=" + myquery;
-                }
-                else if (mode == SPARQL_ENDPOINT_MODE.UPDATE) {
-                    parameters += "&update=" + myquery;
-                } 
-                parameters += "&format=" + encoder;
-                
-                logger.debug("Content: {}", parameters);
+
+		if (mode == SPARQL_ENDPOINT_MODE.QUERY) {
+			parameters += "&query=" + myquery;
+		} else if (mode == SPARQL_ENDPOINT_MODE.UPDATE) {
+			parameters += "&update=" + myquery;
+		}
+		parameters += "&format=" + encoder;
+
+		logger.debug("Content: {}", parameters);
 
 		URL call = null;
 		try {
@@ -1643,14 +1644,14 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				}
 
 				int httpResponseCode = httpConnection.getResponseCode();
-                                String httpResponseMessage = httpConnection.getResponseMessage();
-                                
-                                
-                                logger.debug("HTTP Response code: {}", httpResponseCode);
-                                logger.debug("HTTP Response message: {}", httpResponseMessage);
-                                
-                                 int firstNumberResponseCode = getFirstNumber(httpResponseCode);
-                                
+				String httpResponseMessage = httpConnection.getResponseMessage();
+
+
+				logger.debug("HTTP Response code: {}", httpResponseCode);
+				logger.debug("HTTP Response message: {}", httpResponseMessage);
+
+				int firstNumberResponseCode = getFirstNumber(httpResponseCode);
+
 				if (firstNumberResponseCode != HTTP_OK_RESPONSE_PREFIX) {
 
 					StringBuilder message = new StringBuilder(
@@ -2440,20 +2441,22 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 	}
 
-    // returns the first digit o the http response code
-    private int getFirstNumber(int httpResponseCode) {
-        
-        int firstNumberResponseCode;
-        try {
-            
-            firstNumberResponseCode = Integer.valueOf((String.valueOf(httpResponseCode)).substring(0, 1)); 
-           
-        } catch (NumberFormatException e) {
-            logger.error(e.getLocalizedMessage());
-            logger.debug("Strange response code. First char of response code set to 0");
-            firstNumberResponseCode = 0;
-        }
-        return firstNumberResponseCode;
-        
-    }
+	// returns the first digit o the http response code
+	private int getFirstNumber(int httpResponseCode) {
+
+		int firstNumberResponseCode;
+		try {
+
+			firstNumberResponseCode = Integer.valueOf((String.valueOf(
+					httpResponseCode)).substring(0, 1));
+
+		} catch (NumberFormatException e) {
+			logger.error(e.getLocalizedMessage());
+			logger.debug(
+					"Strange response code. First char of response code set to 0");
+			firstNumberResponseCode = 0;
+		}
+		return firstNumberResponseCode;
+
+	}
 }
