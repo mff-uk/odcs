@@ -1,10 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +21,9 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -47,6 +45,9 @@ public class PipelineFacadeTest {
 
 	@PersistenceContext
 	private EntityManager em;
+
+	@Autowired
+	private DPUFacade dpuFacade;
 
 	@Autowired
 	private UserFacade userFacade;
@@ -113,56 +114,60 @@ public class PipelineFacadeTest {
 		assertNotNull(pipeline2);
 		assertNotSame(pipeline.getId(), pipeline2.getId());
 		assertEquals(pipeline.getDescription(), pipeline2.getDescription());
-//		assertEquals(pipeline.getGraph(), pipeline2.getGraph());
-//		assertEquals(pipeline.getLastChange(), pipeline2.getLastChange());
+		// assertEquals(pipeline.getGraph(), pipeline2.getGraph());
+		// assertEquals(pipeline.getLastChange(), pipeline2.getLastChange());
 		assertEquals("Copy of " + pipeline.getName(), pipeline2.getName());
 		assertNotSame(pipeline.getOwner(), pipeline2.getOwner());
 		assertEquals(ShareType.PRIVATE, pipeline2.getShareType());
-//		assertEquals(pipeline.getConflicts(), pipeline2.getConflicts());
+		// assertEquals(pipeline.getConflicts(), pipeline2.getConflicts());
 
 		Pipeline pipeline3 = pipelineFacade.copyPipeline(pipeline);
 		assertNotNull(pipeline3);
 		assertNotSame(pipeline.getId(), pipeline3.getId());
 		assertEquals(pipeline.getDescription(), pipeline3.getDescription());
-//		assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-//		assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of " + pipeline.getName() + " #1", pipeline3.getName());
+		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
+		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
+		assertEquals("Copy of " + pipeline.getName() + " #1",
+				pipeline3.getName());
 		assertNotSame(pipeline.getOwner(), pipeline3.getOwner());
 		assertEquals(ShareType.PRIVATE, pipeline3.getShareType());
-//		assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-		
+		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
+
 		Pipeline pipeline4 = pipelineFacade.copyPipeline(pipeline);
 		assertNotNull(pipeline4);
 		assertNotSame(pipeline.getId(), pipeline4.getId());
 		assertEquals(pipeline.getDescription(), pipeline4.getDescription());
-//		assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-//		assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of " + pipeline.getName() + " #2", pipeline4.getName());
+		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
+		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
+		assertEquals("Copy of " + pipeline.getName() + " #2",
+				pipeline4.getName());
 		assertNotSame(pipeline.getOwner(), pipeline4.getOwner());
 		assertEquals(ShareType.PRIVATE, pipeline4.getShareType());
-//		assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-			
+		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
+
 		Pipeline pipeline5 = pipelineFacade.copyPipeline(pipeline4);
 		assertNotNull(pipeline5);
 		assertNotSame(pipeline.getId(), pipeline5.getId());
 		assertEquals(pipeline.getDescription(), pipeline5.getDescription());
-//		assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-//		assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of Copy of " + pipeline.getName() + " #2", pipeline5.getName());
+		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
+		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
+		assertEquals("Copy of Copy of " + pipeline.getName() + " #2",
+				pipeline5.getName());
 		assertNotSame(pipeline.getOwner(), pipeline5.getOwner());
 		assertEquals(ShareType.PRIVATE, pipeline5.getShareType());
-//		assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-		
+		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
+
 		Pipeline pipeline6 = pipelineFacade.copyPipeline(pipeline4);
 		assertNotNull(pipeline6);
 		assertNotSame(pipeline.getId(), pipeline6.getId());
 		assertEquals(pipeline.getDescription(), pipeline6.getDescription());
-//		assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-//		assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of Copy of " + pipeline.getName() + " #2 #1", pipeline6.getName());
+		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
+		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
+		assertEquals("Copy of Copy of " + pipeline.getName() + " #2 #1",
+				pipeline6.getName());
 		assertNotSame(pipeline.getOwner(), pipeline6.getOwner());
 		assertEquals(ShareType.PRIVATE, pipeline6.getShareType());
-//		assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
+		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
 	}
 
 	/**
@@ -208,7 +213,7 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetPipeline() {
 		System.out.println("getPipeline");
-		
+
 		Pipeline pipeline = pipelineFacade.createPipeline();
 		pipeline.setDescription("testDescription");
 		pipeline.setGraph(new PipelineGraph());
@@ -229,15 +234,15 @@ public class PipelineFacadeTest {
 
 		pipelineFacade.save(pipeline);
 		assertNotNull(pipeline.getId());
-		Long id = pipeline.getId(); 
+		Long id = pipeline.getId();
 		pipelineFacade.save(pipeline2);
 		assertNotNull(pipeline2.getId());
-		Long id2 = pipeline.getId(); 
+		Long id2 = pipeline.getId();
 
 		Pipeline pipeline3 = pipelineFacade.getPipeline(id);
 		assertNotNull(pipeline3);
 		assertEquals(pipeline, pipeline3);
-		
+
 		Pipeline pipeline4 = pipelineFacade.getPipeline(id2);
 		assertNotNull(pipeline4);
 		assertEquals(pipeline, pipeline4);
@@ -250,6 +255,26 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testSave_Pipeline() {
 		System.out.println("save");
+
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		pipeline.setGraph(new PipelineGraph());
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+
+		pipelineFacade.save(pipeline);
+		assertNotNull(pipeline.getId());
+		Long id = pipeline.getId();
+
+		em.flush();
+		em.clear();
+
+		Pipeline pipeline3 = pipelineFacade.getPipeline(id);
+		assertNotNull(pipeline3);
+		assertEquals(pipeline, pipeline3);
 	}
 
 	/**
@@ -259,6 +284,26 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testDelete_Pipeline() {
 		System.out.println("delete");
+
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		pipeline.setGraph(new PipelineGraph());
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+
+		pipelineFacade.save(pipeline);
+		assertNotNull(pipeline.getId());
+		Long id = pipeline.getId();
+
+		em.flush();
+		em.clear();
+
+		pipelineFacade.delete(pipeline);
+		Pipeline pipeline3 = pipelineFacade.getPipeline(id);
+		assertNull(pipeline3);
 	}
 
 	/**
@@ -268,6 +313,46 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetPipelinesUsingDPU() {
 		System.out.println("getPipelinesUsingDPU");
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setId(-52L);
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+		
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setId(-54L);
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		List<Pipeline> pipelines = pipelineFacade
+				.getPipelinesUsingDPU(templateRecord);
+		assertNotNull(pipelines);
+		assertTrue(pipelines.size() == 1);
+		assertEquals(pipeline, pipelines.get(0));
 	}
 
 	/**
@@ -277,6 +362,27 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testHasPipelineWithName() {
 		System.out.println("hasPipelineWithName");
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		pipeline.setGraph(new PipelineGraph());
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+
+		Pipeline pipeline2 = pipelineFacade.createPipeline();
+		pipeline2.setDescription("testDescription2");
+		pipeline2.setGraph(new PipelineGraph());
+		pipeline2.setLastChange(new Date());
+		pipeline2.setName("testName2");
+		pipeline2.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline2.setVisibility(ShareType.PUBLIC_RO);
+		pipeline2.getConflicts().add(pipeline2);
+		
+		
+		assertFalse(pipelineFacade.hasPipelineWithName("testDescription", pipeline));
 	}
 
 	/**
