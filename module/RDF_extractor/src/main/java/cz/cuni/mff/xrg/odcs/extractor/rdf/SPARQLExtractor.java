@@ -17,7 +17,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -289,26 +288,6 @@ public class SPARQLExtractor {
 		InputStreamReader inputStreamReader = getEndpointStreamReader(
 				endpointURL, query, format);
 
-//                try {
-//                    connection.add(inputStreamReader, "", format);
-//                    
-//                } catch(IOException | RDFParseException | RepositoryException e) {
-//                    logger.error(e.getLocalizedMessage());
-//                    logger.debug(e.getStackTrace());
-//                } finally {
-//			if (inputStreamReader != null) {
-//				try {
-//					inputStreamReader.close();
-//				} catch (IOException ex) {
-//					logger.error("InputStream reader was not closed: " + ex
-//							.getMessage(), ex);
-//				}
-//			}
-//		}
-                    
-                    
-                
-                
 		TripleCountHandler handler;
 
 		boolean failWhenMistake = false;
@@ -334,12 +313,12 @@ public class SPARQLExtractor {
 		RDFParser parser = dataUnit.getRDFParser(format, handler);
 
 		try {
-                    
-                        connection.begin();
-                        
+
+			connection.begin();
+
 			parser.parse(inputStreamReader, "");
-                        
-                        connection.commit();
+
+			connection.commit();
 
 			if (extractFail) {
 				caseNoTriples(handler);
@@ -369,10 +348,10 @@ public class SPARQLExtractor {
 			logger.error(ex.getMessage(), ex);
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-                        logger.error(ex.getLocalizedMessage());
-                        logger.debug(ex.getStackTrace());
-                        //TODO in case of exception, try again based on the settings in the config
-                } finally {
+			logger.error(ex.getLocalizedMessage());
+			logger.debug(ex.getStackTrace());
+			//TODO in case of exception, try again based on the settings in the config
+		} finally {
 			if (inputStreamReader != null) {
 				try {
 					inputStreamReader.close();
