@@ -114,7 +114,7 @@ public class DPUEvent extends ApplicationEvent {
 	 */
 	public static DPUEvent createStart(Context context, Object source) {
 		final DPUInstanceRecord dpu = context.getDPU();
-		final String msg = String.format("Starting DPU {}", dpu.getId());
+		final String msg = String.format("Starting DPU developer's code {}", dpu.getId());
 
 		LOG.info(msg);
 		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
