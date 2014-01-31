@@ -12,8 +12,6 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
@@ -331,24 +329,6 @@ public interface RDFDataUnit extends DataUnit {
 
 	/**
 	 *
-	 * Set time in miliseconds how long to wait before trying to reconnect.
-	 *
-	 * @param retryTimeValue time in milisecond for waiting before trying to
-	 *                       reconnect.
-	 * @throws IllegalArgumentException if time is 0 or negative long number.
-	 */
-	public void setRetryConnectionTime(long retryTimeValue) throws IllegalArgumentException;
-
-	/**
-	 * Set Count of attempts to reconnect if the connection fails. For infinite
-	 * loop use zero or negative integer
-	 *
-	 * @param retrySizeValue as interger with count of attemts to reconnect.
-	 */
-	public void setRetryConnectionSize(int retrySizeValue);
-	
-	/**
-	 *
 	 * @return Shared connection to repository.
 	 * @throws RepositoryException If something went wrong during the creation
 	 *                             of the Connection.
@@ -402,24 +382,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * Removes all RDF data from repository.
 	 */
 	public void cleanAllData();	
-	
-	/**
-	 *
-	 * @param endpointURL URL of endpoint we can to connect to.
-	 * @param endpointGraphURI Name of graph as URI string we want to
-	 * extract/load RDF data.
-	 * @param query SPARQL query to execute on sparql endpoint
-	 * @param format RDF data format for given returned RDF data.
-	 * @param mode Determines the mode in which the method is called - QUERY if
-	 * called by SPARQL Extractor, UPDATE if called by SPARQL Loader
-	 * @return Result of given SPARQL query apply to given graph. If it produce
-	 * some RDF data, there are in specified RDF format.
-	 * @throws RDFException if unknown host, connection problems, no permission
-	 * for this action.
-	 */
-	public InputStreamReader getEndpointStreamReader(URL endpointURL,
-			String endpointGraphURI, String query,
-			RDFFormat format, SPARQL_ENDPOINT_MODE mode) throws RDFException;
 	
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
