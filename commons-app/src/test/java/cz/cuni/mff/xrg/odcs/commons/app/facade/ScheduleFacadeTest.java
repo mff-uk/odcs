@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -225,6 +226,7 @@ public class ScheduleFacadeTest {
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
         schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
         scheduleFacade.save(schedule);
         assertNotNull(schedule.getId());
 
@@ -250,6 +252,7 @@ public class ScheduleFacadeTest {
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
         schedule.setJustOnce(true);
+        schedule.setEnabled(true);
         schedule.setPipeline(pipeline);
         scheduleFacade.save(schedule);
         assertNotNull(schedule.getId());
@@ -269,43 +272,47 @@ public class ScheduleFacadeTest {
      */
     @Test
     public void testExecuteFollowers_0args() {
-        System.out.println("executeFollowers");
+        System.out.println("executeFollowers_0args");
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        assertNull(pipeline.getId());
+        pipelineFacade.save(pipeline);
+        assertNotNull(pipeline.getId());
+        
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        assertNotNull(schedule.getId());
 
         Pipeline pipeline2 = pipelineFacade.createPipeline();
         pipelineFacade.save(pipeline2);
 
-        Schedule schedule2 = scheduleFacade.createSchedule();
-        schedule2.setType(ScheduleType.AFTER_PIPELINE);
-        schedule2.setPipeline(pipeline2);
-        scheduleFacade.execute(schedule2);
-        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
-        assertNotNull(executions2);
-        assertFalse(executions2.isEmpty());
-        PipelineExecution pipelineExecution2 = executions2.get(0);
-        pipelineExecution2.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
-        pipelineFacade.save(pipelineExecution2);
-        
-        Pipeline pipeline = pipelineFacade.createPipeline();
-        pipelineFacade.save(pipeline);
-
-        Schedule schedule = scheduleFacade.createSchedule();
-        assertNull(schedule.getId());
-        Set<Pipeline> afterPipelines = new HashSet<>();
-        afterPipelines.add(pipeline2);
-        schedule.setAfterPipelines(afterPipelines);
-        
-        schedule.setType(ScheduleType.AFTER_PIPELINE);
-        schedule.setPipeline(pipeline);
-        scheduleFacade.save(schedule);
-        assertNotNull(schedule.getId());
-        
-        scheduleFacade.executeFollowers();
         List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
         assertNotNull(executions);
         assertFalse(executions.isEmpty());
-        assertFalse(executions.get(0).getSchedule().isEnabled());
-        assertEquals(pipeline, executions.get(0).getPipeline());
-        assertEquals(schedule, executions.get(0).getSchedule());        
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution = executions.get(0);
+        pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineExecution.setEnd(new Date());
+        pipelineFacade.save(pipelineExecution);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.addAfterPipeline(pipeline);
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        schedule2.setEnabled(true);
+        scheduleFacade.save(schedule2);
+        
+        scheduleFacade.executeFollowers();
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertFalse(executions2.isEmpty());
+        assertTrue(executions2.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline2, executions2.get(0).getPipeline());
+        assertEquals(schedule2, executions2.get(0).getSchedule());        
     }
 
     /**
@@ -313,8 +320,191 @@ public class ScheduleFacadeTest {
      */
     @Test
     public void testExecuteFollowers_Pipeline() {
-        System.out.println("executeFollowers");
-        // TODO review the generated test code and remove the default call to fail.
-        fail("Have no idea what to test here, if anything.");
+        System.out.println("executeFollowers_Pipeline");
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        assertNull(pipeline.getId());
+        pipelineFacade.save(pipeline);
+        assertNotNull(pipeline.getId());
+        
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        assertNotNull(schedule.getId());
+
+        Pipeline pipeline2 = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline2);
+
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution = executions.get(0);
+        pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineExecution.setEnd(new Date());
+        pipelineFacade.save(pipelineExecution);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.addAfterPipeline(pipeline);
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        schedule2.setEnabled(true);
+        scheduleFacade.save(schedule2);
+        
+        scheduleFacade.executeFollowers(pipeline);
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertFalse(executions2.isEmpty());
+        assertTrue(executions2.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline2, executions2.get(0).getPipeline());
+        assertEquals(schedule2, executions2.get(0).getSchedule());        
     }
+    
+    /**
+     * Test of executeFollowers method, of class ScheduleFacade.
+     */
+    @Test
+    public void testExecuteFollowers_Pipeline2() {
+        System.out.println("executeFollowers_Pipeline2");
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        assertNull(pipeline.getId());
+        pipelineFacade.save(pipeline);
+        assertNotNull(pipeline.getId());
+        
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        assertNotNull(schedule.getId());
+
+        Pipeline pipeline2 = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline2);
+
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution = executions.get(0);
+        pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        //pipelineExecution.setEnd(new Date());
+        pipelineFacade.save(pipelineExecution);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.addAfterPipeline(pipeline);
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        schedule2.setEnabled(true);
+        scheduleFacade.save(schedule2);
+        
+        scheduleFacade.executeFollowers(pipeline);
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertTrue(executions2.isEmpty());
+    }   
+    
+    /**
+     * Test of executeFollowers method, of class ScheduleFacade.
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testExecuteFollowers_Pipeline3() throws InterruptedException {
+        System.out.println("executeFollowers_Pipeline");
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        assertNull(pipeline.getId());
+        pipelineFacade.save(pipeline);
+        assertNotNull(pipeline.getId());
+        
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        assertNotNull(schedule.getId());
+
+        Pipeline pipeline2 = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline2);
+
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution = executions.get(0);
+        pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineExecution.setEnd(new Date());
+        pipelineFacade.save(pipelineExecution);
+
+        Thread.sleep(1000L);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.addAfterPipeline(pipeline);
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        schedule2.setEnabled(true);
+        schedule2.setLastExecution(new Date());
+        scheduleFacade.save(schedule2);
+        
+        scheduleFacade.executeFollowers(pipeline);
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertTrue(executions2.isEmpty());
+    }
+
+    /**
+     * Test of executeFollowers method, of class ScheduleFacade.
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testExecuteFollowers_Pipeline4() throws InterruptedException {
+        System.out.println("executeFollowers_Pipeline");
+        
+        Pipeline pipeline = pipelineFacade.createPipeline();
+        assertNull(pipeline.getId());
+        pipelineFacade.save(pipeline);
+        assertNotNull(pipeline.getId());
+        
+        Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        assertNotNull(schedule.getId());
+
+        Pipeline pipeline2 = pipelineFacade.createPipeline();
+        pipelineFacade.save(pipeline2);
+
+        Date dd = new Date();
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution = executions.get(0);
+        pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineExecution.setEnd(dd);
+        pipelineFacade.save(pipelineExecution);
+
+        Schedule schedule2 = scheduleFacade.createSchedule();
+        schedule2.addAfterPipeline(pipeline);
+        schedule2.setType(ScheduleType.AFTER_PIPELINE);
+        schedule2.setPipeline(pipeline2);
+        schedule2.setEnabled(true);
+        schedule2.setLastExecution(dd);
+        scheduleFacade.save(schedule2);
+        
+        scheduleFacade.executeFollowers(pipeline);
+        List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
+        assertNotNull(executions2);
+        assertFalse(executions2.isEmpty());
+        assertTrue(executions2.get(0).getSchedule().isEnabled());
+        assertEquals(pipeline2, executions2.get(0).getPipeline());
+        assertEquals(schedule2, executions2.get(0).getSchedule());    
+    }    
 }
