@@ -162,9 +162,9 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 			}
 		} catch (RDFHandlerException e) {
 			if (checkData) {
-				logger.info("STARTING data validation FAIL");
+				logger.info("Starting data validation FAILED");
 			} else {
-				logger.info("STARTING parsing FAIL");
+				logger.info("Starting parsing FAILED");
 			}
 			throw new RDFHandlerException(e.getMessage(), e);
 		}
@@ -191,11 +191,11 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 		} catch (RDFHandlerException e) {
 			logger.error(e.getMessage());
 			if (checkData) {
-				logger.info("Ending data validating - FAIL");
+				logger.info("Ending data validating FAILED");
 				logger.info("TOTAL VALIDATED:" + getTripleCount() + " triples");
 
 			} else {
-				logger.info("Ending parsing - FAIL");
+				logger.info("Ending parsing FAILED");
 				logger.info("TOTAL ADDED:" + getTripleCount() + " triples");
 
 			}
