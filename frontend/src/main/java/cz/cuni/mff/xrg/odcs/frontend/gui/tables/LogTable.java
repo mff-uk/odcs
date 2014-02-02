@@ -178,7 +178,9 @@ public class LogTable extends CustomComponent {
 		if (isRunning(execution)) {
 
 			Node debugNode = execution.getDebugNode();
-			DependencyGraph dependencyGraph = debugNode == null ? new DependencyGraph(execution.getPipeline().getGraph()) : new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
+			DependencyGraph dependencyGraph = debugNode == null
+					? new DependencyGraph(execution.getPipeline().getGraph())
+					: new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
 			GraphIterator iterator = dependencyGraph.iterator();
 			while (iterator.hasNext()) {
 				DPUInstanceRecord item = iterator.next().getDpuInstance();
