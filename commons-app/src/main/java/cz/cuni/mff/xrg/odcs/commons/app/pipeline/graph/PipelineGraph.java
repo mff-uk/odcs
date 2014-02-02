@@ -39,7 +39,7 @@ public class PipelineGraph implements DataObject {
 	/**
 	 * Pipeline this graph belongs to
 	 */
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="pipeline_id", unique=true, nullable=false)
 	private Pipeline pipeline;
 
