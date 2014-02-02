@@ -9,23 +9,112 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- get_all_tables: tablepattern="db.odcs.%",9
 -- Definitions of 27 tables were read in.
 -- SELECT * FROM `dpu_instance`
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <GraphsUri class="linked-list"> <string>http://dbpedia.org</string> </GraphsUri> <SPARQL__query>CONSTRUCT {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o} where {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o } LIMIT 100</SPARQL__query> <ExtractFail>true</ExtractFail> <UseStatisticalHandler>false</UseStatisticalHandler> </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> </object-stream>',1,1);
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','','<object-stream> <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> <FilePath>/tmp/dbpedia.rdf</FilePath> <RDFFileFormat>RDFXML</RDFFileFormat> <DiffName>false</DiffName> </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> </object-stream>',1,5);
-
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
+    <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint>
+    <Host__name></Host__name>
+    <Password></Password>
+    <GraphsUri class="linked-list">
+      <string>http://dbpedia.org</string>
+    </GraphsUri> 
+    <SPARQL__query>CONSTRUCT {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o} where {&lt;http://dbpedia.org/resource/Prague&gt; ?p ?o } LIMIT 100</SPARQL__query>
+    <ExtractFail>true</ExtractFail>
+    <UseStatisticalHandler>false</UseStatisticalHandler>
+  </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
+</object-stream>',1,1);
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
+    <FilePath>/tmp/dbpedia.rdf</FilePath>
+    <RDFFileFormat>RDFXML</RDFFileFormat>
+    <DiffName>false</DiffName>
+  </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
+</object-stream>',1,5);
 
 -- Table `dpu_instance` 2 rows output.
 -- SELECT * FROM `dpu_template`
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> <SPARQL__endpoint></SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <SPARQL__query></SPARQL__query> <ExtractFail>true</ExtractFail> <UseStatisticalHandler>true</UseStatisticalHandler> <failWhenErrors>false</failWhenErrors> <retryTime>1000</retryTime> <retrySize>-1</retrySize> <endpointParams> <queryParam>query</queryParam> <defaultGraphParam>default-graph-uri</defaultGraphParam> <namedGraphParam>named-graph-uri</namedGraphParam> <defaultGraphURI class="linked-list"/> <namedGraphURI class="linked-list"/> <requestType>POST_URL_ENCODER</requestType> </endpointParams> </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig> </object-stream>',NULL,1,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(1,'SPARQL Extractor',0,'Extracts RDF triples from SPARQL endpoint',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
+    <SPARQL__endpoint></SPARQL__endpoint>
+    <Host__name></Host__name>
+    <Password></Password>
+    <SPARQL__query></SPARQL__query>
+    <ExtractFail>true</ExtractFail>
+    <UseStatisticalHandler>true</UseStatisticalHandler>
+    <failWhenErrors>false</failWhenErrors>
+    <retryTime>1000</retryTime>
+    <retrySize>-1</retrySize>
+    <endpointParams>
+      <queryParam>query</queryParam>
+      <defaultGraphParam>default-graph-uri</defaultGraphParam>
+      <namedGraphParam>named-graph-uri</namedGraphParam>
+      <defaultGraphURI class="linked-list"/>
+      <namedGraphURI class="linked-list"/>
+      <requestType>POST_URL_ENCODER</requestType>
+    </endpointParams>
+  </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
+</object-stream>',NULL,1,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
 
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig> <Path></Path> <FileSuffix></FileSuffix> <RDFFormatValue>AUTO</RDFFormatValue> <fileExtractType>PATH_TO_FILE</fileExtractType> <OnlyThisSuffix>false</OnlyThisSuffix> <UseStatisticalHandler>true</UseStatisticalHandler> </cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig> </object-stream>',NULL,1,1,1,0,'RDF_File_Extractor','RDF_File_Extractor-1.0.0.jar','Extracts RDF data from a file.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(2,'RDF File Extractor',0,'Extracts RDF data from a file',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig>
+    <Path></Path>
+    <FileSuffix></FileSuffix>
+    <RDFFormatValue>AUTO</RDFFormatValue>
+    <fileExtractType>PATH_TO_FILE</fileExtractType>
+    <OnlyThisSuffix>false</OnlyThisSuffix>
+    <UseStatisticalHandler>true</UseStatisticalHandler>
+  </cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig>
+</object-stream>',NULL,1,1,1,0,'RDF_File_Extractor','RDF_File_Extractor-1.0.0.jar','Extracts RDF data from a file.');
 
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig> <SPARQL__Update__Query></SPARQL__Update__Query> <isConstructType>false</isConstructType> </cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig> </object-stream>',NULL,1,1,1,1,'SPARQL_Transformer','SPARQL_Transformer-1.0.0.jar','SPARQL Transformer.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(3,'SPARQL Transformer',0,'Transforms RDF data based on SPARQL (update) query',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig>
+    <SPARQL__Update__Query></SPARQL__Update__Query>
+    <isConstructType>false</isConstructType>
+  </cz.cuni.mff.xrg.odcs.transformer.SPARQL.SPARQLTransformerConfig>
+</object-stream>',NULL,1,1,1,1,'SPARQL_Transformer','SPARQL_Transformer-1.0.0.jar','SPARQL Transformer.');
 
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig> <SPARQL__endpoint></SPARQL__endpoint> <Host__name></Host__name> <Password></Password> <GraphsUri class="linked-list"/> <graphOption>OVERRIDE</graphOption> <insertOption>STOP_WHEN_BAD_PART</insertOption> <chunkSize>100</chunkSize> <validDataBefore>false</validDataBefore> <retryTime>1000</retryTime> <retrySize>-1</retrySize> <endpointParams> <queryParam>update</queryParam> <defaultGraphParam>using-graph-uri</defaultGraphParam> <postType>POST_URL_ENCODER</postType> </endpointParams> </cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig> </object-stream>',NULL,1,1,1,2,'SPARQL_Loader','SPARQL_Loader-1.0.0.jar','Loads RDF data to SPARQL endpoint.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(4,'SPARQL Loader',0,'Loads RDF data to SPARQL endpoint.',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig>
+    <SPARQL__endpoint></SPARQL__endpoint>
+    <Host__name></Host__name>
+    <Password></Password>
+    <GraphsUri class="linked-list"/>
+    <graphOption>OVERRIDE</graphOption>
+    <insertOption>STOP_WHEN_BAD_PART</insertOption>
+    <chunkSize>100</chunkSize>
+    <validDataBefore>false</validDataBefore>
+    <retryTime>1000</retryTime>
+    <retrySize>-1</retrySize>
+    <endpointParams>
+      <queryParam>update</queryParam>
+      <defaultGraphParam>using-graph-uri</defaultGraphParam>
+      <postType>POST_URL_ENCODER</postType>
+    </endpointParams>
+  </cz.cuni.mff.xrg.odcs.loader.rdf.RDFLoaderConfig>
+</object-stream>',NULL,1,1,1,2,'SPARQL_Loader','SPARQL_Loader-1.0.0.jar','Loads RDF data to SPARQL endpoint.');
 
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> <FilePath></FilePath> <RDFFileFormat>AUTO</RDFFileFormat> <DiffName>false</DiffName> <validDataBefore>false</validDataBefore> </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig> </object-stream>',NULL,1,1,1,2,'RDF_File_Loader','RDF_File_Loader-1.0.0.jar','Loads RDF data into file.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(5,'RDF File Loader',0,'Loads RDF data into file.',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
+    <FilePath></FilePath>
+    <RDFFileFormat>AUTO</RDFFileFormat>
+    <DiffName>false</DiffName>
+    <validDataBefore>false</validDataBefore>
+  </cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
+</object-stream>',NULL,1,1,1,2,'RDF_File_Loader','RDF_File_Loader-1.0.0.jar','Loads RDF data into file.');
 
-INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(6,'RDF Data Validator',0,'--null--','<object-stream> <cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig> <stopExecution>false</stopExecution> <sometimesOutput>true</sometimesOutput> </cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig> </object-stream>',NULL,1,1,1,1,'RDF_Data_Validator','RDF_Data_Validator-1.0.0.jar','Validate RDF data and create validation report.');
+INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration,parent_id,config_valid,user_id,visibility,type,jar_directory,jar_name,jar_description) VALUES(6,'RDF Data Validator',0,'Validates RDF data and creates a validation report.',
+'<object-stream>
+  <cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig>
+    <stopExecution>false</stopExecution>
+    <sometimesOutput>true</sometimesOutput>
+  </cz.cuni.mff.xrg.odcs.rdf.validator.RDFDataValidatorConfig>
+</object-stream>',NULL,1,1,1,1,'RDF_Data_Validator','RDF_Data_Validator-1.0.0.jar','Validate RDF data and create validation report.');
 
 -- Table `dpu_template` 5 rows output.
 -- SELECT * FROM `exec_context_dpu`
