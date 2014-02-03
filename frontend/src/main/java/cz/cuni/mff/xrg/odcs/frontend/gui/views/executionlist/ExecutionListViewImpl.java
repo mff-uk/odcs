@@ -412,13 +412,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setImmediate(true);
 
 		executionTable.setColumnWidth("schedule", 32);
-		executionTable.setColumnWidth("status", 32);
-		executionTable.setColumnWidth("isDebugging", 32);
-		executionTable.setColumnWidth("duration", 50);
+		executionTable.setColumnWidth("status", 42);
+		executionTable.setColumnWidth("isDebugging", 36);
+		executionTable.setColumnExpandRatio("pipeline.name", 1);
 		executionTable.setColumnWidth("", 200);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
+		executionTable.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		executionTable.setSortEnabled(true);
 		executionTable.setPageLength(utils.getPageLength());
 

@@ -61,11 +61,11 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "status":
 				return "status";
 			case "isDebugging":
-				return "debugging";
+				return "debug";
 			case "lastChange":
 				return "last modification";
 			case "schedule":
-				return "scheduled";
+				return "sch.";
 			default:
 				return null;
 		}
