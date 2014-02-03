@@ -415,7 +415,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setColumnWidth("status", 42);
 		executionTable.setColumnWidth("isDebugging", 36);
 		executionTable.setColumnExpandRatio("pipeline.name", 1);
-		executionTable.setColumnWidth("", 200);
+		executionTable.setColumnWidth("actions", 200);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
@@ -529,7 +529,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		});
 
 		// add generated columns to the executionTable
-		executionTable.addGeneratedColumn("", 0, createColumnGenerator(presenter));
+		executionTable.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
 		executionTable.setVisibleColumns();
 		executionTable.addListener(new PagedFilterTable.PageChangeListener() {
 			@Override
