@@ -8,6 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.CustomTable;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -97,6 +98,12 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		// add column
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("", 0, createColumnGenerator(presenter));
+		tablePipelines.setColumnWidth("", 324);
+		tablePipelines.setColumnWidth("duration", 80);
+		tablePipelines.setColumnWidth("lastExecStatus", 68);
+		tablePipelines.setColumnExpandRatio("name", 1);
+		tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
+		tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		tablePipelines.setVisibleColumns();
 
 		tablePipelines.setFilterBarVisible(true);
