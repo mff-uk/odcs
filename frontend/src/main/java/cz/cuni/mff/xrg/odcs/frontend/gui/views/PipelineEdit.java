@@ -25,6 +25,7 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
@@ -78,6 +79,7 @@ public class PipelineEdit extends ViewComponent {
 	private Label label;
 	private Label readOnlyLabel;
 	private Label idValue;
+	private Label author;
 	private TextField pipelineName;
 	private TextArea pipelineDescription;
 	private OptionGroup pipelineVisibility;
@@ -118,6 +120,8 @@ public class PipelineEdit extends ViewComponent {
 	private PipelineHelper pipelineHelper;
 	@Autowired
 	private PipelineConflicts conflictDialog;
+	@Autowired
+	private AuthenticationContext authCtx;
 	/**
 	 * Evaluates permissions of currently logged in user.
 	 */
@@ -716,7 +720,7 @@ public class PipelineEdit extends ViewComponent {
 	 */
 	private GridLayout buildPipelineSettingsLayout() throws OverlapsException, OutOfBoundsException {
 
-		pipelineSettingsLayout = new GridLayout(3, 4);
+		pipelineSettingsLayout = new GridLayout(3, 5);
 		pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
 		Label idLabel = new Label("ID");
 		idLabel.setSizeUndefined();
@@ -785,6 +789,11 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 3);
+		
+		pipelineSettingsLayout.addComponent(new Label("Created by"), 0, 4);
+		
+		author = new Label();
+		pipelineSettingsLayout.addComponent(author, 1, 4);
 
 //		Label permissionLabel = new Label("Permissions");
 //		permissionLabel.setImmediate(false);
@@ -865,6 +874,7 @@ public class PipelineEdit extends ViewComponent {
 		Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
 		pipelineName.setValue(copiedPipeline.getName());
 		idValue.setValue(copiedPipeline.getId().toString());
+		author.setValue(copiedPipeline.getOwner().getUsername());
 		pipeline = copiedPipeline;
 		finishSavePipeline(false, ShareType.PRIVATE, "reload");
 		setMode(true);
@@ -990,6 +1000,7 @@ public class PipelineEdit extends ViewComponent {
 		// get data from DB ..
 		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
 		idValue.setValue(pipeline.getId().toString());
+		author.setValue(pipeline.getOwner().getUsername());
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
@@ -1022,6 +1033,7 @@ public class PipelineEdit extends ViewComponent {
 			pipeline.setVisibility(ShareType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			idValue.setValue("New");
+			author.setValue(authCtx.getUsername());
 			pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 			pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
 			setupButtons(false);
@@ -1202,6 +1214,7 @@ public class PipelineEdit extends ViewComponent {
 	private void refreshPipeline() {
 		pipeline = pipelineFacade.getPipeline(pipeline.getId());
 		idValue.setValue(pipeline.getId().toString());
+		author.setValue(pipeline.getOwner().getUsername());
 		pipelineCanvas.showPipeline(pipeline);
 	}
 
