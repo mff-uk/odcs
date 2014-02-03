@@ -49,6 +49,8 @@ public class LogMessageDetail extends Window {
 		mainLayout.setSizeFull();
 
 		Label timeLabel = new Label("Time:");
+		//At least one component must have fixed width, for expand ratio to work correctly for content column.
+		timeLabel.setWidth("60px");
 		mainLayout.addComponent(timeLabel, 0, 0);
 		mainLayout.addComponent(timeContent, 1, 0);
 
@@ -78,6 +80,7 @@ public class LogMessageDetail extends Window {
 		});
 		mainLayout.addComponent(closeButton, 1, 6);
 		mainLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
+
 
 		mainLayout.setColumnExpandRatio(1, 1.0f);
 		mainLayout.setRowExpandRatio(5, 1.0f);
