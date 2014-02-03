@@ -147,28 +147,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
-
-		generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(long id) {
-				presenter.navigateToEventHandler(PipelineEdit.class, id);
-			}
-		}, new ThemeResource("icons/gear.png"));
-
-		generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(long id) {
-				presenter.copyEventHandler(id);
-			}
-		}, new ThemeResource("img/copy.png"));
-
-		generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(final long id) {
-				presenter.deleteEventHandler(id);
-			}
-		}, new ThemeResource("icons/trash.png"));
-
+		
 		generator.addButton("Run", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
@@ -189,6 +168,27 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 				presenter.scheduleEventHandler(id);
 			}
 		}, new ThemeResource("icons/scheduled.png"));
+		
+		generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				presenter.copyEventHandler(id);
+			}
+		}, new ThemeResource("img/copy.png"));
+
+		generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				presenter.navigateToEventHandler(PipelineEdit.class, id);
+			}
+		}, new ThemeResource("icons/gear.png"));
+
+		generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(final long id) {
+				presenter.deleteEventHandler(id);
+			}
+		}, new ThemeResource("icons/trash.png"));
 
 		return generator;
 	}
