@@ -1,9 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,21 +23,27 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 /**
  * Test suite for pipeline facade interface. Each test is run in own
@@ -46,6 +60,9 @@ public class PipelineFacadeTest {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Autowired(required = false)
+    private AuthenticationContext authCtx;
+	
 	@Autowired
 	private DPUFacade dpuFacade;
 
@@ -57,7 +74,13 @@ public class PipelineFacadeTest {
 
 	@Autowired
 	private ScheduleFacade schedulerFacade;
-
+	
+    @Autowired
+    private ScheduleFacade scheduleFacade;
+    
+	@Autowired
+	private DbOpenEvent openEventDao;
+	
 	public PipelineFacadeTest() {
 	}
 
@@ -317,7 +340,6 @@ public class PipelineFacadeTest {
 		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
 				"testParent", DPUType.EXTRACTOR);
         parentTemplateRecord.setDescription("parentTestDescription");
-        parentTemplateRecord.setId(-52L);
         parentTemplateRecord.setJarDescription("parenttestJarDescription");
         parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
         parentTemplateRecord.setJarName("parenttestJarName");
@@ -325,7 +347,6 @@ public class PipelineFacadeTest {
 		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
 				DPUType.EXTRACTOR);
 		templateRecord.setDescription("testDescription");
-		templateRecord.setId(-54L);
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
@@ -380,9 +401,17 @@ public class PipelineFacadeTest {
 		pipeline2.setUser(userFacade.getUserByUsername("jdoe"));
 		pipeline2.setVisibility(ShareType.PUBLIC_RO);
 		pipeline2.getConflicts().add(pipeline2);
+		pipelineFacade.save(pipeline);
+		pipelineFacade.save(pipeline2);
 		
+		assertFalse(pipelineFacade.hasPipelineWithName("nonexistentname", pipeline));
+		assertFalse(pipelineFacade.hasPipelineWithName("testName", pipeline));
+		assertTrue(pipelineFacade.hasPipelineWithName("testName", pipeline2));
+		assertTrue(pipelineFacade.hasPipelineWithName("testName", null));
 		
-		assertFalse(pipelineFacade.hasPipelineWithName("testDescription", pipeline));
+		assertFalse(pipelineFacade.hasPipelineWithName("testName2", pipeline2));
+		assertTrue(pipelineFacade.hasPipelineWithName("testName2", null));
+		assertTrue(pipelineFacade.hasPipelineWithName("testName2", pipeline));
 	}
 
 	/**
@@ -392,6 +421,58 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetPrivateDPUs() {
 		System.out.println("getPrivateDPUs");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+//		pipelineFacade.save(pipeline);
+		
+		List<DPUTemplateRecord> templateRecords = pipelineFacade.getPrivateDPUs(pipeline);
+		assertNotNull(templateRecords);
+		assertTrue(templateRecords.size() == 1);
+		assertTrue(templateRecords.contains(templateRecord));
+		assertFalse(templateRecords.contains(templateRecord2));
 	}
 
 	/**
@@ -401,6 +482,127 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testCreateOpenEvent() {
 		System.out.println("createOpenEvent");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+
+		pipelineFacade.createOpenEvent(pipeline);
+		if (authCtx != null) {
+			assertNull(openEventDao.getOpenEvent(pipeline, authCtx.getUser()));
+		}
+		
+		pipelineFacade.save(pipeline);
+		if (authCtx != null) {
+			pipelineFacade.createOpenEvent(pipeline);
+			OpenEvent  openEvent = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent);
+			assertEquals(authCtx.getUser(), openEvent.getUser());
+			assertEquals(pipeline, openEvent.getPipeline());
+			Date timestamp = openEvent.getTimestamp();
+			
+			pipelineFacade.createOpenEvent(pipeline);
+			OpenEvent  openEvent2 = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent2);
+			assertEquals(authCtx.getUser(), openEvent2.getUser());
+			assertEquals(pipeline, openEvent2.getPipeline());
+			assertEquals(timestamp, openEvent.getTimestamp());
+			assertEquals(openEvent.getId(), openEvent2.getId());
+			assertEquals(openEvent, openEvent2);
+			
+			authCtx.setAuthentication(
+			new Authentication() {
+				
+				@Override
+				public String getName() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public void setAuthenticated(boolean isAuthenticated)
+						throws IllegalArgumentException {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public boolean isAuthenticated() {
+					// TODO Auto-generated method stub
+					return true;
+				}
+				
+				@Override
+				public Object getPrincipal() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public Object getDetails() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public Object getCredentials() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+				
+				@Override
+				public Collection<? extends GrantedAuthority> getAuthorities() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			});
+			pipelineFacade.createOpenEvent(pipeline);
+			assertNull(openEventDao.getOpenEvent(pipeline, authCtx.getUser()));
+		} else {
+			// drop it, it has to test for null
+			pipelineFacade.createOpenEvent(pipeline);			
+		}
 	}
 
 	/**
@@ -410,6 +612,83 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetOpenPipelineEvents() {
 		System.out.println("getOpenPipelineEvents");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+
+		pipelineFacade.createOpenEvent(pipeline);
+		if (authCtx != null) {
+			assertNull(openEventDao.getOpenEvent(pipeline, authCtx.getUser()));
+		}
+		
+		List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
+		assertNotNull(openEvents);
+		assertTrue(openEvents.isEmpty());
+		
+		pipelineFacade.save(pipeline);
+		if (authCtx != null) {
+			pipelineFacade.createOpenEvent(pipeline);		
+			OpenEvent  openEvent = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent);
+			assertEquals(authCtx.getUser(), openEvent.getUser());
+			assertEquals(pipeline, openEvent.getPipeline());
+			Date timestamp = openEvent.getTimestamp();
+			
+			pipelineFacade.createOpenEvent(pipeline);
+			OpenEvent  openEvent2 = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent2);
+			assertEquals(authCtx.getUser(), openEvent2.getUser());
+			assertEquals(pipeline, openEvent2.getPipeline());
+			assertEquals(timestamp, openEvent.getTimestamp());
+			assertEquals(openEvent.getId(), openEvent2.getId());
+			assertEquals(openEvent, openEvent2);
+			
+			List<OpenEvent> openEvents2 = pipelineFacade.getOpenPipelineEvents(pipeline);
+			assertNotNull(openEvents2);
+			assertTrue(openEvents2.isEmpty());
+		}
 	}
 
 	/**
@@ -419,6 +698,64 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testIsUpToDate() {
 		System.out.println("isUpToDate");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		
+		assertTrue(pipelineFacade.isUpToDate(pipeline));
+		pipelineFacade.save(pipeline);		
+		assertTrue(pipelineFacade.isUpToDate(pipeline));
+		em.flush();
+		em.clear();
+		
+		Pipeline pipeline2 = pipelineFacade.getPipeline(pipeline.getId());
+		pipeline2.setDescription("Another Description");
+		pipelineFacade.save(pipeline2);
+		em.flush();
+		em.clear();
+		assertFalse(pipelineFacade.isUpToDate(pipeline));
 	}
 
 	/**
@@ -428,6 +765,70 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testCreateExecution() {
 		System.out.println("createExecution");
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		assertEquals(PipelineExecutionStatus.QUEUED, pipelineExecution.getStatus());
+		assertEquals(pipeline, pipelineExecution.getPipeline());
+		assertFalse(pipelineExecution.isDebugging());
+		assertNull(pipelineExecution.getSchedule());
+		assertTrue(pipelineExecution.getSilentMode());
+		assertFalse(pipelineExecution.getStop());
+
+		assertNotNull(pipelineExecution.getContextReadOnly());
+		assertNotNull(pipelineExecution.getContext().getExecution());
+		assertEquals(pipelineExecution, pipelineExecution.getContext().getExecution());
+		
+		if (authCtx != null) {
+			assertEquals(authCtx.getUser(), pipelineExecution.getOwner());
+		} else {
+			assertNull(pipelineExecution.getOwner());
+		}
 	}
 
 	/**
@@ -437,6 +838,61 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetAllExecutions_0args() {
 		System.out.println("getAllExecutions");
+		
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		pipelineFacade.save(pipelineExecution);
+		
+		List<PipelineExecution> pipelineExecutions = pipelineFacade.getAllExecutions();
+		assertNotNull(pipelineExecutions);
+		assertTrue(pipelineExecutions.size() == 2);
+		assertTrue(pipelineExecutions.contains(pipelineExecution));
 	}
 
 	/**
@@ -446,6 +902,66 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetAllExecutions_PipelineExecutionStatus() {
 		System.out.println("getAllExecutions");
+		
+		
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		pipelineFacade.save(pipelineExecution);
+		
+		List<PipelineExecution> pipelineExecutions = pipelineFacade.getAllExecutions(PipelineExecutionStatus.QUEUED);
+		assertNotNull(pipelineExecutions);
+		assertTrue(pipelineExecutions.size() == 1);
+		assertTrue(pipelineExecutions.contains(pipelineExecution));
+		
+		List<PipelineExecution> pipelineExecutions2 = pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+		assertNotNull(pipelineExecutions2);
+		assertTrue(pipelineExecutions2.isEmpty());
 	}
 
 	/**
@@ -455,6 +971,61 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetExecution() {
 		System.out.println("getExecution");
+		
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		PipelineExecution pipelineExecution2 = pipelineFacade.getExecution(id);
+		assertEquals(pipelineExecution, pipelineExecution2);
 	}
 
 	/**
@@ -464,6 +1035,69 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetExecutions_Pipeline() {
 		System.out.println("getExecutions");
+
+
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		List<PipelineExecution> pipelineExecutions = pipelineFacade.getExecutions(pipeline);
+		assertNotNull(pipelineExecutions);
+		assertTrue(pipelineExecutions.size() == 1);
+		assertTrue(pipelineExecutions.contains(pipelineExecution));
+		
+		List<PipelineExecution> pipelineExecutions2 = pipelineFacade.getExecutions(null);
+		assertNotNull(pipelineExecutions2);
+		assertTrue(pipelineExecutions.isEmpty());
+		
 	}
 
 	/**
@@ -473,6 +1107,66 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetExecutions_Pipeline_PipelineExecutionStatus() {
 		System.out.println("getExecutions");
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		List<PipelineExecution> pipelineExecutions = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.QUEUED);
+		assertNotNull(pipelineExecutions);
+		assertTrue(pipelineExecutions.size() == 1);
+		assertTrue(pipelineExecutions.contains(pipelineExecution));
+
+		List<PipelineExecution> pipelineExecutions2 = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.CANCELLED);
+		assertNotNull(pipelineExecutions2);
+		assertTrue(pipelineExecutions2.isEmpty());
 	}
 
 	/**
@@ -482,6 +1176,70 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetLastExecTime() {
 		System.out.println("getLastExecTime");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		List<PipelineExecution> pipelineExecutions = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.QUEUED);
+		assertNotNull(pipelineExecutions);
+		assertTrue(pipelineExecutions.size() == 1);
+		assertTrue(pipelineExecutions.contains(pipelineExecution));		
+		
+		Date le = pipelineFacade.getLastExecTime(pipeline, PipelineExecutionStatus.QUEUED);
+		assertEquals(no, le);
+		
+		Date le2 = pipelineFacade.getLastExecTime(pipeline, PipelineExecutionStatus.CANCELLED);
+		assertNull(le2);
 	}
 
 	/**
@@ -491,6 +1249,74 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetLastExec_Pipeline_Set() {
 		System.out.println("getLastExec");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		Set<PipelineExecutionStatus> statuses = new HashSet<>();
+		statuses.add(PipelineExecutionStatus.QUEUED);
+		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+		
+		PipelineExecution pipelineExecution2 = pipelineFacade.getLastExec(pipeline, statuses);
+		assertNotNull(pipelineExecution2);
+		assertEquals(pipelineExecution, pipelineExecution2);
+
+		statuses.clear();
+		statuses.add(PipelineExecutionStatus.CANCELLING);
+		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(pipeline, statuses);
+		assertNotNull(pipelineExecution3);
+		assertNotSame(pipelineExecution, pipelineExecution3);
 	}
 
 	/**
@@ -500,6 +1326,67 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetLastExec_Pipeline() {
 		System.out.println("getLastExec");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		PipelineExecution pipelineExecution2 = pipelineFacade.getLastExec(pipeline);
+		assertNotNull(pipelineExecution2);
+		assertEquals(pipelineExecution, pipelineExecution2);
+
+		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(pipeline);
+		assertNotNull(pipelineExecution3);
+		assertNotSame(pipelineExecution, pipelineExecution3);
 	}
 
 	/**
@@ -509,6 +1396,82 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testGetLastExec_Schedule_Set() {
 		System.out.println("getLastExec");
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		Set<PipelineExecutionStatus> statuses = new HashSet<>();
+		statuses.add(PipelineExecutionStatus.QUEUED);
+		
+		PipelineExecution pipelineExecution2 = pipelineFacade.getLastExec(pipeline, statuses);
+		assertNotNull(pipelineExecution2);
+		assertEquals(pipelineExecution, pipelineExecution2);
+        
+		Schedule schedule = scheduleFacade.createSchedule();
+        assertNull(schedule.getId());
+        schedule.setType(ScheduleType.PERIODICALLY);
+        schedule.setPipeline(pipeline);
+        schedule.setEnabled(true);
+        scheduleFacade.execute(schedule);
+        
+		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(schedule, statuses);
+		assertEquals(pipelineExecution, pipelineExecution3);
+		
+		PipelineExecution pipelineExecution4 = pipelineFacade.getLastExec((Schedule) null, statuses);
+		assertNull(pipelineExecution4);
+
+		statuses.clear();
+		PipelineExecution pipelineExecution5 = pipelineFacade.getLastExec(schedule, statuses);
+		assertNull(pipelineExecution5);
 	}
 
 	/**
@@ -518,6 +1481,60 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testHasModifiedExecutions() {
 		System.out.println("hasModifiedExecutions");
+
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		
+		assertFalse(pipelineFacade.hasModifiedExecutions(new Date()));
+		assertTrue(pipelineFacade.hasModifiedExecutions(new Date(0L)));
 	}
 
 	/**
@@ -527,6 +1544,58 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testSave_PipelineExecution() {
 		System.out.println("save");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		assertNotNull(pipelineExecution.getId());
 	}
 
 	/**
@@ -536,6 +1605,67 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testDelete_PipelineExecution() {
 		System.out.println("delete");
+		
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		assertNotNull(pipelineExecution.getId());
+		Long id =pipelineExecution.getId();
+		
+		pipelineFacade.delete(pipelineExecution);
+		
+		em.flush();
+		em.clear();
+		
+		assertNull(pipelineFacade.getExecution(id));
 	}
 
 	/**
@@ -545,6 +1675,70 @@ public class PipelineFacadeTest {
 	@Transactional
 	public void testStopExecution() {
 		System.out.println("stopExecution");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+		pipelineFacade.save(pipeline);
+		
+		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+        pipelineExecution.setStatus(PipelineExecutionStatus.RUNNING);
+        pipelineFacade.save(pipelineExecution);
+		
+		pipelineFacade.stopExecution(pipelineExecution);
+		assertEquals(PipelineExecutionStatus.CANCELLING, pipelineExecution.getStatus());
+
+		pipelineExecution.setStatus(PipelineExecutionStatus.QUEUED);
+        pipelineFacade.save(pipelineExecution);
+		pipelineFacade.stopExecution(pipelineExecution);
+		assertEquals(PipelineExecutionStatus.QUEUED, pipelineExecution.getStatus());
 	}
 
 	@Test
