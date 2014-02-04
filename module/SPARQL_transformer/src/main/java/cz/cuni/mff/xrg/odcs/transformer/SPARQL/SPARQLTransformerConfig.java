@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
@@ -9,22 +12,24 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
-	private String SPARQL_Update_Query;
+	private List<String> SPARQL_Update_Query;
 
 	private boolean isConstructType;
 
 	public SPARQLTransformerConfig() {
-		this.SPARQL_Update_Query = "";
+		this.SPARQL_Update_Query = new LinkedList<>();
 		this.isConstructType = false;
+		
+
 	}
 
-	public SPARQLTransformerConfig(String SPARQL_Update_Query,
+	public SPARQLTransformerConfig(List<String> SPARQL_Update_Query,
 			boolean isConstructType) {
 		this.SPARQL_Update_Query = SPARQL_Update_Query;
 		this.isConstructType = isConstructType;
 	}
 
-	public String getSPARQLUpdateQuery() {
+	public List<String> getSPARQLUpdateQuery() {
 		return SPARQL_Update_Query;
 	}
 
