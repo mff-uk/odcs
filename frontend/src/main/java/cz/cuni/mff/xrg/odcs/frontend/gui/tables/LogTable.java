@@ -145,7 +145,7 @@ public class LogTable extends CustomComponent {
 				} else if(level == Level.ERROR) {
 						img = new ThemeResource("icons/error.png");
 				} else if(level == Level.TRACE) {
-					img = new ThemeResource("icons/scheduled.png");
+					img = new ThemeResource("icons/trace.png");
 				}
 				
 				Embedded emb = new Embedded(level.levelStr, img);

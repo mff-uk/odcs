@@ -234,3 +234,7 @@ overflow: auto !important;
 	padding-left: 4px;
 	font-weight: bold;
 }
+
+.clickable-table-cell {
+	cursor: pointer;
+}

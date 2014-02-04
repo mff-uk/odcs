@@ -55,7 +55,7 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "start":
 				return "started";
 			case "pipeline.name":
-				return "pipeline name";
+				return "pipeline";
 			case "duration":
 				return "duration";
 			case "owner.username":

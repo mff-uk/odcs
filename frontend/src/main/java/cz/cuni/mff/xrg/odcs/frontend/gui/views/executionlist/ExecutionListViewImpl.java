@@ -203,7 +203,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
 
-		generator.addButton("Cancel", "90px", new Action() {
+		generator.addButton("Cancel", null, new Action() {
 			@Override
 			protected void action(long id) {
 				presenter.stopEventHandler(id);
@@ -217,9 +217,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				return status == PipelineExecutionStatus.QUEUED
 						|| status == PipelineExecutionStatus.RUNNING;
 			}
-		});
+		}, new ThemeResource("icons/cancelled.png"));
 
-		generator.addButton("Show log", "90px", new Action() {
+		generator.addButton("Show log", null, new Action() {
 			@Override
 			protected void action(long id) {
 				presenter.showDebugEventHandler(id);
@@ -234,9 +234,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				// ...
 				return !isDebug && status != PipelineExecutionStatus.QUEUED;
 			}
-		});
+		}, new ThemeResource("icons/show_log.png"));
 
-		generator.addButton("Debug data", "90px", new Action() {
+		generator.addButton("Debug data", null, new Action() {
 			@Override
 			protected void action(long id) {
 				presenter.showDebugEventHandler(id);
@@ -251,7 +251,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				// ...
 				return isDebug && status != PipelineExecutionStatus.QUEUED;
 			}
-		});
+		}, new ThemeResource("icons/debug_data.png"));
 
 		generator.addButton("Run pipeline", null, new Action() {
 			@Override
@@ -415,7 +415,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setColumnWidth("status", 42);
 		executionTable.setColumnWidth("isDebugging", 36);
 		executionTable.setColumnExpandRatio("pipeline.name", 1);
-		executionTable.setColumnWidth("actions", 200);
+		//executionTable.setColumnWidth("actions", 160);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
@@ -440,24 +440,26 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
-				final Button btnEdit = new Button("Detail", new Button.ClickListener() {
+				final Button btnEdit = new Button();
+				btnEdit.setDescription("Detail");
+				btnEdit.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
 						presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
 					}
 				});
+				btnEdit.setIcon(new ThemeResource("icons/gear.png"));
 				Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
-				
+				lblPipelineName.setStyleName("clickable-table-cell");
 				HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
 				colLayout.setSpacing(true);
 				colLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-
 					@Override
 					public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-						if(event.getClickedComponent() == btnEdit) {
+						if (event.getClickedComponent() == btnEdit) {
 							return;
 						}
-						presenter.showDebugEventHandler((Long)itemId);
+						presenter.showDebugEventHandler((Long) itemId);
 					}
 				});
 				return colLayout;
