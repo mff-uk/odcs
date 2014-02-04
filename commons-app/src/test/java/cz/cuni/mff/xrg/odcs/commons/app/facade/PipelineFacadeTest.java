@@ -550,55 +550,6 @@ public class PipelineFacadeTest {
 			assertEquals(timestamp, openEvent.getTimestamp());
 			assertEquals(openEvent.getId(), openEvent2.getId());
 			assertEquals(openEvent, openEvent2);
-			
-			authCtx.setAuthentication(
-			new Authentication() {
-				
-				@Override
-				public String getName() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-				
-				@Override
-				public void setAuthenticated(boolean isAuthenticated)
-						throws IllegalArgumentException {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public boolean isAuthenticated() {
-					// TODO Auto-generated method stub
-					return true;
-				}
-				
-				@Override
-				public Object getPrincipal() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-				
-				@Override
-				public Object getDetails() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-				
-				@Override
-				public Object getCredentials() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-				
-				@Override
-				public Collection<? extends GrantedAuthority> getAuthorities() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-			});
-			pipelineFacade.createOpenEvent(pipeline);
-			assertNull(openEventDao.getOpenEvent(pipeline, authCtx.getUser()));
 		} else {
 			// drop it, it has to test for null
 			pipelineFacade.createOpenEvent(pipeline);			
@@ -1096,7 +1047,7 @@ public class PipelineFacadeTest {
 		
 		List<PipelineExecution> pipelineExecutions2 = pipelineFacade.getExecutions(null);
 		assertNotNull(pipelineExecutions2);
-		assertTrue(pipelineExecutions.isEmpty());
+		assertTrue(pipelineExecutions2.isEmpty());
 		
 	}
 
@@ -1315,8 +1266,7 @@ public class PipelineFacadeTest {
 		statuses.add(PipelineExecutionStatus.CANCELLING);
 		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
 		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(pipeline, statuses);
-		assertNotNull(pipelineExecution3);
-		assertNotSame(pipelineExecution, pipelineExecution3);
+		assertNull(pipelineExecution3);
 	}
 
 	/**
@@ -1384,9 +1334,11 @@ public class PipelineFacadeTest {
 		assertNotNull(pipelineExecution2);
 		assertEquals(pipelineExecution, pipelineExecution2);
 
-		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(pipeline);
-		assertNotNull(pipelineExecution3);
-		assertNotSame(pipelineExecution, pipelineExecution3);
+		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(null);
+		assertNull(pipelineExecution3);
+
+		PipelineExecution pipelineExecution4 = pipelineFacade.getLastExec(pipelineFacade.createPipeline());
+		assertNull(pipelineExecution4);
 	}
 
 	/**
@@ -1442,20 +1394,6 @@ public class PipelineFacadeTest {
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
 		
-		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
-		Date no = new Date();
-		pipelineExecution.setEnd(no);
-		pipelineFacade.save(pipelineExecution);
-		Long id = pipelineExecution.getId();
-		assertNotNull(id);
-		
-		Set<PipelineExecutionStatus> statuses = new HashSet<>();
-		statuses.add(PipelineExecutionStatus.QUEUED);
-		
-		PipelineExecution pipelineExecution2 = pipelineFacade.getLastExec(pipeline, statuses);
-		assertNotNull(pipelineExecution2);
-		assertEquals(pipelineExecution, pipelineExecution2);
-        
 		Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -1463,8 +1401,30 @@ public class PipelineFacadeTest {
         schedule.setEnabled(true);
         scheduleFacade.execute(schedule);
         
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
+        assertNotNull(executions);
+        assertFalse(executions.isEmpty());
+        assertTrue(executions.size() == 1);
+        PipelineExecution pipelineExecution2 = executions.get(0);
+        pipelineExecution2.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
+        pipelineExecution2.setEnd(new Date());
+        Long id2 = pipelineExecution2.getId();
+        pipelineFacade.save(pipelineExecution2);
+        
+    	PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
+		Date no = new Date();
+		pipelineExecution.setEnd(no);
+		pipelineFacade.save(pipelineExecution);
+		Long id = pipelineExecution.getId();
+		assertNotNull(id);
+		
+		Set<PipelineExecutionStatus> statuses = new HashSet<>();
+		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+        
 		PipelineExecution pipelineExecution3 = pipelineFacade.getLastExec(schedule, statuses);
-		assertEquals(pipelineExecution, pipelineExecution3);
+		assertNotNull(pipelineExecution3);
+		assertNotSame(id, pipelineExecution3.getId());
+		assertEquals(id2, pipelineExecution3.getId());
 		
 		PipelineExecution pipelineExecution4 = pipelineFacade.getLastExec((Schedule) null, statuses);
 		assertNull(pipelineExecution4);
@@ -1472,6 +1432,10 @@ public class PipelineFacadeTest {
 		statuses.clear();
 		PipelineExecution pipelineExecution5 = pipelineFacade.getLastExec(schedule, statuses);
 		assertNull(pipelineExecution5);
+
+		statuses.add(PipelineExecutionStatus.QUEUED);
+		PipelineExecution pipelineExecution6 = pipelineFacade.getLastExec(schedule, statuses);
+		assertNull(pipelineExecution6);
 	}
 
 	/**
@@ -1531,6 +1495,9 @@ public class PipelineFacadeTest {
 		PipelineExecution pipelineExecution =  pipelineFacade.createExecution(pipeline);
 		Date no = new Date();
 		pipelineExecution.setEnd(no);
+		// No setter why?
+//		pipelineExecution.setLastChange(no);
+		// Nor the save updates lastChange field.
 		pipelineFacade.save(pipelineExecution);
 		
 		assertFalse(pipelineFacade.hasModifiedExecutions(new Date()));
