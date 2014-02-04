@@ -670,6 +670,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			namedGraphTexts.add(textFieldGraph);
 			//text field for the graph
 			textFieldGraph.setWidth("100%");
+			textFieldGraph.setImmediate(true);
 			textFieldGraph.setData(row);
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source1");
@@ -693,6 +694,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 							ex = new InvalidValueException(
 									"Graph name must start with prefix \"http://\"");
 							throw ex;
+						}
+						
+						int countNG=0;
+						for (TextField namedGraphField : namedGraphTexts) {
+							if (namedGraphField.getValue().equals(namedGraph)) countNG++;
+							if(countNG>1){
+								ex = new InvalidValueException(
+										"Duplicate Graph");
+								throw ex;
+							}
+							
 						}
 
 					}
@@ -793,6 +805,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 			//text field for the graph
 			textFieldGraph.setWidth("100%");
+			textFieldGraph.setImmediate(true);
 			textFieldGraph.setData(row);
 			textFieldGraph.setValue(item.trim());
 			textFieldGraph.setInputPrompt("http://ld.opendata.cz/source");
@@ -801,21 +814,34 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 				public void validate(Object value) throws InvalidValueException {
 					if (value != null) {
 
-						String namedGraph = value.toString().toLowerCase()
+						String defaultGraph = value.toString().toLowerCase()
 								.trim();
 
-						if (namedGraph.isEmpty()) {
+						if (defaultGraph.isEmpty()) {
 							return;
 						}
 
-						if (namedGraph.contains(" ")) {
+						if (defaultGraph.contains(" ")) {
 							ex = new InvalidValueException(
 									"Graph name(s) must contain no white spaces");
 							throw ex;
-						} else if (!namedGraph.startsWith("http://")) {
+						} else if (!defaultGraph.startsWith("http://")) {
 							ex = new InvalidValueException(
 									"Graph name must start with prefix \"http://\"");
 							throw ex;
+						}
+						
+						int countDG=0;
+						for (TextField defaultGraphField : defaultGraphTexts) {
+							if (defaultGraphField.getValue().equals(defaultGraph)) countDG++;
+							if(countDG>1){
+								ex = new InvalidValueException(
+										"Duplicate Graph");
+								throw ex;
+								
+							}
+
+							
 						}
 
 					}
@@ -938,7 +964,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		retrySizeField = new TextField(
 				"Count of attempts to reconnect if the connection to SPARQL fails");
 		retrySizeField.setDescription(
-				"(Use 0 for no reperat, negative integer for infinity)");
+				"(Use 0 for no repeat, negative integer for infinity)");
 		retrySizeField.setValue("-1");
 		retrySizeField.setNullRepresentation("");
 		retrySizeField.setImmediate(true);
@@ -975,7 +1001,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 
 		retryTimeField = new TextField(
-				"Time in miliseconds how long to wait before trying to reconnect");
+				"Time in milliseconds how long to wait before trying to reconnect");
 		retryTimeField.setValue("1000");
 		retryTimeField.setNullRepresentation("");
 		retryTimeField.setImmediate(true);
@@ -1027,6 +1053,171 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		return areValid;
 	}
+	
+	private String validationMessage() {
+
+		String errors = "";
+		try {
+			textFieldSparql.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			errors = errors + e.getMessage();
+		}
+
+		if (!areGraphsNameValid()) {
+			
+			if (!errors.equals("")) {
+				errors = errors + "; " + graphVaildationMessage(namedGraphTexts);
+			} else {
+				errors = errors + graphVaildationMessage(namedGraphTexts);;
+			}
+			
+			if (!errors.equals("")) {
+				errors = errors + "; " + graphVaildationMessage(defaultGraphTexts);
+			} else {
+				errors = errors + graphVaildationMessage(defaultGraphTexts);
+			}
+			
+		}
+
+		try {
+			retrySizeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
+				errors = errors + "; " + e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+
+		try {
+			retryTimeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
+				errors = errors + "; " + e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+
+
+		if (!errors.equals("")) {
+			errors = errors + ".";
+		}
+
+
+		return errors;
+	}
+	
+	private String graphVaildationMessage(List<TextField> graphTexts){
+		
+
+		String duplicate = "";
+		boolean dupl = true;
+		
+		int moreWhiteSpaces = 0;
+		String whiteSpaces = "";
+		int morePrefixErorr = 0;
+		String prefixErorr = "";
+		
+		int duplicateNumber = 0;
+		List<TextField> duplicateGraphs = new ArrayList<>();
+		
+		String errorTextMessage = "";
+		
+		for (TextField graphField : graphTexts) {
+			
+			try {
+				graphField.validate();
+				
+			} catch (Validator.InvalidValueException e) {
+				
+				if (e.getMessage().equals("Graph name(s) must contain no white spaces")) {
+					if (moreWhiteSpaces==0) 
+						whiteSpaces = "\"" + graphField.getValue() + "\"";
+					else 
+						whiteSpaces = whiteSpaces + ", " + "\"" + graphField.getValue() + "\"";
+					moreWhiteSpaces++;			
+				}
+				
+				if (e.getMessage().equals("Graph name must start with prefix \"http://\"")) {
+					if (morePrefixErorr==0) 
+						prefixErorr = "\"" + graphField.getValue() + "\"";
+					else
+						prefixErorr = prefixErorr + ", " + "\"" + graphField.getValue() + "\"";
+					morePrefixErorr++;
+				}
+				
+				if (e.getMessage().equals("Duplicate Graph")) {
+					
+					if (duplicateNumber == 0) {
+						duplicate = "\"" + graphField.getValue() + "\"";
+						duplicateGraphs.add(graphField);
+						duplicateNumber++;
+						
+					} else {
+						
+						for (TextField duplicateField : duplicateGraphs) {
+							if (graphField.getValue().equals(duplicateField.getValue())) {
+								dupl = false;
+								break;
+							}
+						}
+						if (dupl) {
+							duplicate = duplicate + ", " + "\"" + graphField.getValue() + "\"";
+							duplicateGraphs.add(graphField);
+							duplicateNumber++;
+						}
+						dupl = true;
+					}
+					
+				}
+			}
+		}
+		
+		String graph="";
+		String mark="";
+		
+		if(graphTexts==namedGraphTexts)			
+			graph= "Named Graph";
+		if(graphTexts==defaultGraphTexts)			
+			graph= "Default Graph";
+		
+		if (moreWhiteSpaces == 1) {
+			
+			errorTextMessage = graph + " " + whiteSpaces + " must contain no white spaces ";
+		}
+		if (moreWhiteSpaces > 1) {
+			errorTextMessage =  graph + "s " + whiteSpaces + ", must contain no white spaces ";
+		}
+		if (morePrefixErorr == 1) {		
+			if (!errorTextMessage.equals("")) mark = "; ";
+			else mark = "";
+			errorTextMessage = errorTextMessage + mark +  graph + " " + prefixErorr + " must start with prefix \"http://\" ";
+		}
+		if (morePrefixErorr > 1) {
+			if (!errorTextMessage.equals("")) mark = "; ";
+			else mark = "";
+			errorTextMessage = errorTextMessage + mark +  graph + "s " + prefixErorr + ", must start with prefix \"http://\" ";
+		}
+		if (duplicateNumber == 1) {
+			if (!errorTextMessage.equals("")) mark = "; ";
+			else mark = "";
+			errorTextMessage = errorTextMessage + mark + graph + " " + duplicate + " is introduced more times";
+		}
+		if (duplicateNumber > 1) {
+			if (!errorTextMessage.equals("")) mark = "; ";
+			else mark = "";
+			errorTextMessage = errorTextMessage + mark + graph + "s " + duplicate + ", are introduced more times";	
+		}
+
+
+		return errorTextMessage;
+	}
+	
+
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
@@ -1042,7 +1233,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
 		if (!allComponentAreValid()) {
-			throw new ConfigException(ex.getMessage(), ex);
+//			throw new ConfigException(ex.getMessage(), ex);
+			String message = validationMessage();
+			throw new ConfigException(message);
 		} else if (!isQueryValid) {
 			throw new SPARQLValidationException(errorMessage);
 		} else {
