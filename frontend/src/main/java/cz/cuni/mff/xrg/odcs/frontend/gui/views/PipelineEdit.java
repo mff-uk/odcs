@@ -54,6 +54,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import java.util.List;
 import org.slf4j.Logger;
@@ -97,6 +98,7 @@ public class PipelineEdit extends ViewComponent {
 	private Tab developTab;
 	Button buttonSave;
 	Button buttonSaveAndClose;
+	Button buttonSaveAndCloseAndDebug;
 	Button buttonCancel;
 	Button buttonConflicts;
 	Button buttonCopy;
@@ -644,6 +646,20 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		saveLayout.addComponent(buttonSaveAndClose);
+		buttonSaveAndCloseAndDebug = new Button("Save & Close & Debug");
+		buttonSaveAndCloseAndDebug.setHeight("25px");
+		//buttonSaveAndCloseAndDebug.setWidth("100px");
+		buttonSaveAndCloseAndDebug.setImmediate(true);
+		buttonSaveAndCloseAndDebug.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// save current pipeline
+				savePipeline("close&debug");
+			}
+		});
+		saveLayout.addComponent(buttonSaveAndCloseAndDebug);
+
+
 		rightPartOfButtonBar.addComponent(saveLayout);
 
 		buttonCancel = new Button("Close");
@@ -789,9 +805,9 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 3);
-		
+
 		pipelineSettingsLayout.addComponent(new Label("Created by"), 0, 4);
-		
+
 		author = new Label();
 		pipelineSettingsLayout.addComponent(author, 1, 4);
 
@@ -906,6 +922,7 @@ public class PipelineEdit extends ViewComponent {
 	private void setupButtons(boolean enabled) {
 		buttonSave.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndClose.setEnabled(enabled && hasPermission("save"));
+		buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("save"));
 		buttonCopy.setEnabled(hasPermission("copy"));
 	}
 
@@ -922,8 +939,7 @@ public class PipelineEdit extends ViewComponent {
 	 *
 	 * @param debug {@link DebuggingView} to show.
 	 */
-	private void openDebug(final Pipeline pip, final Node debugNode) {
-		PipelineExecution pExec = pipelineHelper.runPipeline(pip, true, debugNode);
+	private void openDebug(PipelineExecution pExec, final Pipeline pip, final Node debugNode) {
 		if (pExec == null) {
 			//Solved by dialog if backend is offline in method runPipeline.
 			//Notification.show("Pipeline execution failed!", Notification.Type.ERROR_MESSAGE);
@@ -1111,13 +1127,20 @@ public class PipelineEdit extends ViewComponent {
 		switch (successAction) {
 			case "debug":
 				refreshPipeline();
-				openDebug(pipeline, sde.getDebugNode());
+				PipelineExecution pExec = pipelineHelper.runPipeline(pipeline, true, sde.getDebugNode());
+				openDebug(pExec, pipeline, sde.getDebugNode());
 				break;
 			case "close":
 				closeView();
 				break;
 			case "reload":
 				refreshPipeline();
+				break;
+			case "close&debug":
+				PipelineExecution exec = pipelineHelper.runPipeline(pipeline, true);
+				if (exec != null) {
+					((AppEntry) UI.getCurrent()).getNavigation().navigateTo(ExecutionListPresenterImpl.class, String.format("exec=%s", exec.getId()));
+				}
 				break;
 			default:
 				return true;
