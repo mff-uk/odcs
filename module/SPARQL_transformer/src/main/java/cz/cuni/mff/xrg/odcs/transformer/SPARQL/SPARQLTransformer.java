@@ -84,7 +84,9 @@ public class SPARQLTransformer
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
 
-		final String updateQuery = config.getSPARQLUpdateQuery();
+		// TODO use multiple SPARQL queries instead of first one
+		final String updateQuery = config.getSPARQLUpdateQuery() == null
+				? null : config.getSPARQLUpdateQuery().get(0);
 		final boolean isConstructQuery = config.isConstructType();
 
 		if (updateQuery == null) {
