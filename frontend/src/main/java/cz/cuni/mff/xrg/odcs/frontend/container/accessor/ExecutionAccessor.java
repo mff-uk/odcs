@@ -11,11 +11,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
-	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "duration", "status", "isDebugging", "schedule", "pipeline.id");
-	private final List<String> visible = Arrays.asList("status", "pipeline.name", "duration", "isDebugging", "schedule");
-	private final List<String> sortable = Arrays.asList("pipeline.name", "status", "isDebugging", "schedule");
-	private final List<String> filterable = Arrays.asList("pipeline.name", "status", "isDebugging", "schedule");
-	private final List<String> toFetch = Arrays.asList("pipeline");
+	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "duration", "status", "isDebugging", "schedule", "pipeline.id", "owner.username");
+	private final List<String> visible = Arrays.asList("status", "pipeline.name", "start", "duration", "isDebugging", "schedule", "owner.username");
+	private final List<String> sortable = Arrays.asList("pipeline.name", "status", "start", "isDebugging", "schedule", "owner.username");
+	private final List<String> filterable = Arrays.asList("pipeline.name", "status", "start", "isDebugging", "schedule", "owner.username");
+	private final List<String> toFetch = Arrays.asList("pipeline", "owner");
 
 	@Override
 	public List<String> all() {
@@ -53,19 +53,21 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "id":
 				return "id";
 			case "start":
-				return "start";
+				return "started";
 			case "pipeline.name":
 				return "pipeline name";
 			case "duration":
 				return "duration";
+			case "owner.username":
+				return "executed by";
 			case "status":
 				return "status";
 			case "isDebugging":
-				return "debugging";
+				return "debug";
 			case "lastChange":
 				return "last modification";
 			case "schedule":
-				return "scheduled";
+				return "sch.";
 			default:
 				return null;
 		}
@@ -83,6 +85,8 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 			case "pipeline.name":
 				String name = object.getPipeline().getName();
 				return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
+			case "owner.username":
+				return object.getOwner().getUsername();
 			case "duration":
 				return object.getDuration();
 			case "status":
@@ -119,6 +123,8 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 				return Timestamp.class;
 			case "schedule":
 				return Boolean.class;
+			case "owner.username":
+				return String.class;
 			default:
 				return null;
 		}

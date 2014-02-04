@@ -109,7 +109,8 @@ public class SchedulePipeline extends Window {
 	private AuthenticationContext authCtx;
 	DbInMemorySource<Pipeline> source;
 	DbInMemorySource<Pipeline> sourceCombo;
-	private long oldPipelineId=0;
+	private long oldPipelineId = 0;
+	private Label id;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -163,7 +164,7 @@ public class SchedulePipeline extends Window {
 		source.loadData(dbPipeline);
 		sourceCombo.loadData(dbPipeline);
 		source.hide(selectedPipeline.getId(), true);
-		if(selectPipe != null) {
+		if (selectPipe != null) {
 			selectPipe.setValue(null);
 		}
 		
@@ -183,6 +184,7 @@ public class SchedulePipeline extends Window {
 		if (selectedSchedule == null) {
 			selectSch = null;
 			scheduleDescription.setValue("");
+			id.setValue("New");
 			comboPipeline.setValue(null);
 			scheduleType.setValue(ScheduleType.PERIODICALLY);
 			date.setValue(new Date());
@@ -198,8 +200,8 @@ public class SchedulePipeline extends Window {
 			emailNotifications.setDisableComponents();
 			source.loadData(dbPipeline);
 			sourceCombo.loadData(dbPipeline);
-
-			if(selectPipe != null) {
+			
+			if (selectPipe != null) {
 				selectPipe.setValue(null);
 			}
 			
@@ -208,7 +210,7 @@ public class SchedulePipeline extends Window {
 
 			//setting name
 			scheduleDescription.setValue(selectedSchedule.getDescription());
-
+			id.setValue(selectedSchedule.getId().toString());
 			//setting pipeline
 			comboPipeline.setValue(selectedSchedule.getPipeline().getId());
 			//setting scheduling rule type
@@ -264,18 +266,17 @@ public class SchedulePipeline extends Window {
 				notifyThis.setValue(false);
 				emailNotifications.getScheduleNotificationRecord(selectedSchedule);
 				email.getScheduleEmailNotification(selectedSchedule);
-			}
-			else{
+			} else {
 				notifyThis.setValue(true);
 				emailNotifications.getDefaultScheduleNotificationRecord();
 				email.getUserEmailNotification(authCtx.getUser());
 				emailNotifications.setDisableComponents();
-			
+				
 			}
 			
 			selectSch = selectedSchedule;
 		}
-
+		
 		
 	}
 
@@ -322,9 +323,9 @@ public class SchedulePipeline extends Window {
 		sourceCombo = new DbInMemorySource<>(new PipelineNameAccessor(), dbPipeline);
 		containerCombo = new ReadOnlyContainer<>(sourceCombo);
 		
-
 		
-		GridLayout layoutPipeline = new GridLayout(2, 2);
+		
+		GridLayout layoutPipeline = new GridLayout(2, 3);
 		layoutPipeline.setSpacing(true);
 		layoutPipeline.setMargin(false);
 
@@ -358,21 +359,22 @@ public class SchedulePipeline extends Window {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				
-				if(event.getProperty().getValue()!=null){
+				if (event.getProperty().getValue() != null) {
 					
-					if(oldPipelineId !=0)
+					if (oldPipelineId != 0) {
 						source.show(oldPipelineId);
-					source.hide((long)event.getProperty().getValue(), true);
-					oldPipelineId=(long)event.getProperty().getValue();
-				}
-				else{
-					if(oldPipelineId !=0)
+					}
+					source.hide((long) event.getProperty().getValue(), true);
+					oldPipelineId = (long) event.getProperty().getValue();
+				} else {
+					if (oldPipelineId != 0) {
 						source.show(oldPipelineId);
+					}
 					oldPipelineId = 0;
 				}
-
+				
 				if (scheduleType.getValue().equals(ScheduleType.AFTER_PIPELINE)) {
-
+					
 					coreLayout.removeComponent(0, 3);
 					afterLayout = buildAfterLayout();
 					coreLayout.addComponent(afterLayout, 0, 3);
@@ -381,18 +383,22 @@ public class SchedulePipeline extends Window {
 		});
 		comboPipeline.setWidth("470px");
 		
-		layoutPipeline.addComponent(new Label("Pipeline "), 0,0);
+		layoutPipeline.addComponent(new Label("ID"), 0, 0);
+		id = new Label("New");
+		layoutPipeline.addComponent(id, 1, 0);
+		
+		layoutPipeline.addComponent(new Label("Pipeline "), 0, 1);
 		HorizontalLayout selectedPipe = new HorizontalLayout();
 		selectedPipe.setSpacing(true);
 		selectedPipe.addComponent(comboPipeline);
 		selectedPipe.addComponent(new Label(" was selected for scheduling."));
-		layoutPipeline.addComponent(selectedPipe, 1,0);
+		layoutPipeline.addComponent(selectedPipe, 1, 1);
 		
-		layoutPipeline.addComponent(new Label("Description:" ), 0,1);
+		layoutPipeline.addComponent(new Label("Description"), 0, 2);
 		scheduleDescription = new TextArea();
 		scheduleDescription.setImmediate(true);
 		scheduleDescription.setWidth("470px");
-		layoutPipeline.addComponent(scheduleDescription, 1,1);
+		layoutPipeline.addComponent(scheduleDescription, 1, 2);
 		
 		coreLayout.addComponent(layoutPipeline, 0, 0);
 
@@ -455,47 +461,47 @@ public class SchedulePipeline extends Window {
 			public void buttonClick(ClickEvent event) {
 				
 				email.saveEditedTexts();
-
+				
 				String errors = "";
 				//pipeline should be filled
 				try {
 					comboPipeline.validate();
-
+					
 				} catch (Validator.InvalidValueException e) {
 					errors = errors + e.getMessage();
 				}
-				
+
 				//Interval and Tolerance of PERIODICALLY type should be positive number
-				if (scheduleType.getValue().equals(ScheduleType.PERIODICALLY)){
+				if (scheduleType.getValue().equals(ScheduleType.PERIODICALLY)) {
 					try {
 						tfEvery.validate();
-	
+						
 					} catch (Validator.InvalidValueException e) {
 						if (!errors.equals("")) {
-							errors = errors + "; Interval value must be a positive integer number, you entered \"" + tfEvery.getValue()+"\"";
+							errors = errors + "; Interval value must be a positive integer number, you entered \"" + tfEvery.getValue() + "\"";
 						} else {
-							errors = errors +  "Interval value must be a positive integer number, you entered \"" + tfEvery.getValue()+"\"";
+							errors = errors + "Interval value must be a positive integer number, you entered \"" + tfEvery.getValue() + "\"";
 						}
 					}
 					
 					try {
 						tfTolerance.validate();
-	
+						
 					} catch (Validator.InvalidValueException e) {
 						if (!errors.equals("")) {
-							errors = errors +  "; Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue()+"\"";
+							errors = errors + "; Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue() + "\"";
 						} else {
-							errors = errors + "Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue()+"\"";
+							errors = errors + "Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue() + "\"";
 						}
 					}
-
+					
 				}
 				//selected pipeline in the AFTER_PIPELINE case should be filled.
 				if (scheduleType.getValue()
 						.equals(ScheduleType.AFTER_PIPELINE)) {
 					try {
 						selectPipe.validate();
-	
+						
 					} catch (Validator.InvalidValueException e) {
 						if (!errors.equals("")) {
 							errors = errors + "; " + e.getMessage();
@@ -504,14 +510,14 @@ public class SchedulePipeline extends Window {
 						}
 					}
 				}
-								
+				
 				if (!errors.equals("")) {
 					errors = errors + ".";
 					Notification.show("Failed to create scheduler rule.",
-							errors+  " Please correct that before saving. ", Notification.Type.ERROR_MESSAGE);
+							errors + " Please correct that before saving. ", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-	
+
 
 
 				//checking if the dialog was open from the Scheduler table
@@ -531,8 +537,8 @@ public class SchedulePipeline extends Window {
 				schedule.setPipeline(pipe);
 
 				//setting description
-				if (scheduleDescription.getValue() != null &&
-						scheduleDescription.getValue().trim() != null) {
+				if (scheduleDescription.getValue() != null
+						&& scheduleDescription.getValue().trim() != null) {
 					schedule.setDescription(scheduleDescription.getValue());
 				} else {
 					schedule.setDescription("");
@@ -624,12 +630,11 @@ public class SchedulePipeline extends Window {
 				} else {
 					if (schedule.getNotification() != null) {
 						scheduleFacade.deleteNotification(schedule.getNotification());
-					}
-					else{
-					// store scheduling rule record to DB
-					scheduleFacade.save(schedule);
-					Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
-				
+					} else {
+						// store scheduling rule record to DB
+						scheduleFacade.save(schedule);
+						Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+						
 					}
 				}
 				close();
@@ -764,20 +769,18 @@ public class SchedulePipeline extends Window {
 				// Set new filter
 				filter = new SimpleTreeFilter(event.getText(), true, false);
 				f.addContainerFilter(filter);
-				
+
 				// update filters 
 				source.showAll();
 				
 				source.filter(isInitialized, new InMemorySource.Filter<Pipeline>() {
-
 					@Override
 					public boolean filter(Pipeline object) {
 						return StringUtils.containsIgnoreCase(object.getName(),
 								event.getText());
 					}
-					
 				});
-				
+
 				// refresh the twin container
 				container.refresh();
 			}
@@ -1043,12 +1046,14 @@ public class SchedulePipeline extends Window {
 		return autoLayout;
 		
 	}
+
 	/**
-	 * Creating error message in case of wrong email format or duplicate emails in Notification tab
+	 * Creating error message in case of wrong email format or duplicate emails
+	 * in Notification tab
+	 *
 	 * @return String with error message
 	 */
-	
-	private String emailValidation(){
+	private String emailValidation() {
 		
 		String errorText = "";
 		String wrongFormat = "";
@@ -1067,7 +1072,7 @@ public class SchedulePipeline extends Window {
 		
 		if (notEmpty) {
 			for (TextField emailField : email.listedEditText) {
-
+				
 				try {
 					emailField.validate();
 					
@@ -1083,26 +1088,27 @@ public class SchedulePipeline extends Window {
 					}
 					if (e.getMessage().equals("duplicate e-mail")) {
 						
-						if (duplicateNumber == 0 ) {
+						if (duplicateNumber == 0) {
 							duplicate = "\"" + emailField.getValue() + "\"";
 							duplicateEmails.add(emailField);
 							duplicateNumber++;
-
+							
 						} else {
 							
-							for (TextField duplicateField : duplicateEmails)
-								if (emailField.getValue().equals(duplicateField.getValue())){
-									dupl=false;
+							for (TextField duplicateField : duplicateEmails) {
+								if (emailField.getValue().equals(duplicateField.getValue())) {
+									dupl = false;
 									break;
-									}
-							if(dupl){
+								}
+							}
+							if (dupl) {
 								duplicate = duplicate + ", " + "\"" + emailField.getValue() + "\"";
 								duplicateEmails.add(emailField);
 								duplicateNumber++;
 							}
-							dupl=true;
+							dupl = true;
 						}
-
+						
 					}
 				}
 			}
@@ -1123,6 +1129,6 @@ public class SchedulePipeline extends Window {
 		}
 		
 		return errorText;
-				
+		
 	}
 }

@@ -226,11 +226,11 @@ public class IntlibPagedTable extends PagedFilterTable {
 			if (c != null && c.getClass() == ReadOnlyContainer.class) {
 				LinkedList<String> visible = new LinkedList<>(((ReadOnlyContainer) c).getVisibles());
 				for(Object o : getVisibleColumns()) {
-					if(o.equals("")) {
+					if(o.equals("actions")) {
 						if(positions.containsKey(o)) {
-							visible.add(positions.get(o), "");
+							visible.add(positions.get(o), "actions");
 						} else {
-							visible.add("");
+							visible.add("actions");
 						}
 						break;
 					}

@@ -29,7 +29,17 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
 import java.util.HashMap;
 import java.util.Map;
 import ch.qos.logback.classic.Level;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Embedded;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_DEBUG;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_ERROR;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_INFO;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_TERMINATION_REQUEST;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_WARNING;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.PIPELINE_ERROR;
+import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.PIPELINE_INFO;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -117,11 +127,30 @@ public class LogTable extends CustomComponent {
 				return dpuNames.get(dpuId);
 			}
 		});
+		table.setColumnAlignment("logLevel", CustomTable.Align.CENTER);
 		table.addGeneratedColumn("logLevel", new CustomTable.ColumnGenerator() {
 			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Integer level = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
-				return Level.toLevel(level);
+			public Object generateCell(CustomTable source, Object itemId,
+					Object columnId) {
+
+				Integer levelInt = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
+				Level  level = Level.toLevel(levelInt);
+				ThemeResource img = null;
+				if(level == Level.INFO) {
+						img = new ThemeResource("icons/log.png");
+				} else if(level == Level.DEBUG) {
+						img = new ThemeResource("icons/debug.png");
+				} else if(level == Level.WARN) {
+						img = new ThemeResource("icons/warning.png");
+				} else if(level == Level.ERROR) {
+						img = new ThemeResource("icons/error.png");
+				} else if(level == Level.TRACE) {
+					img = new ThemeResource("icons/scheduled.png");
+				}
+				
+				Embedded emb = new Embedded(level.levelStr, img);
+				emb.setDescription(level.levelStr);
+				return emb;
 			}
 		});
 		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {

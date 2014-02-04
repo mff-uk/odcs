@@ -75,10 +75,10 @@ public class Scheduler extends ViewComponent {
 	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-	static String[] visibleCols = new String[]{"schid", "pipeline", "description", "rule", "user",
-		"last", "next", "duration", "status", "commands"};
-	static String[] headers = new String[]{"ID", "Pipeline", "Description", "Rule", "User",
-		"Last", "Next", "Last run time", "Status", "Commands"};
+	static String[] visibleCols = new String[]{"commands", "pipeline", "rule",
+		"last", "next", "duration", "status", };
+	static String[] headers = new String[]{"Actions", "Pipeline", "Rule",
+		"Last", "Next", "Last run time", "Status"};
 	int style = DateFormat.MEDIUM;
 	static String filter;
 	private Schedule scheduleDel;
@@ -193,12 +193,14 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setWidth("100%");
 		schedulerTable.setHeight("100%");
 		schedulerTable.setImmediate(true);
-		schedulerTable.setVisibleColumns((Object[]) visibleCols);
-		schedulerTable.setColumnHeaders(headers);
 		schedulerTable.setFilterBarVisible(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
+		schedulerTable.setColumnWidth("commands", 150);
+		schedulerTable.setColumnWidth("status", 42);
+		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
+		schedulerTable.setColumnExpandRatio("pipeline", 1);
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
@@ -215,6 +217,8 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setFilterDecorator(new filterDecorator());
 		schedulerTable.setFilterFieldVisible("commands", false);
 		schedulerTable.setFilterFieldVisible("duration", false);
+		schedulerTable.setVisibleColumns((Object[]) visibleCols);
+		schedulerTable.setColumnHeaders(headers);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
 		schedulerTable.setPageLength(utils.getPageLength());
@@ -334,15 +338,15 @@ public class Scheduler extends ViewComponent {
 				}
 			}
 
-			result.getContainerProperty(id, "schid").setValue(item.getId().toString());
-			if (item.getOwner() == null) {
-				result.getContainerProperty(id, "user").setValue(" ");
-			} else {
-				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
-			}
+			result.getContainerProperty(id, "schid").setValue(item.getId());
+//			if (item.getOwner() == null) {
+//				result.getContainerProperty(id, "user").setValue(" ");
+//			} else {
+//				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
+//			}
 			result.getContainerProperty(id, "pipeline").setValue(item.getPipeline().getName());
 			String description = StringUtils.abbreviate(item.getDescription(), Utils.getColumnMaxLenght());
-			result.getContainerProperty(id, "description").setValue(description);
+//			result.getContainerProperty(id, "description").setValue(description);
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(id, "duration").setValue(DecorationHelper.getDuration(exec));
@@ -414,8 +418,9 @@ public class Scheduler extends ViewComponent {
 				//If item in the scheduler table has Disabled status, then for that item will be shown
 				//Enable button
 				if (!testStatus) {
-					Button enableButton = new Button("Enable");
-					enableButton.setWidth("80px");
+					Button enableButton = new Button();
+					enableButton.setDescription("Enable");
+					enableButton.setIcon(new ThemeResource("icons/ok.png"));
 					enableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -429,8 +434,8 @@ public class Scheduler extends ViewComponent {
 				//Disable button
 				else {
 					Button disableButton = new Button();
-					disableButton.setCaption("Disable");
-					disableButton.setWidth("80px");
+					disableButton.setDescription("Disable");
+					disableButton.setIcon(new ThemeResource("icons/error.png"));
 					disableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -444,8 +449,8 @@ public class Scheduler extends ViewComponent {
 			}
 			//Edit button. Opens the window for editing given scheduling rule.
 			Button editButton = new Button();
-			editButton.setCaption("Edit");
-			editButton.setWidth("80px");
+			editButton.setDescription("Edit");
+			editButton.setIcon(new ThemeResource("icons/gear.png"));
 			editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -456,8 +461,8 @@ public class Scheduler extends ViewComponent {
 
 			//Edit button. Delete scheduling rule from the table.
 			Button deleteButton = new Button();
-			deleteButton.setCaption("Delete");
-			deleteButton.setWidth("80px");
+			deleteButton.setDescription("Delete");
+			deleteButton.setIcon(new ThemeResource("icons/trash.png"));
 			deleteButton.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
