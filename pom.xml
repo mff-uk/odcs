@@ -26,9 +26,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- define output dirs -->
-		<project.output.lib>target\lib\</project.output.lib>
-		<project.output.lib.backend>target\lib\backend\</project.output.lib.backend>
-		<project.output.dpu>target\dpu\</project.output.dpu>
+		<project.output.lib>target/lib/</project.output.lib>
+		<project.output.lib.backend>target/lib/backend/</project.output.lib.backend>
+		<project.output.dpu>target/dpu/</project.output.dpu>
 		<!-- odcs version, used to create OSGI import/export package list used 
 		to enable custom user versions of DPUs by using <version> for this reason 
 		<version> can't be used to specify OSGI packages -->

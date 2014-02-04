@@ -44,7 +44,7 @@
 		-->
  		 		
 		<!-- Alternatively, if you would like to refer to local dependency on the file system,  use following code to import local dependency 
-		   from sample project (folder) file\lib\MyLib.java. The dependency (jar file) will be automaticaly
+		   from sample project (folder) file/lib/MyLib.java. The dependency (jar file) will be automaticaly
 		   added to the resulting OSGi bundle. Prefer the reference to publicly available Maven repository (previous dependency example) over local repository (the following dependency example) - if you move the development of DPU to a different machine, local repository will not work there. 
 	   <dependency>
 		   <groupId>com.surname.intlib</groupId>

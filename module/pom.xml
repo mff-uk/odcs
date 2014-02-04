@@ -24,8 +24,8 @@
 	</modules>
 
 	<properties>
-		<!-- path to the ODCL DPU's directory -->
-		<dpu.odcs.dir>${project.build.directory}\..\..\..\${project.output.dpu}</dpu.odcs.dir>
+		<!-- path to the ODCS DPU's directory -->
+		<dpu.odcs.dir>${project.build.directory}/../../../${project.output.dpu}</dpu.odcs.dir>
 	</properties>
 
 	<profiles>
@@ -46,7 +46,7 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${dpu.odcs.dir}\${project.artifactId}</outputDirectory>
+									<outputDirectory>${dpu.odcs.dir}/${project.artifactId}</outputDirectory>
 									<resources>
 										<resource>
 											<directory>${project.build.directory}</directory>
