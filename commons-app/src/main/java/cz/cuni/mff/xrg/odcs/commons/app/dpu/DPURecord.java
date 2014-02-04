@@ -173,7 +173,7 @@ public abstract class DPURecord {
 	 * @param conf
 	 */
 	public void setRawConf(byte[] conf) {
-		serializedConfiguration = conf.toString();
+		serializedConfiguration = new String(conf);
 		LOG.debug("setRawConf for: {} on: {}", this.name, this.serializedConfiguration);
 	}
 	
