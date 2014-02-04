@@ -32,14 +32,6 @@ import ch.qos.logback.classic.Level;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Embedded;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_DEBUG;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_ERROR;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_INFO;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_TERMINATION_REQUEST;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.DPU_WARNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.PIPELINE_ERROR;
-import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.PIPELINE_INFO;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -157,11 +149,11 @@ public class LogTable extends CustomComponent {
 
 			@Override
 			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				if(itemId != null) {
-					//Object fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty("message").getValue();
-					//if(fullMessage != null) {
-						return "TEST";//(String)fullMessage;
-					//}
+				if(itemId != null && "message".equals(propertyId)) {
+					String fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty("message").getValue();
+					if(fullMessage != null) {
+						return fullMessage;
+					}
 				}
 				return null;
 			}
