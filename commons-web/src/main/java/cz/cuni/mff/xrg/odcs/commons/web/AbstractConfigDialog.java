@@ -31,7 +31,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * @param conf Serialized configuration object.
 	 * @throws ConfigException
 	 */
-	public abstract void setConfig(byte[] conf) throws ConfigException;
+	public abstract void setConfig(String conf) throws ConfigException;
 
 	/**
 	 * Return serialized result of {@link #getConfiguration()}
@@ -39,7 +39,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	 * @return Serialized configuration object.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
-	public abstract byte[] getConfig() throws ConfigException;
+	public abstract String getConfig() throws ConfigException;
 
 	/**
 	 * Return text that should be used as a DPU tool tip. The text should

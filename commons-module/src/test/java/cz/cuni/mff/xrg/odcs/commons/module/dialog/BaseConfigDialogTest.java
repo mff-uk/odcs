@@ -47,10 +47,10 @@ public class BaseConfigDialogTest extends BaseConfigDialog<SimpleTestConfig> {
 		ConfigWrap<SimpleTestConfig> configWrap = new ConfigWrap<>(
 				SimpleTestConfig.class);
 
-		byte[] cByte = configWrap.serialize(c);
+		String configString = configWrap.serialize(c);
 		
 		// set configuration
-		this.setConfig(cByte);
+		this.setConfig(configString);
 		// change configuration in dialog .. 
 		this.actualConfiguration = cEqual;
 				
@@ -67,7 +67,7 @@ public class BaseConfigDialogTest extends BaseConfigDialog<SimpleTestConfig> {
 		
 		// and when we update the configuration, it should return false
 		// as we do not change it after this
-		this.setConfig(cByte);
+		this.setConfig(configString);
 		assertFalse(this.hasConfigChanged());
 	}
 

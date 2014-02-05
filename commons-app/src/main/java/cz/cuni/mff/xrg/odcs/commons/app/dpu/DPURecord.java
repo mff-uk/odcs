@@ -163,18 +163,16 @@ public abstract class DPURecord {
 	 * Return raw configuration representation.
 	 * @return
 	 */
-	public byte[] getRawConf() {
-		LOG.debug("getRawConf for: {} on: {}", this.name, this.serializedConfiguration);
-		return serializedConfiguration.getBytes();
+	public String getRawConf() {
+		return serializedConfiguration;
 	}
 
 	/**
 	 * Set raw configuration representation. Use with caution!
 	 * @param conf
 	 */
-	public void setRawConf(byte[] conf) {
-		serializedConfiguration = new String(conf);
-		LOG.debug("setRawConf for: {} on: {}", this.name, this.serializedConfiguration);
+	public void setRawConf(String conf) {
+		serializedConfiguration = conf;
 	}
 	
 	/**

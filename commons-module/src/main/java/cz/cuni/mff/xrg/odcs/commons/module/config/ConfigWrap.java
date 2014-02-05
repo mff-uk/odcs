@@ -15,6 +15,7 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import java.nio.charset.Charset;
 
 /**
  * Class provides functionality to serialize, deserialize and create instance of
@@ -96,20 +97,22 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * Deserialize configuration. If the parameter is null or empty then null is
 	 * returned.
 	 *
-	 * @param c Serialized configuration.
+	 * @param configStr Serialized configuration.
 	 * @return
 	 * @throws ConfigException
 	 */
 	@SuppressWarnings("unchecked")
-	public C deserialize(byte[] c) throws ConfigException {
-		if (c == null || c.length == 0) {
+	public C deserialize(String configStr) throws ConfigException {
+		if (configStr == null || configStr.isEmpty()) {
 			return null;
 		}
 
 		C config = null;
 		// reconstruct object form byte[]
-		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(c); ObjectInputStream objIn = xstream
-				.createObjectInputStream(byteIn)) {
+		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(
+				configStr.getBytes(Charset.forName("UTF-8"))); 
+				ObjectInputStream objIn = xstream.createObjectInputStream(byteIn)) {
+			
 			Object obj = objIn.readObject();
 			config = (C) obj;
 		} catch (IOException e) {
@@ -141,7 +144,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * @return Serialized configuration, can be null.
 	 * @throws ConfigException
 	 */
-	public byte[] serialize(C config) throws ConfigException {
+	public String serialize(C config) throws ConfigException {
 		if (config == null) {
 			return null;
 		}
@@ -167,6 +170,6 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		} catch (IOException e) {
 			throw new ConfigException("Can't serialize configuration.", e);
 		}
-		return result;
+		return new String(result, Charset.forName("UTF-8"));
 	}
 }
