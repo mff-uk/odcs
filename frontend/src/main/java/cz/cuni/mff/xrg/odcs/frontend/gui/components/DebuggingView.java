@@ -134,7 +134,6 @@ public class DebuggingView extends CustomComponent {
 		}
 
 		// building require some thing to be set 
-		// like queryView = new RDFQueryView(pipelineExec);
 		this.pipelineExec = exec;
 		
 		// build gui layout 
@@ -154,7 +153,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Builds main layout.
 	 */
-	public final void buildMainLayout() {
+	private void buildMainLayout() {
 
 		mainLayout = new VerticalLayout();
 
