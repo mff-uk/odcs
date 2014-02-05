@@ -44,29 +44,21 @@ import org.tepi.filtertable.datefilter.DateInterval;
 public class LogTable extends CustomComponent {
 
 	private VerticalLayout mainLayout;
-
 	private IntlibPagedTable table;
-
 	private PipelineExecution execution;
-
 	private FilterGenerator filterGenerator;
-
 	private LogMessageDetail detail = null;
-
 	/**
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
 	private final DbCachedSource<Log> dataSouce;
-
 	private final ReadOnlyContainer<Log> container;
-
 	/**
 	 * Contains names of {@link DPUInstanceRecord}s. Used as a cache for
 	 * generated column.
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
-
 	private final LogFacade logFacade;
 
 	/**
@@ -129,31 +121,18 @@ public class LogTable extends CustomComponent {
 					return null;
 				}
 				Level level = Level.toLevel(levelInt);
-				ThemeResource img = null;
-				if(level == Level.INFO) {
-						img = new ThemeResource("icons/log.png");
-				} else if(level == Level.DEBUG) {
-						img = new ThemeResource("icons/debug.png");
-				} else if(level == Level.WARN) {
-						img = new ThemeResource("icons/warning.png");
-				} else if(level == Level.ERROR) {
-						img = new ThemeResource("icons/error.png");
-				} else if(level == Level.TRACE) {
-					img = new ThemeResource("icons/trace.png");
-				}
-				
+				ThemeResource img = getIconForLevel(level);
 				Embedded emb = new Embedded(level.levelStr, img);
 				emb.setDescription(level.levelStr);
 				return emb;
 			}
 		});
 		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-
 			@Override
 			public String generateDescription(Component source, Object itemId, Object propertyId) {
-				if(itemId != null && "message".equals(propertyId)) {
-					String fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty("message").getValue();
-					if(fullMessage != null) {
+				if (itemId != null && "message".equals(propertyId)) {
+					String fullMessage = (String) ((CustomTable) source).getItem(itemId).getItemProperty("message").getValue();
+					if (fullMessage != null) {
 						return fullMessage;
 					}
 				}
@@ -168,6 +147,7 @@ public class LogTable extends CustomComponent {
 		levelSelector.addItem(Level.ALL);
 		for (Level level : logFacade.getAllLevels()) {
 			levelSelector.addItem(level);
+			levelSelector.setItemIcon(level, getIconForLevel(level));
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
 
@@ -185,6 +165,22 @@ public class LogTable extends CustomComponent {
 		mainLayout.addComponent(table.createControls());
 
 		setCompositionRoot(mainLayout);
+	}
+
+	private ThemeResource getIconForLevel(Level level) {
+		ThemeResource img = null;
+		if (level == Level.INFO) {
+			img = new ThemeResource("icons/log.png");
+		} else if (level == Level.DEBUG) {
+			img = new ThemeResource("icons/debug.png");
+		} else if (level == Level.WARN) {
+			img = new ThemeResource("icons/warning.png");
+		} else if (level == Level.ERROR) {
+			img = new ThemeResource("icons/error.png");
+		} else if (level == Level.TRACE) {
+			img = new ThemeResource("icons/trace.png");
+		}
+		return img;
 	}
 
 	private ComboBox refreshDpuSelector() {

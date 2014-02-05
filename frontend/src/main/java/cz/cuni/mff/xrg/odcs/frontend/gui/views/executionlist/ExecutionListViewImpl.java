@@ -411,11 +411,12 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
 
-		executionTable.setColumnWidth("schedule", 32);
-		executionTable.setColumnWidth("status", 42);
-		executionTable.setColumnWidth("isDebugging", 36);
+		//executionTable.setColumnWidth("schedule", 32);
+		//executionTable.setColumnWidth("status", 42);
+		//executionTable.setColumnWidth("isDebugging", 36);
 		executionTable.setColumnExpandRatio("pipeline.name", 1);
-		//executionTable.setColumnWidth("actions", 160);
+		//Suitable if no more than 3 buttons are available at the same time, which is true in current version.
+		executionTable.setColumnWidth("actions", 160);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
@@ -460,6 +461,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 							return;
 						}
 						presenter.showDebugEventHandler((Long) itemId);
+						monitorTable.select(itemId);
 					}
 				});
 				return colLayout;
