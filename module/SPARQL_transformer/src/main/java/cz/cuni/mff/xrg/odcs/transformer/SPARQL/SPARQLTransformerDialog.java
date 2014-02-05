@@ -56,7 +56,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 	private String validationErrorMessage = "";
 	
-	private void inicialize() {
+	private void initialize() {
 		ex = new Validator.InvalidValueException("Valid");
 	}
 
@@ -65,7 +65,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 */
 	public SPARQLTransformerDialog() {
 		super(SPARQLTransformerConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 	}

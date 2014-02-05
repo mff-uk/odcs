@@ -139,13 +139,13 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 */
 	public RDFLoaderDialog() {
 		super(RDFLoaderConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 
-	private void inicialize() {
+	private void initialize() {
 		ex = new Validator.InvalidValueException("Valid");
 	}
 
