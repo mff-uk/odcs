@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dialog;
 
-import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +31,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 * Last valid configuration that is in dialog. Is used to detect changes in
 	 * configuration by function {@link #hasConfigChanged()}.
 	 */
-	private byte[] lastSetConfig;
+	private String lastSetConfig;
 	
 	/**
 	 * DPUs context. 
@@ -51,7 +49,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	}
 	
 	@Override
-	public void setConfig(byte[] conf) throws ConfigException {
+	public void setConfig(String conf) throws ConfigException {
 		C config;
 		try {
 			config = configWrap.deserialize(conf);		
@@ -96,7 +94,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	}
 
 	@Override
-	public byte[] getConfig() throws ConfigException {
+	public String getConfig() throws ConfigException {
 		C configuration = getConfiguration();
 		// check for validity before saving
 		if (configuration == null) {
@@ -123,10 +121,10 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 
 	@Override
 	public boolean hasConfigChanged() {
-		byte[] configByte;
+		String configString;
 		try {
 			C config = getConfiguration();
-			configByte = configWrap.serialize(config);
+			configString = configWrap.serialize(config);
 		} catch (ConfigException e) {
 			// exception according to definition return false
 			LOG.warn("Dialog configuration is invalid. It's assumed unchanged: ", 
@@ -137,10 +135,11 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 			return false;
 		}
 		
-		// just compare, if comparison is true .. then
-		// the configuration is the same so return false
-		final boolean result = !Arrays.equals(configByte, lastSetConfig);
-		return result;
+		if (lastSetConfig == null) {
+			return configString == null;
+		} else {
+			return lastSetConfig.compareTo(configString) != 0;
+		}
 	}
 	
 	/**
