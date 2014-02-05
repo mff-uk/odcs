@@ -124,6 +124,27 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		}
 		throw new RuntimeException("Failed to load data.");
 	}
+	
+	/**
+	 * Add item to cache. If the item is null nothing happen. If the item's id 
+	 * is null then negative index is used as index.
+	 * 
+	 * @param item
+	 * @param index 
+	 */
+	private void addToCache(T item, int index) {
+		if (item == null) {
+			return;
+		}		
+		Long id = item.getId();
+		if (id == null) {
+			// default, use negative index as id
+			id = -(long)index;
+		}				
+		// add to caches
+		data.put(id, item);
+		dataIndexes.put(index, id);		
+	}
 
 	/**
 	 * Load data size from {@link #source} and return it. Do not store them into
@@ -131,8 +152,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 */
 	int loadSize() {
 		applyFilters();
-		final int newSize = (int) source.executeSize(queryBuilder.getCountQuery());
-		return newSize;
+		return (int) source.executeSize(queryBuilder.getCountQuery());
 	}
 
 	/**
@@ -144,7 +164,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		applyFilters();
 		try {
 			return source.execute(queryBuilder.getQuery().limit(index, 1));
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			LOG.error("Failed to load item. Try to use new instance instead.", e);
 		}
 		// try to return default instead
@@ -164,8 +184,9 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			final List<T> items = source.executeList(
 					queryBuilder.getQuery().limit(startIndex, numberOfItems));
 			return items;
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			// failed to load some message
+			LOG.error("Failed to load a list of object, ltes try one by one.", e);
 		}
 		// let's try it by one .. 
 		final List<T> result = new LinkedList<>();
@@ -200,7 +221,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		T item;
 		try {
 			item = source.execute(queryBuilder.getQuery().limit(0, 1));
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			LOG.error("Failed to load item. Try to use new instance instead.", e);
 			item = getDefault();
 		}
@@ -252,8 +273,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	void add(List<T> items, int startIndex) {
 		int index = startIndex;
 		for (T item : items) {
-			data.put(item.getId(), item);
-			dataIndexes.put(index, item.getId());
+			addToCache(item, index);
 			++index;
 		}
 	}
@@ -296,11 +316,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
-			if (item != null) {
-				// add to caches
-				data.put(item.getId(), item);
-				dataIndexes.put(index, item.getId());
-			}
+			addToCache(item, index);
 			// return new item .. can be null
 			return item;
 		}
@@ -335,9 +351,8 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				// gather IDs and add data to caches
 				List<Long> newIDs = new ArrayList<>(numberOfItems);
 				for (T item : newData) {
-					data.put(item.getId(), item);
-					dataIndexes.put(index++, item.getId());
-					newIDs.add(item.getId());
+					addToCache(item, index);
+					index++;
 				}
 				// add new IDs to the result list
 				result.addAll(newIDs);

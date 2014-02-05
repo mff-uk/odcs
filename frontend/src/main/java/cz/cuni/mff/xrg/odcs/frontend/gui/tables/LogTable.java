@@ -124,9 +124,11 @@ public class LogTable extends CustomComponent {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId,
 					Object columnId) {
-
 				Integer levelInt = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
-				Level  level = Level.toLevel(levelInt);
+				if (levelInt == null) {
+					return null;
+				}
+				Level level = Level.toLevel(levelInt);
 				ThemeResource img = null;
 				if(level == Level.INFO) {
 						img = new ThemeResource("icons/log.png");
