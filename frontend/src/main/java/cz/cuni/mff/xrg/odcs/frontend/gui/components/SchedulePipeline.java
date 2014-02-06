@@ -385,7 +385,7 @@ public class SchedulePipeline extends Window {
 				}
 			}
 		});
-		comboPipeline.setWidth("470px");
+		comboPipeline.setWidth("460px");
 		
 		idLabel = new Label("ID");
 		layoutPipeline.addComponent(idLabel, 0, 3);
@@ -393,16 +393,12 @@ public class SchedulePipeline extends Window {
 		layoutPipeline.addComponent(id, 1, 3);
 		
 		layoutPipeline.addComponent(new Label("Pipeline "), 0, 0);
-		HorizontalLayout selectedPipe = new HorizontalLayout();
-		selectedPipe.setSpacing(true);
-		selectedPipe.addComponent(comboPipeline);
-		selectedPipe.addComponent(new Label(" was selected for scheduling."));
-		layoutPipeline.addComponent(selectedPipe, 1, 0);
+		layoutPipeline.addComponent(comboPipeline, 1, 0);
 		
 		layoutPipeline.addComponent(new Label("Description"), 0, 1);
 		scheduleDescription = new TextArea();
 		scheduleDescription.setImmediate(true);
-		scheduleDescription.setWidth("470px");
+		scheduleDescription.setWidth("460px");
 		layoutPipeline.addComponent(scheduleDescription, 1, 1);
 		
 		layoutPipeline.addComponent(new Label("Schedulled by"), 0, 2);
