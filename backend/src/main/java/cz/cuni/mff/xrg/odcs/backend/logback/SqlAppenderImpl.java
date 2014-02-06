@@ -8,6 +8,7 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import ch.qos.logback.core.db.DBHelper;
 import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.sql.Connection;
@@ -46,6 +47,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	private static final int LOG_BATCH_SIZE = 50;
 	
 	@Autowired
+	private AppConfig configuration;
+	
+	@Autowired
 	private DataSource dataSource;
 
 	/**
@@ -74,6 +78,11 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 */
 	private final Object lockList = new Object();
 
+	/**
+	 * Max length of a log message.
+	 */
+	private int maxMessageSize;
+	
 	/**
 	 * Return string that is used as insert query into logging table.
 	 *
@@ -288,6 +297,17 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		supportsBatchUpdates = connectionSource.supportsBatchUpdates();
 
 		started = true;
+		
+		// get configuration
+		try {
+			maxMessageSize = configuration.getInteger(ConfigProperty.EXECUTION_LOG_SIZE_MAX);
+			// add space for dots at the ned '...'
+			maxMessageSize += 4;
+		} catch (RuntimeException ex) {
+			// use default
+			maxMessageSize = 0;
+			LOG.info("The log.messsage size is unlimited as the limit has not been set.");
+		}
 	}
 
 	@Override
@@ -319,12 +339,18 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		 * must not be empty -> they have to be null or have some content
 		 *
 		 */
+		
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
 		long timeStamp = event.getTimeStamp();
 		String logger = StringUtils.abbreviate(event.getLoggerName(), LenghtLimits.LOGGER_NAME.limit());
 		String message = event.getFormattedMessage();
 
+		if (maxMessageSize != 0) {
+			// concanate message
+			message = StringUtils.abbreviate(message, maxMessageSize);
+		}
+		
 		// null check
 		if (logLevel == null) {
 			logLevel = Level.INFO_INTEGER;
