@@ -49,8 +49,6 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private Label labelOpt;
 
-	private TextField last;
-
 	/**
 	 * TextArea to set SPARQL construct query.
 	 */
@@ -146,9 +144,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	private TextField retryTimeField;
 
+	private RequestItem last;
+
 	int n = 1;
 
-	//private Map<TextField, TextField> map = new HashMap<>();
 	/**
 	 * Basic constructor.
 	 */
@@ -183,11 +182,14 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		requestItems.add(second);
 		requestItems.add(third);
 
+		last = second;
+
 		requestTypeOption.addItem(first.getDescription());
 		requestTypeOption.addItem(second.getDescription());
 		requestTypeOption.addItem(third.getDescription());
 
 		requestTypeOption.setValue(second.getDescription());
+
 	}
 
 	private void inicialize() {
@@ -218,6 +220,20 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		}
 
 		return "";
+	}
+
+	private RequestItem getRequestItem(String desc) {
+		if (requestItems.isEmpty()) {
+			mapRequestItems();
+		}
+
+		for (RequestItem item : requestItems) {
+			if (item.getDescription().equals(desc)) {
+				return item;
+			}
+		}
+
+		return last;
 	}
 
 	/**
@@ -524,6 +540,29 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		requestTypeOption.setWidth("-1px");
 		requestTypeOption.setHeight("-1px");
 		requestTypeOption.setMultiSelect(false);
+		requestTypeOption.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (last != null) {
+					last.setQueryParam(queryParamField.getValue());
+					last.setDefaultGraphParam(defaultGraphParamField.getValue());
+					last.setNamedGraphParam(namedGraphParamField.getValue());
+				}
+
+				String desriptionItem = (String) requestTypeOption.getValue();
+				RequestItem actualItem = getRequestItem(desriptionItem);
+
+				if (last != actualItem) {
+					queryParamField.setValue(actualItem.getQueryParam());
+					defaultGraphParamField.setValue(actualItem
+							.getDefaultGraphParam());
+					namedGraphParamField.setValue(actualItem
+							.getNamedGraphParam());
+					last = actualItem;
+				}
+
+			}
+		});
 
 		verticalLayoutProtocol.addComponent(requestTypeOption);
 
@@ -695,16 +734,18 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 									"Graph name must start with prefix \"http://\"");
 							throw ex;
 						}
-						
-						int countNG=0;
+
+						int countNG = 0;
 						for (TextField namedGraphField : namedGraphTexts) {
-							if (namedGraphField.getValue().equals(namedGraph)) countNG++;
-							if(countNG>1){
+							if (namedGraphField.getValue().equals(namedGraph)) {
+								countNG++;
+							}
+							if (countNG > 1) {
 								ex = new InvalidValueException(
 										"Duplicate Graph");
 								throw ex;
 							}
-							
+
 						}
 
 					}
@@ -830,18 +871,21 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 									"Graph name must start with prefix \"http://\"");
 							throw ex;
 						}
-						
-						int countDG=0;
+
+						int countDG = 0;
 						for (TextField defaultGraphField : defaultGraphTexts) {
-							if (defaultGraphField.getValue().equals(defaultGraph)) countDG++;
-							if(countDG>1){
+							if (defaultGraphField.getValue()
+									.equals(defaultGraph)) {
+								countDG++;
+							}
+							if (countDG > 1) {
 								ex = new InvalidValueException(
 										"Duplicate Graph");
 								throw ex;
-								
+
 							}
 
-							
+
 						}
 
 					}
@@ -1053,7 +1097,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		return areValid;
 	}
-	
+
 	private String validationMessage() {
 
 		String errors = "";
@@ -1065,19 +1109,20 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		}
 
 		if (!areGraphsNameValid()) {
-			
+
 			if (!errors.equals("")) {
 				errors = errors + "; " + graphVaildationMessage(namedGraphTexts);
 			} else {
-				errors = errors + graphVaildationMessage(namedGraphTexts);;
+				errors = errors + graphVaildationMessage(namedGraphTexts);
 			}
-			
+
 			if (!errors.equals("")) {
-				errors = errors + "; " + graphVaildationMessage(defaultGraphTexts);
+				errors = errors + "; " + graphVaildationMessage(
+						defaultGraphTexts);
 			} else {
 				errors = errors + graphVaildationMessage(defaultGraphTexts);
 			}
-			
+
 		}
 
 		try {
@@ -1110,114 +1155,134 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		return errors;
 	}
-	
-	private String graphVaildationMessage(List<TextField> graphTexts){
-		
+
+	private String graphVaildationMessage(List<TextField> graphTexts) {
+
 
 		String duplicate = "";
 		boolean dupl = true;
-		
+
 		int moreWhiteSpaces = 0;
 		String whiteSpaces = "";
 		int morePrefixErorr = 0;
 		String prefixErorr = "";
-		
+
 		int duplicateNumber = 0;
 		List<TextField> duplicateGraphs = new ArrayList<>();
-		
+
 		String errorTextMessage = "";
-		
+
 		for (TextField graphField : graphTexts) {
-			
+
 			try {
 				graphField.validate();
-				
+
 			} catch (Validator.InvalidValueException e) {
-				
-				if (e.getMessage().equals("Graph name(s) must contain no white spaces")) {
-					if (moreWhiteSpaces==0) 
+
+				if (e.getMessage().equals(
+						"Graph name(s) must contain no white spaces")) {
+					if (moreWhiteSpaces == 0) {
 						whiteSpaces = "\"" + graphField.getValue() + "\"";
-					else 
-						whiteSpaces = whiteSpaces + ", " + "\"" + graphField.getValue() + "\"";
-					moreWhiteSpaces++;			
+					} else {
+						whiteSpaces = whiteSpaces + ", " + "\"" + graphField
+								.getValue() + "\"";
+					}
+					moreWhiteSpaces++;
 				}
-				
-				if (e.getMessage().equals("Graph name must start with prefix \"http://\"")) {
-					if (morePrefixErorr==0) 
+
+				if (e.getMessage().equals(
+						"Graph name must start with prefix \"http://\"")) {
+					if (morePrefixErorr == 0) {
 						prefixErorr = "\"" + graphField.getValue() + "\"";
-					else
-						prefixErorr = prefixErorr + ", " + "\"" + graphField.getValue() + "\"";
+					} else {
+						prefixErorr = prefixErorr + ", " + "\"" + graphField
+								.getValue() + "\"";
+					}
 					morePrefixErorr++;
 				}
-				
+
 				if (e.getMessage().equals("Duplicate Graph")) {
-					
+
 					if (duplicateNumber == 0) {
 						duplicate = "\"" + graphField.getValue() + "\"";
 						duplicateGraphs.add(graphField);
 						duplicateNumber++;
-						
+
 					} else {
-						
+
 						for (TextField duplicateField : duplicateGraphs) {
-							if (graphField.getValue().equals(duplicateField.getValue())) {
+							if (graphField.getValue().equals(duplicateField
+									.getValue())) {
 								dupl = false;
 								break;
 							}
 						}
 						if (dupl) {
-							duplicate = duplicate + ", " + "\"" + graphField.getValue() + "\"";
+							duplicate = duplicate + ", " + "\"" + graphField
+									.getValue() + "\"";
 							duplicateGraphs.add(graphField);
 							duplicateNumber++;
 						}
 						dupl = true;
 					}
-					
+
 				}
 			}
 		}
-		
-		String graph="";
-		String mark="";
-		
-		if(graphTexts==namedGraphTexts)			
-			graph= "Named Graph";
-		if(graphTexts==defaultGraphTexts)			
-			graph= "Default Graph";
-		
+
+		String graph = "";
+		String mark = "";
+
+		if (graphTexts == namedGraphTexts) {
+			graph = "Named Graph";
+		}
+		if (graphTexts == defaultGraphTexts) {
+			graph = "Default Graph";
+		}
+
 		if (moreWhiteSpaces == 1) {
-			
+
 			errorTextMessage = graph + " " + whiteSpaces + " must contain no white spaces ";
 		}
 		if (moreWhiteSpaces > 1) {
-			errorTextMessage =  graph + "s " + whiteSpaces + ", must contain no white spaces ";
+			errorTextMessage = graph + "s " + whiteSpaces + ", must contain no white spaces ";
 		}
-		if (morePrefixErorr == 1) {		
-			if (!errorTextMessage.equals("")) mark = "; ";
-			else mark = "";
-			errorTextMessage = errorTextMessage + mark +  graph + " " + prefixErorr + " must start with prefix \"http://\" ";
+		if (morePrefixErorr == 1) {
+			if (!errorTextMessage.equals("")) {
+				mark = "; ";
+			} else {
+				mark = "";
+			}
+			errorTextMessage = errorTextMessage + mark + graph + " " + prefixErorr + " must start with prefix \"http://\" ";
 		}
 		if (morePrefixErorr > 1) {
-			if (!errorTextMessage.equals("")) mark = "; ";
-			else mark = "";
-			errorTextMessage = errorTextMessage + mark +  graph + "s " + prefixErorr + ", must start with prefix \"http://\" ";
+			if (!errorTextMessage.equals("")) {
+				mark = "; ";
+			} else {
+				mark = "";
+			}
+			errorTextMessage = errorTextMessage + mark + graph + "s " + prefixErorr + ", must start with prefix \"http://\" ";
 		}
 		if (duplicateNumber == 1) {
-			if (!errorTextMessage.equals("")) mark = "; ";
-			else mark = "";
+			if (!errorTextMessage.equals("")) {
+				mark = "; ";
+			} else {
+				mark = "";
+			}
 			errorTextMessage = errorTextMessage + mark + graph + " " + duplicate + " is introduced more times";
 		}
 		if (duplicateNumber > 1) {
-			if (!errorTextMessage.equals("")) mark = "; ";
-			else mark = "";
-			errorTextMessage = errorTextMessage + mark + graph + "s " + duplicate + ", are introduced more times";	
+			if (!errorTextMessage.equals("")) {
+				mark = "; ";
+			} else {
+				mark = "";
+			}
+			errorTextMessage = errorTextMessage + mark + graph + "s " + duplicate + ", are introduced more times";
 		}
 
 
 		return errorTextMessage;
 	}
-	
-
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
@@ -1383,9 +1448,18 @@ class RequestItem {
 
 	private String description;
 
+	private String queryParam;
+
+	private String defaultGraphParam;
+
+	private String namedGraphParam;
+
 	public RequestItem(ExtractorRequestType requestType, String description) {
 		this.requestType = requestType;
 		this.description = description;
+		this.queryParam = ExtractorEndpointParams.DEFAULT_QUERY_PARAM;
+		this.defaultGraphParam = ExtractorEndpointParams.DEFAULT_GRAPH_PARAM;
+		this.namedGraphParam = ExtractorEndpointParams.DEFAULT_NAMED_GRAPH_PARAM;
 	}
 
 	public ExtractorRequestType getRequestType() {
@@ -1394,5 +1468,29 @@ class RequestItem {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setQueryParam(String queryParam) {
+		this.queryParam = queryParam;
+	}
+
+	public void setDefaultGraphParam(String defaultGraphParam) {
+		this.defaultGraphParam = defaultGraphParam;
+	}
+
+	public void setNamedGraphParam(String namedGraphParam) {
+		this.namedGraphParam = namedGraphParam;
+	}
+
+	public String getQueryParam() {
+		return queryParam;
+	}
+
+	public String getDefaultGraphParam() {
+		return defaultGraphParam;
+	}
+
+	public String getNamedGraphParam() {
+		return namedGraphParam;
 	}
 }
