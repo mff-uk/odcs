@@ -60,11 +60,18 @@ public class DataUnitUtils {
 			log.error(ex.getLocalizedMessage());
 		}
 
-		try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath(), charset)) {
-			writer.write(s, 0, s.length());
+            
+                BufferedWriter writer = null;
+		try {
+                    
+                    writer = Files.newBufferedWriter(configFile.toPath(), charset);
+                    writer.write(s, 0, s.length());
+                    writer.close();
 		} catch (IOException x) {
 			log.error("IOException: %s%n", x);
-		}
+		} finally {
+                    
+                }
 
 		return configFile;
 
