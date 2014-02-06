@@ -89,7 +89,7 @@ public class VirtuosoSequenceSanitizerAspect {
 	 * @return
 	 * @throws Throwable 
 	 */
-	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.*Facade.save(..))")
+	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.Facade+.save(..))")
 	public Object sanitizeSequenceOnSave(ProceedingJoinPoint pjp) throws Throwable {
 		
 		JoinPoint.StaticPart staticPart = pjp.getStaticPart();
