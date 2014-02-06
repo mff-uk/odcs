@@ -460,7 +460,7 @@ public class Scheduler extends ViewComponent {
 			});
 			layout.addComponent(editButton);
 
-			//Edit button. Delete scheduling rule from the table.
+			//Delete button. Delete scheduling rule from the table.
 			Button deleteButton = new Button();
 			deleteButton.setDescription("Delete");
 			deleteButton.setIcon(new ThemeResource("icons/trash.png"));
@@ -471,7 +471,7 @@ public class Scheduler extends ViewComponent {
 
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
-							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?", "Delete", "Cancel",
+							"Delete \"" + scheduleDel.getPipeline().getName().toString() + "\" pipeline scheduling rule?", "Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 								private static final long serialVersionUID = 1L;
 
