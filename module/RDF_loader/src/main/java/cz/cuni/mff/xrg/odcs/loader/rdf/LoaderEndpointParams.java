@@ -8,6 +8,17 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
  */
 public class LoaderEndpointParams {
 
+	/**
+	 * Default string value of query request parameter for SPARQL extractor
+	 */
+	public static String DEFAULT_QUERY_PARAM = "update";
+
+	/**
+	 * Default string value of default graph request parameter for SPARQL
+	 * extractor
+	 */
+	public static String DEFAULT_GRAPH_PARAM = "using-graph-uri";
+
 	private String queryParam;
 
 	private String defaultGraphParam;
@@ -18,8 +29,8 @@ public class LoaderEndpointParams {
 	 * Create SPARQL loader default setting for VIRTUOSO endpoint.
 	 */
 	public LoaderEndpointParams() {
-		this.queryParam = "update";
-		this.defaultGraphParam = "using-graph-uri";
+		this.queryParam = DEFAULT_QUERY_PARAM;
+		this.defaultGraphParam = DEFAULT_GRAPH_PARAM;
 		this.postType = LoaderPostType.POST_URL_ENCODER;
 	}
 
