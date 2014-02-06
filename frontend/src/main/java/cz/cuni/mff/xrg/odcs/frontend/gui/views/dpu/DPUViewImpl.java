@@ -135,6 +135,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 
 		Button buttonImportDPU = new Button();
+		buttonImportDPU.setVisible(false);
 		buttonImportDPU.setCaption("Import DPU template");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("150px");
@@ -151,6 +152,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonBar.addComponent(buttonImportDPU);
 
 		Button buttonExportAll = new Button();
+		buttonExportAll.setVisible(false);
 		buttonExportAll.setCaption("Export All");
 		buttonExportAll.setHeight("25px");
 		buttonExportAll.setWidth("150px");
