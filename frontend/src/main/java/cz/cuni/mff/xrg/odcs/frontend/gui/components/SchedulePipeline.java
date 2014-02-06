@@ -111,6 +111,8 @@ public class SchedulePipeline extends Window {
 	DbInMemorySource<Pipeline> sourceCombo;
 	private long oldPipelineId = 0;
 	private Label id;
+	private Label idLabel;
+	private Label author;
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -184,7 +186,8 @@ public class SchedulePipeline extends Window {
 		if (selectedSchedule == null) {
 			selectSch = null;
 			scheduleDescription.setValue("");
-			id.setValue("New");
+			setIdValue(null);
+			author.setValue(authCtx.getUsername());
 			comboPipeline.setValue(null);
 			scheduleType.setValue(ScheduleType.PERIODICALLY);
 			date.setValue(new Date());
@@ -210,11 +213,12 @@ public class SchedulePipeline extends Window {
 
 			//setting name
 			scheduleDescription.setValue(selectedSchedule.getDescription());
-			id.setValue(selectedSchedule.getId().toString());
+			setIdValue(selectedSchedule.getId());
 			//setting pipeline
 			comboPipeline.setValue(selectedSchedule.getPipeline().getId());
 			//setting scheduling rule type
 			scheduleType.setValue(selectedSchedule.getType());
+			author.setValue(selectedSchedule.getOwner().getUsername());
 			//PERIODICALLY type
 			if (selectedSchedule.getType().equals(ScheduleType.PERIODICALLY)) {
 				//setting the date
@@ -325,7 +329,7 @@ public class SchedulePipeline extends Window {
 		
 		
 		
-		GridLayout layoutPipeline = new GridLayout(2, 3);
+		GridLayout layoutPipeline = new GridLayout(2, 4);
 		layoutPipeline.setSpacing(true);
 		layoutPipeline.setMargin(false);
 
@@ -381,24 +385,25 @@ public class SchedulePipeline extends Window {
 				}
 			}
 		});
-		comboPipeline.setWidth("470px");
+		comboPipeline.setWidth("460px");
 		
-		layoutPipeline.addComponent(new Label("ID"), 0, 0);
+		idLabel = new Label("ID");
+		layoutPipeline.addComponent(idLabel, 0, 3);
 		id = new Label("New");
-		layoutPipeline.addComponent(id, 1, 0);
+		layoutPipeline.addComponent(id, 1, 3);
 		
-		layoutPipeline.addComponent(new Label("Pipeline "), 0, 1);
-		HorizontalLayout selectedPipe = new HorizontalLayout();
-		selectedPipe.setSpacing(true);
-		selectedPipe.addComponent(comboPipeline);
-		selectedPipe.addComponent(new Label(" was selected for scheduling."));
-		layoutPipeline.addComponent(selectedPipe, 1, 1);
+		layoutPipeline.addComponent(new Label("Pipeline "), 0, 0);
+		layoutPipeline.addComponent(comboPipeline, 1, 0);
 		
-		layoutPipeline.addComponent(new Label("Description"), 0, 2);
+		layoutPipeline.addComponent(new Label("Description"), 0, 1);
 		scheduleDescription = new TextArea();
 		scheduleDescription.setImmediate(true);
-		scheduleDescription.setWidth("470px");
-		layoutPipeline.addComponent(scheduleDescription, 1, 2);
+		scheduleDescription.setWidth("460px");
+		layoutPipeline.addComponent(scheduleDescription, 1, 1);
+		
+		layoutPipeline.addComponent(new Label("Schedulled by"), 0, 2);
+		author = new Label();
+		layoutPipeline.addComponent(author, 1, 2);
 		
 		coreLayout.addComponent(layoutPipeline, 0, 0);
 
@@ -1130,5 +1135,14 @@ public class SchedulePipeline extends Window {
 		
 		return errorText;
 		
+	}
+
+	private void setIdValue(Long id) {
+		boolean hasId = id != null;
+		if(id != null) {
+			this.id.setValue(id.toString());
+		}
+		this.id.setVisible(hasId);
+		this.idLabel.setVisible(hasId);
 	}
 }

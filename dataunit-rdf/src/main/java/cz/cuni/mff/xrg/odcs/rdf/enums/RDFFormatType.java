@@ -46,7 +46,7 @@ public enum RDFFormatType {
 
 	private static Map<String, RDFFormatType> stringMap = new HashMap<>();
 
-	private static void inicializeMap() {
+	private static void initializeMap() {
 
 		map.put(RDFFormat.RDFXML, RDFXML);
 		map.put(RDFFormat.N3, N3);
@@ -57,15 +57,15 @@ public enum RDFFormatType {
 		map.put(RDFFormat.NTRIPLES, NT);
 	}
 
-	private static void inicializeStringMap() {
+	private static void initializeStringMap() {
 		for (RDFFormatType next : getListOfRDFType()) {
 			stringMap.put(getStringValue(next), next);
 		}
 	}
 
 	static {
-		inicializeMap();
-		inicializeStringMap();
+		initializeMap();
+		initializeStringMap();
 	}
 
 	/**

@@ -153,7 +153,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	public RDFExtractorDialog() {
 		super(RDFExtractorConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
@@ -192,7 +192,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	}
 
-	private void inicialize() {
+	private void initialize() {
 		ex = new InvalidValueException("Valid");
 	}
 

@@ -24,7 +24,7 @@ public class AddQueryGraphsTest {
 	private static String GRAPH_NAME;
 
 	@BeforeClass
-	public static void inicialize() {
+	public static void initialize() {
 		repository = RDFDataUnitFactory.createLocalRDFRepo("Local repository");
 		GRAPH_NAME = repository.getDataGraph().toString();
 	}

@@ -34,7 +34,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	private static final String defaultGraph = "http://default";
 
 	/**
-	 * Basic setting before inicializing test class.
+	 * Basic setting before initializing test class.
 	 */
 	@BeforeClass
 	public static void setUpLogger() {

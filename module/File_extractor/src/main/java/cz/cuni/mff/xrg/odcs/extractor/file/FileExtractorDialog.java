@@ -105,7 +105,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	public FileExtractorDialog() {
 		super(FileExtractorConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
@@ -114,7 +114,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	/**
 	 * Initialization of Configuration dialog for DPU RDF File Extractor
 	 */
-	private void inicialize() {
+	private void initialize() {
 		extractType = FileExtractType.UPLOAD_FILE;
 		ex = new InvalidValueException("Valid");
 	}

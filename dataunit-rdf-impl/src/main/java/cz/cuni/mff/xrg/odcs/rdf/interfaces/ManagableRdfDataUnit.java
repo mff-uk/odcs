@@ -105,15 +105,15 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	/**
 	 * Allow re-using repository after destroying repository - calling method
 	 * {@link #shutDown()}. After creating new instance is repository
-	 * automatically inicialized. Calling this method has no effect, if is
+	 * automatically initialized. Calling this method has no effect, if is
 	 * repository is still alive.
 	 */
-	public void inicialize();
+	public void initialize();
 
 	/**
 	 * Definitely destroy repository - use after all working in repository.
 	 * Another repository using cause exception. For other using you have to
-	 * create new instance or call method {@link #inicialize() }.
+	 * create new instance or call method {@link #initialize() }.
 	 */
 	public void shutDown();
 
@@ -169,26 +169,7 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 */
 	public String deleteApplicationGraphs();
 
-	/**
-	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
-	 * repository data and return {@link OrderTupleQueryResult} class as result.
-	 *
-	 * This ordered select query don´t have to containt LIMIT nad OFFSET
-	 * keywords.
-	 *
-	 * For no problem behavior check you setting "MaxSortedRows" param in your
-	 * virtuoso.ini file before using. For more info
-	 *
-	 * @see OrderTupleQueryResult class description.
-	 *
-	 * @param orderSelectQuery String representation of SPARQL select query.
-	 * @return {@link OrderTupleQueryResult} representation of ordered select
-	 *         query.
-	 * @throws InvalidQueryException when query is not valid or containst LIMIT
-	 *                               or OFFSET keyword.
-	 */
-	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
-			String orderSelectQuery) throws InvalidQueryException;
+
 
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult

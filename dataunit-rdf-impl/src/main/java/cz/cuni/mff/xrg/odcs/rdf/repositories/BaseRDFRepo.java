@@ -1789,16 +1789,16 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	/**
 	 * Allow re-using repository after destroying repository - calling method
 	 * {@link #shutDown()}. After creating new instance is repository
-	 * automatically inicialized. Calling this method has no effect, if is
-	 * repository is still alive.
+ automatically initialized. Calling this method has no effect, if is
+ repository is still alive.
 	 */
 	@Override
-	public void inicialize() {
+	public void initialize() {
 		if (repository != null && !repository.isInitialized()) {
 			try {
 				repository.initialize();
 			} catch (RepositoryException ex) {
-				logger.debug("Repository can not be inicialized: {}", ex
+				logger.debug("Repository can not be initialized: {}", ex
 						.getMessage());
 			}
 		}

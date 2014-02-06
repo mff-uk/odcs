@@ -4,6 +4,8 @@
  */
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 /**
@@ -12,4 +14,9 @@ import org.openrdf.query.TupleQueryResult;
  */
 public interface OrderTupleQueryResult extends TupleQueryResult {
     
+    @Override
+    public boolean hasNext() throws QueryEvaluationException;
+    
+    @Override
+    public BindingSet next() throws QueryEvaluationException;
 }
