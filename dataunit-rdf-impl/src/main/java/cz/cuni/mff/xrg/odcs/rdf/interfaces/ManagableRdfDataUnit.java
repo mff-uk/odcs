@@ -103,9 +103,17 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	public void setDataGraph(String newStringDataGraph);
 
 	/**
+	 * Allow re-using repository after destroying repository - calling method
+	 * {@link #shutDown()}. After creating new instance is repository
+	 * automatically initialized. Calling this method has no effect, if is
+	 * repository is still alive.
+	 */
+	public void initialize();
+
+	/**
 	 * Definitely destroy repository - use after all working in repository.
 	 * Another repository using cause exception. For other using you have to
-	 * create new instance.
+	 * create new instance or call method {@link #initialize() }.
 	 */
 	public void shutDown();
 

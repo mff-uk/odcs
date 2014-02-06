@@ -118,7 +118,7 @@ public class DebuggingView extends CustomComponent {
 
 	public final void initialize(PipelineExecution exec,
 			DPUInstanceRecord dpu, boolean debug, boolean isFromCanvas) {
-
+		LOG.debug("Initializing...");
 		// set properties
 		this.isFromCanvas = isFromCanvas;
 
@@ -131,10 +131,10 @@ public class DebuggingView extends CustomComponent {
 			// create tables
 			logTable = new LogTable(logSource, logFacade, utils.getPageLength());
 			msgTable = new RecordsTable(msgSource, utils.getPageLength());
+			LOG.debug("Created new Log and Record table");
 		}
 
 		// building require some thing to be set 
-		// like queryView = new RDFQueryView(pipelineExec);
 		this.pipelineExec = exec;
 		
 		// build gui layout 
@@ -154,7 +154,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Builds main layout.
 	 */
-	public final void buildMainLayout() {
+	private void buildMainLayout() {
 
 		mainLayout = new VerticalLayout();
 
@@ -190,6 +190,7 @@ public class DebuggingView extends CustomComponent {
 		});
 		msgTable.setWidth("100%");
 
+		LOG.debug("Add Events tab");
 		tabs.addTab(msgTable, "Events");
 
 		HorizontalLayout optionLine = new HorizontalLayout();
@@ -207,12 +208,14 @@ public class DebuggingView extends CustomComponent {
 		VerticalLayout logLayout = new VerticalLayout();
 		logLayout.addComponent(logTable);
 		logLayout.setSizeFull();
+		LOG.debug("Add Log tab");
 		logsTab = tabs.addTab(logLayout, "Log");
 		
 		browse = new Browse(pipelineExec);
 		if (debugDpu != null) {
 			browse.setDpu(debugDpu);
 		}
+		LOG.debug("Add Browse tab");
 		queryTab = tabs.addTab(browse, "Browse/Query");
 		
 		VerticalLayout options = new VerticalLayout();
@@ -235,6 +238,7 @@ public class DebuggingView extends CustomComponent {
 		fileDownloader.extend(download);
 		options.addComponent(download);
 		options.setMargin(true);
+		LOG.debug("Add Options tab");
 		tabs.addTab(options, "Options");
 
 		mainLayout.setSizeFull();
@@ -258,7 +262,7 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		LOG.trace("Tables refresh start");
+		LOG.debug("Tables refresh start");
 		if (doRefresh) {
 			// refresh data .. 
 			logSource.invalidate();
@@ -267,7 +271,7 @@ public class DebuggingView extends CustomComponent {
 			logTable.refresh(pipelineExec);
 			msgTable.refresh();
 		}
-		LOG.trace("Tables refresh done");
+		LOG.debug("Tables refresh done");
 		
 		// refresh of query View
 		if (isInDebugMode && isRunFinished()) {
@@ -302,6 +306,7 @@ public class DebuggingView extends CustomComponent {
 	 *
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
+		LOG.debug("setting new execution ID = " + execution.getId());
 		this.pipelineExec = execution;
 		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;

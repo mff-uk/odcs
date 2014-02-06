@@ -33,9 +33,9 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	}
 
 	@Override
-	public void configure(byte[] c) throws ConfigException {
+	public void configure(String configString) throws ConfigException {
 		// set configuration for configWrap
-		C newConfig = configWrap.deserialize(c);
+		C newConfig = configWrap.deserialize(configString);
 		if (newConfig == null) {
 			return;
 		}
@@ -49,7 +49,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	}
 
 	@Override
-	public byte[] getConf() throws ConfigException {
+	public String getConf() throws ConfigException {
 		return configWrap.serialize(config);
 	}
 

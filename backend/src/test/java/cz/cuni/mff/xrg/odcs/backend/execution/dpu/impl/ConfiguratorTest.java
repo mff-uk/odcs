@@ -60,7 +60,7 @@ public class ConfiguratorTest {
 	 */
 	@Test
 	public void configurableTest() throws ConfigException {	
-		byte[] rawConfig = "<a/>".getBytes();
+		String rawConfig = "<a/>";
 		
 		DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
 		when(dpu.getRawConf()).thenReturn(rawConfig);		

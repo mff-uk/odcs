@@ -38,14 +38,14 @@ public class ConfigWrapTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void serialisationNull() throws ConfigException {
-		byte[] serialized = configWrap.serialize(null);
+		String serialized = configWrap.serialize(null);
 		assertNull(serialized);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void serialisation() throws ConfigException {
-		byte[] serialized = configWrap.serialize(configObject);
+		String serialized = configWrap.serialize(configObject);
 	
 		DPUConfigObject newObject = 
 				configWrap.deserialize(serialized);

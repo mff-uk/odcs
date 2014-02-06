@@ -63,13 +63,13 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 */
 	public FileLoaderDialog() {
 		super(FileLoaderConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 
-	private void inicialize() {
+	private void initialize() {
 		ex = new Validator.InvalidValueException("Valid");
 	}
 

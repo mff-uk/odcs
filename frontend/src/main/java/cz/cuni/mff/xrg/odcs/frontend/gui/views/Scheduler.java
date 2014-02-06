@@ -75,10 +75,10 @@ public class Scheduler extends ViewComponent {
 	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-	static String[] visibleCols = new String[]{"commands", "pipeline", "rule",
-		"last", "next", "duration", "status", };
-	static String[] headers = new String[]{"Actions", "Pipeline", "Rule",
-		"Last", "Next", "Last run time", "Status"};
+	static String[] visibleCols = new String[]{"commands", "status", "pipeline", "rule",
+		"last", "next", "duration"};
+	static String[] headers = new String[]{"Actions", "Status", "Pipeline", "Rule",
+		"Last", "Next", "Last run time"};
 	int style = DateFormat.MEDIUM;
 	static String filter;
 	private Schedule scheduleDel;
@@ -197,7 +197,7 @@ public class Scheduler extends ViewComponent {
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
-		schedulerTable.setColumnWidth("commands", 150);
+		schedulerTable.setColumnWidth("commands", 160);
 		schedulerTable.setColumnWidth("status", 42);
 		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
 		schedulerTable.setColumnExpandRatio("pipeline", 1);
@@ -412,6 +412,7 @@ public class Scheduler extends ViewComponent {
 			Property propStatus = source.getItem(itemId).getItemProperty("status");
 			final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
 			HorizontalLayout layout = new HorizontalLayout();
+			layout.setSpacing(true);
 
 			if (propStatus.getType().equals(Boolean.class)) {
 				boolean testStatus = (Boolean) propStatus.getValue();

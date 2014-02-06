@@ -35,7 +35,10 @@ class DPURecordWrap {
 	 */
 	private AbstractConfigDialog<DPUConfigObject> configDialog = null;
 
-	private boolean isTemplate;
+	/**
+	 * True if represents the template.
+	 */
+	private final boolean isTemplate;
 	
 	protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
 		this.dpuRecord = dpuRecord;
@@ -54,7 +57,8 @@ class DPURecordWrap {
 			return;
 		}
 		try {
-			dpuRecord.setRawConf(configDialog.getConfig());
+			final String config = configDialog.getConfig();
+			dpuRecord.setRawConf(config);
 		} catch (ConfigException e) {
 			throw e;
 		} catch (Throwable e) {
@@ -154,7 +158,6 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
-		byte[] conf = dpuRecord.getRawConf();
-		configDialog.setConfig(conf);
+		configDialog.setConfig(dpuRecord.getRawConf());
 	}	
 }

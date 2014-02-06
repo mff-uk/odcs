@@ -1787,32 +1787,41 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
+	 * Allow re-using repository after destroying repository - calling method
+	 * {@link #shutDown()}. After creating new instance is repository
+ automatically initialized. Calling this method has no effect, if is
+ repository is still alive.
+	 */
+	@Override
+	public void initialize() {
+		if (repository != null && !repository.isInitialized()) {
+			try {
+				repository.initialize();
+			} catch (RepositoryException ex) {
+				logger.debug("Repository can not be initialized: {}", ex
+						.getMessage());
+			}
+		}
+	}
+
+	/**
 	 * Definitely destroy repository - use after all working in repository.
 	 * Another repository using cause exception. For other using you have to
 	 * create new instance.
 	 */
 	@Override
 	public void shutDown() {
-
-		Thread destroyThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					closeConnection();
-					repository.shutDown();
-					logger.debug("Repository with data graph <" + getDataGraph()
-							.stringValue() + "> destroyed SUCCESSFUL.");
-				} catch (RepositoryException ex) {
-					hasBrokenConnection = true;
-					logger.debug(
-							"Repository was not destroyed - potencial problems with locks .");
-					logger.debug(ex.getMessage());
-				}
-			}
-		});
-
-		destroyThread.setDaemon(true);
-		destroyThread.start();
+		try {
+			closeConnection();
+			repository.shutDown();
+			logger.debug("Repository with data graph <" + getDataGraph()
+					.stringValue() + "> destroyed SUCCESSFUL.");
+		} catch (RepositoryException ex) {
+			hasBrokenConnection = true;
+			logger.debug(
+					"Repository was not destroyed - potencial problems with locks .");
+			logger.debug(ex.getMessage());
+		}
 	}
 
 	/**
