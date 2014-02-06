@@ -6,6 +6,8 @@ import com.vaadin.data.util.filter.IsNull;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.BrowserWindowResizeListener;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
@@ -90,14 +92,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 	@Override
 	public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
+		isDetailShown = true;
 		presenter.stopRefreshEventHandler();
 		// secure existance of detail layout
-		if (logLayout == null) {
-			buildExecutionDetail(execution);
-		} else {
-			// will just set the debug view content
-			buildDebugView(execution);
-		}
+//		if (logLayout == null) {
+//			buildExecutionDetail(execution);
+//		} 
+		// will just set the debug view content
+		buildDebugView(execution);
 		// no DPU specified
 		debugView.setExecution(execution, null);
 		//debugView.setDisplay(detailDataObject);
@@ -296,8 +298,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		logLayout.setWidth("100%");
 		//logLayout.setHeight("100%");
 		//debugView = new DebuggingView();
+		
 		// build the debug view
-		buildDebugView(execution);
+		//Recursive call
+		//buildDebugView(execution);
 
 		logLayout.addComponent(debugView);
 		logLayout.setExpandRatio(debugView, 1.0f);
@@ -346,7 +350,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		if (!debugView.isInitialized()) {
 			debugView.initialize(execution, null, execution.isDebugging(), false);
 		} else {
-			debugView.setExecution(execution, null);
+			//It is done later...
+			//debugView.setExecution(execution, null);
 		}
 	}
 
