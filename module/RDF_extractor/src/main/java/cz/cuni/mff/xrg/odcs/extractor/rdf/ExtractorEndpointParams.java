@@ -10,6 +10,23 @@ import java.util.List;
  */
 public final class ExtractorEndpointParams {
 
+	/**
+	 * Default string value of query request parameter for SPARQL extractor
+	 */
+	public static String DEFAULT_QUERY_PARAM = "query";
+
+	/**
+	 * Default string value of default graph request parameter for SPARQL
+	 * extractor
+	 */
+	public static String DEFAULT_GRAPH_PARAM = "default-graph-uri";
+
+	/**
+	 * Default string value of named graph request parameter for SPARQL
+	 * extractor
+	 */
+	public static String DEFAULT_NAMED_GRAPH_PARAM = "named-graph-uri";
+
 	private String queryParam;
 
 	private String defaultGraphParam;
@@ -26,9 +43,9 @@ public final class ExtractorEndpointParams {
 	 * Create SPARQL extractor default setting for VIRTUOSO endpoint.
 	 */
 	public ExtractorEndpointParams() {
-		this.queryParam = "query";
-		this.defaultGraphParam = "default-graph-uri";
-		this.namedGraphParam = "named-graph-uri";
+		this.queryParam = DEFAULT_GRAPH_PARAM;
+		this.defaultGraphParam = DEFAULT_GRAPH_PARAM;
+		this.namedGraphParam = DEFAULT_NAMED_GRAPH_PARAM;
 		this.defaultGraphURI = new LinkedList<>();
 		this.namedGraphURI = new LinkedList<>();
 		this.requestType = ExtractorRequestType.POST_URL_ENCODER;
