@@ -134,6 +134,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private CheckBox validateDataBefore;
 
+	private PostItem last;
+
 	/**
 	 * Basic constructor.
 	 */
@@ -193,6 +195,20 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		}
 
 		return "";
+	}
+
+	private PostItem getPostItem(String desc) {
+		if (postItems.isEmpty()) {
+			mapPostItems();
+		}
+
+		for (PostItem item : postItems) {
+			if (item.getDescription().equals(desc)) {
+				return item;
+			}
+		}
+
+		return last;
 	}
 
 	/**
@@ -324,6 +340,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		postTypeOption.addItem(second.getDescription());
 
 		postTypeOption.setValue(first.getDescription());
+		last = first;
 	}
 
 	private void mapGraphItems() {
@@ -742,6 +759,26 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		postTypeOption.setWidth("-1px");
 		postTypeOption.setHeight("-1px");
 		postTypeOption.setMultiSelect(false);
+		postTypeOption.addValueChangeListener(
+				new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				if (last != null) {
+					last.setQueryParam(queryParamField.getValue());
+					last.setDefaultGraphParam(defaultGraphParamField.getValue());
+				}
+
+				String desriptionItem = (String) postTypeOption.getValue();
+				PostItem actualItem = getPostItem(desriptionItem);
+
+				if (last != actualItem) {
+					queryParamField.setValue(actualItem.getQueryParam());
+					defaultGraphParamField.setValue(actualItem
+							.getDefaultGraphParam());
+					last = actualItem;
+				}
+			}
+		});
 
 		verticalLayoutProtocol.addComponent(postTypeOption);
 
@@ -1208,9 +1245,15 @@ class PostItem {
 
 	private String description;
 
+	private String queryParam;
+
+	private String defaultGraphParam;
+
 	public PostItem(LoaderPostType postType, String description) {
 		this.postType = postType;
 		this.description = description;
+		this.queryParam = LoaderEndpointParams.DEFAULT_QUERY_PARAM;
+		this.defaultGraphParam = LoaderEndpointParams.DEFAULT_GRAPH_PARAM;
 	}
 
 	public LoaderPostType getPostType() {
@@ -1219,6 +1262,22 @@ class PostItem {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setQueryParam(String queryParam) {
+		this.queryParam = queryParam;
+	}
+
+	public void setDefaultGraphParam(String defaultGraphParam) {
+		this.defaultGraphParam = defaultGraphParam;
+	}
+
+	public String getQueryParam() {
+		return queryParam;
+	}
+
+	public String getDefaultGraphParam() {
+		return defaultGraphParam;
 	}
 }
 
