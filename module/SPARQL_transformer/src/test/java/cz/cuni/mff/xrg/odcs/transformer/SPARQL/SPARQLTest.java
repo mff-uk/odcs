@@ -8,8 +8,6 @@ import org.openrdf.rio.RDFFormat;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SPARQLTest {
 
@@ -26,9 +24,8 @@ public class SPARQLTest {
 	public void constructAllTest() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
-		
-		List<String> SPARQL_Update_Query = new ArrayList<>(1);
-		SPARQL_Update_Query.add("CONSTRUCT {?s ?p ?o} where {?s ?p ?o }");
+
+		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
 		boolean isConstructType = true;
 
 		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
@@ -63,12 +60,11 @@ public class SPARQLTest {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
 		boolean isConstructType = true;
-		List<String> SPARQL_Update_Query = new ArrayList<>(1);
-		SPARQL_Update_Query.add("CONSTRUCT {?s ?p ?o} where {?s ?p ?o }");
-		
+		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+
 		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
 				SPARQL_Update_Query, isConstructType);
-		
+
 		trans.configureDirectly(config);
 
 		// prepare test environment
