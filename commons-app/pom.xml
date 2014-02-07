@@ -299,15 +299,7 @@
         
     <build>
         
-         <!-- add license from LICENSE.md to the generated JAR file -->
-        <resources>
-            <resource>
-                <directory>${basedir}</directory> <!-- this is default dir-->
-                <includes>
-                  <include>LICENSE.md</include>
-                </includes>
-            </resource>
-         </resources>
+       
          
         <plugins>
             <plugin>
@@ -363,7 +355,18 @@
                                         <include>sequences.sql</include>
                                     </includes>
                                 </resource>
-                            </resources>              
+                                <resource>
+                                    <directory>${basedir}</directory> <!-- this is default dir-->
+                                    <includes>
+                                      <include>LICENSE.md</include>
+                                    </includes>
+                                </resource>
+                            </resources>  
+                              <!-- add license from LICENSE.md to the generated JAR file -->
+        
+         
+        
+                                                    
                         </configuration>            
                     </execution>
                 </executions>
