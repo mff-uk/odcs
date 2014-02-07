@@ -43,7 +43,7 @@ public final class ExtractorEndpointParams {
 	 * Create SPARQL extractor default setting for VIRTUOSO endpoint.
 	 */
 	public ExtractorEndpointParams() {
-		this.queryParam = DEFAULT_GRAPH_PARAM;
+		this.queryParam = DEFAULT_QUERY_PARAM;
 		this.defaultGraphParam = DEFAULT_GRAPH_PARAM;
 		this.namedGraphParam = DEFAULT_NAMED_GRAPH_PARAM;
 		this.defaultGraphURI = new LinkedList<>();
