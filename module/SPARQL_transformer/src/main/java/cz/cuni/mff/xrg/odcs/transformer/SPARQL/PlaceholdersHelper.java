@@ -1,14 +1,22 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 
 /**
  * It allows for SPARQL CONSTRUCT queries to replace "graph ?g_XX" (XX is DPU
@@ -57,12 +65,57 @@ public class PlaceholdersHelper {
 	 */
 	private DPUContext context;
 
+	private List<RDFDataUnit> usedRepositories = new LinkedList<>();
+
 	public PlaceholdersHelper() {
 		this.context = null;
 	}
 
 	public PlaceholdersHelper(DPUContext context) {
 		this.context = context;
+	}
+
+	/**
+	 * @return true if some of repository in collection of {@link RDFDataUnit}
+	 *         need for 'special' SPARQL contruct query based on DPU name is
+	 *         type of {@link DataUnitType#RDF_Local}, false otherwise. If
+	 *         method returns true, is necessary to create temp
+	 *         repository(calling method {@link #getExecutableTempRepository()},
+	 *         where this 'special' SPARQL contruct can be executed.
+	 */
+	public boolean needExecutableRepository() {
+		boolean hasLocal = false;
+		for (RDFDataUnit nextRepository : usedRepositories) {
+			if (nextRepository.getType() == DataUnitType.RDF_Local) {
+				hasLocal = true;
+				break;
+			}
+		}
+		return hasLocal;
+	}
+
+	/**
+	 * Create new instance of {@link ManagableRdfDataUnit} where 'special'
+	 * SPARQL contruct based on DPU name can be executed. Need only if method
+	 * {@link #needExecutableRepository()} returns TRUE;
+	 *
+	 * @return new instance of {@link ManagableRdfDataUnit} where 'special'
+	 *         SPARQL contruct based on DPU name can be executed. Need only if
+	 *         method {@link #needExecutableRepository()} returns TRUE;
+	 */
+	public ManagableRdfDataUnit getExecutableTempRepository() {
+		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
+				"executable");
+		for (RDFDataUnit repository : usedRepositories) {
+			URI dataGraph = repository.getDataGraph();
+			LazyTriples iterator = repository.getTriplesIterator();
+
+			while (iterator.hasNextTriples()) {
+				List<Statement> triples = iterator.getTriples();
+				tempRepository.addStatementsToGraph(triples, dataGraph);
+			}
+		}
+		return tempRepository;
 	}
 
 	/**
@@ -143,15 +196,17 @@ public class PlaceholdersHelper {
 
 			for (RDFDataUnit input : inputs) {
 				if (input.getDataUnitName().equals(next.getDPUName())) {
-
+					usedRepositories.add(input);
 					//set RIGHT data graph for DPU
 					next.setGraphName(input.getDataGraph().toString());
 					isReplased = true;
+
 					break;
 				}
 			}
 
 			if (!isReplased) {
+				usedRepositories.clear();
 				String DPUName = next.getDPUName();
 				final String message = "Graph for DPU name " + DPUName + " was not replased";
 
