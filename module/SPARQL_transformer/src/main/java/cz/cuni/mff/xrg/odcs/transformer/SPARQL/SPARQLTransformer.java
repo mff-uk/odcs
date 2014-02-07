@@ -63,7 +63,7 @@ public class SPARQLTransformer
 		for (RDFDataUnit repository : inputs) {
 			if (repository != null) {
 				URI dataGraphURI = repository.getDataGraph();
-				dataSet.addDefaultGraph(dataGraphURI);
+				dataSet.addNamedGraph(dataGraphURI);
 			}
 		}
 		return dataSet;
@@ -84,52 +84,93 @@ public class SPARQLTransformer
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
 
-		// TODO use multiple SPARQL queries instead of first one
-		final String updateQuery = config.getSPARQLUpdateQuery() == null
-				? null : config.getSPARQLUpdateQuery().get(0);
-		final boolean isConstructQuery = config.isConstructType();
+		//GET ALL possible inputs
+		List<RDFDataUnit> inputs = getInputs();
 
-		if (updateQuery == null) {
+		final List<SPARQLQueryPair> queryPairs = config.getQueryPairs();
+
+		if (queryPairs == null) {
 			context.sendMessage(MessageType.ERROR,
-					"Query for SPARQL transformer is null value");
-		} else if (updateQuery.trim().isEmpty()) {
-			context.sendMessage(MessageType.ERROR,
-					"Query for SPARQL transformer is empty",
-					"SPARQL transformer must constains text of SPARQL query");
+					"All queries for SPARQL transformer are null values");
+		} else {
+			if (queryPairs.isEmpty()) {
+				context.sendMessage(MessageType.ERROR,
+						"Queries for SPARQL transformer are empty",
+						"SPARQL transformer must constains at least one SPARQL query");
+			}
 		}
 
-		try {
-			if (isConstructQuery) {
+		//if merge input - depend on type of quries.
+		boolean isFirstUpdateQuery = true;
 
-				//GET ALL inputs
-				List<RDFDataUnit> inputs = getInputs();
+		int queryCount = 0;
 
-				//creating newConstruct replaced query
-				PlaceholdersHelper placeHolders = new PlaceholdersHelper(context);
-				String constructQuery = placeHolders.getContructQuery(
-						updateQuery,
-						inputs);
+		for (SPARQLQueryPair nextPair : queryPairs) {
 
-				//execute given construct query
-				Dataset dataSet = createGraphDataSet(inputs);
-				Graph graph = intputDataUnit.executeConstructQuery(
-						constructQuery, dataSet);
-				((ManagableRdfDataUnit)outputDataUnit).addTriplesFromGraph(graph);
+			queryCount++;
+			String updateQuery = nextPair.getSPARQLQuery();
+			boolean isConstructQuery = nextPair.isConstructType();
 
-			} else {
-				((ManagableRdfDataUnit)outputDataUnit).merge(intputDataUnit);
-				outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
+			if (updateQuery == null) {
+				context.sendMessage(MessageType.ERROR,
+						"Query n." + queryCount + " for SPARQL transformer is null value");
+			} else if (updateQuery.trim().isEmpty()) {
+				context.sendMessage(MessageType.ERROR,
+						"Query n." + queryCount + " for SPARQL transformer is empty",
+						"SPARQL transformer must constains text of SPARQL query");
 			}
 
-		} catch (RDFDataUnitException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
-					.fillInStackTrace().toString());
+			try {
+				if (isConstructQuery) {
+					isFirstUpdateQuery = false;
+					//creating newConstruct replaced query
+					PlaceholdersHelper placeHolders = new PlaceholdersHelper(
+							context);
+					String constructQuery = placeHolders.getContructQuery(
+							updateQuery,
+							inputs);
+
+					//execute given construct query
+					Dataset dataSet = createGraphDataSet(inputs);
+
+					if (placeHolders.needExecutableRepository()) {
+						ManagableRdfDataUnit tempDataUnit = placeHolders
+								.getExecutableTempRepository();
+						Graph graph = tempDataUnit.executeConstructQuery(
+								constructQuery, dataSet);
+
+						((ManagableRdfDataUnit) outputDataUnit)
+								.addTriplesFromGraph(graph);
+
+						tempDataUnit.delete();
+
+					} else {
+						Graph graph = intputDataUnit.executeConstructQuery(
+								constructQuery, dataSet);
+						((ManagableRdfDataUnit) outputDataUnit)
+								.addTriplesFromGraph(
+								graph);
+					}
+
+				} else {
+					if (isFirstUpdateQuery) {
+						((ManagableRdfDataUnit) outputDataUnit)
+								.merge(intputDataUnit);
+						isFirstUpdateQuery = false;
+					}
+					outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
+				}
+
+			} catch (RDFDataUnitException ex) {
+				context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+						.fillInStackTrace().toString());
+			}
 		}
 
 		final long beforeTriplesCount = intputDataUnit.getTripleCount();
 		final long afterTriplesCount = outputDataUnit.getTripleCount();
-		LOG.info("Transformed {} triples into {}", beforeTriplesCount,
-				afterTriplesCount);
+		LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
+				queryCount, beforeTriplesCount, afterTriplesCount);
 	}
 
 	@Override
