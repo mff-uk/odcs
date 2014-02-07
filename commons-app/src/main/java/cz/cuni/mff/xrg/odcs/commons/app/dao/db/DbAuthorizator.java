@@ -10,7 +10,7 @@ import javax.persistence.criteria.Predicate;
  * @author Jan Vojt
  * @author Petyr
  */
-public interface Authorizator {
+public interface DbAuthorizator {
         
     /**
      * Return authorization {@link Predicat}.

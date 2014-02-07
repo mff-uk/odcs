@@ -22,7 +22,7 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	protected EntityManager em;
 
     @Autowired(required = false)
-    protected Authorizator authorizator;
+    protected DbAuthorizator authorizator;
     
     @Autowired(required = false)
     protected List<FilterTranslator> translators;	

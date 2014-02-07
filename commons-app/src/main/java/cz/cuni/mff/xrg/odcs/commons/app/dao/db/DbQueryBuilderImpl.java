@@ -49,9 +49,9 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
     private final SortInformation sortInfo = new SortInformation();
     
     /**
-     * Authorizator.
+     * DbAuthorizator.
      */
-    private final Authorizator authorizator;
+    private final DbAuthorizator authorizator;
     
     /**
      * Translator that can be used to translate given filter.
@@ -64,7 +64,7 @@ class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
 	private final Set<String> fetchList = new HashSet<>();
 	
     DbQueryBuilderImpl(EntityManager entityManager, Class<T> entityClass, 
-        Authorizator authorizator, List<FilterTranslator> filterTranslators) {
+        DbAuthorizator authorizator, List<FilterTranslator> filterTranslators) {
         this.entityManager = entityManager;
         this.entityClass = entityClass;
         this.authorizator = authorizator;

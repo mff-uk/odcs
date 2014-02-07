@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Petyr
  * @author Jan Vojt
  */
-class AuthorizatorImpl implements Authorizator {
+class DbAuthorizatorImpl implements DbAuthorizator {
 
     @Autowired(required = false)
     private AuthenticationContext authCtx;

@@ -99,7 +99,7 @@
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl" />
     
     <!-- authorizator required by dao -->
-    <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.AuthorizatorImpl" />
+    <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizatorImpl" />
     
     <!-- translator for ODCS filters -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator" />
