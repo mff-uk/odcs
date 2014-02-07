@@ -12,33 +12,41 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  */
 public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
-	private List<String> SPARQL_Update_Query;
+	private List<SPARQLQueryPair> queryPairs;
 
-	private boolean isConstructType;
+	private String SPARQL_Update_Query;
+
+	boolean isConstructType;
 
 	public SPARQLTransformerConfig() {
-		this.SPARQL_Update_Query = new LinkedList<>();
-		this.isConstructType = false;
-		
-
+		this.queryPairs = new LinkedList<>();
 	}
 
-	public SPARQLTransformerConfig(List<String> SPARQL_Update_Query,
-			boolean isConstructType) {
-		this.SPARQL_Update_Query = SPARQL_Update_Query;
-		this.isConstructType = isConstructType;
+	public SPARQLTransformerConfig(String query, boolean isContructType) {
+		this.queryPairs = new LinkedList<>();
+		this.queryPairs.add(new SPARQLQueryPair(query, isContructType));
 	}
 
-	public List<String> getSPARQLUpdateQuery() {
-		return SPARQL_Update_Query;
+	public SPARQLTransformerConfig(List<SPARQLQueryPair> queryPairs) {
+		this.queryPairs = queryPairs;
 	}
 
-	public boolean isConstructType() {
-		return isConstructType;
+	public List<SPARQLQueryPair> getQueryPairs() {
+		return queryPairs;
 	}
 
 	@Override
 	public boolean isValid() {
-		return SPARQL_Update_Query != null;
+		return queryPairs != null;
+	}
+
+	@Override
+	public void onDeserialize() {
+		if (queryPairs == null) {
+			queryPairs = new LinkedList<>();
+		}
+		if (SPARQL_Update_Query != null) {
+			queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query, isConstructType));
+		}
 	}
 }
