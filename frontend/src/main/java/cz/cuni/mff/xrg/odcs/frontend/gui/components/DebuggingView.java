@@ -262,16 +262,16 @@ public class DebuggingView extends CustomComponent {
 			iconStatus.setDescription(pipelineExec.getStatus().name());
 		}
 
-		LOG.debug("Tables refresh start");
 		if (doRefresh) {
+			LOG.debug("Tables refresh start");
 			// refresh data .. 
 			logSource.invalidate();
 			msgSource.invalidate();
 			// refresh tables
 			logTable.refresh(pipelineExec);
 			msgTable.refresh();
+			LOG.debug("Tables refresh done");
 		}
-		LOG.debug("Tables refresh done");
 		
 		// refresh of query View
 		if (isInDebugMode && isRunFinished()) {

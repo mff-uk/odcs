@@ -180,6 +180,16 @@
 
     </dependencies>
 
+  <!-- define license -->
+      <licenses>
+          <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+            <!-- https://maven.apache.org/pom.html#Licenses -->
+          </license>
+      </licenses>
+        
     <build>
         <finalName>odcleanstore</finalName>
         <plugins>
@@ -292,6 +302,16 @@
             <resource>
                 <directory>src/main/java/cz/cuni/mff/xrg/odcs/frontend/gui/components/pipelinecanvas</directory>
             </resource>
+            
+                    <!-- add license from LICENSE.md to the generated JAR file -->
+      
+            <resource>
+                <directory>${basedir}</directory> <!-- this is default dir-->
+                <includes>
+                  <include>LICENSE.md</include>
+                </includes>
+            </resource>
+         
         </resources>
 
     </build>

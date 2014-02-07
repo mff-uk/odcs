@@ -198,9 +198,13 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
 		schedulerTable.setColumnWidth("commands", 160);
-		schedulerTable.setColumnWidth("status", 42);
+		schedulerTable.setColumnWidth("status", 39);
+		schedulerTable.setColumnWidth("last", 115);
+		schedulerTable.setColumnWidth("next", 115);
+		schedulerTable.setColumnWidth("duration", 77);
 		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
-		schedulerTable.setColumnExpandRatio("pipeline", 1);
+		
+		//schedulerTable.setColumnExpandRatio("pipeline", 1);
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
@@ -344,7 +348,9 @@ public class Scheduler extends ViewComponent {
 //			} else {
 //				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
 //			}
-			result.getContainerProperty(id, "pipeline").setValue(item.getPipeline().getName());
+			String pipeline = item.getPipeline().getName();
+			pipeline = pipeline.length() > 158 ? pipeline.substring(0, 156) + "..." : pipeline;
+			result.getContainerProperty(id, "pipeline").setValue(pipeline);
 			String description = StringUtils.abbreviate(item.getDescription(), Utils.getColumnMaxLenght());
 //			result.getContainerProperty(id, "description").setValue(description);
 

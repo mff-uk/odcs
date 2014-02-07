@@ -18,6 +18,7 @@ public enum ConfigProperty {
 	BACKEND_DEFAULTRDF("backend.defaultRdf"),
 
 	EXECUTION_LOG_HISTORY("exec.log.history"),
+	EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
 	
 	// namespaces for virtuoso configuration
 	RDBMS("database.sql"),

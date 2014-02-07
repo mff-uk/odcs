@@ -101,7 +101,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		tablePipelines.setColumnWidth("actions", 324);
 		tablePipelines.setColumnWidth("duration", 80);
 		tablePipelines.setColumnWidth("lastExecStatus", 68);
-		tablePipelines.setColumnExpandRatio("name", 1);
+		tablePipelines.setColumnWidth("lastExecTime", 115);
+		//tablePipelines.setColumnExpandRatio("name", 1);
 		tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
 		tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		tablePipelines.setVisibleColumns();
