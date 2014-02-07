@@ -38,23 +38,6 @@ import org.openrdf.rio.RDFParser;
 public interface RDFDataUnit extends DataUnit {
 
 	/**
-	 * Mode in which the application works with the target SPARQL endpoint. Used
-	 * to distinguish whether param query or update should be used when POSTing
-	 * to target endpoint
-	 */
-	public enum SPARQL_ENDPOINT_MODE {
-
-		/**
-		 * SPARQL Query is executed
-		 */
-		QUERY,
-		/**
-		 * SPARQL Update QUery is executed
-		 */
-		UPDATE
-	}	
-	
-	/**
 	 * Add one RDF triple (statement) to the repository. Subject, predicate,
 	 * object may be prepare by the corresponding methods createURI,
 	 * createBlankNode, or createLiteral
@@ -198,20 +181,19 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
-        /**
+	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param filePath Path to file, where RDF data will be saved.
+	 * @param filePath   Path to file, where RDF data will be saved.
 	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 * RDF/XML,etc.)
+	 *                   RDF/XML,etc.)
 	 * @throws CannotOverwriteFileException when file is protected for
-	 * overwritting.
-	 * @throws RDFException when loading data to file fail.
+	 *                                      overwritting.
+	 * @throws RDFException                 when loading data to file fail.
 	 */
 	public void loadToFile(String filePath,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
-        
-        
+
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
 	 *
@@ -235,8 +217,8 @@ public interface RDFDataUnit extends DataUnit {
 	public File executeSelectQuery(String selectQuery,
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
-	
-        /**
+
+	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
 	 * repository data and return {@link OrderTupleQueryResult} class as result.
 	 *
@@ -256,7 +238,7 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException;
-        
+
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -335,7 +317,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param targetRepo goal repository where RDF data are added.
 	 */
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
-	
 
 	/**
 	 *
@@ -382,14 +363,14 @@ public interface RDFDataUnit extends DataUnit {
 			String path, String suffix,
 			String baseURI,
 			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
-	
+
 	/**
 	 * Return URI representation of graph where RDF data are stored.
 	 *
 	 * @return graph with stored data as URI.
 	 */
-	public URI getDataGraph();	
-	
+	public URI getDataGraph();
+
 	/**
 	 * Create RDF parser for given RDF format and set RDF handler where are data
 	 * insert to.
@@ -403,21 +384,21 @@ public interface RDFDataUnit extends DataUnit {
 	/**
 	 * Removes all RDF data from repository.
 	 */
-	public void cleanAllData();	
-	
+	public void cleanAllData();
+
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
-	 * @param filePath Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 * RDF/XML,etc.)
+	 * @param filePath         Path to file, where RDF data will be saved.
+	 * @param formatType       Type of RDF format for saving data (example:
+	 *                         TURTLE, RDF/XML,etc.)
 	 * @param canFileOverWrite boolean value, if existing file can be
-	 * overwritten.
-	 * @param isNameUnique boolean value, if every pipeline execution has his
-	 * unique name.
+	 *                         overwritten.
+	 * @param isNameUnique     boolean value, if every pipeline execution has
+	 *                         his unique name.
 	 * @throws CannotOverwriteFileException when file is protected for
-	 * overwritting.
-	 * @throws RDFException when loading data to file fail.
+	 *                                      overwritting.
+	 * @throws RDFException                 when loading data to file fail.
 	 */
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
@@ -428,17 +409,27 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return Count of parts as split data in reposioty by defined chunkSize .
 	 */
 	public long getPartsCount(long chunkSize);
-	
+
 	/**
 	 * Method called after restarting after DB. Calling method
 	 * {@link #getConnection()} provides to get new instance of connection.
 	 */
 	public void restartConnection();
-	
+
 	/**
 	 *
 	 * @return dataset for graphs set in reposiotory as default.
 	 */
-	public Dataset getDataSet();	
-	
+	public Dataset getDataSet();
+
+	/**
+	 * Add statements to defined graph name. Data in this graph could be used
+	 * only in SPARQL queries for named graph cause. If graph graph is different
+	 * from default, others methods don`t know anything about here stored
+	 * triples.
+	 *
+	 * @param statements connection of statements you want to add
+	 * @param graphName  Graph name where statements are added.
+	 */
+	public void addStatementsToGraph(List<Statement> statements, URI graphName);
 }
