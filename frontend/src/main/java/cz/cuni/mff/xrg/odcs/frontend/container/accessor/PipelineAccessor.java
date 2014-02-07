@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Locale;
 import org.slf4j.Logger;
@@ -158,7 +159,8 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 				LOG.warn("The start time for execuiton id: {} is null", latestExec.getId());
 				return null;
 			}			
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+			SimpleDateFormat df = new SimpleDateFormat("d.M.yyyy H:mm:ss");
+			//DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
 			return df.format(latestExec.getStart());
 		} else {
 			return null;

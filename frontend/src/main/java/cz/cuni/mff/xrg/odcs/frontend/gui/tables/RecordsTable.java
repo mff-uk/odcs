@@ -62,6 +62,7 @@ public class RecordsTable extends CustomComponent {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
 		messageTable.setSelectable(true);
+		messageTable.setImmediate(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override

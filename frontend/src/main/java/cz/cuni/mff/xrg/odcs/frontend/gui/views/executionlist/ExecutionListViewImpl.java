@@ -413,10 +413,12 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
 
-		//executionTable.setColumnWidth("schedule", 32);
-		//executionTable.setColumnWidth("status", 42);
-		//executionTable.setColumnWidth("isDebugging", 36);
-		executionTable.setColumnExpandRatio("pipeline.name", 1);
+		executionTable.setColumnWidth("schedule", 32);
+		executionTable.setColumnWidth("status", 39);
+		executionTable.setColumnWidth("isDebugging", 36);
+		executionTable.setColumnWidth("duration", 53);
+		executionTable.setColumnWidth("start", 115);
+		//executionTable.setColumnExpandRatio("pipeline.name", 1);
 		//Suitable if no more than 3 buttons are available at the same time, which is true in current version.
 		executionTable.setColumnWidth("actions", 160);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
