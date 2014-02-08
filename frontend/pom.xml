@@ -305,12 +305,12 @@
             
                     <!-- add license from LICENSE.md to the generated JAR file -->
       
-            <resource>
-                <directory>${basedir}</directory> <!-- this is default dir-->
+<!--            <resource>
+                <directory>${basedir}</directory>  this is default dir
                 <includes>
                   <include>LICENSE.md</include>
                 </includes>
-            </resource>
+            </resource>-->
          
         </resources>
 
