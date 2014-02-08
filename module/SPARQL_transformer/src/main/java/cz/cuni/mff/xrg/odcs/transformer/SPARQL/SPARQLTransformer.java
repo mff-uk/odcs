@@ -63,6 +63,7 @@ public class SPARQLTransformer
 		for (RDFDataUnit repository : inputs) {
 			if (repository != null) {
 				URI dataGraphURI = repository.getDataGraph();
+				dataSet.addDefaultGraph(dataGraphURI);
 				dataSet.addNamedGraph(dataGraphURI);
 			}
 		}
