@@ -94,7 +94,6 @@ public class AddQueryGraphsTest {
 	private void compareQueries(String originalQuery, String expectedQuery) {
 
 		String returnedQuery = repository.AddGraphToUpdateQuery(originalQuery);
-		System.out.println("RETURNED:\n" + returnedQuery + "AAAAAAAAAAAAA");
 
 		boolean areSame = expectedQuery.equals(returnedQuery);
 		assertTrue("Queries are not SAME", areSame);
