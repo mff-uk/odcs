@@ -1,12 +1,14 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.util.Collection;
 
 /**
- * Represent a directory from {@link FileDataUnit}.
+ * Represent a directory from {@link FileDataUnit}. The sample how to 
+ * iterate over directory content is in documentation for {@link FileDataUnit}.
  *
  * @author Petyr
  */
@@ -22,7 +24,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return Null if given name is used by already existing directory.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
-	public FileHandler addNewFile(String name) throws DataUnitException;
+	FileHandler addNewFile(String name) throws DataUnitException;
 
 	/**
 	 * Add existing file to the directory. In every case the file of same name
@@ -41,7 +43,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return Null if given name is used by already existing directory.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
-	public FileHandler addExistingFile(File file, OptionsAdd options)
+	FileHandler addExistingFile(File file, OptionsAdd options)
 			throws DataUnitException;
 
 	/**
@@ -54,7 +56,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return Null if given name is used by already existing file.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
-	public DirectoryHandler addNewDirectory(String name) throws DataUnitException;
+	DirectoryHandler addNewDirectory(String name) throws DataUnitException;
 
 	/**
 	 * Add existing directory recursively. The semantic is similar to the
@@ -66,7 +68,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return Null if given name is used by already existing file.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
-	public DirectoryHandler addExistingDirectory(File directory, OptionsAdd options)
+	DirectoryHandler addExistingDirectory(File directory, OptionsAdd options)
 			throws DataUnitException;
 
 	/**
@@ -78,7 +80,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return
 	 */
 	@Override
-	public boolean add(Handler e);
+	boolean add(Handler e);
 
 	/**
 	 * Based on given handler type just recall 
@@ -91,7 +93,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @param options
 	 * @return True if the handler has been added.
 	 */
-	public boolean add(Handler e, OptionsAdd options);
+	boolean add(Handler e, OptionsAdd options);
 
 	/**
 	 * Same as calling the
@@ -102,7 +104,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return
 	 */
 	@Override
-	public boolean addAll(Collection<? extends Handler> c);
+	boolean addAll(Collection<? extends Handler> c);
 
 	/**
 	 * Call
@@ -113,7 +115,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @param options
 	 * @return
 	 */
-	public boolean addAll(Collection<? extends Handler> c, OptionsAdd options);
+	boolean addAll(Collection<? extends Handler> c, OptionsAdd options);
 
 	/**
 	 * If given object is {@link FileHandler} or {@link DirectoryHandler} and is
@@ -123,7 +125,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return
 	 */
 	@Override
-	public boolean remove(Object o);
+	boolean remove(Object o);
 
 	/**
 	 * This method is not supported. If call just return false.
@@ -132,7 +134,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return
 	 */
 	@Override
-	public boolean retainAll(Collection<?> c);
+	boolean retainAll(Collection<?> c);
 
 	/**
 	 * Return handler to object wit given name.
@@ -140,6 +142,6 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @param name
 	 * @return Null is no handler for this name is in this directory.
 	 */
-	public Handler getByName(String name);
+	Handler getByName(String name);
 
 }

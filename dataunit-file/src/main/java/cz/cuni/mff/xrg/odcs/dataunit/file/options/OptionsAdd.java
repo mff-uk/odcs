@@ -1,14 +1,15 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.options;
 
 /**
- * Holds options for process of adding existing file/directory. 
+ * Holds options used for adding existing file/directory. 
  * 
  * @author Petyr
  */
 public class OptionsAdd {
 	
 	/**
-	 * If true then given file/directory is added only as a link.
+	 * If true then given file/directory is added only as a link. The linked 
+	 * file/directory can not be modified.
 	 */
 	private final boolean isLink;
 	
@@ -19,22 +20,33 @@ public class OptionsAdd {
 	 */
 	private final boolean overwrite;
 	
+	/**
+	 * Create options that add given object as link. In case of collision the
+	 * old data are overwritten.
+	 */
 	public OptionsAdd() {
 		this.isLink = true;
 		this.overwrite = true;
 	}
 
+	/**
+	 * In case of collision the old data are overwritten.
+	 * @param asLink true if add as link
+	 */
 	public OptionsAdd(boolean asLink) {
 		this.isLink = asLink;
 		this.overwrite = true;
 	}
 
+	/**
+	 * @param asLink true if add as link
+	 * @param overwrite true if in case of collision overwrite old data
+	 */
 	public OptionsAdd(boolean asLink, boolean overwrite) {
 		this.isLink = asLink;
 		this.overwrite = overwrite;
 	}
-	
-	
+		
 	public boolean isLink() {
 		return this.isLink;
 	}
