@@ -29,6 +29,10 @@ import java.io.File;
  * }
  * </pre>
  *
+ * Every handler can hold user data, that can be used to add additional info to
+ * the handler. The user data should be reasonable small as they are hold in 
+ * memory.
+ * 
  * @author Petyr
  */
 public interface Handler {

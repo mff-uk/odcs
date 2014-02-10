@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
 
 /**
  * Implementation of {@link DataUnit} that enable storing files.
@@ -28,6 +28,9 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
  *	}
  * }
  * </pre>
+ * 
+ * For more samples please see {@link DirectoryHandler}, {@link FileHandler} and
+ * {@link Handler}.
  * 
  * @author Petyr
  */

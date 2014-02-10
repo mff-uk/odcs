@@ -4,7 +4,12 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 
 /**
- * Represent a file from {@link FileDataUnit}.
+ * Represent a file from {@link FileDataUnit}. The file it self can be 
+ * accessed by {@link #asFile()} function. 
+ * 
+ * The other way is to use build in function {@link #getContent()} and
+ * {@link #setContent(java.lang.String)} to read and write given string
+ * into the file.
  * 
  * @author Petyr
  */
