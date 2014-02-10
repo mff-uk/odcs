@@ -17,10 +17,16 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.dataunit.file.ManageableFileDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
@@ -250,6 +256,79 @@ public class TestEnvironment {
 		return rdf;
 	}
 
+	/**
+	 * Create file data unit, add it as an input and return reference to it.
+	 * 
+	 * @param name
+	 * @param dir Root folder, where data unit can store data. Should be empty.
+	 * @return 
+	 */
+	public FileDataUnit createFileInput(String name, File dir) {
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addInput(name, file);
+		return file;
+	}
+	
+	/**
+	 * Create file data unit, add it as an input and return reference to it.
+	 * The file data unit is created in temp directory and data from given 
+	 * resource path are added to the root.
+	 * 
+	 * @param name
+	 * @param resourceName Path to the resources.
+	 * @return 
+	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException 
+	 */
+	public FileDataUnit createFileInputFromResource(String name, String resourceName) 
+			throws DataUnitException {
+		File dir = new File(FileUtils.getTempDirectory(), 
+				"odcs-file-test-" + Long.toString(System.nanoTime()));
+		dir.mkdirs();
+		
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		// add from resources
+		URL url = Thread.currentThread().getContextClassLoader()
+				.getResource(resourceName);
+		DirectoryHandler dh = file.getRootDir();
+		File resourceRoot = new File(url.getPath());
+		for (File toAdd :resourceRoot.listFiles()) {
+			dh.addExistingDirectory(toAdd, new OptionsAdd(true));
+		}
+		
+		addInput(name, file);
+		return file;
+	}	
+	
+	/**
+	 * Create file data unit, add it as an input and return reference to it.
+	 * 
+	 * @param name
+	 * @param dir Root folder, where data unit can store data. Should be empty.
+	 * @return 
+	 */
+	public FileDataUnit createFileOutput(String name, File dir) {
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addOutput(name, file);
+		return file;
+	}
+	
+	/**
+	 * Create file data unit, add it as an input and return reference to it. As
+	 * a directory use temp director.
+	 * 
+	 * @param name
+	 * @return 
+	 */
+	public FileDataUnit createFileOutput(String name) throws IOException {
+		File dir = new File(FileUtils.getTempDirectory(), 
+				"odcs-file-test-" + Long.toString(System.nanoTime()));
+		dir.mkdirs();
+		
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addOutput(name, file);
+		return file;
+	}	
+	
 	// - - - - - - - - - method for test execution - - - - - - - - - //
 
 	/**

@@ -32,9 +32,17 @@
             <type>jar</type>
         </dependency>
 
-        <dependency> <!-- RDF project -->
+        <dependency> <!-- RDF data unit project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>dataunit-rdf-impl</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+
+
+        <dependency> <!-- File data unit project -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dataunit-file-impl</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
