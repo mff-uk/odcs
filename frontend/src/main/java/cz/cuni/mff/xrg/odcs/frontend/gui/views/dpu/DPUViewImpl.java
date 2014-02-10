@@ -5,6 +5,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
@@ -39,6 +40,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Component
 @Scope("prototype")
 public class DPUViewImpl extends CustomComponent implements DPUView {
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
 
 	private DPUPresenter presenter;
 	private static final long serialVersionUID = 1L;
@@ -802,8 +804,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 //		instancesTable.setVisibleColumns((Object[]) visibleCols);
 //		instancesTable.setColumnHeaders(headers);
 
+		instancesTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
 		instancesTable.addGeneratedColumn("actions",
 				createActionColumn());
+		
+		instancesTable.setVisibleColumns("actions", "name");
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
@@ -885,14 +890,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		};
 
 		// add buttons to column generator
-		generator.addButton("Detail", "70px", detailAction, detailShowCondition);
-		generator.addButton("Delete", "70px", deleteAction, deleteShowCondition);
-		generator.addButton("Status", "70px", new ActionColumnGenerator.Action() {
+		generator.addButton("Detail", null, detailAction, detailShowCondition, new ThemeResource("icons/gear.png"));
+		generator.addButton("Delete", null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.png"));
+		generator.addButton("Status", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineStatusEventHandler(id);
 			}
-		});
+		}, new ThemeResource("icons/log.png"));
 
 		return generator;
 	}

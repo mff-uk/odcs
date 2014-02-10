@@ -173,7 +173,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 	IndexedContainer getPipelinesForDpu(DPUTemplateRecord dpu) {
 		IndexedContainer result = new IndexedContainer();
 		// visible columns of instancesTable
-		String[] visibleCols = new String[]{"id", "name", "description", "author", "actions"};
+		String[] visibleCols = new String[]{"id", "actions", "name"};
 
 		for (String p : visibleCols) {
 			// setting type of the columns
@@ -201,8 +201,8 @@ public class DPUPresenterImpl implements DPUPresenter {
 			if (item != null) {
 				item.getItemProperty("id").setValue(pipeline.getId());
 				item.getItemProperty("name").setValue(pipeline.getName());
-				item.getItemProperty("description").setValue(pipeline.getDescription());
-				item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
+				//item.getItemProperty("description").setValue(pipeline.getDescription());
+				//item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
 			}
 		}
 
