@@ -8,6 +8,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 public class dataunit_file {
 	
 	public static final String PACKAGE_LIST = 
-			"cz.cuni.mff.xrg.odcs.dataunit.file;version=\"1.0.0\"";
+			"cz.cuni.mff.xrg.odcs.dataunit.file;version=\"1.0.0\"," +
+			"cz.cuni.mff.xrg.odcs.dataunit.file.handlers;version=\"1.0.0\"," + 
+			"cz.cuni.mff.xrg.odcs.dataunit.file.options;version=\"1.0.0\"";
 	
 }
