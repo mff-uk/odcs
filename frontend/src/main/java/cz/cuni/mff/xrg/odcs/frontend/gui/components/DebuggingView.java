@@ -230,8 +230,10 @@ public class DebuggingView extends CustomComponent {
 			public InputStream getStream() {
 				LinkedList<Object> filters = new LinkedList<>();
 				for(Filter f : logCoreFilters) {
+					LOG.debug("Adding log filter to logs download.");
 					filters.add(f);
 				}
+				LOG.debug("Creating logs stream for download...");
 				return logFacade.getLogsAsStream(filters);
 			}
 		});
