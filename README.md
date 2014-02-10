@@ -1,4 +1,4 @@
-ODCleanStore
+UnifiedViews
 ============
 
 The tool uses data processing pipelines for obtaining, processing, and storing
@@ -10,13 +10,13 @@ scheduling capabilities.
 Documentation
 -------------
 
-Please see http://www.ksi.mff.cuni.cz/~knap/odcs
+https://grips.semantic-web.at/display/UDDOC/Introduction
 
 
 Installation steps
 ------------------
 
-Please see http://www.ksi.mff.cuni.cz/~knap/odcs/doc.html#install
+Please see https://grips.semantic-web.at/display/UDDOC/Installation+Guide
 
 
 Licenses
