@@ -567,7 +567,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
 		groupVisibility.addItem(ShareType.PRIVATE);
+		groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
 		groupVisibility.addItem(ShareType.PUBLIC_RO);
+		groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
 		// JAR path of DPU Template.
