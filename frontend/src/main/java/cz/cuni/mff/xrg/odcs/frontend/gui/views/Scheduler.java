@@ -69,6 +69,15 @@ public class Scheduler extends ViewComponent {
 	 * View name.
 	 */
 	public static final String NAME = "Scheduler";
+	
+	/**
+	 * Column widths for schedules table.
+	 */
+	private static final int COLUMN_STATUS_WIDTH = 39;
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
+	private static final int COLUMN_TIME_WIDTH = 115;
+	private static final int COLUMN_DURATION_WIDTH = 77;
+	
 	private VerticalLayout mainLayout;
 	/**
 	 * Table contains rules of pipeline scheduling.
@@ -197,14 +206,13 @@ public class Scheduler extends ViewComponent {
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
-		schedulerTable.setColumnWidth("commands", 160);
-		schedulerTable.setColumnWidth("status", 39);
-		schedulerTable.setColumnWidth("last", 115);
-		schedulerTable.setColumnWidth("next", 115);
-		schedulerTable.setColumnWidth("duration", 77);
+		schedulerTable.setColumnWidth("commands", COLUMN_ACTIONS_WIDTH);
+		schedulerTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
+		schedulerTable.setColumnWidth("last", COLUMN_TIME_WIDTH);
+		schedulerTable.setColumnWidth("next", COLUMN_TIME_WIDTH);
+		schedulerTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
 		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
 		
-		//schedulerTable.setColumnExpandRatio("pipeline", 1);
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override

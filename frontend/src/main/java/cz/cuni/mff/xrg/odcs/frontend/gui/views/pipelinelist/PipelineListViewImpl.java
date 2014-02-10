@@ -34,6 +34,14 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineListViewImpl.class);
 	
+	/**
+	 * Column widths for pipeline table.
+	 */
+	private static final int COLUMN_ACTIONS_WIDTH = 324;
+	private static final int COLUMN_STATUS_WIDTH = 68;
+	private static final int COLUMN_DURATION_WIDTH = 80;
+	private static final int COLUMN_TIME_WIDTH = 115;
+	
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
@@ -98,11 +106,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		// add column
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
-		tablePipelines.setColumnWidth("actions", 324);
-		tablePipelines.setColumnWidth("duration", 80);
-		tablePipelines.setColumnWidth("lastExecStatus", 68);
-		tablePipelines.setColumnWidth("lastExecTime", 115);
-		//tablePipelines.setColumnExpandRatio("name", 1);
+		tablePipelines.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
+		tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+		tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);
+		tablePipelines.setColumnWidth("lastExecTime", COLUMN_TIME_WIDTH);
+
 		tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
 		tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		tablePipelines.setVisibleColumns();

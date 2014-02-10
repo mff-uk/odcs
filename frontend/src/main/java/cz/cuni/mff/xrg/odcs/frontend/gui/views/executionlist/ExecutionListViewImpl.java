@@ -60,6 +60,17 @@ import org.tepi.filtertable.paged.PagedTableChangeEvent;
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
+	
+	/**
+	 * Column widths for execution table.
+	 */
+	private static final int COLUMN_SCHEDULE_WIDTH = 32;
+	private static final int COLUMN_STATUS_WIDTH = 39;
+	private static final int COLUMN_DEBUG_WIDTH = 36;
+	private static final int COLUMN_DURATION_WIDTH = 53;
+	private static final int COLUMN_START_WIDTH = 115;
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
+	
 	private IntlibPagedTable monitorTable;
 	/**
 	 * Used to separate table from execution detail view.
