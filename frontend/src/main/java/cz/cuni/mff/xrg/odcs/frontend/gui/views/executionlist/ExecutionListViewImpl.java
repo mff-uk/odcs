@@ -214,22 +214,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
 
-		generator.addButton("Cancel", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.stopEventHandler(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				// ...
-				return status == PipelineExecutionStatus.QUEUED
-						|| status == PipelineExecutionStatus.RUNNING;
-			}
-		}, new ThemeResource("icons/cancelled.png"));
-
 		generator.addButton("Show log", null, new Action() {
 			@Override
 			protected void action(long id) {
@@ -263,6 +247,22 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 				return isDebug && status != PipelineExecutionStatus.QUEUED;
 			}
 		}, new ThemeResource("icons/debug_data.png"));
+		
+		generator.addButton("Cancel", null, new Action() {
+			@Override
+			protected void action(long id) {
+				presenter.stopEventHandler(id);
+			}
+		}, new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				Property propStatus = source.getItem(id).getItemProperty("status");
+				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+				// ...
+				return status == PipelineExecutionStatus.QUEUED
+						|| status == PipelineExecutionStatus.RUNNING;
+			}
+		}, new ThemeResource("icons/cancelled.png"));
 
 		generator.addButton("Run pipeline", null, new Action() {
 			@Override
@@ -425,14 +425,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
 
-		executionTable.setColumnWidth("schedule", 32);
-		executionTable.setColumnWidth("status", 39);
-		executionTable.setColumnWidth("isDebugging", 36);
-		executionTable.setColumnWidth("duration", 53);
-		executionTable.setColumnWidth("start", 115);
-		//executionTable.setColumnExpandRatio("pipeline.name", 1);
+		executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
+		executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
+		executionTable.setColumnWidth("isDebugging", COLUMN_DEBUG_WIDTH);
+		executionTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+		executionTable.setColumnWidth("start", COLUMN_START_WIDTH);
+
 		//Suitable if no more than 3 buttons are available at the same time, which is true in current version.
-		executionTable.setColumnWidth("actions", 160);
+		executionTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
 		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
 		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
