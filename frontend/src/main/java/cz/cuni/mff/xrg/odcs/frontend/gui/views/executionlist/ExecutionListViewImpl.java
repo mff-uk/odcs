@@ -119,6 +119,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
 			long duration = (new Date()).getTime() - entry.getKey().getTime();
 			entry.getValue().setValue(DecorationHelper.formatDuration(duration));
+			entry.getValue().setSizeUndefined();
 		}
 	}
 
@@ -519,6 +520,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 					if (start != null) {
 						duration = (new Date()).getTime() - start.getTime();
 						Label durationLabel = new Label(DecorationHelper.formatDuration(duration));
+						durationLabel.setSizeUndefined();
 						durationLabel.setImmediate(true);
 						runTimeLabels.put(start, durationLabel);
 						return durationLabel;
