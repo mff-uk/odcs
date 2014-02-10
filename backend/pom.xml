@@ -100,15 +100,15 @@
         
     <build>
         
-         <!-- add license from LICENSE.md to the generated JAR file -->
+<!--          add license from LICENSE.md to the generated JAR file 
         <resources>
             <resource>
-                <directory>${basedir}</directory> <!-- this is default dir-->
+                <directory>${basedir}</directory>  this is default dir
                 <includes>
                   <include>LICENSE.md</include>
                 </includes>
             </resource>
-         </resources>
+         </resources>-->
 
 	
 
