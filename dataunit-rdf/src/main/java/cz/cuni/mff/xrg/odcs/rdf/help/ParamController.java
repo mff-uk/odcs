@@ -38,11 +38,9 @@ public class ParamController {
 	public static void testEmptyParameter(Object param, String message) throws RDFException {
 
 		if (param != null) {
-			boolean isEmpty = true;
+			boolean isEmpty = param.toString().isEmpty();
 
-			if (param instanceof String) {
-				isEmpty = ((String) param).isEmpty();
-			} else if (param instanceof List) {
+			if (param instanceof List) {
 				isEmpty = ((List) param).isEmpty();
 			}
 
