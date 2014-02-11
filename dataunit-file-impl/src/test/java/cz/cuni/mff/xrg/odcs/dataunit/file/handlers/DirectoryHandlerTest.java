@@ -70,6 +70,9 @@ public class DirectoryHandlerTest {
 		assertEquals(1, handler.size());
 		assertEquals(1, dir.size());
 		assertTrue(file.asFile().exists());
+		// test the root path
+		assertEquals("myDir" + File.separatorChar + "myFile", 
+				file.getRootedPath());
 		// delete the dur and file as well
 		handler.clear();
 		// test that the file has been deleted
@@ -87,7 +90,7 @@ public class DirectoryHandlerTest {
 		final String fileName = "odcs-file-test-add-" + (new Date()).getTime();
 		final File testFile = new File(FileUtils.getTempDirectory(), fileName);
 		// use FileHandler to set content
-		FileHandler testHandler = new FileHandlerImpl(testFile, fileName, false);
+		FileHandler testHandler = new FileHandlerImpl(testFile, null, fileName, false);
 		final String content = "my content";
 		testHandler.setContent(content);
 		// add to the handler
@@ -114,7 +117,7 @@ public class DirectoryHandlerTest {
 		subDir.mkdirs();
 		final File subFile = new File(root, "subFile");
 		// use FileHandler to set content
-		FileHandler fileHandler = new FileHandlerImpl(subFile, "subFile", false);
+		FileHandler fileHandler = new FileHandlerImpl(subFile, null, "subFile", false);
 		final String content = "my content";
 		fileHandler.setContent(content);
 		

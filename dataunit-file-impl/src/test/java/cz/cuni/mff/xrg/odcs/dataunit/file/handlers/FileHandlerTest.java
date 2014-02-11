@@ -39,7 +39,7 @@ public class FileHandlerTest {
 	public void testCreate() {
 		assertFalse(fileToUse.exists());
 		FileHandler handler 
-				= new FileHandlerImpl(fileToUse, fileToUse.getName(), false);
+				= new FileHandlerImpl(fileToUse, null, fileToUse.getName(), false);
 		assertTrue(fileToUse.exists());
 	}
 
@@ -47,14 +47,14 @@ public class FileHandlerTest {
 	public void testCreateLink() {
 		assertFalse(fileToUse.exists());
 		FileHandler handler 
-				= new FileHandlerImpl(fileToUse, fileToUse.getName(), true);
+				= new FileHandlerImpl(fileToUse, null, fileToUse.getName(), true);
 		assertFalse(fileToUse.exists());		
 	}	
 	
 	@Test
 	public void testContent() throws IOException, FileDataUnitException {
 		FileHandler handler 
-				= new FileHandlerImpl(fileToUse, fileToUse.getName(), false);
+				= new FileHandlerImpl(fileToUse, null, fileToUse.getName(), false);
 		
 		final String content = "my new test content ...";
 		handler.setContent(content);
@@ -62,14 +62,14 @@ public class FileHandlerTest {
 		
 		// now lets create a new, with as link .. 
 		FileHandler link 
-				= new FileHandlerImpl(fileToUse, fileToUse.getName(), true);
+				= new FileHandlerImpl(fileToUse, null, fileToUse.getName(), true);
 		assertEquals(content, link.getContent());
 	}
 
 	@Test
 	public void testUserData() {
 		FileHandler handler 
-				= new FileHandlerImpl(fileToUse, fileToUse.getName(), true);
+				= new FileHandlerImpl(fileToUse, null, fileToUse.getName(), true);
 		final String userDate = "my new test content ...";
 		handler.setUserData(userDate);
 		assertEquals(userDate, handler.getUserData());

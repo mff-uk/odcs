@@ -65,4 +65,9 @@ public interface Handler {
 	 */
 	String getName();
 	
+	/**
+	 * @return Path from the root of respective {@link FileDataUnit}, can be 
+	 * used as {@link Handler}'s id.
+	 */
+	String getRootedPath();
 }
