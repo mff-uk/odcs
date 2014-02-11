@@ -76,21 +76,21 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	
 	/**
 	 * Create typed query from given string.
-	 * @param sringQuery
+	 * @param stringQuery
 	 * @return 
 	 */
-	protected TypedQuery<T> createTypedQuery(String sringQuery) {
-		return em.createQuery(sringQuery, entityClass);
+	protected TypedQuery<T> createTypedQuery(String stringQuery) {
+		return em.createQuery(stringQuery, entityClass);
 	}
 	
 	/**
 	 * Execute the given string query and return the results. No filters are 
 	 * applied.
-	 * @param sringQuery
+	 * @param stringQuery
 	 * @return 
 	 */
-	protected List<T> executeList(String sringQuery) {
-		return executeList(createTypedQuery(sringQuery));
+	protected List<T> executeList(String stringQuery) {
+		return executeList(createTypedQuery(stringQuery));
 	}
 	
 	/**

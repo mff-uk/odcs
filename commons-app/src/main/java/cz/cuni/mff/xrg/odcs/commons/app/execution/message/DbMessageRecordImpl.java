@@ -23,9 +23,9 @@ public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
 
 	@Override
 	public List<MessageRecord> getAll(PipelineExecution pipelineExec) {
-		final String sringQuery = "SELECT r FROM MessageRecord r WHERE r.execution = :ins";
+		final String stringQuery = "SELECT r FROM MessageRecord r WHERE r.execution = :ins";
 		
-		TypedQuery<MessageRecord> query = createTypedQuery(sringQuery);
+		TypedQuery<MessageRecord> query = createTypedQuery(stringQuery);
 		query.setParameter("ins", pipelineExec);
 		
 		return executeList(query);		
