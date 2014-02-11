@@ -5,6 +5,7 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
@@ -56,6 +57,10 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	private ExecutionListView view;
 	@Autowired
 	private Utils utils;
+	
+	@Autowired
+	private AuthAwarePermissionEvaluator permissionEvaluator;
+	
 	private ExecutionListData dataObject;
 	private DbCachedSource<PipelineExecution> cachedSource;
 	private RefreshManager refreshManager;
@@ -150,6 +155,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 			cachedSource.invalidate();
 			dataObject.getContainer().refresh();
 		}
+	}
+	
+	@Override
+	public boolean canStopExecution(long executionId) {
+		PipelineExecution exec = pipelineFacade.getExecution(executionId);
+		return permissionEvaluator.hasPermission(exec, "save");
 	}
 
 	@Override

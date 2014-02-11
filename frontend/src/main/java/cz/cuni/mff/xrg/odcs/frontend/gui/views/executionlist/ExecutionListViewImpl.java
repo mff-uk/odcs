@@ -258,9 +258,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 			public boolean show(CustomTable source, long id) {
 				Property propStatus = source.getItem(id).getItemProperty("status");
 				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				// ...
-				return status == PipelineExecutionStatus.QUEUED
+
+				boolean stoppableStatus = status == PipelineExecutionStatus.QUEUED
 						|| status == PipelineExecutionStatus.RUNNING;
+				
+				boolean userCanStop = presenter.canStopExecution(id);
+				
+				return stoppableStatus && userCanStop;
 			}
 		}, new ThemeResource("icons/cancelled.png"));
 

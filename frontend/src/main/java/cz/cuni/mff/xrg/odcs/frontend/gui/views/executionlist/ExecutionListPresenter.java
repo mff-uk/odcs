@@ -49,6 +49,16 @@ public interface ExecutionListPresenter extends Presenter {
 	public void debugEventHandler(long executionId);
 
 	public void stopRefreshEventHandler();
+	
+	/**
+	 * Tells whether user has permission to stop pipeline execution, so we know
+	 * whether to render stop button.
+	 * 
+	 * @param executionId id of pipeline execution
+	 * @return true if user has permission to stop given pipeline execution,
+	 *		   false otherwise
+	 */
+	public boolean canStopExecution(long executionId);
 
 	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
 

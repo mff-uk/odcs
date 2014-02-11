@@ -490,9 +490,10 @@ class PipelineFacadeImpl implements PipelineFacade {
     /**
      * Stop the execution.
      *
-     * @param execution
+     * @param execution pipeline execution to stop
      */
 	@Override
+    @PreAuthorize("hasPermission(#execution, 'save')")
     public void stopExecution(PipelineExecution execution) {
 		PipelineExecution currentExec = getExecution(execution.getId());
 		
@@ -500,7 +501,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 			execution.stop();
 			save(execution);
 		} else {
-			// we are not in running state enymore .. so we do not
+			// we are not in running state anymore .. so we do not
 			// save the pipeline
 		}
     }
