@@ -31,9 +31,9 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	private File file;
 
 	/**
-	 * Root of the respective {@link FileDataUnit}.
+	 * Directory in which we are located in sense of file data unit.
 	 */
-	private File rootDir;	
+	private DirectoryHandler parent;
 	
 	/**
 	 * User data.
@@ -55,14 +55,14 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	 * Create non-readonly handler for given file.
 	 *
 	 * @param file Path to the existing file.
-	 * @param root of the respective {@link FileDataUnit}
+	 * @param parent
 	 * @param name File name must not be null!
 	 * @param asLink
 	 */
-	FileHandlerImpl(File file, File root, String name, boolean asLink) {
+	FileHandlerImpl(File file, DirectoryHandler parent, String name, boolean asLink) {
 		this.name = name;
 		this.file = file;
-		this.rootDir = root;
+		this.parent = parent;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = asLink;
@@ -147,10 +147,8 @@ public class FileHandlerImpl implements ManageableFileHandler {
 
 	@Override
 	public String getRootedPath() {
-        Path pathAbsolute = Paths.get(file.toURI());
-        Path pathBase = Paths.get(rootDir.toURI());
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-		return pathRelative.toString();
+		final String parentPath = parent.getRootedPath();
+		return parentPath + "/" + getName();
 	}	
 	
 	@Override

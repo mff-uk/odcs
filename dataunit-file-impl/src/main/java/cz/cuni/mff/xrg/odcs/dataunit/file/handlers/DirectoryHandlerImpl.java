@@ -5,8 +5,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,7 +34,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	/**
 	 * Root of the respective {@link FileDataUnit}.
 	 */
-	private File rootDir;
+	private DirectoryHandler parent;
 	
 	/**
 	 * User data.
@@ -68,7 +66,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public DirectoryHandlerImpl(File directory) {
 		this.name = directory.getName();
 		this.directory = directory;
-		this.rootDir = directory;
+		this.parent = null;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = false;
@@ -82,15 +80,15 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * recursively.
 	 *
 	 * @param directory
-	 * @param root of the respective {@link FileDataUnit}
+	 * @param parent
 	 * @param name
 	 * @param isLink
 	 */
-	private DirectoryHandlerImpl(File directory, File root, String name, boolean isLink) {
+	private DirectoryHandlerImpl(File directory, DirectoryHandler parent, String name, boolean isLink) {
 		// set fields
 		this.name = name;
 		this.directory = directory;
-		this.rootDir = root;
+		this.parent = parent;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = isLink;
@@ -103,10 +101,12 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
 	@Override
 	public String getRootedPath() {
-        Path pathAbsolute = Paths.get(directory.toURI());
-        Path pathBase = Paths.get(rootDir.toURI());
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-		return pathRelative.toString();		
+		if (parent == null) {
+			return "";
+		} else {
+			final String parentPath = parent.getRootedPath();
+			return parentPath + "/" + getName();
+		}
 	}
 	
 	@Override
@@ -158,7 +158,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final File newFilePath = new File(this.directory, name);
 			// create file handler
 			final FileHandlerImpl newFile
-					= new FileHandlerImpl(newFilePath, rootDir, name, false);
+					= new FileHandlerImpl(newFilePath, this, name, false);
 			this.handlers.add(newFile);
 			return newFile;
 		} else {
@@ -210,7 +210,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		FileHandlerImpl newHandler
-				= new FileHandlerImpl(file, rootDir, newName, options.isLink());
+				= new FileHandlerImpl(file, this, newName, options.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -227,7 +227,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final File newFilePath = new File(this.directory, name);
 			// create dir handler
 			final DirectoryHandlerImpl newDir
-					= new DirectoryHandlerImpl(newFilePath, rootDir, name, false);
+					= new DirectoryHandlerImpl(newFilePath, this, name, false);
 			this.handlers.add(newDir);
 			return newDir;
 		} else {
@@ -279,7 +279,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		DirectoryHandlerImpl newHandler
-				= new DirectoryHandlerImpl(directory, rootDir, newName, options.isLink());
+				= new DirectoryHandlerImpl(directory, this, newName, options.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -511,14 +511,14 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final String newName = file.getName();
 			if (file.isFile()) {
 				FileHandlerImpl fileHandler
-						= new FileHandlerImpl(file, rootDir, newName, false);
+						= new FileHandlerImpl(file, this, newName, false);
 				this.handlers.add(fileHandler);
 			} else if (file.isDirectory()) {
 
 				// create handler for subdir, this will 
 				// also let it scan the subdir for subdirectories
 				DirectoryHandlerImpl dirHandler
-						= new DirectoryHandlerImpl(file, rootDir, newName, false);
+						= new DirectoryHandlerImpl(file, this, newName, false);
 				this.handlers.add(dirHandler);
 			} else {
 				LOG.warn("Unknown file '%s' type ignored during scan.", newName);

@@ -71,8 +71,7 @@ public class DirectoryHandlerTest {
 		assertEquals(1, dir.size());
 		assertTrue(file.asFile().exists());
 		// test the root path
-		assertEquals("myDir" + File.separatorChar + "myFile", 
-				file.getRootedPath());
+		assertEquals("/myDir/myFile", file.getRootedPath());
 		// delete the dur and file as well
 		handler.clear();
 		// test that the file has been deleted
@@ -139,7 +138,7 @@ public class DirectoryHandlerTest {
 	}	
 
 	@Test 
-	public void testAddAll() throws DataUnitException {
+	public void testAddAllAsLink() throws DataUnitException {
 		DirectoryHandler source 
 				= new DirectoryHandlerImpl(new File(dirToUse, "source"));
 		// file to link 
@@ -152,6 +151,8 @@ public class DirectoryHandlerTest {
 				= source.addNewFile("file");
 		final DirectoryHandler sourceLink 
 				= source.addExistingDirectory(toLink, new OptionsAdd(true));
+		// test link rooted path
+		assertEquals("/toLink", sourceLink.getRootedPath());
 		
 		// target
 		DirectoryHandler target 
@@ -163,6 +164,11 @@ public class DirectoryHandlerTest {
 		assertNotNull(target.getByName("directory"));
 		assertNotNull(target.getByName("file"));
 		assertNotNull(target.getByName("toLink"));
+		
+		// and also check rooted path
+		assertEquals("/directory", target.getByName("directory").getRootedPath());
+		assertEquals("/file", target.getByName("file").getRootedPath());
+		assertEquals("/toLink", target.getByName("toLink").getRootedPath());
 	}
 	
 }
