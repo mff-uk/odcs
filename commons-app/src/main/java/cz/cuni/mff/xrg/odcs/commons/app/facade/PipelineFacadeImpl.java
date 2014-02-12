@@ -494,6 +494,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
 	@Override
     @PreAuthorize("hasPermission(#execution, 'save')")
+	@Transactional
     public void stopExecution(PipelineExecution execution) {
 		PipelineExecution currentExec = getExecution(execution.getId());
 		
