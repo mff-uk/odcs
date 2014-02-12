@@ -159,7 +159,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	
 	@Override
 	public boolean canStopExecution(long executionId) {
-		PipelineExecution exec = pipelineFacade.getExecution(executionId);
+		PipelineExecution exec = cachedSource.getObject(executionId);
 		return permissionEvaluator.hasPermission(exec, "save");
 	}
 
