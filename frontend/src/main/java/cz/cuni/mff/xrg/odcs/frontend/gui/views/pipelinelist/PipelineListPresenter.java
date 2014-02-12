@@ -30,6 +30,15 @@ public interface PipelineListPresenter extends Presenter {
 	 * @param id Pipeline id.
 	 */
 	public void deleteEventHandler(long id);
+	
+	/**
+	 * Tells whether user has permission to delete pipeline with given id, so
+	 * we can decide whether to hide delete button.
+	 * 
+	 * @param pipelineId id of pipeline to be deleted
+	 * @return true if user has permission to delete, false otherwise
+	 */
+	public boolean canDeletePipeline(long pipelineId);
 
 	/**
 	 * Schedule pipeline with given id.

@@ -197,6 +197,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			protected void action(final long id) {
 				presenter.deleteEventHandler(id);
 			}
+		}, new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.canDeletePipeline(id);
+			}
 		}, new ThemeResource("icons/trash.png"));
 
 		return generator;
