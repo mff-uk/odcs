@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
 import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import info.aduna.iteration.EmptyIteration;
 
@@ -60,6 +61,8 @@ import org.slf4j.Logger;
  */
 public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
+        private FileRDFMetadataExtractor fileRDFMetadataExtractor; 
+    
 	/**
 	 * Default name for graph using for store RDF data.
 	 */
@@ -106,6 +109,21 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	private boolean hasBrokenConnection = false;
 
+        public BaseRDFRepo() {
+             this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
+        }
+
+
+         @Override
+         public Map<String,List<String>> getRDFMetadataForSubjectURI(String subjectURI, List<String> predicates) {
+             return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI, predicates);
+         }
+        
+         @Override
+         public Map<String,List<String>> getRDFMetadataForFile(String filePath, List<String> predicates) {
+             return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath, predicates);
+         }
+         
 	/**
 	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
 	 * serialization of RDF data
@@ -328,7 +346,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		ParamController.testNullParameter(file,
 				"Given file for loading is null.");
 
-		ParamController.testEmptyParameter(file, "File name is empty");
+		//ParamController.testEmptyParameter(file, "File name is empty");
 
 		if (!file.exists()) {
 			createNewFile(file);

@@ -30,6 +30,13 @@
 			<scope>test</scope>
 		</dependency>
 
+                <dependency> <!-- ontology -->
+                   <groupId>${project.groupId}</groupId>
+                   <artifactId>ontology</artifactId>
+                   <!-- the version has to be specify -->
+                   <version>${project.version}</version>
+               </dependency>
+               
 		<dependency> <!-- slf4j -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

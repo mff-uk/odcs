@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.impl;
 
+import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import info.aduna.iteration.Iterations;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jiri Tomes
  */
-public class MyTupleQueryResult implements TupleQueryResult {
+public class MyTupleQueryResult implements MyTupleQueryResultIf {
 
 	private static Logger logger = LoggerFactory.getLogger(
 			MyTupleQueryResult.class);

@@ -170,15 +170,4 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	public String deleteApplicationGraphs();
 
 
-
-	/**
-	 * Make select query over repository data and return MyTupleQueryResult
-	 * class as result.
-	 *
-	 * @param selectQuery String representation of SPARQL select query.
-	 * @return MyTupleQueryResult representation of SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	public MyTupleQueryResult executeSelectQueryAsTuples(
-			String selectQuery) throws InvalidQueryException;
 }

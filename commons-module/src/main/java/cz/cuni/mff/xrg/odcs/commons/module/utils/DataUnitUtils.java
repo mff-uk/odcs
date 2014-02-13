@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -19,6 +21,12 @@ public class DataUnitUtils {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(
 			DataUnitUtils.class);
 
+        public static void printBytes(byte[] array, String name) {
+            for (int k = 0; k < array.length; k++) {
+                System.out.println(name + "[" + k + "]:" + array[k]);
+            }
+        }
+        
 	public static File storeStringToTempFile(String s, String fileName) {
 		return storeStringToTempFile(s, fileName, StandardCharsets.UTF_8);
 	}
@@ -116,5 +124,5 @@ public class DataUnitUtils {
 		}
 		return val;
 	}
-
+       
 }
