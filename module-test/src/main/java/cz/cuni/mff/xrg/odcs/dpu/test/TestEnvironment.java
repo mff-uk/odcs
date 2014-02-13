@@ -289,16 +289,31 @@ public class TestEnvironment {
 		// add from resources
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resourceName);
+                
+                // check ..
+		if (url == null) {
+			throw new RDFException("Missing input file in resource for: "
+					+ resourceName);
+		}
+                
 		DirectoryHandler dh = file.getRootDir();
 		File resourceRoot = new File(url.getPath());
-		for (File toAdd :resourceRoot.listFiles()) {
-			dh.addExistingDirectory(toAdd, new OptionsAdd(true));
-		}
+		
+                //if the resource is a directory: 
+                if (resourceRoot.isDirectory()) {
+                    for (File toAdd :resourceRoot.listFiles()) {
+                            dh.addExistingDirectory(toAdd, new OptionsAdd(true));
+                    }
+                }
+                else {
+                    //add single resource (file)
+                    dh.addExistingFile(resourceRoot, new OptionsAdd(true));
+                }
 		
 		addInput(name, file);
 		return file;
-	}	
-	
+	}
+        
 	/**
 	 * Create file data unit, add it as an input and return reference to it.
 	 * 
