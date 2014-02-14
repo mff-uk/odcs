@@ -124,7 +124,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		}
 		throw new RuntimeException("Failed to load data.");
 	}
-	
+
 	/**
 	 * Add item to cache. If the item is null nothing happen. If the item's id 
 	 * is null then negative index is used as index.
@@ -133,19 +133,11 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * @param index 
 	 */
 	private void addToCache(T item, int index) {
-		if (item == null) {
-			return;
-		}		
-		Long id = item.getId();
-		if (id == null) {
-			// default, use negative index as id
-			id = -(long)index;
-		}				
 		// add to caches
-		data.put(id, item);
-		dataIndexes.put(index, id);		
-	}
-
+		data.put(item.getId(), item);
+		dataIndexes.put(index, item.getId());
+	}	
+	
 	/**
 	 * Load data size from {@link #source} and return it. Do not store them into
 	 * any member variable.
@@ -186,7 +178,6 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			return items;
 		} catch (Throwable e) {
 			// failed to load some message
-			LOG.error("Failed to load a list of object, ltes try one by one.", e);
 		}
 		// let's try it by one .. 
 		final List<T> result = new LinkedList<>();
@@ -316,7 +307,10 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
-			addToCache(item, index);
+			if (item != null) {
+				// add to caches
+				addToCache(item, index);
+			}
 			// return new item .. can be null
 			return item;
 		}
@@ -353,6 +347,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				for (T item : newData) {
 					addToCache(item, index);
 					index++;
+					newIDs.add(item.getId());
 				}
 				// add new IDs to the result list
 				result.addAll(newIDs);

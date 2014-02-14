@@ -31,11 +31,7 @@ public class NewLogAccessor extends ClassAccessorBase<Log> {
 		add(Date.class, "timestamp", new ColumnGetter<Date>() {
 			@Override
 			public Date get(Log object) {
-				if (object.getTimestamp() == null) {
-					return null;
-				} else {
-					return new Date(object.getTimestamp());
-				}
+				return new Date(object.getTimestamp());
 			}
 		});
 

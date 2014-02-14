@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>filteringtable</artifactId>
-			<version>0.9.0.v7</version>
+			<version>0.9.4.v7</version>
 		 <type>jar</type>
 		</dependency>	
 

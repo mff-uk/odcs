@@ -116,6 +116,7 @@ public class LogTable extends CustomComponent {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId,
 					Object columnId) {
+
 				Integer levelInt = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
 				if (levelInt == null) {
 					return null;
