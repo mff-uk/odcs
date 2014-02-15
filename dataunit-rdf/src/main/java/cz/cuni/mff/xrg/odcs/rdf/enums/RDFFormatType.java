@@ -4,25 +4,24 @@ import java.util.*;
 import org.openrdf.rio.RDFFormat;
 
 /**
- *
- * @author Jiri Tomes
- *
  * Set of system supported RDF data types. It´s used priority for easy setting
  * one of possible RDF types choosed by user in DPU details dialog.
+ *
+ * @author Jiri Tomes
  */
 public enum RDFFormatType {
 
 	/**
 	 * RDF type is set automatically by suffix. If no suffix, RDFXML type is
-	 * set. *
+	 * set.
 	 */
 	AUTO,
 	/**
-	 * RDF type using for storing data XML syntax*
+	 * RDF type using for storing data XML syntax
 	 */
 	RDFXML,
 	/**
-	 * RDF type using triples - subject, predicate, object. *
+	 * RDF type using triples - subject, predicate, object.
 	 */
 	N3,
 	/**
@@ -30,7 +29,7 @@ public enum RDFFormatType {
 	 */
 	TRIG,
 	/**
-	 * RDF type using turle format - extension of N3 type. *
+	 * RDF type using turle format - extension of N3 type.
 	 */
 	TTL,
 	/**
