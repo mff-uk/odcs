@@ -230,11 +230,10 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	/**
 	 * Set values from from dialog where the configuration object may be edited
 	 * to configuration object implementing {@link DPUConfigObject} interface
-	 * and configuring DPU
+	 * and configuring DPU.
 	 *
-	 * @throws ConfigException Exception which might be thrown when fields
-	 *                         {@link #textFieldFileName} and
-	 *                         {@link #textFieldFilePath} contain null value.
+	 * @throws ConfigException Exception which might be thrown when the field
+	 *                         {@link #textFieldFilePath} contains null value.
 	 * @return config Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
@@ -266,7 +265,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *                         {@link #textFieldFileName}, {@link #textFieldFilePath}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
+	 *                         {@link #textFieldFilePath}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted.
 	 * @param conf Object holding configuration which is used to initialize
