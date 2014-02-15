@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
 /**
- * Is responsible for right validation of queries.
+ * It is responsible for right validation of queries.
  *
  * @author Jiri Tomes
  */
