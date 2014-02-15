@@ -85,8 +85,8 @@ public class VirtuosoSequenceSanitizerAspect {
 	 * entities. These methods are candidates for running into outdated database
 	 * sequences.
 	 * 
-	 * @param pjp
-	 * @return
+	 * @param pjp join point
+	 * @return object returned by advised method
 	 * @throws Throwable 
 	 */
 	@Around("execution(* cz.cuni.mff.xrg.odcs.commons.app.facade.Facade+.save(..))")
@@ -135,29 +135,29 @@ public class VirtuosoSequenceSanitizerAspect {
 	 * 
 	 * @param pjp join point to proceed with
 	 * @param ex exception thrown by underlying database / JPA provider
-	 * @return
+	 * @return object returned by {@link ProceedingJoinPoint#proceed()}
 	 * @throws Throwable 
 	 */
 	private Object handleError(ProceedingJoinPoint pjp, Exception ex) throws Throwable {
-			VirtuosoException cause = getRootCause(ex);
-			if (REMEMBER_SEQ_ASSIGN.get()
-					&& cause != null
-					&& cause.getErrorCode() == VirtuosoException.SQLERROR) {
-				
-				// Lets assume SQLERROR implies "non-unique primary key error",
-				// retry after rollback won't hurt anything.
-				LOG.error("Virtuoso SQLERROR encountered. Will update sequences and retry.", ex);
-				updateSequences();
-				resetArgumentState();
-				forget();
-				
-				LOG.info("Retrying operation after sequence update.");
-				return pjp.proceed();
-			} else {
-				// Different exception -> rethrow
-				LOG.error("Unexpected error type, giving up on recovery.");
-				throw ex;
-			}
+		VirtuosoException cause = getRootCause(ex);
+		if (REMEMBER_SEQ_ASSIGN.get()
+				&& cause != null
+				&& cause.getErrorCode() == VirtuosoException.SQLERROR) {
+
+			// Lets assume SQLERROR implies "non-unique primary key error",
+			// retry after rollback won't hurt anything.
+			LOG.error("Virtuoso SQLERROR encountered. Will update sequences and retry.", ex);
+			updateSequences();
+			resetArgumentState();
+			forget();
+
+			LOG.info("Retrying operation after sequence update.");
+			return pjp.proceed();
+		} else {
+			// Different exception -> rethrow
+			LOG.error("Unexpected error type, giving up on recovery.");
+			throw ex;
+		}
 	}
 	
 	/**

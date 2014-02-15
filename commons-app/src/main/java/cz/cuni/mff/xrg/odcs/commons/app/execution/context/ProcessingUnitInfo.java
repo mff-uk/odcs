@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import java.util.LinkedList;
 
 import javax.persistence.*;
@@ -10,10 +11,10 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import java.util.List;
 
 /**
- * Contains and manage information about execution for single {@link DPU}. The
- * information class (this) is created at the start of the DPU execution. So the
- * information class in not accessible for all the DPUs from the beginning of the
- * execution.
+ * Contains and manage information about execution for single
+ * {@link DPUInstanceRecord}. The information class (this) is created at the
+ * start of the DPU execution. So the information class in not accessible for
+ * all the DPUs from the beginning of the execution.
  * 
  * @author Petyr
  * 
@@ -49,17 +50,13 @@ public class ProcessingUnitInfo implements DataObject {
 	public ProcessingUnitInfo() { }
 
 	/**
-	 * Create information about new DataUnit and return path to it's directory.
-	 * The storage directory should be used to save data by method
-	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit#save()} and load from by
-	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit#load()}.
+	 * Create information about new DataUnit.
 	 * 
 	 * @param name
 	 * @param type
 	 * @param isInput
-	 * @return Index of new DataUnitInfo.
-	 * 
-	 * @deprecated use DpuContextInfo instead
+	 * @return index of new DataUnitInfo.
+	 * @deprecated use {@link DpuContextInfo} instead
 	 */
 	@Deprecated
 	public Integer addDataUnit(String name, DataUnitType type, boolean isInput) {
@@ -76,8 +73,7 @@ public class ProcessingUnitInfo implements DataObject {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return list of data units
 	 * @deprecated use DpuContextInfo instead
 	 */
 	@Deprecated

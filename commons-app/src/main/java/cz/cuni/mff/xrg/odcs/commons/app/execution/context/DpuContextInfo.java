@@ -96,8 +96,8 @@ public class DpuContextInfo {
 	}
 	
 	/**
-	 * Return list of stored {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
-	 * @return 
+	 * @return list of stored
+	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s.
 	 */
 	public List<DataUnitInfo> getDataUnits() {
 		return dpuInfo.dataUnits;
@@ -109,7 +109,8 @@ public class DpuContextInfo {
 	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
 	 *
 	 * @param index
-	 * @return
+	 * @return id for {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} of
+	 * given index
 	 */
 	public String createId(Integer index) {
 		return "exec_" + executionContext.getExecution().getId().toString() + "_dpu_"

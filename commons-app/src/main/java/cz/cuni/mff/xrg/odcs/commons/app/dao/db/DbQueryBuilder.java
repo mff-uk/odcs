@@ -16,11 +16,11 @@ public interface DbQueryBuilder<T extends DataObject>
 	DataQueryBuilder.Sortable<T, DbQuery<T>, DbQueryCount<T>> {
 	
 	/**
-	 * Add given property into the fetch list. Non-trivial classes
-	 * in fetch list will be loaded together with the main class instance {@link T}.
-	 * 
-	 * <b>The given property name must be name of direct non-trivial property
-	 * of main class {@link T}. </b>
+	 * Add given property into the fetch list. Non-trivial classes in fetch list
+	 * will be loaded together with the main class instance {@code T}.
+	 *
+	 * <b>The given property name must be name of direct non-trivial property of
+	 * main class {@code T}. </b>
 	 * 
 	 * @param propertyName 
 	 */

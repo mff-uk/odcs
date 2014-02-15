@@ -6,9 +6,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
 import javax.persistence.TypedQuery;
 
 /**
- * Query can be created by {@link DatabaseQueryBuilder} and used in 
+ * Query can be created by
+ * {@link cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder} and used in
  * {@link DataAccess}.
- * 
+ *
  * @author Petyr
  *
  * @param <T>
@@ -31,9 +32,10 @@ public class DbQuery<T extends DataObject> implements DataQuery<T> {
 	
 	/**
 	 * Set limits for this query.
+	 * 
 	 * @param first
 	 * @param count
-	 * @return
+	 * @return database query
 	 */
 	public DbQuery<T> limit(int first, int count) {		
 		query.setFirstResult(first);

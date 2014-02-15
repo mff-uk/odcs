@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module;
 
 /**
- * Base exception used by {@link ModuleFacade} and related classes.
+ * Base exception used by {@link cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade}
+ * and related classes.
  * 
  * @author Petyr
  *

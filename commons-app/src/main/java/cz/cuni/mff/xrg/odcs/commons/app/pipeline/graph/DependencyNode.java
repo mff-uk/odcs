@@ -37,9 +37,7 @@ public class DependencyNode {
     }
 
     /**
-     * Tells whether all dependencies for this node are already met.
-     *
-     * @return
+     * @return whether all dependencies for this node are already met.
      */
     public boolean hasMetDependencies() {
         for (DependencyNode d : dependencies) {
@@ -68,7 +66,7 @@ public class DependencyNode {
      * Checks whether this node already has given dependency
      *
      * @param node dependency to check
-     * @return
+     * @return whether this node already has given dependency
      */
     public boolean hasDependency(DependencyNode node) {
         return dependencies.contains(node);
@@ -114,7 +112,7 @@ public class DependencyNode {
      * Tells whether this node is directly dependent on given node
      *
      * @param node
-     * @return
+     * @return whether this node is directly dependent on given node
      */
     public boolean hasDependant(DependencyNode node) {
         return dependants.contains(node);

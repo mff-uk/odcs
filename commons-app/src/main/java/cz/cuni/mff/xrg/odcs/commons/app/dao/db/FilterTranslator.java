@@ -14,10 +14,11 @@ public interface FilterTranslator {
     
     /**
      * Translate given filter. Return null it the filter is unknown.
+	 * 
      * @param filter
      * @param cb
      * @param root
-     * @return 
+     * @return translated predicate
      */
     Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root);
     

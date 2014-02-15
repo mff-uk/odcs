@@ -26,9 +26,10 @@ public interface DataQueryBuilder<T extends DataObject,
 
         /**
          * Remove previously applied sort and set new.
+		 * 
          * @param propertyName Set to null to remove sorting.
          * @param asc
-         * @return
+         * @return query builder
          */
         DataQueryBuilder<T, QUERY, QUERY_SIZE> sort(String propertyName, boolean asc);
         
@@ -47,7 +48,8 @@ public interface DataQueryBuilder<T extends DataObject,
 
         /**
          * Remove all user applied filters.
-         * @return 
+		 * 
+         * @return query builder
          */
         DataQueryBuilder<T, QUERY, QUERY_SIZE> claerFilters();
         
@@ -55,22 +57,21 @@ public interface DataQueryBuilder<T extends DataObject,
          * Add given filter as AND to existing filters.
          *
          * @param filter
-         * @return
+         * @return query builder
          */
         DataQueryBuilder<T, QUERY, QUERY_SIZE> addFilter(Object filter);
 
     }
 
     /**
-     *
-     * @return
+     * @return query
      */
     QUERY getQuery();
 
     /**
      * Generate query that can be used to obtain size of result data.
      *
-     * @return
+     * @return count query
      */
     QUERY_SIZE getCountQuery();
 

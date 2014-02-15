@@ -63,18 +63,18 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
 	 * 
 	 * @param username
 	 * @param authentication
-	 * @return
+	 * @return user
 	 * @throws AuthenticationException 
 	 */
 	@Override
 	protected UserDetails retrieveUser(String username,
 			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-		
+
 		User user = userFacade.getUserByUsername(authentication.getName());
 		if (user == null) {
 			throw new BadCredentialsException(username);
 		}
-		
+
 		return user;
 	}
 

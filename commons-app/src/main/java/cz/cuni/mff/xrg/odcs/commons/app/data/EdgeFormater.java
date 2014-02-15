@@ -11,7 +11,7 @@ public class EdgeFormater {
 	 * Format the script string so it can be shown to user.
 	 * 
 	 * @param script
-	 * @return 
+	 * @return formatted string
 	 */
 	public String format(final String script) {		
 		return script.replace(EdgeInstructions.Separator.getValue(), "\n");
