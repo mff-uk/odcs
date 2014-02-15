@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
 import java.io.File;
 
 /**
- * FileDataUnitFactory for creating {@Link FileDataUnit}s.
+ * Factory for {@link ManageableFileDataUnit}.
  *
  * @author Petyr
  */
@@ -14,11 +14,9 @@ public class FileDataUnitFactory {
 	}
 
 	/**
-	 * Create {@link FileDataUnit}.
-	 * 
-	 * @param name Name for newly created {@link FileDataUnit}.
-	 * @param directory Directory where {@link FileDataUnit} can store it's data.
-	 * @return 
+	 * @param name Name for newly created .
+	 * @param directory Directory where the working data can be stored.
+	 * @return New instance of {@link ManageableFileDataUnit}.
 	 */
 	public static ManageableFileDataUnit create(final String name, 
 			final File directory) {
