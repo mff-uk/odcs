@@ -3,19 +3,19 @@ package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 import java.io.File;
 
 /**
- * Handler for single record in {@link FileDataUnit}. In order to user
- * recast it into {@link DirectoryHandler} or {@link FileHandler}.
- * 
+ * Handler for single record in {@link FileDataUnit}. In order to user recast it
+ * into {@link DirectoryHandler} or {@link FileHandler}.
+ *
  * To determine if the {@link Handler} denotes file or directory you can use
- * class inheritance (see sample code below), or utilize {@link #asFile()} 
+ * class inheritance (see sample code below), or utilize {@link #asFile()}
  * result of. You should use the first approach rather then the second.
- * 
- * To every {@link Handler} in {@link FileDataUnit} the user data (string) 
- * can be attached. The string should have reasonable size as it's stored in 
- * memory for whole time of existence of given {@link FileDataUnit}.
- * 
+ *
+ * To every {@link Handler} in {@link FileDataUnit} the user data (string) can
+ * be attached. The string should have reasonable size as it's stored in memory
+ * for whole time of existence of given {@link FileDataUnit}.
+ *
  * <pre>
- * {@code 
+ * {@code
  * // some unknown handler
  * Handler handler;
  * if (handler instanceof DirectoryHandler) {
@@ -30,9 +30,9 @@ import java.io.File;
  * </pre>
  *
  * Every handler can hold user data, that can be used to add additional info to
- * the handler. The user data should be reasonable small as they are hold in 
+ * the handler. The user data should be reasonable small as they are hold in
  * memory.
- * 
+ *
  * @author Petyr
  */
 public interface Handler {
@@ -44,30 +44,30 @@ public interface Handler {
 	 *
 	 * @return
 	 */
-	File asFile();
+	public File asFile();
 
 	/**
 	 * Set user data for this handler.
 	 *
 	 * @param newUserData
 	 */
-	void setUserData(String newUserData);
+	public void setUserData(String newUserData);
 
 	/**
 	 * Return user data attached to this handler.
 	 *
 	 * @return
 	 */
-	String getUserData();
-	
+	public String getUserData();
+
 	/**
 	 * @return name
 	 */
-	String getName();
-	
+	public String getName();
+
 	/**
-	 * @return Path from the root of respective {@link FileDataUnit}, can be 
-	 * used as {@link Handler}'s id.
+	 * @return Path from the root of respective {@link FileDataUnit}, can be
+	 *         used as {@link Handler}'s id.
 	 */
 	String getRootedPath();
 }
