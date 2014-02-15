@@ -74,6 +74,7 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	 * @throws QueryEvaluationException An exception indicating that the
 	 *                                  evaluation of a query failed.
 	 */
+	@Override
 	public List<BindingSet> asList() throws QueryEvaluationException {
 		return Iterations.asList(result);
 
