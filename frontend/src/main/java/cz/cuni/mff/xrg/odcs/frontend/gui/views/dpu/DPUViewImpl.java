@@ -5,6 +5,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -40,8 +41,8 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Component
 @Scope("prototype")
 public class DPUViewImpl extends CustomComponent implements DPUView {
-	private static final int COLUMN_ACTIONS_WIDTH = 160;
 
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
 	private DPUPresenter presenter;
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout mainLayout;
@@ -80,6 +81,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
 	private Button buttonSaveDPU;
 	private String tabname;
+	private Page.BrowserWindowResizeListener resizeListener = null;
+	private Panel dpuTreePanel;
 
 	public DPUViewImpl() {
 	}
@@ -87,7 +90,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	@Override
 	public Object enter(DPUPresenter presenter) {
 		this.presenter = presenter;
-		buildMainLayout();
+		setupResizeListener();
+				buildMainLayout();
 		setCompositionRoot(mainLayout);
 		return this;
 	}
@@ -223,12 +227,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				}
 			});
 		}
+		dpuTree.setSizeUndefined();
 
-		dpuLayout.addComponent(dpuTree);
+		dpuTreePanel = new Panel();
+		setDpuTreeMaxHeight(Page.getCurrent().getBrowserWindowHeight());
+		dpuTreePanel.setWidth("-1px");
+		dpuTreePanel.setContent(dpuTree);
+
+		dpuLayout.addComponent(dpuTreePanel);
 		dpuLayout.addComponent(layoutInfo);
 		dpuLayout.setExpandRatio(layoutInfo, 5);
-		dpuTree.setSizeUndefined();
-		dpuLayout.setExpandRatio(dpuTree, 0);
+		dpuLayout.setExpandRatio(dpuTreePanel, 0);
 
 		return dpuLayout;
 	}
@@ -809,7 +818,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		instancesTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
 		instancesTable.addGeneratedColumn("actions",
 				createActionColumn());
-		
+
 		instancesTable.setVisibleColumns("actions", "name");
 
 		verticalLayoutInstances.addComponent(instancesTable);
@@ -902,5 +911,22 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		}, new ThemeResource("icons/log.png"));
 
 		return generator;
+	}
+
+	private void setupResizeListener() {
+		if (resizeListener == null) {
+			resizeListener = new Page.BrowserWindowResizeListener() {
+				@Override
+				public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+					setDpuTreeMaxHeight(event.getHeight());
+				}
+			};
+		}
+		Page.getCurrent().removeBrowserWindowResizeListener(resizeListener);
+		Page.getCurrent().addBrowserWindowResizeListener(resizeListener);
+	}
+
+	private void setDpuTreeMaxHeight(int windowHeight) {
+		dpuTreePanel.setHeight(windowHeight - 120, Unit.PIXELS);
 	}
 }
