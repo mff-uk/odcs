@@ -213,15 +213,16 @@ public class SPARQLoader {
 	 * Load RDF data from repository to SPARQL endpointURL to the collection of
 	 * URI graphs without endpoint authentication.
 	 *
-	 * @param endpointURL     Remote URL connection to SPARQL endpoint contains
-	 *                        RDF data.
-	 * @param defaultGraphURI List with names of graph where RDF data are
-	 *                        loading.
-	 * @param graphType       One of way, how to solve loading RDF data to graph
-	 *                        when is it is not empty (MERGE, OVERRIDE, FAIL).
-	 * @param insertType      One of way, how solve loading RDF data parts to
-	 *                        SPARQL endpoint (SKIP_BAD_TYPES,
-	 *                        STOP_WHEN_BAD_PART).
+	 * @param endpointURL       Remote URL connection to SPARQL endpoint
+	 *                          contains RDF data.
+	 * @param endpointGraphsURI List with names of graph where RDF data are
+	 *                          loading.
+	 * @param graphType         One of way, how to solve loading RDF data to
+	 *                          graph when is it is not empty (MERGE, OVERRIDE,
+	 *                          FAIL).
+	 * @param insertType        One of way, how solve loading RDF data parts to
+	 *                          SPARQL endpoint (SKIP_BAD_TYPES,
+	 *                          STOP_WHEN_BAD_PART).
 	 * @throws RDFException when loading data to SPARQL endpoint fail.
 	 */
 	public void loadToSPARQLEndpoint(URL endpointURL,
@@ -957,8 +958,7 @@ public class SPARQLoader {
 	 *
 	 * @param endpointURL   URL address of update endpoint connect to.
 	 * @param endpointGraph Graph name in URI format.
-	 * @param context       DPU context for checking manual canceling in case of
-	 *                      infinite loop (no recovery error).
+	 *
 	 * @throws RDFException When you dont have update right for this action, or
 	 *                      connection is lost before succesfully ending.
 	 */

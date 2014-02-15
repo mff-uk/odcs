@@ -1083,8 +1083,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	/**
 	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface
-	 * and configuring DPU
+	 * to configuration object implementing {@link DPUConfigObject} interface.
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
 	 *                         {@link #comboBoxSparql} contains null value.
@@ -1138,9 +1137,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
-	 * Load values from configuration object implementing {@link Config}
-	 * interface and configuring DPU into the dialog where the configuration
-	 * object may be edited.
+	 * Load values from configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU into the dialog where the configuration object may be
+	 * edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *

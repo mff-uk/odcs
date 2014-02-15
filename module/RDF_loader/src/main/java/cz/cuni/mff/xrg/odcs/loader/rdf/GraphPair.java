@@ -14,8 +14,8 @@ public class GraphPair {
 	/**
 	 * Create new graph pair based on given parameters.
 	 *
-	 * @param graphName           String value of graph name (URI type)
-	 * @param tempGraphNameString String value of temp graph name (URI type)
+	 * @param graphName     String value of graph name (URI type)
+	 * @param tempGraphName String value of temp graph name (URI type)
 	 */
 	public GraphPair(String graphName, String tempGraphName) {
 		this.graphName = graphName;
