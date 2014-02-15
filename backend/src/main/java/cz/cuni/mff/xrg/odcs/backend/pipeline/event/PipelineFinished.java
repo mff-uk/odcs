@@ -29,11 +29,10 @@ public final class PipelineFinished extends PipelineInfo {
 	}
 
 	/**
-	 * Return true if respective execution finished with
+	 * 
+	 * @return True if respective execution finished with
 	 * {@link PipelineExecutionStatus#FINISHED_SUCCESS} or
 	 * {@link PipelineExecutionStatus#FINISHED_WARNING}.
-	 *
-	 * @return
 	 */
 	public boolean sucess() {
 		return execution.getStatus() == PipelineExecutionStatus.FINISHED_SUCCESS

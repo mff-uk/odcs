@@ -74,7 +74,7 @@ abstract class PreExecutorBase implements PreExecutor {
 	 * @param dpuInstance
 	 * @param execution
 	 * @param unitInfo
-	 * @return
+	 * @return False in case of failure.
 	 */
 	protected abstract boolean execute(Node node,
 			Map<Node, Context> contexts,
