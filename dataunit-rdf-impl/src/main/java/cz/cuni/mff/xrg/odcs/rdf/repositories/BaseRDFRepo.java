@@ -1251,7 +1251,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
-	 * repository data and return {@link OrderTupleQueryResult} class as result.
+	 * repository data and return {@link OrderTupleQueryResultImpl} class as result.
 	 *
 	 * This ordered select query don´t have to containt LIMIT nad OFFSET
 	 * keywords.
@@ -1259,10 +1259,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
 	 * virtuoso.ini file before using. For more info
 	 *
-	 * @see OrderTupleQueryResult class description.
+	 * @see OrderTupleQueryResultImpl class description.
 	 *
 	 * @param orderSelectQuery String representation of SPARQL select query.
-	 * @return {@link OrderTupleQueryResult} representation of ordered select
+	 * @return {@link OrderTupleQueryResultImpl} representation of ordered select
 	 *         query.
 	 * @throws InvalidQueryException when query is not valid or containst LIMIT
 	 *                               or OFFSET keyword.
