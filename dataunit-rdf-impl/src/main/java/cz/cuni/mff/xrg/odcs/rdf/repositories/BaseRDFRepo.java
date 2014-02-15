@@ -61,8 +61,8 @@ import org.slf4j.Logger;
  */
 public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
-        private FileRDFMetadataExtractor fileRDFMetadataExtractor; 
-    
+	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
+
 	/**
 	 * Default name for graph using for store RDF data.
 	 */
@@ -109,21 +109,24 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	private boolean hasBrokenConnection = false;
 
-        public BaseRDFRepo() {
-             this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
-        }
+	public BaseRDFRepo() {
+		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
+	}
 
+	@Override
+	public Map<String, List<String>> getRDFMetadataForSubjectURI(
+			String subjectURI, List<String> predicates) {
+		return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI,
+				predicates);
+	}
 
-         @Override
-         public Map<String,List<String>> getRDFMetadataForSubjectURI(String subjectURI, List<String> predicates) {
-             return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI, predicates);
-         }
-        
-         @Override
-         public Map<String,List<String>> getRDFMetadataForFile(String filePath, List<String> predicates) {
-             return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath, predicates);
-         }
-         
+	@Override
+	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
+			List<String> predicates) {
+		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
+				predicates);
+	}
+
 	/**
 	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
 	 * serialization of RDF data
@@ -1251,7 +1254,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
-	 * repository data and return {@link OrderTupleQueryResultImpl} class as result.
+	 * repository data and return {@link OrderTupleQueryResultImpl} class as
+	 * result.
 	 *
 	 * This ordered select query don´t have to containt LIMIT nad OFFSET
 	 * keywords.
@@ -1262,8 +1266,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * @see OrderTupleQueryResultImpl class description.
 	 *
 	 * @param orderSelectQuery String representation of SPARQL select query.
-	 * @return {@link OrderTupleQueryResultImpl} representation of ordered select
-	 *         query.
+	 * @return {@link OrderTupleQueryResultImpl} representation of ordered
+	 *         select query.
 	 * @throws InvalidQueryException when query is not valid or containst LIMIT
 	 *                               or OFFSET keyword.
 	 */
