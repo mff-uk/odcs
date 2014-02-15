@@ -25,7 +25,7 @@
 	
         <dependency> <!-- commons project -->
             <groupId>${project.groupId}</groupId>
-            <artifactId>commons</artifactId>
+            <artifactId>dataunit-file</artifactId>
             <version>${project.version}</version>
         </dependency>      
                        
