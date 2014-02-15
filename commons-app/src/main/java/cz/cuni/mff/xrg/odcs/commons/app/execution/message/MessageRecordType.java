@@ -39,9 +39,10 @@ public enum MessageRecordType {
 	,PIPELINE_INFO;
 		
 	/**
-	 * Convert {@link MessageType} to {@link RecordType}.
-	 * @param type 
-	 * @return
+	 * Convert {@link MessageType} to {@link MessageRecordType}.
+	 * 
+	 * @param type message type
+	 * @return record type
 	 */
 	public static MessageRecordType fromMessageType(MessageType type) {
 		switch(type) {

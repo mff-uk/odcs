@@ -43,7 +43,7 @@ public class MySQLDataSource extends BasicDataSource {
 	 * Connection URL factory.
 	 * 
 	 * @param config
-	 * @return 
+	 * @return connection string
 	 */
 	private static String buildUrl(AppConfig config) {
 		return String.format(JDBC_URL,

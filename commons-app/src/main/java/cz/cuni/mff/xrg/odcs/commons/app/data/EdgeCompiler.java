@@ -42,8 +42,12 @@ public final class EdgeCompiler {
 	}
 	
 	/**
-	 * Create script that maps output {@link DataUnit}s (sourceNames) to input
-	 * {@link DataUnit}s (targetNames). Does not use {@link #moduleFacade}.
+	 * Create script that maps output
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
+	 * (sourceNames) to input
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
+	 * (targetNames). Does not use
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade}.
 	 *
 	 * @param mappings
 	 * @param sources
@@ -92,7 +96,7 @@ public final class EdgeCompiler {
 	 * @param sources Sources data unit.
 	 * @param targets Targets data unit.
 	 * @param handler Can be null, in such case default handler is used.
-	 * @return 
+	 * @return mapping translation into string
 	 */
 	public String translate(List<MutablePair<Integer, Integer>> mappings,
 			List<DataUnitDescription> sources,
@@ -194,9 +198,10 @@ public final class EdgeCompiler {
 	}	
 	
 	/**
-	 * Decompile script and create mapping from based on given {@link DataUnit}s
+	 * Decompile script and create mapping from based on given
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
 	 * names. Mapping is from sourceNames to targetNames. Does not use
-	 * {@link #moduleFacade}.
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade}.
 	 *
 	 * @param script
 	 * @param sources
@@ -323,8 +328,8 @@ public final class EdgeCompiler {
 	 * will be lost.
 	 *
 	 * @param edge Edge which default mapping should be created.
-	 * @param source Description of source {@link DataUnits}.
-	 * @param target Description of source {@link DataUnits}.
+	 * @param source Description of source {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
+	 * @param target Description of source {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
 	 * @deprecated use createDefaultMapping instead
 	 */
 	public void setDefaultMapping(Edge edge, List<DataUnitDescription> source,
@@ -362,8 +367,10 @@ public final class EdgeCompiler {
 	 * 
 	 * @param graph
 	 * @param explorer
-	 * @return 
-	 * @deprecated Use pipeline.PipelineValidator instead
+	 * @return validation report as string
+	 * @deprecated Use
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineValidator}
+	 * instead
 	 */
 	public String checkMandatoryInputsAndOutputs(PipelineGraph graph, DPUExplorer explorer) {
 		String report = "";

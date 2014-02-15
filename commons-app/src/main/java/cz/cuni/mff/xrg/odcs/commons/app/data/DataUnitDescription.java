@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data;
 
 /**
- * Class describe {@link DataUnit} class.
+ * Class describe {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo} class.
  *
  * @author Petyr
  *
@@ -24,7 +24,9 @@ public class DataUnitDescription {
 	private final String description;
 
 	/**
-	 * True if usage of {@link DataUnit} is optional.
+	 * True if usage of
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}
+	 * is optional.
 	 */
 	private final boolean optional;
 
@@ -39,12 +41,13 @@ public class DataUnitDescription {
 	}
 
 	/**
-	 * Create description for output {@link DataUnit}.
+	 * Create description for output
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
 	 *
 	 * @param name
 	 * @param typeName
 	 * @param description
-	 * @return
+	 * @return description
 	 */
 	public static DataUnitDescription createOutput(String name,
 			String typeName,
@@ -53,13 +56,13 @@ public class DataUnitDescription {
 	}
 
 	/**
-	 * Create description for input {@link DataUnit}.
+	 * Create description for input {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
 	 *
 	 * @param name
 	 * @param typeName
 	 * @param description
 	 * @param optional
-	 * @return
+	 * @return description
 	 */
 	public static DataUnitDescription createInput(String name,
 			String typeName,
@@ -81,10 +84,9 @@ public class DataUnitDescription {
 	}
 
 	/**
-	 * Return true if the usage of this DataUnit is optional. For output
-	 * {@link DataUnit} return false always.
-	 *
-	 * @return
+	 * @return true if the usage of this DataUnit is optional. For output
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}
+	 * always return false.
 	 */
 	public boolean getOptional() {
 		return this.optional;

@@ -9,7 +9,7 @@ import java.util.EnumSet;
  * 
  * @see SharedEntity
  * @see AuthAwarePermissionEvaluator
- * @see cz.cuni.mff.xrg.odcs.commons.app.dao.db.Authorizator
+ * @see cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizator
  * 
  * @author Jan Vojt
  *
@@ -32,7 +32,7 @@ public enum ShareType {
 	 */
 	PUBLIC_RW("Public");
         
-        /**
+	/**
 	 * Share type pretty name.
 	 */
 	protected final String name;
@@ -42,8 +42,7 @@ public enum ShareType {
 	}
 	
 	/**
-	 * Return name.
-	 * @return
+	 * @return name
 	 */
 	public String getName() {
 		return this.name;

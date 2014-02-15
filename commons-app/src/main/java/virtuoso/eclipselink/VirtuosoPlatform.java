@@ -31,7 +31,7 @@ import static org.eclipse.persistence.platform.database.DatabasePlatform.DEFAULT
  * </ul>
  * 
  * <p>
- * Inspired by {@link MySQLPlatform}.
+ * Inspired by {@link org.eclipse.persistence.platform.database.MySQLPlatform}.
  *
  * @author Jan Vojt
  */
@@ -224,14 +224,13 @@ public class VirtuosoPlatform extends DatabasePlatform {
      * 
      * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
      * 
-     * @param readQuery
      * @param firstResultIndex
      * @param maxResults
      * 
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
     @Override
-    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
         return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
     }
 
@@ -581,8 +580,8 @@ public class VirtuosoPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL uses ' to allow identifier to have spaces.
      * @deprecated
-     * @see getStartDelimiter()
-     * @see getEndDelimiter()
+     * @see #getStartDelimiter()
+     * @see #getEndDelimiter()
      */
     @Override
     public String getIdentifierQuoteCharacter() {

@@ -250,7 +250,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 	 * Returns duration of execution. Returns -1 for unfinished/not started
 	 * executions.
 	 * 
-	 * @return 
+	 * @return duration of pipeline execution
 	 */
 	public long getDuration() {
 		if (start == null || end == null) {

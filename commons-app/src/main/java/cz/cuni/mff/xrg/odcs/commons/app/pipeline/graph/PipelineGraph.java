@@ -159,7 +159,7 @@ public class PipelineGraph implements DataObject {
      * Removes DPURecord from graph.
      *
      * @param dpuId
-     * @return
+     * @return removed node
      */
     public Node removeDpu(int dpuId) {
         Node node = getNodeById(dpuId);
@@ -378,8 +378,7 @@ public class PipelineGraph implements DataObject {
 	}
 	
 	/**
-	 * Gets maximum coordinates of DPUs in graph.
-	 * @return 
+	 * @return maximum coordinates of DPUs in graph.
 	 */
 	public Position getBounds() {
 		Position bounds = new Position(0, 0);

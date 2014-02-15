@@ -31,9 +31,7 @@ public abstract class ConfigPropertyException extends RuntimeException {
 	}
 
 	/**
-	 * Error message.
-	 * 
-	 * @return 
+	 * @return error message.
 	 */
 	@Override
 	public String getMessage() {

@@ -19,7 +19,7 @@ public interface ModuleFacade {
 	 * Return instance for given {@link DPUTemplateRecord}.
 	 * 
 	 * @param dpu
-	 * @return
+	 * @return DPU instance for given DPU template
 	 * @throws ModuleException
 	 */
 	Object getInstance(DPUTemplateRecord dpu) throws ModuleException;
@@ -82,10 +82,10 @@ public interface ModuleFacade {
 	void delete(DPUTemplateRecord dpu);
 	
 	/**
-	 * Return jar-properties for given {@link DPURecord}'s bundle.
+	 * Return jar-properties for given DPU template's bundle.
 	 * 
 	 * @param dpu
-	 * @return
+	 * @return jar-properties for given {@link DPUTemplateRecord}'s bundle.
 	 */
 	Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu);
 	
@@ -111,9 +111,7 @@ public interface ModuleFacade {
 	void loadLibs(List<String> directoryPaths);
 	
 	/**
-	 * Return path to the DPU directory.
-	 * 
-	 * @return 
+	 * @return path to the DPU directory.
 	 */
 	String getDPUDirectory();
 	
