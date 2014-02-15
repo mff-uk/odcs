@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler;
 
 import java.io.File;
 import java.util.List;
@@ -25,7 +26,6 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
@@ -40,23 +40,31 @@ import org.openrdf.rio.RDFParser;
  */
 public interface RDFDataUnit extends DataUnit {
 
+	/**
+	 * Extracts metadata (held within the list of predicates) about certain
+	 * subjects (subject URIs)
+	 *
+	 * @param subjectURI Subject URI for which metadata is searched
+	 * @param predicates Predicates being searched
+	 * @return Pairs predicate-value for the given subject URI
+	 */
+	public Map<String, List<String>> getRDFMetadataForSubjectURI(
+			String subjectURI,
+			List<String> predicates);
 
-        /**
-         * Extracts metadata (held within the list of predicates) about certain subjects (subject URIs)
-         * @param subjectURI Subject URI for which metadata is searched 
-         * @param predicates Predicates being searched
-         * @return Pairs predicate-value for the given subject URI
-         */
-        Map<String,List<String>> getRDFMetadataForSubjectURI(String subjectURI, List<String> predicates);
-        
-         /**
-         * Extracts metadata (held within the list of predicates) about certain files (based on the path obtained by {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath})
-         * @param filePath Path to the file. May be obtained by calling {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath}) 
-         * @param predicates Predicates being searched
-         * @return Pairs predicate-value for the given filePath
-         */
-        Map<String,List<String>> getRDFMetadataForFile(String filePath, List<String> predicates);
-        
+	/**
+	 * Extracts metadata (held within the list of predicates) about certain
+	 * files (based on the path obtained by
+	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath})
+	 *
+	 * @param filePath   Path to the file. May be obtained by calling
+	 *                   {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath})
+	 * @param predicates Predicates being searched
+	 * @return Pairs predicate-value for the given filePath
+	 */
+	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
+			List<String> predicates);
+
 	/**
 	 * Add one RDF triple (statement) to the repository. Subject, predicate,
 	 * object may be prepare by the corresponding methods createURI,
@@ -238,8 +246,7 @@ public interface RDFDataUnit extends DataUnit {
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
 
-	
-        	/**
+	/**
 	 * Make select query over repository data and return MyTupleQueryResult
 	 * class as result.
 	 *
@@ -249,9 +256,8 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public MyTupleQueryResultIf executeSelectQueryAsTuples(
 			String selectQuery) throws InvalidQueryException;
-        
-        
-        /**
+
+	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
 	 * repository data and return {@link OrderTupleQueryResult} class as result.
 	 *
