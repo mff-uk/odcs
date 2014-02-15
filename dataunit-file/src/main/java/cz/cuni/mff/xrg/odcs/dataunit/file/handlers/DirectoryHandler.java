@@ -77,7 +77,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * with the default {@link OptionsAdd} parameter.
 	 *
 	 * @param e
-	 * @return
+	 * @return True if the handler has been added.
 	 */
 	@Override
 	boolean add(Handler e);
@@ -101,7 +101,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * with the default {@link OptionsAdd} parameter.
 	 *
 	 * @param c
-	 * @return
+	 * @return True at least one element has been added.
 	 */
 	@Override
 	boolean addAll(Collection<? extends Handler> c);
@@ -113,7 +113,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 *
 	 * @param c
 	 * @param options
-	 * @return
+	 * @return True at least one element has been added.
 	 */
 	boolean addAll(Collection<? extends Handler> c, OptionsAdd options);
 
@@ -122,7 +122,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * in directory then remove. Also if it's not link then delete it's content.
 	 *
 	 * @param o
-	 * @return
+	 * @return True if an object has been removed as a result of this call.
 	 */
 	@Override
 	boolean remove(Object o);
@@ -131,7 +131,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * This method is not supported. If call just return false.
 	 *
 	 * @param c
-	 * @return
+	 * @return False.
 	 */
 	@Override
 	boolean retainAll(Collection<?> c);
