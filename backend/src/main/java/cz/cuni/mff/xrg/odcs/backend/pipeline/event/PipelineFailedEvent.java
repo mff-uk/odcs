@@ -177,7 +177,7 @@ public final class PipelineFailedEvent extends PipelineEvent {
 	 * @param dpuInstance
 	 * @param execution
 	 * @param source
-	 * @return
+	 * @return Event representing given situation.
 	 */
 	public static PipelineFailedEvent createMissingFile(DPUInstanceRecord dpuInstance,
 			PipelineExecution execution,

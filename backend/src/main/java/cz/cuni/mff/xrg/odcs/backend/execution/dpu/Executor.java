@@ -179,7 +179,7 @@ public final class Executor implements Runnable {
 	 *
 	 * @param dpuInstance Instance of DPU to execute.
 	 * @param unitInfo
-	 * @return
+	 * @return False if any of the pre-executors failed.
 	 */
 	private boolean executePreExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {
@@ -264,7 +264,7 @@ public final class Executor implements Runnable {
 	 *
 	 * @param dpuInstance Instance of DPU that has been executed.
 	 * @param unitInfo
-	 * @return
+	 * @return False if any of the post-executors failed.
 	 */
 	private boolean executePostExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {

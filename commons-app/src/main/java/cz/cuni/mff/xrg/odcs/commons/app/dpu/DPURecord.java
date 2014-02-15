@@ -132,8 +132,7 @@ public abstract class DPURecord {
 	}
 	
 	/**
-	 * Return DPU's type.
-	 * @return
+	 * @return DPU's type.
 	 */
     public abstract DPUType getType();
     
@@ -146,13 +145,13 @@ public abstract class DPURecord {
     public abstract void loadInstance(ModuleFacade moduleFacade) throws ModuleException;
     
     /**
-     * Return full path from the DPU's jar file from DPU's directory.
-     * @return
+     * @return full path from the DPU's jar file relative to DPU's directory.
      */
     public abstract String getJarPath();
 
     /**
      * Get stored instance if loaded. To load instance use {@link #loadInstance}.
+	 * 
      * @return Stored instance.
      */
     public Object getInstance() {
@@ -160,8 +159,7 @@ public abstract class DPURecord {
     }
     
 	/**
-	 * Return raw configuration representation.
-	 * @return
+	 * @return raw configuration representation.
 	 */
 	public String getRawConf() {
 		return serializedConfiguration;
@@ -179,7 +177,7 @@ public abstract class DPURecord {
 	 * Generates hash code from primary key if it is available, otherwise
 	 * from the rest of the attributes.
 	 * 
-	 * @return 
+	 * @return hash code
 	 */
 	@Override
 	public int hashCode() {
@@ -196,15 +194,15 @@ public abstract class DPURecord {
 	}
 	
 	/**
-	 * Compares DPURecord to other object. Two DPURecord instances are equal if they have
-	 * the same non-null primary key, or if both their primary keys are
-	 * <code>null</code> and their attributes are equal. Note that
-	 * {@link TemplateConfiguration} is also a part ofDPUs identity, because we
-	 * may want to have same DPUs that only differ in configuration (although we
-	 * should ideally change DPUs name).
+	 * Compares DPURecord to other object. Two DPURecord instances are equal if
+	 * they have the same non-null primary key, or if both their primary keys
+	 * are {@code null} and their attributes are equal. Note that template's
+	 * configuration is also a part ofDPUs identity, because we may want to have
+	 * same DPUs that only differ in configuration (although we should ideally
+	 * change DPUs name).
 	 *
 	 * @param obj
-	 * @return
+	 * @return whether {@code this} object is equal to given object
 	 */
 	@Override
 	public boolean equals(Object obj) {

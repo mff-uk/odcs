@@ -76,8 +76,9 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	
 	/**
 	 * Create typed query from given string.
+	 * 
 	 * @param stringQuery
-	 * @return 
+	 * @return typed JPA query
 	 */
 	protected TypedQuery<T> createTypedQuery(String stringQuery) {
 		return em.createQuery(stringQuery, entityClass);
@@ -86,8 +87,9 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	/**
 	 * Execute the given string query and return the results. No filters are 
 	 * applied.
+	 * 
 	 * @param stringQuery
-	 * @return 
+	 * @return list of query results
 	 */
 	protected List<T> executeList(String stringQuery) {
 		return executeList(createTypedQuery(stringQuery));
@@ -96,8 +98,9 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	/**
 	 * Execute given typed query and return the results. No filters are 
 	 * applied.
+	 * 
 	 * @param typedQuery
-	 * @return 
+	 * @return list of query results
 	 */
 	protected List<T> executeList(TypedQuery<T> typedQuery) {
 		return Collections.checkedList(typedQuery.getResultList(), entityClass);
@@ -107,7 +110,7 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	 * Execute given typed query and return the result. No filters are 
 	 * applied.
 	 * @param typedQuery
-	 * @return 
+	 * @return query result
 	 */
 	protected T execute(TypedQuery<T> typedQuery) {
 		try {

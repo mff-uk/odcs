@@ -9,8 +9,10 @@ import ch.qos.logback.core.spi.FilterReply;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 /**
- * Use MDC value {@link LogMessage.MDPU_EXECUTION_KEY_NAME} to determine 
- * related execution and then do Level filtering based on stored informations.
+ * Use MDC value 
+ * {@link Log#MDC_EXECUTION_KEY_NAME} 
+ * to determine related execution and then do Level filtering based on stored 
+ * informations.
  * 
  * @author Petyr
  *

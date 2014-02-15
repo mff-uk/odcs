@@ -77,7 +77,6 @@ public interface ManagableDataUnit extends DataUnit {
 	 * Return true if DataUnit is in read only state.
 	 *
 	 * @return True if data in DataUnit are read only, false otherwise.
-	 * @see {@link #madeReadOnly}
 	 */
 	public boolean isReadOnly();
 	

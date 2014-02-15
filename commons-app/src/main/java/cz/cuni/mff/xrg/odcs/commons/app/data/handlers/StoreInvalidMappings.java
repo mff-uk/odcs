@@ -4,7 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Error handler for {@link EdgeCompiler}, that store all the invalid mappings.
+ * Error handler for {@link cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler},
+ * that store all the invalid mappings.
  * 
  * @author Petyr
  */

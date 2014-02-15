@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class AppLock.
+ * The Class AppLock taken from
+ * http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
  * 
- * @url http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-
- *      instance.html
  * @author rumatoest
  */
 public class AppLock {

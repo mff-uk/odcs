@@ -12,9 +12,7 @@ public class MissingConfigPropertyException extends ConfigPropertyException {
 	}
 
 	/**
-	 * Error message.
-	 * 
-	 * @return 
+	 * @return error message.
 	 */
 	@Override
 	public String getMessage() {

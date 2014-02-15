@@ -6,8 +6,9 @@ import javax.persistence.*;
 
 /**
  * Global notification settings used as default for all user schedules. This
- * configuration can be overridden for specific {@link Schedule} by
- * {@link ScheduleNotificationRecord}.
+ * configuration can be overridden for specific
+ * {@link cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule} by
+ * {@link cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord}.
  *
  * @author Jan Vojt
  */

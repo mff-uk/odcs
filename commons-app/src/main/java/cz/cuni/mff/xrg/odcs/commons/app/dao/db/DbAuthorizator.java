@@ -13,11 +13,12 @@ import javax.persistence.criteria.Predicate;
 public interface DbAuthorizator {
         
     /**
-     * Return authorization {@link Predicat}.
+     * Return authorization {@link Predicate}.
+	 * 
      * @param cb
      * @param root
      * @param entityClass
-     * @return 
+     * @return authorization predicate for DB query
      */
     Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass);
     

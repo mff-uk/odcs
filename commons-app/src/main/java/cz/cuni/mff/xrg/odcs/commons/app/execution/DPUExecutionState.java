@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution;
 /**
  * Describe states for DPU execution. 
  * 
- * @see {@link ProcessingUnitInfo}
+ * @see cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo
  * @author Petyr
  *
  */

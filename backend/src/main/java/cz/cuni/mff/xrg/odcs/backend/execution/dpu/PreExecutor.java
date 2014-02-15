@@ -37,8 +37,9 @@ public interface PreExecutor extends Ordered {
 	
 	/**
 	 * Should perform pre-execution actions. If return false then the execution
-	 * is cancelled. In such case it should publish event
-	 * {@link DPUPreExecutorFailed} with problem description.
+	 * is cancelled. In such case the PreExutor should publish respective
+	 * {@link cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent} 
+	 * with problem description.
 	 * 
 	 * @param node Node that will be executed.
 	 * @param contexts List of context, also contain context for current node.
@@ -46,7 +47,7 @@ public interface PreExecutor extends Ordered {
 	 * @param execution Respective execution.
 	 * @param unitInfo DPU's ProcessingUnitInfo.
 	 * @param willExecute False it the DPU will not be executed.
-	 * @return
+	 * @return False if the pre-executor failed.
 	 */
 	public boolean preAction(Node node,
 			Map<Node, Context> contexts,

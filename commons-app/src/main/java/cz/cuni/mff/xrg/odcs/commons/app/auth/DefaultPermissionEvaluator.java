@@ -122,7 +122,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 	 * @param targetId
 	 * @param targetType
 	 * @param permission
-	 * @return 
+	 * @return always throws exception
 	 */
 	@Override
 	public boolean hasPermission(Authentication auth,

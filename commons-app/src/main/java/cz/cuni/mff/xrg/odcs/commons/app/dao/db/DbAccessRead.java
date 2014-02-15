@@ -15,7 +15,8 @@ public interface DbAccessRead <T extends DataObject>
 	
 	/**
 	 * Database use special query builder.
-	 * @return 
+	 * 
+	 * @return query builder
 	 */
 	@Override
 	public DbQueryBuilder<T> createQueryBuilder();

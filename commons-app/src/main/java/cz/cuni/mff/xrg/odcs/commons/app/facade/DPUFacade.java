@@ -31,16 +31,17 @@ public interface DPUFacade extends Facade {
 	/**
 	 * Create copy of DPU template, as the owner the current user is set.
 	 * 
-	 * @param original
-	 * @return
+	 * @param original DPU template
+	 * @return newly created copy of DPU template
 	 */
 	 DPUTemplateRecord createCopy(DPUTemplateRecord original);
 	
 	/**
-	 * Creates a new DPURecord with the same properties and configuration as in given
-	 * {@link DPUInstance}. Note that newly created DPURecord is only returned, but
-	 * not managed by database. To persist it, {@link #save(DPURecord)} must be called
-	 * explicitly.
+	 * Creates a new DPU template with the same properties and configuration as
+	 * in given DPU instance. Note that newly created DPU template is only
+	 * returned, but not managed by database. To persist it,
+	 * {@link #save(cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord) save}
+	 * must be called explicitly.
 	 *
 	 * @param instance
 	 * @return new DPURecord
@@ -48,15 +49,18 @@ public interface DPUFacade extends Facade {
 	DPUTemplateRecord createTemplateFromInstance(DPUInstanceRecord instance);
 
 	/**
-	 * Returns list of all DPUTemplateRecords currently persisted in database.
-	 * @return DPURecord list
+	 * Returns list of all {@link DPUTemplateRecord}s currently persisted in
+	 * database.
+	 *
+	 * @return list of DPU templates
 	 */
 	List<DPUTemplateRecord> getAllTemplates();
 	
 	/**
 	 * Find DPUTemplateRecord in database by ID and return it.
+	 * 
 	 * @param id
-	 * @return
+	 * @return fetched DPU template or null
 	 */
 	DPUTemplateRecord getTemplate(long id);
 	
@@ -103,18 +107,20 @@ public interface DPUFacade extends Facade {
 	 * Find DPUInstanceRecord in database by ID and return it.
 	 *
 	 * @param id
-	 * @return
+	 * @return DPU instance
 	 */
 	DPUInstanceRecord getDPUInstance(long id);
 
 	/**
 	 * Saves any modifications made to the DPUInstanceRecord into the database.
+	 * 
 	 * @param dpu
 	 */
 	void save(DPUInstanceRecord dpu);
 
 	/**
 	 * Deletes DPUInstance from the database.
+	 * 
 	 * @param dpu
 	 */
 	void delete(DPUInstanceRecord dpu);
@@ -125,7 +131,7 @@ public interface DPUFacade extends Facade {
 	 * Fetches all DPURecords emitted by given PipelineExecution.
 	 *
 	 * @param pipelineExec
-	 * @return
+	 * @return all DPURecords emitted by given PipelineExecution.
 	 */
 	List<MessageRecord> getAllDPURecords(PipelineExecution pipelineExec);
 
@@ -133,7 +139,7 @@ public interface DPUFacade extends Facade {
 	 * Find Record in database by ID and return it.
 	 *
 	 * @param id
-	 * @return
+	 * @return DPU record
 	 */
 	MessageRecord getDPURecord(long id);
 
