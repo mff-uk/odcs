@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 /**
- * Exception is thrown when file where we load RDF data is protected for
+ * Exception is thrown when the file where RDF data are loaded is protected for
  * overwritting.
  *
  * @author Jiri Tomes
@@ -13,7 +13,7 @@ public class CannotOverwriteFileException extends DataUnitException {
 	private static final String MESSAGE = "This file cannot be overwritten";
 
 	/**
-	 * Create a new instance of {@link CannotOverwriteFileException} with
+	 * Create a new instance of {@link CannotOverwriteFileException} with the
 	 * default {@link #MESSAGE}.
 	 */
 	public CannotOverwriteFileException() {
@@ -21,8 +21,8 @@ public class CannotOverwriteFileException extends DataUnitException {
 	}
 
 	/**
-	 * Create new instance of {@link CannotOverwriteFileException} with specific
-	 * message.
+	 * Create new instance of {@link CannotOverwriteFileException} with the
+	 * specific message.
 	 *
 	 * @param message String value of described message
 	 */
@@ -34,18 +34,18 @@ public class CannotOverwriteFileException extends DataUnitException {
 	 * Create new instance of {@link CannotOverwriteFileException} with cause of
 	 * throwing this exception.
 	 *
-	 * @param cause Cause of throwing exception
+	 * @param cause The cause of throwing the exception
 	 */
 	public CannotOverwriteFileException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Create new instance of {@link CannotOverwriteFileException} with a
-	 * specific message and cause of throwing this exception.
+	 * Create new instance of {@link CannotOverwriteFileException} with the
+	 * specific message and the cause of throwing this exception.
 	 *
 	 * @param message String value of described message
-	 * @param cause   Cause of throwing exception
+	 * @param cause   The cause of throwing exception
 	 */
 	public CannotOverwriteFileException(String message, Throwable cause) {
 		super(message, cause);
