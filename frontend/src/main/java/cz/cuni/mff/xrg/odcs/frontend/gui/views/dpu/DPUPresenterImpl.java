@@ -115,7 +115,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		DPUTemplateRecord copyDpuTemplate = dpuFacade.createCopy(selectedDpu);
 		copyDpuTemplate.setName(nameOfDpuCopy);
-		copyDpuTemplate.setParent(selectedDpu.getParent());
+		if(selectedDpu.getParent() != null)
+			copyDpuTemplate.setParent(selectedDpu.getParent());
+		else
+			copyDpuTemplate.setParent(selectedDpu);
 		dpuFacade.save(copyDpuTemplate);
 	}
 

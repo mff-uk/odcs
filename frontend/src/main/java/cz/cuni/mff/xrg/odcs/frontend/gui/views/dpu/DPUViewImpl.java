@@ -362,12 +362,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
-		if (selectedDpu.getParent() != null) {
-			// check permissions .. 
-			buttonCopyDPU.setEnabled(presenter.hasPermission("copy"));
-		} else {
-			buttonCopyDPU.setEnabled(false);
-		}
 		buttonCopyDPU.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
 
