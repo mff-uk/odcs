@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  *
  * All elements from part are added to collection defined in {@link #bindings}.
  * If collection contains some elements, one element is remove and it´s return.
- * If collection is empty, process try to fill collection with data from next
- * part. The process ends if collection is empty and are is no reason(no parts)
- * how to fill it.
+ * If collection is empty, process tries to fill collection with data from next
+ * part. The process ends if collection is empty and there is no reason (no data
+ * parts) how to fill it.
  *
  * @author Jiri Tomes
  */
@@ -79,9 +79,10 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 	 * @param repository       instance of {@link RDFDataUnit} as repository
 	 *                         where query will be executed.
 	 */
-	public OrderTupleQueryResultImpl(String orderSelectQuery, RDFDataUnit repository) {
+	public OrderTupleQueryResultImpl(String orderSelectQuery,
+			RDFDataUnit repository) {
 		this.orderSelectQuery = orderSelectQuery;
-		this.repository = (ManagableRdfDataUnit)repository;
+		this.repository = (ManagableRdfDataUnit) repository;
 		this.bindings = new LinkedList<>();
 	}
 
@@ -220,7 +221,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
 	 * virtuoso.ini file before using. For more info
 	 *
-	 * @see OrderTupleQueryResult class description.
+	 * @see OrderTupleQueryResultImpl class description.
 	 *
 	 * @return true if next element is available, false otherwise.
 	 * @throws QueryEvaluationException An exception indicating that the
@@ -240,7 +241,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
 	 * virtuoso.ini file before using. For more info
 	 *
-	 * @see OrderTupleQueryResult class description.
+	 * @see OrderTupleQueryResultImpl class description.
 	 *
 	 * @return next {@link BindingSet} element
 	 * @throws QueryEvaluationException An exception indicating that the

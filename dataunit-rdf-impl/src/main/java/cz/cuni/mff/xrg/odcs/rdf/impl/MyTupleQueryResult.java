@@ -34,9 +34,9 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	 * concrete instance.
 	 *
 	 * @param connection connection of repository where instance result of
-	 *                   {@link TupleQueryResult} interface was created by.
+	 *                   {@link TupleQueryResult} interface was created.
 	 * @param result     instance of interface {@link TupleQueryResult} that
-	 *                   will be used in no extented method.
+	 *                   will be used in no extented methods.
 	 */
 	public MyTupleQueryResult(RepositoryConnection connection,
 			TupleQueryResult result) {
@@ -45,8 +45,11 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	}
 
 	/**
+	 * Returns list of variable names defined in query.
 	 *
-	 * @return @throws QueryEvaluationException
+	 * @return List of variable names defined in query.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public List<String> getBindingNames() throws QueryEvaluationException {
@@ -56,8 +59,8 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	/**
 	 * Close used connection and holding resource.
 	 *
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public void close() throws QueryEvaluationException {
@@ -66,13 +69,13 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	}
 
 	/**
-	 * Get a list containing all elements obtained from the
-	 * {@link TupleQueryResult} instance.
+	 * Get the list with all elements obtained from the {@link TupleQueryResult}
+	 * instance.
 	 *
-	 * @return List containing all elements obtained from the
+	 * @return The list with all elements obtained from the
 	 *         {@link TupleQueryResult} instance.
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public List<BindingSet> asList() throws QueryEvaluationException {
@@ -81,13 +84,13 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	}
 
 	/**
-	 * Get a set containing all elements obtained from the
+	 * Get the set containing all elements obtained from the
 	 * {@link TupleQueryResult} instance.
 	 *
-	 * @return Set containing all elements obtained from the
+	 * @return The set containing all elements obtained from the
 	 *         {@link TupleQueryResult} instance.
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	public Set<BindingSet> asSet() throws QueryEvaluationException {
 		return Iterations.asSet(result);
@@ -98,8 +101,8 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	 * Returns true if the iteration has more elements, false otherwise.
 	 *
 	 * @return true if the iteration has more elements, false otherwise.
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public boolean hasNext() throws QueryEvaluationException {
@@ -109,9 +112,9 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	/**
 	 * Returns the next BindingSet element in the iteration.
 	 *
-	 * @return the next Statement element in the iteration.
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @return the next BindingSet element in the iteration.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public BindingSet next() throws QueryEvaluationException {
@@ -123,8 +126,8 @@ public class MyTupleQueryResult implements MyTupleQueryResultIf {
 	 * iteration (optional operation). This method can be called only once per
 	 * call to next.
 	 *
-	 * @throws QueryEvaluationException An exception indicating that the
-	 *                                  evaluation of a query failed.
+	 * @throws QueryEvaluationException The exception describes the reason why
+	 *                                  the evaluation of the query fails.
 	 */
 	@Override
 	public void remove() throws QueryEvaluationException {
