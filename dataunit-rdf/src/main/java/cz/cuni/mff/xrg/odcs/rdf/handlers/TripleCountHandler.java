@@ -17,8 +17,8 @@ import org.openrdf.rio.RDFHandlerException;
 
 /**
  * Class for counting of extracted triples from SPARQL endpoint or given file.
- * Need very oftern in cause throwing exception, when no triples were extracted
- * from SPARQL endpoint.
+ * It is used very often in case throwing the exception, when no triples were
+ * extracted from SPARQL endpoint.
  *
  *
  * @author Jiri Tomes
@@ -44,17 +44,17 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	private DPUContext context;
 
 	/**
-	 * Variable is responsible for creating message used by {@link #logger}.
-	 * True value is set if handler is used by data validator for checking data.
-	 * False value is set if handler is used for data parsing and adding data to
-	 * repository.
+	 * The variable is responsible for creating message used by {@link #logger}.
+	 * True value is set, if handler is used by data validator for checking RDF
+	 * data. False value is set, if handler is used for RDF data parsing and
+	 * adding data to repository.
 	 */
 	protected boolean checkData;
 
 	/**
-	 * Default hadler contructor for parsing and adding data to repository.
+	 * Default handler constructor for parsing and adding data to repository.
 	 *
-	 * @param connection connection to repository where we add data.
+	 * @param connection connection to repository where RDF data are added.
 	 */
 	public TripleCountHandler(RepositoryConnection connection) {
 		super(connection);
@@ -63,10 +63,10 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Default hadler contructor for parsing and adding data from SPARQL
+	 * Default handler constructor for parsing and adding data from SPARQL
 	 * endpoint to repository.
 	 *
-	 * @param connection connection to repository where we add data.
+	 * @param connection connection to repository where RDF data are added.
 	 * @param context    DPU context for checking if parsing was cancelled or
 	 *                   not.
 	 */
@@ -79,11 +79,14 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Handler constructor used for check data validation in repository.
+	 * Handler constructor used for checking data validation in repository.
 	 *
-	 * @param connection connection to repository where we add data.
-	 * @param checkData  true for logging validation, false for logging parsing
-	 *                   and adding - same as using constructor {@link
+	 * @param connection connection to repository where RDF data are added.
+	 * @param checkData  true value for logging the validation, false value for
+	 *                   logging the parsing and adding process - same as using
+	 *                   constructor null	null	null	null	null	null	null	null
+	 *                   null	null	null	null	null	null	null	null	null	null	null
+	 *                   null	null	null	null	null	null	null	null	null	null	null	 {@link
 	 * TripleCountHandler#TripleCountHandler(org.openrdf.repository.RepositoryConnection)
 	 *                   }.
 	 *
@@ -96,10 +99,10 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	private long tripleCount = 0;
 
 	/**
-	 * If given statement contains valid RDF data then call method
+	 * If given statement contains valid RDF data then the method calls
 	 * {@link RDFInserter#handleStatement(org.openrdf.model.Statement)} on
-	 * parent class, otherwise add this problem statement to specific problem
-	 * collection of {@link TripleProblem}.
+	 * parent class, otherwise this problem statement is added to the specific
+	 * problem collection of {@link TripleProblem}.
 	 *
 	 *
 	 * @param st Statement that will be added to repostory.
@@ -145,7 +148,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Call method {@link RDFInserter#startRDF()} on parent class and write log
+	 * Method calls {@link RDFInserter#startRDF()} on parent class and write log
 	 * message about it.
 	 *
 	 * @throws RDFHandlerException if handler find out problem during execution
@@ -171,7 +174,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Call method {@link RDFInserter#endRDF()} on parent class and write log
+	 * Method calls {@link RDFInserter#endRDF()} on parent class and write log
 	 * message about it.
 	 *
 	 * @throws RDFHandlerException if handler find out problem during execution
@@ -203,9 +206,9 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Add next finded error during data parsing.
+	 * Add next found error during data parsing.
 	 *
-	 * @param message describe of finded error
+	 * @param message description of found error
 	 * @param line    number of line where error was find out
 	 * @param column  number of column where error was find out
 	 */
@@ -216,9 +219,9 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Add next finded warning during data parsing.
+	 * Add next found warning during data parsing.
 	 *
-	 * @param message describe of finded warning
+	 * @param message describe of found warning
 	 * @param line    number of line where warning was find out
 	 * @param column  number of column where warning was find out
 	 */
@@ -229,7 +232,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Return true if last parsed statement was added to repository, false
+	 * Returns true if last parsed statement was added to repository, false
 	 * otherwise.
 	 *
 	 * @return true if last parsed statement was added to repository,false
@@ -240,7 +243,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Return true, if parsing proccess was canceled by user, false otherwise.
+	 * Returns true, if parsing proccess was canceled by user, false otherwise.
 	 *
 	 * @return true, if parsing proccess was canceled by user, false otherwise.
 	 */
@@ -253,13 +256,13 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Returns string warning message contains description of all problems from
-	 * given collection.
+	 * Returns string warning message contains the description of all problems
+	 * from given collection.
 	 *
 	 * @param warningsList Collection of {@link TripleProblem} to create string
 	 *                     message
-	 * @return String warning message contains description of all problems from
-	 *         given collection.
+	 * @return String warning message contains the description of all problems
+	 *         from given collection.
 	 */
 	protected static String getWarningsAsString(List<TripleProblem> warningsList) {
 		StringBuilder result = new StringBuilder();
@@ -275,24 +278,24 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Returns string warning message contains description of all problems from
-	 * collection {@link #warnings}.
+	 * Returns string warning message contains the description of all problems
+	 * from collection {@link #warnings}.
 	 *
-	 * @return String warning message contains description of all problems from
-	 *         collection {@link #warnings}.
+	 * @return String warning message contains the description of all problems
+	 *         from collection {@link #warnings}.
 	 */
 	protected String getWarningsAsString() {
 		return getWarningsAsString(warnings);
 	}
 
 	/**
-	 * Returns string error message contains description of all problems from
-	 * given collection.
+	 * Returns string error message contains the description of all problems
+	 * from given collection.
 	 *
 	 * @param errorsList Collection of {@link TripleProblem} to create string
 	 *                   message
-	 * @return String error message contains description of all problems from
-	 *         given collection.
+	 * @return String error message contains the description of all problems
+	 *         from given collection.
 	 */
 	protected static String getErorrsAsString(List<TripleProblem> errorsList) {
 
@@ -310,11 +313,11 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Returns string warning message contains description of all problems from
-	 * collection {@link #errors}.
+	 * Returns string warning message contains the description of all problems
+	 * from collection {@link #errors}.
 	 *
-	 * @return String warning message contains description of all problems from
-	 *         collection {@link #errors}.
+	 * @return String warning message contains the description of all problems
+	 *         from collection {@link #errors}.
 	 */
 	protected String getErorrsAsString() {
 		return getErorrsAsString(errors);
@@ -325,7 +328,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	 *
 	 * @param next       Instance of {@link TripleProblem } used for creating
 	 *                   description from that.
-	 * @param errorCount number of finded problems used in desription.
+	 * @param errorCount number of found problems used in description.
 	 * @return string description from given {@link TripleProblem}.
 	 */
 	private static String getDescribedProblem(TripleProblem next, int errorCount) {
@@ -362,10 +365,10 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Returns list as collection of {@link TripleProblem} contains all finded
+	 * Returns list as collection of {@link TripleProblem} contains all found
 	 * problems - warning and errors.
 	 *
-	 * @return List as collection of {@link TripleProblem} contains all finded
+	 * @return List as collection of {@link TripleProblem} contains all found
 	 *         problems - warning and errors.
 	 */
 	protected List<TripleProblem> getTripleProblems() {
@@ -378,7 +381,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Return count of extracted triples.
+	 * Returns count of extracted triples.
 	 *
 	 * @return count of extracted triples.
 	 */
@@ -388,7 +391,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Reset counting triples, finded errors and warnings.
+	 * Reset counting triples, found errors and warnings.
 	 */
 	@Override
 	public void reset() {
@@ -400,7 +403,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Return true if there is no triples, false otherwise.
+	 * Returns true if there is no triples, false otherwise.
 	 *
 	 * @return true if there is no triples, false otherwise.
 	 */
@@ -410,9 +413,9 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 	}
 
 	/**
-	 * Set graphs where are insert data thanks using this handler.
+	 * Set graphs where data are inserted using this handler.
 	 *
-	 * @param graphs Collection of graph to insert data from handler.
+	 * @param graphs Collection of graphs for inserting data using this handler.
 	 */
 	public void setGraphContext(Resource... graphs) {
 		if (graphs != null) {

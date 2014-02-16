@@ -71,7 +71,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
 
 				String problems = StatisticalHandler
-						.getFindedGlobalProblemsAsString();
+						.getFoundGlobalProblemsAsString();
 				StatisticalHandler.clearParsingProblems();
 
 				context.sendMessage(MessageType.WARNING,

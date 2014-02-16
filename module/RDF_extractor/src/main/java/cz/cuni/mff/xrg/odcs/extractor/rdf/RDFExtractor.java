@@ -91,7 +91,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
 
 				String problems = StatisticalHandler
-						.getFindedGlobalProblemsAsString();
+						.getFoundGlobalProblemsAsString();
 				StatisticalHandler.clearParsingProblems();
 
 				context.sendMessage(MessageType.WARNING,
