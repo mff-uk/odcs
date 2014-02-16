@@ -24,13 +24,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dataunit-rdf</artifactId>
 			<version>${project.version}</version>
-		 <exclusions>
-		  <exclusion>
-		   <artifactId>slf4j-api</artifactId>
-		   <groupId>org.slf4j</groupId>
-		  </exclusion>
-		 </exclusions>
-		</dependency>		
+		</dependency>
 		
 		<dependency> <!-- dataunit base project -->
 			<groupId>${project.groupId}</groupId>
