@@ -40,6 +40,11 @@ import org.springframework.stereotype.Component;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 import org.vaadin.dialogs.ConfirmDialog;
 
+/**
+ * Implementation of {@link PipelineListPresenter}.
+ *
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")

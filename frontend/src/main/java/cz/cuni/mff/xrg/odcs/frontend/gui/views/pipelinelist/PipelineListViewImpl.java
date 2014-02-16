@@ -49,11 +49,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	@Autowired
 	private Utils utils;
 
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
-	}
-
 	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
 		mainLayout = new VerticalLayout();

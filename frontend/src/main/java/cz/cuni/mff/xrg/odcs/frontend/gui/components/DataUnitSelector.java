@@ -40,6 +40,11 @@ public class DataUnitSelector extends CustomComponent {
 	private Button browse;
 	private Label dataUnitGraph;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param execution
+	 */
 	public DataUnitSelector(PipelineExecution execution) {
 		pipelineExec = execution;
 		buildMainLayout();
@@ -120,6 +125,11 @@ public class DataUnitSelector extends CustomComponent {
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Refresh the selector.
+	 *
+	 * @param exec
+	 */
 	public void refresh(PipelineExecution exec) {
 		pipelineExec = exec;
 		if (loadExecutionContextReader()) {
@@ -270,14 +280,29 @@ public class DataUnitSelector extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Get selected DPU.
+	 *
+	 * @return
+	 */
 	public DPUInstanceRecord getSelectedDPU() {
 		return debugDpu;
 	}
 
+	/**
+	 * Get selected data unit.
+	 *
+	 * @return
+	 */
 	public DataUnitInfo getSelectedDataUnit() {
 		return (DataUnitInfo) dataUnitSelector.getValue();
 	}
 
+	/**
+	 * Get execution info.
+	 *
+	 * @return
+	 */
 	public ExecutionInfo getInfo() {
 		return executionInfo;
 	}
@@ -292,6 +317,11 @@ public class DataUnitSelector extends CustomComponent {
 	 */
 	public class BrowseRequestedEvent extends Component.Event {
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param cmp
+		 */
 		public BrowseRequestedEvent(Component cmp) {
 			super(cmp);
 		}
@@ -302,6 +332,11 @@ public class DataUnitSelector extends CustomComponent {
 	 */
 	public class DisableEvent extends Component.Event {
 
+		/**
+		 * Constructor.
+		 *
+		 * @param cmp
+		 */
 		public DisableEvent(Component cmp) {
 			super(cmp);
 		}
@@ -312,24 +347,49 @@ public class DataUnitSelector extends CustomComponent {
 	 */
 	public class EnableEvent extends Component.Event {
 
+		/**
+		 * Constructor.
+		 *
+		 * @param cmp
+		 */
 		public EnableEvent(Component cmp) {
 			super(cmp);
 		}
 	}
 
+	/**
+	 * Event informing about selection change.
+	 */
 	public class SelectionChangedEvent extends Component.Event {
 
 		private DataUnitInfo info;
 		private DPUInstanceRecord dpu;
 
+		/**
+		 * Get data unit info.
+		 *
+		 * @return
+		 */
 		public DataUnitInfo getInfo() {
 			return info;
 		}
 
+		/**
+		 * Get DPU.
+		 *
+		 * @return
+		 */
 		public DPUInstanceRecord getDpu() {
 			return dpu;
 		}
 
+		/**
+		 * Constructor.
+		 *
+		 * @param cmp
+		 * @param duInfo
+		 * @param dpu
+		 */
 		public SelectionChangedEvent(Component cmp, DataUnitInfo duInfo, DPUInstanceRecord dpu) {
 			super(cmp);
 			info = duInfo;

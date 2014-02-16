@@ -51,16 +51,44 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class DPUCreate extends Window {
 
+	/**
+	 * @return the uploadInfoWindow
+	 */
+	public static UploadInfoWindow getUploadInfoWindow() {
+		return uploadInfoWindow;
+	}
+
+	/**
+	 * @param aUploadInfoWindow the uploadInfoWindow to set
+	 */
+	public static void setUploadInfoWindow(UploadInfoWindow aUploadInfoWindow) {
+		uploadInfoWindow = aUploadInfoWindow;
+	}
+
+	/**
+	 * @return the fl
+	 */
+	public static int getFl() {
+		return fl;
+	}
+
+	/**
+	 * @param aFl the fl to set
+	 */
+	public static void setFl(int aFl) {
+		fl = aFl;
+	}
+
 	private TextField dpuName;
 	private TextArea dpuDescription;
 	private OptionGroup groupVisibility;
 	private Upload selectFile;
 	private FileUploadReceiver fileUploadReceiver;
-	public static UploadInfoWindow uploadInfoWindow;
+	private static UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
-	public static int fl = 0;
+	private static int fl = 0;
 	@Autowired
 	private DPUFacade dpuFacade;
 	@Autowired
@@ -274,10 +302,10 @@ public class DPUCreate extends Window {
 							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-				if (uploadInfoWindow.getParent() == null) {
-					UI.getCurrent().addWindow(uploadInfoWindow);
+				if (getUploadInfoWindow().getParent() == null) {
+					UI.getCurrent().addWindow(getUploadInfoWindow());
 				}
-				uploadInfoWindow.setClosable(false);
+				getUploadInfoWindow().setClosable(false);
 			}
 		});
 
@@ -288,8 +316,8 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadFailed(FailedEvent event) {
 
-				uploadInfoWindow.setClosable(true);
-				uploadInfoWindow.close();
+				getUploadInfoWindow().setClosable(true);
+				getUploadInfoWindow().close();
 				dpuGeneralSettingsLayout.removeComponent(1, 3);
 				dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
 
@@ -304,8 +332,8 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadSucceeded(final SucceededEvent event) {
 
-				uploadInfoWindow.setClosable(true);
-				uploadInfoWindow.close();
+				getUploadInfoWindow().setClosable(true);
+				getUploadInfoWindow().close();
 				uploadFile.setReadOnly(false);
 				uploadFile.setValue(event.getFilename());
 				uploadFile.setReadOnly(true);
@@ -313,7 +341,7 @@ public class DPUCreate extends Window {
 			}
 		});
 		// Upload status window
-		uploadInfoWindow = new UploadInfoWindow(selectFile);
+		setUploadInfoWindow(new UploadInfoWindow(selectFile));
 
 		uploadFileLayout.addComponent(selectFile);
 
@@ -341,6 +369,9 @@ public class DPUCreate extends Window {
 
 	}
 
+	/**
+	 * Reset the component to empty values.
+	 */
 	public void initClean() {
 		dpuName.setValue("");
 		dpuDescription.setValue("");

@@ -112,10 +112,21 @@ public class DebuggingView extends CustomComponent {
 	@Autowired
 	private LogFacade logFacade;
 
+	/**
+	 * Constructor.
+	 */
 	public DebuggingView() {
 		// empty ctor .. nothing is done on creation
 	}
 
+	/**
+	 * Initialize the debugging view.
+	 *
+	 * @param exec Execution to show.
+	 * @param dpu DPU to select in detail.
+	 * @param debug Is debug mode.
+	 * @param isFromCanvas Is from canvas.
+	 */
 	public final void initialize(PipelineExecution exec,
 			DPUInstanceRecord dpu, boolean debug, boolean isFromCanvas) {
 		LOG.debug("Initializing...");
@@ -147,6 +158,11 @@ public class DebuggingView extends CustomComponent {
 		isInitialized = true;
 	}
 
+	/**
+	 * Is debugging view initialized.
+	 *
+	 * @return
+	 */
 	public boolean isInitialized() {
 		return isInitialized;
 	}
@@ -376,6 +392,11 @@ public class DebuggingView extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Selects tab by name.
+	 *
+	 * @param tabName
+	 */
 	public void setActiveTab(String tabName) {
 		int tabIdx;
 		switch (tabName) {

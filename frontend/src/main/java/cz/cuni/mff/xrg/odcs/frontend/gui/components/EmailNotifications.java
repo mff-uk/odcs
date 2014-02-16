@@ -31,9 +31,20 @@ public class EmailNotifications {
 //	public EmailComponent shEmail;
 	private OptionGroup errorExec;
 	private OptionGroup successfulExec;
+	/**
+	 * Parent component.
+	 */
 	public SchedulePipeline parentComponentSh;
+	/**
+	 * Alternative parent component.
+	 */
 	public cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings parentComponentUs;
 
+	/**
+	 * Build layout.
+	 *
+	 * @return
+	 */
 	public VerticalLayout buildEmailNotificationsLayout() {
 
 		VerticalLayout emailNotificationsLayout = new VerticalLayout();
@@ -69,7 +80,7 @@ public class EmailNotifications {
 					noSuccessful = 1;
 					if ((noError == 1) && (noSuccessful == 1)) {
 						if (parentComponentSh != null) {
-							parentComponentSh.emailLayout.setEnabled(false);
+							parentComponentSh.getEmailLayout().setEnabled(false);
 						}
 //						if(parentComponentUs!=null)	
 //							parentComponentUs.emailLayout.setEnabled(false);
@@ -78,7 +89,7 @@ public class EmailNotifications {
 				} else {
 					noSuccessful = 0;
 					if (parentComponentSh != null) {
-						parentComponentSh.emailLayout.setEnabled(true);
+						parentComponentSh.getEmailLayout().setEnabled(true);
 					}
 //					if(parentComponentUs!=null)	
 //						parentComponentUs.emailLayout.setEnabled(true);
@@ -116,7 +127,7 @@ public class EmailNotifications {
 
 					if ((noError == 1) && (noSuccessful == 1)) {
 						if (parentComponentSh != null) {
-							parentComponentSh.emailLayout.setEnabled(false);
+							parentComponentSh.getEmailLayout().setEnabled(false);
 						}
 //						if(parentComponentUs!=null)	
 //							parentComponentUs.emailLayout.setEnabled(false);
@@ -124,7 +135,7 @@ public class EmailNotifications {
 				} else {
 					noError = 0;
 					if (parentComponentSh != null) {
-						parentComponentSh.emailLayout.setEnabled(true);
+						parentComponentSh.getEmailLayout().setEnabled(true);
 					}
 //					if(parentComponentUs!=null)	
 //						parentComponentUs.emailLayout.setEnabled(true);
@@ -141,11 +152,22 @@ public class EmailNotifications {
 		return emailNotificationsLayout;
 	}
 
+	/**
+	 * Set notification record.
+	 *
+	 * @param notification
+	 */
 	public void setUserNotificatonRecord(UserNotificationRecord notification) {
 		notification.setTypeError((NotificationRecordType) errorExec.getValue());
 		notification.setTypeSuccess((NotificationRecordType) successfulExec.getValue());
 	}
 
+	/**
+	 * Set notification record for schedule.
+	 *
+	 * @param notofication
+	 * @param schedule
+	 */
 	public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule) {
 
 		notofication.setSchedule(schedule);
@@ -154,6 +176,11 @@ public class EmailNotifications {
 
 	}
 
+	/**
+	 * Gets {@link ScheduleNotificationRecord} for given schedule.
+	 *
+	 * @param schedule Schedule which record to retrieve.
+	 */
 	public void getScheduleNotificationRecord(Schedule schedule) {
 
 		ScheduleNotificationRecord notification = schedule.getNotification();
@@ -165,6 +192,11 @@ public class EmailNotifications {
 
 	}
 
+	/**
+	 * Get notification record for user.
+	 *
+	 * @param user
+	 */
 	public void getUserNotificationRecord(User user) {
 
 		UserNotificationRecord notification = user.getNotification();
@@ -177,6 +209,9 @@ public class EmailNotifications {
 
 	}
 	
+	/**
+	 * Get default notification record for schedules.
+	 */
 	public void getDefaultScheduleNotificationRecord() {
 
 		errorExec.setValue(NotificationRecordType.INSTANT);
@@ -185,20 +220,27 @@ public class EmailNotifications {
 	}
 
 
+	/**
+	 * Disable components.
+	 */
 	public void setDisableComponents() {
 
 		successfulExec.setEnabled(false);
 		errorExec.setEnabled(false);
-		parentComponentSh.emailLayout.setEnabled(false);
+		parentComponentSh.getEmailLayout().setEnabled(false);
 //			shEmailLayout.setEnabled(false);
 
 	}
 
+	/**
+	 * Enables components in email notifications.
+	 *
+	 */
 	public void setEnableComponents() {
 
 		successfulExec.setEnabled(true);
 		errorExec.setEnabled(true);
-		parentComponentSh.emailLayout.setEnabled(true);
+		parentComponentSh.getEmailLayout().setEnabled(true);
 //			shEmailLayout.setEnabled(true);
 
 	}

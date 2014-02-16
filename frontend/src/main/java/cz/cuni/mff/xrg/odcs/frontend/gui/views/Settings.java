@@ -86,8 +86,14 @@ public class Settings extends ViewComponent {
 	@Autowired
 	private UsersList usersList;
 
+	/**
+	 * Buttons layout for my account.
+	 */
 	public HorizontalLayout buttonMyAccountBar;
 
+	/**
+	 * Buttons layout for notifications.
+	 */
 	public HorizontalLayout buttonNotificationBar;
 
 	private EmailComponent email;

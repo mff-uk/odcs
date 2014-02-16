@@ -51,9 +51,9 @@ public class DPUDetail extends Window {
 	private VerticalLayout mainLayout;
 
 	/**
-	 * Basic constructor, takes DPUInstance which detail should be showed.
+	 * Basic constructor, takes DPUFacade.
 	 *
-	 * @param dpu {@link DPUInstanceRecord} which detail will be showed.
+	 * @param dpuFacade 
 	 */
 	public DPUDetail(DPUFacade dpuFacade) {
 		this.dpuFacade = dpuFacade;
@@ -166,6 +166,12 @@ public class DPUDetail extends Window {
 		setSizeUndefined();
 	}
 
+	/**
+	 * Show DPU detail.
+	 *
+	 * @param dpu
+	 * @param readOnly
+	 */
 	public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
 		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
 		this.setCaption(String.format("%s detail%s", dpu.getName().trim(), readOnly ? " - Read only mode" : ""));
@@ -307,6 +313,11 @@ public class DPUDetail extends Window {
 		return true;
 	}
 
+	/**
+	 * Get result.
+	 *
+	 * @return
+	 */
 	public boolean getResult() {
 		return result;
 	}

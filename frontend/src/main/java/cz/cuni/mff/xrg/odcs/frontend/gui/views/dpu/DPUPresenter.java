@@ -109,6 +109,9 @@ public interface DPUPresenter extends Presenter {
 	 */
 	public boolean showPipelineDetailButton(long pipelineId);
 	
+	/**
+	 * View interface for DPU.
+	 */
 	public interface DPUView {
 	
 		/**

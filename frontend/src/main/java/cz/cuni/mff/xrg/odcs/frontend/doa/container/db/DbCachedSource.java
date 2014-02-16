@@ -70,6 +70,9 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 */
 	protected final List<Filter> coreFilters;
 
+	/**
+	 * Class accessor.
+	 */
 	protected final ClassAccessor<T> classAccessor;
 
 	/**

@@ -1,14 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import ch.qos.logback.classic.Level;
 import com.vaadin.data.Container;
-import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -18,7 +15,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 
@@ -39,7 +35,6 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
-import org.tepi.filtertable.datefilter.DateInterval;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -65,6 +60,7 @@ public class RecordsTable extends CustomComponent {
 	 * Default constructor. Initializes the layout.
 	 *
 	 * @param dataSouce
+	 * @param pageLenght  
 	 */
 	public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght) {
 		this.dataSouce = dataSouce;
@@ -249,6 +245,11 @@ public class RecordsTable extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set table page length.
+	 *
+	 * @param pageLength New table page length.
+	 */
 	public void setPageLength(int pageLength) {
 		messageTable.setPageLength(pageLength);
 	}

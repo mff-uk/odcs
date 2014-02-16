@@ -52,6 +52,11 @@ public class UsersList {
 	@Autowired
 	private UserFacade userFacade;
 
+	/**
+	 * Builds users list layout.
+	 *
+	 * @return
+	 */
 	public VerticalLayout buildUsersListLayout() {
 
 

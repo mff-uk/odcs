@@ -95,7 +95,7 @@ public class SchedulePipeline extends Window {
 	private EmailNotifications emailNotifications;
 	private CheckBox notifyThis;
 	private EmailComponent email;
-	public GridLayout emailLayout;
+	private GridLayout emailLayout;
 	private ComboBox comboPipeline = null;
 	private TextArea scheduleDescription;
 	private boolean isInitialized = false;
@@ -127,6 +127,9 @@ public class SchedulePipeline extends Window {
 		this.setCaption("Schedule a pipeline");
 	}
 	
+	/**
+	 * Initialize the component.
+	 */
 	public void init() {
 		buildMainLayout();
 		this.setContent(mainLayout);
@@ -134,6 +137,11 @@ public class SchedulePipeline extends Window {
 		isInitialized = true;
 	}
 	
+	/**
+	 * Is initialized.
+	 *
+	 * @return
+	 */
 	public boolean isInitialized() {
 		return isInitialized;
 	}
@@ -142,8 +150,8 @@ public class SchedulePipeline extends Window {
 	 * The method calls from {@link #PipelineEdit} and sets the corresponding
 	 * value of Pipeline component to the dialog.
 	 *
-	 * @param selectedPipeline. Pipeline that locate in the row of Pipeline List
-	 * table in which has been pressed the button Scheduler.
+	 * 
+	 * @param selectedPipeline 
 	 */
 	public void setSelectePipeline(Pipeline selectedPipeline) {
 		tabSheet.setSelectedTab(0);
@@ -174,11 +182,9 @@ public class SchedulePipeline extends Window {
 	}
 
 	/**
-	 * The method calls from {@link #Scheduler} and sets the corresponding
-	 * values of specific scheduling rule parameters to the dialog.
+	 * Selects given schedule and displays it.
 	 *
-	 * @param selectedSchedule. Schedule that locate in the row of Schedule
-	 * table in which has been pressed the button Scheduler.
+	 * @param selectedSchedule 
 	 */
 	public void setSelectedSchedule(Schedule selectedSchedule) {
 		tabSheet.setSelectedTab(0);
@@ -604,7 +610,7 @@ public class SchedulePipeline extends Window {
 				
 				if (notifyThis.getValue().equals(false)) {
 					
-					if (emailLayout.isEnabled()) {
+					if (getEmailLayout().isEnabled()) {
 						
 						String errorText = emailValidation();
 						
@@ -689,9 +695,9 @@ public class SchedulePipeline extends Window {
 		notificationsLayout = emailNotifications.buildEmailNotificationsLayout();
 		
 		email = new EmailComponent();
-		emailLayout = new GridLayout();
-		emailLayout = email.initializeEmailList();
-		notificationsLayout.addComponent(emailLayout);
+		setEmailLayout(new GridLayout());
+		setEmailLayout(email.initializeEmailList());
+		notificationsLayout.addComponent(getEmailLayout());
 		email.getUserEmailNotification(authCtx.getUser());
 		
 		notifyThis = new CheckBox();
@@ -699,7 +705,7 @@ public class SchedulePipeline extends Window {
 		notifyThis.setCaption("Use default notification settings");
 		notificationsLayout.addComponent(notifyThis, 0);
 		emailNotifications.setDisableComponents();
-		emailLayout.setEnabled(false);
+		getEmailLayout().setEnabled(false);
 		notifyThis.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 			
@@ -1144,5 +1150,19 @@ public class SchedulePipeline extends Window {
 		}
 		this.id.setVisible(hasId);
 		this.idLabel.setVisible(hasId);
+	}
+
+	/**
+	 * @return the emailLayout
+	 */
+	public GridLayout getEmailLayout() {
+		return emailLayout;
+	}
+
+	/**
+	 * @param emailLayout the emailLayout to set
+	 */
+	public void setEmailLayout(GridLayout emailLayout) {
+		this.emailLayout = emailLayout;
 	}
 }

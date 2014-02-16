@@ -125,6 +125,13 @@ public class RDFDataUnitHelper {
 		return virtuosoRepository;
 	}
 
+	/**
+	 * Filter RDF query.
+	 * 
+	 * @param query Query to filter.
+	 * @param filters Filters to apply.
+	 * @return Filtered query.
+	 */
 	public static String filterRDFQuery(String query, Collection<Filter> filters) {
 		if (filters == null) {
 			return query;

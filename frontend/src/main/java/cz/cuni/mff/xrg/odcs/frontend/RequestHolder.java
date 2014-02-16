@@ -10,6 +10,11 @@ public class RequestHolder {
 
 	private static final ThreadLocal<HttpServletRequest> THREAD_LOCAL = new ThreadLocal<>();
 
+	/**
+	 * Get request.
+	 * 
+	 * @return Request.
+	 */
 	public static HttpServletRequest getRequest() {
 		return THREAD_LOCAL.get();
 	}

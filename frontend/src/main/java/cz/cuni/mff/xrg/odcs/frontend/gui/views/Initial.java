@@ -11,6 +11,11 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Initial view with short description of the tool.
+ *
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 @Address(url = "")
@@ -20,6 +25,9 @@ public class Initial extends ViewComponent {
 	
 	private Label label;
 
+	/**
+	 * Constructor.
+	 */
 	public Initial() {
 	}
 

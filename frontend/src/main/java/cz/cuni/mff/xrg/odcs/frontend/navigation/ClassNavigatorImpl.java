@@ -25,6 +25,13 @@ public class ClassNavigatorImpl extends Navigator implements ClassNavigator {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(ClassNavigatorImpl.class);
 
+	/**
+	 * Implementation of {@link ClassNavigator}.
+	 * 
+	 * @param ui UI to navigate.
+	 * @param container Container which holds the views.
+	 * @param context Application context.
+	 */
 	public ClassNavigatorImpl(UI ui, SingleComponentContainer container, ApplicationContext context) {
 		super(ui, new UriFragmentManager(ui.getPage()),
 				new PresenterViewDisplay(container));

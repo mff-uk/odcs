@@ -279,6 +279,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		});
 	}
 
+	/**
+	 * Return to page which user tried to accessed before redirecting to login page.
+	 */
 	public void navigateAfterLogin() {
 		if (storedNavigation == null) {
 			navigatorHolder.navigateTo(Initial.class);
@@ -297,6 +300,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		}
 	}
 
+	/**
+	 * Navigate to previous view.
+	 */
 	public void navigateToLastView() {
 		if (lastView != null) {
 			navigatorHolder.navigateTo(lastView);
@@ -305,33 +311,54 @@ public class AppEntry extends com.vaadin.ui.UI {
 		}
 	}
 
+	/**
+	 * Get current navigation.
+	 * @return Navigator.
+	 */
 	public ClassNavigator getNavigation() {
 		return navigatorHolder;
 	}
 
 	/**
-	 * Fetches spring bean. For cases when autowiring is not a possibility.
+	 * Fetches spring bean. For cases when auto-wiring is not a possibility.
 	 *
-	 * @param <T>
-	 * @param type
+	 * @param <T> 
+	 * @param type Class of the bean to fetch.
 	 * @return bean
 	 */
 	public <T extends Object> T getBean(Class<T> type) {
 		return context.getBean(type);
 	}
 
+	/**
+	 * Get main layout.
+	 * @return 
+	 */
 	public MenuLayout getMain() {
 		return main;
 	}
 
+	/**
+	 * Get backend client.
+	 * @return Backend client.
+	 */
 	public Client getBackendClient() {
 		return backendClient;
 	}
 
+	/**
+	 * Get refresh manager.
+	 * @return Refresh manager.
+	 */
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
 	}
 
+	/**
+	 * Set URI fragment.
+	 * @param uriFragment New URI fragment.
+	 * @param throwEvents True to fire event.
+	 */
 	public void setUriFragment(String uriFragment, boolean throwEvents) {
 		Page.getCurrent().setUriFragment(uriFragment, throwEvents);
 		if(uriFragment.length() > 0) {

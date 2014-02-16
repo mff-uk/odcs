@@ -39,6 +39,11 @@ public class DPUInstanceWrap extends DPURecordWrap {
 		dpuFacade.save(dpuInstance);
 	}
 
+	/**
+	 * Get DPUInstance record.
+	 *
+	 * @return
+	 */
 	public DPUInstanceRecord getDPUInstanceRecord() {
 		return dpuInstance;
 	}

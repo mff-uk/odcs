@@ -25,6 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Status window for pipeline.
+ *
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 public class PipelineStatus extends Window {
@@ -83,8 +88,7 @@ public class PipelineStatus extends Window {
 	/**
 	 * Get date of the last execution and number of run for specific pipeline.
 	 *
-	 * @param selectedPipeline. Pipeline that locate in the row of Instances
-	 * table in which has been pressed the button Status.
+	 * @param selectedPipeline 
 	 */
 	public void setSelectedPipeline(Pipeline selectedPipeline) {
 

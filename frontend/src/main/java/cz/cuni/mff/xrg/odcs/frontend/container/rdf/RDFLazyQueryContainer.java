@@ -15,14 +15,33 @@ import org.vaadin.addons.lazyquerycontainer.QueryView;
  */
 public class RDFLazyQueryContainer extends LazyQueryContainer {
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param queryView 
+	 */
 	public RDFLazyQueryContainer(QueryView queryView) {
 		super(queryView);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param queryDefinition
+	 * @param queryFactory 
+	 */
 	public RDFLazyQueryContainer(QueryDefinition queryDefinition, QueryFactory queryFactory) {
 		super(queryDefinition, queryFactory);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param queryFactory
+	 * @param idPropertyId
+	 * @param batchSize
+	 * @param compositeItems 
+	 */
 	public RDFLazyQueryContainer(QueryFactory queryFactory, Object idPropertyId, int batchSize, boolean compositeItems) {
 		super(queryFactory, idPropertyId, batchSize, compositeItems);
 	}

@@ -13,11 +13,22 @@ public class FormattingEnabledEvent extends Event {
 	
 	private boolean isEnabled;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param source
+	 * @param isEnabled
+	 */
 	public FormattingEnabledEvent(Component source, boolean isEnabled) {
 		super(source);
 		this.isEnabled = isEnabled;
 	}
 
+	/**
+	 * Is formatting enabled.
+	 *
+	 * @return
+	 */
 	public boolean isEnabled() {
 		return isEnabled;
 	}

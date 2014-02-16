@@ -105,6 +105,12 @@ public class DecorationHelper {
 		return formatDuration(duration);
 	}
 
+	/**
+	 * Get icon for scheduled column.
+	 * 
+	 * @param isScheduled True for icon for scheduled execution.
+	 * @return Icon for scheduled column.
+	 */
 	public static Embedded getIconForScheduled(boolean isScheduled) {
 		ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.png" : "icons/not_scheduled.png");
 		String description = isScheduled ? "Scheduled" : "Manual";

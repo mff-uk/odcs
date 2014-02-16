@@ -58,7 +58,9 @@ public class EdgeDetail extends Window {
 	/**
 	 * Basic constructor, takes {@link Edge} which detail should be showed.
 	 *
-	 * @param edge {@link Edge} which detail will be showed.
+	 * @param e 
+	 * @param readOnly 
+	 * @param dpuExplorer  
 	 */
 	public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
 		this.explorer = dpuExplorer;

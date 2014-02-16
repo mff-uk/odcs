@@ -8,6 +8,9 @@ import com.vaadin.ui.Label;
  */
 public class FileQueryView extends QueryView {
 	
+	/**
+	 * Constructor.
+	 */
 	public FileQueryView() {
 		Label label = new Label("Browser not available.");
 		setCompositionRoot(label);
@@ -19,7 +22,7 @@ public class FileQueryView extends QueryView {
 	}
 
 	@Override
-	public void setQueryingEnabled(boolean b) {
+	public void setQueryingEnabled(boolean enabled) {
 		
 	}
 

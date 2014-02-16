@@ -11,12 +11,19 @@ import org.tepi.filtertable.datefilter.DateInterval;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
+ * Class for holding filter parameters and showing them in the URL.
  *
  * @author Bogo
  */
 public class ParametersHandler {
 
-	public static Object getInterval(String value) {
+	/**
+	 * Get interval from string value.
+	 * 
+	 * @param value Interval value represented as string.
+	 * @return Interval.
+	 */
+	public static NumberInterval getInterval(String value) {
 		if (value.contains("-")) {
 			String[] boundaries = value.split("-", -1);
 			return new NumberInterval(boundaries[1].isEmpty() ? null : boundaries[1], boundaries[0].isEmpty() ? null : boundaries[0], null);
@@ -25,6 +32,13 @@ public class ParametersHandler {
 		}
 	}
 
+	/**
+	 * Get string representing interval.
+	 * 
+	 * @param interval Interval to convert to string.
+	 * @return String representation of interval.
+	 * 
+	 */
 	public static String getStringForInterval(NumberInterval interval) {
 		if (interval.getEqualsValue() != null) {
 			return interval.getEqualsValue();
@@ -35,6 +49,13 @@ public class ParametersHandler {
 		}
 	}
 
+	/**
+	 * Get string representing {@link DateInterval}.
+	 * 
+	 * @param interval Interval to convert to string.
+	 * @return String representation of interval.
+	 * 
+	 */
 	public static String getStringForInterval(DateInterval interval) {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		String min = interval.getFrom() == null ? "" : format.format(interval.getFrom());
@@ -42,7 +63,13 @@ public class ParametersHandler {
 		return String.format("%s-%s", min, max);
 	}
 
-	public static Object getDateInterval(String value) {
+	/**
+	 * Get {@link DateInterval} from string value.
+	 * 
+	 * @param value Interval value represented as string.
+	 * @return Interval.
+	 */
+	public static DateInterval getDateInterval(String value) {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		String[] boundaries = value.split("-", -1);
 		try {
@@ -51,16 +78,33 @@ public class ParametersHandler {
 			return null;
 		}
 	}
+	
 	private String uriFragment;
 
+	/**
+	 * Constructor with URI fragment.
+	 * 
+	 * @param uriFragment URI fragment representing parameters.
+	 */
 	public ParametersHandler(String uriFragment) {
 		this.uriFragment = uriFragment;
 	}
 
+	/**
+	 * Gets current URI fragment.
+	 * 
+	 * @return URI fragment.
+	 */
 	public String getUriFragment() {
 		return uriFragment;
 	}
 
+	/**
+	 * Add parameter to URI fragment.
+	 * 
+	 * @param name Name of the parameter.
+	 * @param value Value of the parameter.
+	 */
 	public void addParameter(String name, String value) {
 		try {
 			value = URLEncoder.encode(value, "UTF-8");
@@ -88,10 +132,23 @@ public class ParametersHandler {
 		}
 	}
 
+	/**
+	 * Get value of parameter.
+	 * 
+	 * @param parameterName Name of the parameter.
+	 * @return Value of the parameter.
+	 */
 	public Object getValue(String parameterName) {
+		//TODO: Properly implement if needed.
 		return null;
 	}
 
+	/**
+	 * Build configuration from URI fragment with parameters.
+	 * 
+	 * @param parameters URI fragment holding parameters.
+	 * @return Map with parameters.
+	 */
 	public static Map<String, String> getConfiguration(String parameters) {
 		HashMap<String, String> configuration = new HashMap<>();
 		if (parameters.isEmpty()) {
@@ -113,6 +170,11 @@ public class ParametersHandler {
 		return configuration;
 	}
 
+	/**
+	 * Remove parameter.
+	 * 
+	 * @param name Name of the parameter to remove.
+	 */
 	public void removeParameter(String name) {
 		String parameter = String.format("/%s=", name);
 		String parameter2 = String.format("&%s=", name);

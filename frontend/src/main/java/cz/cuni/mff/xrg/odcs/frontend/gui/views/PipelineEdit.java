@@ -92,7 +92,13 @@ public class PipelineEdit extends ViewComponent {
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
 	Button undo;
+	/**
+	 * Constant representing standard mode of pipeline edit.
+	 */
 	public final static String STANDARD_MODE = "standard_mode";
+	/**
+	 * Constant representing develop mode of pipeline edit.
+	 */
 	public final static String DEVELOP_MODE = "develop_mode";
 	private String canvasMode = DEVELOP_MODE;
 	private Tab standardTab;
@@ -716,6 +722,12 @@ public class PipelineEdit extends ViewComponent {
 		}
 	}
 
+	/**
+	 * Check for permission.
+	 *
+	 * @param type Required permission.
+	 * @return
+	 */
 	public boolean hasPermission(String type) {
 		return permissions.hasPermission(pipeline, type);
 	}
@@ -1070,6 +1082,7 @@ public class PipelineEdit extends ViewComponent {
 	/**
 	 * Saves current pipeline.
 	 *
+	 * @param successAction 
 	 * @return
 	 */
 	protected boolean savePipeline(final String successAction) {

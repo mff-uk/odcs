@@ -56,6 +56,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private TextArea dpuDescription; // description of selected DPU Template
 	private Upload reloadFile; // button for reload JAR file
 	private FileUploadReceiver fileUploadReceiver;
+	/**
+	 * Window with upload info.
+	 */
 	public static UploadInfoWindow uploadInfoWindow;
 	private boolean errorExtension = false;
 	private Label jarPath;
@@ -84,6 +87,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private Page.BrowserWindowResizeListener resizeListener = null;
 	private Panel dpuTreePanel;
 
+	/**
+	 * Constructor.
+	 */
 	public DPUViewImpl() {
 	}
 
@@ -829,6 +835,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		return verticalLayoutInstances;
 	}
 
+	/**
+	 * Validate DPU detail.
+	 *
+	 * @return
+	 */
 	public boolean validate() {
 		try {
 			dpuName.validate();

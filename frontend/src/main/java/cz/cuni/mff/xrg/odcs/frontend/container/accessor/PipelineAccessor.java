@@ -13,14 +13,17 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
-import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Accessor for {@link Pipeline}s.
+ * 
+ * @author Bogo
+ */
 public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineAccessor.class);

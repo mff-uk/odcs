@@ -30,6 +30,11 @@ public class AuthAwareUploadSucceededWrapper implements Upload.SucceededListener
 	 */
 	private Authentication authentication;
 
+	/**
+	 *  Constructor.
+	 * 
+	 * @param succeededListener 
+	 */
 	public AuthAwareUploadSucceededWrapper(Upload.SucceededListener succeededListener) {
 		this.succeededListener = succeededListener;
 		authentication = SecurityContextHolder.getContext().getAuthentication();

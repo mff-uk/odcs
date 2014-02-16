@@ -14,6 +14,11 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
 	 */
 	private final boolean isTemplate;
 	
+	/**
+	 *  Constructor.
+	 *
+	 * @param isTemplate Whether the dialog is used for DPU template.
+	 */
 	public ConfigDialogContextImpl(boolean isTemplate) {
 		this.isTemplate = isTemplate;
 	}

@@ -77,6 +77,8 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	 * Occures when copy of given DPURecord is requested.
 	 *
 	 * @param dpuId Id of node, which should be copied.
+	 * @param x 
+	 * @param y  
 	 */
 	public void onDpuCopyRequested(int dpuId, int x, int y);
 	

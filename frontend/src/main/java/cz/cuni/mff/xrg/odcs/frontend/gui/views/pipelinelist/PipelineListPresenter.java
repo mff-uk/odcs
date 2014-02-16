@@ -51,6 +51,7 @@ public interface PipelineListPresenter extends Presenter {
 	 * Run pipeline with given id.
 	 *
 	 * @param id Pipeline id.
+	 * @param inDebugMode Run in debug mode.
 	 */
 	public void runEventHandler(long id, boolean inDebugMode);
 
@@ -62,10 +63,24 @@ public interface PipelineListPresenter extends Presenter {
 	 */
 	public void navigateToEventHandler(Class where, Object param);
 
+	/**
+	 * Select given page.
+	 * 
+	 * @param newPageNumber Page to select.
+	 */
 	public void pageChangedHandler(Integer newPageNumber);
 
-	public void filterParameterEventHander(String string, Object filterValue);
+	/**
+	 * Informs about filter.
+	 * 
+	 * @param name Name of the filter.
+	 * @param filterValue Value of the filter.
+	 */
+	public void filterParameterEventHander(String name, Object filterValue);
 
+	/**
+	 * View interface for pipeline list.
+	 */
 	public interface PipelineListView {
 
 		/**
@@ -83,10 +98,25 @@ public interface PipelineListPresenter extends Presenter {
 		 */
 		public void setDisplay(PipelineListData dataObject);
 
+		/**
+		 * Select given page.
+		 * 
+		 * @param pageNumber Page to select.
+		 */
 		public void setPage(int pageNumber);
 
+		/**
+		 * Set filter.
+		 * 
+		 * @param key Name of the filter.
+		 * @param value Value of the filter.
+		 * 
+		 */
 		public void setFilter(String key, Object value);
 		
+		/**
+		 * Refresh paging controls of the table.
+		 */
 		public void refreshTableControls();
 	}
 
@@ -97,10 +127,19 @@ public interface PipelineListPresenter extends Presenter {
 
 		private final ReadOnlyContainer<Pipeline> container;
 
+		/**
+		 * Gets the container.
+		 * @return Container.
+		 */
 		public ReadOnlyContainer<Pipeline> getContainer() {
 			return container;
 		}
 
+		/**
+		 * Constructor
+		 * 
+		 * @param container Container to hold.
+		 */
 		public PipelineListData(ReadOnlyContainer<Pipeline> container) {
 			this.container = container;
 		}

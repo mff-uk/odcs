@@ -390,6 +390,11 @@ public class LogTable extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set table page length.
+	 *
+	 * @param pageLength New table page length.
+	 */
 	public void setPageLength(int pageLength) {
 		table.setPageLength(pageLength);
 	}

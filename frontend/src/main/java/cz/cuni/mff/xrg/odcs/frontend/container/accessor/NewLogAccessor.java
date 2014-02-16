@@ -11,6 +11,9 @@ import java.util.Date;
  */
 public class NewLogAccessor extends ClassAccessorBase<Log> {
 
+	/**
+	 * Constructor.
+	 */
 	public NewLogAccessor() {
 		super(Log.class);
 

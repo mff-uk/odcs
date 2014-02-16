@@ -62,12 +62,26 @@ public class InMemorySource<T extends DataObject,
 	 */
 	protected final List<Long> idsVisible = new ArrayList<>();
 
+	/**
+	 * Class accessor.
+	 */
 	protected final ClassAccessor<T> classAccessor;
 
+	/**
+	 * Basic constructor.
+	 *
+	 * @param classAccessor Class of data in source.
+	 */
 	public InMemorySource(ClassAccessor<T> classAccessor) {
 		this.classAccessor = classAccessor;
 	}
 
+	/**
+	 * Extended constructor, loads data.
+	 * 
+	 * @param classAccessor Class of data in source.
+	 * @param source {@link DataAccessRead} source.
+	 */
 	public InMemorySource(ClassAccessor<T> classAccessor, 
 			DataAccessRead<T, BUILDER, QUERY, QUERY_SIZE> source) {
 		this.classAccessor = classAccessor;
