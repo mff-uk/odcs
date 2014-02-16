@@ -5,14 +5,14 @@ import java.util.List;
 
 /**
  *
- * Is responsible for right validation of data.
+ * Validator is responsible for right data validation.
  *
  * @author Jiri Tomes
  */
 public interface DataValidator {
 
 	/**
-	 * Method for detection right syntax of data.
+	 * Method for detection right data syntax.
 	 *
 	 * @return true, if data are valid, false otherwise.
 	 */

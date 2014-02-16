@@ -32,7 +32,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 
 /**
- * Provides method for working with RDF data repository.
+ * Interface provides methods for working with RDF data repository.
  *
  * @author Jiri Tomes
  * @author Petyr
@@ -358,11 +358,14 @@ public interface RDFDataUnit extends DataUnit {
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
 
 	/**
+	 * Returns graph contains all RDF triples as result of describe query for
+	 * given Resource URI. If graph is empty, there is are no triples for
+	 * describing.
 	 *
 	 * @param uriResource Subject or object URI as resource use to describe it.
-	 * @return Graph contains all RDF triples as result of descibe for given
-	 *         Resource URI. If graph is empty, there is are no triples for
-	 *         describe Resource URI.
+	 * @return Graph contains all RDF triples as result of describe query for
+	 *         given Resource URI. If graph is empty, there is are no triples
+	 *         for describing.
 	 * @throws InvalidQueryException if resource is not URI type (e.g.
 	 *                               BlankNode, some type of Literal (in object
 	 *                               case))
@@ -370,6 +373,7 @@ public interface RDFDataUnit extends DataUnit {
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
+	 * Returns shared connection to repository.
 	 *
 	 * @return Shared connection to repository.
 	 * @throws RepositoryException If something went wrong during the creation
@@ -404,19 +408,19 @@ public interface RDFDataUnit extends DataUnit {
 			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
-	 * Return URI representation of graph where RDF data are stored.
+	 * Returns URI representation of graph where RDF data are stored.
 	 *
-	 * @return graph with stored data as URI.
+	 * @return URI representation of graph where RDF data are stored.
 	 */
 	public URI getDataGraph();
 
 	/**
-	 * Create RDF parser for given RDF format and set RDF handler where are data
+	 * Create RDF parser for given RDF format and set RDF handler where data are
 	 * insert to.
 	 *
 	 * @param format  RDF format witch is set to RDF parser
 	 * @param handler Type of handler where RDF parser used for parsing.
-	 * @return RDFParser for given RDF format and handler.
+	 * @return RDFParser for given RDF format and set RDF handler.
 	 */
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
@@ -443,9 +447,10 @@ public interface RDFDataUnit extends DataUnit {
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
 	/**
+	 * Returns count of parts in repository by defined chunkSize.
 	 *
 	 * @param chunkSize size of triples/statements in one part.
-	 * @return Count of parts as split data in reposioty by defined chunkSize .
+	 * @return Count of parts in repository by defined chunkSize.
 	 */
 	public long getPartsCount(long chunkSize);
 
@@ -456,6 +461,7 @@ public interface RDFDataUnit extends DataUnit {
 	public void restartConnection();
 
 	/**
+	 * Returns dataset for graphs set in reposiotory as default.
 	 *
 	 * @return dataset for graphs set in reposiotory as default.
 	 */
