@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible for lazy returning RDF triples keeping in repository - data
- * are split to parts. It can be useful, when all data collection is too big to
- * return at once. The class behaves as RDF data part iterator, where each data
- * part containt given size of RDF triples.
+ * are split into the parts. It can be useful, when all data collection is too
+ * big to return at once. The class has behavior as RDF data part iterator,
+ * where each data part contains given count of RDF triples.
  *
- * Each calling method {@link #getTriples()} return next data part. Size of data
- * parts is defined using splitSize variable in constructor or in not, then are
+ * Each calling method {@link #getTriples()} returns next data part. The size of
+ * data parts is defined in splitSize variable in constructor, otherwise it is
  * used default splitSize value.
  *
  * @author Jiri Tomes
@@ -31,7 +31,7 @@ public class LazyTriples {
 	private RepositoryResult<Statement> lazy;
 
 	/**
-	 * Create new contructor for {@link LazyTriples} based on lazy RDF data
+	 * Create new constructor for {@link LazyTriples} based on lazy RDF data
 	 * iterator
 	 * <code> RepositoryResult&lt;Statement&gt;</code> used
 	 * {@link #DEFAULT_SPLIT_SIZE} for one data part.
@@ -46,7 +46,7 @@ public class LazyTriples {
 	}
 
 	/**
-	 * Create new contructor for {@link LazyTriples} based on lazy RDF data
+	 * Create new constructor for {@link LazyTriples} based on lazy RDF data
 	 * iterator
 	 * <code> RepositoryResult&lt;Statement&gt;</code> and size for one data
 	 * part.
@@ -61,11 +61,11 @@ public class LazyTriples {
 	}
 
 	/**
-	 * Returns true if repository keeps some RDF data, which were not return
-	 * yet, false otherwise.
+	 * Returns true if the repository keeps some RDF data, which were not be
+	 * returned yet, false otherwise.
 	 *
-	 * @return true if repository keeps some RDF data, which were not return
-	 *         yet, false otherwise.
+	 * @return true if repository keeps some RDF data, which were not be
+	 *         returned yet, false otherwise.
 	 */
 	public boolean hasNextTriples() {
 		if (lazy == null) {
@@ -80,13 +80,13 @@ public class LazyTriples {
 	}
 
 	/**
-	 * Returns list of RDF triples in repository for next data part defined by
-	 * split RDF data keeps in repository using splitSize. If there is no
-	 * triples to return yet, it returns empty collection.
+	 * Returns list of RDF triples in the repository for next data part defined
+	 * by split RDF data. If there is no triples to return, it is returned empty
+	 * collection.
 	 *
-	 * @return List of RDF triples in repository for next data part defined by
-	 *         split RDF data keeps in repository using splitSize. If there is
-	 *         no triples to return yet, it returns empty collection.
+	 * @return List of RDF triples in the repository for next data part defined
+	 *         by split RDF data. If there is no triples to return, it is
+	 *         returned empty collection.
 	 */
 	public List<Statement> getTriples() {
 		List<Statement> result = new ArrayList<>();

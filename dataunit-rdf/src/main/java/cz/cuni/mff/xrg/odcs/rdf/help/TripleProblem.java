@@ -4,8 +4,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import org.openrdf.model.Statement;
 
 /**
- * Responsible for describing invalid RDF triples during data parsing- typo of
- * finded problem, place where invalidation found out, described message about
+ * Responsible for describing invalid RDF triples during data parsing- type of
+ * found problem, place where invalidation found out, described message about
  * that.
  *
  * @author Jiri Tomes
@@ -23,13 +23,13 @@ public class TripleProblem {
 	private Statement statement;
 
 	/**
-	 * Create new instace of {@link TripleProblem} from describe message ,
+	 * Create new instance of {@link TripleProblem} from describe message,
 	 * number of line and column, where problem was found out and it´s type.
 	 *
 	 * @param message String desription of problem
 	 * @param line    number of line where problem was found
 	 * @param column  number of column where problem was found
-	 * @param type    type of finded problem
+	 * @param type    type of found problem
 	 */
 	public TripleProblem(String message, int line, int column,
 			ParsingConfictType type) {
@@ -41,18 +41,18 @@ public class TripleProblem {
 	}
 
 	/**
-	 * Set RDF problem statement that describes finded problem.
+	 * Set RDF problem statement that describes found problem.
 	 *
-	 * @param statement RDF statement that characterizes finded problem.
+	 * @param statement RDF statement that describes found problem.
 	 */
 	public void setStatement(Statement statement) {
 		this.statement = statement;
 	}
 
 	/**
-	 * Returns string description message of finded problem.
+	 * Returns string description message of found problem.
 	 *
-	 * @return string description message of finded problem.
+	 * @return string description message of found problem.
 	 */
 	public String getMessage() {
 		return message;
@@ -86,9 +86,9 @@ public class TripleProblem {
 	}
 
 	/**
-	 * Returns RDF problem statement that describes finded problem.
+	 * Returns RDF problem statement that describes found problem.
 	 *
-	 * @return RDF problem statement that describes finded problem.
+	 * @return RDF problem statement that describes found problem.
 	 */
 	public Statement getStatement() {
 		return statement;
