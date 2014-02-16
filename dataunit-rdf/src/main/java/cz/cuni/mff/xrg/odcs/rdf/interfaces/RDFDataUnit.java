@@ -12,7 +12,6 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler;
 
 import java.io.File;
 import java.util.List;
@@ -54,11 +53,9 @@ public interface RDFDataUnit extends DataUnit {
 
 	/**
 	 * Extracts metadata (held within the list of predicates) about certain
-	 * files (based on the path obtained by
-	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath})
+	 * files (based on the file path)
 	 *
-	 * @param filePath   Path to the file. May be obtained by calling
-	 *                   {@link cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler#getRootedPath getRootedPath})
+	 * @param filePath   Path to the file. 
 	 * @param predicates Predicates being searched
 	 * @return Pairs predicate-value for the given filePath
 	 */
