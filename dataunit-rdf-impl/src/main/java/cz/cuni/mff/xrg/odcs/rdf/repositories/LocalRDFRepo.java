@@ -238,6 +238,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 				List<Statement> statements = getNextDataPart(lazySource,
 						DEFAULT_MERGE_PART_SIZE);
 
+				Resource sourceGraphName = sourceDataUnit.getDataGraph();
+
 				while (!statements.isEmpty()) {
 					addedParts++;
 
@@ -245,7 +247,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 							partsCount);
 
 					mergeNextDataPart(targetConnection, statements,
-							processing);
+							processing, sourceGraphName);
 
 					statements = getNextDataPart(lazySource,
 							DEFAULT_MERGE_PART_SIZE);
@@ -304,10 +306,11 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 	private void mergeNextDataPart(
 			RepositoryConnection targetConnection, List<Statement> statements,
-			String processing)
+			String processing, Resource graphName)
 			throws RepositoryException {
 
 		addStatementsCollection(targetConnection, statements);
+		addStatementsCollection(targetConnection, statements, graphName);
 		statements.clear();
 		logger.debug(
 				"Merging data part {} were successful", processing);
@@ -317,6 +320,15 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			List<Statement> statements) throws RepositoryException {
 		if (graph != null) {
 			targetConnection.add(statements, graph);
+		} else {
+			targetConnection.add(statements);
+		}
+	}
+
+	private void addStatementsCollection(RepositoryConnection targetConnection,
+			List<Statement> statements, Resource graphName) throws RepositoryException {
+		if (graphName != null) {
+			targetConnection.add(statements, graphName);
 		} else {
 			targetConnection.add(statements);
 		}
@@ -334,7 +346,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
 		}
-		Repository targetRepository = ((ManagableRdfDataUnit)targetRepo).getDataRepository();
+		Repository targetRepository = ((ManagableRdfDataUnit) targetRepo)
+				.getDataRepository();
 
 		RepositoryConnection sourceConnection = null;
 		RepositoryConnection targetConnection = null;
@@ -348,7 +361,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 				targetConnection = targetRepository.getConnection();
 
-				Resource targetGraph = ((ManagableRdfDataUnit)targetRepo).getDataGraph();
+				Resource targetGraph = ((ManagableRdfDataUnit) targetRepo)
+						.getDataGraph();
 
 				if (targetGraph != null) {
 					targetConnection.add(sourceStatemens, targetGraph);
@@ -418,5 +432,4 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			}
 		}
 	}
-
 }

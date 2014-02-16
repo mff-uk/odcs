@@ -55,7 +55,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * Extracts metadata (held within the list of predicates) about certain
 	 * files (based on the file path)
 	 *
-	 * @param filePath   Path to the file. 
+	 * @param filePath   Path to the file.
 	 * @param predicates Predicates being searched
 	 * @return Pairs predicate-value for the given filePath
 	 */
@@ -226,6 +226,16 @@ public interface RDFDataUnit extends DataUnit {
 	 * @throws RDFException when transformation fail.
 	 */
 	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
+
+	/**
+	 * Transform RDF in repository by SPARQL updateQuery.
+	 *
+	 * @param updateQuery String value of update SPARQL query.
+	 * @param dataset     Set of graph URIs used for update query.
+	 * @throws RDFException when transformation fault.
+	 */
+	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
+			throws RDFException;
 
 	/**
 	 * Make select query over repository data and return file as SPARQL XML

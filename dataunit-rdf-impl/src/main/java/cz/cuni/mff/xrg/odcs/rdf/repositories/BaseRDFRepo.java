@@ -515,7 +515,21 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * @throws RDFException when transformation fault.
 	 */
 	@Override
-	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException {
+	public void executeSPARQLUpdateQuery(String updateQuery)
+			throws RDFException {
+		executeSPARQLUpdateQuery(updateQuery, getDataSet());
+	}
+
+	/**
+	 * Transform RDF in repository by SPARQL updateQuery.
+	 *
+	 * @param updateQuery String value of update SPARQL query.
+	 * @param dataset     Set of graph URIs used for update query.
+	 * @throws RDFException when transformation fault.
+	 */
+	@Override
+	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
+			throws RDFException {
 
 		try {
 			RepositoryConnection connection = getConnection();
@@ -523,7 +537,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			String newUpdateQuery = AddGraphToUpdateQuery(updateQuery);
 			Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
 					newUpdateQuery);
-
+			myupdate.setDataset(dataset);
 
 			logger.debug(
 					"This SPARQL update query is valid and prepared for execution:");
