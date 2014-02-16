@@ -2,26 +2,28 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
 
 /**
  *
- * Type of problems we want to find out in case of parsing RDF data triples
- * using RDF handler.
+ * Type of problems we want to find out in case of parsing RDF triples using RDF
+ * handler.
  *
  * @author Jiri Tomes
  */
 public enum ParsingConfictType {
 
 	/**
-	 * Define warning type find out in case of parsing RDF triples.
+	 * Define the warning type in case of parsing RDF triples.
 	 */
 	WARNING,
 	/**
-	 * Define error type find out in case of parsing RDF triples.
+	 * Define the error type in case of parsing RDF triples.
 	 */
 	ERROR;
 
 	/**
+	 * Returns name of {@link ParsingConfictType}. The name starts with capital
+	 * first letter (Other letters are small).
 	 *
-	 * @return Name of {@link ParsingConfictType} starts with capital first
-	 *         letter (others are small).
+	 * @return Name of {@link ParsingConfictType} The name starts with capital
+	 *         first letter (Other letters are small).
 	 */
 	@Override
 	public String toString() {

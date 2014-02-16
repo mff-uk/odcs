@@ -4,24 +4,25 @@ import java.util.*;
 import org.openrdf.rio.RDFFormat;
 
 /**
- * Set of system supported RDF data types. It´s used priority for easy setting
- * one of possible RDF types choosed by user in DPU details dialog.
+ * Define the set of RDF data types supported by system. It is used priority for
+ * easy setting one of possible RDF types choosed by user in DPU details
+ * dialogue.
  *
  * @author Jiri Tomes
  */
 public enum RDFFormatType {
 
 	/**
-	 * RDF type is set automatically by suffix. If no suffix, RDFXML type is
-	 * set.
+	 * RDF type is set automatically by suffix. If no suffix, {@link #RDFXML}
+	 * type is set.
 	 */
 	AUTO,
 	/**
-	 * RDF type using for storing data XML syntax
+	 * RDF type using for storing data in RDF/XML syntax.
 	 */
 	RDFXML,
 	/**
-	 * RDF type using triples - subject, predicate, object.
+	 * RDF type using for storing triples - subject, predicate, object.
 	 */
 	N3,
 	/**
@@ -29,7 +30,7 @@ public enum RDFFormatType {
 	 */
 	TRIG,
 	/**
-	 * RDF type using turle format - extension of N3 type.
+	 * RDF type using turtle format - extension of N3 type.
 	 */
 	TTL,
 	/**
@@ -68,9 +69,9 @@ public enum RDFFormatType {
 	}
 
 	/**
-	 * For given {@link RDFFormat} return equivalent in {@link RDFFormatType}.
-	 * If {@link RDFFormat} is not supported in application returns
-	 * {@link #AUTO} type.
+	 * For given {@link RDFFormat} it is returned equivalent in
+	 * {@link RDFFormatType}. If {@link RDFFormat} is not supported in
+	 * application, it is returned {@link #AUTO} type.
 	 *
 	 * @param format Original RDF format need for finding equivalent.
 	 * @return equivalent for given {@link RDFFormat} as {@link RDFFormatType}.
@@ -86,7 +87,7 @@ public enum RDFFormatType {
 	}
 
 	/**
-	 * For given desription of one of {@link RDFFormatType} return one of
+	 * For given desription one of {@link RDFFormatType} it is returned one of
 	 * concrete {@link RDFFormatType}.
 	 *
 	 * @param value String description of {@link RDFFormatType}.
@@ -101,12 +102,12 @@ public enum RDFFormatType {
 	}
 
 	/**
-	 * For given {@link RDFFormatType} return it´s eqvivalent as
+	 * For given {@link RDFFormatType} it is returned the eqvivalent as
 	 * {@link RDFFormat}.
 	 *
-	 * @param type {@link RDFFormatType} for what you can get equivalent
+	 * @param type {@link RDFFormatType} for which you can get equivalent
 	 *             {@link RDFFormat}.
-	 * @return concrete {@link RDFFormat} as equivalent for given
+	 * @return Concrete {@link RDFFormat} as equivalent for given
 	 *         {@link RDFFormatType}.
 	 */
 	public static RDFFormat getRDFFormatByType(RDFFormatType type) {
@@ -142,7 +143,7 @@ public enum RDFFormatType {
 	}
 
 	/**
-	 * Return list of all {@link RDFFormatType} supported by this application.
+	 * Returns list of all {@link RDFFormatType} supported by this application.
 	 *
 	 * @return List of all {@link RDFFormatType} supported by this application.
 	 */
@@ -155,7 +156,7 @@ public enum RDFFormatType {
 	}
 
 	/**
-	 * For given {@link RDFFormatType} return it´s string description.
+	 * For given {@link RDFFormatType} returns it´s string description.
 	 *
 	 * @param type {@link RDFFormatType} for you can get string description.
 	 * @return string description of given {@link RDFFormatType} as method
