@@ -6,8 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 
 /**
- * Base abstract class for a configuration dialog. DPU developer should extend 
- * his DPU's configuration dialog from {@link BaseConfigDialog} instead of this class. 
+ * Base abstract class for a configuration dialog.
  * 
  * @author Petyr
  * @param <C>
@@ -25,8 +24,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	public abstract void setContext(ConfigDialogContext newContext);
 	
 	/**
-	 * Deserialize configuration and call
-	 * {@link #setConfiguration(DPUConfigObject)}
+	 * Configure dialog with given serialized configuration.
 	 * 
 	 * @param conf Serialized configuration object.
 	 * @throws ConfigException
@@ -34,7 +32,8 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 	public abstract void setConfig(String conf) throws ConfigException;
 
 	/**
-	 * Return serialized result of {@link #getConfiguration()}
+	 * Return current configuration from dialog in serialized form. If the
+	 * configuration is invalid then throws.
 	 * 
 	 * @return Serialized configuration object.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
@@ -67,7 +66,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
      * Compare last configuration and current dialog's configuration. If any
      * exception is thrown then return false.
      * The last configuration is updated in calls {@link #getConfig()}
-     * and {@link #setConfig(byte[])}.
+     * and {@link #setConfig(java.lang.String) }.
      *  
      * @return False if configurations are valid and are different.
      */
