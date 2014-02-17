@@ -78,8 +78,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 		// saving configuration
 		try {
 			dpuWrap.saveConfig();
+			Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
 		} catch (ConfigException e) {
-			dpuWrap.getDPUTemplateRecord().setRawConf(null);
+//			dpuWrap.getDPUTemplateRecord().setRawConf(null);
+			Notification.show("The configuration have not been saved.",e.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} catch (DPUWrapException e) {
 			Notification.show(
 					"Unexpected error. The configuration may have not been saved.",
@@ -89,7 +91,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		// store into DB
 		dpuFacade.save(dpuWrap.getDPUTemplateRecord());
-		Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
+
 	}
 
 	void copyDPU(DPUTemplateRecord selectedDpu) {
