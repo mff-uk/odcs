@@ -145,8 +145,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	Handler getByName(String queryName);
 
 	/**
-	 * Return handler to object with given rooted name. If called on non root
-	 * {@link DirectoryHandler} the return null.
+	 * Return handler to object with given rooted name.
 	 * 
 	 * @param queryName
 	 * @return Null if the object for given rooted path does not exists.

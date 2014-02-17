@@ -87,7 +87,8 @@ public class DirectoryHandlerTest {
 		assertEquals("/myDir/myFile", file.getRootedPath());
 		// test getter for wrong values
 		assertEquals(file, handler.getByRootedName(file.getRootedPath()));
-		assertEquals(null, dir.getByRootedName(file.getRootedPath()));
+		assertEquals(file, dir.getByRootedName("/myFile"));
+		assertEquals(null, dir.getByRootedName("/NotExistingDir/subFile"));
 		assertEquals(null, handler.getByRootedName(""));
 		assertEquals(null, handler.getByRootedName(null));
 		assertEquals(null, handler.getByRootedName("//"));

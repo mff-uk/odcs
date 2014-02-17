@@ -114,10 +114,6 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
 	@Override
 	public Handler getByRootedName(String queryName) {
-		// are we rooted ?
-		if (this.parent != null) {
-			return null;
-		}
 		// null check
 		if (queryName == null) {
 			return null;
@@ -127,8 +123,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		if (names.length < 2) {
 			return null;
 		}
-		// check for first name
-		if (names[0].compareToIgnoreCase(name) != 0) {
+		// check for first name, it should be empty string
+		if (names[0].compareToIgnoreCase("") != 0) {
 			return null;
 		}
 		// ok, start the search process
