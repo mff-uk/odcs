@@ -52,6 +52,7 @@ import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
@@ -1036,9 +1037,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
-		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(this.pipeline.getShareType());
 		setupButtons(false);
 		return pipeline;
 	}
@@ -1082,7 +1081,7 @@ public class PipelineEdit extends ViewComponent {
 	/**
 	 * Saves current pipeline.
 	 *
-	 * @param successAction 
+	 * @param successAction
 	 * @return
 	 */
 	protected boolean savePipeline(final String successAction) {
@@ -1120,9 +1119,7 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-		if (visibility != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(visibility);
 
 		undo.setEnabled(false);
 		this.pipeline.setName(pipelineName.getValue());
@@ -1263,9 +1260,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setValue(this.pipeline.getName());
 		pipelineDescription.setValue(this.pipeline.getDescription());
 		pipelineVisibility.setValue(this.pipeline.getShareType());
-		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(this.pipeline.getShareType());
 		setupButtons(false);
 	}
 
@@ -1326,10 +1321,16 @@ public class PipelineEdit extends ViewComponent {
 
 	private void setIdLabel(Long id) {
 		boolean hasId = id != null;
-		if(id != null) {
+		if (id != null) {
 			idValue.setValue(id.toString());
 		}
 		idValue.setVisible(hasId);
 		idLabel.setVisible(hasId);
+	}
+
+	private void setupVisibilityOptions(ShareType visibility) {
+		pipelineVisibility.setItemEnabled(ShareType.PRIVATE, visibility == ShareType.PRIVATE);
+		boolean publicRoAvalilable = visibility != ShareType.PUBLIC_RW || authCtx.getUser().equals(this.pipeline.getOwner()) || authCtx.getUser().getRoles().contains(Role.ROLE_ADMIN);
+		pipelineVisibility.setItemEnabled(ShareType.PUBLIC_RO, publicRoAvalilable);
 	}
 }
