@@ -176,7 +176,7 @@ public class Executor implements Runnable {
 	 * instantly return true.
 	 *
 	 * @param graph Dependency graph used for execution.
-	 * @return
+	 * @return False if any of the pre-executors failed.
 	 */
 	private boolean executePreExecutors(DependencyGraph graph) {
 		if (preExecutors == null) {
@@ -199,7 +199,7 @@ public class Executor implements Runnable {
 	 * instantly return true.
 	 *
 	 * @param graph Dependency graph that has been used for execution.
-	 * @return
+	 * @return False if any of the post-executors failed.
 	 */
 	private boolean executePostExecutors(DependencyGraph graph) {
 		if (postExecutors == null) {
@@ -263,7 +263,7 @@ public class Executor implements Runnable {
 	/**
 	 * Prepare and return instance of {@link DependencyGraph}.
 	 *
-	 * @return
+	 * @return Dependency graph for currently executed pipeline.
 	 */
 	private DependencyGraph prepareDependencyGraph() {
 		final Pipeline pipeline = execution.getPipeline();

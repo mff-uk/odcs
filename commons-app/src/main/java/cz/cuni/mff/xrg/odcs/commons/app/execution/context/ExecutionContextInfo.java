@@ -113,7 +113,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param id DPUInstanceRecord's id.
 	 * @return DataProcessingUnitInfo
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	private ProcessingUnitInfo getContext(DPUInstanceRecord dpuInstance) {
@@ -137,7 +137,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param type {@link DataUnitType Type} of data unit.
 	 * @return Index of new DataUnitInfo.
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public Integer createInput(DPUInstanceRecord dpuInstance,
@@ -156,7 +156,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param type {@link DataUnitType Type} of data unit.
 	 * @return Index of new DataUnitInfo.
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public Integer createOutput(DPUInstanceRecord dpuInstance,
@@ -166,10 +166,10 @@ public class ExecutionContextInfo implements DataObject {
 	}
 
 	/**
-	 * Delete all data about execution except {@link #rootDirectory} and
-	 * {@link #id} Use to start execution from the very beginning.
+	 * Delete all data about execution except {@link #id} Use to start execution
+	 * from the very beginning.
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public void reset() {
@@ -184,8 +184,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param dpuInstance Owner of the DataUnit.
 	 * @param index DataUnit's index assigned to the DataUnit by context.
 	 * @return Unique id.
-	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String generateDataUnitId(DPUInstanceRecord dpuInstance,
@@ -200,8 +199,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * 
 	 * @param dpuInstance Instance of DPU for which retrieve context info.
 	 * @return {@link ProcessingUnitInfo}
-	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public ProcessingUnitInfo createDPUInfo(DPUInstanceRecord dpuInstance) {
@@ -209,11 +207,8 @@ public class ExecutionContextInfo implements DataObject {
 	}
 
 	/**
-	 * Return set of indexes of stored DPU's execution information.
-	 * 
-	 * @return
-	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @return set of indexes of stored DPU's execution information.
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public Set<DPUInstanceRecord> getDPUIndexes() {
@@ -233,7 +228,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param dpuInstance The
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getDPUTmpPath(DPUInstanceRecord dpuInstance) {
@@ -253,7 +248,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param dpuInstance
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
@@ -273,7 +268,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getDataUnitTmpPath(DPUInstanceRecord dpuInstance,
@@ -291,7 +286,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param dpuInstance
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
@@ -312,7 +307,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @param index DataUnitInfo index.
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getDataUnitStoragePath(DPUInstanceRecord dpuInstance,
@@ -329,7 +324,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * @return {@link ProcessingUnitInfo} or null if no records for given
 	 *         dpuInstance exist.
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public ProcessingUnitInfo getDPUInfo(DPUInstanceRecord dpuInstance) {
@@ -346,7 +341,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getWorkingPath() {
@@ -359,7 +354,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getResultPath() {
@@ -372,7 +367,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * 
 	 * @return Relative path, start but not end with separator (/, \\)
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getStoragePath() {
@@ -385,7 +380,7 @@ public class ExecutionContextInfo implements DataObject {
 	 * 
 	 * @return Relative path start but not end with separator separator (/, \\).
 	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public String getRootPath() {
@@ -393,11 +388,9 @@ public class ExecutionContextInfo implements DataObject {
 	}
 
 	/**
-	 * Return respective pipeline execution.
+	 * @return respective pipeline execution.
 	 * 
-	 * @return
-	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	public PipelineExecution getExecution() {
@@ -405,9 +398,8 @@ public class ExecutionContextInfo implements DataObject {
 	}
 
 	/**
-	 * Return string that should be used as a name for DPU's directory.
-	 * 
-	 * @deprecated use ExecutionInfo instead
+	 * @return string that should be used as a name for DPU's directory.
+	 * @deprecated use {@link ExecutionInfo} instead
 	 */
 	@Deprecated
 	private String getDpuDirectoryName(DPUInstanceRecord dpuInstance) {

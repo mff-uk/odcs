@@ -26,7 +26,7 @@ public interface DbOpenEvent extends DbAccess<OpenEvent> {
 	 * Fetches all events when given pipeline was open in pipeline canvas.
 	 * 
 	 * @param pipeline
-	 * @return 
+	 * @return list of {@link OpenEvent}s for given pipeline.
 	 */
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline);
 	
@@ -35,7 +35,7 @@ public interface DbOpenEvent extends DbAccess<OpenEvent> {
 	 * 
 	 * @param pipeline
 	 * @param from select only events with later timestamp
-	 * @return 
+	 * @return list of {@link OpenEvent}s for given pipeline since given date.
 	 */
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from);
 	
@@ -45,7 +45,8 @@ public interface DbOpenEvent extends DbAccess<OpenEvent> {
 	 * @param pipeline
 	 * @param user who's events will not be included in the returned list,
 	 *				or null
-	 * @return 
+	 * @return list of {@link OpenEvent}s for given pipeline opened by given
+	 * user.
 	 */
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline, User user);
 	

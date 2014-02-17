@@ -15,32 +15,73 @@ public abstract class QueryView extends CustomComponent {
 	private ExecutionInfo executionInfo;
 	private DPUInstanceRecord selectedDpu;
 
+	/**
+	 * Browse data unit.
+	 */
 	public abstract void browseDataUnit();
 
-	public abstract void setQueryingEnabled(boolean b);
+	/**
+	 * Set querying enabled.
+	 *
+	 * @param enabled
+	 */
+	public abstract void setQueryingEnabled(boolean enabled);
 
+	/**
+	 * Reset view.
+	 */
 	public abstract void reset();
 
+	/**
+	 * Set execution info.
+	 *
+	 * @param executionInfo
+	 */
 	public void setExecutionInfo(ExecutionInfo executionInfo) {
 		this.executionInfo = executionInfo;
 	}
 
+	/**
+	 * Set data unit info.
+	 *
+	 * @param duInfo
+	 */
 	public void setDataUnitInfo(DataUnitInfo duInfo) {
 		dataUnitInfo = duInfo;
 	}
 
+	/**
+	 * Set selected DPU.
+	 *
+	 * @param dpu
+	 */
 	public void setSelectedDpu(DPUInstanceRecord dpu) {
 		selectedDpu = dpu;
 	}
 
+	/**
+	 * Get execution info.
+	 *
+	 * @return
+	 */
 	protected ExecutionInfo getExecutionInfo() {
 		return executionInfo;
 	}
 
+	/**
+	 * Get data unit info.
+	 *
+	 * @return
+	 */
 	protected DataUnitInfo getDataUnitInfo() {
 		return dataUnitInfo;
 	}
 
+	/**
+	 * Get selected DPU.
+	 *
+	 * @return
+	 */
 	protected DPUInstanceRecord getSelectedDpu() {
 		return selectedDpu;
 	}

@@ -5,12 +5,23 @@ import java.util.Collection;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
+/**
+ * {@link Item} implementation for use in {@link ReadOnlyContainer}.
+ * 
+ * @author petyr
+ */
 public class ValueItem implements Item {
 
 	private final ReadOnlyContainer<?> container;
 	
 	private final Long objectId;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param container Container with data.
+	 * @param objectId Id of item.
+	 */
 	ValueItem(ReadOnlyContainer<?> container, Long objectId) {
 		this.container = container;
 		this.objectId = objectId;

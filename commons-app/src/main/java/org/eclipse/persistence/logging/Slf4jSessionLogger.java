@@ -153,7 +153,7 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
 	 * Return true if SQL logging should log visible bind parameters. If the
 	 * shouldDisplayData is not set, return false.
 	 *
-	 * @return
+	 * @return true if SQL logging should log binded query parameters
 	 */
 	@Override
 	public boolean shouldDisplayData() {

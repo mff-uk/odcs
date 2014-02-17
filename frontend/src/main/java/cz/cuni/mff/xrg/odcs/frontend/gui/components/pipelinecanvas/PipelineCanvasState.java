@@ -10,5 +10,8 @@ import com.vaadin.shared.ui.JavaScriptComponentState;
 @SuppressWarnings("serial")
 public class PipelineCanvasState extends JavaScriptComponentState {
 
+	/**
+	 * XHTML representing state.
+	 */
 	public String xhtml;
 }

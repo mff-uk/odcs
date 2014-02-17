@@ -53,9 +53,9 @@ public class ExecutionResult {
 	}
 	
 	/**
-	 * Return true if the execution calls any of {@link #stop()}, {@link #failure()}
+	 * 
+	 * @return true if the execution calls any of {@link #stop()}, {@link #failure()}
 	 * or {@link #finished()} methods.
-	 * @return 
 	 */
 	public boolean executionEndsProperly() {
 		return stop || failed || finished;
@@ -70,8 +70,8 @@ public class ExecutionResult {
 	}
 	
 	/**
-	 * Return true if the execution has been killed by exception.
-	 * @return 
+	 * 
+	 * @return true if the execution has been killed by exception.
 	 */
 	public boolean nonStandardEnding() {
 		return !finished;

@@ -40,6 +40,11 @@ import org.springframework.stereotype.Component;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 import org.vaadin.dialogs.ConfirmDialog;
 
+/**
+ * Implementation of {@link PipelineListPresenter}.
+ *
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")
@@ -159,10 +164,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 			Notification.show("Pipeline " + pipeline.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
 			return;
 		}
-		if (!permissions.hasPermission(pipeline, "delete")) {
-			Notification.show("Pipeline " + pipeline.getName() + " cannot be deleted. Public pipelne may be deleted only by pipeline authors and administrators", Notification.Type.WARNING_MESSAGE);
-			return;
-		}
 		String message = "Would you really like to delete the \"" + pipeline.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
 		List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
 		if (!schedules.isEmpty()) {
@@ -189,6 +190,12 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		});
 	}
 
+	@Override
+	public boolean canDeletePipeline(long pipelineId) {
+		Pipeline pipeline = cachedSource.getObject(pipelineId);
+		return permissions.hasPermission(pipeline, "delete");
+	}
+	
 	@Override
 	public void scheduleEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);

@@ -15,6 +15,11 @@ public class Utils {
 	@Autowired
 	private AuthenticationContext authCtx;
 	
+	/**
+	 * Get page length.
+	 *
+	 * @return
+	 */
 	public int getPageLength() {
 		User user = authCtx.getUser();
 		Integer rows = user == null 
@@ -26,11 +31,21 @@ public class Utils {
 		return rows;
 	}
 	
+	/**
+	 * Get username.
+	 *
+	 * @return
+	 */
 	public String getUserName() {
 		User user = authCtx.getUser();		
 		return user == null ? "" : user.getUsername();
 	}
 	
+	/**
+	 * Get default max length of column.
+	 *
+	 * @return
+	 */
 	public static int getColumnMaxLenght() {
 		return 100;
 	}

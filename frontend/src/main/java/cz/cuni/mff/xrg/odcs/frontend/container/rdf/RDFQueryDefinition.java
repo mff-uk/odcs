@@ -18,6 +18,16 @@ public class RDFQueryDefinition extends LazyQueryDefinition {
 	private DPUInstanceRecord dpu;
 	private DataUnitInfo dataUnitInfo;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param batchSize
+	 * @param propertyId
+	 * @param query
+	 * @param info
+	 * @param dpu
+	 * @param dataUnitInfo 
+	 */
 	public RDFQueryDefinition(int batchSize, String propertyId, String query, ExecutionInfo info, DPUInstanceRecord dpu, DataUnitInfo dataUnitInfo) {
 		super(true, batchSize, propertyId);
 		this.query = query;

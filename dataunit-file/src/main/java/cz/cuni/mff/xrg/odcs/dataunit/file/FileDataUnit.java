@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
  *		DirectoryHandler file = (DirectoryHandler)handler;
  *	}
  * }
+ * }
  * </pre>
  * 
  * For more samples please see {@link DirectoryHandler}, {@link FileHandler} and
@@ -37,9 +38,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
 public interface FileDataUnit extends DataUnit {
 
 	/**
-	 * Return access to the root directory.
-	 * 
-	 * @return 
+	 * @return Handler to the root directory.
 	 */
 	DirectoryHandler getRootDir();
 

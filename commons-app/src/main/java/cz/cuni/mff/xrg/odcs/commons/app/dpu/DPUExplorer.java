@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
@@ -84,8 +85,8 @@ public class DPUExplorer {
     }
 
     /**
-     * Return list of input {@link DataUnit}'s descriptions for given DPU. Need
-     * to load instance of given DPU.
+     * Return list of input {@link DataUnitInfo}'s descriptions for given DPU.
+	 * Need to load instance of given DPU.
      *
      * @param dpu
      * @return Does not return null.
@@ -101,15 +102,19 @@ public class DPUExplorer {
         for (AnnotationContainer<InputDataUnit> item : inputs) {
             final InputDataUnit annotation = item.getAnnotation();
             // create description
-            result.add(DataUnitDescription.createInput(annotation.name(), item.getField().getGenericType().toString(), annotation.description(),
-                    annotation.optional()));
+            result.add(DataUnitDescription.createInput(
+				annotation.name(),
+				item.getField().getGenericType().toString(),
+				annotation.description(),
+				annotation.optional())
+			);
         }
         return result;
     }
 
     /**
-     * Return list of output {@link DataUnit}'s descriptions for given DPU. Need
-     * to load instance of given DPU.
+     * Return list of output {@link DataUnitInfo}'s descriptions for given DPU.
+	 * Need to load instance of given DPU.
      *
      * @param dpu
      * @return Does not return null.

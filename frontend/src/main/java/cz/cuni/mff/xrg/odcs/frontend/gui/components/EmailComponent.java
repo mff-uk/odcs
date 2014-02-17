@@ -37,8 +37,17 @@ public class EmailComponent {
 	private Button buttonEmailhRem;
 	private Button buttonEmailAdd;
 	private GridLayout gridLayoutEmail;
+	/**
+	 * Text field with email.
+	 */
 	public TextField textFieldEmail;
+	/**
+	 * List of edited text fields.
+	 */
 	public List<TextField> listedEditText = null;
+	/**
+	 * Parent component.
+	 */
 	public Settings parentComponentAccount;
 	
 	/**
@@ -193,16 +202,32 @@ public class EmailComponent {
 
 	}
 
+	/**
+	 * Set notification to display.
+	 *
+	 * @param notofication
+	 */
 	public void setUserEmailNotification(UserNotificationRecord notofication) {
 		Set<EmailAddress> emails = stringsToEmails(griddata);
 		notofication.setEmails(emails);
 	}
 
+	/**
+	 * Set notification for schedules.
+	 *
+	 * @param notofication
+	 * @param schedule
+	 */
 	public void setScheduleEmailNotification(ScheduleNotificationRecord notofication, Schedule schedule) {
 		Set<EmailAddress> emails = stringsToEmails(griddata);
 		notofication.setEmails(emails);
 	}
 
+	/**
+	 * Get notifications for user.
+	 *
+	 * @param user
+	 */
 	public void getUserEmailNotification(User user) {
 
 		UserNotificationRecord notification = user.getNotification();
@@ -216,6 +241,11 @@ public class EmailComponent {
 		}
 	}
 
+	/**
+	 * Get notification for schedules.
+	 *
+	 * @param schedule
+	 */
 	public void getScheduleEmailNotification(Schedule schedule) {
 
 		ScheduleNotificationRecord notification = schedule.getNotification();

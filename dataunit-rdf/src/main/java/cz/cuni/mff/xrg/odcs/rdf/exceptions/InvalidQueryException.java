@@ -12,7 +12,7 @@ public class InvalidQueryException extends DataUnitException {
 	private static final String message = "This SPARQL query is not valid !!!";
 
 	/**
-	 * Create a new instance of {@link InvalidQueryException} with default
+	 * Create a new instance of {@link InvalidQueryException} with the default
 	 * {@link #message}.
 	 */
 	public InvalidQueryException() {
@@ -20,7 +20,7 @@ public class InvalidQueryException extends DataUnitException {
 	}
 
 	/**
-	 * Create new instance of {@link InvalidQueryException} with specific
+	 * Create new instance of {@link InvalidQueryException} with the specific
 	 * message.
 	 *
 	 * @param message String value of described message
@@ -33,18 +33,18 @@ public class InvalidQueryException extends DataUnitException {
 	 * Create new instance of {@link InvalidQueryException} with cause of
 	 * throwing this exception.
 	 *
-	 * @param cause Cause of throwing exception
+	 * @param cause The cause of throwing exception
 	 */
 	public InvalidQueryException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Create new instance of {@link InvalidQueryException} with a specific
-	 * message and cause of throwing this exception.
+	 * Create new instance of {@link InvalidQueryException} with the specific
+	 * message and the cause of throwing this exception.
 	 *
 	 * @param message String value of described message
-	 * @param cause   Cause of throwing exception
+	 * @param cause   The cause of throwing exception
 	 */
 	public InvalidQueryException(String message, Throwable cause) {
 		super(message, cause);

@@ -79,7 +79,6 @@ public class RDFQueryView extends QueryView {
 	/**
 	 * Constructor with parent view.
 	 *
-	 * @param execution
 	 */
 	public RDFQueryView() {
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -302,6 +301,9 @@ public class RDFQueryView extends QueryView {
 				dataUnit);
 	}
 
+	/**
+	 * Resets the query view to default state. Restores default query.
+	 */
 	@Override
 	public void reset() {
 		queryText.setValue(defaultQuery);

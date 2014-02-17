@@ -38,8 +38,7 @@ public enum Messages {
 	}
 	
 	/**
-	 * Return message.
-	 * @return
+	 * @return message
 	 */
 	public Integer getMessage() {
 		return this.id;
@@ -47,8 +46,9 @@ public enum Messages {
 	
 	/**
 	 * Translate Integer into the {@link Messages}.
+	 * 
 	 * @param id
-	 * @return
+	 * @return message corresponding to given id
 	 */
 	public static Messages getEnum(Integer id) {
 		if (TRANSLATOR.isEmpty()) {

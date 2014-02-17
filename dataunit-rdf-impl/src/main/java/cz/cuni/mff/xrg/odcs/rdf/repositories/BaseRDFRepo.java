@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
 import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import info.aduna.iteration.EmptyIteration;
 
@@ -59,6 +60,8 @@ import org.slf4j.Logger;
  * @author Jiri Tomes
  */
 public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
+
+	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
 	/**
 	 * Default name for graph using for store RDF data.
@@ -105,6 +108,24 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * instance.
 	 */
 	private boolean hasBrokenConnection = false;
+
+	public BaseRDFRepo() {
+		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
+	}
+
+	@Override
+	public Map<String, List<String>> getRDFMetadataForSubjectURI(
+			String subjectURI, List<String> predicates) {
+		return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI,
+				predicates);
+	}
+
+	@Override
+	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
+			List<String> predicates) {
+		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
+				predicates);
+	}
 
 	/**
 	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
@@ -328,7 +349,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		ParamController.testNullParameter(file,
 				"Given file for loading is null.");
 
-		ParamController.testEmptyParameter(file, "File name is empty");
+		//ParamController.testEmptyParameter(file, "File name is empty");
 
 		if (!file.exists()) {
 			createNewFile(file);
@@ -494,7 +515,21 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * @throws RDFException when transformation fault.
 	 */
 	@Override
-	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException {
+	public void executeSPARQLUpdateQuery(String updateQuery)
+			throws RDFException {
+		executeSPARQLUpdateQuery(updateQuery, getDataSet());
+	}
+
+	/**
+	 * Transform RDF in repository by SPARQL updateQuery.
+	 *
+	 * @param updateQuery String value of update SPARQL query.
+	 * @param dataset     Set of graph URIs used for update query.
+	 * @throws RDFException when transformation fault.
+	 */
+	@Override
+	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
+			throws RDFException {
 
 		try {
 			RepositoryConnection connection = getConnection();
@@ -502,7 +537,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			String newUpdateQuery = AddGraphToUpdateQuery(updateQuery);
 			Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
 					newUpdateQuery);
-
+			myupdate.setDataset(dataset);
 
 			logger.debug(
 					"This SPARQL update query is valid and prepared for execution:");
@@ -1233,7 +1268,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
-	 * repository data and return {@link OrderTupleQueryResult} class as result.
+	 * repository data and return {@link OrderTupleQueryResultImpl} class as
+	 * result.
 	 *
 	 * This ordered select query don´t have to containt LIMIT nad OFFSET
 	 * keywords.
@@ -1241,11 +1277,11 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
 	 * virtuoso.ini file before using. For more info
 	 *
-	 * @see OrderTupleQueryResult class description.
+	 * @see OrderTupleQueryResultImpl class description.
 	 *
 	 * @param orderSelectQuery String representation of SPARQL select query.
-	 * @return {@link OrderTupleQueryResult} representation of ordered select
-	 *         query.
+	 * @return {@link OrderTupleQueryResultImpl} representation of ordered
+	 *         select query.
 	 * @throws InvalidQueryException when query is not valid or containst LIMIT
 	 *                               or OFFSET keyword.
 	 */

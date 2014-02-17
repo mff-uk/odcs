@@ -251,6 +251,9 @@ public class DPUTree extends CustomComponent {
 		mainLayout.addComponent(layoutTree);
 	}
 
+	/**
+	 * Fill DPU tree with data.
+	 */
 	public void fillTree() {
 		Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
 		Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
@@ -358,6 +361,11 @@ public class DPUTree extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set DPU tree expandable.
+	 *
+	 * @param expandable
+	 */
 	public void setExpandable(boolean expandable) {
 		this.isExpandable = expandable;
 		topLine.setVisible(isExpandable);

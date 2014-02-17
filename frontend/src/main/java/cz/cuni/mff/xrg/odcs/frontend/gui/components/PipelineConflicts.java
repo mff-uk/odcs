@@ -59,10 +59,16 @@ public class PipelineConflicts extends Window {
 	 */
 	private Pipeline pipeline;
 	
+	/**
+	 *	Empty constructor.
+	 */
 	public PipelineConflicts() {
 		
 	}
 	
+	/**
+	 *	Initializes the component.
+	 */
 	public void init() {
 		if (isInitialized) {
 			// do nothing .. the init has already been done
@@ -80,6 +86,11 @@ public class PipelineConflicts extends Window {
 		isInitialized = true;
 	}
 	
+	/**
+	 * Set pipeline.
+	 *
+	 * @param pipeline
+	 */
 	public void setData(Pipeline pipeline) {
 		result = false;
 		this.pipeline = pipeline;
@@ -92,6 +103,11 @@ public class PipelineConflicts extends Window {
 		selectPipe.setValue(conflictsNames);		
 	}
 	
+	/**
+	 * Is component initialized.
+	 *
+	 * @return
+	 */
 	public boolean isInitialized() {
 		return isInitialized;
 	}
@@ -196,6 +212,11 @@ public class PipelineConflicts extends Window {
 		return mainLayout;
 	}
 
+	/**
+	 * Get result.
+	 *
+	 * @return
+	 */
 	public boolean getResult() {
 		return result;
 	}

@@ -30,6 +30,13 @@ public class PipelineValidator {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineValidator.class);
 	
+	/**
+	 * Validate edges of graph.
+	 *
+	 * @param graph Graph to valifate.
+	 * @return Is graph valid.
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValidationException
+	 */
 	public boolean validateGraphEdges(PipelineGraph graph) throws PipelineValidationException {
 		EdgeCompiler edgeCompiler = new EdgeCompiler();
 		String result = edgeCompiler.checkMandatoryInputsAndOutputs(graph, dpuExplorer);
@@ -40,6 +47,12 @@ public class PipelineValidator {
 		return true;
 	}
 	
+	/**
+	 * Validate graph.
+	 *
+	 * @param graph Graph to validate.
+	 * @return Is graph valid.
+	 */
 	public boolean validateGraph(PipelineGraph graph) {
 		boolean isGraphValid = true;
 		for(Node node : graph.getNodes()) {
@@ -54,6 +67,12 @@ public class PipelineValidator {
 		}
 	}
 	
+	/**
+	 * Validate DPU.
+	 *
+	 * @param dpu DPU to validate.
+	 * @return Is DPU valid.
+	 */
 	public boolean checkDPUValidity(DPUInstanceRecord dpu) {
 		LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
 		DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
@@ -76,7 +95,15 @@ public class PipelineValidator {
 		return true;
 	}
 	
+	/**
+	 *	Exception in pipeline validation.
+	 */
 	public class PipelineValidationException extends Exception {
+		/**
+		 * Constructor.
+		 *
+		 * @param report Report from validation.
+		 */
 		public PipelineValidationException(String report) {
 			super(report);
 		}

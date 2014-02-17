@@ -21,7 +21,7 @@ public interface Configurable <C extends DPUConfigObject> {
 	
 	/**
 	 * Return serialized configuration object. If no configuration has 
-	 * been previously set by {@link #configure(byte[])} then serialized default
+	 * been previously set by {@link #configure(java.lang.String) } then serialized default
 	 * configuration should be returned.
 	 * @return Serialized configuration.
 	 * @throws ConfigException If the configuration can't be serialized.

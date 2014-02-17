@@ -20,7 +20,7 @@ public enum SPARQLQueryType {
 	 */
 	DESCRIBE,
 	/**
-	 * Value for syntax error or other type of queries.
+	 * Value for syntax error or other types of queries.
 	 */
 	UNKNOWN;
 }

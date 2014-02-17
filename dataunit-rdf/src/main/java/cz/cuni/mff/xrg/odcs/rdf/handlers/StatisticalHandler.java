@@ -10,7 +10,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFHandlerException;
 
 /**
- * Class allow monitor better the extraction data process - information about
+ * Class allows monitoring about the extraction data process - information about
  * parsed triples and detail error log.
  *
  *
@@ -26,9 +26,10 @@ public class StatisticalHandler extends TripleCountHandler {
 	private long addedCount = 0;
 
 	/**
-	 * Default hadler contructor for parsing and adding data to repository.
+	 * Default handler constructor for parsing and adding RDF data to
+	 * repository.
 	 *
-	 * @param connection connection to repository where we add data.
+	 * @param connection connection to repository where RDF data are added.
 	 */
 	public StatisticalHandler(RepositoryConnection connection) {
 		super(connection);
@@ -36,12 +37,12 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Default hadler contructor for parsing and adding data from SPARQL
+	 * Default handler constructor for parsing and adding data from SPARQL
 	 * endpoint to repository.
 	 *
-	 * @param connection connection to repository where we add data.
-	 * @param context    DPU context for checking if parsing was cancelled or
-	 *                   not.
+	 * @param connection connection to repository where RDF data are added.
+	 * @param context    DPU context for checking if parsing process was
+	 *                   cancelled or not.
 	 */
 	public StatisticalHandler(RepositoryConnection connection,
 			DPUContext context) {
@@ -50,11 +51,12 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Handler constructor used for check data validation in repository.
+	 * Handler constructor used for checking data validation in repository.
 	 *
-	 * @param connection connection to repository where we add data.
-	 * @param checkData  true for logging validation, false for logging parsing
-	 *                   and adding - same as using constructor {@link
+	 * @param connection connection to repository where RDF data are added.
+	 * @param checkData  true value for logging the validation, false value for
+	 *                   logging the parsing and adding process - same as using
+	 *                   constructor {@link
 	 * StatisticalHandler#StatisticalHandler(org.openrdf.repository.RepositoryConnection)
 	 *                   }
 	 *
@@ -65,15 +67,15 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Call method
+	 * Method calls
 	 * {@link TripleCountHandler#handleStatement(org.openrdf.model.Statement)}
 	 * on parent class and after successfully parsing/validating every X triples
-	 * add log about that, where X is number defined by
+	 * add the log about that, where X is the number defined by
 	 * {@link #TRIPLE_LOGGED_SIZE} variable.
 	 *
 	 * @param st Statement that will be added to repostory.
-	 * @throws RDFHandlerException if handler find out problem during execution
-	 *                             this method.
+	 * @throws RDFHandlerException if handler find out the problem during
+	 *                             execution this method.
 	 */
 	@Override
 	public void handleStatement(Statement st) throws RDFHandlerException {
@@ -96,15 +98,15 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Call method {@link TripleCountHandler#endRDF()} on parent class and add
+	 * Method calls {@link TripleCountHandler#endRDF()} on parent class and add
 	 * all finded problems during parsing to collection
 	 * {@link #parsingProblems}.
 	 *
 	 * For getting this collection of problems you call method {@link #getFindedProblems()
 	 * }.
 	 *
-	 * @throws RDFHandlerException if handler find out problem during execution
-	 *                             this method.
+	 * @throws RDFHandlerException if handler find out the problem during
+	 *                             execution this method.
 	 */
 	@Override
 	public void endRDF() throws RDFHandlerException {
@@ -115,7 +117,7 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Reset counting triples, finded errors and warnings.
+	 * Reset counting RDF triples, found errors and warnings.
 	 */
 	@Override
 	public void reset() {
@@ -125,11 +127,11 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Return boolean value if during parsing data using handler were find some
+	 * Returns boolean value if during data parsing the handler found some
 	 * problems (invalid data) or not.
 	 *
-	 * @return if during parsing data using handler were find some problems
-	 *         (invalid data) or not.
+	 * @return if during data parsing the handler found some problems (invalid
+	 *         data) or not.
 	 */
 	public boolean hasFindedProblems() {
 		if (hasWarnings() || hasErrors()) {
@@ -140,11 +142,11 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Returns string representation of all finded problems with data
-	 * validation. If all data are valid, return empty string.
+	 * Returns string representation of all found data validation problems. It
+	 * is returned the empty string, if all data are valid.
 	 *
-	 * @return String representation of all finded problems with data
-	 *         validation. If all data are valid, return empty string.
+	 * @return string representation of all found data validation problems. It
+	 *         is returned the empty string, if all data are valid.
 	 */
 	public String getFindedProblemsAsString() {
 		StringBuilder result = new StringBuilder();
@@ -163,18 +165,18 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Return list as collection of all finded problems with data validation. If
-	 * all data are valid, return empty list.
+	 * Returns list as collection of all found data validation problems. It is
+	 * returned the empty list, if all data are valid.
 	 *
-	 * @return List as collection of all finded problems with data validation.
-	 *         If all data are valid, return empty list.
+	 * @return list as collection of all found data validation problems. It is
+	 *         returned the empty list, if all data are valid.
 	 */
 	public List<TripleProblem> getFindedProblems() {
 		return getTripleProblems();
 	}
 
 	/**
-	 * Add finded {@link TripleProblem} to collection of
+	 * Add found {@link TripleProblem} to collection of
 	 * {@link #parsingProblems}.
 	 */
 	private void addToParsingProblems() {
@@ -186,22 +188,24 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Return true, if find out some problems during parsing, false otherwise.
+	 * Returns true, if some problems were found out during parsing process,
+	 * false otherwise.
 	 *
-	 * @return true, if find out some problems during parsing, false otherwise.
+	 * @return true, if some problems were found out during parsing process,
+	 *         false otherwise.
 	 */
 	public static boolean hasParsingProblems() {
 		return !parsingProblems.isEmpty();
 	}
 
 	/**
-	 * Return string representation of all finded problems fixed by parsing
-	 * using {@link StatisticalHandler}.
+	 * Returns string representation of all found problems fixed by parsing
+	 * {@link StatisticalHandler}.
 	 *
-	 * @return string representation of all finded problems fixed by parsing
-	 *         using {@link StatisticalHandler}.
+	 * @return string representation of all found problems fixed by parsing
+	 *         {@link StatisticalHandler}.
 	 */
-	public static String getFindedGlobalProblemsAsString() {
+	public static String getFoundGlobalProblemsAsString() {
 		StringBuilder result = new StringBuilder();
 
 		List<TripleProblem> warning = new LinkedList<>();
@@ -233,8 +237,7 @@ public class StatisticalHandler extends TripleCountHandler {
 	}
 
 	/**
-	 * Clear list of problems finded by parsing using
-	 * {@link StatisticalHandler}.
+	 * Clear list of problems found by parsing.
 	 */
 	public static void clearParsingProblems() {
 		parsingProblems.clear();

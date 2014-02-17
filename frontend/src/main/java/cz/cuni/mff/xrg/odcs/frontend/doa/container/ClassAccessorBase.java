@@ -110,6 +110,11 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	 */
 	private final Class<T> entityClass;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param entityClass Class of the data objects.
+	 */
 	public ClassAccessorBase(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}

@@ -25,8 +25,7 @@ public enum LenghtLimits {
 	}
 	
 	/**
-	 * The max. length or -1 if the length is limitless.
-	 * @return 
+	 * @return the maximum length or -1 if the length is limitless.
 	 */
 	public int limit() {
 		return limit;

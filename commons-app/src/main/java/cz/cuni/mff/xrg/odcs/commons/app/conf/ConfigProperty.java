@@ -4,7 +4,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
  * Recognized configuration properties.
  *
  * @author Jan Vojt
- * @copyright (c) 2013 Jan Vojt
  */
 public enum ConfigProperty {
 	

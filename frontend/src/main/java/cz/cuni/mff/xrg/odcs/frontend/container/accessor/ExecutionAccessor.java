@@ -9,6 +9,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
+/**
+ * Accessor for {@link PipelineExecution}s.
+ * 
+ * @author Bogo
+ * 
+ */
 public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
 	private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "duration", "status", "isDebugging", "schedule", "pipeline.id", "owner.username");

@@ -32,7 +32,15 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
             action((long)event.getButton().getData());
         }
         
-        protected abstract void action(long id);
+		/**
+		 * Action to invoke on click.
+		 * @param id Id of object to use in action.
+		 */
+        /**
+		 *
+		 * @param id
+		 */
+		protected abstract void action(long id);
         
     }
     
@@ -42,7 +50,20 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
      */
     public static interface ButtonShowCondition {
 
-        public boolean show(CustomTable source, long id);
+		/**
+		 * Whether button should be showed.
+		 * 
+		 * @param source Source table.
+		 * @param id Id of object in row with the button.
+		 * @return 
+		 */
+        /**
+		 *
+		 * @param source
+		 * @param id
+		 * @return
+		 */
+		public boolean show(CustomTable source, long id);
 
     }
 
@@ -152,7 +173,8 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
      *
      * @param name
      * @param width
-     * @param action
+	 * @param action
+	 * @param icon  
      */
     public void addButton(String name, String width, Action action, ThemeResource icon) {
         ActionButtonInfo abi = new ActionButtonInfo(name, width, action, null);
@@ -166,7 +188,8 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
      * @param name
      * @param width
      * @param action
-     * @param showCondition
+	 * @param showCondition
+	 * @param icon  
      */
     public void addButton(String name, String width, Action action, ButtonShowCondition showCondition, ThemeResource icon) {
         ActionButtonInfo abi = new ActionButtonInfo(name, width, action, showCondition);

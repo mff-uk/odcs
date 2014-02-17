@@ -20,10 +20,10 @@ class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 
 	@Override
 	public OpenEvent getOpenEvent(Pipeline pipeline, User user) {
-		final String sringQuery = "SELECT e FROM OpenEvent e"
+		final String stringQuery = "SELECT e FROM OpenEvent e"
 				+ " WHERE e.owner = :user"
 				+ " AND e.pipeline = :ppl";
-		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		TypedQuery<OpenEvent> query = createTypedQuery(stringQuery);
 		query.setParameter("user", user);
 		query.setParameter("ppl", pipeline);
 		return execute(query);
@@ -31,21 +31,21 @@ class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 	
 	@Override
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline) {
-		final String sringQuery = "SELECT e FROM OpenEvent e"
+		final String stringQuery = "SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
 				+ " WHERE e.pipeline = :pipe";
-		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		TypedQuery<OpenEvent> query = createTypedQuery(stringQuery);
 		query.setParameter("pipe", pipeline);
 		return executeList(query);
 	}
 	
 	@Override
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from) {
-		final String sringQuery = "SELECT e FROM OpenEvent e"
+		final String stringQuery = "SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
 				+ " WHERE e.pipeline = :pipe"
 				+ " AND e.timestamp >= :tsp";
-		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		TypedQuery<OpenEvent> query = createTypedQuery(stringQuery);
 		query.setParameter("pipe", pipeline);
 		query.setParameter("tsp", from);
 		return executeList(query);
@@ -53,11 +53,11 @@ class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 
 	@Override
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline, User user) {
-		final String sringQuery = "SELECT e FROM OpenEvent e"
+		final String stringQuery = "SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
 				+ " WHERE e.pipeline = :pipe"
 				+ " AND e.owner <> :usr";
-		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		TypedQuery<OpenEvent> query = createTypedQuery(stringQuery);
 		query.setParameter("pipe", pipeline);
 		query.setParameter("usr", user);
 		return executeList(query);
@@ -65,12 +65,12 @@ class DbOpenEventImpl extends DbAccessBase<OpenEvent> implements DbOpenEvent {
 
 	@Override
 	public List<OpenEvent> getOpenEvents(Pipeline pipeline, Date from, User user) {
-		final String sringQuery = "SELECT e FROM OpenEvent e"
+		final String stringQuery = "SELECT e FROM OpenEvent e"
 				+ " LEFT JOIN FETCH e.owner u" // eagerly load users
 				+ " WHERE e.pipeline = :pipe"
 				+ " AND e.timestamp >= :tsp"
 				+ " AND e.owner <> :usr";
-		TypedQuery<OpenEvent> query = createTypedQuery(sringQuery);
+		TypedQuery<OpenEvent> query = createTypedQuery(stringQuery);
 		query.setParameter("pipe", pipeline);
 		query.setParameter("tsp", from);
 		query.setParameter("usr", user);

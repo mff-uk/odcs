@@ -86,7 +86,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	/**
 	 * Return string that is used as insert query into logging table.
 	 *
-	 * @return
+	 * @return SQL command used to the insert data to the database.
 	 */
 	private String getInsertSQL() {
 		return "INSERT INTO logging"
@@ -98,7 +98,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * Return not null {@link Conenction}. If failed to get connection then
 	 * continue to try until success.
 	 *
-	 * @return
+	 * @return Connection to the database.
 	 */
 	private Connection getConnection() {
 		Connection connection = null;

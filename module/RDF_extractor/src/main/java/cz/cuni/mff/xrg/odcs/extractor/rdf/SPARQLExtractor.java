@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
@@ -120,7 +121,7 @@ public class SPARQLExtractor {
 	 * Create new instance of SPARQLExtractor with given parameters and default
 	 * retrySize and retryTime values.
 	 *
-	 * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
+	 * @param dataUnit       Instance of RDFDataUnit repository neeed for
 	 *                       loading
 	 * @param context        Given DPU context for DPU over it are executed.
 	 * @param endpointParams Request HTTP parameters neeed for setting SPARQL

@@ -79,18 +79,14 @@ public class Edge implements DataObject {
 	}
 
 	/**
-	 * Returns start node of edge
-	 *
-	 * @return
+	 * @return start node of edge
 	 */
 	public Node getFrom() {
 		return from;
 	}
 
 	/**
-	 * Returns end node of edge
-	 *
-	 * @return
+	 * @return end node of edge
 	 */
 	public Node getTo() {
 		return to;

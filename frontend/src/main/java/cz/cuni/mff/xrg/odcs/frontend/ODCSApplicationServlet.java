@@ -30,6 +30,13 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
+	/**
+	 * Create {link VaadinServletService} from supplied {@link DeploymentConfiguration}.
+	 * 
+	 * @param deploymentConfiguration Deployment configuration.
+	 * @return Vaadin servlet service.
+	 * @throws ServiceException 
+	 */
 	@Override
 	protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
 		VaadinServletService service = super.createServletService(deploymentConfiguration);

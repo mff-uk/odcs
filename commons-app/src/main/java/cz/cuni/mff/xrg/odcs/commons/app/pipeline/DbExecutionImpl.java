@@ -23,33 +23,33 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 
 	@Override
 	public List<PipelineExecution> getAll() {
-		final String sringQuery = "SELECT e FROM PipelineExecution e";
-		return executeList(sringQuery);
+		final String stringQuery = "SELECT e FROM PipelineExecution e";
+		return executeList(stringQuery);
 	}
 	
 	@Override
 	public List<PipelineExecution> getAll(Pipeline pipeline) {
-		final String sringQuery = "SELECT e FROM PipelineExecution e"
+		final String stringQuery = "SELECT e FROM PipelineExecution e"
 								+ " WHERE e.pipeline = :pipe";
-		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);	
+		TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);	
 		query.setParameter("pipe", pipeline);
 		return executeList(query);
 	}
 	
 	@Override
 	public List<PipelineExecution> getAll(PipelineExecutionStatus status) {
-		final String sringQuery = "SELECT e FROM PipelineExecution e"
+		final String stringQuery = "SELECT e FROM PipelineExecution e"
 								+ " WHERE e.status = :status";
-		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);
+		TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
 		query.setParameter("status", status);
 		return executeList(query);
 	}	
 	
 	@Override
 	public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status) {
-		final String sringQuery = "SELECT e FROM PipelineExecution e"
+		final String stringQuery = "SELECT e FROM PipelineExecution e"
 								+ " WHERE e.pipeline = :pipe AND e.status = :status";
-		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);	
+		TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);	
 		query.setParameter("pipe", pipeline);
 		query.setParameter("status", status);
 		return executeList(query);
@@ -58,12 +58,12 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 	@Override
 	public PipelineExecution getLastExecution(Pipeline pipeline,
 			Set<PipelineExecutionStatus> statuses) {
-		final String sringQuery = "SELECT e FROM PipelineExecution e"
+		final String stringQuery = "SELECT e FROM PipelineExecution e"
 								+ " WHERE e.pipeline = :pipe"
 								+ " AND e.status IN :status"
 								+ " AND e.end IS NOT NULL"
 								+ " ORDER BY e.end DESC";				
-		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);		
+		TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);		
 		query.setParameter("pipe", pipeline);
 		query.setParameter("status", statuses);		
 		return execute(query);
@@ -72,12 +72,12 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 	@Override
 	public PipelineExecution getLastExecution(Schedule schedule,
 			Set<PipelineExecutionStatus> statuses) {		
-		final String sringQuery = "SELECT e FROM PipelineExecution e"
+		final String stringQuery = "SELECT e FROM PipelineExecution e"
 								+ " WHERE e.schedule = :schedule"
 								+ " AND e.status IN :status"
 								+ " AND e.end IS NOT NULL"
 								+ " ORDER BY e.end DESC";		
-		TypedQuery<PipelineExecution> query = createTypedQuery(sringQuery);		
+		TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);		
 		query.setParameter("schedule", schedule);
 		query.setParameter("status", statuses);
         return execute(query);
@@ -85,10 +85,10 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 
 	@Override
 	public boolean hasModified(Date since) {		
-		final String sringQuery = "SELECT MAX(e.lastChange)"
+		final String stringQuery = "SELECT MAX(e.lastChange)"
 				+ " FROM PipelineExecution e";
 		
-		TypedQuery<Date> query = em.createQuery(sringQuery, Date.class);
+		TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
 		Date lastModified = (Date) query.getSingleResult();
 		
 		if (lastModified == null) {

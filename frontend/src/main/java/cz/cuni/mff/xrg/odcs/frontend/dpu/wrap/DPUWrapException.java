@@ -9,15 +9,31 @@ package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
  */
 public class DPUWrapException extends Exception {
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param cause Cause of the exception.
+	 */
 	public DPUWrapException(Throwable cause) {
         super(cause);
     }
 
-    public DPUWrapException(String message, Throwable cause) {
+    /**
+	 * Constructor.
+	 * 
+	 * @param message
+	 * @param cause
+	 */
+	public DPUWrapException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DPUWrapException(String message) {
+    /**
+	 *  Constructor.
+	 *
+	 * @param message
+	 */
+	public DPUWrapException(String message) {
         super(message);
     }
     

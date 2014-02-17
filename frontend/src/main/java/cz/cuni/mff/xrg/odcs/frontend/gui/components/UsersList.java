@@ -9,6 +9,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,6 +52,11 @@ public class UsersList {
 	@Autowired
 	private UserFacade userFacade;
 
+	/**
+	 * Builds users list layout.
+	 *
+	 * @return
+	 */
 	public VerticalLayout buildUsersListLayout() {
 
 
@@ -257,8 +263,9 @@ public class UsersList {
 
 			//Edit button. Open dialog for edit user's details.
 			Button changeButton = new Button();
-			changeButton.setCaption("Edit");
-			changeButton.setWidth("80px");
+			changeButton.setDescription("Edit");
+			changeButton.setIcon(new ThemeResource("icons/gear.png"));
+			//changeButton.setWidth("80px");
 			changeButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -276,8 +283,9 @@ public class UsersList {
 
 			//Delete button. Delete user's record from Database.
 			Button deleteButton = new Button();
-			deleteButton.setCaption("Delete");
-			deleteButton.setWidth("80px");
+			deleteButton.setDescription("Delete");
+			deleteButton.setIcon(new ThemeResource("icons/trash.png"));
+			//deleteButton.setWidth("80px");
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 

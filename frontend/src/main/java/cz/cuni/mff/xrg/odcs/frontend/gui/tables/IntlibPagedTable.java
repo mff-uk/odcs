@@ -34,6 +34,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 	
 	private HashMap<Object, Integer> positions;
 
+	/**
+	 * Constructor.
+	 */
 	public IntlibPagedTable() {
 		super();
 		positions = new HashMap<>();
@@ -202,6 +205,13 @@ public class IntlibPagedTable extends PagedFilterTable {
 		setFilterFieldVisible(id, false);
 	}
 	
+	/**
+	 * Adds generated columns on specified position.
+	 *
+	 * @param id Id of column.
+	 * @param position Position of column.
+	 * @param generatedColumn Column.
+	 */
 	public void addGeneratedColumn(Object id, int position, ColumnGenerator generatedColumn) {
 		positions.put(id, position);
 		addGeneratedColumn(id, generatedColumn);
@@ -219,6 +229,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 		}
 	}
 
+	/**
+	 * Set visible columns from accessor, if available. Take actions columns into account.
+	 */
 	public void setVisibleColumns() {
 		PagedFilterTableContainer pagedContainer = getContainerDataSource();
 		if (pagedContainer != null) {
@@ -241,6 +254,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 		
 	}
 
+	/**
+	 * Set filters on columns from accessor, if available.
+	 */
 	public void setFilterLayout() {
 		PagedFilterTableContainer pagedContainer = getContainerDataSource();
 		if (pagedContainer != null) {

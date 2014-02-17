@@ -317,6 +317,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Changes mode of the pipeline canvas.
 	 *
+	 * @param newMode 
 	 */
 	public void changeMode(String newMode) {
 		canvasMode = newMode;
@@ -333,6 +334,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		return isModified;
 	}
 
+	/**
+	 * Cancel unsaved changes.
+	 */
 	public void cancelChanges() {
 		isModified = false;
 	}
@@ -344,6 +348,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Inform listeners, about supplied event.
+	 * 
+	 * @param event 
 	 */
 	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(com.vaadin.ui.Component.Event.class);
@@ -457,6 +463,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		fireEvent(new ShowDebugEvent(this, debugNode));
 	}
 
+	/**
+	 * Validate graph.
+	 */
 	public void validateGraph() {
 		boolean isGraphValid = true;
 		for (Node node : graph.getNodes()) {
@@ -475,6 +484,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		}
 	}
 
+	/**
+	 * Invoke formatting action.
+	 *
+	 * @param action Formatting action.
+	 */
 	public void formatAction(String action) {
 		getRpcProxy(PipelineCanvasClientRpc.class).formatDPUs(action);
 	}

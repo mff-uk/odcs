@@ -26,6 +26,11 @@ public class DPUTemplateWrap extends DPURecordWrap {
 		this.dpuTemplate = dpuTemplate;
 	}
 
+	/**
+	 * Get DPU template record.
+	 *
+	 * @return
+	 */
 	public DPUTemplateRecord getDPUTemplateRecord() {
 		return dpuTemplate;
 	}

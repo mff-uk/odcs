@@ -29,6 +29,11 @@ public class AuthAwareButtonClickWrapper implements Button.ClickListener {
 	 */
 	private Authentication authentication;
 
+	/**
+	 *  Constructor.
+	 * 
+	 * @param clickListener
+	 */
 	public AuthAwareButtonClickWrapper(Button.ClickListener clickListener) {
 		this.clickListener = clickListener;
 		authentication = SecurityContextHolder.getContext().getAuthentication();

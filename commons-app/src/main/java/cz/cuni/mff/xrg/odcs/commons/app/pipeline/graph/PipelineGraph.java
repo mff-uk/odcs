@@ -16,8 +16,8 @@ import java.util.Map;
 import javax.persistence.*;
 
 /**
- * Oriented acyclic graph representation of pipeline. Each Node represents a DPURecord
- * instance, and each edge represents data flow.
+ * Oriented acyclic graph representation of pipeline. Each Node represents
+ * a DPURecord instance, and each edge represents data flow.
  *
  * @author Jiri Tomes
  * @author Bogo
@@ -159,7 +159,7 @@ public class PipelineGraph implements DataObject {
      * Removes DPURecord from graph.
      *
      * @param dpuId
-     * @return
+     * @return removed node
      */
     public Node removeDpu(int dpuId) {
         Node node = getNodeById(dpuId);
@@ -174,8 +174,7 @@ public class PipelineGraph implements DataObject {
      *
      * @param from source DPURecord
      * @param to target DPURecord
-     * @return newly created edge or null TODO find and return edge even if it
-     * was present before
+     * @return newly created edge or null
      */
     public Edge addEdge(Node from, Node to) {
         Edge edge = new Edge(from, to);
@@ -194,6 +193,12 @@ public class PipelineGraph implements DataObject {
         return added ? edge : null;
     }
 
+	/**
+	 * Removes an egde from graph. Reference to graph in edge is also cleared.
+	 * 
+	 * @param edge
+	 * @return true if edge was removed, false if no such edge was in the graph
+	 */
 	public boolean removeEdge(Edge edge) {
 		edge.setGraph(null);
 		return edges.remove(edge);
@@ -203,9 +208,9 @@ public class PipelineGraph implements DataObject {
      * Duplicate methdod from adding edge to graph. Probably only one shall
      * remain.
      *
-     * @param fromId
-     * @param toId
-     * @return
+     * @param fromId node id
+     * @param toId node id
+     * @return hashcode as identification of new edge
      */
     public int addEdge(int fromId, int toId) {
         Node dpuFrom = getNodeById(fromId);
@@ -218,8 +223,8 @@ public class PipelineGraph implements DataObject {
     /**
      * Removes edge from graph.
      *
-     * @param edgeId
-     * @return
+     * @param edgeId id of edge to be removed
+     * @return edge with given id that was removed
      */
     public Edge removeEdge(int edgeId) {
         Edge edge = getEdgeById(edgeId);
@@ -232,8 +237,8 @@ public class PipelineGraph implements DataObject {
     /**
      * Gets edge with given id.
      *
-     * @param id
-     * @return
+     * @param id edge id
+     * @return edge with given id
      */
     public Edge getEdgeById(int id) {
         for (Edge el : edges) {
@@ -247,8 +252,8 @@ public class PipelineGraph implements DataObject {
     /**
      * Gets node with given id.
      *
-     * @param id
-     * @return
+     * @param id node id
+     * @return node with given id
      */
     public Node getNodeById(int id) {
         for (Node el : nodes) {
@@ -268,9 +273,9 @@ public class PipelineGraph implements DataObject {
 	 */
 	public void moveNode(int dpuId, int newX, int newY) {
 		Node node = getNodeById(dpuId);
-                if(node == null) {
-                    throw new IllegalArgumentException("Node with supplied id was not found!");
-                }
+		if(node == null) {
+			throw new IllegalArgumentException("Node with supplied id was not found!");
+		}
 		node.setPosition(new Position(newX, newY));
 	}
 
@@ -373,8 +378,7 @@ public class PipelineGraph implements DataObject {
 	}
 	
 	/**
-	 * Gets maximum coordinates of DPUs in graph.
-	 * @return 
+	 * @return maximum coordinates of DPUs in graph.
 	 */
 	public Position getBounds() {
 		Position bounds = new Position(0, 0);
@@ -392,35 +396,54 @@ public class PipelineGraph implements DataObject {
 		}
 		return bounds;
 	}
-        
-        public PipelineGraph cloneGraph() {
-            PipelineGraph clone = new PipelineGraph(this);
-            clone.id = this.id;
-            return clone;
-        }
+
+	/**
+	 * Clones the graph into a new object with the same id.
+	 * Internally calls the copy constructor and sets the same id as in original
+	 * graph.
+	 * 
+	 * @return cloned graph
+	 */
+	public PipelineGraph cloneGraph() {
+		PipelineGraph clone = new PipelineGraph(this);
+		clone.id = this.id;
+		return clone;
+	}
 
 	@Override
 	public Long getId() {
 		return id;
 	}
 
-    public List<Edge> getEdgesTo(Node node) {
-        List<Edge> edgesTo = new LinkedList<>();
-        for(Edge e : edges) {
-            if(e.getTo().equals(node)) {
-                edgesTo.add(e);
-            }
-        }
-        return edgesTo;
-    }
-    
-        public List<Edge> getEdgesFrom(Node node) {
-        List<Edge> edgesFrom = new LinkedList<>();
-        for(Edge e : edges) {
-            if(e.getFrom().equals(node)) {
-                edgesFrom.add(e);
-            }
-        }
-        return edgesFrom;
-    }
+	/**
+	 * Get all edges pointing to given node.
+	 * 
+	 * @param node
+	 * @return list of edges
+	 */
+	public List<Edge> getEdgesTo(Node node) {
+		List<Edge> edgesTo = new LinkedList<>();
+		for (Edge e : edges) {
+			if (e.getTo().equals(node)) {
+				edgesTo.add(e);
+			}
+		}
+		return edgesTo;
+	}
+
+	/**
+	 * Get all edges starting at given node.
+	 * 
+	 * @param node
+	 * @return list of edges
+	 */
+	public List<Edge> getEdgesFrom(Node node) {
+		List<Edge> edgesFrom = new LinkedList<>();
+		for (Edge e : edges) {
+			if (e.getFrom().equals(node)) {
+				edgesFrom.add(e);
+			}
+		}
+		return edgesFrom;
+	}
 }

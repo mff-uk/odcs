@@ -11,10 +11,9 @@ import java.io.Serializable;
 public interface DPUConfigObject extends Serializable {
 
 	/**
-	 * Check if configuration is valid ie. can be used to configure DPU or
-	 * configuration dialog.
 	 * 
-	 * @return
+	 * @return True it he configuration is valid ie. can be used to configure DPU or
+	 * configuration dialog.
 	 */
 	boolean isValid();
 	

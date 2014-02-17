@@ -34,19 +34,19 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 
 	@Override
 	public List<Schedule> getSchedulesFor(Pipeline pipeline) {
-		final String sringQuery = "SELECT e FROM Schedule e WHERE e.pipeline = :pipeline";
-		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		final String stringQuery = "SELECT e FROM Schedule e WHERE e.pipeline = :pipeline";
+		TypedQuery<Schedule> query = createTypedQuery(stringQuery);
 		query.setParameter("pipeline", pipeline);
 		return executeList(query);
 	}
 
 	@Override
 	public List<Schedule> getFollowers(Pipeline pipeline, boolean enabled) {
-		final String sringQuery = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
+		final String stringQuery = "SELECT s FROM Schedule s JOIN s.afterPipelines p"
 				+ " WHERE p = :pipeline"
 				+ " AND s.type = :type"
 				+ " AND s.enabled = :enabled";
-		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		TypedQuery<Schedule> query = createTypedQuery(stringQuery);
 		query.setParameter("pipeline", pipeline);
 		query.setParameter("type", ScheduleType.AFTER_PIPELINE);	
 		query.setParameter("enabled", enabled);
@@ -55,26 +55,26 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 
 	@Override
 	public List<Schedule> getAllTimeBased() {
-		final String sringQuery = "SELECT s FROM Schedule s"
+		final String stringQuery = "SELECT s FROM Schedule s"
 				+ " WHERE s.type = :type";
-		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		TypedQuery<Schedule> query = createTypedQuery(stringQuery);
 		query.setParameter("type", ScheduleType.PERIODICALLY);
 		return executeList(query);
 	}
 
 	@Override
 	public List<Schedule> getActiveRunAfterBased() {
-		final String sringQuery = "SELECT s FROM Schedule s"
+		final String stringQuery = "SELECT s FROM Schedule s"
 				+ " WHERE s.type = :type"
 				+ " AND s.enabled = 1";
-		TypedQuery<Schedule> query = createTypedQuery(sringQuery);
+		TypedQuery<Schedule> query = createTypedQuery(stringQuery);
 		query.setParameter("type", ScheduleType.AFTER_PIPELINE);
 		return executeList(query);
 	}
 
 	@Override
 	public List<Date> getLastExecForRunAfter(Schedule schedule) {
-		final String sringQuery = "SELECT max(exec.end)"
+		final String stringQuery = "SELECT max(exec.end)"
 				+ " FROM Schedule schedule"
 				+ " JOIN schedule.afterPipelines pipeline"
 				+ " JOIN PipelineExecution exec ON exec.pipeline = pipeline"
@@ -85,7 +85,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
 		statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
 		statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
 
-		TypedQuery<Date> query = em.createQuery(sringQuery, Date.class);
+		TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
 		query.setParameter("schedule", schedule.getId());
 		query.setParameter("status", statuses);
 

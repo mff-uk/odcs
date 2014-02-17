@@ -54,7 +54,7 @@ public class DPUTemplateRecord extends DPURecord
 	 * Name of directory where {@link #jarName} is located.
 	 * It's transitive for non-root templates.
 	 * 
-	 * @see AppConfig
+	 * @see cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig
 	 */
 	@Column(name = "jar_directory")
 	private String jarDirectory;
@@ -63,7 +63,7 @@ public class DPUTemplateRecord extends DPURecord
 	 * DPU's jar file name.
 	 * It's transitive for non-root templates.
 	 * 
-	 * @see AppConfig
+	 * @see cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig
 	 */
 	@Column(name = "jar_name")
 	private String jarName;
@@ -240,9 +240,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return name of jar-sub directory.
-	 * 
-	 * @return
+	 * @return name of jar-sub directory.
 	 */
 	public String getJarDirectory() {
 		if (parent == null) {
@@ -269,9 +267,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return name of given jar file.
-	 * 
-	 * @return
+	 * @return name of given jar file.
 	 */
 	public String getJarName() {
 		if (parent == null) {
@@ -298,9 +294,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return true if DPU jar can be replaced.
-	 * 
-	 * @return
+	 * @return true if DPU jar can be replaced, false otherwise.
 	 */
 	public boolean jarFileReplacable() {
 		return parent == null;

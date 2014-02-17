@@ -73,7 +73,8 @@ public class Schedule implements DataObject, OwnedEntity {
 	/**
 	 * Time o first planned execution. May be null if this plan is only supposed
 	 * to run after pipelines in {@link #afterPipelines}, but has no specific
-	 * time to be run at. Used only if {@link #type} is {@link ScheduleType#.
+	 * time to be run at. Used only if {@link #type} is
+	 * {@link ScheduleType#PERIODICALLY}.
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "first_exec", nullable = true)
@@ -113,8 +114,9 @@ public class Schedule implements DataObject, OwnedEntity {
 	private Set<Pipeline> afterPipelines = new HashSet<>();
 	
 	/**
-	 * Notification settings for this schedule.
-	 * May be null, if so {@link UserNotificationRecord} is to be used.
+	 * Notification settings for this schedule. May be null, if so
+	 * {@link cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord} is
+	 * to be used.
 	 */
 	@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ScheduleNotificationRecord notification;
@@ -131,7 +133,7 @@ public class Schedule implements DataObject, OwnedEntity {
 	private boolean strictlyTimed;
 	
 	/**
-	 * If {@link strictTiming} is true then say how strict we are in minutes.
+	 * If {@link #strictlyTimed} is true then say how strict we are in minutes.
 	 */
 	@Column(name = "strict_tolerance")
 	private Integer strictToleranceMinutes;
@@ -271,15 +273,23 @@ public class Schedule implements DataObject, OwnedEntity {
 	}
 	
 	/**
-	 * Set tolerance. If negative then enable pipeline to run sooner but 
-	 * any delay will be ignored. If positive then enable delay, but prevent
-	 * from running earlier.  
-	 * @return
+	 * Tolerance for schedule. If negative then enable pipeline to run sooner
+	 * but any delay will be ignored. If positive then enable delay, but prevent
+	 * from running earlier.
+	 ** 
+	 * @return tolerance for execution jitter
 	 */
 	public Integer getStrictToleranceMinutes() {
 		return strictToleranceMinutes;
 	}
 	
+	/**
+	 * Set tolerance. If negative then enable pipeline to run sooner but 
+	 * any delay will be ignored. If positive then enable delay, but prevent
+	 * from running earlier.
+	 * 
+	 * @param strictToleranceMinutes 
+	 */
 	public void setStrictToleranceMinutes(Integer strictToleranceMinutes) {
 		this.strictToleranceMinutes = strictToleranceMinutes;
 	}	

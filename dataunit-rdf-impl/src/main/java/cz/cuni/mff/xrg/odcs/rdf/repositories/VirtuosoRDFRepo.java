@@ -315,7 +315,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 	/**
 	 * Tells whether Virtuoso specific syntax for SPARQL is used. In such case
-	 * parameter log-enable with value {@value #LOG_LEVEL} disables logging and
+	 * parameter log-enable with value {@link #LOG_LEVEL} disables logging and
 	 * enables row-by-row autocommit.
 	 *
 	 * @return whether Virtuoso specific syntax for SPARQL is used.

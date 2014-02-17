@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 
 /**
- * Possibilies how to choose handler for data extraction and how to solve finded
+ * Possibilies how to choose handler for data extraction and how to solve found
  * problems with no valid data.
  *
  * @author Jiri Tomes
@@ -11,33 +11,33 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 public enum HandlerExtractType {
 
 	/**
-	 * For data extraction is used statistical and error handler - see
-	 * {@link StatisticalHandler}. If some data are invalid, pipeline execution
-	 * fail.
+	 * Statistical and error handler is used for data extraction - see
+	 * {@link StatisticalHandler}. Pipeline execution fails, if some data are
+	 * invalid.
 	 */
 	ERROR_HANDLER_FAIL_WHEN_MISTAKE,
 	/**
-	 * For data extraction is used statistical and error handler - see
-	 * {@link StatisticalHandler}. If some data are invalid, message is shown
-	 * about that after finishing extraction. Problem triples are not added to
-	 * repository, pipeline execution continue to execute next DPU.
+	 * Statistical and error handler is used for data extraction - see
+	 * {@link StatisticalHandler}. The report message is shown after finishing
+	 * extraction, if some data are invalid. Problematic triples are not added
+	 * to repository, pipeline execution continues to execute the next DPU.
 	 */
 	ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
 	/**
-	 * For data extraction is used standard handler with information about count
-	 * of extracted triples. Not valid triples are automatically skip during
-	 * extraction and there is no error message about it.Pipeline execution
-	 * continue to execute next DPU.
+	 * Standard handler is used for data extraction with the information about
+	 * count of extracted triples. No valid triples are automatically skipped
+	 * during extraction and there is no error message about it. Pipeline
+	 * execution continues to execute the next DPU.
 	 */
 	STANDARD_HANDLER;
 
 	/**
 	 *
-	 * @param useStatisticalErrorHandler if is use statistical and error handler
-	 *                                   for data parsing or not.
+	 * @param useStatisticalErrorHandler If is used statistical and error
+	 *                                   handler for data parsing or not.
 	 * @param failWhenErrors             If pipeline execution will fail, if
 	 *                                   some data are invalid, or not.
-	 * @return Concrete HandlerExtractType as choise based on the specified
+	 * @return Concrete HandlerExtractType as the choise based on the specified
 	 *         parameters.
 	 */
 	public static HandlerExtractType getHandlerType(

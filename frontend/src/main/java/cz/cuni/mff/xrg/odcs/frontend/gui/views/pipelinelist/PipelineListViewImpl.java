@@ -34,17 +34,20 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineListViewImpl.class);
 	
+	/**
+	 * Column widths for pipeline table.
+	 */
+	private static final int COLUMN_ACTIONS_WIDTH = 324;
+	private static final int COLUMN_STATUS_WIDTH = 68;
+	private static final int COLUMN_DURATION_WIDTH = 80;
+	private static final int COLUMN_TIME_WIDTH = 115;
+	
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
 	
 	@Autowired
 	private Utils utils;
-
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
-	}
 
 	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
@@ -98,11 +101,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		// add column
 		tablePipelines.setImmediate(true);
 		tablePipelines.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
-		tablePipelines.setColumnWidth("actions", 324);
-		tablePipelines.setColumnWidth("duration", 80);
-		tablePipelines.setColumnWidth("lastExecStatus", 68);
-		tablePipelines.setColumnWidth("lastExecTime", 115);
-		//tablePipelines.setColumnExpandRatio("name", 1);
+		tablePipelines.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
+		tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+		tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);
+		tablePipelines.setColumnWidth("lastExecTime", COLUMN_TIME_WIDTH);
+
 		tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
 		tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		tablePipelines.setVisibleColumns();
@@ -188,6 +191,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			@Override
 			protected void action(final long id) {
 				presenter.deleteEventHandler(id);
+			}
+		}, new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.canDeletePipeline(id);
 			}
 		}, new ThemeResource("icons/trash.png"));
 

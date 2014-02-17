@@ -28,10 +28,10 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 
 	@Override
 	public DPUTemplateRecord getByDirectory(String directory) {
-		final String sringQuery = "SELECT e FROM DPUTemplateRecord e"
+		final String stringQuery = "SELECT e FROM DPUTemplateRecord e"
 								+ " WHERE e.jarDirectory = :directory";
 		
-		TypedQuery<DPUTemplateRecord> query =createTypedQuery(sringQuery);
+		TypedQuery<DPUTemplateRecord> query =createTypedQuery(stringQuery);
 		query.setParameter("directory", directory);
 		
 		return execute(query);
@@ -39,10 +39,10 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 
 	@Override
 	public List<DPUTemplateRecord> getChilds(DPUTemplateRecord parentDpu) {
-		final String sringQuery = "SELECT e FROM DPUTemplateRecord e"
+		final String stringQuery = "SELECT e FROM DPUTemplateRecord e"
 								+ " WHERE e.parent = :tmpl";
 		
-		TypedQuery<DPUTemplateRecord> query = createTypedQuery(sringQuery);
+		TypedQuery<DPUTemplateRecord> query = createTypedQuery(stringQuery);
 		query.setParameter("tmpl", parentDpu);
 		
 		return executeList(query);

@@ -73,12 +73,18 @@ public class SPARQLTransformer
 	private List<RDFDataUnit> getInputs() {
 		List<RDFDataUnit> inputs = new ArrayList<>();
 
-		inputs.add(intputDataUnit);
-		inputs.add(intputOptional1);
-		inputs.add(intputOptional2);
-		inputs.add(intputOptional3);
+		addInput(inputs, intputDataUnit);
+		addInput(inputs, intputOptional1);
+		addInput(inputs, intputOptional2);
+		addInput(inputs, intputOptional3);
 
 		return inputs;
+	}
+
+	private void addInput(List<RDFDataUnit> inputs, RDFDataUnit nextInput) {
+		if (inputs != null && nextInput != null) {
+			inputs.add(nextInput);
+		}
 	}
 
 	@Override
@@ -127,7 +133,7 @@ public class SPARQLTransformer
 					//creating newConstruct replaced query
 					PlaceholdersHelper placeHolders = new PlaceholdersHelper(
 							context);
-					String constructQuery = placeHolders.getContructQuery(
+					String constructQuery = placeHolders.getReplacedQuery(
 							updateQuery,
 							inputs);
 
@@ -154,12 +160,41 @@ public class SPARQLTransformer
 					}
 
 				} else {
+
+					PlaceholdersHelper placeHolders = new PlaceholdersHelper(
+							context);
+
+					String replacedUpdateQuery = placeHolders.getReplacedQuery(
+							updateQuery,
+							inputs);
+
+					boolean needRepository = placeHolders
+							.needExecutableRepository();
+
 					if (isFirstUpdateQuery) {
-						((ManagableRdfDataUnit) outputDataUnit)
-								.merge(intputDataUnit);
+
 						isFirstUpdateQuery = false;
+
+						if (needRepository) {
+							prepareRepository(inputs);
+						} else {
+							((ManagableRdfDataUnit) outputDataUnit)
+									.merge(intputDataUnit);
+						}
+
 					}
-					outputDataUnit.executeSPARQLUpdateQuery(updateQuery);
+
+
+					if (needRepository) {
+						Dataset dataset = createGraphDataSet(inputs);
+
+						outputDataUnit.executeSPARQLUpdateQuery(
+								replacedUpdateQuery, dataset);
+					} else {
+
+						outputDataUnit.executeSPARQLUpdateQuery(
+								replacedUpdateQuery);
+					}
 				}
 
 			} catch (RDFDataUnitException ex) {
@@ -172,6 +207,12 @@ public class SPARQLTransformer
 		final long afterTriplesCount = outputDataUnit.getTripleCount();
 		LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
 				queryCount, beforeTriplesCount, afterTriplesCount);
+	}
+
+	private void prepareRepository(List<RDFDataUnit> inputs) {
+		for (RDFDataUnit input : inputs) {
+			((ManagableRdfDataUnit) outputDataUnit).merge(input);
+		}
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 public class RDFDataUnitException extends DataUnitException {
 
 	/**
-	 * Create a new instance of {@link RDFDataUnitException} with empty default
+	 * Create a new instance of {@link RDFDataUnitException} with the empty
 	 * message.
 	 */
 	public RDFDataUnitException() {
@@ -18,7 +18,7 @@ public class RDFDataUnitException extends DataUnitException {
 	}
 
 	/**
-	 * Create new instance of {@link RDFDataUnitException} with specific
+	 * Create new instance of {@link RDFDataUnitException} with the specific
 	 * message.
 	 *
 	 * @param message String value of described message
@@ -28,21 +28,21 @@ public class RDFDataUnitException extends DataUnitException {
 	}
 
 	/**
-	 * Create new instance of {@link RDFDataUnitException} with cause of
+	 * Create new instance of {@link RDFDataUnitException} with the cause of
 	 * throwing this exception.
 	 *
-	 * @param cause Cause of throwing exception
+	 * @param cause The cause of throwing exception
 	 */
 	public RDFDataUnitException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Create new instance of {@link RDFDataUnitException} with a specific
-	 * message and cause of throwing this exception.
+	 * Create new instance of {@link RDFDataUnitException} with the specific
+	 * message and the cause of throwing this exception.
 	 *
 	 * @param message String value of described message
-	 * @param cause   Cause of throwing exception
+	 * @param cause   The cause of throwing exception
 	 */
 	public RDFDataUnitException(String message, Throwable cause) {
 		super(message, cause);

@@ -116,6 +116,7 @@ public class LogTable extends CustomComponent {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId,
 					Object columnId) {
+
 				Integer levelInt = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
 				if (levelInt == null) {
 					return null;
@@ -389,6 +390,11 @@ public class LogTable extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set table page length.
+	 *
+	 * @param pageLength New table page length.
+	 */
 	public void setPageLength(int pageLength) {
 		table.setPageLength(pageLength);
 	}

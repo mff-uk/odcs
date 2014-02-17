@@ -4,6 +4,8 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,11 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	private File file;
 
 	/**
+	 * Directory in which we are located in sense of file data unit.
+	 */
+	private DirectoryHandler parent;
+	
+	/**
 	 * User data.
 	 */
 	private String userData;
@@ -48,12 +55,14 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	 * Create non-readonly handler for given file.
 	 *
 	 * @param file Path to the existing file.
+	 * @param parent
 	 * @param name File name must not be null!
 	 * @param asLink
 	 */
-	FileHandlerImpl(File file, String name, boolean asLink) {
+	FileHandlerImpl(File file, DirectoryHandler parent, String name, boolean asLink) {
 		this.name = name;
 		this.file = file;
+		this.parent = parent;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = asLink;
@@ -136,6 +145,12 @@ public class FileHandlerImpl implements ManageableFileHandler {
 		return this.name;
 	}
 
+	@Override
+	public String getRootedPath() {
+		final String parentPath = parent.getRootedPath();
+		return parentPath + "/" + getName();
+	}	
+	
 	@Override
 	public boolean isReadOnly() {
 		return this.isReadOnly;

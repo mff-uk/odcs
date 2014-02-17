@@ -32,6 +32,11 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	private File directory;
 
 	/**
+	 * Root of the respective {@link FileDataUnit}.
+	 */
+	private DirectoryHandler parent;
+	
+	/**
 	 * User data.
 	 */
 	private String userData;
@@ -53,13 +58,15 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	private LinkedList<ManageableHandler> handlers;
 
 	/**
-	 * Create handler for given directory. The given directory should be empty.
+	 * Create root handler for given directory. The given directory should be 
+	 * empty.
 	 *
 	 * @param directory
 	 */
 	public DirectoryHandlerImpl(File directory) {
 		this.name = directory.getName();
 		this.directory = directory;
+		this.parent = null;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = false;
@@ -73,13 +80,15 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * recursively.
 	 *
 	 * @param directory
+	 * @param parent
 	 * @param name
 	 * @param isLink
 	 */
-	private DirectoryHandlerImpl(File directory, String name, boolean isLink) {
+	private DirectoryHandlerImpl(File directory, DirectoryHandler parent, String name, boolean isLink) {
 		// set fields
 		this.name = name;
 		this.directory = directory;
+		this.parent = parent;
 		this.userData = null;
 		this.isReadOnly = false;
 		this.isLink = isLink;
@@ -90,6 +99,16 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		scanDirectory();
 	}
 
+	@Override
+	public String getRootedPath() {
+		if (parent == null) {
+			return "";
+		} else {
+			final String parentPath = parent.getRootedPath();
+			return parentPath + "/" + getName();
+		}
+	}
+	
 	@Override
 	public String getName() {
 		return this.name;
@@ -139,7 +158,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final File newFilePath = new File(this.directory, name);
 			// create file handler
 			final FileHandlerImpl newFile
-					= new FileHandlerImpl(newFilePath, name, false);
+					= new FileHandlerImpl(newFilePath, this, name, false);
 			this.handlers.add(newFile);
 			return newFile;
 		} else {
@@ -191,7 +210,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		FileHandlerImpl newHandler
-				= new FileHandlerImpl(file, newName, options.isLink());
+				= new FileHandlerImpl(file, this, newName, options.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -208,7 +227,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final File newFilePath = new File(this.directory, name);
 			// create dir handler
 			final DirectoryHandlerImpl newDir
-					= new DirectoryHandlerImpl(newFilePath, name, false);
+					= new DirectoryHandlerImpl(newFilePath, this, name, false);
 			this.handlers.add(newDir);
 			return newDir;
 		} else {
@@ -260,7 +279,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		DirectoryHandlerImpl newHandler
-				= new DirectoryHandlerImpl(directory, newName, options.isLink());
+				= new DirectoryHandlerImpl(directory, this, newName, options.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -492,14 +511,14 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			final String newName = file.getName();
 			if (file.isFile()) {
 				FileHandlerImpl fileHandler
-						= new FileHandlerImpl(file, newName, false);
+						= new FileHandlerImpl(file, this, newName, false);
 				this.handlers.add(fileHandler);
 			} else if (file.isDirectory()) {
 
 				// create handler for subdir, this will 
 				// also let it scan the subdir for subdirectories
 				DirectoryHandlerImpl dirHandler
-						= new DirectoryHandlerImpl(file, newName, false);
+						= new DirectoryHandlerImpl(file, this, newName, false);
 				this.handlers.add(dirHandler);
 			} else {
 				LOG.warn("Unknown file '%s' type ignored during scan.", newName);

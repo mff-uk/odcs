@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * For making distinction for extraction data from file.
+ * For making difference between extraction data from file.
  *
  * @author Jiri Tomes
  */
@@ -19,8 +19,8 @@ public enum FileExtractType {
 	 */
 	PATH_TO_FILE,
 	/**
-	 * Data extraction from each file in given directory. Extraction stop when
-	 * some file cause error.
+	 * Data extraction from each file in given directory. Extraction stops when
+	 * some file causes the error.
 	 */
 	PATH_TO_DIRECTORY,
 	/**
@@ -51,9 +51,10 @@ public enum FileExtractType {
 	}
 
 	/**
+	 * Returns string description to given one of enum type parameter.
 	 *
 	 * @param type how to extract data from file
-	 * @return string description to given one of enum as type parameter.
+	 * @return string description to given one of enum type parameter.
 	 */
 	public static String getDescriptionByType(FileExtractType type) {
 		return map.get(type);

@@ -78,8 +78,9 @@ public class DPUPresenterImpl implements DPUPresenter {
 		// saving configuration
 		try {
 			dpuWrap.saveConfig();
+			Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
 		} catch (ConfigException e) {
-			dpuWrap.getDPUTemplateRecord().setRawConf(null);
+			Notification.show("The configuration have not been saved.",e.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} catch (DPUWrapException e) {
 			Notification.show(
 					"Unexpected error. The configuration may have not been saved.",
@@ -89,7 +90,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		// store into DB
 		dpuFacade.save(dpuWrap.getDPUTemplateRecord());
-		Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
+
 	}
 
 	void copyDPU(DPUTemplateRecord selectedDpu) {
@@ -115,7 +116,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		DPUTemplateRecord copyDpuTemplate = dpuFacade.createCopy(selectedDpu);
 		copyDpuTemplate.setName(nameOfDpuCopy);
-		copyDpuTemplate.setParent(selectedDpu.getParent());
+		if(selectedDpu.getParent() != null)
+			copyDpuTemplate.setParent(selectedDpu.getParent());
+		else
+			copyDpuTemplate.setParent(selectedDpu);
 		dpuFacade.save(copyDpuTemplate);
 	}
 
@@ -173,7 +177,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 	IndexedContainer getPipelinesForDpu(DPUTemplateRecord dpu) {
 		IndexedContainer result = new IndexedContainer();
 		// visible columns of instancesTable
-		String[] visibleCols = new String[]{"id", "name", "description", "author", "actions"};
+		String[] visibleCols = new String[]{"id", "actions", "name"};
 
 		for (String p : visibleCols) {
 			// setting type of the columns
@@ -201,8 +205,8 @@ public class DPUPresenterImpl implements DPUPresenter {
 			if (item != null) {
 				item.getItemProperty("id").setValue(pipeline.getId());
 				item.getItemProperty("name").setValue(pipeline.getName());
-				item.getItemProperty("description").setValue(pipeline.getDescription());
-				item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
+				//item.getItemProperty("description").setValue(pipeline.getDescription());
+				//item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
 			}
 		}
 

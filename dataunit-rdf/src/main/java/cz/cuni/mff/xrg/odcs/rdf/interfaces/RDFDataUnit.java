@@ -10,10 +10,12 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
+import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
@@ -29,13 +31,36 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 
 /**
- * Provides method for working with RDF data repository.
+ * Interface provides methods for working with RDF data repository.
  *
  * @author Jiri Tomes
  * @author Petyr
  *
  */
 public interface RDFDataUnit extends DataUnit {
+
+	/**
+	 * Extracts metadata (held within the list of predicates) about certain
+	 * subjects (subject URIs)
+	 *
+	 * @param subjectURI Subject URI for which metadata is searched
+	 * @param predicates Predicates being searched
+	 * @return Pairs predicate-value for the given subject URI
+	 */
+	public Map<String, List<String>> getRDFMetadataForSubjectURI(
+			String subjectURI,
+			List<String> predicates);
+
+	/**
+	 * Extracts metadata (held within the list of predicates) about certain
+	 * files (based on the file path)
+	 *
+	 * @param filePath   Path to the file.
+	 * @param predicates Predicates being searched
+	 * @return Pairs predicate-value for the given filePath
+	 */
+	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
+			List<String> predicates);
 
 	/**
 	 * Add one RDF triple (statement) to the repository. Subject, predicate,
@@ -203,6 +228,16 @@ public interface RDFDataUnit extends DataUnit {
 	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
 
 	/**
+	 * Transform RDF in repository by SPARQL updateQuery.
+	 *
+	 * @param updateQuery String value of update SPARQL query.
+	 * @param dataset     Set of graph URIs used for update query.
+	 * @throws RDFException when transformation fault.
+	 */
+	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
+			throws RDFException;
+
+	/**
 	 * Make select query over repository data and return file as SPARQL XML
 	 * result.
 	 *
@@ -217,6 +252,17 @@ public interface RDFDataUnit extends DataUnit {
 	public File executeSelectQuery(String selectQuery,
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
+
+	/**
+	 * Make select query over repository data and return MyTupleQueryResult
+	 * class as result.
+	 *
+	 * @param selectQuery String representation of SPARQL select query.
+	 * @return MyTupleQueryResult representation of SPARQL select query.
+	 * @throws InvalidQueryException when query is not valid.
+	 */
+	public MyTupleQueryResultIf executeSelectQueryAsTuples(
+			String selectQuery) throws InvalidQueryException;
 
 	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
@@ -319,11 +365,14 @@ public interface RDFDataUnit extends DataUnit {
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
 
 	/**
+	 * Returns graph contains all RDF triples as result of describe query for
+	 * given Resource URI. If graph is empty, there is are no triples for
+	 * describing.
 	 *
 	 * @param uriResource Subject or object URI as resource use to describe it.
-	 * @return Graph contains all RDF triples as result of descibe for given
-	 *         Resource URI. If graph is empty, there is are no triples for
-	 *         describe Resource URI.
+	 * @return Graph contains all RDF triples as result of describe query for
+	 *         given Resource URI. If graph is empty, there is are no triples
+	 *         for describing.
 	 * @throws InvalidQueryException if resource is not URI type (e.g.
 	 *                               BlankNode, some type of Literal (in object
 	 *                               case))
@@ -331,6 +380,7 @@ public interface RDFDataUnit extends DataUnit {
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
+	 * Returns shared connection to repository.
 	 *
 	 * @return Shared connection to repository.
 	 * @throws RepositoryException If something went wrong during the creation
@@ -365,19 +415,19 @@ public interface RDFDataUnit extends DataUnit {
 			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
-	 * Return URI representation of graph where RDF data are stored.
+	 * Returns URI representation of graph where RDF data are stored.
 	 *
-	 * @return graph with stored data as URI.
+	 * @return URI representation of graph where RDF data are stored.
 	 */
 	public URI getDataGraph();
 
 	/**
-	 * Create RDF parser for given RDF format and set RDF handler where are data
+	 * Create RDF parser for given RDF format and set RDF handler where data are
 	 * insert to.
 	 *
 	 * @param format  RDF format witch is set to RDF parser
 	 * @param handler Type of handler where RDF parser used for parsing.
-	 * @return RDFParser for given RDF format and handler.
+	 * @return RDFParser for given RDF format and set RDF handler.
 	 */
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
@@ -404,9 +454,10 @@ public interface RDFDataUnit extends DataUnit {
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
 	/**
+	 * Returns count of parts in repository by defined chunkSize.
 	 *
 	 * @param chunkSize size of triples/statements in one part.
-	 * @return Count of parts as split data in reposioty by defined chunkSize .
+	 * @return Count of parts in repository by defined chunkSize.
 	 */
 	public long getPartsCount(long chunkSize);
 
@@ -417,6 +468,7 @@ public interface RDFDataUnit extends DataUnit {
 	public void restartConnection();
 
 	/**
+	 * Returns dataset for graphs set in reposiotory as default.
 	 *
 	 * @return dataset for graphs set in reposiotory as default.
 	 */

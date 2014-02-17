@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionChangedEvent;
 
 /**
+ * Component for browsing results of {@link PipelineExecution}.
  *
  * @author Bogo
  */
@@ -21,6 +22,11 @@ public class Browse extends CustomComponent {
 	private PipelineExecution execution;
 	private QueryView queryView;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param execution
+	 */
 	public Browse(PipelineExecution execution) {
 
 		mainLayout = new VerticalLayout();

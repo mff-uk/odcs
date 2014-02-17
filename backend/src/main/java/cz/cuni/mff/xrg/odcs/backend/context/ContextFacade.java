@@ -45,7 +45,7 @@ public class ContextFacade {
 	 * @param dpuInstance
 	 * @param contextInfo
 	 * @param lastSuccExec
-	 * @return
+	 * @return New context.
 	 * @throws ContextException
 	 */
 	public Context create(DPUInstanceRecord dpuInstance,
@@ -99,9 +99,10 @@ public class ContextFacade {
 
 	/**
 	 * Add data from left context to the right one based on given script. The
-	 * newly created {@link ManagableDataUnit} are cleaned by calling
-	 * {@link ManagableDataUnit#clean()}. So any previous data are safely
-	 * deleted and do not contaminate the execution.
+	 * newly created 
+	 * {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit} are cleaned by 
+	 * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clean()}. 
+	 * So any previous data are safely deleted and do not contaminate the execution.
 	 *
 	 * @param left
 	 * @param right

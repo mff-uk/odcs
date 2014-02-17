@@ -4,7 +4,7 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
 /**
- * Class responsible for authentification to access to SPARQL endpoint.
+ * Class responsible for authentification to access to the SPARQL endpoint.
  *
  * @author Jiri Tomes
  */

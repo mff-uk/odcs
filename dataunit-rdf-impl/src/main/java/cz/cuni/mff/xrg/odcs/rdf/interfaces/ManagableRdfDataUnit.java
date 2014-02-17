@@ -4,8 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -170,15 +168,4 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	public String deleteApplicationGraphs();
 
 
-
-	/**
-	 * Make select query over repository data and return MyTupleQueryResult
-	 * class as result.
-	 *
-	 * @param selectQuery String representation of SPARQL select query.
-	 * @return MyTupleQueryResult representation of SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	public MyTupleQueryResult executeSelectQueryAsTuples(
-			String selectQuery) throws InvalidQueryException;
 }

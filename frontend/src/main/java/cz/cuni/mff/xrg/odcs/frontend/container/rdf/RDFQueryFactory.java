@@ -11,6 +11,12 @@ import org.vaadin.addons.lazyquerycontainer.QueryFactory;
  */
 public class RDFQueryFactory implements QueryFactory {
 
+	/**
+	 * Construct query from definition.
+	 *
+	 * @param qd Query definition.
+	 * @return Query.
+	 */
 	@Override
 	public Query constructQuery(QueryDefinition qd) {
 		if(qd.getClass() != RDFQueryDefinition.class) {

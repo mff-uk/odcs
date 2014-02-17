@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -18,34 +19,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Represents a fixed workflow composed of one or several {@link Extract}s,
- * {@link Transform}s and {@link Load}s organized in acyclic graph. <br/>
- * Processing will always take place in the following order: <ol> <li>Execute
- * all {@link Extract}s</li> <ul> <li>If an Extractor throws an error publish an
- * {@link ExtractFailedEvent} - otherwise publish an
- * {@link ExtractCompletedEvent}</li> <li>If an Extractor requests cancellation
- * of the pipeline through {@link ProcessingContext#cancelPipeline} publish a
- * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
- * {@link Transform}s in the order of their dependences given by graph</li>
- * <ul> <li>If a Transformer throws an error publish an
- * {@link TransformFailedEvent} - otherwise publish an
- * {@link TransformCompletedEvent}</li>
- * <li>If a Transformer requests cancellation of the pipeline through
- * {@link ProcessingContext#cancelPipeline} publish a
- * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Execute all
- * {@link Load}s</li> <ul> <li>If a Loader throws an error publish an
- * {@link LoadFailedEvent} - otherwise publish an {@link LoadCompletedEvent}
- * </li>
- * <li>If a Loader requests cancellation of the pipeline through
- * {@link ProcessingContext#cancelPipeline} publish a
- * {@link PipelineAbortedEvent} and exit</li> </ul> <li>Publish a
- * {@link PipelineCompletedEvent}
- * </ol> <br/> A Spring {@link ApplicationEventPublisher} is required for
- * propagation of important events occurring throughout the pipeline.
+ * Represents a fixed workflow composed of one or several extractor,
+ * transformer and loader modules ({@link DPUInstanceRecord}s) organized in
+ * acyclic graph.
  *
- * @see Extract
- * @see Transform
- * @see Load
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Bogo

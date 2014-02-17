@@ -47,27 +47,27 @@ public class DPUModuleManipulator {
 	private ModuleChangeNotifier notifier;
 
 	/**
-	 * Create {@link DPUTemplateRecord} for given DPU. If success then return
-	 * new instance {@link DPUTemplateRecord} in such case the DPU is loaded
-	 * into application the DPU's and is presented in DPU's directory. The
-	 * visibility of new {@link DPUTemplateWrap} is set to
-	 * {@link VisibilityType#PRIVATE}.
+	 * Create {@link DPUTemplateRecord} for given DPU. If creation is successful
+	 * the DPU is loaded into application and is presented in DPU directory. The
+	 * visibility of new DPU is set to {@link ShareType#PRIVATE}.
 	 * 
-	 * Use setters to set additional DPU's fields like name, description,
-	 * visibility, ... those are not set by the {@link create} method.
+	 * <p>
+	 * Use setters to set additional DPU fields like name, description,
+	 * visibility, ..., as those are not set by the {@link #create} method.
 	 * 
-	 * In case throw {@link DPUCreateException}. Use
-	 * {@link DPUCreateException#getMessage()} to get description that can be
-	 * shown to the user.
+	 * <p>
+	 * In case of error use {@link DPUCreateException#getMessage()} to get the
+	 * description that can be shown to user.
 	 * 
-	 * When {@link DPUTemplateRecord} is loaded and instances is created then
-	 * execute validators to validate new DPU. If one of them failed the create
-	 * method failed and the DPU is not created.
+	 * <p>
+	 * When {@link DPUTemplateRecord} is loaded and instance is created then
+	 * execute validators to validate new DPU. If one of them fails, the create
+	 * method fails and the DPU is not created.
 	 * 
 	 * @param sourceFile
 	 * @param name
 	 * @param validators Validators for DPU checking, can be null.
-	 * @return
+	 * @return new instance of {@link DPUTemplateRecord}
 	 * @throws DPUCreateException
 	 */
 	public DPUTemplateRecord create(File sourceFile,
@@ -452,10 +452,10 @@ public class DPUModuleManipulator {
 
 	/**
 	 * Validate the sourcePath. If the sourcePath is in right format then return
-	 * the name for DPU's directory otherwise throws.
+	 * the name for DPU's directory otherwise throws exception.
 	 * 
 	 * @param sourceFileName
-	 * @return
+	 * @return directory for DPU
 	 * @throws DPUCreateException
 	 */
 	protected static String getDirectoryName(String sourceFileName)
@@ -477,7 +477,7 @@ public class DPUModuleManipulator {
 	 * Return file for the backUp to given DPU's jar file.
 	 * 
 	 * @param originalDPU
-	 * @return
+	 * @return file for the backup of given DPU's jar file
 	 */
 	protected File createBackUpName(File originalDPU) {
 		return new File(originalDPU.toString() + ".backup");

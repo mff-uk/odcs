@@ -36,13 +36,13 @@ public interface ScheduleFacade extends Facade {
 	 * Fetches all {@link Schedule}s planned for given pipeline.
 	 *
 	 * @param pipeline
-	 * @return
+	 * @return list of schedules for pipeline
 	 */
 	List<Schedule> getSchedulesFor(Pipeline pipeline);
 	/**
 	 * Fetches all {@link Schedule}s which are activated in certain time.
 	 *
-	 * @return
+	 * @return list of all schedules planned to launch on time
 	 */	
 	List<Schedule> getAllTimeBased();
 
@@ -50,7 +50,7 @@ public interface ScheduleFacade extends Facade {
 	 * Find Schedule in database by ID and return it.
 	 *
 	 * @param id
-	 * @return
+	 * @return schedule
 	 */
 	Schedule getSchedule(long id);
 

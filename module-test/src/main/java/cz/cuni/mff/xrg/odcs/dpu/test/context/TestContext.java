@@ -10,7 +10,8 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
- *
+ * Special implementation of {@link DPUContext} that enables testing.
+ * 
  * @author Petyr
  *
  */
@@ -218,7 +219,7 @@ public class TestContext implements DPUContext {
 
 	/**
 	 * @param workingDirectory the workingDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 * subdirectory in {@link #rootDirectory}
 	 */
 	public void setWorkingDirectory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
@@ -226,7 +227,7 @@ public class TestContext implements DPUContext {
 
 	/**
 	 * @param resultDirectory the resultDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 * subdirectory in {@link #rootDirectory}
 	 */
 	public void setResultDirectory(File resultDirectory) {
 		this.resultDirectory = resultDirectory;
@@ -234,7 +235,7 @@ public class TestContext implements DPUContext {
 
 	/**
 	 * @param globalDirectory the globalDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 * subdirectory in {@link #rootDirectory}
 	 */
 	public void setGlobalDirectory(File globalDirectory) {
 		this.globalDirectory = globalDirectory;
@@ -242,7 +243,7 @@ public class TestContext implements DPUContext {
 
 	/**
 	 * @param userDirectory the userDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 * subdirectory in {@link #rootDirectory}
 	 */
 	public void setUserDirectory(File userDirectory) {
 		this.userDirectory = userDirectory;
