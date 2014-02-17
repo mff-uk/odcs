@@ -5,8 +5,8 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 /**
  * Interface for DPU.
  * 
- * @see {@link DPUContext}
- * @see {@link DPUException}
+ * @see DPUContext
+ * @see DPUException
  * @author Petyr
  * 
  */
