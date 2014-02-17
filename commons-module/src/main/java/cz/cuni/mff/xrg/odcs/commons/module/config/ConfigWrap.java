@@ -98,7 +98,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * returned.
 	 *
 	 * @param configStr Serialized configuration.
-	 * @return
+	 * @return Deserialized configuration.
 	 * @throws ConfigException
 	 */
 	@SuppressWarnings("unchecked")
