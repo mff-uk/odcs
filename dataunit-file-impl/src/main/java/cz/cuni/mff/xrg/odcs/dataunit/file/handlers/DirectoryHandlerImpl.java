@@ -19,7 +19,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DirectoryHandlerImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+			DirectoryHandlerImpl.class);
 
 	/**
 	 * Directory name.
@@ -35,7 +36,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * Root of the respective {@link FileDataUnit}.
 	 */
 	private DirectoryHandler parent;
-	
+
 	/**
 	 * User data.
 	 */
@@ -58,13 +59,14 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	private LinkedList<ManageableHandler> handlers;
 
 	/**
-	 * Create root handler for given directory. The given directory should be 
+	 * Create root handler for given directory. The given directory should be
 	 * empty.
+	 * The name of such directory is en empty string.
 	 *
 	 * @param directory
 	 */
 	public DirectoryHandlerImpl(File directory) {
-		this.name = directory.getName();
+		this.name = "";
 		this.directory = directory;
 		this.parent = null;
 		this.userData = null;
@@ -84,7 +86,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * @param name
 	 * @param isLink
 	 */
-	private DirectoryHandlerImpl(File directory, DirectoryHandler parent, String name, boolean isLink) {
+	private DirectoryHandlerImpl(File directory, DirectoryHandler parent,
+			String name, boolean isLink) {
 		// set fields
 		this.name = name;
 		this.directory = directory;
@@ -102,13 +105,60 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	@Override
 	public String getRootedPath() {
 		if (parent == null) {
-			return "";
+			return getName();
 		} else {
 			final String parentPath = parent.getRootedPath();
 			return parentPath + "/" + getName();
 		}
 	}
-	
+
+	@Override
+	public Handler getByRootedName(String queryName) {
+		// are we rooted ?
+		if (this.parent != null) {
+			return null;
+		}
+		// null check
+		if (queryName == null) {
+			return null;
+		}
+		// parse into array and check it's size
+		final String[] names = queryName.split("/");
+		if (names.length < 2) {
+			return null;
+		}
+		// check for first name
+		if (names[0].compareToIgnoreCase(name) != 0) {
+			return null;
+		}
+		// ok, start the search process
+		return getByRootedName(names, 1);
+	}
+
+	/**
+	 * Return handler to object with given rooted name.
+	 *
+	 * @param names Array of names.
+	 * @param index Index of last user value (name) in names.
+	 * @return Null if the object for given rooted path does not exists.
+	 */
+	private Handler getByRootedName(String[] names, int index) {
+		final String queryName = names[index++];
+		final Handler handler = getByName(queryName);
+
+		if (index == names.length) {
+			// we are at the end .. return what ever we have
+			return handler;
+		}
+		if (handler instanceof DirectoryHandlerImpl) {
+			// the last we have is directory, continue in query
+			return ((DirectoryHandlerImpl) handler)
+					.getByRootedName(names, index);
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -242,7 +292,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	@Override
-	public DirectoryHandler addExistingDirectory(File directory, OptionsAdd options)
+	public DirectoryHandler addExistingDirectory(File directory,
+			OptionsAdd options)
 			throws DataUnitException {
 		accessCheck();
 
@@ -279,7 +330,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		DirectoryHandlerImpl newHandler
-				= new DirectoryHandlerImpl(directory, this, newName, options.isLink());
+				= new DirectoryHandlerImpl(directory, this, newName, options
+						.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -332,8 +384,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	@Override
-	public Handler getByName(String name) {
-		return getManageableByName(name);
+	public Handler getByName(String queryName) {
+		return getManageableByName(queryName);
 	}
 
 	@Override
@@ -359,8 +411,9 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			/**
 			 * Iterator over underlying collection.
 			 */
-			private final Iterator<ManageableHandler> iterator = handlers.iterator();
-			
+			private final Iterator<ManageableHandler> iterator = handlers
+					.iterator();
+
 			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
@@ -417,7 +470,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			return true;
 		} else {
 			// unknown
-			LOG.warn("Method remove(Object) has been called on unexpected object type: %s",
+			LOG.warn(
+					"Method remove(Object) has been called on unexpected object type: %s",
 					o.getClass().getName());
 			return false;
 		}
@@ -469,12 +523,12 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	/**
-	 * @param name
+	 * @param queryName
 	 * @return handler of given name or null
 	 */
-	private ManageableHandler getManageableByName(String name) {
+	private ManageableHandler getManageableByName(String queryName) {
 		for (ManageableHandler handler : this.handlers) {
-			if (handler.getName().compareTo(name) == 0) {
+			if (handler.getName().compareTo(queryName) == 0) {
 				return handler;
 			}
 		}
@@ -487,7 +541,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 */
 	private void accessCheck() {
 		if (isReadOnly) {
-			throw new DataUnitAccessException("Can't modify read only FileDataUnit.");
+			throw new DataUnitAccessException(
+					"Can't modify read only FileDataUnit.");
 		} else if (isLink) {
 			throw new DataUnitAccessException("Can't modify linked directory.");
 		}
