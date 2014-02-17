@@ -416,8 +416,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					public void validate(Object value) throws InvalidValueException {
 						Class<?> myClass = value.getClass();
 
-
-
 						if (myClass.equals(String.class)) {
 							String stringValue = (String) value;
 
@@ -432,12 +430,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 									throw ex;
 								}
 							} else {
-								if (stringValue.isEmpty()) {
-
+								
+								if (!getContext().isTemplate() && stringValue.isEmpty()){
 									String message = getValidMessageByFileExtractType(
-											extractType);
+												extractType);
 									ex = new EmptyValueException(message);
 									throw ex;
+
 								}
 							}
 						} else {

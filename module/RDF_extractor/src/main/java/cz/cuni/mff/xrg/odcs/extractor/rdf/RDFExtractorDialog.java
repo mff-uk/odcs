@@ -1091,13 +1091,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	private boolean allComponentAreValid() {
 
-			boolean areValid = textFieldSparql.isValid()
-					&& retrySizeField.isValid()
-					&& retryTimeField.isValid()
-					&& areGraphsNameValid();
-
-			return areValid;
-
+		boolean areValid = textFieldSparql.isValid()
+				&& retrySizeField.isValid()
+				&& retryTimeField.isValid()
+				&& areGraphsNameValid();
+		return areValid;
 	}
 
 	private String validationMessage() {
@@ -1107,8 +1105,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			textFieldSparql.validate();
 
 		} catch (Validator.InvalidValueException e) {
-
-				errors = errors + e.getMessage();
+			errors = errors + e.getMessage();
 		}
 
 		if (!areGraphsNameValid()) {

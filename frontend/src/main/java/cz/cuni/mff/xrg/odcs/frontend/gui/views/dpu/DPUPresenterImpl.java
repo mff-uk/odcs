@@ -80,7 +80,6 @@ public class DPUPresenterImpl implements DPUPresenter {
 			dpuWrap.saveConfig();
 			Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
 		} catch (ConfigException e) {
-//			dpuWrap.getDPUTemplateRecord().setRawConf(null);
 			Notification.show("The configuration have not been saved.",e.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} catch (DPUWrapException e) {
 			Notification.show(

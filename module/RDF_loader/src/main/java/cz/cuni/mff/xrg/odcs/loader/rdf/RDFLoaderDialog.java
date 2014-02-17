@@ -72,7 +72,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	/**
 	 * ComboBox to set SPARQL endpoint.
 	 */
-	private TextField comboBoxSparql;
+	private TextField textFieldSparql;
 
 	private Validator.InvalidValueException ex;
 
@@ -465,25 +465,26 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		gridLayoutAdm.addComponent(labelSparql, 0, 0);
 		gridLayoutAdm.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
-		// SPARQL endpoint ComboBox
-		comboBoxSparql = new TextField();
-		comboBoxSparql.setImmediate(true);
-		comboBoxSparql.setWidth("100%");
-		comboBoxSparql.setHeight("-1px");
-		comboBoxSparql.setInputPrompt("http://localhost:8890/sparql");
+		// SPARQL endpoint textfield
+		textFieldSparql = new TextField();
+		textFieldSparql.setImmediate(true);
+		textFieldSparql.setWidth("100%");
+		textFieldSparql.setHeight("-1px");
+		textFieldSparql.setInputPrompt("http://localhost:8890/sparql");
 
 
 		//comboBoxSparql is mandatory fields
-		comboBoxSparql.addValidator(new Validator() {
+		textFieldSparql.addValidator(new Validator() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if (value == null) {
-
-					ex = new InvalidValueException(
-							"SPARQL endpoint must be filled");
-					throw ex;
+				if (value == null || value.equals("")) {
+					if (!getContext().isTemplate()){ 
+						ex = new InvalidValueException(
+								"SPARQL endpoint must be filled");
+						throw ex;
+					}
 				} else {
 					String myValue = value.toString().toLowerCase().trim();
 					if (!myValue.startsWith("http://")) {
@@ -500,7 +501,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 		});
 
-		gridLayoutAdm.addComponent(comboBoxSparql, 1, 0);
+		gridLayoutAdm.addComponent(textFieldSparql, 1, 0);
 
 		// labelNameAdm
 		labelNameAdm = new Label();
@@ -1012,7 +1013,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private boolean allComponentAreValid() {
 
-		boolean areValid = comboBoxSparql.isValid()
+		boolean areValid = textFieldSparql.isValid()
 				&& chunkParts.isValid()
 				&& retrySizeField.isValid()
 				&& retryTimeField.isValid()
@@ -1025,14 +1026,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		String errors = "";
 		try {
-			comboBoxSparql.validate();
+			textFieldSparql.validate();
 
 		} catch (Validator.InvalidValueException e) {
 			errors = errors + e.getMessage();
 		}
 
 		if (!areGraphsNameValid()) {
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; Graph name must start with prefix \"http://\" and contain no white spaces";
 			} else {
 				errors = errors + "Graph name must start with prefix \"http://\" and contain no white spaces";
@@ -1043,7 +1044,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			chunkParts.validate();
 
 		} catch (Validator.InvalidValueException e) {
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1054,7 +1055,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			retrySizeField.validate();
 
 		} catch (Validator.InvalidValueException e) {
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1086,7 +1087,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 * to configuration object implementing {@link DPUConfigObject} interface.
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
-	 *                         {@link #comboBoxSparql} contains null value.
+	 *                         {@link #textFieldSparql} contains null value.
 	 * @return config Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
@@ -1112,7 +1113,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			int retrySize = Integer.parseInt(retrySizeField.getValue());
 			long retryTime = Long.parseLong(retryTimeField.getValue());
 
-			String SPARQLEndpoint = (String) comboBoxSparql.getValue();
+			String SPARQLEndpoint = (String) textFieldSparql.getValue();
 			String hostName = textFieldNameAdm.getValue().trim();
 			String password = passwordFieldPass.getValue();
 			boolean validDataBefore = validateDataBefore.getValue();
@@ -1143,7 +1144,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *
-	 * {@link #comboBoxSparql}, {@link #textFieldNameAdm},
+	 * {@link #textFieldSparql}, {@link #textFieldNameAdm},
 	 * {@link #passwordFieldPass}, {@link #optionGroupDetail},
 	 * {@link #defaultGraphs}, in read-only mode or when requested operation is
 	 * not supported.
@@ -1157,7 +1158,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			if (endp != null) {
 
-				comboBoxSparql.setValue(endp);
+				textFieldSparql.setValue(endp);
 			}
 			textFieldNameAdm.setValue(conf.getHostName().trim());
 			passwordFieldPass.setValue(conf.getPassword());
@@ -1212,7 +1213,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();
 		description.append("Load to SPARQL: ");
-		description.append((String) comboBoxSparql.getValue());
+		description.append((String) textFieldSparql.getValue());
 		return description.toString();
 	}
 }
