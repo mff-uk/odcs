@@ -137,7 +137,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	boolean retainAll(Collection<?> c);
 
 	/**
-	 * Return handler to object wit given name.
+	 * Return handler to object with the given name.
 	 *
 	 * @param name
 	 * @return Null is no handler for this name is in this directory.
