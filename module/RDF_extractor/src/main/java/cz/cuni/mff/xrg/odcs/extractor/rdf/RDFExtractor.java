@@ -10,7 +10,9 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
@@ -49,6 +51,8 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			final String password = config.getPassword();
 			String constructQuery = config.getSPARQLQuery();
 
+			final boolean usedSplitConstruct = config.isUsedSplitConstruct();
+
 			if (constructQuery.isEmpty()) {
 				constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
 			}
@@ -80,23 +84,58 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 						"Extractor endpoint params is null, used default values instead without setting ");
 			}
 
+			Integer splitConstructSize = config.getSplitConstructSize();
+			if (splitConstructSize == null) {
+				splitConstructSize = 50000;
+				LOG.info("Split construct size is null, using 50000");
+			}
+
 
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime, endpointParams);
 
-			extractor.extractFromSPARQLEndpoint(endpointURL, constructQuery,
-					hostName, password, RDFFormat.NTRIPLES,
-					handlerExtractType, extractFail);
+			if (usedSplitConstruct) {
+				if (splitConstructSize <= 0) {
+					context.sendMessage(MessageType.ERROR,
+							"Split construct size must be positive number");
+				}
 
-			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
+				long lastrepoSize = rdfDataUnit.getTripleCount();
 
-				String problems = StatisticalHandler
-						.getFoundGlobalProblemsAsString();
-				StatisticalHandler.clearParsingProblems();
+				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
+						constructQuery, splitConstructSize);
 
-				context.sendMessage(MessageType.WARNING,
-						"Statistical and error handler has found during parsing problems triples (these triples were not added)",
-						problems);
+				while (true) {
+					String splitConstructQuery = helper.getSplitConstructQuery();
+
+					extractor.extractFromSPARQLEndpoint(endpointURL,
+							splitConstructQuery,
+							hostName, password, RDFFormat.NTRIPLES,
+							handlerExtractType, false);
+
+					long newrepoSize = rdfDataUnit.getTripleCount();
+
+					checkParsingProblems(useStatisticHandler, context);
+					if (lastrepoSize < newrepoSize) {
+						lastrepoSize = newrepoSize;
+						helper.goToNextQuery();
+					} else {
+						break;
+					}
+				}
+
+				if (extractFail && lastrepoSize == 0) {
+					throw new RDFException(
+							"No extracted triples from SPARQL endpoint");
+				}
+
+			} else {
+
+				extractor.extractFromSPARQLEndpoint(endpointURL, constructQuery,
+						hostName, password, RDFFormat.NTRIPLES,
+						handlerExtractType, extractFail);
+
+				checkParsingProblems(useStatisticHandler, context);
 			}
 
 			final long triplesCount = rdfDataUnit.getTripleCount();
@@ -107,6 +146,10 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 			context.sendMessage(MessageType.INFO, tripleInfoMessage);
 
+		} catch (InvalidQueryException ex) {
+			LOG.debug("InvalidQueryException", ex);
+			context.sendMessage(MessageType.ERROR,
+					"InvalidQueryException: " + ex.getMessage());
 		} catch (MalformedURLException ex) {
 			LOG.debug("RDFDataUnitException", ex);
 			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
@@ -116,8 +159,21 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
 		}
+	}
 
+	private void checkParsingProblems(boolean useStatisticHandler,
+			DPUContext context) {
 
+		if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
+
+			String problems = StatisticalHandler
+					.getFoundGlobalProblemsAsString();
+			StatisticalHandler.clearParsingProblems();
+
+			context.sendMessage(MessageType.WARNING,
+					"Statistical and error handler has found during parsing problems triples (these triples were not added)",
+					problems);
+		}
 	}
 
 	@Override
