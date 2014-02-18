@@ -70,14 +70,30 @@ public class DirectoryHandlerTest {
 		assertEquals(1, handler.size());
 		assertEquals(1, dir.size());
 		assertTrue(file.asFile().exists());
-		// test the root path
-		assertEquals("/myDir/myFile", file.getRootedPath());
-		// delete the dur and file as well
+		// delete the dir and file as well
 		handler.clear();
 		// test that the file has been deleted
 		assertTrue(handler.isEmpty());
 		assertFalse(dir.asFile().exists());
 		assertFalse(file.asFile().exists());
+	}
+	
+	@Test
+	public void testGetByRootedName() throws DataUnitException {
+		DirectoryHandler handler = new DirectoryHandlerImpl(dirToUse);
+		DirectoryHandler dir = handler.addNewDirectory("myDir");
+		FileHandler file = dir.addNewFile("myFile");
+		// test the root path
+		assertEquals("/myDir/myFile", file.getRootedPath());
+		// test getter for wrong values
+		assertEquals(file, handler.getByRootedName(file.getRootedPath()));
+		assertEquals(file, dir.getByRootedName("/myFile"));
+		assertEquals(null, dir.getByRootedName("/NotExistingDir/subFile"));
+		assertEquals(null, handler.getByRootedName(""));
+		assertEquals(null, handler.getByRootedName(null));
+		assertEquals(null, handler.getByRootedName("//"));
+
+		handler.clear();
 	}
 	
 	@Test

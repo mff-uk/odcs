@@ -19,6 +19,11 @@ public enum ConfigProperty {
 	EXECUTION_LOG_HISTORY("exec.log.history"),
 	EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
 	
+	/**
+	 * Used to generate url for pipeline execution in emails.
+	 */
+	FRONTEND_URL("frontend.url"),
+	
 	// namespaces for virtuoso configuration
 	RDBMS("database.sql"),
 	RDF("database.rdf"),

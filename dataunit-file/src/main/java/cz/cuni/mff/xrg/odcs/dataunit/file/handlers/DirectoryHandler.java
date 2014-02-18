@@ -139,9 +139,17 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	/**
 	 * Return handler to object with the given name.
 	 *
-	 * @param name
+	 * @param queryName
 	 * @return Null is no handler for this name is in this directory.
 	 */
-	Handler getByName(String name);
+	Handler getByName(String queryName);
 
+	/**
+	 * Return handler to object with given rooted name.
+	 * 
+	 * @param queryName
+	 * @return Null if the object for given rooted path does not exists.
+	 */
+	Handler getByRootedName(String queryName);
+	
 }
