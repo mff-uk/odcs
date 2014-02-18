@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import static cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment.virtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
@@ -9,7 +8,8 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * Create {@link DataUnit}s that can be used in {@link TestEnvironment}.
+ * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used 
+ * in {@link cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment}.
  * 
  * @author Petyr
  */
@@ -34,13 +34,13 @@ public class DataUnitFactory {
 	 *
 	 * @param name
 	 * @param useVirtuoso
-	 * @return
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	public ManagableRdfDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
+	public ManagableRdfDataUnit createRDFDataUnit(String name, boolean useVirtuoso) {
 		if (useVirtuoso) {
-			return createVirtuosoRdfDataUnit(name);
+			return createVirtuosoRDFDataUnit(name);
 		} else {
-			return createLocalRdfDataUnit(name);
+			return createLocalRDFDataUnit(name);
 		}
 	}
 
@@ -48,9 +48,9 @@ public class DataUnitFactory {
 	 * Create RDF data unit with given name that is stored in local file.
 	 *
 	 * @param name
-	 * @return
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	private ManagableRdfDataUnit createLocalRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createLocalRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String repoPath = workingDirectory.toString()
 				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
@@ -65,9 +65,9 @@ public class DataUnitFactory {
 	 * Create RDF data unit with given name that is stored in virtuoso.
 	 *
 	 * @param name
-	 * @return
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	private ManagableRdfDataUnit createVirtuosoRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createVirtuosoRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String id = "dpu-test_" + number + "_" + name;
 		final String namedGraph = GraphUrl.translateDataUnitId(id);

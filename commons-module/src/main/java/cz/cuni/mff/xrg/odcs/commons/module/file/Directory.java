@@ -20,9 +20,8 @@ public final class Directory {
 	}
 	
 	/**
-	 * Return path the file in the current directory.
 	 * @param fileName File name.
-	 * @return
+	 * @return Absolute path the file in the current directory.
 	 */
 	public File file(String fileName) {
 		return new File(root, fileName);
@@ -31,7 +30,7 @@ public final class Directory {
 	/**
 	 * Create sub-directory in current directory.
 	 * @param dirName
-	 * @return
+	 * @return Representation of created sub-directory.
 	 */
 	public Directory directory(String dirName) {
 		File result = new File(root, dirName);

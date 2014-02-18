@@ -50,9 +50,8 @@ public interface DPUContext {
 			String fullMessage);	
 	
 	/**
-	 * Return true if the DPU is running in debugging mode.
 	 * 
-	 * @return
+	 * @return True if the DPU is running in debugging mode.
 	 */
 	public boolean isDebugging();
 
@@ -60,7 +59,7 @@ public interface DPUContext {
 	 * Return true if the execution of current DPU should be stopped
 	 * as soon as possible. After the {@link DPU#execute(DPUContext)} method
 	 * finished the {@link DPU#cleanUp()} will be called.
-	 * @return
+	 * @return True if the execution should stop.
 	 */
 	public boolean canceled();
 	
@@ -99,7 +98,7 @@ public interface DPUContext {
 	 * for DPU of single type (jar-file). It's shared among all the instances
 	 * and executions. Be aware of concurrency access when using this directory.
 	 * 
-	 * @return
+	 * @return Folder in which the DPU's are stored.
 	 */
 	public File getGlobalDirectory();
 
@@ -108,7 +107,7 @@ public interface DPUContext {
 	 * shared among all the instances and executions for single user and certain
 	 * DPU (jar-file). Be aware of concurrency access when using this directory.
 	 * 
-	 * @return
+	 * @return User specific folder shared by all DPU's of single template.
 	 */
 	public File getUserDirectory();
 	

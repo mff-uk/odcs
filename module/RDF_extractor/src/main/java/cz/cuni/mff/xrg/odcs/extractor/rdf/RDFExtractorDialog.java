@@ -364,11 +364,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if (value == null) {
-
-					ex = new InvalidValueException(
-							"SPARQL endpoint must be filled!");
-					throw ex;
+				if (value == null || value.equals("")) {
+					if (!getContext().isTemplate()) {
+						ex = new InvalidValueException(
+								"SPARQL endpoint must be filled!");
+						throw ex;
+					}
 				} else {
 					String myValue = value.toString().toLowerCase().trim();
 					if (!myValue.startsWith("http://")) {
@@ -1176,7 +1177,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 				errors = errors + graphVaildationMessage(namedGraphTexts);
 			}
 
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; " + graphVaildationMessage(
 						defaultGraphTexts);
 			} else {
@@ -1189,7 +1190,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			retrySizeField.validate();
 
 		} catch (Validator.InvalidValueException e) {
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1200,7 +1201,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			retryTimeField.validate();
 
 		} catch (Validator.InvalidValueException e) {
-			if (!errors.equals("")) {
+			if (!errors.equals("") && !errors.endsWith("; ")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1368,6 +1369,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
+
 		if (!allComponentAreValid()) {
 //			throw new ConfigException(ex.getMessage(), ex);
 			String message = validationMessage();

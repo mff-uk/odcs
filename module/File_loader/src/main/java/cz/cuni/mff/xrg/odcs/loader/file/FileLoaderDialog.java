@@ -177,12 +177,14 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		textFieldFilePath.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class && !((String) value)
-						.isEmpty()) {
-					return;
+				if (!getContext().isTemplate()){
+					if (value.getClass() == String.class && !((String) value)
+							.isEmpty()) {
+						return;
+					}
+					ex = new InvalidValueException("File path must be filled!");
+					throw ex;
 				}
-				ex = new InvalidValueException("File path must be filled!");
-				throw ex;
 			}
 		});
 		verticalLayoutCore.addComponent(textFieldFilePath);
