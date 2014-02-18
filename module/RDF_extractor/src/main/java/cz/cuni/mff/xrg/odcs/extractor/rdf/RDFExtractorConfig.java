@@ -34,6 +34,10 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 
 	private List<String> GraphsUri;
 
+	private boolean useSplitConstruct;
+
+	private Integer splitConstructSize;
+
 	public RDFExtractorConfig() {
 		this.SPARQL_endpoint = "";
 		this.Host_name = "";
@@ -45,12 +49,15 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		this.retrySize = -1;
 		this.retryTime = 1000L;
 		this.endpointParams = new ExtractorEndpointParams();
+		this.useSplitConstruct = false;
+		this.splitConstructSize = 50000;
 	}
 
 	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
 			String Password, String SPARQL_query, boolean ExtractFail,
 			boolean UseStatisticalHandler, boolean failWhenErrors, int retrySize,
-			long retryTime, ExtractorEndpointParams endpointParams) {
+			long retryTime, ExtractorEndpointParams endpointParams,
+			boolean useSplitConstruct, int splitConstructSize) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
@@ -62,6 +69,8 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		this.retrySize = retrySize;
 		this.retryTime = retryTime;
 		this.endpointParams = endpointParams;
+		this.useSplitConstruct = useSplitConstruct;
+		this.splitConstructSize = splitConstructSize;
 	}
 
 	public ExtractorEndpointParams getEndpointParams() {
@@ -104,6 +113,14 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		return retrySize;
 	}
 
+	public boolean isUsedSplitConstruct() {
+		return useSplitConstruct;
+	}
+
+	public Integer getSplitConstructSize() {
+		return splitConstructSize;
+	}
+
 	@Override
 	public boolean isValid() {
 		return SPARQL_endpoint != null
@@ -134,6 +151,10 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 					endpointParams.addDefaultGraph(defaultGraph);
 				}
 			}
+		}
+
+		if (splitConstructSize == null) {
+			splitConstructSize = 50000;
 		}
 	}
 }
