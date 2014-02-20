@@ -90,8 +90,8 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 */
 	private String getInsertSQL() {
 		return "INSERT INTO logging"
-				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace)"
-				+ " VALUES (?, ?, ? ,?, ?, ?, ?)";
+				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace, relative_id)"
+				+ " VALUES (?, ?, ? ,?, ?, ?, ?, ?)";
 	}
 
 	/**
@@ -394,6 +394,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 
 		stmt.setString(7, stackTrace);
+		
+		// add zero
+		stmt.setInt(8, 0);
 	}
 
 	/**

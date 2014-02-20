@@ -567,6 +567,7 @@ CREATE TABLE `logging`
   `dpu` INTEGER,
   `execution` INTEGER,
   `stack_trace` TEXT,
+  `relative_id` INTEGER,
   PRIMARY KEY (id)
 );
 

@@ -614,6 +614,7 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
   "dpu" INTEGER,
   "execution" INTEGER,
   "stack_trace" LONG VARCHAR,
+  "relative_id" INTEGER,
   PRIMARY KEY (id)
 );
 
