@@ -310,6 +310,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		LOG.trace("{}.getObjectByIndex({})", classAccessor.getClass().getSimpleName(), index);
 		if (dataIndexes.containsKey(index)) {
 			// we have the mapping index -> id
+			LOG.trace("{}.getObjectByIndex({}) -> cached", classAccessor.getClass().getSimpleName(), index);
 			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
@@ -318,6 +319,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				addToCache(item, index);
 			}
 			// return new item .. can be null
+			LOG.trace("{}.getObjectByIndex({}) -> loaded", classAccessor.getClass().getSimpleName(), index);
 			return item;
 		}
 	}

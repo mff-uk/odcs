@@ -326,7 +326,7 @@ public class DebuggingView extends CustomComponent {
 	 *
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
-		LOG.debug("setting new execution ID = " + execution.getId());
+		LOG.debug("setExecution({})", execution.getId());
 		this.pipelineExec = execution;
 		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
@@ -353,6 +353,7 @@ public class DebuggingView extends CustomComponent {
 					RefreshManager.DEBUGGINGVIEW, 
 					RefreshManager.getDebugRefresher(this, execution, pipelineFacade));
 		}
+		LOG.debug("setExecution({}) -> done", execution.getId());
 	}
 
 	/**
