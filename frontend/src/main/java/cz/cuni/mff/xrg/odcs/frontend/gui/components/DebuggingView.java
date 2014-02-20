@@ -129,7 +129,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public final void initialize(PipelineExecution exec,
 			DPUInstanceRecord dpu, boolean debug, boolean isFromCanvas) {
-		LOG.debug("Initializing...");
+		LOG.debug("initialize() ...");
 		// set properties
 		this.isFromCanvas = isFromCanvas;
 
@@ -156,6 +156,8 @@ public class DebuggingView extends CustomComponent {
 		setExecution(exec, dpu);
 
 		isInitialized = true;
+		
+		LOG.debug("initialize() -> done");
 	}
 
 	/**

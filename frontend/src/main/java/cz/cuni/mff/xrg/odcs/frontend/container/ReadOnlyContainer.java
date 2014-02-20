@@ -105,6 +105,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	 * Announce that the container has changed to tables.
 	 */
 	public void refresh() {
+		LOG.trace("{}.refresh()", classAccessor.getClass().getSimpleName());
 		final ReadOnlyContainer<T> container = this;
 
 		for (ItemSetChangeListener listener : changeListeners) {
