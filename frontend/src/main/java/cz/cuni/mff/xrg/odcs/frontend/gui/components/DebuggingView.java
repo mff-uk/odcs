@@ -129,7 +129,7 @@ public class DebuggingView extends CustomComponent {
 	 */
 	public final void initialize(PipelineExecution exec,
 			DPUInstanceRecord dpu, boolean debug, boolean isFromCanvas) {
-		LOG.debug("Initializing...");
+		LOG.debug("initialize() ...");
 		// set properties
 		this.isFromCanvas = isFromCanvas;
 
@@ -156,6 +156,8 @@ public class DebuggingView extends CustomComponent {
 		setExecution(exec, dpu);
 
 		isInitialized = true;
+		
+		LOG.debug("initialize() -> done");
 	}
 
 	/**
@@ -324,7 +326,7 @@ public class DebuggingView extends CustomComponent {
 	 *
 	 */
 	public void setExecution(PipelineExecution execution, DPUInstanceRecord instance) {
-		LOG.debug("setting new execution ID = " + execution.getId());
+		LOG.debug("setExecution({})", execution.getId());
 		this.pipelineExec = execution;
 		this.isInDebugMode = execution.isDebugging();
 		this.debugDpu = instance;
@@ -351,6 +353,7 @@ public class DebuggingView extends CustomComponent {
 					RefreshManager.DEBUGGINGVIEW, 
 					RefreshManager.getDebugRefresher(this, execution, pipelineFacade));
 		}
+		LOG.debug("setExecution({}) -> done", execution.getId());
 	}
 
 	/**

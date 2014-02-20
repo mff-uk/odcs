@@ -196,7 +196,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * @param id
 	 */
 	protected void loadById(Long id) {
-		LOG.trace("loadById({})", id);
+		LOG.trace("{}.loadById({})", classAccessor.getClass().getSimpleName(), id);
 		applyFilters();
 
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
@@ -225,12 +225,14 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		}
 		// add to the data cache
 		data.put(item.getId(), item);
+		LOG.trace("{}.loadById({}) -> done", classAccessor.getClass().getSimpleName(), id);
 	}
 
 	/**
 	 * Re-apply all filters to the {@link #queryBuilder}. If it's filterable.
 	 */
 	protected void applyFilters() {
+		LOG.trace("{}.applyFilters()", classAccessor.getClass().getSimpleName());
 		// TODO we can optimize and do not set those filter twice .. 
 
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
@@ -305,8 +307,10 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 
 	@Override
 	public T getObjectByIndex(int index) {
+		LOG.trace("{}.getObjectByIndex({})", classAccessor.getClass().getSimpleName(), index);
 		if (dataIndexes.containsKey(index)) {
 			// we have the mapping index -> id
+			LOG.trace("{}.getObjectByIndex({}) -> cached", classAccessor.getClass().getSimpleName(), index);
 			return getObject(dataIndexes.get(index));
 		} else {
 			T item = loadByIndex(index);
@@ -315,6 +319,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				addToCache(item, index);
 			}
 			// return new item .. can be null
+			LOG.trace("{}.getObjectByIndex({}) -> loaded", classAccessor.getClass().getSimpleName(), index);
 			return item;
 		}
 	}
@@ -333,7 +338,8 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-
+		LOG.trace("{}.getItemIds({}, {})", classAccessor.getClass().getSimpleName(), startIndex, numberOfItems);
+		
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
@@ -375,6 +381,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			// maybe we can try to be smarter here ...
 		}
 
+		LOG.trace("{}.getItemIds({}, {}) -> done", classAccessor.getClass().getSimpleName(), startIndex, numberOfItems);
 		return result;
 	}
 
