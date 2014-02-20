@@ -79,29 +79,29 @@ INSERT INTO SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id)
  VALUES(1,1);
 
 -- Log messages
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,10000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,null,1);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400667,10000,'org.springframework.beans.factory.support.DefaultListableBeanFactory','Returning cached instance of singleton bean "transactionManager"',1,null,2);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056401201,10000,'org.springframework.beans.factory.support.DefaultListableBeanFactory','Returning cached instance of singleton bean "engine"',1,1,3);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,10000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,4);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,10000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,null,5);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,10000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,6);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,20000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,7);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,20000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,null,8);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,20000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,9);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,30000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,10);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,30000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,null,11);
-INSERT INTO LOGGING(timestmp, logLevel, logger, message, dpu, execution, relative_id)
+INSERT INTO LOGGING(timestmp, logLevel, logger, message, execution, dpu, relative_id)
  VALUES(1373056400664,30000,'cz.cuni.xrg.intlib.backend.execution.PipelineWorker','Started',1,1,12);
 
 INSERT INTO RDF_NS_PREFIX(id, name, uri)

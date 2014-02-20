@@ -15,4 +15,13 @@ public interface DbLogRead extends DbAccessRead<Log> {
 	 */
 	void prune(Date date);
 
+	/**
+	 * Retrieve the highest relative log index for given execution. If there are
+	 * no logs for given execution then return null.
+	 * 
+	 * @param executionId
+	 * @return Can be null.
+	 */
+	Long getLastRelativeIndex(Long executionId);
+	
 }

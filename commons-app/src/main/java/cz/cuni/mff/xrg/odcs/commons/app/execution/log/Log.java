@@ -145,5 +145,9 @@ public class Log implements Serializable, DataObject {
 	public String getStackTrace() {
 		return StringUtils.defaultString(stackTrace);
 	}
+
+	public Long getRelativeId() {
+		return relativeId;
+	}
 	
 }
