@@ -301,7 +301,13 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		// get information about the source
 		supportsBatchUpdates = connectionSource.supportsBatchUpdates();
-
+		if (!supportsBatchUpdates) {
+			// log some warning
+			LOG.error("LoggingConnectionSource does not support batch updates. "
+					+ "This will have serious impact on performance of database and ODCS.");
+		}
+		
+		
 		started = true;
 		
 		// get configuration
