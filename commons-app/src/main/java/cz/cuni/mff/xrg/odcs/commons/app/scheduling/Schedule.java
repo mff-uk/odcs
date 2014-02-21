@@ -148,7 +148,7 @@ public class Schedule implements DataObject, OwnedEntity {
 	}
 
 	public void setName(String newName) {
-		this.name = StringUtils.abbreviate(newName, LenghtLimits.SCHEDULE_NAME.limit());
+		this.name = StringUtils.abbreviate(newName, LenghtLimits.SCHEDULE_NAME);
 	}
 
 	public String getDescription() {

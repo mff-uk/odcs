@@ -343,7 +343,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		// prepare the values
 		Integer logLevel = event.getLevel().toInteger();
 		long timeStamp = event.getTimeStamp();
-		String logger = StringUtils.abbreviate(event.getLoggerName(), LenghtLimits.LOGGER_NAME.limit());
+		String logger = StringUtils.abbreviate(event.getLoggerName(), LenghtLimits.LOGGER_NAME);
 		String message = event.getFormattedMessage();
 
 		if (maxMessageSize != 0) {

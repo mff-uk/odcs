@@ -104,7 +104,7 @@ public abstract class DPURecord {
     }
 
     public void setName(String newName) {
-        this.name = StringUtils.abbreviate(newName, LenghtLimits.DPU_NAME.limit());
+        this.name = newName;
     }
 
     public boolean useDPUDescription() {

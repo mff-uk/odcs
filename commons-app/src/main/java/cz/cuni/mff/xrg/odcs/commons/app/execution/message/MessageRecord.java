@@ -96,7 +96,7 @@ public class MessageRecord implements DataObject {
 		this.type = type;
 		this.dpuInstance = dpuInstance;
 		this.execution = execution;
-		this.shortMessage = StringUtils.abbreviate(shortMessage, LenghtLimits.SHORT_MESSAGE.limit());
+		this.shortMessage = StringUtils.abbreviate(shortMessage, LenghtLimits.SHORT_MESSAGE);
 		this.fullMessage = fullMessage;
 	}
 

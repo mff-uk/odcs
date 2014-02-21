@@ -11,14 +11,6 @@ import com.vaadin.data.Validator;
 public final class MaxLengthValidator implements Validator {
 
 	/**
-	 * Max length of pipeline name.
-	 */
-	public static int NAME_LENGTH = 2048;
-	/**
-	 * Max length of DPU name.
-	 */
-	public static int DPU_NAME_LENGTH = 45;
-	/**
 	 * Max length of description.
 	 */
 	public static int DESCRIPTION_LENGTH = 512;

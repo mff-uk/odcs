@@ -121,7 +121,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	}
 
 	public void setName(String newName) {
-		this.name = StringUtils.abbreviate(newName, LenghtLimits.PIPELINE_NAME.limit());
+		this.name = newName;
 	}
 
 	public String getDescription() {

@@ -29,11 +29,13 @@ import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 
 /**
  * Dialog for new user creation. Called from the {@link #UsersList}.
@@ -132,6 +134,7 @@ public class UserCreate extends Window {
 				}
 			}
 		});
+		userFullName.addValidator(new MaxLengthValidator(LenghtLimits.USER_FULLNAME));
 
 		userDetailsLayout.addComponent(new Label("Full user name:"), 0, 0);
 		userDetailsLayout.addComponent(userFullName, 1, 0);
@@ -166,6 +169,7 @@ public class UserCreate extends Window {
 				throw ex;
 			}
 		});
+		userName.addValidator(new MaxLengthValidator(LenghtLimits.USER_NAME));
 
 		userDetailsLayout.addComponent(new Label("User name:"), 0, 1);
 		userDetailsLayout.addComponent(userName, 1, 1);
