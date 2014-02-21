@@ -15,7 +15,7 @@ public class DbQueryCount<T extends DataObject> implements DataQueryCount<T> {
 
     private final TypedQuery<Number> query;
     
-	DbQueryCount(TypedQuery<Number> query) {
+	protected DbQueryCount(TypedQuery<Number> query) {
 		this.query = query;
 	}
 

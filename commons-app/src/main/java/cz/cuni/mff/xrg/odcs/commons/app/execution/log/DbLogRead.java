@@ -4,7 +4,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import java.util.Date;
 
 /**
- *
+ * Logs are using special row as workaround for LIMIT, that can cause 
+ * full result scan. This require support from whole respective DAO layer.
+ * 
  * @author Petyr
  */
 public interface DbLogRead extends DbAccessRead<Log> {

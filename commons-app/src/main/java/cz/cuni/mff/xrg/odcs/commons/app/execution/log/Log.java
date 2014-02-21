@@ -82,6 +82,7 @@ public class Log implements Serializable, DataObject {
 	 * Id (position) relative to a given execution. The id is given in same
 	 * order as the logs are generated. Starts from one.
 	 * 
+	 * Name of this property is used in {@link DbLogReadImpl}.
 	 */
 	@Column(name = "relative_id")
 	private Long relativeId;

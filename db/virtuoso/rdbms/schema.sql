@@ -620,5 +620,6 @@ CREATE TABLE "DB"."ODCS"."LOGGING"
 
 CREATE INDEX "ix_LOGGING_dpu" ON "DB"."ODCS"."LOGGING" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "DB"."ODCS"."LOGGING" ("execution");
+CREATE INDEX "ix_LOGGIN_relative_id" ON "DB"."ODCS"."LOGGING" ("relative_id");
 
 -- File must end with empty line, so last query is followed by enter.

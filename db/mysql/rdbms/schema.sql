@@ -573,5 +573,6 @@ CREATE TABLE `logging`
 
 CREATE INDEX `ix_LOGGING_dpu` ON `logging` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `logging` (`execution`);
+CREATE INDEX `ix_LOGGIN_relative_id` ON `logging` (`relative_id`);
 
 -- File must end with empty line, so last query is followed by enter.
