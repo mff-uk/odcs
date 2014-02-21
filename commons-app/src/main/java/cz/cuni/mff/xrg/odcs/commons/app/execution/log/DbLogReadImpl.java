@@ -91,7 +91,13 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
 				Long execution = checkFilter(logQuery.filters.get(0));
 				// we also need to get the value of execution
 				if (execution != null) {
-					return getLastRelativeIndex(execution);
+					Long size = getLastRelativeIndex(execution);
+					if (size == null) {
+						// no execution exists, return null 
+						return 0;
+					} else {
+						return size;
+					}
 				}
 			}
 
