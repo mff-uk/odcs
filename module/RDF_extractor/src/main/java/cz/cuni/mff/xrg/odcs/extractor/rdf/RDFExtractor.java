@@ -105,6 +105,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
 						constructQuery, splitConstructSize);
 
+				LOG.debug(
+						"The max size of one data part extracted from SPARQL extractor is set to {} TRIPLES",
+						splitConstructSize);
 				while (true) {
 					String splitConstructQuery = helper.getSplitConstructQuery();
 
