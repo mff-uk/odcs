@@ -16,13 +16,13 @@ import javax.persistence.TypedQuery;
  */
 public class DbQuery<T extends DataObject> implements DataQuery<T> {
     
-	private final TypedQuery<T> query;
+	protected final TypedQuery<T> query;
 	
 	/**
 	 * Create new query.
 	 * @param query
 	 */
-	DbQuery(TypedQuery<T> query) {
+	protected DbQuery(TypedQuery<T> query) {
 		this.query = query;		
 	}
 	

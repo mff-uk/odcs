@@ -3,20 +3,20 @@ package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 import java.io.File;
 
 /**
- * Handler for single record in 
- * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}. In order to user 
+ * Handler for single record in
+ * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}. In order to user
  * recast it into {@link DirectoryHandler} or {@link FileHandler}.
  *
  * To determine if the {@link Handler} denotes file or directory you can use
  * class inheritance (see sample code below), or utilize {@link #asFile()}
  * result of. You should use the first approach rather then the second.
- * 
- * Every {@link Handler} in 
- * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit} can holds user data. 
- * The string should have reasonable size as it's stored in 
- * memory for whole time of existence of given 
+ *
+ * Every {@link Handler} in
+ * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit} can holds user data.
+ * The string should have reasonable size as it's stored in memory for whole
+ * time of existence of given
  * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}.
- * 
+ *
  * <pre>
  * {@code
  * // some unknown handler
@@ -42,10 +42,10 @@ import java.io.File;
 public interface Handler {
 
 	/**
-	 * Return path to file in 
-	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}. This can be used 
-	 * to access even read only file. It's up to the programmer to not change the 
-	 * input data units.
+	 * Return path to file in
+	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}. This can be used
+	 * to access even read only file. It's up to the programmer to not change
+	 * the input data units.
 	 *
 	 * @return File representation of this handler.
 	 */
@@ -69,9 +69,13 @@ public interface Handler {
 	public String getName();
 
 	/**
-	 * @return Path from the root of respective 
-	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}, can be 
-	 * used as {@link Handler}'s id.
-	 */ 
+	 * Returned path is relative to the root of
+	 * {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}. To get access 
+	 * use {@link #asFile()} instead.
+	 *
+	 * @return String representation of path from the root of respective
+	 *         {@link cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit}, can be
+	 *         used as {@link Handler}'s id.
+	 */
 	String getRootedPath();
 }

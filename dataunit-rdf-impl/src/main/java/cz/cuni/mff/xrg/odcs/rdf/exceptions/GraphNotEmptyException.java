@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 /**
- * Exception is thrown when target graph on the SPARQL endpoint where we RDF
+ * This exception is thrown when target graph on the SPARQL endpoint where RDF
  * data will be loaded is not empty.
  *
  * @author Jiri Tomes

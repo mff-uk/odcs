@@ -483,6 +483,7 @@ public class SPARQLExtractor {
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
 
 		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("SPARQL query: {}", query);
 		logger.debug("Request content: {}", parameters);
 		logger.debug("Request method: GET");
 
@@ -653,6 +654,7 @@ public class SPARQLExtractor {
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
 
 		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("SPARQL query: {}", query);
 		logger.debug("Request content: {}", parameters);
 		logger.debug("Request method: POST with URL encoder");
 

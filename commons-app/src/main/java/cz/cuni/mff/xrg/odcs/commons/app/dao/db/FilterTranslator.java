@@ -11,15 +11,25 @@ import javax.persistence.criteria.Root;
  * @author Petyr
  */
 public interface FilterTranslator {
-    
+    	
     /**
-     * Translate given filter. Return null it the filter is unknown.
+     * Translate given filter. Return null it the filter is unknown to the 
+	 * translator.
 	 * 
      * @param filter
      * @param cb
      * @param root
-     * @return translated predicate
+     * @return Translated predicate, or null.
      */
     Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root);
-    
+ 
+	/**
+	 * Explain given filter. Return null it the filter is unknown to the 
+	 * translator.
+	 * 
+	 * @param filter
+	 * @return Explanation or null.
+	 */
+	FilterExplanation explain(Object filter);
+	
 }

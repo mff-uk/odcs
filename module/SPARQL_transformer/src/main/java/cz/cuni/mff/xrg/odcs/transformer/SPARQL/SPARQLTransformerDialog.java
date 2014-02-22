@@ -38,11 +38,14 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	private Button buttonQueryAdd;
 
 	/**
-	 * Mapping pairs(query,isSpecialContructQuery)
+	 * Mapping pairs(query,QueryObject).
 	 */
-	private Map<String, Boolean> map = new HashMap<>();
+	private Map<String, QueryObject> map = new HashMap<>();
 
 	private String validationErrorMessage = "No errors";
+
+	//number of invalid query
+	private int invalidQueryNumber = -1;
 
 	/**
 	 * Constructor.
@@ -101,17 +104,22 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 		//Right SPARQL VALIDATOR - default false
 		if (!areSparqlQueriesValid()) {
-			throw new SPARQLValidationException(validationErrorMessage);
+			throw new SPARQLValidationException(validationErrorMessage,
+					invalidQueryNumber);
 		} else {
 			saveEditedTexts();
 
 			List<SPARQLQueryPair> queryPairs = new LinkedList<>();
 
 			for (String query : getSPARQLQueries()) {
-				boolean isConstructQuery = map.get(query);
+				QueryObject queryObject = map.get(query);
 
-				if (isConstructQuery && !hasValidMoreGraphsForContruct(query)) {
-					throw new SPARQLValidationException(validationErrorMessage);
+				boolean isConstructQuery = queryObject.isConstructQuery();
+				int queryNumber = queryObject.getQueryNumber();
+
+				if (!hasValidMoreGraphsForQuery(query)) {
+					throw new SPARQLValidationException(validationErrorMessage,
+							queryNumber);
 				}
 				queryPairs.add(new SPARQLQueryPair(query, isConstructQuery));
 			}
@@ -137,10 +145,10 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 	}
 
-	private boolean hasValidMoreGraphsForContruct(String contructQuery) {
+	private boolean hasValidMoreGraphsForQuery(String query) {
 
 		PlaceholdersHelper helper = new PlaceholdersHelper();
-		List<String> extractedNames = helper.getExtractedDPUNames(contructQuery);
+		List<String> extractedNames = helper.getExtractedDPUNames(query);
 
 		if (extractedNames.isEmpty()) {
 			return true;
@@ -302,6 +310,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 				public void validate(Object value) throws InvalidValueException {
 					final String query = textFieldQuery.getValue().trim();
 
+					invalidQueryNumber = (int) textFieldQuery.getData() + 1;
+
 					if (query.isEmpty()) {
 
 						validationErrorMessage = "SPARQL query is empty a must be filled";
@@ -319,7 +329,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 					if (isConstructValid) {
 						//query is valid
-						map.put(query, true);
+						map.put(query, new QueryObject(invalidQueryNumber,
+								true));
 						return;
 					} else {
 						//if is construct query, but no valid
@@ -332,7 +343,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 					}
 
 					if (isUpdateValid) {
-						map.put(query, false);
+						map.put(query, new QueryObject(invalidQueryNumber,
+								false));
 					} else {
 						validationErrorMessage = updateValidator
 								.getErrorMessage();
@@ -397,5 +409,42 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		gridLayoutQuery.setColumnExpandRatio(1, 0.05f);
 
 		refreshSparqlQueryData();
+	}
+}
+
+class QueryObject {
+
+	private int queryNumber;
+
+	private boolean isConstructQuery;
+
+	/**
+	 * Create the new instance of {@link QueryObject}.
+	 *
+	 * @param queryNumber      the number of SPARQL query in dialogue
+	 * @param isConstructQuery if is the construct query or not.
+	 */
+	public QueryObject(int queryNumber, boolean isConstructQuery) {
+		this.queryNumber = queryNumber;
+		this.isConstructQuery = isConstructQuery;
+	}
+
+	/**
+	 * Returns true, if the query is the construct query, false othrrwise.
+	 *
+	 * @return true, if the query is the construct query, false othrrwise.
+	 *
+	 */
+	public boolean isConstructQuery() {
+		return isConstructQuery;
+	}
+
+	/**
+	 * Return the number of SPARQL query in dialogue.
+	 *
+	 * @return The number of SPARQL query in dialogue.
+	 */
+	public int getQueryNumber() {
+		return queryNumber;
 	}
 }

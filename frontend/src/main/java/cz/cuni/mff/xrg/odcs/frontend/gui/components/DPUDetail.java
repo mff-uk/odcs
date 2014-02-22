@@ -37,23 +37,32 @@ import org.vaadin.dialogs.ConfirmDialog;
 public class DPUDetail extends Window {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
+
 	private DPUInstanceWrap dpuInstance;
+
 	private TextField dpuName;
+
 	private TextArea dpuDescription;
+
 	private boolean result = false;
+
 	/**
 	 * DPU's configuration dialog.
 	 */
 	private AbstractConfigDialog<DPUConfigObject> confDialog;
+
 	private DPUFacade dpuFacade;
+
 	private Button saveAsNewButton;
+
 	private Button saveAndCommitButton;
+
 	private VerticalLayout mainLayout;
 
 	/**
 	 * Basic constructor, takes DPUFacade.
 	 *
-	 * @param dpuFacade 
+	 * @param dpuFacade
 	 */
 	public DPUDetail(DPUFacade dpuFacade) {
 		this.dpuFacade = dpuFacade;
@@ -86,7 +95,8 @@ public class DPUDetail extends Window {
 				setCaption(dpuName.getValue().trim());
 			}
 		});
-		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
+		dpuName.addValidator(new MaxLengthValidator(
+				MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
 		Label descriptionLabel = new Label("Description");
@@ -99,7 +109,8 @@ public class DPUDetail extends Window {
 		dpuDescription.setImmediate(false);
 		dpuDescription.setWidth("500px");
 		dpuDescription.setHeight("60px");
-		dpuDescription.addValidator(new MaxLengthValidator(MaxLengthValidator.DESCRIPTION_LENGTH));
+		dpuDescription.addValidator(new MaxLengthValidator(
+				MaxLengthValidator.DESCRIPTION_LENGTH));
 		dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
 
 		dpuGeneralSettingsLayout.setMargin(new MarginInfo(false, false, true,
@@ -174,7 +185,8 @@ public class DPUDetail extends Window {
 	 */
 	public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
 		this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
-		this.setCaption(String.format("%s detail%s", dpu.getName().trim(), readOnly ? " - Read only mode" : ""));
+		this.setCaption(String.format("%s detail%s", dpu.getName().trim(),
+				readOnly ? " - Read only mode" : ""));
 		dpuName.setValue(dpu.getName().trim());
 		if (dpu.useDPUDescription()) {
 			// leave dpuDescription blank
@@ -201,7 +213,8 @@ public class DPUDetail extends Window {
 			Notification.show("Missing DPU jar file.", e.getMessage(),
 					Type.ERROR_MESSAGE);
 		} catch (DPUWrapException ex) {
-			Notification.show("Failed to load DPU,", ex.getMessage(), Type.ERROR_MESSAGE);
+			Notification.show("Failed to load DPU,", ex.getMessage(),
+					Type.ERROR_MESSAGE);
 		}
 
 
@@ -220,13 +233,15 @@ public class DPUDetail extends Window {
 				Notification.show(
 						"Unexpected error. The configuration dialog may not be loaded correctly.",
 						e.getMessage(), Type.WARNING_MESSAGE);
-				LOG.error("Unexpected error while loading dialog for {}", dpuInstance.getDPUInstanceRecord().getId(), e);
+				LOG.error("Unexpected error while loading dialog for {}",
+						dpuInstance.getDPUInstanceRecord().getId(), e);
 			}
 			// add to layout
 			confDialog.setWidth("100%");
 
 			setResizable(true);
-			mainLayout.addComponent(confDialog, mainLayout.getComponentCount() - 1);
+			mainLayout.addComponent(confDialog,
+					mainLayout.getComponentCount() - 1);
 		}
 	}
 
@@ -250,11 +265,14 @@ public class DPUDetail extends Window {
 					// dialog description is not supported .. we have no 
 					// description at all
 					dpuInstance.getDPUInstanceRecord().setDescription("");
-					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(false);
+					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(
+							false);
 				} else {
 					// use dialogDescription
-					dpuInstance.getDPUInstanceRecord().setDescription(dialogDescription);
-					dpuInstance.getDPUInstanceRecord().setUseDPUDescription(true);
+					dpuInstance.getDPUInstanceRecord().setDescription(
+							dialogDescription);
+					dpuInstance.getDPUInstanceRecord()
+							.setUseDPUDescription(true);
 				}
 			} else {
 				// use user provided description
@@ -263,22 +281,28 @@ public class DPUDetail extends Window {
 				dpuInstance.getDPUInstanceRecord().setUseDPUDescription(false);
 			}
 
-			dpuInstance.getDPUInstanceRecord().setName(dpuName.getValue().trim());
+			dpuInstance.getDPUInstanceRecord()
+					.setName(dpuName.getValue().trim());
 
 		} catch (Exception ce) {
 			if (ce instanceof SPARQLValidationException) {
 
+				SPARQLValidationException validationEx = (SPARQLValidationException) ce;
+
 				Notification.show("Query Validator",
-						"Query is not valid: "
-						+ ce.getMessage(),
+						"Validation of " + validationEx.getQueryNumber() + ". query failed: "
+						+ validationEx.getMessage(),
 						Notification.Type.ERROR_MESSAGE);
 			} else if (ce instanceof ConfigException) {
 				Notification.show("Failed to save configuration. Reason:", ce
 						.getMessage(), Type.ERROR_MESSAGE);
 			} else {
 				Throwable rootCause = DecorationHelper.findFinalCause(ce);
-				String text = String.format("Exception: %s, Message: %s", rootCause.getClass().getName(), rootCause.getMessage());
-				Notification.show("Method for storing configuration threw exception:", text, Type.ERROR_MESSAGE);
+				String text = String.format("Exception: %s, Message: %s",
+						rootCause.getClass().getName(), rootCause.getMessage());
+				Notification.show(
+						"Method for storing configuration threw exception:",
+						text, Type.ERROR_MESSAGE);
 			}
 			return false;
 		}
@@ -307,7 +331,8 @@ public class DPUDetail extends Window {
 			dpuName.validate();
 			dpuDescription.validate();
 		} catch (Validator.InvalidValueException e) {
-			Notification.show("Error saving DPU configuration. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			Notification.show("Error saving DPU configuration. Reason:", e
+					.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return false;
 		}
 		return true;
