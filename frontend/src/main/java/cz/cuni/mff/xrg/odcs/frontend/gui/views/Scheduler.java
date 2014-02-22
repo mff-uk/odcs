@@ -69,7 +69,7 @@ public class Scheduler extends ViewComponent {
 	 * View name.
 	 */
 	public static final String NAME = "Scheduler";
-	
+
 	/**
 	 * Column widths for schedules table.
 	 */
@@ -77,7 +77,7 @@ public class Scheduler extends ViewComponent {
 	private static final int COLUMN_ACTIONS_WIDTH = 160;
 	private static final int COLUMN_TIME_WIDTH = 115;
 	private static final int COLUMN_DURATION_WIDTH = 77;
-	
+
 	private VerticalLayout mainLayout;
 	/**
 	 * Table contains rules of pipeline scheduling.
@@ -183,6 +183,8 @@ public class Scheduler extends ViewComponent {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						schedulerTable.resetFilters();
+						schedulerTable.setFilterFieldVisible("commands", false);
+						schedulerTable.setFilterFieldVisible("duration", false);
 					}
 				});
 		topLine.addComponent(buttonDeleteFilters);
@@ -212,7 +214,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setColumnWidth("next", COLUMN_TIME_WIDTH);
 		schedulerTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
 		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
-		
+
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
