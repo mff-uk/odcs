@@ -135,13 +135,16 @@ public class DebuggingView extends CustomComponent {
 
 		// bind to data sources
 		{
+			final int pageSize = utils.getPageLength();
 			// create sources
-			logSource = new DbCachedSource<>(dbLogs, new NewLogAccessor(), logCoreFilters);
-			msgSource = new DbCachedSource<>(dbMsg, new MessageRecordAccessor(), msgCoreFilters);
+			logSource = new DbCachedSource<>(dbLogs, new NewLogAccessor(), 
+					logCoreFilters, pageSize);
+			msgSource = new DbCachedSource<>(dbMsg, new MessageRecordAccessor(),
+					msgCoreFilters, pageSize);
 
 			// create tables
-			logTable = new LogTable(logSource, logFacade, utils.getPageLength());
-			msgTable = new RecordsTable(msgSource, utils.getPageLength());
+			logTable = new LogTable(logSource, logFacade, pageSize);
+			msgTable = new RecordsTable(msgSource, pageSize);
 			LOG.debug("Created new Log and Record table");
 		}
 

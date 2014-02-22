@@ -75,17 +75,22 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 */
 	protected final ClassAccessor<T> classAccessor;
 
+	protected int pageSize;
+	
 	/**
 	 * Initialize the source with given data access. No core filters are used.
 	 *
 	 * @param access
 	 * @param classAccessor
+	 * @param pageSize
 	 */
-	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor) {
+	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor,
+			int pageSize) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = null;
 		this.classAccessor = classAccessor;
+		this.pageSize = pageSize;		
 	}
 
 	/**
@@ -96,13 +101,15 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * @param access
 	 * @param classAccessor
 	 * @param coreFilters
+	 * @param pageSize
 	 */
 	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor,
-			List<Filter> coreFilters) {
+			List<Filter> coreFilters, int pageSize) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = coreFilters;
 		this.classAccessor = classAccessor;
+		this.pageSize = pageSize;
 	}
 
 	/**
@@ -313,6 +320,15 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			LOG.trace("{}.getObjectByIndex({}) -> cached", classAccessor.getClass().getSimpleName(), index);
 			return getObject(dataIndexes.get(index));
 		} else {
+			// cache whole page
+			getItemIds(index, pageSize);
+			// return required object
+			if (dataIndexes.containsKey(index)) {
+				return getObject(dataIndexes.get(index));
+			}
+			LOG.warn("Failed to cache line {} in group ({}, {})",
+					index, index, pageSize);
+			// try to load directely 
 			T item = loadByIndex(index);
 			if (item != null) {
 				// add to caches
@@ -452,7 +468,14 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				invalidate();
 				break;
 		}
-
 	}
 
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+	
 }
