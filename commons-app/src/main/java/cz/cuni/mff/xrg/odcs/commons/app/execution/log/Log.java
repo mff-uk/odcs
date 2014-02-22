@@ -78,6 +78,15 @@ public class Log implements Serializable, DataObject {
 	@Column(name = "stack_trace")
 	private String stackTrace;
 	
+	/**
+	 * Id (position) relative to a given execution. The id is given in same
+	 * order as the logs are generated. Starts from one.
+	 * 
+	 * Name of this property is used in {@link DbLogReadImpl}.
+	 */
+	@Column(name = "relative_id")
+	private Long relativeId;
+	
 	public Log() { }
 	
 	/**
@@ -136,6 +145,10 @@ public class Log implements Serializable, DataObject {
 	 */
 	public String getStackTrace() {
 		return StringUtils.defaultString(stackTrace);
+	}
+
+	public Long getRelativeId() {
+		return relativeId;
 	}
 	
 }

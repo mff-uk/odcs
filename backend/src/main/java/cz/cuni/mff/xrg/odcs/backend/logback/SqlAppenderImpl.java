@@ -10,6 +10,7 @@ import ch.qos.logback.core.db.DriverManagerConnectionSource;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,6 +52,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	
 	@Autowired
 	private DataSource dataSource;
+	
+	@Autowired
+	private DbLogRead logRead;
 
 	/**
 	 * Source of database connection.
@@ -84,18 +88,23 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	private int maxMessageSize;
 	
 	/**
+	 * Used to hold last relative ID's for executions.
+	 */
+	private RelativeIdHolder relativeIdHolder;
+
+	/**
 	 * Return string that is used as insert query into logging table.
 	 *
 	 * @return SQL command used to the insert data to the database.
 	 */
 	private String getInsertSQL() {
 		return "INSERT INTO logging"
-				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace)"
-				+ " VALUES (?, ?, ? ,?, ?, ?, ?)";
+				+ " (logLevel, timestmp, logger, message, dpu, execution, stack_trace, relative_id)"
+				+ " VALUES (?, ?, ? ,?, ?, ?, ?, ?)";
 	}
 
 	/**
-	 * Return not null {@link Conenction}. If failed to get connection then
+	 * Return not null {@link Connection}. If failed to get connection then
 	 * continue to try until success.
 	 *
 	 * @return Connection to the database.
@@ -161,7 +170,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	@Async
 	@Scheduled(fixedDelay = 4300)
 	public synchronized void flush() {
-
+		
 		if (!supportsBatchUpdates) {
 			// no batches, the data are stored immediately
 			// we have nothing to do
@@ -245,7 +254,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		LOG.debug("flush() -> finished in: {} ms ", (new Date()).getTime() - start.getTime());
 	}
-
+	
 	/**
 	 * Do immediate write of given log into database. If the database is down
 	 * then the log is not saved.
@@ -268,12 +277,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
 			// inserting an event and getting the result must be exclusive
-			synchronized (this) {
-				// we can do more subAppend at time .. 
-				bindStatement(eventObject, stmt);
-				// execute ..
-				stmt.executeUpdate();
-			}
+			bindStatement(eventObject, stmt);
+			// execute ..
+			stmt.executeUpdate();
 			// we no longer need the insertStatement
 			stmt.close();
 			// commit command
@@ -295,19 +301,28 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		// get information about the source
 		supportsBatchUpdates = connectionSource.supportsBatchUpdates();
-
+		if (!supportsBatchUpdates) {
+			// log some warning
+			LOG.error("LoggingConnectionSource does not support batch updates. "
+					+ "This will have serious impact on performance of database and ODCS.");
+		}
+		
+		
 		started = true;
 		
 		// get configuration
 		try {
 			maxMessageSize = configuration.getInteger(ConfigProperty.EXECUTION_LOG_SIZE_MAX);
-			// add space for dots at the ned '...'
+			// add space for dots at the end '...'
 			maxMessageSize += 4;
 		} catch (RuntimeException ex) {
 			// use default
 			maxMessageSize = 0;
 			LOG.info("The log.messsage size is unlimited as the limit has not been set.");
 		}
+		
+		// prepare relative id holder
+		relativeIdHolder = new RelativeIdHolder(logRead);
 	}
 
 	@Override
@@ -331,13 +346,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * @param stmt
 	 * @throws Throwable
 	 */
-	protected void bindStatement(ILoggingEvent event,
+	protected synchronized void bindStatement(ILoggingEvent event,
 			PreparedStatement stmt) throws Throwable {
 
 		/* ! ! ! ! ! ! ! ! ! 
 		 * As the message and stackTrace are BLOBS interpreted as string they
 		 * must not be empty -> they have to be null or have some content
-		 *
 		 */
 		
 		// prepare the values
@@ -370,16 +384,18 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
 		try {
 			final String dpuString = mdc.get(Log.MDC_DPU_INSTANCE_KEY_NAME);
-			final int dpuId = Integer.parseInt(dpuString);
-			stmt.setInt(5, dpuId);
+			final long dpuId = Long.parseLong(dpuString);
+			stmt.setLong(5, dpuId);
 		} catch (NumberFormatException | SQLException ex) {
 			stmt.setNull(5, java.sql.Types.INTEGER);
 		}
 
 		try {
 			final String execString = mdc.get(Log.MDC_EXECUTION_KEY_NAME);
-			final int execId = Integer.parseInt(execString);
-			stmt.setInt(6, execId);
+			final long execId = Long.parseLong(execString);
+			stmt.setLong(6, execId);
+			// set relative id
+			stmt.setLong(8, relativeIdHolder.getNextId(execId));
 		} catch (NumberFormatException | SQLException ex) {
 			stmt.setNull(6, java.sql.Types.INTEGER);
 			LOG.error("Failed to set EXECUTION_KEY for log.", ex);
@@ -394,6 +410,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 		}
 
 		stmt.setString(7, stackTrace);
+		
 	}
 
 	/**
