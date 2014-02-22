@@ -57,7 +57,7 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	public String getColumnName(String id) {
 		switch (id) {
 			case "time":
-				return "Date";
+				return "Timestamp";
 			case "dpu":
 				return "DPU Instance";
 			case "shortMessage":

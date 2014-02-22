@@ -111,6 +111,8 @@ public class LogTable extends CustomComponent {
 				return dpuNames.get(dpuId);
 			}
 		});
+		table.setColumnWidth("timestamp", 115);
+		table.setColumnWidth("logLevel", 32);
 		table.setColumnAlignment("logLevel", CustomTable.Align.CENTER);
 		table.addGeneratedColumn("logLevel", new CustomTable.ColumnGenerator() {
 			@Override
