@@ -62,6 +62,8 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 				return "DPU Instance";
 			case "shortMessage":
 				return "Short message";
+			case "type":
+				return "type";
 			default:
 				return id;
 		}

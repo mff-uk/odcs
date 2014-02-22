@@ -205,6 +205,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setHeight("100%");
 		schedulerTable.setImmediate(true);
 		schedulerTable.setFilterBarVisible(true);
+		schedulerTable.setColumnCollapsingAllowed(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());

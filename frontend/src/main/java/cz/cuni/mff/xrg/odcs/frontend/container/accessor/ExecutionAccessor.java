@@ -57,23 +57,23 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 	public String getColumnName(String id) {
 		switch (id) {
 			case "id":
-				return "id";
+				return "Id";
 			case "start":
-				return "started";
+				return "Started";
 			case "pipeline.name":
-				return "pipeline";
+				return "Pipeline";
 			case "duration":
-				return "duration";
+				return "Duration";
 			case "owner.username":
-				return "executed by";
+				return "Executed by";
 			case "status":
-				return "status";
+				return "Status";
 			case "isDebugging":
-				return "debug";
+				return "Debug";
 			case "lastChange":
-				return "last modification";
+				return "Last modification";
 			case "schedule":
-				return "sch.";
+				return "Sch.";
 			default:
 				return null;
 		}
