@@ -54,6 +54,8 @@ INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration
       <namedGraphURI class="linked-list"/>
       <requestType>POST_URL_ENCODER</requestType>
     </endpointParams>
+    <useSplitConstruct>false</useSplitConstruct>
+    <splitConstructSize>50000</splitConstructSize>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
 </object-stream>',NULL,1,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
 

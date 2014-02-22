@@ -559,16 +559,20 @@ CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
 DROP TABLE IF EXISTS `logging`;
 CREATE TABLE `logging`
 (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+-- BEGIN MYSQL ONLY
+ `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
+-- END MYSQL ONLY
   `logLevel` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
   `message` TEXT,
   `dpu` INTEGER,
-  `execution` INTEGER,
+  `execution` INTEGER NOT NULL,
   `stack_trace` TEXT,
   PRIMARY KEY (id)
-);
+-- BEGIN MYSQL ONLY
+) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX `ix_LOGGING_dpu` ON `logging` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `logging` (`execution`);
