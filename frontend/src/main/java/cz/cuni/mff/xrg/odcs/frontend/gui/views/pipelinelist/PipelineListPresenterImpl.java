@@ -82,7 +82,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor);
+		cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
 
 		// prepare view
