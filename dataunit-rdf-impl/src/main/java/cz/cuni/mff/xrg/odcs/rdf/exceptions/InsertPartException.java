@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-
 /**
  * Exception is thrown when RDF data insert part for loading data to the SPARQL
  * have some invalid RDF triples.
