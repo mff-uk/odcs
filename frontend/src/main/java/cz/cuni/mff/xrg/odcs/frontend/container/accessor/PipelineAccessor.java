@@ -81,9 +81,9 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 	public String getColumnName(String id) {
 		switch (id) {
 			case "id":
-				return "id";
+				return "Id";
 			case "name":
-				return "name";
+				return "Name";
 			case "duration":
 				return "Last run time";
 			case "lastExecTime":

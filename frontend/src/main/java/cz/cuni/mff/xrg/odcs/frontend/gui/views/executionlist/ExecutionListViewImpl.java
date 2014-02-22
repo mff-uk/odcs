@@ -434,6 +434,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setWidth("100%");
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
+		executionTable.setColumnCollapsingAllowed(true);
 
 		executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
 		executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);

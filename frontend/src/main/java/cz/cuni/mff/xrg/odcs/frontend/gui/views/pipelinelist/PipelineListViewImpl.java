@@ -97,6 +97,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(utils.getPageLength());
+		tablePipelines.setColumnCollapsingAllowed(true);
 
 		// add column
 		tablePipelines.setImmediate(true);

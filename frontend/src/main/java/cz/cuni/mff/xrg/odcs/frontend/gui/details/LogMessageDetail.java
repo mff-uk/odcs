@@ -115,10 +115,10 @@ public class LogMessageDetail extends Window {
 				sb.append("<br/><br/>Stack trace:<br/>");
 				// just do replace in stack trace
 				final String stackTrace = 
-						log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
+						log.getStackTrace(); //.replace("<", "&lt;").replace("&", "&amp;");
 				sb.append(stackTrace);
 			}
-			fullMessageContent.setValue(sb.toString());
+			fullMessageContent.setValue(HtmlUtils.htmlEscape(sb.toString()));
 		}
 		fullMessageContent.setReadOnly(true);
 		
