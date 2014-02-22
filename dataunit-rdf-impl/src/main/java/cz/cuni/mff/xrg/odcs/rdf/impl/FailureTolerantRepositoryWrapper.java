@@ -162,9 +162,6 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 	 * Logic for deciding whether to continue db reconnect attempts. If we
 	 * decide to stop trying, exception is thrown.
 	 *
-	 * TODO create a handler interface and implementation and merge common logic
-	 * with PipelineFacade#handleRetries() in backend.
-	 *
 	 * @param attempts number of attempts so far
 	 * @param ex       exception to be thrown in case we give up
 	 */
