@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.TransactionException;
 
 /**
  * LOGIN screen of application.
@@ -131,7 +132,13 @@ public class Login extends ViewComponent {
 			error.setValue(String.format("Invalid credentials for username %s.", login.getValue()));
 			error.setVisible(true);
 			error.setSizeUndefined();
-		} 
+		} catch (TransactionException ex) {
+			password.setValue("");
+			LOG.error("SQL error.", ex);
+			error.setValue("Database error, check connection and configuration.");
+			error.setVisible(true);
+			error.setSizeUndefined();
+		}
     }
 
 	@Override
