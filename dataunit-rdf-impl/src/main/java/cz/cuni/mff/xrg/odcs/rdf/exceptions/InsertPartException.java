@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
 /**
  * Exception is thrown when RDF data insert part for loading data to the SPARQL
- * have some invalid RDF triples.
+ * endpoint have some invalid RDF triples.
  *
  * @author Jiri Tomes
  */
@@ -36,8 +36,8 @@ public class InsertPartException extends RDFException {
 	}
 
 	/**
-	 * Create new instance of {@link InsertPartException} with a
-	 * specific message and cause of throwing this exception.
+	 * Create new instance of {@link InsertPartException} with a specific
+	 * message and cause of throwing this exception.
 	 *
 	 * @param message String value of described message
 	 * @param cause   Cause of throwing exception

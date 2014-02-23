@@ -126,6 +126,7 @@ public class UsersList {
 		usersTable.setImmediate(true);
 		usersTable.setVisibleColumns((Object[]) visibleCols); // Set visible columns
 		usersTable.setColumnHeaders(headers);
+		usersTable.setColumnCollapsingAllowed(true);
 
 		//Actions column. Contains actions buttons: Debug data, Show log, Stop.
 		usersTable.addGeneratedColumn("actions",

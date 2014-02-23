@@ -820,6 +820,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				createActionColumn());
 
 		instancesTable.setVisibleColumns("actions", "name");
+		instancesTable.setColumnCollapsingAllowed(true);
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());

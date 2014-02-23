@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Responsible to extract RDF data from SPARQL endpoint. Need special for SPARQL
- * extractor DPU - separed implementation from {@link BaseRDFRepo}.
+ * Responsible for the RDF data extraction from SPARQL endpoint. Class contains
+ * special methods for SPARQL extractor DPU - separed implementation from
+ * {@link BaseRDFRepo}.
  *
  * @author Jiri Tomes
  */

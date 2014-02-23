@@ -480,7 +480,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value == null || value.equals("")) {
-					if (!getContext().isTemplate()){ 
+					if (!getContext().isTemplate()) {
 						ex = new InvalidValueException(
 								"SPARQL endpoint must be filled");
 						throw ex;
@@ -1083,8 +1083,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
-	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface.
+	 * Set values from dialog where the configuration object may be edited to
+	 * configuration object implementing {@link DPUConfigObject} interface.
 	 *
 	 * @throws ConfigException Exception which might be thrown when field
 	 *                         {@link #textFieldSparql} contains null value.
@@ -1138,9 +1138,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	}
 
 	/**
-	 * Load values from configuration object implementing {@link DPUConfigObject} interface
-	 * and configuring DPU into the dialog where the configuration object may be
-	 * edited.
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
 	 *

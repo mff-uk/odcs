@@ -895,6 +895,10 @@ public class PipelineEdit extends ViewComponent {
 	private void setupButtons() {
 		setupButtons(isModified());
 	}
+	
+	private void setupButtons(boolean isModified) {
+		setupButtons(isModified, this.pipeline.getId() == null);
+	}
 
 	private void savePipelineAsNew() {
 		if (!pipelineFacade.isUpToDate(pipeline)) {
@@ -936,11 +940,12 @@ public class PipelineEdit extends ViewComponent {
 		return true;
 	}
 
-	private void setupButtons(boolean enabled) {
+	private void setupButtons(boolean enabled, boolean isNew) {
 		buttonSave.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndClose.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("save"));
-		buttonCopy.setEnabled(hasPermission("copy"));
+		buttonCopy.setEnabled(!isNew && hasPermission("copy"));
+		buttonCopyAndClose.setEnabled(!isNew && hasPermission("copy"));
 	}
 
 	/**
