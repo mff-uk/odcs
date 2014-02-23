@@ -42,7 +42,7 @@ public class DPUInstanceWrap extends DPURecordWrap {
 	/**
 	 * Get DPUInstance record.
 	 *
-	 * @return
+	 * @return DPUInstance record
 	 */
 	public DPUInstanceRecord getDPUInstanceRecord() {
 		return dpuInstance;

@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.
- * 
+ *
  * @author Petyr
  *
  */
@@ -68,20 +68,7 @@ public class TestContext implements DPUContext {
 	 */
 	private File userDirectory = null;
 
-	public TestContext() { }
-	
-	/**
-	 * 
-	 * @param rootDirectory
-	 * @param lastExecution
-	 * @param jarPath
-	 * @deprecated use empty ctor and setters instead
-	 */
-	@Deprecated
-	public TestContext(File rootDirectory, Date lastExecution, String jarPath) {
-		this.rootDirectory = rootDirectory;
-		this.lastExecution = lastExecution;
-		this.jarPath = jarPath;
+	public TestContext() {
 	}
 
 	@Override
@@ -117,7 +104,8 @@ public class TestContext implements DPUContext {
 				publishedWarning = true;
 				break;
 			case TERMINATION_REQUEST:
-				LOG.info("DPU publish termination message short: '{}' long: '{}'",
+				LOG.info(
+						"DPU publish termination message short: '{}' long: '{}'",
 						shortMessage,
 						fullMessage);
 				break;
@@ -168,7 +156,8 @@ public class TestContext implements DPUContext {
 	@Override
 	public File getJarPath() {
 		if (jarPath == null) {
-			throw new RuntimeException("Jar-path has not been set! Use TestEnvironment.setJarPath");
+			throw new RuntimeException(
+					"Jar-path has not been set! Use TestEnvironment.setJarPath");
 		} else {
 			return new File(jarPath);
 		}
@@ -209,62 +198,70 @@ public class TestContext implements DPUContext {
 		return userDir;
 	}
 
+	/**
+	 *
+	 * @return True if the warning message has been sent via this context.
+	 */
 	public boolean isPublishedWarning() {
 		return publishedWarning;
 	}
 
+	/**
+	 *
+	 * @return True if the error message has been sent via this context.
+	 */
 	public boolean isPublishedError() {
 		return publishedError;
 	}
 
 	/**
-	 * @param workingDirectory the workingDirectory to set, use null to use
-	 * subdirectory in {@link #rootDirectory}
+	 * @param workingDirectory Working directory, use null to use
+	 *                         subdirectory in {@link #rootDirectory}.
 	 */
 	public void setWorkingDirectory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
 
 	/**
-	 * @param resultDirectory the resultDirectory to set, use null to use
-	 * subdirectory in {@link #rootDirectory}
+	 * @param resultDirectory Result directory, use null to use
+	 *                        subdirectory in {@link #rootDirectory}.
 	 */
 	public void setResultDirectory(File resultDirectory) {
 		this.resultDirectory = resultDirectory;
 	}
 
 	/**
-	 * @param globalDirectory the globalDirectory to set, use null to use
-	 * subdirectory in {@link #rootDirectory}
+	 * @param globalDirectory Global directory, use null to use
+	 *                        subdirectory in {@link #rootDirectory}.
 	 */
 	public void setGlobalDirectory(File globalDirectory) {
 		this.globalDirectory = globalDirectory;
 	}
 
 	/**
-	 * @param userDirectory the userDirectory to set, use null to use
-	 * subdirectory in {@link #rootDirectory}
+	 * @param userDirectory User directory, use null to use
+	 *                      subdirectory in {@link #rootDirectory}.
 	 */
 	public void setUserDirectory(File userDirectory) {
 		this.userDirectory = userDirectory;
 	}
 
 	/**
-	 * @param rootDirectory the rootDirectory to set
+	 * @param rootDirectory Root directory.
 	 */
 	public void setRootDirectory(File rootDirectory) {
 		this.rootDirectory = rootDirectory;
 	}
 
 	/**
-	 * @param lastExecution the lastExecution to set
+	 * @param lastExecution Date of last execution.
 	 */
 	public void setLastExecution(Date lastExecution) {
 		this.lastExecution = lastExecution;
 	}
 
 	/**
-	 * @param jarPath the jarPath to set
+	 * @param jarPath Path to the jar file.
 	 */
 	public void setJarPath(String jarPath) {
 		this.jarPath = jarPath;

@@ -6,28 +6,31 @@ import java.util.List;
 
 /**
  * Interface for access to {@link Pipeline}s.
- * 
+ *
  * @author Petyr
  * @author Jan Vojt
  */
 public interface DbPipeline extends DbAccess<Pipeline> {
-	
+
 	/**
-	 * @return all pipelines in DB
+	 *
+	 * @return List of all pipelines in DB.
 	 * @deprecated performance intensive for many pipelines
 	 */
 	@Deprecated
 	public List<Pipeline> getAll();
-	
+
 	/**
 	 * Fetches all pipelines using given DPU template.
-	 * 
-	 * @param dpu
-	 * @return list of pipelines
+	 *
+	 * @param dpu DPU template.
+	 * @return List of pipelines, that's contains instance of DPU of given
+	 *         template.
 	 */
 	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu);
-	
+
 	/**
+	 *
 	 * @param name pipeline name
 	 * @return pipeline with given name or null
 	 */

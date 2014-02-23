@@ -8,9 +8,9 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used 
+ * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
  * in {@link cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment}.
- * 
+ *
  * @author Petyr
  */
 public class DataUnitFactory {
@@ -25,6 +25,15 @@ public class DataUnitFactory {
 	 */
 	private final File workingDirectory;
 
+	/**
+	 * Create a {@link DataUnitFactory} that use given directory as working
+	 * directory.
+	 *
+	 * @param workingDirectory Directory where to create working subdirectories
+	 *                         for
+	 *                         {@link cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit}
+	 *                         that use local storage as RDF repository.
+	 */
 	public DataUnitFactory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
@@ -32,11 +41,12 @@ public class DataUnitFactory {
 	/**
 	 * Create RDF data unit.
 	 *
-	 * @param name
-	 * @param useVirtuoso
+	 * @param name Name of the DataUnit.
+	 * @param useVirtuoso False to use local repository, True to use Virtuoso.
 	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	public ManagableRdfDataUnit createRDFDataUnit(String name, boolean useVirtuoso) {
+	public ManagableRdfDataUnit createRDFDataUnit(String name,
+			boolean useVirtuoso) {
 		if (useVirtuoso) {
 			return createVirtuosoRDFDataUnit(name);
 		} else {
@@ -47,7 +57,7 @@ public class DataUnitFactory {
 	/**
 	 * Create RDF data unit with given name that is stored in local file.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @return New {@link ManagableRdfDataUnit}.
 	 */
 	private ManagableRdfDataUnit createLocalRDFDataUnit(String name) {
@@ -64,7 +74,7 @@ public class DataUnitFactory {
 	/**
 	 * Create RDF data unit with given name that is stored in virtuoso.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @return New {@link ManagableRdfDataUnit}.
 	 */
 	private ManagableRdfDataUnit createVirtuosoRDFDataUnit(String name) {

@@ -19,9 +19,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Represents a fixed workflow composed of one or several extractor,
- * transformer and loader modules ({@link DPUInstanceRecord}s) organized in
- * acyclic graph.
+ * Represents a fixed workflow composed of one or several extractor, transformer
+ * and loader modules ({@link DPUInstanceRecord}s) organized in acyclic graph.
  *
  * @author Jiri Tomes
  * @author Jan Vojt
@@ -34,7 +33,8 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	/**
 	 * Unique ID for each pipeline
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
 	@SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
 	private Long id;
 
@@ -52,7 +52,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
 	private PipelineGraph graph = new PipelineGraph();
-	
+
 	/**
 	 * User who created and owns this pipeline.
 	 */
@@ -72,25 +72,28 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	 */
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "ppl_ppl_conflicts",
-			joinColumns = @JoinColumn(name = "pipeline_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "pipeline_conflict_id", referencedColumnName = "id"))
+			joinColumns =
+			@JoinColumn(name = "pipeline_id", referencedColumnName = "id"),
+			inverseJoinColumns =
+			@JoinColumn(name = "pipeline_conflict_id", referencedColumnName = "id"))
 	private Set<Pipeline> conflicts = new HashSet<>();
-	
+
 	/**
 	 * Timestamp when was the last time someone made changes to this pipeline.
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "last_change")
 	private Date lastChange;
-	
+
 	/**
 	 * Default constructor for JPA
 	 */
-	public Pipeline() {}
+	public Pipeline() {
+	}
 
 	/**
 	 * Copy constructor. Creates a deep copy of given pipeline.
-	 * 
+	 *
 	 * @param pipeline to copy
 	 */
 	@SuppressWarnings("LeakingThisInConstructor")
@@ -107,79 +110,154 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	/**
 	 * Constructor with given pipeline name and description.
 	 *
-	 * @param name
-	 * @param description
+	 * @param name        Name of pipeline
+	 * @param description String value of pipeline description
 	 */
 	public Pipeline(String name, String description) {
 		this();
 		this.name = name;
 		this.description = description;
 	}
-	
+
+	/**
+	 * Returns the name of the pipeline.
+	 *
+	 * @return the name of the pipeline.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Set new name to the pipeline.
+	 *
+	 * @param newName String value of new name of pipeline.
+	 */
 	public void setName(String newName) {
-		this.name = StringUtils.abbreviate(newName, LenghtLimits.PIPELINE_NAME.limit());
+		this.name = StringUtils.abbreviate(newName, LenghtLimits.PIPELINE_NAME
+				.limit());
 	}
 
+	/**
+	 * Returns the pipeline description.
+	 *
+	 * @return the value of the pipeline description.
+	 */
 	public String getDescription() {
 		return StringUtils.defaultString(description);
 	}
 
+	/**
+	 * Set new value of the pipeline description.
+	 *
+	 * @param newDescription new value of the pipeline description.
+	 */
 	public void setDescription(String newDescription) {
 		this.description = newDescription;
 	}
 
+	/**
+	 * Returns the instance of {@link PipelineGraph} for this pipeline.
+	 *
+	 * @return the instance of {@link PipelineGraph} for this pipeline.
+	 */
 	public PipelineGraph getGraph() {
 		return graph;
 	}
 
+	/**
+	 * Set new value of {@link PipelineGraph} to this pipeline.
+	 *
+	 * @param graph instance of {@link PipelineGraph} will be set to this
+	 *              pipeline.
+	 */
 	public void setGraph(PipelineGraph graph) {
 		this.graph = graph;
 		graph.setPipeline(this);
 	}
 
+	/**
+	 * Returns the set ID of this pipeline as {@link Long} value.
+	 *
+	 * @return the set ID of this pipeline as {@link Long} value.
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
-	
+
+	/**
+	 * Set new value of pipeline owner.
+	 *
+	 * @param owner instance of {@link User} as new pipeline owner.
+	 */
 	public void setUser(User owner) {
 		this.owner = owner;
 	}
 
+	/**
+	 * Return the instance of {@link User} as owner of this pipeline.
+	 *
+	 * @return the owner of this pipeline.
+	 */
 	@Override
 	public User getOwner() {
 		return owner;
 	}
 
+	/**
+	 * Returns the set of pipeline conflicts.
+	 *
+	 * @return the set of pipeline conflicts.
+	 */
 	public Set<Pipeline> getConflicts() {
 		return conflicts;
-	}	
+	}
 
+	/**
+	 * Returns the pipeline visibility as one of {@link ShareType} values set
+	 * for this pipeline.
+	 *
+	 * @return the pipeline visibility as one of {@link ShareType} values set
+	 *         for this pipeline.
+	 */
 	@Override
 	public ShareType getShareType() {
 		return shareType;
 	}
 
+	/**
+	 * Set the pipeline visibity as one of {@link ShareType} values.
+	 *
+	 * @param visibility set new value of pipeline visibility
+	 */
 	public void setVisibility(ShareType visibility) {
 		this.shareType = visibility;
 	}
 
+	/**
+	 * Returns the {@link Date} instance where the pipeline was last changed.
+	 *
+	 * @return {@link Date} where the pipeline was last changed.
+	 */
 	public Date getLastChange() {
 		return lastChange;
 	}
 
+	/**
+	 * Set the {@link Date} instance where the pipeline was last changed to this
+	 * pipeline.
+	 *
+	 * @param lastChange value of {@link Date} that will be set.
+	 */
 	public void setLastChange(Date lastChange) {
 		this.lastChange = lastChange;
 	}
-	
+
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-	 * 
-	 * @return hashcode
+	 *
+	 * @return The value of hashcode.
 	 */
 	@Override
 	public int hashCode() {
@@ -193,27 +271,27 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
 	/**
 	 * Returns true if two objects represent the same pipeline. This holds if
-	 * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-	 * 
+	 * and only if
+	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 *
 	 * @param o
 	 * @return true if both objects represent the same pipeline
 	 */
 	@Override
 	public boolean equals(Object o) {
-		
+
 		if (o == null) {
 			return false;
 		}
 		if (getClass() != o.getClass()) {
 			return false;
 		}
-		
+
 		final Pipeline other = (Pipeline) o;
 		if (this.id == null) {
 			return super.equals(other);
 		}
-		
+
 		return Objects.equals(this.id, other.id);
 	}
-	
 }

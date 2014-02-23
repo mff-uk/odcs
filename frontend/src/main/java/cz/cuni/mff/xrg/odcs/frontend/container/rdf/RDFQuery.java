@@ -229,7 +229,7 @@ public class RDFQuery implements Query {
 
 	/**
 	 * Override from {@link Query}. Not applicable for our use.
-	 * @return
+	 * @return not supported
 	 */
 	@Override
 	public boolean deleteAllItems() {
@@ -239,7 +239,7 @@ public class RDFQuery implements Query {
 
 	/**
 	 * Override from {@link Query}. Not applicable for our use.
-	 * @return
+	 * @return not supported
 	 */
 	@Override
 	public Item constructItem() {

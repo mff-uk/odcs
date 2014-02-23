@@ -214,7 +214,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	 * Create and return {@link ActionColumnGenerator}.
 	 *
 	 * @param presenter
-	 * @return
+	 * @return {@link ActionColumnGenerator}
 	 */
 	private ActionColumnGenerator createColumnGenerator(final ExecutionListPresenter presenter) {
 		ActionColumnGenerator generator = new ActionColumnGenerator();

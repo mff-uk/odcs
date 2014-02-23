@@ -60,10 +60,9 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
 	/**
 	 * Create root handler for given directory. The given directory should be
-	 * empty.
-	 * The name of such directory is en empty string.
+	 * empty. The name of such directory is en empty string.
 	 *
-	 * @param directory
+	 * @param directory Root directory.
 	 */
 	public DirectoryHandlerImpl(File directory) {
 		this.name = "";
@@ -81,10 +80,10 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * Create new handler for existing directory. Also scan and add it's content
 	 * recursively.
 	 *
-	 * @param directory
-	 * @param parent
-	 * @param name
-	 * @param isLink
+	 * @param directory Directory to use in {@link DirectoryHandler}.
+	 * @param parent    Parent {@link DirectoryHandler}.
+	 * @param name      Name of the {@DirectoryHandler}, should be same as the name directory.
+	 * @param isLink    True if asLink.
 	 */
 	private DirectoryHandlerImpl(File directory, DirectoryHandler parent,
 			String name, boolean isLink) {

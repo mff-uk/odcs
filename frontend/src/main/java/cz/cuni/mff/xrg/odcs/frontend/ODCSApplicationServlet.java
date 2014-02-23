@@ -22,8 +22,8 @@ import ru.xpoft.vaadin.SpringVaadinServlet;
 /**
  * Customized servlet implementation to provide access to original
  * {@link HttpServletRequest} across application.
- *
- * @see {@link RequestHolder}
+ * 
+ * @see RequestHolder
  * @author Jan Vojt
  */
 public class ODCSApplicationServlet extends SpringVaadinServlet {
@@ -31,7 +31,7 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 	private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
 	/**
-	 * Create {link VaadinServletService} from supplied {@link DeploymentConfiguration}.
+	 * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
 	 * 
 	 * @param deploymentConfiguration Deployment configuration.
 	 * @return Vaadin servlet service.

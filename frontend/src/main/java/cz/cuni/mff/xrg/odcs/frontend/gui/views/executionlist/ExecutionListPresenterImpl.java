@@ -200,7 +200,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	 * Get light copy of execution.
 	 *
 	 * @param executionId
-	 * @return
+	 * @return light copy of execution
 	 */
 	private PipelineExecution getLightExecution(long executionId) {
 		return pipelineFacade.getExecution(executionId);

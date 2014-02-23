@@ -833,7 +833,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	/**
 	 * Validate DPU detail.
 	 *
-	 * @return
+	 * @return If DPU detail is valid
 	 */
 	public boolean validate() {
 		try {

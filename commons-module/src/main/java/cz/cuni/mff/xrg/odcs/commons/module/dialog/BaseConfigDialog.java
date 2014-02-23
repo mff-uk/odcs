@@ -38,6 +38,11 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 */
 	private ConfigDialogContext context;
 	
+	/**
+	 * Initialize {@link BaseConfigDialog} for given configuration class.
+	 * 
+	 * @param configClass Configuration class.
+	 */
 	public BaseConfigDialog(Class<C> configClass) {
 		this.configWrap = new ConfigWrap<>(configClass);
 		this.lastSetConfig = null;
@@ -162,7 +167,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 	 * Get configuration from dialog. In case of presence invalid configuration
 	 * in dialog throw ConfigException.
 	 * 
-	 * @return getConfiguration object.
+	 * @return Configuration object.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
 	protected abstract C getConfiguration() throws ConfigException;

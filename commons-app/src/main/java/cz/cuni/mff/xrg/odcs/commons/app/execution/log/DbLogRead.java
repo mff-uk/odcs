@@ -13,7 +13,8 @@ public interface DbLogRead extends DbAccessRead<Log> {
 	
 	/**
 	 * Delete all logs that are older then given date.
-	 * @param date 
+	 * 
+	 * @param date  Date threshold.
 	 */
 	void prune(Date date);
 
@@ -21,7 +22,7 @@ public interface DbLogRead extends DbAccessRead<Log> {
 	 * Retrieve the highest relative log index for given execution. If there are
 	 * no logs for given execution then return null.
 	 * 
-	 * @param executionId
+	 * @param executionId Execution id.
 	 * @return Can be null.
 	 */
 	Long getLastRelativeIndex(Long executionId);

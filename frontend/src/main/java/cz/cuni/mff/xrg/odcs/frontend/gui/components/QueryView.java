@@ -62,7 +62,7 @@ public abstract class QueryView extends CustomComponent {
 	/**
 	 * Get execution info.
 	 *
-	 * @return
+	 * @return execution info
 	 */
 	protected ExecutionInfo getExecutionInfo() {
 		return executionInfo;
@@ -71,7 +71,7 @@ public abstract class QueryView extends CustomComponent {
 	/**
 	 * Get data unit info.
 	 *
-	 * @return
+	 * @return data unit info
 	 */
 	protected DataUnitInfo getDataUnitInfo() {
 		return dataUnitInfo;
@@ -80,7 +80,7 @@ public abstract class QueryView extends CustomComponent {
 	/**
 	 * Get selected DPU.
 	 *
-	 * @return
+	 * @return selected DPU
 	 */
 	protected DPUInstanceRecord getSelectedDpu() {
 		return selectedDpu;

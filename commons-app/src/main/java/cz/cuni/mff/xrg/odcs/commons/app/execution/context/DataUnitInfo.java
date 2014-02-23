@@ -80,18 +80,30 @@ public class DataUnitInfo implements DataObject {
 		return index;
 	}
 
+	/**
+	 * 
+	 * @return DataUnit's name.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return DateUnit'stype.
+	 */
 	public DataUnitType getType() {
 		return type;
 	}
 
+	/**
+	 * 
+	 * @return True it represented DataUnit is used as an input.
+	 */
 	public boolean isInput() {
 		return isInput;
 	}
-        
+       
     @Override
     public String toString() {
         return name;

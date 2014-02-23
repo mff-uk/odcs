@@ -1209,6 +1209,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of SPARQL loader as string.
+	 *
+	 * @return desription of SPARQL loader as string.
+	 */
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();

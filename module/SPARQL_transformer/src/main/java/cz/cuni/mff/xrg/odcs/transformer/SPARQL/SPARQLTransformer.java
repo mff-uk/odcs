@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * SPARQL Transformer.
  *
  * @author Jiri Tomes
  * @author Petyr
@@ -37,19 +38,34 @@ public class SPARQLTransformer
 
 	public static final String[] DPUNames = {"input", "optional1", "optional2", "optional3"};
 
+	/**
+	 * The repository input for SPARQL transformer.
+	 */
 	@InputDataUnit(name = "input")
 	public RDFDataUnit intputDataUnit;
 
-	//two other optional inputs, which may be used in the queries
+	//three other optional inputs, which may be used in the queries
+	/**
+	 * The first repository optional input for SPARQL transformer.
+	 */
 	@InputDataUnit(name = "optional1", optional = true)
 	public RDFDataUnit intputOptional1;
 
+	/**
+	 * The second repository optional input for SPARQL transformer.
+	 */
 	@InputDataUnit(name = "optional2", optional = true)
 	public RDFDataUnit intputOptional2;
 
+	/**
+	 * The third repository optional input for SPARQL transformer.
+	 */
 	@InputDataUnit(name = "optional3", optional = true)
 	public RDFDataUnit intputOptional3;
 
+	/**
+	 * The repository output for SPARQL transformer.
+	 */
 	@OutputDataUnit
 	public RDFDataUnit outputDataUnit;
 
@@ -87,6 +103,13 @@ public class SPARQLTransformer
 		}
 	}
 
+	/**
+	 * Execute the SPARQL transformer.
+	 *
+	 * @param context SPARQL transformer context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException, DataUnitException {
@@ -215,6 +238,11 @@ public class SPARQLTransformer
 		}
 	}
 
+	/**
+	 * Returns the configuration dialogue for SPARQL transformer.
+	 *
+	 * @return the configuration dialogue for SPARQL transformer.
+	 */
 	@Override
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();

@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
+import static cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource.Filterable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -124,7 +125,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	/**
 	 * Return new default instance of variable.
 	 *
-	 * @return
+	 * @return new default instance of variable
 	 */
 	private T getDefault() {
 		try {
@@ -178,7 +179,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 *
 	 * @param startIndex
 	 * @param numberOfItems
-	 * @return
+	 * @return data on given indexes
 	 */
 	List<T> loadByIndex(int startIndex, int numberOfItems) {
 		applyFilters();
@@ -286,7 +287,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * core filters are not modifiable by using other {@link DbCachedSource}
 	 * methods.
 	 *
-	 * @return
+	 * @return list of used core filters
 	 */
 	public List<Filter> getFiltersCore() {
 		return coreFilters;

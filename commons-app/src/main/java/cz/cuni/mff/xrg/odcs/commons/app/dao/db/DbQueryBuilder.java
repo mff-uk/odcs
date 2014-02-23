@@ -22,14 +22,14 @@ public interface DbQueryBuilder<T extends DataObject>
 	 * <b>The given property name must be name of direct non-trivial property of
 	 * main class {@code T}. </b>
 	 * 
-	 * @param propertyName 
+	 * @param propertyName Name of property to fetch.
 	 */
 	void addFetch(String propertyName);
 	
 	/**
 	 * Remove given property from fetch list.
 	 * 
-	 * @param propertyName 
+	 * @param propertyName Name of property to remove from fetch list.
 	 */
 	void removeFetch(String propertyName);
 	

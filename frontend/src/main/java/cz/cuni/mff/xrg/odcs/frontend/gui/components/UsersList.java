@@ -55,7 +55,7 @@ public class UsersList {
 	/**
 	 * Builds users list layout.
 	 *
-	 * @return
+	 * @return built users list layout
 	 */
 	public VerticalLayout buildUsersListLayout() {
 

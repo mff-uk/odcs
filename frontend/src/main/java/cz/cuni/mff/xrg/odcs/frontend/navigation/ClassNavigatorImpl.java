@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
  *
  * The navigator also cooperate with spring and do autodiscovery for beans that
  * implements {@link View} or {@link Presenter} and add them as views. The
- * views, that are obtained from spring, must have {@link Adress} annotation.
+ * views, that are obtained from spring, must have {@link Address} annotation.
  *
  * @author Petyr
  */

@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.rdf.validator;
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
+ * RDF Data validator configuration.
+ *
  * @author Jiri Tomes
  */
 public class RDFDataValidatorConfig extends DPUConfigObjectBase {
@@ -21,14 +23,33 @@ public class RDFDataValidatorConfig extends DPUConfigObjectBase {
 		this.sometimesOutput = sometimesOutput;
 	}
 
+	/**
+	 * Returns true, if report output should be created only if some invalid
+	 * data are found, false otherwise.
+	 *
+	 * @return true if validator should stop when some invalid data are found,
+	 *         false otherwise.
+	 */
 	public boolean canStopExecution() {
 		return stopExecution;
 	}
 
+	/**
+	 * Returns true, if report output should be created only if some invalid
+	 * data are found, false otherwise.
+	 *
+	 * @return true, if report output should be created only if some invalid
+	 *         data are found, false otherwise.
+	 */
 	public boolean hasSometimesOutput() {
 		return sometimesOutput;
 	}
-	
+
+	/**
+	 * Returns true, if DPU configuration is valid, false otherwise.
+	 *
+	 * @return true, if DPU configuration is valid, false otherwise.
+	 */
 	@Override
 	public boolean isValid() {
 		return true;

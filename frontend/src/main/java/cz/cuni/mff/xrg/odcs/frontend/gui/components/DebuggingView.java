@@ -164,7 +164,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Is debugging view initialized.
 	 *
-	 * @return
+	 * @return If debugging view is initialized
 	 */
 	public boolean isInitialized() {
 		return isInitialized;
@@ -382,7 +382,7 @@ public class DebuggingView extends CustomComponent {
 	/**
 	 * Return true if the content is automatically refreshed.
 	 *
-	 * @return
+	 * @return true if the content is automatically refreshed
 	 */
 	public boolean isRefreshingAutomatically() {
 		return refreshAutomatically.getValue();

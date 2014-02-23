@@ -14,6 +14,7 @@ public class FileDataUnitFactory {
 	}
 
 	/**
+	 * Create instance of ManageableFileDataUnit.
 	 * @param name Name for newly created .
 	 * @param directory Directory where the working data can be stored.
 	 * @return New instance of {@link ManageableFileDataUnit}.
