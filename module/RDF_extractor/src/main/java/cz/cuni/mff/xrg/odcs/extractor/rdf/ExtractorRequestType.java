@@ -8,7 +8,16 @@ package cz.cuni.mff.xrg.odcs.extractor.rdf;
  */
 public enum ExtractorRequestType {
 
+	/**
+	 * Use GET method and URL encoder.
+	 */
 	GET_URL_ENCODER,
+	/**
+	 * Use POST method and URL encoder.
+	 */
 	POST_URL_ENCODER,
+	/**
+	 * Use POST method and unecoded query.
+	 */
 	POST_UNENCODED_QUERY;
 }

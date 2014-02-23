@@ -90,19 +90,19 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 	}
 
 	/**
-	 * Returns true, if use only for data extraction onlz files with defined
-	 * suffix, false otherwise.
+	 * Returns true, if only files with defined suffix are used for data
+	 * extraction, false otherwise.
 	 *
-	 * @return true, if use only for data extraction onlz files with defined
-	 *         suffix, false otherwise.
+	 * @return true, if only files with defined suffix are used for data
+	 *         extraction, false otherwise.
 	 */
 	public boolean useOnlyThisSuffix() {
 		return OnlyThisSuffix;
 	}
 
 	/**
-	 * Returns true, if use only for data extraction onlz files with defined
-	 * suffix, false otherwise.
+	 * Returns true, if is used statistical handler for data extraction, false
+	 * otherwise.
 	 *
 	 * @return true, if is used statistical handler for data extraction, false
 	 *         otherwise.
@@ -112,10 +112,10 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 	}
 
 	/**
-	 * Returns true, if execution should stop when some errors are detected,
+	 * Returns true, if execution should fail when some errors are detected,
 	 * false otherwise.
 	 *
-	 * @return true, if execution should stop when some errors are detected,
+	 * @return true, if execution should fail when some errors are detected,
 	 *         false otherwise.
 	 */
 	public boolean isFailWhenErrors() {
