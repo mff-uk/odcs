@@ -35,7 +35,7 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
 		DbQueryBuilder<Log> builder = super.createQueryBuilder();
 
 		builder.addFilter(Compare.equal("execution", executionId));
-		builder.sort("relativeId", false);
+		builder.sort("id", false);
 
 		Log lastLog = execute(builder.getQuery().limit(0, 1));
 		return lastLog == null ? null : lastLog.getRelativeId();
