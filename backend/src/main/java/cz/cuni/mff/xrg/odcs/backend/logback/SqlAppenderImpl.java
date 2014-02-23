@@ -136,7 +136,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 	 * @param logs
 	 * @return True only if all logs has been saved into database.
 	 */
-	private boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
+	private synchronized boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
 		LOG.trace("flushIntoDatabase called for {} logs", logs.size());
 		try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
 			// append all logs
@@ -150,6 +150,11 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			connection.commit();
 		} catch (BatchUpdateException sqle) {
 			LOG.error("Failed to save logs into database. Given logs will not be saved.", sqle);
+			// also reset the counter, as it may count logs that are not in 
+			// database .. this will force some queris into database
+			// but as we do not know which logs passed and which not we 
+			// have to do this
+			relativeIdHolder.resetIdCounters();
 			return true;
 		} catch (Throwable sqle) {
 			// we failed, try it again .. later
