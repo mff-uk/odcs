@@ -26,7 +26,7 @@ public class OpenLogsEvent extends Event {
 	/**
 	 * Get Id of DPU which logs should be opened.
 	 *
-	 * @return
+	 * @return Id of DPU which logs should be opened
 	 */
 	public Long getDpuId() {
 		return dpuId;

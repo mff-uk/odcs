@@ -28,7 +28,7 @@ public class GraphChangedEvent extends Event {
 	/**
 	 * If the change is undo able.
 	 *
-	 * @return
+	 * @return If the change is undo able
 	 */
 	public boolean isUndoable() {
 		return isUndo;

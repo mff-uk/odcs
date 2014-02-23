@@ -87,7 +87,7 @@ public interface PipelineListPresenter extends Presenter {
 		 * Generate view, that interact with given presenter.
 		 *
 		 * @param presenter
-		 * @return
+		 * @return view
 		 */
 		public Object enter(final PipelineListPresenter presenter);
 

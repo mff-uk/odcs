@@ -67,7 +67,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 		 * Get the information of type U from object.
 		 *
 		 * @param object
-		 * @return
+		 * @return information of type U from object
 		 */
 		public abstract U get(T object);
 

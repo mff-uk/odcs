@@ -70,7 +70,7 @@ class DPURecordWrap {
 	 * Return configuration dialog for wrapped DPU. The configuration is not
 	 * set. To set dialog configuration call {@link #configuredDialog}
 	 *
-	 * @return
+	 * @return configuration dialog for wrapped DPU
 	 * @throws ModuleException
 	 * @throws FileNotFoundException
 	 */

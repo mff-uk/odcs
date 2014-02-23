@@ -2,13 +2,10 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -18,8 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Builds layout with GUI components for settings notifications about scheduled
- * events and their runs. Used in User Settings dialog {@link UserSettings} and
- * in Schedule a pipeline dialog {@link SchedulePipeline}
+ * events and their runs. Used in User Settings dialog and in Schedule a
+ * pipeline dialog.
  *
  * @author Maria Kukhar
  *
@@ -43,7 +40,7 @@ public class EmailNotifications {
 	/**
 	 * Build layout.
 	 *
-	 * @return
+	 * @return built layout
 	 */
 	public VerticalLayout buildEmailNotificationsLayout() {
 
@@ -51,7 +48,6 @@ public class EmailNotifications {
 		emailNotificationsLayout.setMargin(true);
 		emailNotificationsLayout.setSpacing(true);
 		emailNotificationsLayout.setImmediate(true);
-
 
 		GridLayout notifycationLayout = new GridLayout(2, 2);
 		notifycationLayout.setSpacing(true);
@@ -67,15 +63,15 @@ public class EmailNotifications {
 		successfulExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report (default)");
 		successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
 
-
 		successfulExec.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if(parentComponentUs!=null && parentComponentUs.buttonNotificationBar!=null)	
+				if (parentComponentUs != null && parentComponentUs.buttonNotificationBar != null) {
 					parentComponentUs.buttonNotificationBar.setEnabled(true);
-				
+				}
+
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)) {
 					noSuccessful = 1;
 					if ((noError == 1) && (noSuccessful == 1)) {
@@ -119,9 +115,10 @@ public class EmailNotifications {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if(parentComponentUs!=null && parentComponentUs.buttonNotificationBar!=null)	
+				if (parentComponentUs != null && parentComponentUs.buttonNotificationBar != null) {
 					parentComponentUs.buttonNotificationBar.setEnabled(true);
-				
+				}
+
 				if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)) {
 					noError = 1;
 
@@ -147,7 +144,6 @@ public class EmailNotifications {
 
 		notifycationLayout.addComponent(errorExec, 1, 1);
 		emailNotificationsLayout.addComponent(notifycationLayout);
-		
 
 		return emailNotificationsLayout;
 	}
@@ -208,7 +204,7 @@ public class EmailNotifications {
 		}
 
 	}
-	
+
 	/**
 	 * Get default notification record for schedules.
 	 */
@@ -218,7 +214,6 @@ public class EmailNotifications {
 		successfulExec.setValue(NotificationRecordType.DAILY);
 
 	}
-
 
 	/**
 	 * Disable components.

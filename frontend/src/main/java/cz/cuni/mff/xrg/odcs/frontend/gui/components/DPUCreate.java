@@ -40,9 +40,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Dialog for the DPU template creation. Called from the {@link #DPU}. Allows to
- * upload a JAR file and on base of it create a new DPU template that will be
- * stored to the DPU template tree.
+ * Dialog for the DPU template creation. Allows to upload a JAR file and on base
+ * of it create a new DPU template that will be stored to the DPU template tree.
  *
  * @author Maria Kukhar
  *
@@ -106,7 +105,6 @@ public class DPUCreate extends Window {
 		this.setResizable(false);
 		this.setModal(true);
 		this.setCaption("DPU Template Creation");
-
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -363,9 +361,7 @@ public class DPUCreate extends Window {
 
 		uploadFileLayout.addComponent(uploadFile);
 
-
 		return uploadFileLayout;
-
 
 	}
 

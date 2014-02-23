@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
- * and buttons for add and remove this text fields. Used in {@link UserSettings}
+ * and buttons for add and remove this text fields. Used in {@link Settings}
  * and {@link EmailNotifications}
  *
  * @author Maria Kukhar
@@ -58,7 +58,7 @@ public class EmailComponent {
 	/**
 	 * Initializes E-mail notification component.
 	 *
-	 * @return
+	 * @return Initialized E-mail notification component
 	 */
 	public GridLayout initializeEmailList() {
 

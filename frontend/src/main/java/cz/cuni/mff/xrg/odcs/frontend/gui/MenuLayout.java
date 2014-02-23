@@ -147,7 +147,7 @@ public class MenuLayout extends CustomComponent {
 	/**
 	 * Return layout for application views.
 	 *
-	 * @return
+	 * @return layout for application views
 	 */
 	public Panel getViewLayout() {
 		return this.viewLayout;

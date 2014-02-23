@@ -278,7 +278,7 @@ public class LogTable extends CustomComponent {
 	 * Reload data from source, do not refresh the source it self!!
 	 *
 	 * @param exec
-	 * @return
+	 * @return If data were refreshed
 	 */
 	public boolean refresh(PipelineExecution exec) {
 		this.execution = exec;

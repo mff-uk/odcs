@@ -333,7 +333,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get main layout.
-	 * @return 
+	 * @return Main layout.
 	 */
 	public MenuLayout getMain() {
 		return main;

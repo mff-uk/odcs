@@ -341,7 +341,7 @@ public class DPUDetail extends Window {
 	/**
 	 * Get result.
 	 *
-	 * @return
+	 * @return result
 	 */
 	public boolean getResult() {
 		return result;
