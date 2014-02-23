@@ -13,15 +13,32 @@ public class SPARQLQueryPair {
 
 	private boolean isConstructType;
 
+	/**
+	 * Create new instance of {@link SPARQLQueryPair}.
+	 *
+	 * @param SPARQLQuery     SPARQL query value as string
+	 * @param isConstructType boolean value, if SPARQL query is construct or
+	 *                        not.
+	 */
 	public SPARQLQueryPair(String SPARQLQuery, boolean isConstructType) {
 		this.SPARQLQuery = SPARQLQuery;
 		this.isConstructType = isConstructType;
 	}
 
+	/**
+	 * Returns SPARQL query value as string.
+	 *
+	 * @return SPARQL query.
+	 */
 	public String getSPARQLQuery() {
 		return SPARQLQuery;
 	}
 
+	/**
+	 * Returns collection of {@link SPARQLQueryPair} instance.
+	 *
+	 * @return true, if SPARQL query is construct, false otherwise.
+	 */
 	public boolean isConstructType() {
 		return isConstructType;
 	}
