@@ -14,7 +14,7 @@ import java.util.Objects;
 
 /**
  * Information about executed pipeline and its states.
- * 
+ *
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Petyr
@@ -122,8 +122,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 	 * Constructor. Create pipeline which will be run as soon as possible in
 	 * non-debug mode. The pipeline execution will not run other pipelines based
 	 * on scheduling rules.
-	 * 
-	 * @param pipeline
+	 *
+	 * @param pipeline the pipeline for pipeline execution.
 	 */
 	public PipelineExecution(Pipeline pipeline) {
 		this.status = PipelineExecutionStatus.QUEUED;
@@ -138,110 +138,232 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 		this.context = new ExecutionContextInfo(this);
 	}
 
+	/**
+	 * Returns the set ID of this pipeline execution as {@link Long} value.
+	 *
+	 * @return the set ID of this pipeline execution as {@link Long} value.
+	 */
 	@Override
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Returns the actual status for executed pipeline.
+	 *
+	 * @return The actual status for executed pipeline.
+	 */
 	public PipelineExecutionStatus getStatus() {
 		return status;
 	}
 
+	/**
+	 * Set new status for executed pipeline.
+	 *
+	 * @param newStatus new value of {@link PipelineExecutionStatus}
+	 */
 	public void setStatus(PipelineExecutionStatus newStatus) {
 		status = newStatus;
 	}
 
+	/**
+	 * Returns the executed pipeline.
+	 *
+	 * @return the executed pipeline
+	 */
 	public Pipeline getPipeline() {
 		return pipeline;
 	}
 
+	/**
+	 * Set new value of executed pipeline.
+	 *
+	 * @param pipeline the new executed pipeline
+	 */
 	public void setPipeline(Pipeline pipeline) {
 		this.pipeline = pipeline;
 	}
 
+	/**
+	 * Returns true, if pipeline run in debug mode, false otherwise.
+	 *
+	 * @return true, if pipeline run in debug mode, false otherwise.
+	 */
 	public boolean isDebugging() {
 		return isDebugging;
 	}
 
-	public boolean getIsDebugging() {
-		return isDebugging;
-	}
-
+	/**
+	 * Set if pipeline will be run in debug mode or not.
+	 *
+	 * @param isDebugging boolean value to set debug mode fot the pipeline
+	 *                    execution.
+	 */
 	public void setDebugging(boolean isDebugging) {
 		this.isDebugging = isDebugging;
 	}
 
+	/**
+	 * Returns the timestamp when this execution started, or null.
+	 *
+	 * @return The timestamp when this execution started, or null.
+	 */
 	public Date getStart() {
 		return start;
 	}
 
+	/**
+	 * Set the instance of {@link Date} as the value when the pipeline execution
+	 * started.
+	 *
+	 * @param start the timestamp as value when the pipeline execution started.
+	 */
 	public void setStart(Date start) {
 		this.start = start;
 	}
 
+	/**
+	 * Returns the timestamp when this execution ends, or null.
+	 *
+	 * @return The timestamp when this execution ends, or null.
+	 */
 	public Date getEnd() {
 		return end;
 	}
 
+	/**
+	 * Set the instance of {@link Date} as the value when the pipeline execution
+	 * ends.
+	 *
+	 * @param end the timestamp as value when the pipeline execution ends.
+	 */
 	public void setEnd(Date end) {
 		this.end = end;
 	}
 
 	/**
 	 * Use to gain read only access to the context.
-	 * 
+	 *
 	 * @return Context or null.
 	 */
 	public ExecutionContextInfo getContextReadOnly() {
 		return context;
 	}
 
+	/**
+	 * Returns the execution context or null.
+	 *
+	 * @return the execution context or null.
+	 */
 	public ExecutionContextInfo getContext() {
 		return context;
 	}
 
+	/**
+	 * Returns schedule that planned this execution. Null for execution created
+	 * by user.
+	 *
+	 * @return Schedule that planned this execution. Null for execution created
+	 *         by user.
+	 */
 	public Schedule getSchedule() {
 		return schedule;
 	}
 
+	/**
+	 * Set the schedule that planned this execution. Null for execution created
+	 * by user.
+	 *
+	 * @param schedule new instance of {@link Schedule} for planned this
+	 *                 pipeline execution, null for execution created by user.
+	 */
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
 	}
 
+	/**
+	 * Returns true if pipeline run in silent mode and the end of the execution
+	 * can't be used to fire schedule, false otherwise.
+	 *
+	 * @return true if pipeline run in silent mode and the end of the execution
+	 *         can't be used to fire schedule, false otherwise.
+	 */
 	public boolean getSilentMode() {
 		return silentMode;
 	}
 
+	/**
+	 * Set new boolean value for pipeline execution silent mode.
+	 *
+	 * @param silentMode true if pipeline run in silent mode and the end of the
+	 *                   execution can't be used to fire schedule, false
+	 *                   otherwise.
+	 */
 	public void setSilentMode(boolean silentMode) {
 		this.silentMode = silentMode;
 	}
 
+	/**
+	 * Returns the node where execution should end. Only for debug mode.
+	 *
+	 * @return The node where execution should end. Only for debug mode.
+	 */
 	public Node getDebugNode() {
 		return debugNode;
 	}
 
+	/**
+	 * Set the node where execution should end. Only for debug mode.
+	 *
+	 * @param debugNode instance of {@link Node} to set execution end node.
+	 */
 	public void setDebugNode(Node debugNode) {
 		this.debugNode = debugNode;
 	}
 
+	/**
+	 * Returns true if pipeline should or has been stopped on user request,
+	 * false otherwise.
+	 *
+	 * @return true if pipeline should or has been stopped on user request,
+	 *         false otherwise.
+	 */
 	public boolean getStop() {
 		return stop;
 	}
 
+	/**
+	 * Set new value of this pipeline owner.
+	 *
+	 * @param owner instance of {@link User} as new pipeline owner.
+	 */
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
 
+	/**
+	 * Return the instance of {@link User} as owner of this executablepipeline.
+	 *
+	 * @return the owner of this executable pipeline.
+	 */
 	@Override
 	public User getOwner() {
 		return owner;
 	}
 
+	/**
+	 * Stop pipeline execution.
+	 */
 	public void stop() {
 		status = PipelineExecutionStatus.CANCELLING;
 		stop = true;
 	}
 
+	/**
+	 * Returns the {@link Date} instance where the pipeline was last changed.
+	 *
+	 * @return {@link Date} where the pipeline was last changed.
+	 */
 	public Date getLastChange() {
 		return lastChange;
 	}
@@ -249,7 +371,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 	/**
 	 * Returns duration of execution. Returns -1 for unfinished/not started
 	 * executions.
-	 * 
+	 *
 	 * @return duration of pipeline execution
 	 */
 	public long getDuration() {
@@ -261,7 +383,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
 	/**
 	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-	 * 
+	 *
 	 * @return hashcode
 	 */
 	@Override
@@ -278,8 +400,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 	 * Returns true if two objects represent the same pipeline execution. This
 	 * holds if and only if
 	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
-	 * 
-	 * @param o
+	 *
+	 * @param o value of object
 	 * @return true if both objects represent the same pipeline execution
 	 */
 	@Override
@@ -298,5 +420,4 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
 		return Objects.equals(this.id, other.id);
 	}
-
 }
