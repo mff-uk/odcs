@@ -7,7 +7,16 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
  *
  */
 public enum DPUType {
+	/**
+	 * Represents an extractor.
+	 */
 	EXTRACTOR,
+	/**
+	 * Represents a transformer. 
+	 */
 	TRANSFORMER,
+	/**
+	 * Represents a loader.
+	 */
 	LOADER
 }

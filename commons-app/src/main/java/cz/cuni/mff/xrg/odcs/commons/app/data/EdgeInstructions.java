@@ -12,7 +12,13 @@ package cz.cuni.mff.xrg.odcs.commons.app.data;
  *
  */
 public enum EdgeInstructions {
+	/**
+	 * Command for rename operation, represents mapping.
+	 */
 	Rename("->"),
+	/**
+	 * Represent separation of two commands.
+	 */
 	Separator(";");
 	
 	/**
@@ -24,6 +30,10 @@ public enum EdgeInstructions {
 		this.command = command;
 	}
 	
+	/**
+	 * 
+	 * @return String representation of instruction.
+	 */
 	public String getValue() {
 		return this.command;
 	}

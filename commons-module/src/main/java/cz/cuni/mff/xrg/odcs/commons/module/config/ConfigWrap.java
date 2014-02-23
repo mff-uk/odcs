@@ -45,6 +45,11 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 */
 	private final XStream xstreamUTF;
 
+	/**
+	 * Create configuration wrap for given configuration class.
+	 * 
+	 * @param configClass Configuration class.
+	 */
 	public ConfigWrap(Class<C> configClass) {
 		this.configClass = configClass;
 		// stream for loading, not so strict, ignore missing fields
@@ -140,7 +145,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
 	 * Serialized actual stored configuration. Can return null if configuration
 	 * is null.
 	 *
-	 * @param config
+	 * @param config Configuration to serialize.
 	 * @return Serialized configuration, can be null.
 	 * @throws ConfigException
 	 */
@@ -172,4 +177,5 @@ public class ConfigWrap<C extends DPUConfigObject> {
 		}
 		return new String(result, Charset.forName("UTF-8"));
 	}
+	
 }

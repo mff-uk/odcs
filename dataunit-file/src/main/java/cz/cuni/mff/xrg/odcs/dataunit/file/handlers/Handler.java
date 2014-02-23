@@ -52,9 +52,9 @@ public interface Handler {
 	public File asFile();
 
 	/**
-	 * Set user data for this handler.
+	 * Set user data for this handler, the user data should be reasonable small.
 	 *
-	 * @param newUserData
+	 * @param newUserData New user data, that will be attached to this handler.
 	 */
 	public void setUserData(String newUserData);
 
@@ -64,7 +64,7 @@ public interface Handler {
 	public String getUserData();
 
 	/**
-	 * @return name
+	 * @return Name of the handler.
 	 */
 	public String getName();
 

@@ -38,8 +38,8 @@ public interface LogFacade extends Facade {
 	/**
 	 * Creates an input stream for logging.
 	 * 
-	 * @param filters
-	 * @return input stream
+	 * @param filters Filters to apply.
+	 * @return Input stream with the logs in text form.
 	 */
 	InputStream getLogsAsStream(List<Object> filters);
 	
