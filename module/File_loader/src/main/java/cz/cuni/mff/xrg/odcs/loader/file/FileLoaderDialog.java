@@ -291,6 +291,11 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of file loader as string.
+	 *
+	 * @return desription of file loader as string.
+	 */
 	@Override
 	public String getDescription() {
 		String path = textFieldFilePath.getValue().trim();
