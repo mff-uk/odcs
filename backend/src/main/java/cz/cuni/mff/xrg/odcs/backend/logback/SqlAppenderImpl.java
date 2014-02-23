@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -147,9 +148,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			stmt.executeBatch();
 			stmt.close();
 			connection.commit();
+		} catch (BatchUpdateException sqle) {
+			LOG.error("Failed to save logs into database. Given logs will not be saved.", sqle);
+			return true;
 		} catch (Throwable sqle) {
 			// we failed, try it again .. later
-			LOG.error("Can't save logs into database.", sqle);
+			LOG.error("Can't save logs into database not. Wait before another attempt.", sqle);
 			// wait for some time
 			try {
 				Thread.sleep(2500);
@@ -158,7 +162,6 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 			}
 			return false;
 		}
-
 		return true;
 	}
 
