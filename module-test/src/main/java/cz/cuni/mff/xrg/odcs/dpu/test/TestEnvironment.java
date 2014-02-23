@@ -42,8 +42,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  */
 public class TestEnvironment {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(TestEnvironment.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+			TestEnvironment.class);
 
 	/**
 	 * Configuration used to access virtuoso. If tests use Virtuoso then this
@@ -84,7 +84,7 @@ public class TestEnvironment {
 	private TestEnvironment(File workingDirectory) {
 		this.context = new TestContext();
 		context.setWorkingDirectory(workingDirectory);
-		
+
 		this.workingDirectory = workingDirectory;
 		this.dataUnitFactory = new DataUnitFactory(workingDirectory);
 	}
@@ -114,24 +114,28 @@ public class TestEnvironment {
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
 	/**
-	 * Set path that is used like jar-path during execution.
+	 * Set path that is used like jar-path during execution. This value will 
+	 * be used during test execution if DPU asks for it.
 	 *
-	 * @param jarPath
+	 * @param jarPath path to the jar file.
 	 */
 	public void setJarPath(String jarPath) {
 		context.setJarPath(jarPath);
 	}
 
 	/**
-	 * Set time for last execution.
+	 * Set time for last execution. This value will  be used during test 
+	 * execution if DPU asks for it.
 	 *
-	 * @param lastExecution
+	 * @param lastExecution Time of last execution.
 	 */
 	public void setLastExecution(Date lastExecution) {
 		context.setLastExecution(lastExecution);
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param workingDirectory the workingDirectory to set, use null to use
 	 *                         subdirectory in {@link #workingDirectory}
 	 */
@@ -140,6 +144,8 @@ public class TestEnvironment {
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param resultDirectory the resultDirectory to set, use null to use
 	 *                        subdirectory in {@link #workingDirectory}
 	 */
@@ -148,6 +154,8 @@ public class TestEnvironment {
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param globalDirectory the globalDirectory to set, use null to use
 	 *                        subdirectory in {@link #workingDirectory}
 	 */
@@ -156,6 +164,8 @@ public class TestEnvironment {
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param userDirectory the userDirectory to set, use null to use
 	 *                      subdirectory in {@link #workingDirectory}
 	 */
@@ -169,7 +179,7 @@ public class TestEnvironment {
 	 * {@link ManagableDataUnit} is not released.
 	 *
 	 * @param name     Name of dataUnit.
-	 * @param dataUnit
+	 * @param dataUnit DataUnit to add as input.
 	 */
 	public void addInput(String name, ManagableDataUnit dataUnit) {
 		inputDataUnits.put(name, dataUnit);
@@ -187,7 +197,7 @@ public class TestEnvironment {
 	 * old {@link ManagableDataUnit} is not released.
 	 *
 	 * @param name     Name of dataUnit.
-	 * @param dataUnit
+	 * @param dataUnit DataUnit to add as output.
 	 */
 	public void addOutput(String name, ManagableDataUnit dataUnit) {
 		outputDataUnits.put(name, dataUnit);
@@ -196,7 +206,7 @@ public class TestEnvironment {
 	/**
 	 * Create input {@link RDFDataUnit} that is used in test environment.
 	 *
-	 * @param name        Name.
+	 * @param name        Name of DataUnit.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @return Created input {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
@@ -215,7 +225,7 @@ public class TestEnvironment {
 	 *
 	 * The data are loaded from file in test\resources.
 	 *
-	 * @param name         Name.
+	 * @param name         Name of DataUnit.
 	 * @param useVirtuoso  If true then Virtuoso is used as a storage.
 	 * @param resourceName Name of resource file. The path to the resource file
 	 *                     should be relative with respect to src/test/resources
@@ -249,7 +259,7 @@ public class TestEnvironment {
 	 * Create output {@link RDFDataUnit}, add it to the test environment and
 	 * return it.
 	 *
-	 * @param name        Name.
+	 * @param name        Name of DataUnit.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
 	 * @return Created output {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
@@ -265,7 +275,7 @@ public class TestEnvironment {
 	/**
 	 * Create file data unit, add it as an input and return reference to it.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @param dir  Root folder, where data unit can store data. Should be empty.
 	 * @return Created input {@link FileDataUnit}.
 	 */
@@ -280,7 +290,7 @@ public class TestEnvironment {
 	 * file data unit is created in temp directory and data from given resource
 	 * path are added to the root.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @param resourceName Path to the resources.
 	 * @return Created input {@link FileDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
@@ -323,7 +333,7 @@ public class TestEnvironment {
 	/**
 	 * Create file data unit, add it as an input and return reference to it.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @param dir  Root folder, where data unit can store data. Should be empty.
 	 * @return Created output {@link FileDataUnit}.
 	 */
@@ -337,8 +347,9 @@ public class TestEnvironment {
 	 * Create file data unit, add it as an input and return reference to it. As
 	 * a directory use temp director.
 	 *
-	 * @param name
+	 * @param name Name of DataUnit.
 	 * @return Created output {@link FileDataUnit}.
+	 * @throws java.io.IOException
 	 */
 	public FileDataUnit createFileOutput(String name) throws IOException {
 		File dir = new File(FileUtils.getTempDirectory(),
@@ -401,7 +412,6 @@ public class TestEnvironment {
 	}
 
 	// - - - - - - - - - methods for examining the results - - - - - - - - - //
-	
 	/**
 	 * Return context used during tests. Return null before call of
 	 * {@link #run(cz.cuni.mff.xrg.odcs.commons.dpu.DPU)} method.
@@ -447,6 +457,13 @@ public class TestEnvironment {
 		return null;
 	}
 
+	/**
+	 * Connect data units from {@link #inputDataUnits} and {@link #outputDataUnits}
+	 * to the given DPU instance.
+	 * 
+	 * @param dpuInstance DPU instance object.
+	 * @throws Exception 
+	 */
 	private void connectDataUnits(DPU dpuInstance) throws Exception {
 		// add inputs
 		List<AnnotationContainer<InputDataUnit>> inputAnnotations = AnnotationGetter
