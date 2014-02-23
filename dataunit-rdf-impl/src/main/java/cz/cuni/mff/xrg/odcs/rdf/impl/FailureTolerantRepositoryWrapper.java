@@ -60,16 +60,32 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		this.repository = repository;
 	}
 
+	/**
+	 * Set the directory where data and logging for this repository is stored.
+	 *
+	 * @param dataDir the directory where data for this repository is stored.
+	 */
 	@Override
 	public void setDataDir(File dataDir) {
 		repository.setDataDir(dataDir);
 	}
 
+	/**
+	 * Get the directory where data and logging for this repository is stored.
+	 *
+	 * @return the directory where data for this repository is stored.
+	 */
 	@Override
 	public File getDataDir() {
 		return repository.getDataDir();
 	}
 
+	/**
+	 * Initializes this repository. A repository needs to be initialized before
+	 * it can be used.
+	 *
+	 * @throws RDFRepositoryException if the initialization failed.
+	 */
 	@Override
 	public void initialize() throws RDFRepositoryException {
 		int attempts = 0;
@@ -84,11 +100,24 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		}
 	}
 
+	/**
+	 * Indicates if the Repository has been initialized. Note that the
+	 * initialization status may change if the Repository is shut down.
+	 *
+	 * @return true iff the repository has been initialized, false otherwise.
+	 */
 	@Override
 	public boolean isInitialized() {
 		return repository.isInitialized();
 	}
 
+	/**
+	 * Shuts the repository down, releasing any resources that it keeps hold of.
+	 * Once shut down, the repository can no longer be used until it is
+	 * re-initialized.
+	 *
+	 * @throws RepositoryException
+	 */
 	@Override
 	public void shutDown() throws RepositoryException {
 		int attempts = 0;
@@ -103,6 +132,15 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		}
 	}
 
+	/**
+	 * Checks whether this repository is writable, i.e. if the data contained in
+	 * this repository can be changed. The writability of the repository is
+	 * determined by the writability of the Sail that this repository operates
+	 * on.
+	 *
+	 * @return true if this repository is writable, false otherwise.
+	 * @throws RepositoryException
+	 */
 	@Override
 	public boolean isWritable() throws RepositoryException {
 		int attempts = 0;
@@ -116,6 +154,15 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		}
 	}
 
+	/**
+	 * Opens a connection to this repository that can be used for querying and
+	 * updating the contents of the repository. Created connections need to be
+	 * closed to make sure that any resources they keep hold of are released.
+	 *
+	 * @return A connection that allows operations on this repository.
+	 * @throws RepositoryException if something went wrong during the creation
+	 *                             of the connection.
+	 */
 	@Override
 	public RepositoryConnection getConnection() throws RepositoryException {
 		int attempts = 0;
@@ -129,6 +176,11 @@ public class FailureTolerantRepositoryWrapper implements Repository {
 		}
 	}
 
+	/**
+	 * Gets the ValueFactory for this Repository.
+	 *
+	 * @return The repository-specific ValueFactory.
+	 */
 	@Override
 	public ValueFactory getValueFactory() {
 		return repository.getValueFactory();
