@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  * File extractor configuration.
  *
  * @author Petyr
+ * @author Jiri Tomes
  *
  */
 public class FileExtractorConfig extends DPUConfigObjectBase {
@@ -50,35 +51,82 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 		this.failWhenErrors = failWhenErrors;
 	}
 
+	/**
+	 * Returns the path to file as string value.
+	 *
+	 * @return the path to file as string value.
+	 */
 	public String getPath() {
 		return Path;
 	}
 
+	/**
+	 * Returns the value of file suffix, empty string if no suffix is defined.
+	 *
+	 * @return the file suffix, empty string if no suffix is defined.
+	 */
 	public String getFileSuffix() {
 		return FileSuffix;
 	}
 
+	/**
+	 * Returns selected {@link RDFFormatType} for extracted RDF data.
+	 *
+	 * @return selected {@link RDFFormatType} for extracted RDF data.
+	 */
 	public RDFFormatType getRDFFormatValue() {
 		return RDFFormatValue;
 	}
 
+	/**
+	 * Returns one of possibilities defined in {@link FileExtractType} how to
+	 * data extract.
+	 *
+	 * @return one of possibilities defined in {@link FileExtractType} how to
+	 *         data extract.
+	 */
 	public FileExtractType getFileExtractType() {
 		return fileExtractType;
 	}
 
+	/**
+	 * Returns true, if use only for data extraction onlz files with defined
+	 * suffix, false otherwise.
+	 *
+	 * @return true, if use only for data extraction onlz files with defined
+	 *         suffix, false otherwise.
+	 */
 	public boolean useOnlyThisSuffix() {
 		return OnlyThisSuffix;
 	}
 
+	/**
+	 * Returns true, if use only for data extraction onlz files with defined
+	 * suffix, false otherwise.
+	 *
+	 * @return true, if is used statistical handler for data extraction, false
+	 *         otherwise.
+	 */
 	public boolean isUsedStatisticalHandler() {
 		return UseStatisticalHandler;
 	}
 
+	/**
+	 * Returns true, if execution should stop when some errors are detected,
+	 * false otherwise.
+	 *
+	 * @return true, if execution should stop when some errors are detected,
+	 *         false otherwise.
+	 */
 	public boolean isFailWhenErrors() {
 		return failWhenErrors;
 	}
 
-	
+	/**
+	 * Returns true, if DPU configuration is valid, false otherwise.
+	 *
+	 * @return true, if DPU configuration is valid, false otherwise.
+	 */
 	@Override
 	public boolean isValid() {
 		return Path != null
