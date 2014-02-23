@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
 /**
+ * SPARQL loader configuration.
  *
  * @author Petyr
  * @author Jiri Tomes
@@ -71,50 +72,121 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.endpointParams = endpointParams;
 	}
 
+	/**
+	 * Returns URL address of SPARQL endpoint as string.
+	 *
+	 * @return URL address of SPARQL endpoint as string.
+	 */
 	public String getSPARQLEndpoint() {
 		return SPARQL_endpoint;
 	}
 
+	/**
+	 * Returns parameters for target SPARQL endpoint as
+	 * {@link LoaderEndpointParams} instance.
+	 *
+	 * @return parameters for target SPARQL endpoint as
+	 *         {@link LoaderEndpointParams} instance.
+	 */
 	public LoaderEndpointParams getEndpointParams() {
 		return endpointParams;
 	}
 
+	/**
+	 * Returns host name for target SPARQL endpoint.
+	 *
+	 * @return host name for target SPARQL endpoint.
+	 */
 	public String getHostName() {
 		return Host_name;
 	}
 
+	/**
+	 * Returns password for access to the target SPARQL endpoint.
+	 *
+	 * @return password for access to the target SPARQL endpoint.
+	 */
 	public String getPassword() {
 		return Password;
 	}
 
+	/**
+	 * Returns list of graphs where RDF data will be loaded.
+	 *
+	 * @return list of graphs where RDF data will be loaded.
+	 */
 	public List<String> getGraphsUri() {
 		return GraphsUri;
 	}
 
+	/**
+	 * Returns one of way how to load RDF data to named graph to SPARQL
+	 * endpoint. See {@link WriteGraphType}.
+	 *
+	 * @return one of way how to load RDF data to named graph to SPARQL
+	 *         endpoint.
+	 */
 	public WriteGraphType getGraphOption() {
 		return graphOption;
 	}
 
+	/**
+	 * Returns one of way how to load RDF data insert part to the SPARQL
+	 * endpoint.
+	 *
+	 * @return one of way how to load RDF data insert part to the SPARQL
+	 *         endpoint.
+	 */
 	public InsertType getInsertOption() {
 		return insertOption;
 	}
 
+	/**
+	 * Returns the size of one data part for loading.
+	 *
+	 * @return the size of one data part for loading.
+	 */
 	public long getChunkSize() {
 		return chunkSize;
 	}
 
+	/**
+	 * Returns true, if data are validated before loading to SPARQL endpoint,
+	 * false otherwise.
+	 *
+	 * @return true, if data are validated before loading to SPARQL endpoint,
+	 *         false otherwise.
+	 */
 	public boolean isValidDataBefore() {
 		return validDataBefore;
 	}
 
+	/**
+	 * Returns time in ms how long wait before re-connection attempt.
+	 *
+	 * @return Time in ms how long wait before re-connection attempt.
+	 */
 	public Long getRetryTime() {
 		return retryTime;
 	}
 
+	/**
+	 * Returns count of re-connection if connection failed. For infinite loop
+	 * use zero or negative integer.
+	 *
+	 * @return Count of re-connection if connection failed. For infinite loop
+	 *         use zero or negative integer.
+	 *
+	 */
 	public Integer getRetrySize() {
 		return retrySize;
 	}
 
+	/**
+	 * Returns true, if DPU configuration is valid, false otherwise.
+	 *
+	 * @return true, if DPU configuration is valid, false otherwise.
+	 */
 	@Override
 	public boolean isValid() {
 		return SPARQL_endpoint != null
@@ -128,6 +200,9 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& endpointParams != null;
 	}
 
+	/**
+	 * Fill missing configuration with default values.
+	 */
 	@Override
 	public void onDeserialize() {
 		if (retrySize == null) {
