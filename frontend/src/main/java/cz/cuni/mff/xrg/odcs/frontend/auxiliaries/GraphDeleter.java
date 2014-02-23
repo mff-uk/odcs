@@ -38,7 +38,7 @@ public class GraphDeleter implements Runnable {
 	/**
 	 * Return last message from last deletion.
 	 *
-	 * @return
+	 * @return Last message from last deletion.
 	 */
 	public static String getMessage() {
 		return message;
@@ -47,7 +47,7 @@ public class GraphDeleter implements Runnable {
 	/**
 	 * True it the graphs are currently being deleted.
 	 *
-	 * @return
+	 * @return If currently deleting graphs.
 	 */
 	public static boolean isRunning() {
 		return running;

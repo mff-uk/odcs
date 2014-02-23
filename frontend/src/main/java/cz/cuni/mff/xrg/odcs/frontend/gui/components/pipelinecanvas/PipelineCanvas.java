@@ -228,7 +228,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Shows detail of given {@link DPUInstance} in new sub-window.
+	 * Shows detail of given {@link DPUInstanceRecord} in new sub-window.
 	 *
 	 * @param node {@link Node} containing DPU, which detail should be showed.
 	 */

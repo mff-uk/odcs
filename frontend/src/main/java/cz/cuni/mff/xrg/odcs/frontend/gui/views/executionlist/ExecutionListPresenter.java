@@ -105,7 +105,7 @@ public interface ExecutionListPresenter extends Presenter {
 		 * Generate view, that interact with given presenter.
 		 *
 		 * @param presenter
-		 * @return
+		 * @return view
 		 */
 		public Object enter(final ExecutionListPresenter presenter);
 
@@ -193,7 +193,7 @@ public interface ExecutionListPresenter extends Presenter {
 		/**
 		 * Gets {@link MessageRecord} container.
 		 *
-		 * @return
+		 * @return container
 		 */
 		public ReadOnlyContainer<MessageRecord> getMessageContainer() {
 			return messageContainer;

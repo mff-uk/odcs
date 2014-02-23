@@ -9,6 +9,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
+import static com.vaadin.server.Sizeable.Unit;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 
@@ -108,8 +109,7 @@ public class RecordDetail extends Window {
 	 * Resizes content due to resize of whole dialog.
 	 *
 	 * @param height New height of whole dialog.
-	 * @param unit
-	 * @{link Unit} of height.
+	 * @param unit {@link Unit} of height.
 	 */
 	public void setContentHeight(float height, Unit unit) {
 		fullMessageContent.setHeight(height - 250, unit);

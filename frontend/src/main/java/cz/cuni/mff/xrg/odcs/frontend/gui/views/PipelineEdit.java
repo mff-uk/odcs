@@ -727,7 +727,7 @@ public class PipelineEdit extends ViewComponent {
 	 * Check for permission.
 	 *
 	 * @param type Required permission.
-	 * @return
+	 * @return If the user has given permission
 	 */
 	public boolean hasPermission(String type) {
 		return permissions.hasPermission(pipeline, type);
@@ -1087,8 +1087,8 @@ public class PipelineEdit extends ViewComponent {
 	 * Saves current pipeline.
 	 *
 	 * @param successAction
-	 * @return
-	 */
+	 * @return If current pipeline was saved
+	 */ 
 	protected boolean savePipeline(final String successAction) {
 		if (!validate()) {
 			return false;

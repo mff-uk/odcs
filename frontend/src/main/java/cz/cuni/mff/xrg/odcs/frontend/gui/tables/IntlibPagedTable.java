@@ -47,7 +47,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 	 * Creates controls for navigating between pages of table. Hides the page
 	 * size selector.
 	 *
-	 * @return {@link ControlsLayout} for accessing table controls.
+	 * @return layout with table controls.
 	 */
 	@Override
 	public HorizontalLayout createControls() {
