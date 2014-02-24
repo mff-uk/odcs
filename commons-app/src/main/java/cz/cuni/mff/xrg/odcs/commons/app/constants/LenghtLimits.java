@@ -56,7 +56,6 @@ public class LenghtLimits {
 	public static final int NAMESPACE_PREFIX_URI = 255;
 	
 	
-	public static int DATAUNIT_NAME = 2048;
 	public static int SCHEDULE_NAME =1024;
 	public static int LOGGER_NAME = 254;
 }
