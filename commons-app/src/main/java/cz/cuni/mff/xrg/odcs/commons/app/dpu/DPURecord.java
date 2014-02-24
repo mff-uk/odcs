@@ -22,142 +22,176 @@ import org.slf4j.LoggerFactory;
 public abstract class DPURecord {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DPURecord.class);
-	
-    /**
-     * Primary key of graph stored in db
-     */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
-	@SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
-    private Long id;
-    
-    /**
-     * DPURecord name, provided by user.
-     */
-	@Column(name="name")
-    private String name;
-    
+
 	/**
-	 * If true then the value of {@link #description} has been 
-	 * created by DPU's dialog.  
+	 * Primary key of graph stored in db
 	 */
-	@Column(name="use_dpu_description")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
+	@SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
+	private Long id;
+
+	/**
+	 * DPURecord name, provided by user.
+	 */
+	@Column(name = "name")
+	private String name;
+
+	/**
+	 * If true then the value of {@link #description} has been created by DPU's
+	 * dialog.
+	 */
+	@Column(name = "use_dpu_description")
 	private boolean useDPUDescription;
-	
-    /**
-     * DPURecord description, can be provided by user or by the DPU's dialog.
-     */
-	@Column(name="description")
-    private String description;
-    		
+
+	/**
+	 * DPURecord description, can be provided by user or by the DPU's dialog.
+	 */
+	@Column(name = "description")
+	private String description;
+
 	/**
 	 * DPU's configuration in serialized version.
 	 */
-	@Column(name="configuration")
+	@Column(name = "configuration")
 	private String serializedConfiguration;
-	
+
 	/**
 	 * If true configuration is in valid state.
 	 */
-	@Column(name="config_valid", nullable = false)
+	@Column(name = "config_valid", nullable = false)
 	private boolean configValid;
-	
+
 	/**
 	 * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
 	 */
 	@Transient
 	protected Object instance;
-	
-    /**
-     * Allow empty constructor for JPA.
-     */
-    public DPURecord() { }
 
-    /**
-     * Constructor with name and type of DPURecord.
-     *
-     * @param name
-     */
-    public DPURecord(String name) {
-        this.name = name;
-        this.useDPUDescription = false;
-    }
+	/**
+	 * Allow empty constructor for JPA.
+	 */
+	public DPURecord() {
+	}
 
-    /**
-     * Create new DPURecord by copying the values from existing DPURecord.
-     * @param dpuRecord
-     */
-    public DPURecord(DPURecord dpuRecord) {
-    	this.name = dpuRecord.name;
-    	this.useDPUDescription = dpuRecord.useDPUDescription;
-    	this.description = dpuRecord.description;
-    	if (dpuRecord.serializedConfiguration == null) {
-    		this.serializedConfiguration = null;
-    	} else {
+	/**
+	 * Constructor with name and type of DPU record.
+	 *
+	 * @param name Name of the DPU.
+	 */
+	public DPURecord(String name) {
+		this.name = name;
+		this.useDPUDescription = false;
+	}
+
+	/**
+	 * Create new DPURecord by copying the values from existing DPURecord.
+	 *
+	 * @param dpuRecord Existing DPU record.
+	 */
+	public DPURecord(DPURecord dpuRecord) {
+		this.name = dpuRecord.name;
+		this.useDPUDescription = dpuRecord.useDPUDescription;
+		this.description = dpuRecord.description;
+		if (dpuRecord.serializedConfiguration == null) {
+			this.serializedConfiguration = null;
+		} else {
 			// deep copy
 			this.serializedConfiguration = dpuRecord.serializedConfiguration;
-    	}
-    	this.configValid = dpuRecord.configValid;
-    }
+		}
+		this.configValid = dpuRecord.configValid;
+	}
 
-    public String getName() {
-        return name;
-    }
+	/**
+	 *
+	 * @return Name of the DPU.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String newName) {
-        this.name = StringUtils.abbreviate(newName, LenghtLimits.DPU_NAME.limit());
-    }
+	/**
+	 *
+	 * @param newName New DPU name.
+	 */
+	public void setName(String newName) {
+		this.name = StringUtils.abbreviate(newName, LenghtLimits.DPU_NAME
+				.limit());
+	}
 
-    public boolean useDPUDescription() {
-    	return useDPUDescription;
-    }
-    
-    public void setUseDPUDescription(boolean useDPUDescription) {
-    	this.useDPUDescription = useDPUDescription;
-    }
-    
-    public String getDescription() {
+	/**
+	 *
+	 * @return False if the DPU description should be generated from
+	 *         configuration in case that the user provided description is
+	 *         empty.
+	 */
+	public boolean useDPUDescription() {
+		return useDPUDescription;
+	}
+
+	/**
+	 * 
+	 * @param useDPUDescription False if the DPU description should be generated from
+	 *         configuration in case that the user provided description is
+	 *         empty.
+	 */
+	public void setUseDPUDescription(boolean useDPUDescription) {
+		this.useDPUDescription = useDPUDescription;
+	}
+
+	/**
+	 * 
+	 * @return DPU's description.
+	 */
+	public String getDescription() {
 		return StringUtils.defaultString(description);
-    }
+	}
 
-    public void setDescription(String newDescription)  {
+	/**
+	 * 
+	 * @param newDescription New DPU description. 
+	 */
+	public void setDescription(String newDescription) {
 		this.description = newDescription;
-    }
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return DPU's type.
 	 */
-    public abstract DPUType getType();
-    
-    /**
-     * Load appropriate DPU instance info {@link #instance}. The instance
-     * is then accessible through the {@link #getInstance()} method.
-     * @param moduleFacade
-     * @throws ModuleException
-     */
-    public abstract void loadInstance(ModuleFacade moduleFacade) throws ModuleException;
-    
-    /**
-     * @return full path from the DPU's jar file relative to DPU's directory.
-     */
-    public abstract String getJarPath();
+	public abstract DPUType getType();
 
-    /**
-     * Get stored instance if loaded. To load instance use {@link #loadInstance}.
-	 * 
-     * @return Stored instance.
-     */
-    public Object getInstance() {
-    	return instance;
-    }
-    
+	/**
+	 * Load appropriate DPU instance info {@link #instance}. The instance is
+	 * then accessible through the {@link #getInstance()} method.
+	 *
+	 * @param moduleFacade
+	 * @throws ModuleException
+	 */
+	public abstract void loadInstance(ModuleFacade moduleFacade) throws ModuleException;
+
+	/**
+	 * @return full path from the DPU's jar file relative to DPU's directory.
+	 */
+	public abstract String getJarPath();
+
+	/**
+	 * Get stored instance if loaded. To load instance use
+	 * {@link #loadInstance}.
+	 *
+	 * @return Stored instance.
+	 */
+	public Object getInstance() {
+		return instance;
+	}
+
 	/**
 	 * @return raw configuration representation.
 	 */
@@ -167,16 +201,17 @@ public abstract class DPURecord {
 
 	/**
 	 * Set raw configuration representation. Use with caution!
+	 *
 	 * @param conf
 	 */
 	public void setRawConf(String conf) {
 		serializedConfiguration = conf;
 	}
-	
+
 	/**
-	 * Generates hash code from primary key if it is available, otherwise
-	 * from the rest of the attributes.
-	 * 
+	 * Generates hash code from primary key if it is available, otherwise from
+	 * the rest of the attributes.
+	 *
 	 * @return hash code
 	 */
 	@Override
@@ -192,7 +227,7 @@ public abstract class DPURecord {
 		}
 		return hash;
 	}
-	
+
 	/**
 	 * Compares DPURecord to other object. Two DPURecord instances are equal if
 	 * they have the same non-null primary key, or if both their primary keys
@@ -213,7 +248,7 @@ public abstract class DPURecord {
 			return false;
 		}
 		final DPURecord other = (DPURecord) obj;
-		
+
 		// try primary key comparison
 		if (this.id != null && other.id != null) {
 			// both have primary keys
@@ -223,7 +258,7 @@ public abstract class DPURecord {
 			// only one has primary key
 			return false;
 		}
-		
+
 		// compare attributes
 		if (!Objects.equals(this.name, other.name)) {
 			return false;
@@ -237,14 +272,15 @@ public abstract class DPURecord {
 		if (!Objects.equals(getJarPath(), other.getJarPath())) {
 			return false;
 		}
-		if (!Objects.equals(this.serializedConfiguration, other.serializedConfiguration)) {
+		if (!Objects.equals(this.serializedConfiguration,
+				other.serializedConfiguration)) {
 			return false;
 		}
 		return true;
 	}
-	
-    @Override
-    public String toString() {
-        return name;
-    }
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

@@ -7,6 +7,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
  */
 public class commons {
 	
+	/**
+	 * List of OSGI packages to export. Does not start nor end with separator.
+	 */	
 	public static final String PACKAGE_LIST = 
 		"org.slf4j.bridge;uses:=\"org.slf4j.spi,org.slf4j\";version=\"1.7.5\"," +
 		"org.apache.log4j;uses:=\"org.apache.log4j.spi,org.slf4j.spi,org.apache.log4j.helpers,org.slf4j,org.slf4j.helpers\";version=\"1.2.17\"," +

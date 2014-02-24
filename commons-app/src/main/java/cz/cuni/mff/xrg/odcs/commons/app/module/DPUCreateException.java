@@ -8,10 +8,19 @@ package cz.cuni.mff.xrg.odcs.commons.app.module;
  */
 public class DPUCreateException extends Exception {
 
-	public DPUCreateException(String message) {
-		super(message);
+	/**
+	 * 
+	 * @param cause Cause of the {@link DPUCreateException}.
+	 */		
+	public DPUCreateException(String cause) {
+		super(cause);
 	}
 
+	/**
+	 * 
+	 * @param message Description of action that throws.
+	 * @param cause Cause of the {@link DPUCreateException}.
+	 */		
 	public DPUCreateException(String message, Throwable cause) {
 		super(message, cause);
 	}

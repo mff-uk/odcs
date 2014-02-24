@@ -32,6 +32,7 @@ import ch.qos.logback.classic.Level;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Embedded;
+import org.springframework.web.util.HtmlUtils;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -87,6 +88,7 @@ public class LogTable extends CustomComponent {
 		table.setSelectable(true);
 		table.setImmediate(true);
 		table.setSizeFull();
+		table.setColumnCollapsingAllowed(true);
 
 		table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
@@ -111,6 +113,8 @@ public class LogTable extends CustomComponent {
 				return dpuNames.get(dpuId);
 			}
 		});
+		table.setColumnWidth("timestamp", 115);
+		table.setColumnWidth("logLevel", 32);
 		table.setColumnAlignment("logLevel", CustomTable.Align.CENTER);
 		table.addGeneratedColumn("logLevel", new CustomTable.ColumnGenerator() {
 			@Override
@@ -134,7 +138,7 @@ public class LogTable extends CustomComponent {
 				if (itemId != null && "message".equals(propertyId)) {
 					String fullMessage = (String) ((CustomTable) source).getItem(itemId).getItemProperty("message").getValue();
 					if (fullMessage != null) {
-						return fullMessage;
+						return HtmlUtils.htmlEscape(fullMessage);
 					}
 				}
 				return null;
@@ -274,7 +278,7 @@ public class LogTable extends CustomComponent {
 	 * Reload data from source, do not refresh the source it self!!
 	 *
 	 * @param exec
-	 * @return
+	 * @return If data were refreshed
 	 */
 	public boolean refresh(PipelineExecution exec) {
 		this.execution = exec;

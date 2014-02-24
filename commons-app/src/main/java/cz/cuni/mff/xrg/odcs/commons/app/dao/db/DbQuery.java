@@ -16,13 +16,14 @@ import javax.persistence.TypedQuery;
  */
 public class DbQuery<T extends DataObject> implements DataQuery<T> {
     
-	private final TypedQuery<T> query;
+	protected final TypedQuery<T> query;
 	
 	/**
 	 * Create new query.
-	 * @param query
+	 * 
+	 * @param query Inner query.
 	 */
-	DbQuery(TypedQuery<T> query) {
+	protected DbQuery(TypedQuery<T> query) {
 		this.query = query;		
 	}
 	
@@ -33,9 +34,9 @@ public class DbQuery<T extends DataObject> implements DataQuery<T> {
 	/**
 	 * Set limits for this query.
 	 * 
-	 * @param first
-	 * @param count
-	 * @return database query
+	 * @param first Index of first required object.
+	 * @param count How many objects to return.
+	 * @return This database query.
 	 */
 	public DbQuery<T> limit(int first, int count) {		
 		query.setFirstResult(first);

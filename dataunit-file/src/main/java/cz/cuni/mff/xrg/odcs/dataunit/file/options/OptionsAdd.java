@@ -39,6 +39,7 @@ public class OptionsAdd {
 	}
 
 	/**
+	 * Create an option class with given options.
 	 * @param asLink true if add as link
 	 * @param overwrite true if in case of collision overwrite old data
 	 */
@@ -46,11 +47,17 @@ public class OptionsAdd {
 		this.isLink = asLink;
 		this.overwrite = overwrite;
 	}
-		
+	
+	/**
+	 * @return True if the Handler should be added as a link.
+	 */
 	public boolean isLink() {
 		return this.isLink;
 	}
 	
+	/**
+	 * @return True if in the case of collision the old Handler should be deleted.
+	 */
 	public boolean overwrite() {
 		return this.overwrite;
 	}

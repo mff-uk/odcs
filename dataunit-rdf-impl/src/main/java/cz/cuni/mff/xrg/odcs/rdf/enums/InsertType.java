@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.enums;
 
 /**
- * Possibilies how to load RDF data insert part to SPARL endpoint.
+ * Possibilies how to load RDF data insert part to the SPARQL endpoint.
  *
  * @author Jiri Tomes
  */

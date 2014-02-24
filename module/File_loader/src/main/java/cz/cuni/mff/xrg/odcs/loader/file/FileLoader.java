@@ -19,6 +19,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
+ * Loads RDF data into file.
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -28,6 +30,9 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
 	private final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
+	/**
+	 * The repository for file loader.
+	 */
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -35,6 +40,13 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		super(FileLoaderConfig.class);
 	}
 
+	/**
+	 * Execute the file loader.
+	 *
+	 * @param context File loader context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context) throws DPUException, DataUnitException {
 
@@ -78,6 +90,11 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		}
 	}
 
+	/**
+	 * Returns the configuration dialogue for file loader.
+	 *
+	 * @return the configuration dialogue for file loader.
+	 */
 	@Override
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
 		return new FileLoaderDialog();

@@ -29,7 +29,7 @@ public class DPUTemplateWrap extends DPURecordWrap {
 	/**
 	 * Get DPU template record.
 	 *
-	 * @return
+	 * @return DPU template record
 	 */
 	public DPUTemplateRecord getDPUTemplateRecord() {
 		return dpuTemplate;

@@ -27,6 +27,11 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	 */
 	private final ConfigWrap<C> configWrap;
 
+	/**
+	 * Initialize the {@link ConfigurableBase} for given configuration class.
+	 * 
+	 * @param configClass Configuration class.
+	 */
 	public ConfigurableBase(Class<C> configClass) {
 		this.configWrap = new ConfigWrap<>(configClass);
 		this.config = this.configWrap.createInstance();
@@ -57,7 +62,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
 	 * Validate given configuration and if it's valid then configure the DPU.
 	 * Can be used to set null configuration too.
 	 * 
-	 * @param newConfig
+	 * @param newConfig New configuration.
 	 * @throws ConfigException In case of invalid configuration.
 	 */
 	public void configureDirectly(C newConfig) throws ConfigException {

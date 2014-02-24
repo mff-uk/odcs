@@ -60,7 +60,7 @@ public class FileUploadReceiver implements Receiver {
 	/**
 	 * Get uploaded file.
 	 *
-	 * @return
+	 * @return uploaded file
 	 */
 	public File getFile() {
 		return file;
@@ -69,7 +69,7 @@ public class FileUploadReceiver implements Receiver {
 	/**
 	 * Get path to file.
 	 *
-	 * @return
+	 * @return path to file
 	 */
 	public Path getPath() {
 		return path;

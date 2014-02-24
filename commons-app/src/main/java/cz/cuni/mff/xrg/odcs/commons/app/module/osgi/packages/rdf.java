@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 
 /**
- * Packages for RDF, without seasame.
+ * Packages for RDF, without sesame.
  * 
  * @author Petyr
  */
 public class rdf {
 	
+	/**
+	 * List of OSGI packages to export. Does not start nor end with separator.
+	 */	
 	public static final String PACKAGE_LIST = 
 		"org.apache.commons.dbcp.cpdsadapter;uses:=\"org.apache.commons.dbcp,javax.naming,javax.sql,org.apache.commons.pool.impl,org.apache.commons.pool,javax.naming.spi\";version=\"1.3\"," + 
 		"org.apache.commons.dbcp;uses:=\"org.apache.commons.pool.impl,org.apache.commons.pool,javax.sql,javax.naming,javax.naming.spi,org.apache.commons.jocl,org.xml.sax\";version=\"1.3\"," +

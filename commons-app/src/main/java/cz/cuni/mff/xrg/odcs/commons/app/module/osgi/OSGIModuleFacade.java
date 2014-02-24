@@ -242,14 +242,14 @@ class OSGIModuleFacade implements ModuleFacade {
 	}
 	
 	@Override
-	public void endUpdate(DPUTemplateRecord dpu, boolean updataFailed) {
+	public void endUpdate(DPUTemplateRecord dpu, boolean updateFailed) {
 		final String directory = dpu.getJarDirectory();
 		BundleContainer container = bundles.get(directory);
 		if (container == null) {
 			// bundle does not exist			
 		} else {
 			// bundle exist
-			if (updataFailed) {
+			if (updateFailed) {
 				// we have to remove and uninstall the bundle
 				try {
 					container.uninstall();

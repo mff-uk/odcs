@@ -10,24 +10,24 @@ public enum MessageType {
 	/**
 	 * Debug messages will be stored only if the DPU is running in debug mode.
 	 */
-	DEBUG
+	DEBUG,
 	/**
 	 * Information messages can be used to inform about DPU execution progress.
 	 */
-	, INFO
+	INFO,
 	/**
 	 * Warning messages.
 	 */
-	, WARNING
+	WARNING,
 	/**
 	 * Error messages can be used to report non fatal error during the DPU
 	 * execution.
 	 */
-	, ERROR
+	ERROR,
 	/**
 	 * Message that require skipping execution of every DPU after current
 	 * DPU till the end of the pipeline. Can be used to terminate execution
 	 * if there are for example no input data without failing it.
 	 */
-	, TERMINATION_REQUEST
+	TERMINATION_REQUEST
 }
