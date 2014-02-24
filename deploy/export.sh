@@ -8,7 +8,7 @@
 script=`readlink -f $0`
 basedir="`dirname $script`/.."
 config="$HOME/.odcs/config.properties"
-target="./odcs-export"
+target="odcs-export"
 warfile="frontend/target/odcleanstore.war"
 jarfile="backend/target/backend-*.jar"
 shellconf="/tmp/odcs-conf.sh"
