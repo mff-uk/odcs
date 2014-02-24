@@ -58,4 +58,13 @@ public class RelativeIdHolder {
 		return holder.id++;
 	}
 	
+	/**
+	 * Delete all the counters from application cache. This will result in query
+	 * into database for every call of {@link #getNextId(java.lang.Long)} for
+	 * certain execution id. 
+	 */
+	public void resetIdCounters() {
+		relativeIds.clear();
+	}
+	
 }
