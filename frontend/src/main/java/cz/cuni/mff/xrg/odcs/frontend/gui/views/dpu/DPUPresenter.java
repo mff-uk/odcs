@@ -85,7 +85,7 @@ public interface DPUPresenter extends Presenter {
 	/**
 	 * Get data(pipelines) for selected DPU.
 	 * @param dpu
-	 * @return 
+	 * @return data(pipelines) for selected DPU 
 	 */
 	public IndexedContainer getTableData(DPUTemplateRecord dpu);
 	
@@ -118,7 +118,7 @@ public interface DPUPresenter extends Presenter {
 		 * Generate view, that interact with given presenter.
 		 *
 		 * @param presenter
-		 * @return
+		 * @return generated view
 		 */
 		public Object enter(final DPUPresenter presenter);
 

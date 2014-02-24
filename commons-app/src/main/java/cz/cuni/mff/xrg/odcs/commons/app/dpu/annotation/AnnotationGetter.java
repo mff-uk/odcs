@@ -18,10 +18,10 @@ public class AnnotationGetter {
 	}
 
 	/**
-	 * Get annotation of given type for all the fields.
+	 * Get annotations of given type for all the fields in given DPU instance.
 	 *
 	 * @param <T>
-	 * @param instance
+	 * @param instance DPU instance from which get the annotations.
 	 * @param type Type of annotation to get
 	 * @return List with {@link AnnotationContainer}, can be empty.
 	 */
@@ -45,6 +45,6 @@ public class AnnotationGetter {
 			}
 		}
 		return result;
-
 	}
+	
 }

@@ -71,7 +71,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor());
+		cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
+				utils.getPageLength());
 		ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
 		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
@@ -199,7 +200,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	 * Get light copy of execution.
 	 *
 	 * @param executionId
-	 * @return
+	 * @return light copy of execution
 	 */
 	private PipelineExecution getLightExecution(long executionId) {
 		return pipelineFacade.getExecution(executionId);
@@ -207,7 +208,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(
-				new DbCachedSource<>(dbMessageRecord, new MessageRecordAccessor()));
+				new DbCachedSource<>(dbMessageRecord, 
+						new MessageRecordAccessor(), utils.getPageLength()));
 	}
 
 	@Override

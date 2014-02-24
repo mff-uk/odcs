@@ -9,6 +9,8 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
  */
 public class SPARQLValidationException extends ConfigException {
 
+	private int queryNumber = 1;
+
 	/**
 	 * Create a new instance of {@link SPARQLValidationException} with the
 	 * default message.
@@ -21,9 +23,23 @@ public class SPARQLValidationException extends ConfigException {
 	 * specific message.
 	 *
 	 * @param message String value of described message
+	 *
 	 */
 	public SPARQLValidationException(String message) {
 		super(message);
+	}
+
+	/**
+	 * Create new instance of {@link SPARQLValidationException} with the
+	 * specific message and number of invalid SPARQL query.
+	 *
+	 * @param message     String value of described message
+	 * @param queryNumber Number of SPARQL query which is not valid (in case of
+	 *                    validation more queries).
+	 */
+	public SPARQLValidationException(String message, int queryNumber) {
+		super(message);
+		this.queryNumber = queryNumber;
 	}
 
 	/**
@@ -45,5 +61,18 @@ public class SPARQLValidationException extends ConfigException {
 	 */
 	public SPARQLValidationException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	/**
+	 * Returns the number of SPARQL query which is not valid. This method is
+	 * used to specify number invalid query in case of validation more SPARQL
+	 * queries.
+	 *
+	 * @return the number of SPARQL query which is not valid. This method is
+	 *         used to specify number invalid query in case of validation more
+	 *         SPARQL queries.
+	 */
+	public int getQueryNumber() {
+		return queryNumber;
 	}
 }

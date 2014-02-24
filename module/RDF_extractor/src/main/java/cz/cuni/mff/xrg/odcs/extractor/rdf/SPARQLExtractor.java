@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Responsible to extract RDF data from SPARQL endpoint. Need special for SPARQL
- * extractor DPU - separed implementation from {@link BaseRDFRepo}.
+ * Responsible for the RDF data extraction from SPARQL endpoint. Class contains
+ * special methods for SPARQL extractor DPU - separed implementation from
+ * {@link BaseRDFRepo}.
  *
  * @author Jiri Tomes
  */
@@ -483,6 +484,7 @@ public class SPARQLExtractor {
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
 
 		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("SPARQL query: {}", query);
 		logger.debug("Request content: {}", parameters);
 		logger.debug("Request method: GET");
 
@@ -653,6 +655,7 @@ public class SPARQLExtractor {
 		final String parameters = queryParam + defaultGraphParam + namedGraphParam + formatParam;
 
 		logger.debug("Target endpoint: {}", endpointURL.toString());
+		logger.debug("SPARQL query: {}", query);
 		logger.debug("Request content: {}", parameters);
 		logger.debug("Request method: POST with URL encoder");
 

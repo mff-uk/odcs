@@ -79,12 +79,12 @@ public class MessageRecord implements DataObject {
 	/**
 	 * Constructor.
 	 *
-	 * @param time
-	 * @param type
-	 * @param dpuInstance
-	 * @param execution
-	 * @param shortMessage
-	 * @param fullMessage
+	 * @param time Time of creation.
+	 * @param type Message type.
+	 * @param dpuInstance ID of source DPU or null.
+	 * @param execution ID of execution that produce the message.
+	 * @param shortMessage Short message.
+	 * @param fullMessage Long message.
 	 */
 	public MessageRecord(Date time,
 			MessageRecordType type,
@@ -105,31 +105,60 @@ public class MessageRecord implements DataObject {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @return Time of creation.
+	 */
 	public Date getTime() {
 		return time;
 	}
 
+	/**
+	 * 
+	 * @return Type of message.
+	 */
 	public MessageRecordType getType() {
 		return type;
 	}
 
+	/**
+	 * 
+	 * @return ID of source DPU or null.
+	 */
 	public DPUInstanceRecord getDpuInstance() {
 		return dpuInstance;
 	}
 
+	/**
+	 * 
+	 * @return ID of execution during which the message has been created.
+	 */
 	public PipelineExecution getExecution() {
 		return execution;
 	}
 
+	/**
+	 * 
+	 * @return Short message.
+	 */
 	public String getShortMessage() {
 		return StringUtils.defaultString(shortMessage);
 	}
 
+	/**
+	 * 
+	 * @return Long message.
+	 */
 	public String getFullMessage() {
 		return StringUtils.defaultString(fullMessage);
 	}
 	
+	/**
+	 * 
+	 * @return Time of creation.
+	 */
 	public Timestamp getTimestamp() {
 		return new Timestamp(time.getTime());
 	}
+	
 }

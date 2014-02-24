@@ -46,7 +46,7 @@ public class RDFRegexFilter implements Filter {
 	/**
 	 * Get filtered column.
 	 *
-	 * @return
+	 * @return filtered column name
 	 */
 	public String getColumnName() {
 		return columnName;
@@ -55,7 +55,7 @@ public class RDFRegexFilter implements Filter {
 	/**
 	 * Get regex.
 	 *
-	 * @return
+	 * @return regex
 	 */
 	public String getRegex() {
 		return regex;

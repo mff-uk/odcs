@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Extracts RDF data from a file.
  *
  * @author Jiri Tomes
  * @author Petyr
@@ -31,6 +32,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
 	private final Logger LOG = LoggerFactory.getLogger(FileExtractor.class);
 
+	/**
+	 * The repository for file extractor.
+	 */
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -38,6 +42,13 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		super(FileExtractorConfig.class);
 	}
 
+	/**
+	 * Execute the file extractor.
+	 *
+	 * @param context File extractor context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context) throws DataUnitException, DPUException {
 
@@ -86,6 +97,11 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		LOG.info("Extracted {} triples", triplesCount);
 	}
 
+	/**
+	 * Returns the configuration dialogue for File extractor.
+	 *
+	 * @return the configuration dialogue for File extractor.
+	 */
 	@Override
 	public AbstractConfigDialog<FileExtractorConfig> getConfigurationDialog() {
 		return new FileExtractorDialog();

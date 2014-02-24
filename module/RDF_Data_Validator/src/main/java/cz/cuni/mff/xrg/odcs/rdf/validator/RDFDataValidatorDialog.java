@@ -114,12 +114,35 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		return verticalLayoutCore;
 	}
 
+	/**
+	 * Load values from configuration object implementing
+	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
+	 * where the configuration object may be edited.
+	 *
+	 * @throws ConfigException Exception which might be thrown when components
+	 *                         are in read-only mode or when values loading to
+	 *                         this fields could not be converted. Also when
+	 *                         requested operation is not supported.
+	 * @param conf Object holding configuration which is used to initialize
+	 *             fields in the configuration dialog.
+	 */
 	@Override
 	public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
 		failExecution.setValue(conf.canStopExecution());
 		createOutput.setValue(conf.hasSometimesOutput());
 	}
 
+	/**
+	 * Set values from from dialog where the configuration object may be edited
+	 * to configuration object implementing {@link DPUConfigObject} interface
+	 * and configuring DPU
+	 *
+	 * @throws ConfigException Exception which might be thrown when some of
+	 *                         fields contains null value.
+	 * @return config object holding configuration which is used in
+	 *         {@link #setConfiguration} to initialize fields in the
+	 *         configuration dialog.
+	 */
 	@Override
 	public RDFDataValidatorConfig getConfiguration() throws ConfigException {
 
@@ -131,11 +154,4 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		return conf;
 
 	}
-
-//	@Override
-//	public String getDescription() {
-//		String description = "Error validation report output was created.";
-//
-//		return description;
-//	}
 }

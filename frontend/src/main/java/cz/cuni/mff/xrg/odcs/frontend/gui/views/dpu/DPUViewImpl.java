@@ -824,6 +824,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				createActionColumn());
 
 		instancesTable.setVisibleColumns("actions", "name");
+		instancesTable.setColumnCollapsingAllowed(true);
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
@@ -836,7 +837,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	/**
 	 * Validate DPU detail.
 	 *
-	 * @return
+	 * @return If DPU detail is valid
 	 */
 	public boolean validate() {
 		try {

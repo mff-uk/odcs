@@ -27,7 +27,7 @@ public class DetailClosedEvent extends Event {
 	/**
 	 * Get class of detail.
 	 *
-	 * @return
+	 * @return class of detail
 	 */
 	public Class getDetailClass() {
 		return detailClass;

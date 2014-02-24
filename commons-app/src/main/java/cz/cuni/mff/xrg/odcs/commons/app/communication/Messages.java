@@ -13,15 +13,15 @@ public enum Messages {
 	/**
 	 * Unknown message, or error during communication.
 	 */	
-	UNKNOWN(0)
+	UNKNOWN(0),
 	/**
 	 * Request for database check, probably because of new work.
 	 */
-	,CHECK_DATABASE(1)
+	CHECK_DATABASE(1),
 	/**
 	 * Heartbeat message
 	 */
-	,HEARTBEAT(2);
+	HEARTBEAT(2);
 	
 	/**
 	 * Contains mapping from integers into the messages.

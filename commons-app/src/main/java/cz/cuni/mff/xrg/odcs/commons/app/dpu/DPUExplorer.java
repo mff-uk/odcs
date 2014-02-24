@@ -42,7 +42,7 @@ public class DPUExplorer {
     /**
      * Try to find out given DPU instance type.
      *
-     * @param DPUInstance
+     * @param DPUInstance Dpu instance to get type of.
      * @param relativePath Relative path to the DPU.
      * @return Null if nothing about type can be found.
      */
@@ -66,7 +66,7 @@ public class DPUExplorer {
      * directory. This method does not load DPU into system. The description is
      * length is limited based on {@link LenghtLimits}.
      *
-     * @param dpu {@link DPUTemplateRecord} to explore
+     * @param dpu {@link DPUTemplateRecord} to explore.
      * @return Description stored in manifest file or null in case of error.
      */
     public String getJarDescription(DPUTemplateRecord dpu) {
@@ -87,7 +87,7 @@ public class DPUExplorer {
      * Return list of input {@link DataUnitInfo}'s descriptions for given DPU.
 	 * Need to load instance of given DPU.
      *
-     * @param dpu
+     * @param dpu DPU to get inputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getInputs(DPURecord dpu) {
@@ -115,7 +115,7 @@ public class DPUExplorer {
      * Return list of output {@link DataUnitInfo}'s descriptions for given DPU.
 	 * Need to load instance of given DPU.
      *
-     * @param dpu
+     * @param dpu DPU to get outputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getOutputs(DPURecord dpu) {
@@ -137,7 +137,7 @@ public class DPUExplorer {
     /**
      * Load and return instance of given DPU. Does use {@link #moduleFacade}.
      *
-     * @param dpu
+     * @param dpu DPU to get class of.
      * @return Does not return null.
      */
     private Object getInstance(DPURecord dpu) {

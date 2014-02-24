@@ -23,7 +23,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 
 /**
  * Dialog for Namespace Prefix creation. Called from the
- * {@link #NamespacePrefixes}.
+ * {@link NamespacePrefixes}.
  *
  * @author Maria Kukhar
  *
@@ -66,7 +66,7 @@ public class PrefixCreate extends Window {
 	}
 
 	/**
-	 * The method calls from {@link #NamespacePrefixes} and sets the
+	 * The method calls from {@link NamespacePrefixes} and sets the
 	 * corresponding values of Namespace Prefix to the dialog.
 	 *
 	 * @param selectedPrefix NamespacePrefix that locate in the row of Namespace

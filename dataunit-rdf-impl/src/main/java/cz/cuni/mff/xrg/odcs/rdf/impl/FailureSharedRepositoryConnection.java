@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class responsible for getting shared connection if DB connection failured.
+ * Class responsible for getting shared connection if DB connection fails.
  *
  * @author Jiri Tomes
  */

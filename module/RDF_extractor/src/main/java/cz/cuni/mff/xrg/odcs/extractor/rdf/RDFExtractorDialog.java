@@ -1518,6 +1518,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of SPARQL extractor as string.
+	 *
+	 * @return desription of SPARQL extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();

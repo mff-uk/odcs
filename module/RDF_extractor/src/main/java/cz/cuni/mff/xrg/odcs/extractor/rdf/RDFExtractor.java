@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Extracts RDF data from SPARQL endpoint.
  *
  * @author Jiri Tomes
  * @author Petyr
@@ -33,6 +34,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 	private final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
 
+	/**
+	 * The repository for SPARQL extractor.
+	 */
 	@OutputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -40,6 +44,13 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		super(RDFExtractorConfig.class);
 	}
 
+	/**
+	 * Execute the SPARQL extractor.
+	 *
+	 * @param context SPARQL extractor context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
@@ -105,6 +116,9 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
 						constructQuery, splitConstructSize);
 
+				LOG.debug(
+						"The max size of one data part extracted from SPARQL extractor is set to {} TRIPLES",
+						splitConstructSize);
 				while (true) {
 					String splitConstructQuery = helper.getSplitConstructQuery();
 
@@ -176,6 +190,11 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		}
 	}
 
+	/**
+	 * Returns the configuration dialogue for SPARQL extractor.
+	 *
+	 * @return the configuration dialogue for SPARQL extractor.
+	 */
 	@Override
 	public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
 		return new RDFExtractorDialog();

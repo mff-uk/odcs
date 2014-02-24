@@ -70,18 +70,34 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 		this.toolTip = null;
 	}
 
+	/**
+	 * 
+	 * @return Used {@link DPUTemplateRecord}.
+	 */
 	public DPUTemplateRecord getTemplate() {
 		return template;
 	}
 
+	/**
+	 * 
+	 * @param template New {@link DPUTemplateRecord}.
+	 */
 	public void setTemplate(DPUTemplateRecord template) {
 		this.template = template;
 	}
 
+	/**
+	 * 
+	 * @return Tool tip for the DPU.
+	 */
 	public String getToolTip() {
 		return toolTip;
 	}
 
+	/**
+	 * 
+	 * @param toolTip New DPU tool tip.
+	 */
 	public void setToolTip(String toolTip) {
 		this.toolTip = toolTip;
 	}

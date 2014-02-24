@@ -16,8 +16,8 @@ public interface DPUValidator {
 	 * can be used. If the DPU is invalid then should throw exception
 	 * with message for user.
 	 * 
-	 * @param dpu
-	 * @param dpuInstance
+	 * @param dpu Data object that represent DPU to validate.
+	 * @param dpuInstance Instance of DPU to validate.
 	 * @throws DPUValidatorException
 	 */
 	public void validate(DPUTemplateRecord dpu, Object dpuInstance)

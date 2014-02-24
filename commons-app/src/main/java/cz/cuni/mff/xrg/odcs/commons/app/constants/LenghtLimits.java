@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 
 /**
  * The enum contains length limits based on database schema limitations.
+ * 
  * @author Petyr
  * @author michal.klempa@eea.sk
  */

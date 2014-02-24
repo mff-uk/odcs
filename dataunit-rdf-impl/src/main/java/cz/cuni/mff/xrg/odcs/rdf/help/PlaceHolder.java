@@ -46,8 +46,8 @@ public class PlaceHolder {
 	}
 
 	/**
-	 * Return name of grapf for DPU. If graph has not been set, return
-	 * tempGraphName.
+	 * Returns name of graph for DPU. If graph has not been set, the
+	 * tempGraphName is returned.
 	 *
 	 * @return String value of URI representation of graph set for this DPU
 	 *         name.
