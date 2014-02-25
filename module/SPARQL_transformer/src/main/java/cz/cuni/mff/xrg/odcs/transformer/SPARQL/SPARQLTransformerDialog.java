@@ -304,7 +304,12 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			textFieldQuery.setData(row);
 			textFieldQuery.setValue(item.trim());
 			textFieldQuery.setInputPrompt(
-					"PREFIX br:<http://purl.org/business-register#>\nMODIFY\nDELETE { ?s pc:contact ?o}\nINSERT { ?s br:contact ?o}\nWHERE {\n\t     ?s a gr:BusinessEntity .\n\t      ?s pc:contact ?o\n}");
+					"PREFIX s: <http://schema.org>\n"
+					+ "DELETE { ?address s:geo ?geo}\n"
+					+ "INSERT { ?place s:geo ?geo}\n"
+					+ "WHERE { ?address a s:postalAddress; \n"
+					+ "^s:address ?place; \n"
+					+ "s:geo ?geo .}");
 			textFieldQuery.addValidator(new Validator() {
 				@Override
 				public void validate(Object value) throws InvalidValueException {
