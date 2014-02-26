@@ -14,21 +14,21 @@ config="$HOME/.odcs/config.properties"
 target="odcs-export"
 warfile="frontend/target/odcleanstore.war"
 shellconf="/tmp/odcs-conf.sh"
-isqlv="isql-v"
+isqlv="isql"
 
 usage () {
-        echo "Usage: export [-p path] [-c path] [-v path] odcs-export"
-        echo
-        echo "-p        Path to the project root."
-        echo "          By default directory above the script location is used."
-        echo
-        echo "-c        Path where the backend configuration is to be created."
-        echo "          By default this is the path '$HOME/.odcs/config.properties'"
+	echo "Usage: export [-p path] [-c path] [-v path] odcs-export"
+	echo
+	echo "-p	Path to the project root."
+	echo "  	By default directory above the script location is used."
+	echo
+	echo "-c	Path where the backend configuration is to be created."
+	echo "  	By default this is the path '$HOME/.odcs/config.properties'"
 	echo
 	echo "-v	Command to use for Virtuoso isql client."
-	echo "  	By default 'isql-v' is used."
-        echo
-        echo "-h        Help."
+	echo "  	By default 'isql' is used."
+	echo
+	echo "-h	Help."
 }
 
 while getopts hp:c:t:v: opt; do

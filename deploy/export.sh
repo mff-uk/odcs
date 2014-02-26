@@ -26,8 +26,8 @@ usage () {
 	echo "-t	Path to the directory where the export is to be created."
 	echo "  	By default this is the current working directory."
 	echo
-        echo "-v        Command to use for Virtuoso isql client."
-        echo "          By default 'isql-v' is used."
+	echo "-v	Command to use as Virtuoso dumping tool."
+	echo "  	By default 'dbdump' is used."
 	echo
 	echo "-h	Help."
 }
