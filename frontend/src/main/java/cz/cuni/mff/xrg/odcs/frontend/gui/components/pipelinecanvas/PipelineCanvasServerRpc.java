@@ -44,8 +44,9 @@ public interface PipelineCanvasServerRpc extends ServerRpc {
 	 * @param dpuId Id of moved node.
 	 * @param newX New X coordinate of node.
 	 * @param newY New Y coordinate of node.
+         * @param autoAction If the action was initiated internally.
 	 */
-	public void onDpuMoved(int dpuId, int newX, int newY);
+	public void onDpuMoved(int dpuId, int newX, int newY, boolean autoAction);
 
 	/**
 	 * Occurs on logging a message from graph canvas.
