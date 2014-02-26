@@ -12,9 +12,10 @@ target="odcs-export"
 warfile="frontend/target/odcleanstore.war"
 jarfile="backend/target/backend-*.jar"
 shellconf="/tmp/odcs-conf.sh"
+dumpv="dbdump"
 
 usage () {
-	echo "Usage: export [-b path] [-c path] [-t path]"
+	echo "Usage: export [-p path] [-c path] [-t path] [-v path]"
 	echo
 	echo "-p	Path to the project root."
 	echo "  	By default directory above the script location is used."
@@ -25,14 +26,18 @@ usage () {
 	echo "-t	Path to the directory where the export is to be created."
 	echo "  	By default this is the current working directory."
 	echo
+        echo "-v        Command to use for Virtuoso isql client."
+        echo "          By default 'isql-v' is used."
+	echo
 	echo "-h	Help."
 }
 
-while getopts hp:c:t: opt; do
+while getopts hp:c:t:v: opt; do
 	case $opt in
 		p) basedir="$OPTARG";;
 		c) config="$OPTARG";;
 		t) target="$OPTARG/odcs-export";;
+		v) dumpv="$OPTARG";;
                 *) usage; exit;;
 	esac
 done
@@ -156,7 +161,7 @@ if [ "$database_sql_platform" == "virtuoso" ]; then
 
 	# dump data in relational database for ODCS
 	echo "fk_check_input_values(0);" > "$dbdatafile"
-	dbdump "${database_sql_hostname}:${database_sql_port}" \
+	$dumpv "${database_sql_hostname}:${database_sql_port}" \
 		"$database_sql_user" "$database_sql_password" \
 		tablename=db.odcs.% -c \
         	| sed 's/^EXIT;$//' >> "$dbdatafile"
@@ -176,7 +181,7 @@ if [ "$database_sql_platform" == "mysql" ]; then
 	echo "Dumping data in MySQL database into '${target}/data.sql' ..."
 
 	# dump data
-	echo "SET NAMES '${charset}';" > "${basedir}/data.sql"
+	echo "SET NAMES '${database_sql_charset}';" > "${basedir}/data.sql"
 	mysqldump --skip-triggers --no-create-info \
 		-h"$database_sql_hostname" -u"$database_sql_user" \
 		-p"$database_sql_password" "$database_sql_dbname" >> "${target}/data.sql"
