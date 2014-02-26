@@ -9,34 +9,50 @@
 @import "../reindeer/legacy-styles.css";
 
 /* Menubar */
-.v-menubar {
+.v-menubar-new {
 	background-image: none !important;
-	font-size: 16px;
-	background-color: black !important;
-	line-height: 50px; 
-	text-align: left;
 }
 
-.v-menubar .v-menubar-menuitem {
+.v-menubar-new .v-menubar-menuitem-new {
 	cursor: pointer;
-	height: 50px !important;
-	line-height: 40px !important;
-	border-right: 1px solid;
-	border-left: 1px solid;
-	border-color: #000;
+	font-size: 16px;
+	display: block;
+	text-align: center;
 }
 
-.v-menubar > .v-menubar-menuitem:first-child {
-	/* color: #fff; */
-        font-weight: bold;
-	margin-right: 25px;
+.v-menubar-menuitem-new a {
+	display: block;
+	background-color: black;
+	line-height: 44px;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 
-.v-menubar .v-menubar-menuitem.v-menubar-menuitem-checked {
+.v-menubar-new .v-menubar-menuitem-new a span {
+	color: white; 
+	text-decoration: none;
+}
+
+.v-menubar-new .v-slot:first-child a {
+    font-weight: bold;
+	padding-left: 2em;
+	padding-right: 4em;
+}
+
+.v-menubar-menuitem-checked-new a {
 	/* font-weight: bold; */
 	background-color: #575757;
-	color: #fff;
-	border-color: #666;
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+
+}
+
+.v-menubar-new .v-menubar-menuitem-new a:hover span {
+	color: black;
+}
+
+.v-menubar-new .v-menubar-menuitem-new a:hover  {
+	background-color: grey;
 }
 
 .backendStatus {
