@@ -39,7 +39,7 @@ public class DataUnitUtils {
          * Stores string to a file
          * 
          * @param s String being stored
-         * @param fileName Name of the file
+         * @param filePath  The path to the file
          * @param charset Encoding
          * @return Reference to the created file
          */
