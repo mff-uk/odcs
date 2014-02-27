@@ -6,9 +6,9 @@ INSERT INTO SCH_EMAIL(id,e_user,e_domain)
  VALUES(2,'pdoe','example.com');
 
 INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
- VALUES(1,'jdoe',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
+ VALUES(1,'jdoe',1,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John Doe');
 INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
- VALUES(2,'pdoe',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','Peter Doe');
+ VALUES(2,'pdoe',2,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','Peter Doe');
 
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,0);
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,1);

@@ -299,7 +299,7 @@ CREATE TABLE "DB"."ODCS"."USR_USER"
   "id" INTEGER IDENTITY,
   "username" VARCHAR(25) NOT NULL,
   "email_id" INTEGER,
-  "u_password" CHAR(132) NOT NULL,
+  "u_password" CHAR(142) NOT NULL,
   "full_name" VARCHAR(55),
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),

@@ -183,8 +183,8 @@ INSERT INTO DB.ODCS.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(
 INSERT INTO DB.ODCS.SCH_USR_NOTIFICATION_EMAIL(notification_id,email_id) VALUES(2,2);
 -- Table DB.ODCS.SCH_USR_NOTIFICATION_EMAIL 2 rows output.
 -- SELECT * FROM DB.ODCS.USR_USER
-INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(1,'admin',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin',20);
-INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(2,'user',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John User',20);
+INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(1,'admin',1,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John Admin',20);
+INSERT INTO DB.ODCS.USR_USER(id,username,email_id,u_password,full_name,table_rows) VALUES(2,'user',2,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John User',20);
 -- Table DB.ODCS.USR_USER 2 rows output.
 -- SELECT * FROM DB.ODCS.USR_USER_ROLE
 INSERT INTO DB.ODCS.USR_USER_ROLE(user_id,role_id) VALUES(1,0);
