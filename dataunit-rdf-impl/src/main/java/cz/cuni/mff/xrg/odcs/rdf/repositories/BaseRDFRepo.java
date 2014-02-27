@@ -33,6 +33,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.*;
@@ -801,6 +802,49 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	}
 
+//        @Override 
+//        public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException {
+//
+//            try {
+//                RepositoryConnection connection = getConnection();
+//
+//
+//
+//
+//                StringWriter sw = new StringWriter();
+//                //PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+//                RDFWriter writer = Rio.createWriter(RDFFormat.NTRIPLES, sw);
+//
+//
+//                connection.prepareGraphQuery(QueryLanguage.SPARQL, constructQuery).evaluate(writer);
+//                logger.info("Evaluating query {}", constructQuery);
+//
+//                String out = sw.toString();
+//                logger.debug("Out: {}", sw.toString());
+//                return out;
+//                //return "";
+//
+//
+//
+//            } catch (RepositoryException ex) {
+//                hasBrokenConnection = true;
+//                logger.error("Connection to RDF repository failed. {}", ex
+//                        .getMessage(), ex);
+//            } catch (MalformedQueryException ex) {
+//                logger.error(ex.getLocalizedMessage());
+//            } catch (QueryEvaluationException ex) {
+//                 logger.error(ex.getLocalizedMessage());
+//            } catch (RDFHandlerException ex) {
+//                 logger.error(ex.getLocalizedMessage());
+////            } catch (UnsupportedEncodingException ex) {
+////                java.util.logging.Logger.getLogger(BaseRDFRepo.class.getName()).log(Level.SEVERE, null, ex);
+////            } catch (IOException ex) {
+////                 logger.error(ex.getLocalizedMessage());
+////            }
+//            }
+//            throw new InvalidQueryException("Executing query " + constructQuery + " failed");
+//        }
+//        
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -1689,10 +1733,16 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		RDFParser parser = getRDFParser(fileFormat, handler);
 
 		try {
+                        getConnection().begin();
+                        
 			parser.parse(is, baseURI);
+                        
+                        getConnection().commit();
 		} catch (IOException | RDFParseException | RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
-		}
+		} catch (RepositoryException ex) {
+                    throw new RDFException(ex.getMessage(), ex);
+            }
 	}
 
 	private void setErrorsListenerToParser(RDFParser parser,
