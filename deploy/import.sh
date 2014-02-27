@@ -158,8 +158,13 @@ fi
 
 if [ "$database_sql_platform" == "mysql" ]; then
 
+        # MySQL uses charecter set names without dash
+        # -> make sure it is not there
+        mysql_charset=`echo "$database_sql_charset" | sed 's/-//g'`
+        echo $mysql_charset
+
 	echo "Importing MySQL database ..."
-	echo -e "CREATE DATABASE ${database_sql_dbname} DEFAULT CHARACTER SET ${database_sql_charset};"\
+	echo -e "CREATE DATABASE IF NOT EXISTS ${database_sql_dbname} DEFAULT CHARACTER SET ${mysql_charset};"\
 		"\nUSE ${database_sql_dbname};"\
 		| cat - "${unpackeddir}/schema.sql" "${unpackeddir}/data.sql"\
                 | mysql -h"$database_sql_hostname" -u"$database_sql_user" -p"$database_sql_password"
