@@ -5,22 +5,10 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.RichTextArea;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -28,8 +16,8 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
@@ -54,6 +42,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 @Scope("prototype")
 public class DPUViewImpl extends CustomComponent implements DPUView {
 
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
 	private DPUPresenter presenter;
 	private static final long serialVersionUID = 1L;
 	private VerticalLayout mainLayout;
@@ -67,6 +56,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private TextArea dpuDescription; // description of selected DPU Template
 	private Upload reloadFile; // button for reload JAR file
 	private FileUploadReceiver fileUploadReceiver;
+	/**
+	 * Window with upload info.
+	 */
 	public static UploadInfoWindow uploadInfoWindow;
 	private boolean errorExtension = false;
 	private Label jarPath;
@@ -76,7 +68,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 */
 	private TabSheet tabSheet;
 	private OptionGroup groupVisibility; // Visibility of DPU Template: public or private
-	private GridLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
+	private HorizontalLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
 	private HorizontalLayout buttonDpuBar; // Layout contains action buttons of DPU Template details.
 	private HorizontalLayout layoutInfo; // Layout with the information that no DPU template was selected.
 	/**
@@ -92,14 +84,20 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private static final Logger LOG = LoggerFactory.getLogger(ViewComponent.class);
 	private Button buttonSaveDPU;
 	private String tabname;
+	private Page.BrowserWindowResizeListener resizeListener = null;
+	private Panel dpuTreePanel;
 
+	/**
+	 * Constructor.
+	 */
 	public DPUViewImpl() {
 	}
 
 	@Override
 	public Object enter(DPUPresenter presenter) {
 		this.presenter = presenter;
-		buildMainLayout();
+		setupResizeListener();
+				buildMainLayout();
 		setCompositionRoot(mainLayout);
 		return this;
 	}
@@ -149,6 +147,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
 
 		Button buttonImportDPU = new Button();
+		buttonImportDPU.setVisible(false);
 		buttonImportDPU.setCaption("Import DPU template");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("150px");
@@ -165,6 +164,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonBar.addComponent(buttonImportDPU);
 
 		Button buttonExportAll = new Button();
+		buttonExportAll.setVisible(false);
 		buttonExportAll.setCaption("Export All");
 		buttonExportAll.setHeight("25px");
 		buttonExportAll.setWidth("150px");
@@ -196,13 +196,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 * @return dpuLayout GridLayout contains {@link DPUTree} and
 	 * {@link #buildDPUDetailLayout}.
 	 */
-	private GridLayout buildDpuLayout() {
+	private HorizontalLayout buildDpuLayout() {
 
-		dpuLayout = new GridLayout(3, 1);
+		dpuLayout = new HorizontalLayout();
+		dpuLayout.setSizeFull();
 		dpuLayout.setSpacing(true);
-		dpuLayout.setHeight(630, Unit.PIXELS);
-		dpuLayout.setRowExpandRatio(0, 0.01f);
-		dpuLayout.setRowExpandRatio(1, 0.99f);
+//		dpuLayout.setRowExpandRatio(0, 0.01f);
+//		dpuLayout.setRowExpandRatio(1, 0.99f);
+//		
+//		dpuLayout.setColumnExpandRatio(0, 0.2f);
+//		dpuLayout.setColumnExpandRatio(1, 1);
+//		dpuLayout.setColumnExpandRatio(2, 1);
 
 		// Layout with the information that no DPU template was selected.
 		layoutInfo = new HorizontalLayout();
@@ -229,9 +233,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				}
 			});
 		}
+		dpuTree.setSizeUndefined();
 
-		dpuLayout.addComponent(dpuTree, 0, 0);
-		dpuLayout.addComponent(layoutInfo, 2, 0);
+		dpuTreePanel = new Panel();
+		setDpuTreeMaxHeight(Page.getCurrent().getBrowserWindowHeight());
+		dpuTreePanel.setWidth("-1px");
+		dpuTreePanel.setContent(dpuTree);
+
+		dpuLayout.addComponent(dpuTreePanel);
+		dpuLayout.addComponent(layoutInfo);
+		dpuLayout.setExpandRatio(layoutInfo, 5);
+		dpuLayout.setExpandRatio(dpuTreePanel, 0);
 
 		return dpuLayout;
 	}
@@ -250,11 +262,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuDetailLayout.setImmediate(true);
 		dpuDetailLayout.setStyleName("dpuDetailLayout");
 		dpuDetailLayout.setMargin(true);
+		dpuDetailLayout.setSizeFull();
 
 		//DPU Details TabSheet
 		tabSheet = new TabSheet();
-		tabSheet.setWidth(630, Unit.PIXELS);
-		tabSheet.setHeight(350, Unit.PIXELS);
+		tabSheet.setSizeFull();
 		tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -288,7 +300,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		verticalLayoutConfigure.setCaption("configuration");
 		tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
 		tabSheet.setSelectedTab(dataTab);
-		if (selectedDpuWrap!= null) {
+		if (selectedDpuWrap != null) {
 			AbstractConfigDialog<DPUConfigObject> configDialog = null;
 			//getting configuration dialog of selected DPU Template
 			try {
@@ -339,9 +351,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private HorizontalLayout buildDPUButtonBar() {
 
 		buttonDpuBar = new HorizontalLayout();
-		buttonDpuBar.setWidth("100%");
-		buttonDpuBar.setHeight(30, Unit.PIXELS);
-		buttonDpuBar.setSpacing(false);
+		buttonDpuBar.setSizeUndefined();
+		buttonDpuBar.setHeight("30px");
+		buttonDpuBar.setSpacing(true);
 
 		final DPUTemplateRecord selectedDpu = selectedDpuWrap.getDPUTemplateRecord();
 
@@ -350,12 +362,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonCopyDPU.setCaption("Copy");
 		buttonCopyDPU.setHeight("25px");
 		buttonCopyDPU.setWidth("100px");
-		if (selectedDpu.getParent() != null) {
-			// check permissions .. 
-			buttonCopyDPU.setEnabled(presenter.hasPermission("copy"));
-		} else {
-			buttonCopyDPU.setEnabled(false);
-		}
 		buttonCopyDPU.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -369,9 +375,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			}
 		});
 		buttonDpuBar.addComponent(buttonCopyDPU);
-		buttonDpuBar.setExpandRatio(buttonCopyDPU, 0.85f);
-		buttonDpuBar
-				.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
+		buttonDpuBar.setComponentAlignment(buttonCopyDPU, Alignment.BOTTOM_LEFT);
 
 		// Delete DPU Template Button
 		Button buttonDeleteDPU = new Button();
@@ -401,12 +405,12 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			}
 		});
 		buttonDpuBar.addComponent(buttonDeleteDPU);
-		buttonDpuBar.setExpandRatio(buttonDeleteDPU, 0.85f);
 		buttonDpuBar.setComponentAlignment(buttonDeleteDPU,
 				Alignment.BOTTOM_LEFT);
 
 		// Export DPU Template Button
 		Button buttonExportDPU = new Button();
+		buttonExportDPU.setVisible(false);
 		buttonExportDPU.setCaption("Export");
 		buttonExportDPU.setHeight("25px");
 		buttonExportDPU.setWidth("100px");
@@ -419,7 +423,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			}
 		});
 		buttonDpuBar.addComponent(buttonExportDPU);
-		buttonDpuBar.setExpandRatio(buttonExportDPU, 2.55f);
 		buttonDpuBar.setComponentAlignment(buttonExportDPU,
 				Alignment.BOTTOM_LEFT);
 
@@ -573,7 +576,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
 		groupVisibility.addItem(ShareType.PRIVATE);
+		groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
 		groupVisibility.addItem(ShareType.PUBLIC_RO);
+		groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
 		dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
 		// JAR path of DPU Template.
@@ -582,10 +587,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		jarPathLayout.setSpacing(true);
 		jarPathLayout.setHeight("100%");
 		dpuSettingsLayout.addComponent(new Label("JAR path:"), 0, 3);
-		
+
 		jarPath = new Label();
-		String jarPathText = selectedDpuWrap.getDPUTemplateRecord().getJarPath(); 
-		if(jarPathText.length() > 64) {
+		String jarPathText = selectedDpuWrap.getDPUTemplateRecord().getJarPath();
+		if (jarPathText.length() > 64) {
 			jarPath.setValue("..." + jarPathText.substring(jarPathText.length() - 61));
 		} else {
 			jarPath.setValue(jarPathText);
@@ -669,7 +674,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		jDescription.setValue(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
 		jDescription.setReadOnly(true);
 		jDescription.setWidth("100%");
-		
+
 		dpuSettingsLayout.addComponent(jDescription, 1, 4);
 
 		verticalLayoutData.addComponent(dpuSettingsLayout);
@@ -689,7 +694,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		}
 		boolean configChanged = false;
 		try {
-			if (selectedDpuWrap.getDialog() != null) {			
+			if (selectedDpuWrap.getDialog() != null) {
 				configChanged = selectedDpuWrap.getDialog().hasConfigChanged();
 			}
 		} catch (FileNotFoundException e) {
@@ -725,6 +730,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			return false;
 		}
 	}
+
 	/**
 	 * Store DPU Template record to DB
 	 */
@@ -755,10 +761,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			// crate new wrap
 			selectedDpuWrap = new DPUTemplateWrap(dpu);
 
-			dpuLayout.removeComponent(dpuDetailLayout);
+			if (dpuDetailLayout != null) {
+				dpuLayout.removeComponent(dpuDetailLayout);
+			}
 			dpuLayout.removeComponent(layoutInfo);
 			dpuDetailLayout = buildDPUDetailLayout();
-			dpuLayout.addComponent(dpuDetailLayout, 1, 0);
+			dpuLayout.addComponent(dpuDetailLayout, 1);
+			dpuLayout.setExpandRatio(dpuDetailLayout, 5);
 
 			// show/hide replace button
 			reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
@@ -768,7 +777,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		} else {
 			dpuLayout.removeComponent(dpuDetailLayout);
 			dpuLayout.removeComponent(layoutInfo);
-			dpuLayout.addComponent(layoutInfo, 2, 0);
+			dpuLayout.addComponent(layoutInfo, 1);
 		}
 	}
 
@@ -806,8 +815,12 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 //		instancesTable.setVisibleColumns((Object[]) visibleCols);
 //		instancesTable.setColumnHeaders(headers);
 
+		instancesTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
 		instancesTable.addGeneratedColumn("actions",
 				createActionColumn());
+
+		instancesTable.setVisibleColumns("actions", "name");
+		instancesTable.setColumnCollapsingAllowed(true);
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
@@ -817,6 +830,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		return verticalLayoutInstances;
 	}
 
+	/**
+	 * Validate DPU detail.
+	 *
+	 * @return If DPU detail is valid
+	 */
 	public boolean validate() {
 		try {
 			dpuName.validate();
@@ -859,29 +877,62 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	private ActionColumnGenerator createActionColumn() {
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 
-		generator.addButton("Detail", "70px", new ActionColumnGenerator.Action() {
+		// prepare pipeline detail button
+		ActionColumnGenerator.Action detailAction = new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineDetailEventHandler(id);
 			}
-		});
+		};
+		ActionColumnGenerator.ButtonShowCondition detailShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.showPipelineDetailButton(id);
+			}
+		};
 
-		//Delete button. Delete pipeline.
-		generator.addButton("Delete", "70px", new ActionColumnGenerator.Action() {
+		// prepare pipeline delete button
+		ActionColumnGenerator.Action deleteAction = new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineDeleteEventHandler(id);
+				tableData.removeItem(id);
 			}
-		});
+		};
+		ActionColumnGenerator.ButtonShowCondition deleteShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.showPipelineDeleteButton(id);
+			}
+		};
 
-		//Status button
-		generator.addButton("Status", "70px", new ActionColumnGenerator.Action() {
+		// add buttons to column generator
+		generator.addButton("Detail", null, detailAction, detailShowCondition, new ThemeResource("icons/gear.png"));
+		generator.addButton("Delete", null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.png"));
+		generator.addButton("Status", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.pipelineStatusEventHandler(id);
 			}
-		});
+		}, new ThemeResource("icons/log.png"));
 
 		return generator;
+	}
+
+	private void setupResizeListener() {
+		if (resizeListener == null) {
+			resizeListener = new Page.BrowserWindowResizeListener() {
+				@Override
+				public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+					setDpuTreeMaxHeight(event.getHeight());
+				}
+			};
+		}
+		Page.getCurrent().removeBrowserWindowResizeListener(resizeListener);
+		Page.getCurrent().addBrowserWindowResizeListener(resizeListener);
+	}
+
+	private void setDpuTreeMaxHeight(int windowHeight) {
+		dpuTreePanel.setHeight(windowHeight - 120, Unit.PIXELS);
 	}
 }

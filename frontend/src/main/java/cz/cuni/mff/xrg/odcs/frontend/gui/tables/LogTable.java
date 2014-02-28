@@ -4,9 +4,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -24,18 +22,17 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import ch.qos.logback.classic.Level;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractSelect;
-import java.util.LinkedList;
+import com.vaadin.ui.Embedded;
+import org.springframework.web.util.HtmlUtils;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -48,29 +45,21 @@ import org.tepi.filtertable.datefilter.DateInterval;
 public class LogTable extends CustomComponent {
 
 	private VerticalLayout mainLayout;
-
 	private IntlibPagedTable table;
-
 	private PipelineExecution execution;
-
 	private FilterGenerator filterGenerator;
-
 	private LogMessageDetail detail = null;
-
 	/**
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
-	private final CachedSource<Log> dataSouce;
-
+	private final DbCachedSource<Log> dataSouce;
 	private final ReadOnlyContainer<Log> container;
-
 	/**
 	 * Contains names of {@link DPUInstanceRecord}s. Used as a cache for
 	 * generated column.
 	 */
 	private final Map<Long, String> dpuNames = new HashMap<>();
-
 	private final LogFacade logFacade;
 
 	/**
@@ -80,7 +69,7 @@ public class LogTable extends CustomComponent {
 	 * @param logFacade
 	 * @param pageLenght
 	 */
-	public LogTable(CachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
+	public LogTable(DbCachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
 		this.logFacade = logFacade;
@@ -99,6 +88,7 @@ public class LogTable extends CustomComponent {
 		table.setSelectable(true);
 		table.setImmediate(true);
 		table.setSizeFull();
+		table.setColumnCollapsingAllowed(true);
 
 		table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 			@Override
@@ -123,26 +113,37 @@ public class LogTable extends CustomComponent {
 				return dpuNames.get(dpuId);
 			}
 		});
+		table.setColumnWidth("timestamp", 115);
+		table.setColumnWidth("logLevel", 32);
+		table.setColumnAlignment("logLevel", CustomTable.Align.CENTER);
 		table.addGeneratedColumn("logLevel", new CustomTable.ColumnGenerator() {
 			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Integer level = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
-				return Level.toLevel(level);
+			public Object generateCell(CustomTable source, Object itemId,
+					Object columnId) {
+
+				Integer levelInt = (Integer) source.getItem(itemId).getItemProperty(columnId).getValue();
+				if (levelInt == null) {
+					return null;
+				}
+				Level level = Level.toLevel(levelInt);
+				ThemeResource img = getIconForLevel(level);
+				Embedded emb = new Embedded(level.levelStr, img);
+				emb.setDescription(level.levelStr);
+				return emb;
 			}
 		});
-//		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
-//
-//			@Override
-//			public String generateDescription(Component source, Object itemId, Object propertyId) {
-//				if(itemId != null && "message".equals(propertyId)) {
-//					Object fullMessage = (String) ((CustomTable)source).getItem(itemId).getItemProperty(propertyId).getValue();
-//					if(fullMessage != null) {
-//						return "TEST";//(String)fullMessage;
-//					}
-//				}
-//				return null;
-//			}
-//		});
+		table.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+			@Override
+			public String generateDescription(Component source, Object itemId, Object propertyId) {
+				if (itemId != null && "message".equals(propertyId)) {
+					String fullMessage = (String) ((CustomTable) source).getItem(itemId).getItemProperty("message").getValue();
+					if (fullMessage != null) {
+						return HtmlUtils.htmlEscape(fullMessage);
+					}
+				}
+				return null;
+			}
+		});
 
 		// add filter generation
 		ComboBox levelSelector = new ComboBox();
@@ -151,6 +152,7 @@ public class LogTable extends CustomComponent {
 		levelSelector.addItem(Level.ALL);
 		for (Level level : logFacade.getAllLevels()) {
 			levelSelector.addItem(level);
+			levelSelector.setItemIcon(level, getIconForLevel(level));
 			levelSelector.setItemCaption(level, level.toString() + "+");
 		}
 
@@ -167,27 +169,23 @@ public class LogTable extends CustomComponent {
 		mainLayout.addComponent(table);
 		mainLayout.addComponent(table.createControls());
 
-		Button download = new Button("Download");
-		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
-			@Override
-			public String getFilename() {
-				return "log.txt";
-			}
-
-			@Override
-			public InputStream getStream() {
-				// we need used filters
-				LinkedList<Object> filters = new LinkedList<>();
-				filters.addAll(dataSouce.getFilters());
-				filters.addAll(dataSouce.getFiltersCore());
-				// and now we used them to get data ..
-				return logFacade.getLogsAsStream(filters);
-			}
-		});
-		fileDownloader.extend(download);
-		mainLayout.addComponent(download);
 		setCompositionRoot(mainLayout);
+	}
 
+	private ThemeResource getIconForLevel(Level level) {
+		ThemeResource img = null;
+		if (level == Level.INFO) {
+			img = new ThemeResource("icons/log.png");
+		} else if (level == Level.DEBUG) {
+			img = new ThemeResource("icons/debug.png");
+		} else if (level == Level.WARN) {
+			img = new ThemeResource("icons/warning.png");
+		} else if (level == Level.ERROR) {
+			img = new ThemeResource("icons/error.png");
+		} else if (level == Level.TRACE) {
+			img = new ThemeResource("icons/trace.png");
+		}
+		return img;
 	}
 
 	private ComboBox refreshDpuSelector() {
@@ -204,7 +202,9 @@ public class LogTable extends CustomComponent {
 		if (isRunning(execution)) {
 
 			Node debugNode = execution.getDebugNode();
-			DependencyGraph dependencyGraph = debugNode == null ? new DependencyGraph(execution.getPipeline().getGraph()) : new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
+			DependencyGraph dependencyGraph = debugNode == null
+					? new DependencyGraph(execution.getPipeline().getGraph())
+					: new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
 			GraphIterator iterator = dependencyGraph.iterator();
 			while (iterator.hasNext()) {
 				DPUInstanceRecord item = iterator.next().getDpuInstance();
@@ -278,7 +278,7 @@ public class LogTable extends CustomComponent {
 	 * Reload data from source, do not refresh the source it self!!
 	 *
 	 * @param exec
-	 * @return
+	 * @return If data were refreshed
 	 */
 	public boolean refresh(PipelineExecution exec) {
 		this.execution = exec;
@@ -394,6 +394,11 @@ public class LogTable extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set table page length.
+	 *
+	 * @param pageLength New table page length.
+	 */
 	public void setPageLength(int pageLength) {
 		table.setPageLength(pageLength);
 	}

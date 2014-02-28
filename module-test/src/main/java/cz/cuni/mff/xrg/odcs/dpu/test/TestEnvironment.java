@@ -17,26 +17,33 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.dataunit.file.ManageableFileDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Hold environment used to test DPU.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 public class TestEnvironment {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(TestEnvironment.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+			TestEnvironment.class);
 
 	/**
 	 * Configuration used to access virtuoso. If tests use Virtuoso then this
@@ -73,16 +80,18 @@ public class TestEnvironment {
 	 * Factory for {@link DataUnit}s classes.
 	 */
 	private final DataUnitFactory dataUnitFactory;
-	
+
 	private TestEnvironment(File workingDirectory) {
 		this.context = new TestContext();
+		context.setWorkingDirectory(workingDirectory);
+
 		this.workingDirectory = workingDirectory;
 		this.dataUnitFactory = new DataUnitFactory(workingDirectory);
 	}
 
 	/**
-	 * Create test environment. As working directory is used tmp file.
-	 * 
+	 * Create test environment. As working directory is used temp file.
+	 *
 	 * @return Test environment.
 	 */
 	public static TestEnvironment create() {
@@ -92,76 +101,85 @@ public class TestEnvironment {
 
 	/**
 	 * Create test environment.
-	 * 
+	 *
 	 * @param directory Working directory.
 	 * @return Test environment.
 	 */
 	public static TestEnvironment create(File directory) {
 		final String testDirName = "odcs_test_"
 				+ Long.toString((new Date()).getTime());
-		
+
 		return new TestEnvironment(new File(directory, testDirName));
 	}
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
-
 	/**
-	 * Set path that is used like jar-path during execution.
-	 * 
-	 * @param jarPath
+	 * Set path that is used like jar-path during execution. This value will 
+	 * be used during test execution if DPU asks for it.
+	 *
+	 * @param jarPath path to the jar file.
 	 */
 	public void setJarPath(String jarPath) {
 		context.setJarPath(jarPath);
 	}
 
 	/**
-	 * Set time for last execution.
-	 * 
-	 * @param lastExecution 
+	 * Set time for last execution. This value will  be used during test 
+	 * execution if DPU asks for it.
+	 *
+	 * @param lastExecution Time of last execution.
 	 */
 	public void setLastExecution(Date lastExecution) {
 		context.setLastExecution(lastExecution);
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param workingDirectory the workingDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 *                         subdirectory in {@link #workingDirectory}
 	 */
 	public void setWorkingDirectory(File workingDirectory) {
 		context.setWorkingDirectory(workingDirectory);
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param resultDirectory the resultDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 *                        subdirectory in {@link #workingDirectory}
 	 */
 	public void setResultDirectory(File resultDirectory) {
 		context.setResultDirectory(resultDirectory);
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param globalDirectory the globalDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 *                        subdirectory in {@link #workingDirectory}
 	 */
 	public void setGlobalDirectory(File globalDirectory) {
 		context.setGlobalDirectory(globalDirectory);
 	}
 
 	/**
+	 * This value will be used during test execution if DPU asks for it.
+	 * 
 	 * @param userDirectory the userDirectory to set, use null to use
-	 * subdirectory in {@link#rootDirectory}
+	 *                      subdirectory in {@link #workingDirectory}
 	 */
 	public void setUserDirectory(File userDirectory) {
 		context.setUserDirectory(userDirectory);
 	}
-	
+
 	/**
 	 * Set given {@link ManagableDataUnit} as an input. If there already is
 	 * another value for given name it is overridden. The old
 	 * {@link ManagableDataUnit} is not released.
-	 * 
-	 * @param name Name of dataUnit.
-	 * @param dataUnit
+	 *
+	 * @param name     Name of dataUnit.
+	 * @param dataUnit DataUnit to add as input.
 	 */
 	public void addInput(String name, ManagableDataUnit dataUnit) {
 		inputDataUnits.put(name, dataUnit);
@@ -171,53 +189,57 @@ public class TestEnvironment {
 	 * Set {@link ManagableDataUnit} where should the data, from output
 	 * DataUnit, be stored. If there is other setting for given name then it is
 	 * overwritten.
-	 * 
+	 *
 	 * The data in given {@link ManagableDataUnit} may not be accessible after
 	 * call of {@link #release()}.
-	 * 
+	 *
 	 * If there already is another value for given name it is overridden. The
 	 * old {@link ManagableDataUnit} is not released.
-	 * 
-	 * @param name Name of dataUnit.
-	 * @param dataUnit
+	 *
+	 * @param name     Name of dataUnit.
+	 * @param dataUnit DataUnit to add as output.
 	 */
 	public void addOutput(String name, ManagableDataUnit dataUnit) {
 		outputDataUnits.put(name, dataUnit);
 	}
 
 	/**
-	 * Create input {@link RdfDataUnit} that is used in test environment.
-	 * 
-	 * @param name Name.
+	 * Create input {@link RDFDataUnit} that is used in test environment.
+	 *
+	 * @param name        Name of DataUnit.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @return Created input data unit.
+	 * @return Created input {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
+				useVirtuoso);
 		addInput(name, rdf);
 		return rdf;
 	}
 
 	/**
-	 * Create input {@link RdfDataUnit} and populate it with data from given
-	 * file. Created {@link RdfDataUnit} is used in test environment.
-	 * 
+	 * Create input {@link RDFDataUnit} and populate it with data from given
+	 * file. Created {@link RDFDataUnit} is used in test environment.
+	 *
 	 * The data are loaded from file in test\resources.
-	 * 
-	 * @param name Name.
-	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @param resourceName Name of resource file. The path to the resource file should be relative with respect to src/test/resources folder
-	 * @param format Format of input file.
-	 * @return Created input data unit.
+	 *
+	 * @param name         Name of DataUnit.
+	 * @param useVirtuoso  If true then Virtuoso is used as a storage.
+	 * @param resourceName Name of resource file. The path to the resource file
+	 *                     should be relative with respect to src/test/resources
+	 *                     folder
+	 * @param format       Format of input file.
+	 * @return Created input {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfInputFromResource(String name,
 			boolean useVirtuoso,
 			String resourceName,
 			RDFFormat format) throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
+				useVirtuoso);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resourceName);
@@ -234,32 +256,121 @@ public class TestEnvironment {
 	}
 
 	/**
-	 * Create output {@link RdfDataUnit}, add it to the test environment and
+	 * Create output {@link RDFDataUnit}, add it to the test environment and
 	 * return it.
-	 * 
-	 * @param name Name.
+	 *
+	 * @param name        Name of DataUnit.
 	 * @param useVirtuoso If true then Virtuoso is used as a storage.
-	 * @return Created RDFDataUnit.
+	 * @return Created output {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		RDFDataUnit rdf = dataUnitFactory.createRdfDataUnit(name, useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
+				useVirtuoso);
 		addOutput(name, rdf);
 		return rdf;
 	}
 
-	// - - - - - - - - - method for test execution - - - - - - - - - //
+	/**
+	 * Create file data unit, add it as an input and return reference to it.
+	 *
+	 * @param name Name of DataUnit.
+	 * @param dir  Root folder, where data unit can store data. Should be empty.
+	 * @return Created input {@link FileDataUnit}.
+	 */
+	public FileDataUnit createFileInput(String name, File dir) {
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addInput(name, file);
+		return file;
+	}
 
+	/**
+	 * Create file data unit, add it as an input and return reference to it. The
+	 * file data unit is created in temp directory and data from given resource
+	 * path are added to the root.
+	 *
+	 * @param name Name of DataUnit.
+	 * @param resourceName Path to the resources.
+	 * @return Created input {@link FileDataUnit}.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
+	 */
+	public FileDataUnit createFileInputFromResource(String name,
+			String resourceName)
+			throws DataUnitException {
+		File dir = new File(FileUtils.getTempDirectory(),
+				"odcs-file-test-" + Long.toString(System.nanoTime()));
+		dir.mkdirs();
+
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		// add from resources
+		URL url = Thread.currentThread().getContextClassLoader()
+				.getResource(resourceName);
+
+		// check ..
+		if (url == null) {
+			throw new RDFException("Missing input file in resource for: "
+					+ resourceName);
+		}
+
+		DirectoryHandler dh = file.getRootDir();
+		File resourceRoot = new File(url.getPath());
+
+		//if the resource is a directory: 
+		if (resourceRoot.isDirectory()) {
+			for (File toAdd : resourceRoot.listFiles()) {
+				dh.addExistingDirectory(toAdd, new OptionsAdd(true));
+			}
+		} else {
+			//add single resource (file)
+			dh.addExistingFile(resourceRoot, new OptionsAdd(true));
+		}
+
+		addInput(name, file);
+		return file;
+	}
+
+	/**
+	 * Create file data unit, add it as an input and return reference to it.
+	 *
+	 * @param name Name of DataUnit.
+	 * @param dir  Root folder, where data unit can store data. Should be empty.
+	 * @return Created output {@link FileDataUnit}.
+	 */
+	public FileDataUnit createFileOutput(String name, File dir) {
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addOutput(name, file);
+		return file;
+	}
+
+	/**
+	 * Create file data unit, add it as an input and return reference to it. As
+	 * a directory use temp director.
+	 *
+	 * @param name Name of DataUnit.
+	 * @return Created output {@link FileDataUnit}.
+	 * @throws java.io.IOException
+	 */
+	public FileDataUnit createFileOutput(String name) throws IOException {
+		File dir = new File(FileUtils.getTempDirectory(),
+				"odcs-file-test-" + Long.toString(System.nanoTime()));
+		dir.mkdirs();
+
+		ManageableFileDataUnit file = FileDataUnitFactory.create(name, dir);
+		addOutput(name, file);
+		return file;
+	}
+
+	// - - - - - - - - - method for test execution - - - - - - - - - //
 	/**
 	 * Run given DPU in the test environment. The test environment is not reset
 	 * before or after the test. If the test working directory should be deleted
 	 * then is deleted at the end of this method same as all the
 	 * {@link DataUnit}s
-	 * 
+	 *
 	 * Any thrown exception is passed. In every case the {@link #release()}
 	 * method must be called in order to release test data.
-	 * 
+	 *
 	 * @param dpuInstance Instance of DPU to run.
 	 * @return False if the execution failed by sending error message
 	 * @throws java.lang.Exception
@@ -301,19 +412,17 @@ public class TestEnvironment {
 	}
 
 	// - - - - - - - - - methods for examining the results - - - - - - - - - //
-
 	/**
 	 * Return context used during tests. Return null before call of
-	 * {@link #run(Class)} method.
-	 * 
-	 * @return
+	 * {@link #run(cz.cuni.mff.xrg.odcs.commons.dpu.DPU)} method.
+	 *
+	 * @return Context used during testing.
 	 */
 	public TestContext getContext() {
 		return context;
 	}
 
 	// - - - - - - - - - - - - methods for dpu setup - - - - - - - - - - - - //
-
 	private ManagableDataUnit getInputDataUnit(Field field, String name) {
 		if (inputDataUnits.containsKey(name)) {
 			// check type
@@ -348,6 +457,13 @@ public class TestEnvironment {
 		return null;
 	}
 
+	/**
+	 * Connect data units from {@link #inputDataUnits} and {@link #outputDataUnits}
+	 * to the given DPU instance.
+	 * 
+	 * @param dpuInstance DPU instance object.
+	 * @throws Exception 
+	 */
 	private void connectDataUnits(DPU dpuInstance) throws Exception {
 		// add inputs
 		List<AnnotationContainer<InputDataUnit>> inputAnnotations = AnnotationGetter
@@ -359,7 +475,7 @@ public class TestEnvironment {
 				// missing non option dataUnit
 				throw new Exception(
 						"Test failure missing import mandatory DataUnit: "
-								+ item.getAnnotation().name());
+						+ item.getAnnotation().name());
 			}
 
 			item.getField().set(dpuInstance, dataUnit);

@@ -24,7 +24,7 @@ public class AddQueryGraphsTest {
 	private static String GRAPH_NAME;
 
 	@BeforeClass
-	public static void inicialize() {
+	public static void initialize() {
 		repository = RDFDataUnitFactory.createLocalRDFRepo("Local repository");
 		GRAPH_NAME = repository.getDataGraph().toString();
 	}
@@ -94,7 +94,6 @@ public class AddQueryGraphsTest {
 	private void compareQueries(String originalQuery, String expectedQuery) {
 
 		String returnedQuery = repository.AddGraphToUpdateQuery(originalQuery);
-		System.out.println("RETURNED:\n" + returnedQuery + "AAAAAAAAAAAAA");
 
 		boolean areSame = expectedQuery.equals(returnedQuery);
 		assertTrue("Queries are not SAME", areSame);

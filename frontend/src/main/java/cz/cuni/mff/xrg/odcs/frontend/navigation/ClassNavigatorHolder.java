@@ -29,10 +29,20 @@ public class ClassNavigatorHolder implements ClassNavigator {
 		navigator.navigateTo(target, parameters);
 	}
 	
+	/**
+	 * Sets navigator.
+	 * 
+	 * @param navigator Navigator to use.
+	 */
 	public void setNavigator(ClassNavigator navigator) {
 		this.navigator = navigator;
 	}
 	
+	/**
+	 * 
+	 * Gets current navigator.
+	 * @return Navigator.
+	 */
 	public ClassNavigator getNavigator() {
 		return this.navigator;
 	}

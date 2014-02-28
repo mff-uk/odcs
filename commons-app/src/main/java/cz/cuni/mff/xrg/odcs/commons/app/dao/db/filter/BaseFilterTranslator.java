@@ -1,11 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 /**
  * Translator for filters from this package.
@@ -30,22 +27,24 @@ class BaseFilterTranslator implements FilterTranslator {
 
 		if (filter instanceof Compare) {
 			Compare compare = (Compare) filter;
-
 			switch (compare.type) {
 				case EQUAL:
 					return cb.equal(property, compare.propertyValue);
 				case GREATER:
-					return cb.greaterThan(property, (Comparable) compare.propertyValue);
+					return cb.greaterThan(property,
+							(Comparable) compare.propertyValue);
 				case GREATER_OR_EQUAL:
-					return cb.greaterThanOrEqualTo(property, (Comparable) compare.propertyValue);
+					return cb.greaterThanOrEqualTo(property,
+							(Comparable) compare.propertyValue);
 				case LESS:
-					return cb.lessThan(property, (Comparable) compare.propertyValue);
+					return cb.lessThan(property,
+							(Comparable) compare.propertyValue);
 				case LESS_OR_EQUAL:
-					return cb.lessThanOrEqualTo(property, (Comparable) compare.propertyValue);
+					return cb.lessThanOrEqualTo(property,
+							(Comparable) compare.propertyValue);
 				default:
 					return null;
 			}
-
 		} else {
 			// unknown filter
 			return null;
@@ -56,11 +55,12 @@ class BaseFilterTranslator implements FilterTranslator {
 	/**
 	 * Gets property path.
 	 *
-	 * @param root the root where path starts form
+	 * @param root       the root where path starts form
 	 * @param propertyId the property ID
 	 * @return the path to property
 	 */
-	private Path<Object> getPropertyPath(final Root<?> root, final Object propertyId) {
+	private Path<Object> getPropertyPath(final Root<?> root,
+			final Object propertyId) {
 		final String[] propertyIdParts = ((String) propertyId).split("\\.");
 
 		Path<Object> path = null;
@@ -72,6 +72,45 @@ class BaseFilterTranslator implements FilterTranslator {
 			}
 		}
 		return path;
+	}
+
+	@Override
+	public FilterExplanation explain(Object filter) {
+		if (filter instanceof BaseFilter) {
+			// ok, continue
+		} else {
+			return null;
+		}
+
+		if (filter instanceof Compare) {
+			Compare compare = (Compare) filter;
+			String operation;
+			switch (compare.type) {
+				case EQUAL:
+					operation = "==";
+					break;
+				case GREATER:
+					operation = ">";
+					break;
+				case GREATER_OR_EQUAL:
+					operation = ">=";
+					break;
+				case LESS:
+					operation = "<";
+					break;
+				case LESS_OR_EQUAL:
+					operation = "<=";
+					break;
+				default:
+					return null;
+			}
+			
+			return new FilterExplanation(compare.propertyName, operation,
+					compare.propertyValue);
+		} else {
+			// unknown filter
+			return null;
+		}
 	}
 
 }

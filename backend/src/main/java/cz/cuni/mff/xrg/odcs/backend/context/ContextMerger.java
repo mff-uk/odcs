@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.DataUnitMergerInstructions;
+import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
@@ -51,7 +51,7 @@ class ContextMerger {
 			return "";
 		}
 
-		String[] rules = instruction.split(DataUnitMergerInstructions.Separator
+		String[] rules = instruction.split(EdgeInstructions.Separator
 				.getValue());
 		for (String item : rules) {
 			String[] elements = item.split(" ", 2);
@@ -101,7 +101,7 @@ class ContextMerger {
 			} else {
 				String[] cmdSplit = cmd.split(" ");
 				if (cmdSplit[0]
-						.compareToIgnoreCase(DataUnitMergerInstructions.Rename
+						.compareToIgnoreCase(EdgeInstructions.Rename
 								.getValue()) == 0) {
 					// renaming .. we need second arg
 					if (cmdSplit.length == 2) {

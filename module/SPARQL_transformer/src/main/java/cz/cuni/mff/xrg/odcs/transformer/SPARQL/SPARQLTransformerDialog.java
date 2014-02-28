@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 
@@ -12,7 +12,12 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.
@@ -22,25 +27,25 @@ import java.util.List;
  */
 public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerConfig> {
 
-	private static final long serialVersionUID = 1L;
-
 	private GridLayout mainLayout;
-
-	private TextArea txtQuery;
 
 	private Label labelUpQuer;
 
-	/**
-	 * SPARQL VALIDATOR - default false.
-	 */
-	private boolean isQueryValid = false;
+	private GridLayout gridLayoutQuery;
+
+	private Button buttonQueryRem;
+
+	private Button buttonQueryAdd;
 
 	/**
-	 * If query is construct or other update query.
+	 * Mapping pairs(query,QueryObject).
 	 */
-	private boolean isConstructQuery = false;
+	private Map<String, QueryObject> map = new HashMap<>();
 
-	private String validationErrorMessage = "";
+	private String validationErrorMessage = "No errors";
+
+	//number of invalid query
+	private int invalidQueryNumber = -1;
 
 	/**
 	 * Constructor.
@@ -49,6 +54,18 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		super(SPARQLTransformerConfig.class);
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
+	}
+
+	private List<String> getQueriesFromPairs(List<SPARQLQueryPair> pairs) {
+		List<String> result = new LinkedList<>();
+
+		if (pairs != null) {
+			for (SPARQLQueryPair nextPair : pairs) {
+				result.add(nextPair.getSPARQLQuery());
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -63,8 +80,12 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 */
 	@Override
 	public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
-		txtQuery.setValue(conf.getSPARQLUpdateQuery());
-		isConstructQuery = conf.isConstructType();
+
+		List<SPARQLQueryPair> queryPairs = conf.getQueryPairs();
+		SPARQLQueries = getQueriesFromPairs(queryPairs);
+
+		refreshSparqlQueryData();
+
 	}
 
 	/**
@@ -72,8 +93,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	 * to configuration object implementing {@link DPUConfigObject} interface
 	 * and configuring DPU
 	 *
-	 * @throws ConfigException Exception which might be thrown when
-	 *                         {@link #isQueryValid} is false.
+	 * @throws ConfigException Exception which might be thrown when any of
+	 *                         SPARQL queries are invalid.
 	 * @return conf Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
@@ -82,25 +103,31 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	public SPARQLTransformerConfig getConfiguration() throws ConfigException {
 
 		//Right SPARQL VALIDATOR - default false
-		if (!txtQuery.isValid()) {
-			InvalidValueException ex = new EmptyValueException(
-					"SPARQL query must be filled");
-			throw new ConfigException(ex.getMessage(), ex);
-		} else if (!isQueryValid) {
-			throw new SPARQLValidationException(validationErrorMessage);
+		if (!areSparqlQueriesValid()) {
+			throw new SPARQLValidationException(validationErrorMessage,
+					invalidQueryNumber);
 		} else {
-			String query = txtQuery.getValue().trim();
+			saveEditedTexts();
 
-			if (isConstructQuery && !hasValidMoreGraphsForContruct(query)) {
-				throw new SPARQLValidationException(validationErrorMessage);
-			} else {
-				String SPARQL_Update_Query = txtQuery.getValue().trim();
-				boolean isConstructType = isConstructQuery;
+			List<SPARQLQueryPair> queryPairs = new LinkedList<>();
 
-				SPARQLTransformerConfig conf=new SPARQLTransformerConfig(
-						SPARQL_Update_Query, isConstructType);
-				return conf;
+			for (String query : getSPARQLQueries()) {
+				QueryObject queryObject = map.get(query);
+
+				boolean isConstructQuery = queryObject.isConstructQuery();
+				int queryNumber = queryObject.getQueryNumber();
+
+				if (!hasValidMoreGraphsForQuery(query)) {
+					throw new SPARQLValidationException(validationErrorMessage,
+							queryNumber);
+				}
+				queryPairs.add(new SPARQLQueryPair(query, isConstructQuery));
 			}
+
+			SPARQLTransformerConfig conf = new SPARQLTransformerConfig(
+					queryPairs);
+
+			return conf;
 		}
 	}
 
@@ -118,10 +145,10 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 	}
 
-	private boolean hasValidMoreGraphsForContruct(String contructQuery) {
+	private boolean hasValidMoreGraphsForQuery(String query) {
 
 		PlaceholdersHelper helper = new PlaceholdersHelper();
-		List<String> extractedNames = helper.getExtractedDPUNames(contructQuery);
+		List<String> extractedNames = helper.getExtractedDPUNames(query);
 
 		if (extractedNames.isEmpty()) {
 			return true;
@@ -167,64 +194,262 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		labelUpQuer.setValue("SPARQL  Update Query");
 		mainLayout.addComponent(labelUpQuer, 0, 0);
 
-		// SPARQL Update Query textArea
-		txtQuery = new TextArea();
+		initializeSparqlQueryList();
 
-		txtQuery.addValidator(new com.vaadin.data.Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				final String query = txtQuery.getValue().trim();
+		mainLayout.addComponent(gridLayoutQuery, 1, 0);
 
-				if (query.isEmpty()) {
-
-					throw new EmptyValueException("SPARQL query must be filled");
-				}
-
-				QueryValidator updateValidator = new SPARQLUpdateValidator(query);
-				SPARQLQueryValidator constructValidator = new SPARQLQueryValidator(
-						query, SPARQLQueryType.CONSTRUCT);
-
-				boolean isConstructValid = constructValidator.isQueryValid();
-				boolean isUpdateValid = updateValidator.isQueryValid();
-
-				if (isConstructValid) {
-					isQueryValid = true;
-					isConstructQuery = true;
-					return;
-				} else {
-					//if is construct query, but no valid
-					if (constructValidator.hasSameType()) {
-						isConstructQuery = true;
-						isQueryValid = false;
-						validationErrorMessage = constructValidator
-								.getErrorMessage();
-						return;
-					} else {
-						isConstructQuery = false;
-					}
-				}
-
-				if (isUpdateValid) {
-					isQueryValid = true;
-				} else {
-					isQueryValid = false;
-					validationErrorMessage = updateValidator
-							.getErrorMessage();
-				}
-			}
-		});
-
-		txtQuery.setNullRepresentation("");
-		txtQuery.setImmediate(true);
-		txtQuery.setWidth("100%");
-		txtQuery.setHeight("211px");
-		txtQuery.setInputPrompt(
-				"PREFIX br:<http://purl.org/business-register#>\nMODIFY\nDELETE { ?s pc:contact ?o}\nINSERT { ?s br:contact ?o}\nWHERE {\n\t     ?s a gr:BusinessEntity .\n\t      ?s pc:contact ?o\n}");
-
-		mainLayout.addComponent(txtQuery, 1, 0);
 		mainLayout.setColumnExpandRatio(0, 0.00001f);
 		mainLayout.setColumnExpandRatio(1, 0.99999f);
 
 		return mainLayout;
+	}
+
+	/**
+	 * List<String> that contains SPARQL Update Query.
+	 */
+	private List<String> SPARQLQueries = initializeGridData();
+
+	/**
+	 * Initializes data of the SPARQL Update Query component
+	 */
+	private static List<String> initializeGridData() {
+		List<String> result = new LinkedList<>();
+		result.add("");
+
+		return result;
+
+	}
+
+	private List<String> getSPARQLQueries() {
+		List<String> result = new LinkedList<>();
+
+		for (String nextQuery : SPARQLQueries) {
+			String query = nextQuery.trim();
+			if (!query.isEmpty()) {
+				result.add(query);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Add new data to SPARQL Update Query component
+	 *
+	 * @param newData. Query that will be added
+	 */
+	private void addDataToGridData(String newData) {
+		SPARQLQueries.add(newData.trim());
+	}
+
+	/**
+	 * Remove data from SPARQL Update Query component. Only if component contain
+	 * more then 1 row.
+	 *
+	 * @param row Data that will be removed.
+	 */
+	private void removeDataFromGridData(Integer row) {
+		int index = row;
+		if (SPARQLQueries.size() > 1) {
+			SPARQLQueries.remove(index);
+		}
+	}
+
+	private List<TextArea> listedEditText = null;
+
+	/**
+	 * Save edited texts in the Named Graph component
+	 */
+	private void saveEditedTexts() {
+		SPARQLQueries.clear();
+		for (TextArea editText : listedEditText) {
+			SPARQLQueries.add(editText.getValue().trim());
+		}
+	}
+
+	/**
+	 *
+	 * @return if all SPARQL Update Queries are valid or not.
+	 */
+	private boolean areSparqlQueriesValid() {
+		for (TextArea next : listedEditText) {
+			if (!next.isValid()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Builds SPARQL Update Query component which consists of textareas for
+	 * SPARQL query and buttons for add and remove this textareas. Used in
+	 * {@link #initializeSparqlQueryList()} and also in adding and removing
+	 * textareas for component refresh
+	 */
+	private void refreshSparqlQueryData() {
+		gridLayoutQuery.removeAllComponents();
+		int row = 0;
+		listedEditText = new ArrayList<>();
+		if (SPARQLQueries.size() < 1) {
+			SPARQLQueries.add("");
+		}
+		gridLayoutQuery.setRows(SPARQLQueries.size() + 1);
+		for (String item : SPARQLQueries) {
+			final TextArea textFieldQuery = new TextArea();
+			listedEditText.add(textFieldQuery);
+			//text area for the query
+			textFieldQuery.setNullRepresentation("");
+			textFieldQuery.setImmediate(true);
+			textFieldQuery.setWidth("100%");
+			textFieldQuery.setHeight("100px");
+			textFieldQuery.setData(row);
+			textFieldQuery.setValue(item.trim());
+			textFieldQuery.setInputPrompt(
+					"PREFIX s: <http://schema.org>\n"
+					+ "DELETE { ?address s:geo ?geo}\n"
+					+ "INSERT { ?place s:geo ?geo}\n"
+					+ "WHERE { ?address a s:postalAddress; \n"
+					+ "^s:address ?place; \n"
+					+ "s:geo ?geo .}");
+			textFieldQuery.addValidator(new Validator() {
+				@Override
+				public void validate(Object value) throws InvalidValueException {
+					final String query = textFieldQuery.getValue().trim();
+
+					invalidQueryNumber = (int) textFieldQuery.getData() + 1;
+
+					if (query.isEmpty()) {
+
+						validationErrorMessage = "SPARQL query is empty a must be filled";
+						throw new EmptyValueException(
+								"SPARQL query must be filled");
+
+					}
+					QueryValidator updateValidator = new SPARQLUpdateValidator(
+							query);
+					SPARQLQueryValidator constructValidator = new SPARQLQueryValidator(
+							query, SPARQLQueryType.CONSTRUCT);
+
+					boolean isConstructValid = constructValidator.isQueryValid();
+					boolean isUpdateValid = updateValidator.isQueryValid();
+
+					if (isConstructValid) {
+						//query is valid
+						map.put(query, new QueryObject(invalidQueryNumber,
+								true));
+						return;
+					} else {
+						//if is construct query, but no valid
+						if (constructValidator.hasSameType()) {
+							validationErrorMessage = constructValidator
+									.getErrorMessage();
+							throw new InvalidValueException(
+									"SPARQL query is not valid");
+						}
+					}
+
+					if (isUpdateValid) {
+						map.put(query, new QueryObject(invalidQueryNumber,
+								false));
+					} else {
+						validationErrorMessage = updateValidator
+								.getErrorMessage();
+						throw new InvalidValueException(
+								"SPARQL query is not valid");
+					}
+				}
+			});
+
+			//remove button
+			buttonQueryRem = new Button();
+			buttonQueryRem.setWidth("55px");
+			buttonQueryRem.setCaption("-");
+			buttonQueryRem.setData(row);
+			buttonQueryRem.addClickListener(new Button.ClickListener() {
+				@Override
+				public void buttonClick(Button.ClickEvent event) {
+					saveEditedTexts();
+					Button senderButton = event.getButton();
+					Integer row = (Integer) senderButton.getData();
+					removeDataFromGridData(row);
+					refreshSparqlQueryData();
+				}
+			});
+			gridLayoutQuery.addComponent(textFieldQuery, 0, row);
+			gridLayoutQuery.addComponent(buttonQueryRem, 1, row);
+			gridLayoutQuery.setComponentAlignment(buttonQueryRem,
+					Alignment.TOP_RIGHT);
+			row++;
+		}
+
+		//add button
+		buttonQueryAdd = new Button();
+		buttonQueryAdd.setCaption("+");
+		buttonQueryAdd.setImmediate(true);
+		buttonQueryAdd.setWidth("55px");
+		buttonQueryAdd.setHeight("-1px");
+		buttonQueryAdd.addClickListener(new Button.ClickListener() {
+			@Override
+			public void buttonClick(Button.ClickEvent event) {
+				saveEditedTexts();
+				addDataToGridData("");
+				refreshSparqlQueryData();
+			}
+		});
+		gridLayoutQuery.addComponent(buttonQueryAdd, 0, row);
+	}
+
+	/**
+	 * Initializes Named Graph component. Calls from
+	 * {@link #buildVerticalLayoutCore()}
+	 */
+	private void initializeSparqlQueryList() {
+
+		gridLayoutQuery = new GridLayout();
+		gridLayoutQuery.setImmediate(true);
+		gridLayoutQuery.setWidth("100%");
+		gridLayoutQuery.setHeight("100%");
+		gridLayoutQuery.setMargin(false);
+		gridLayoutQuery.setColumns(2);
+		gridLayoutQuery.setColumnExpandRatio(0, 0.95f);
+		gridLayoutQuery.setColumnExpandRatio(1, 0.05f);
+
+		refreshSparqlQueryData();
+	}
+}
+
+class QueryObject {
+
+	private int queryNumber;
+
+	private boolean isConstructQuery;
+
+	/**
+	 * Create the new instance of {@link QueryObject}.
+	 *
+	 * @param queryNumber      the number of SPARQL query in dialogue
+	 * @param isConstructQuery if is the construct query or not.
+	 */
+	public QueryObject(int queryNumber, boolean isConstructQuery) {
+		this.queryNumber = queryNumber;
+		this.isConstructQuery = isConstructQuery;
+	}
+
+	/**
+	 * Returns true, if the query is the construct query, false othrrwise.
+	 *
+	 * @return true, if the query is the construct query, false othrrwise.
+	 *
+	 */
+	public boolean isConstructQuery() {
+		return isConstructQuery;
+	}
+
+	/**
+	 * Return the number of SPARQL query in dialogue.
+	 *
+	 * @return The number of SPARQL query in dialogue.
+	 */
+	public int getQueryNumber() {
+		return queryNumber;
 	}
 }

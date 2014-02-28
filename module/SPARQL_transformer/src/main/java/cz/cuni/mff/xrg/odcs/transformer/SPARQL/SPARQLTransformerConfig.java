@@ -1,39 +1,67 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
+ * SPARQL transformer configuration.
  *
  * @author Jiri Tomes
  * @author tknap
  */
 public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 
+	private List<SPARQLQueryPair> queryPairs;
+
 	private String SPARQL_Update_Query;
 
-	private boolean isConstructType;
+	boolean isConstructType;
 
 	public SPARQLTransformerConfig() {
-		this.SPARQL_Update_Query = "";
-		this.isConstructType = false;
+		this.queryPairs = new LinkedList<>();
 	}
 
-	public SPARQLTransformerConfig(String SPARQL_Update_Query,
-			boolean isConstructType) {
-		this.SPARQL_Update_Query = SPARQL_Update_Query;
-		this.isConstructType = isConstructType;
+	public SPARQLTransformerConfig(String query, boolean isContructType) {
+		this.queryPairs = new LinkedList<>();
+		this.queryPairs.add(new SPARQLQueryPair(query, isContructType));
 	}
 
-	public String getSPARQLUpdateQuery() {
-		return SPARQL_Update_Query;
+	public SPARQLTransformerConfig(List<SPARQLQueryPair> queryPairs) {
+		this.queryPairs = queryPairs;
 	}
 
-	public boolean isConstructType() {
-		return isConstructType;
+	/**
+	 * Returns collection of {@link SPARQLQueryPair} instance.
+	 *
+	 * @return collection of {@link SPARQLQueryPair} instance.
+	 */
+	public List<SPARQLQueryPair> getQueryPairs() {
+		return queryPairs;
 	}
 
+	/**
+	 * Returns true, if DPU configuration is valid, false otherwise.
+	 *
+	 * @return true, if DPU configuration is valid, false otherwise.
+	 */
 	@Override
 	public boolean isValid() {
-		return SPARQL_Update_Query != null;
+		return queryPairs != null;
+	}
+
+	/**
+	 * Fill missing configuration with default values.
+	 */
+	@Override
+	public void onDeserialize() {
+		if (queryPairs == null) {
+			queryPairs = new LinkedList<>();
+		}
+		if (SPARQL_Update_Query != null) {
+			queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
+					isConstructType));
+		}
 	}
 }

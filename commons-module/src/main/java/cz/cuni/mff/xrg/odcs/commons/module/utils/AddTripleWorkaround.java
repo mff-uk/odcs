@@ -19,9 +19,9 @@ public class AddTripleWorkaround {
 	 * pred, Value obj, cannot define whether literal should be single/triple
 	 * quoted.
 	 *
-	 * @param subj
-	 * @param pred
-	 * @param obj
+	 * @param subj Subject of the triple 
+	 * @param pred Predicate of the triple  
+	 * @param obj Object of the triple
 	 * @return TTL serialization if the triple
 	 */
 	public static String prepareTriple(Resource subj, URI pred, Value obj) {

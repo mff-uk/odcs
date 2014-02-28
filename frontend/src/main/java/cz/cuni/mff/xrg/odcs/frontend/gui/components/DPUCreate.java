@@ -31,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import javax.annotation.PostConstruct;
@@ -40,9 +40,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Dialog for the DPU template creation. Called from the {@link #DPU}. Allows to
- * upload a JAR file and on base of it create a new DPU template that will be
- * stored to the DPU template tree.
+ * Dialog for the DPU template creation. Allows to upload a JAR file and on base
+ * of it create a new DPU template that will be stored to the DPU template tree.
  *
  * @author Maria Kukhar
  *
@@ -51,16 +50,44 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class DPUCreate extends Window {
 
+	/**
+	 * @return the uploadInfoWindow
+	 */
+	public static UploadInfoWindow getUploadInfoWindow() {
+		return uploadInfoWindow;
+	}
+
+	/**
+	 * @param aUploadInfoWindow the uploadInfoWindow to set
+	 */
+	public static void setUploadInfoWindow(UploadInfoWindow aUploadInfoWindow) {
+		uploadInfoWindow = aUploadInfoWindow;
+	}
+
+	/**
+	 * @return the fl
+	 */
+	public static int getFl() {
+		return fl;
+	}
+
+	/**
+	 * @param aFl the fl to set
+	 */
+	public static void setFl(int aFl) {
+		fl = aFl;
+	}
+
 	private TextField dpuName;
 	private TextArea dpuDescription;
 	private OptionGroup groupVisibility;
 	private Upload selectFile;
 	private FileUploadReceiver fileUploadReceiver;
-	public static UploadInfoWindow uploadInfoWindow;
+	private static UploadInfoWindow uploadInfoWindow;
 	private GridLayout dpuGeneralSettingsLayout;
 	private DPUTemplateRecord dpuTemplate;
 	private TextField uploadFile;
-	public static int fl = 0;
+	private static int fl = 0;
 	@Autowired
 	private DPUFacade dpuFacade;
 	@Autowired
@@ -78,7 +105,6 @@ public class DPUCreate extends Window {
 		this.setResizable(false);
 		this.setModal(true);
 		this.setCaption("DPU Template Creation");
-
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
@@ -137,7 +163,9 @@ public class DPUCreate extends Window {
 		groupVisibility = new OptionGroup();
 		groupVisibility.addStyleName("horizontalgroup");
 		groupVisibility.addItem(ShareType.PRIVATE);
+		groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
 		groupVisibility.addItem(ShareType.PUBLIC_RO);
+		groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
 		groupVisibility.setValue(ShareType.PUBLIC_RO);
 
 		dpuGeneralSettingsLayout.addComponent(groupVisibility, 1, 2);
@@ -272,10 +300,10 @@ public class DPUCreate extends Window {
 							"Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-				if (uploadInfoWindow.getParent() == null) {
-					UI.getCurrent().addWindow(uploadInfoWindow);
+				if (getUploadInfoWindow().getParent() == null) {
+					UI.getCurrent().addWindow(getUploadInfoWindow());
 				}
-				uploadInfoWindow.setClosable(false);
+				getUploadInfoWindow().setClosable(false);
 			}
 		});
 
@@ -286,8 +314,8 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadFailed(FailedEvent event) {
 
-				uploadInfoWindow.setClosable(true);
-				uploadInfoWindow.close();
+				getUploadInfoWindow().setClosable(true);
+				getUploadInfoWindow().close();
 				dpuGeneralSettingsLayout.removeComponent(1, 3);
 				dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
 
@@ -302,8 +330,8 @@ public class DPUCreate extends Window {
 			@Override
 			public void uploadSucceeded(final SucceededEvent event) {
 
-				uploadInfoWindow.setClosable(true);
-				uploadInfoWindow.close();
+				getUploadInfoWindow().setClosable(true);
+				getUploadInfoWindow().close();
 				uploadFile.setReadOnly(false);
 				uploadFile.setValue(event.getFilename());
 				uploadFile.setReadOnly(true);
@@ -311,7 +339,7 @@ public class DPUCreate extends Window {
 			}
 		});
 		// Upload status window
-		uploadInfoWindow = new UploadInfoWindow(selectFile);
+		setUploadInfoWindow(new UploadInfoWindow(selectFile));
 
 		uploadFileLayout.addComponent(selectFile);
 
@@ -333,12 +361,13 @@ public class DPUCreate extends Window {
 
 		uploadFileLayout.addComponent(uploadFile);
 
-
 		return uploadFileLayout;
-
 
 	}
 
+	/**
+	 * Reset the component to empty values.
+	 */
 	public void initClean() {
 		dpuName.setValue("");
 		dpuDescription.setValue("");

@@ -1,29 +1,37 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 
 /**
- * It allows for SPARQL CONSTRUCT queries to replace "graph ?g_XX" (XX is DPU
- * name used graph, which name we need to replace in query) in WHERE SPARQL part
- * to original URI of this used graph mapping
+ * This class allows for SPARQL CONSTRUCT/UPDATE queries possible to replace
+ * "graph ?g_XX" (XX is DPU name of used graph, which name we need to replace in
+ * query) in WHERE clause to original URI thanks used graph mapping.
  *
  * (for example: XX -> http://myGraph).
  *
- * If mapping between DPU name and graph URI (graph name) not exist, in query is
- * used generated temp graph name as http://graphForDataUnit_XXXX, where XXXX is
- * name of DPU.
+ * If mapping between DPU name and graph URI (graph name) don´t exist, in query
+ * is used generated temp graph name as http://graphForDataUnit_XXXX, where XXXX
+ * is the name of DPU.
  *
  * Example:
  *
- * SPARQL contruct query:
+ * SPARQL construct query:
  *
  * construct {?s ?p ?o. ?s ?p ?y} where { graph ?g_AA {?s ?p ?o} graph
  * ?G_ABECEDA {?s ?p ?y}}
@@ -57,6 +65,8 @@ public class PlaceholdersHelper {
 	 */
 	private DPUContext context;
 
+	private List<RDFDataUnit> usedRepositories = new LinkedList<>();
+
 	public PlaceholdersHelper() {
 		this.context = null;
 	}
@@ -66,17 +76,65 @@ public class PlaceholdersHelper {
 	}
 
 	/**
+	 * Returns true if some of repository in collection of {@link RDFDataUnit}
+	 * need for SPARQL construct/update query based on DPU name is type of
+	 * {@link DataUnitType#RDF_Local}, false otherwise.
 	 *
-	 * @param constructQuery original SPARQL contruct query where we can find
-	 *                       DPU names to graph names(graph URI).
-	 * @return List as collection of DPUNames - each keep String DPU name
+	 * If method returns true, is necessary to create temp repository(calling
+	 * method {@link #getExecutableTempRepository()}, where this SPARQL
+	 * construct/update query can be executed.
+	 *
+	 * @return true if some of repository in collection of {@link RDFDataUnit}
+	 *         need for SPARQL construct/update query based on DPU name is type
+	 *         of {@link DataUnitType#RDF_Local}, false otherwise.
+	 */
+	public boolean needExecutableRepository() {
+		boolean hasLocal = false;
+		for (RDFDataUnit nextRepository : usedRepositories) {
+			if (nextRepository.getType() == DataUnitType.RDF_Local) {
+				hasLocal = true;
+				break;
+			}
+		}
+		return hasLocal;
+	}
+
+	/**
+	 * Create new instance of {@link ManagableRdfDataUnit} where SPARQL
+	 * construct/update query based on DPU name can be executed. Need only if
+	 * method {@link #needExecutableRepository()} returns TRUE;
+	 *
+	 * @return new instance of {@link ManagableRdfDataUnit} where SPARQL
+	 *         construct/update query based on DPU name can be executed. Need
+	 *         only if method {@link #needExecutableRepository()} returns TRUE;
+	 */
+	public ManagableRdfDataUnit getExecutableTempRepository() {
+		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
+				"executable");
+		for (RDFDataUnit repository : usedRepositories) {
+			URI dataGraph = repository.getDataGraph();
+			LazyTriples iterator = repository.getTriplesIterator();
+
+			while (iterator.hasNextTriples()) {
+				List<Statement> triples = iterator.getTriples();
+				tempRepository.addStatementsToGraph(triples, dataGraph);
+			}
+		}
+		return tempRepository;
+	}
+
+	/**
+	 *
+	 * @param query original SPARQL construct/update query where we can find DPU
+	 *              names need for graph names(graph URI).
+	 * @return List as collection of DPUNames - each keep DPU name as string
 	 *         extracted from SPARQL query.
 	 */
-	public List<String> getExtractedDPUNames(String constructQuery) {
+	public List<String> getExtractedDPUNames(String query) {
 
 		String regex = "graph\\s+\\?[gG]_[\\w-_]+";
 		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(constructQuery);
+		Matcher matcher = pattern.matcher(query);
 
 		boolean hasResult = matcher.find();
 
@@ -87,11 +145,11 @@ public class PlaceholdersHelper {
 			int start = matcher.start();
 			int end = matcher.end();
 
-			int partIndex = constructQuery.substring(start, end).indexOf("_") + 1;
+			int partIndex = query.substring(start, end).indexOf("_") + 1;
 
 			start += partIndex;
 
-			String DPUName = constructQuery.substring(start, end);
+			String DPUName = query.substring(start, end);
 
 			DPUNames.add(DPUName);
 
@@ -103,14 +161,14 @@ public class PlaceholdersHelper {
 
 	/**
 	 *
-	 * @param constructQuery original SPARQL contruct query where we can replace
-	 *                       DPU names to graph names(graph URI).
+	 * @param query original SPARQL construct/update query where we can replace
+	 *              DPU names to graph names(graph URI).
 	 * @return List as collection of PlaceHolder - each keep DPU name extracted
 	 *         from SPARQL query.
 	 */
-	private List<PlaceHolder> getPlaceHolders(String constructQuery) {
+	private List<PlaceHolder> getPlaceHolders(String query) {
 
-		List<String> DPUNames = getExtractedDPUNames(constructQuery);
+		List<String> DPUNames = getExtractedDPUNames(query);
 
 
 		List<PlaceHolder> placeholders = new ArrayList<>();
@@ -127,7 +185,7 @@ public class PlaceholdersHelper {
 	 *
 	 * @param inputs       Set of RDFDataUnit for checking if DPU name in query
 	 *                     correspondent to at least one DPU name in given
-	 *                     inputs. Is necessary for mapping DPU_name -> graph
+	 *                     inputs. It is necessary for mapping DPU_name -> graph
 	 *                     URI.
 	 * @param placeHolders List as collection of PlaceHolder - each keep DPU
 	 *                     name extracted from SPARQL query.
@@ -143,15 +201,17 @@ public class PlaceholdersHelper {
 
 			for (RDFDataUnit input : inputs) {
 				if (input.getDataUnitName().equals(next.getDPUName())) {
-
+					usedRepositories.add(input);
 					//set RIGHT data graph for DPU
 					next.setGraphName(input.getDataGraph().toString());
 					isReplased = true;
+
 					break;
 				}
 			}
 
 			if (!isReplased) {
+				usedRepositories.clear();
 				String DPUName = next.getDPUName();
 				final String message = "Graph for DPU name " + DPUName + " was not replased";
 
@@ -166,25 +226,26 @@ public class PlaceholdersHelper {
 	}
 
 	/**
+	 * Returns modified SPARQL construct/update query after using placeholders
+	 * (with original URI graph names).
 	 *
-	 * @param originalConstructQuery Original SPARQL contruct query where we can
-	 *                               replace DPU names to graph names(graph
-	 *                               URI).
-	 * @param inputs                 Set of RDFDataUnit for checking if DPU name
-	 *                               in query correspondent to at least one DPU
-	 *                               name in given inputs. Is necessary for
-	 *                               mapping DPU_name -> graph URI.
-	 * @return Modified query after using placeholders (with original URI graph
-	 *         names)
+	 * @param originalQuery Original SPARQL construct/update query where we can
+	 *                      replace DPU names to graph names(graph URI).
+	 * @param inputs        Set of RDFDataUnit for checking if DPU name in query
+	 *                      correspondent to at least one DPU name in given
+	 *                      inputs. Is necessary for mapping DPU_name -> graph
+	 *                      URI.
+	 * @return Modified SPARQL construct/update query after using placeholders
+	 *         (with original URI graph names).
 	 * @throws DPUException if there can not exist mapping DPU name in query to
 	 *                      graph URI (graph name).
 	 */
-	public String getContructQuery(String originalConstructQuery,
+	public String getReplacedQuery(String originalQuery,
 			List<RDFDataUnit> inputs) throws DPUException {
 
-		String result = originalConstructQuery;
+		String result = originalQuery;
 
-		List<PlaceHolder> placeHolders = getPlaceHolders(originalConstructQuery);
+		List<PlaceHolder> placeHolders = getPlaceHolders(originalQuery);
 
 		if (!placeHolders.isEmpty()) {
 			replaceAllPlaceHolders(inputs, placeHolders);

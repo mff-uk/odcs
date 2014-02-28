@@ -105,7 +105,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	public FileExtractorDialog() {
 		super(FileExtractorConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
@@ -114,7 +114,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	/**
 	 * Initialization of Configuration dialog for DPU RDF File Extractor
 	 */
-	private void inicialize() {
+	private void initialize() {
 		extractType = FileExtractType.UPLOAD_FILE;
 		ex = new InvalidValueException("Valid");
 	}
@@ -160,6 +160,9 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	@Override
 	public FileExtractorConfig getConfiguration() throws ConfigException {
+
+		if (getContext().isTemplate()) {
+		}
 
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
@@ -282,6 +285,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	}
 
+	/**
+	 * Returns desription of file extractor as string.
+	 *
+	 * @return desription of file extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		String path;
@@ -412,8 +420,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 					public void validate(Object value) throws InvalidValueException {
 						Class<?> myClass = value.getClass();
 
-
-
 						if (myClass.equals(String.class)) {
 							String stringValue = (String) value;
 
@@ -428,12 +434,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 									throw ex;
 								}
 							} else {
-								if (stringValue.isEmpty()) {
 
+								if (!getContext().isTemplate() && stringValue
+										.isEmpty()) {
 									String message = getValidMessageByFileExtractType(
 											extractType);
 									ex = new EmptyValueException(message);
 									throw ex;
+
 								}
 							}
 						} else {

@@ -28,22 +28,22 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 
 	@Override
 	public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
-		final String sringQuery = "SELECT e FROM Pipeline e"
+		final String stringQuery = "SELECT e FROM Pipeline e"
 				+ " LEFT JOIN e.graph g"
 				+ " LEFT JOIN g.nodes n"
 				+ " LEFT JOIN n.dpuInstance i"
 				+ " LEFT JOIN i.template t"
-				+ " WHERE t = :dpu";
-		TypedQuery<Pipeline> query = createTypedQuery(sringQuery);	
-		query.setParameter("dpu", dpu);
+				+ " WHERE t.id = :dpuid";
+		TypedQuery<Pipeline> query = createTypedQuery(stringQuery);	
+		query.setParameter("dpuid", dpu.getId());
 		return executeList(query);
 	}
 
 	@Override
 	public Pipeline getPipelineByName(String name) {
-		final String sringQuery = "SELECT e FROM Pipeline e"
+		final String stringQuery = "SELECT e FROM Pipeline e"
                 + " WHERE e.name = :name";
-		TypedQuery<Pipeline> query = createTypedQuery(sringQuery);	
+		TypedQuery<Pipeline> query = createTypedQuery(stringQuery);	
 		query.setParameter("name", name);
 		return execute(query);		
 	}	

@@ -5,6 +5,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
+import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -56,9 +57,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
-	
+	private DPUDetail detailDialog;
+	private Window.CloseListener detailCloseListener;
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
-
+	private EdgeFormater edgeFormater = new EdgeFormater();
 	/**
 	 * Initial constructor with registering of server side RPC.
 	 */
@@ -130,6 +132,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				storeHistoryGraph();
 				copyDpu(dpuId, x, y);
 			}
+
+			@Override
+			public void onMultipleDPUsSelected(boolean selected) {
+				fireEvent(new FormattingEnabledEvent(PipelineCanvas.this, selected));
+			}
 		});
 
 	}
@@ -138,6 +145,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * Method initializing client side RPC.
 	 */
 	public void init() {
+		detailDialog = new DPUDetail(dpuFacade);
 		getRpcProxy(PipelineCanvasClientRpc.class).init();
 	}
 
@@ -203,7 +211,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
 			edgeCompiler.setDefaultMapping(edge, dpuExplorer.getOutputs(from), dpuExplorer.getInputs(to.getDpuInstance()));
 
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edge.getScript());
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edgeFormater.format(edge.getScript()));
 		} else {
 			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
 		}
@@ -220,14 +228,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Shows detail of given {@link DPUInstance} in new sub-window.
+	 * Shows detail of given {@link DPUInstanceRecord} in new sub-window.
 	 *
 	 * @param node {@link Node} containing DPU, which detail should be showed.
 	 */
 	public void showDPUDetail(final Node node) {
 		final DPUInstanceRecord dpu = node.getDpuInstance();
-		DPUDetail detailDialog = new DPUDetail(dpu, dpuFacade, canvasMode.equals(PipelineEdit.STANDARD_MODE));
-		detailDialog.addCloseListener(new Window.CloseListener() {
+		detailDialog.showDpuDetail(dpu, canvasMode.equals(PipelineEdit.STANDARD_MODE));
+		if (detailCloseListener != null) {
+			detailDialog.removeCloseListener(detailCloseListener);
+		}
+		detailCloseListener = new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
 				DPUDetail source = (DPUDetail) e.getSource();
@@ -239,8 +250,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 					getRpcProxy(PipelineCanvasClientRpc.class).setDpuValidity(node.hashCode(), isValid);
 				}
 			}
-		});
-		UI.getCurrent().addWindow(detailDialog);
+		};
+
+		detailDialog.addCloseListener(detailCloseListener);
+		if (!UI.getCurrent().getWindows().contains(detailDialog)) {
+			UI.getCurrent().addWindow(detailDialog);
+		}
 	}
 
 	/**
@@ -302,6 +317,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Changes mode of the pipeline canvas.
 	 *
+	 * @param newMode 
 	 */
 	public void changeMode(String newMode) {
 		canvasMode = newMode;
@@ -318,6 +334,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		return isModified;
 	}
 
+	/**
+	 * Cancel unsaved changes.
+	 */
 	public void cancelChanges() {
 		isModified = false;
 	}
@@ -329,6 +348,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Inform listeners, about supplied event.
+	 * 
+	 * @param event 
 	 */
 	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(com.vaadin.ui.Component.Event.class);
@@ -363,7 +384,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 				hadInvalidMappings = true;
 				message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
 			}
-			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edge.getScript());
+			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edgeFormater.format(edge.getScript()));
 		}
 		if (hadInvalidMappings) {
 			Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
@@ -393,7 +414,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			public void windowClose(CloseEvent e) {
 				isModified = true;
 				fireEvent(new DetailClosedEvent(PipelineCanvas.this, Edge.class));
-				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edge.getScript());
+				getRpcProxy(PipelineCanvasClientRpc.class).updateEdge(edge.hashCode(), edgeFormater.format(edge.getScript()));
 			}
 		});
 		UI.getCurrent().addWindow(edgeDetailDialog);
@@ -442,6 +463,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		fireEvent(new ShowDebugEvent(this, debugNode));
 	}
 
+	/**
+	 * Validate graph.
+	 */
 	public void validateGraph() {
 		boolean isGraphValid = true;
 		for (Node node : graph.getNodes()) {
@@ -458,5 +482,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 		} catch (PipelineValidationException ex) {
 			Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
 		}
+	}
+
+	/**
+	 * Invoke formatting action.
+	 *
+	 * @param action Formatting action.
+	 */
+	public void formatAction(String action) {
+		getRpcProxy(PipelineCanvasClientRpc.class).formatDPUs(action);
 	}
 }

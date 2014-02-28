@@ -1,16 +1,16 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import static cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment.virtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import java.io.File;
 import java.util.Properties;
 
 /**
- * Create {@link DataUnit}s that can be used in {@link TestEnvironment}.
- * 
+ * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
+ * in {@link cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment}.
+ *
  * @author Petyr
  */
 public class DataUnitFactory {
@@ -25,6 +25,15 @@ public class DataUnitFactory {
 	 */
 	private final File workingDirectory;
 
+	/**
+	 * Create a {@link DataUnitFactory} that use given directory as working
+	 * directory.
+	 *
+	 * @param workingDirectory Directory where to create working subdirectories
+	 *                         for
+	 *                         {@link cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit}
+	 *                         that use local storage as RDF repository.
+	 */
 	public DataUnitFactory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
@@ -32,25 +41,26 @@ public class DataUnitFactory {
 	/**
 	 * Create RDF data unit.
 	 *
-	 * @param name
-	 * @param useVirtuoso
-	 * @return
+	 * @param name Name of the DataUnit.
+	 * @param useVirtuoso False to use local repository, True to use Virtuoso.
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	public RDFDataUnit createRdfDataUnit(String name, boolean useVirtuoso) {
+	public ManagableRdfDataUnit createRDFDataUnit(String name,
+			boolean useVirtuoso) {
 		if (useVirtuoso) {
-			return createVirtuosoRdfDataUnit(name);
+			return createVirtuosoRDFDataUnit(name);
 		} else {
-			return createLocalRdfDataUnit(name);
+			return createLocalRDFDataUnit(name);
 		}
 	}
 
 	/**
 	 * Create RDF data unit with given name that is stored in local file.
 	 *
-	 * @param name
-	 * @return
+	 * @param name Name of DataUnit.
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	private RDFDataUnit createLocalRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createLocalRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String repoPath = workingDirectory.toString()
 				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
@@ -64,10 +74,10 @@ public class DataUnitFactory {
 	/**
 	 * Create RDF data unit with given name that is stored in virtuoso.
 	 *
-	 * @param name
-	 * @return
+	 * @param name Name of DataUnit.
+	 * @return New {@link ManagableRdfDataUnit}.
 	 */
-	private RDFDataUnit createVirtuosoRdfDataUnit(String name) {
+	private ManagableRdfDataUnit createVirtuosoRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
 		final String id = "dpu-test_" + number + "_" + name;
 		final String namedGraph = GraphUrl.translateDataUnitId(id);

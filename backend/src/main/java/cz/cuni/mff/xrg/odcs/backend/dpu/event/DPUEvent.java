@@ -110,13 +110,18 @@ public class DPUEvent extends ApplicationEvent {
 	 *
 	 * @param context
 	 * @param source
-	 * @return
+	 * @return Instance of dpu event.
 	 */
-	public static DPUEvent createStart(Context context, Object source) {		
-		LOG.info("DPU '{}' started", context.getDPU().getName());
-		
-		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-				"DPU started.", "");
+	public static DPUEvent createStart(Context context, Object source) {
+		final DPUInstanceRecord dpu = context.getDPU();
+
+		//final String msg = String.format("Starting DPU developer's code {}", dpu.getId());
+
+		final String msg = String.format("Starting DPU developer's code for DPU: %d", dpu.getId());
+
+
+		LOG.info(msg);
+		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
 	}
 
 	/**
@@ -124,13 +129,14 @@ public class DPUEvent extends ApplicationEvent {
 	 *
 	 * @param context
 	 * @param source
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createComplete(Context context, Object source) {
-		LOG.info("DPU '{}' finished", context.getDPU().getName());
-		
-		return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-				"DPU completed.", "");
+		final DPUInstanceRecord dpu = context.getDPU();
+		final String msg = String.format("DPU: %d completed", dpu.getId());
+
+		LOG.info(msg);
+		return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");	
 	}
 
 	/**
@@ -138,7 +144,7 @@ public class DPUEvent extends ApplicationEvent {
 	 *
 	 * @param context
 	 * @param source
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createNoOutputWarning(Context context, Object source) {
 		LOG.warn("Missing outpuds for '{}'", context.getDPU().getName());
@@ -152,7 +158,7 @@ public class DPUEvent extends ApplicationEvent {
 	 *
 	 * @param context
 	 * @param source
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createWrongState(Context context, Object source) {
 		LOG.error("DPU '{}' has wrong state at the beggining of the execution.",
@@ -169,7 +175,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param context
 	 * @param source
 	 * @param longMessage Description of the error.
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPreExecutorFailed(Context context,
 			PreExecutor source,
@@ -191,7 +197,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param source
 	 * @param longMessage Description of the error.
 	 * @param throwable
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPreExecutorFailed(Context context,
 			PreExecutor source,
@@ -214,7 +220,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param context
 	 * @param source
 	 * @param longMessage Description of the error.
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPostExecutorFailed(Context context,
 			PostExecutor source,
@@ -235,7 +241,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param context
 	 * @param source
 	 * @param e
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createFailed(Context context, Object source,
 			Exception e) {
@@ -253,7 +259,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @param context
 	 * @param source
 	 * @param e
-	 * @return
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createDataUnitFailed(Context context, Object source,
 			DataUnitException e) {
@@ -270,7 +276,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * 
 	 * @param context
 	 * @param source
-	 * @return 
+	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createStopOnDpuRequest(Context context, Object source) {
 		LOG.info("DPU '{}' required the termination of execution",
@@ -281,9 +287,7 @@ public class DPUEvent extends ApplicationEvent {
 	}
 	
 	/**
-	 * Record that describes event.
-	 *
-	 * @return record
+	 * @return {@link MessageRecord} that describes event.
 	 */
 	public MessageRecord getRecord() {
 		return new MessageRecord(time, type, context.getDPU(),

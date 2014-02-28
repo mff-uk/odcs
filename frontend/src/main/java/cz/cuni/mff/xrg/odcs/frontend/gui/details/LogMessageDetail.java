@@ -11,6 +11,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import static com.vaadin.server.Sizeable.Unit;
 
 import java.util.Date;
 import org.apache.log4j.Level;
@@ -49,12 +50,10 @@ public class LogMessageDetail extends Window {
 		mainLayout.setSizeFull();
 
 		Label timeLabel = new Label("Time:");
+		//At least one component must have fixed width, for expand ratio to work correctly for content column.
+		timeLabel.setWidth("60px");
 		mainLayout.addComponent(timeLabel, 0, 0);
 		mainLayout.addComponent(timeContent, 1, 0);
-
-		Label threadLabel = new Label("Thread:");
-		threadLabel.setWidth(120, Sizeable.Unit.PIXELS);
-		mainLayout.addComponent(threadLabel, 0, 1);
 
 		Label levelLabel = new Label("Level:");
 		mainLayout.addComponent(levelLabel, 0, 2);
@@ -83,6 +82,7 @@ public class LogMessageDetail extends Window {
 		mainLayout.addComponent(closeButton, 1, 6);
 		mainLayout.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
+
 		mainLayout.setColumnExpandRatio(1, 1.0f);
 		mainLayout.setRowExpandRatio(5, 1.0f);
 
@@ -105,16 +105,20 @@ public class LogMessageDetail extends Window {
 		fullMessageContent.setReadOnly(false);
 		// set the of main text box
 		if (log.getStackTrace() == null) {
-			fullMessageContent.setValue(HtmlUtils.htmlEscape(log.getMessage()));
+			fullMessageContent.setValue(log.getMessage());
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
-			sb.append("<br/><br/>Stack trace:<br/>");
-			// just do replace in stack trace
-			final String stackTrace = 
-					log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
-			sb.append(stackTrace);
-			
+		
+			if (log.getStackTrace().isEmpty()) {
+				// no stack trace
+			} else {
+				sb.append("<br/><br/>Stack trace:<br/>");
+				// just do replace in stack trace
+				final String stackTrace = 
+						log.getStackTrace(); //.replace("<", "&lt;").replace("&", "&amp;");
+				sb.append(stackTrace);
+			}
 			fullMessageContent.setValue(sb.toString());
 		}
 		fullMessageContent.setReadOnly(true);
@@ -126,8 +130,7 @@ public class LogMessageDetail extends Window {
 	 * Resizes content due to resize of whole dialog.
 	 *
 	 * @param height New height of whole dialog.
-	 * @param unit
-	 * @{link Unit} of height.
+	 * @param unit {@link Unit} of height.
 	 */
 	public void setContentHeight(float height, Sizeable.Unit unit) {
 		fullMessageContent.setHeight(height - 230, unit);

@@ -10,8 +10,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 class UserFacadeImpl implements UserFacade {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserFacadeImpl.class);
-	
-	/**
-	 * Entity manager for accessing database with persisted objects.
-	 */
-	@PersistenceContext
-	private EntityManager em;
 	
 	@Autowired
 	private DbUser userDao;

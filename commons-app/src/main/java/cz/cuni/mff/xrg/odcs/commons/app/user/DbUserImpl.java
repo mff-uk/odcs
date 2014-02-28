@@ -20,14 +20,14 @@ public class DbUserImpl extends DbAccessBase<User> implements DbUser {
 
 	@Override
 	public List<User> getAll() {
-		final String sringQuery = "SELECT e FROM User e";
-		return executeList(sringQuery);		
+		final String stringQuery = "SELECT e FROM User e";
+		return executeList(stringQuery);		
 	}
 
 	@Override
 	public User getByUsername(String username) {
-		final String sringQuery = "SELECT e FROM User e WHERE e.username = :uname";
-		TypedQuery<User> query = createTypedQuery(sringQuery);
+		final String stringQuery = "SELECT e FROM User e WHERE e.username = :uname";
+		TypedQuery<User> query = createTypedQuery(stringQuery);
 		query.setParameter("uname", username);
 		return execute(query);
 	}

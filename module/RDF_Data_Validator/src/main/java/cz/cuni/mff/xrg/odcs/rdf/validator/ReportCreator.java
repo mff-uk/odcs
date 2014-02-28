@@ -40,6 +40,12 @@ public class ReportCreator {
 
 	}
 
+	/**
+	 * Make RDF report and add this report to the given repository.
+	 *
+	 * @param repository Repository where report will be added.
+	 * @throws RDFException if some problem during making report.
+	 */
 	public void makeOutputReport(RDFDataUnit repository) throws RDFException {
 
 		setNamespaces(repository);

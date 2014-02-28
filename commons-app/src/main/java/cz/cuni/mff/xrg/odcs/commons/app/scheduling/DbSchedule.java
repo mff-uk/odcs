@@ -25,7 +25,7 @@ public interface DbSchedule extends DbAccess<Schedule> {
 	 * Fetches all {@link Schedule}s planned for given pipeline.
 	 *
 	 * @param pipeline
-	 * @return
+	 * @return all {@link Schedule}s planned for given pipeline.
 	 */
 	public List<Schedule> getSchedulesFor(Pipeline pipeline);
 	
@@ -53,15 +53,16 @@ public interface DbSchedule extends DbAccess<Schedule> {
 	 * Fetches active (enabled) {@link Schedule}s which are activated based on 
 	 * pipelines executions.
 	 * 
-	 * @return 
+	 * @return list of schedules
 	 */
 	public List<Schedule> getActiveRunAfterBased();
 	
 	/**
 	 * Return times of last executions (or null if there has been no successful 
 	 * execution) of run-after pipelines for runAfter base schedule.
+	 * 
 	 * @param schedule
-	 * @return 
+	 * @return list of timestamps
 	 */
 	public List<Date> getLastExecForRunAfter(Schedule schedule);
 

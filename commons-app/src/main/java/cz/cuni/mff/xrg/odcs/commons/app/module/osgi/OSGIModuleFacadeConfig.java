@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.dataunit_file;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
@@ -136,12 +137,15 @@ class OSGIModuleFacadeConfig {
 					this.rootDirectory.length() - 1);
 		}
 
+		LOG.debug("Instance: {} ", app.toString());
+		
 		StringBuilder packageList = new StringBuilder();
-		try {
+		try {			
 			String configPackages = conf.getString(Application.FRONTEND
 					.equals(app)
 					? ConfigProperty.MODULE_FRONT_EXPOSE
 					: ConfigProperty.MODULE_BACK_EXPOSE);
+			LOG.debug("Packages from config: {}", configPackages);
 			packageList.append(configPackages);
 		} catch (MissingConfigPropertyException e) {
 			// missing configuration -> use empty
@@ -167,6 +171,7 @@ class OSGIModuleFacadeConfig {
 		appendPackages(packageList, commons_web.PACKAGE_LIST);
 		appendPackages(packageList, commons_module.PACKAGE_LIST);
 		appendPackages(packageList, rdf.PACKAGE_LIST);
+		appendPackages(packageList, dataunit_file.PACKAGE_LIST);
 
 		this.additionalPackages = packageList.toString();
 		// check if load data from backend's library directory

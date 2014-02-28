@@ -10,11 +10,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
  * 
  * @param <T> 
  */
-public interface DbAccessRead <T extends DataObject> extends DataAccessRead<T> {
+public interface DbAccessRead <T extends DataObject> 
+	extends DataAccessRead<T, DbQueryBuilder<T>, DbQuery<T>, DbQueryCount<T>> {
 	
 	/**
 	 * Database use special query builder.
-	 * @return 
+	 * 
+	 * @return query builder
 	 */
 	@Override
 	public DbQueryBuilder<T> createQueryBuilder();

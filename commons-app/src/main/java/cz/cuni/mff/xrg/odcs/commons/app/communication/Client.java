@@ -36,6 +36,12 @@ public class Client {
 	 */
 	private Socket socket;
 
+	/**
+	 * Create client.
+	 * 
+	 * @param backendAddress IP address of backend.
+	 * @param port Backend's communication port.
+	 */
 	public Client(String backendAddress, int port) {
 		this.backendAddress = backendAddress;
 		this.port = port;

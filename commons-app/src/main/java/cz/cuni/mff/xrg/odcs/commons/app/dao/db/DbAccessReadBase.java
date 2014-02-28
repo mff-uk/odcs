@@ -22,7 +22,7 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	protected EntityManager em;
 
     @Autowired(required = false)
-    protected Authorizator authorizator;
+    protected DbAuthorizator authorizator;
     
     @Autowired(required = false)
     protected List<FilterTranslator> translators;	
@@ -76,28 +76,31 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	
 	/**
 	 * Create typed query from given string.
-	 * @param sringQuery
-	 * @return 
+	 * 
+	 * @param stringQuery
+	 * @return typed JPA query
 	 */
-	protected TypedQuery<T> createTypedQuery(String sringQuery) {
-		return em.createQuery(sringQuery, entityClass);
+	protected TypedQuery<T> createTypedQuery(String stringQuery) {
+		return em.createQuery(stringQuery, entityClass);
 	}
 	
 	/**
 	 * Execute the given string query and return the results. No filters are 
 	 * applied.
-	 * @param sringQuery
-	 * @return 
+	 * 
+	 * @param stringQuery
+	 * @return list of query results
 	 */
-	protected List<T> executeList(String sringQuery) {
-		return executeList(createTypedQuery(sringQuery));
+	protected List<T> executeList(String stringQuery) {
+		return executeList(createTypedQuery(stringQuery));
 	}
 	
 	/**
 	 * Execute given typed query and return the results. No filters are 
 	 * applied.
+	 * 
 	 * @param typedQuery
-	 * @return 
+	 * @return list of query results
 	 */
 	protected List<T> executeList(TypedQuery<T> typedQuery) {
 		return Collections.checkedList(typedQuery.getResultList(), entityClass);
@@ -107,7 +110,7 @@ public class DbAccessReadBase <T extends DataObject> implements DbAccessRead<T> 
 	 * Execute given typed query and return the result. No filters are 
 	 * applied.
 	 * @param typedQuery
-	 * @return 
+	 * @return query result
 	 */
 	protected T execute(TypedQuery<T> typedQuery) {
 		try {

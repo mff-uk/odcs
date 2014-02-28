@@ -54,14 +54,14 @@ public class ConfigurableBaseTest {
 	@Test
 	public void nullSet() throws ConfigException {
 		ConfigurableDummy configurable = new ConfigurableDummy();
-		byte[] oldConfig = configurable.getConf();
+		String oldConfig = configurable.getConf();
 		assertNotNull(oldConfig);
-		byte[] nullByteConfig = null;
+		String nullByteConfig = null;
 		configurable.configure(nullByteConfig);
 		assertNotNull(configurable.getConf());
-		byte[] newConfig = configurable.getConf();
+		String newConfig = configurable.getConf();
 		// configuration is unchanged
-		assertArrayEquals(oldConfig, newConfig);
+		assertEquals(oldConfig, newConfig);
 	}
 	
 }

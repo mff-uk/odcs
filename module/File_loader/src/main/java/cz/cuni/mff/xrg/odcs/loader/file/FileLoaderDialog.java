@@ -63,13 +63,13 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 */
 	public FileLoaderDialog() {
 		super(FileLoaderConfig.class);
-		inicialize();
+		initialize();
 		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		mapData();
 	}
 
-	private void inicialize() {
+	private void initialize() {
 		ex = new Validator.InvalidValueException("Valid");
 	}
 
@@ -177,12 +177,14 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		textFieldFilePath.addValidator(new Validator() {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
-				if (value.getClass() == String.class && !((String) value)
-						.isEmpty()) {
-					return;
+				if (!getContext().isTemplate()){
+					if (value.getClass() == String.class && !((String) value)
+							.isEmpty()) {
+						return;
+					}
+					ex = new InvalidValueException("File path must be filled!");
+					throw ex;
 				}
-				ex = new InvalidValueException("File path must be filled!");
-				throw ex;
 			}
 		});
 		verticalLayoutCore.addComponent(textFieldFilePath);
@@ -230,11 +232,10 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	/**
 	 * Set values from from dialog where the configuration object may be edited
 	 * to configuration object implementing {@link DPUConfigObject} interface
-	 * and configuring DPU
+	 * and configuring DPU.
 	 *
-	 * @throws ConfigException Exception which might be thrown when fields
-	 *                         {@link #textFieldFileName} and
-	 *                         {@link #textFieldFilePath} contain null value.
+	 * @throws ConfigException Exception which might be thrown when the field
+	 *                         {@link #textFieldFilePath} contains null value.
 	 * @return config Object holding configuration which is used in
 	 *         {@link #setConfiguration} to initialize fields in the
 	 *         configuration dialog.
@@ -266,7 +267,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * where the configuration object may be edited.
 	 *
 	 * @throws ConfigException Exception which might be thrown when components
-	 *                         {@link #textFieldFileName}, {@link #textFieldFilePath}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
+	 *                         {@link #textFieldFilePath}, {@link #checkBoxDiffName}, {@link #comboBoxFormat}
 	 *                         in read-only mode or when values loading to this
 	 *                         fields could not be converted.
 	 * @param conf Object holding configuration which is used to initialize
@@ -290,6 +291,11 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of file loader as string.
+	 *
+	 * @return desription of file loader as string.
+	 */
 	@Override
 	public String getDescription() {
 		String path = textFieldFilePath.getValue().trim();

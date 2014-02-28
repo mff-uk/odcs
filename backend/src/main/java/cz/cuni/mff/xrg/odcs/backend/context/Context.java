@@ -194,63 +194,49 @@ public class Context implements DPUContext {
 	}
 
 	/**
-	 * Return respective {@link PipelineExecution}.
-	 *
-	 * @return
+	 * @return Respective {@link PipelineExecution}.
 	 */
 	public PipelineExecution getExecution() {
 		return contextInfo.getExecution();
 	}
 
 	/**
-	 * Return list of all input {@link ManagableDataUnit}s.
-	 *
-	 * @return
+	 * @return List of all input {@link ManagableDataUnit}s.
 	 */
 	public List<ManagableDataUnit> getInputs() {
 		return inputsManager.getDataUnits();
 	}
 
 	/**
-	 * Return list of all output {@link ManagableDataUnit}s.
-	 *
-	 * @return
+	 * @return List of all output {@link ManagableDataUnit}s.
 	 */
 	public List<ManagableDataUnit> getOutputs() {
 		return outputsManager.getDataUnits();
 	}
 
 	/**
-	 * Return true if the warning message has been publish using this context.
-	 *
-	 * @return
+	 * @return True if the warning message has been publish using this context.
 	 */
 	public boolean warningMessagePublished() {
 		return this.warningMessage;
 	}
 
 	/**
-	 * Return true if the error message has been publish using this context.
-	 *
-	 * @return
+	 * @return True if the error message has been publish using this context.
 	 */
 	public boolean errorMessagePublished() {
 		return this.errorMessage;
 	}
 
 	/**
-	 * True if the execution should be stopped but not failed instantly.
-	 *
-	 * @return
+	 * @return True if the execution should be stopped but not failed instantly.
 	 */
 	public boolean shouldStopExecution() {
 		return stopExecution;
 	}
 
 	/**
-	 * Return engine's general working directory.
-	 *
-	 * @return
+	 * @return Engine's general working directory.
 	 */
 	private File getGeneralWorkingDir() {
 		return new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
@@ -260,7 +246,7 @@ public class Context implements DPUContext {
 	 * Return identification of single DPU template shared by all templates with
 	 * same name.
 	 *
-	 * @return
+	 * @return DPU template identification.
 	 */
 	private String getTemplateIdentification() {
 		return dpuInstance.getTemplate().getJarDirectory();

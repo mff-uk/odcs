@@ -29,6 +29,8 @@ public class FileUploadReceiver implements Receiver {
 
 	/**
 	 * return an OutputStream
+	 * 
+	 * @param MIMEType 
 	 */
 	@Override
 	public OutputStream receiveUpload(final String filename,
@@ -55,10 +57,20 @@ public class FileUploadReceiver implements Receiver {
 
 	}
 
+	/**
+	 * Get uploaded file.
+	 *
+	 * @return uploaded file
+	 */
 	public File getFile() {
 		return file;
 	}
 
+	/**
+	 * Get path to file.
+	 *
+	 * @return path to file
+	 */
 	public Path getPath() {
 		return path;
 	}

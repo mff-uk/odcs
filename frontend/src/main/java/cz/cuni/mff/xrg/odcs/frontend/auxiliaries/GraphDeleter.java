@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 
 /**
  * Component for deleting the graphs for virtuoso.
@@ -27,7 +27,7 @@ public class GraphDeleter implements Runnable {
 	@Override
 	public void run() {
 		try {
-			RDFDataUnit repo
+			ManagableRdfDataUnit repo
 					= RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
 			message = repo.deleteApplicationGraphs();
 		} finally {
@@ -38,7 +38,7 @@ public class GraphDeleter implements Runnable {
 	/**
 	 * Return last message from last deletion.
 	 *
-	 * @return
+	 * @return Last message from last deletion.
 	 */
 	public static String getMessage() {
 		return message;
@@ -47,7 +47,7 @@ public class GraphDeleter implements Runnable {
 	/**
 	 * True it the graphs are currently being deleted.
 	 *
-	 * @return
+	 * @return If currently deleting graphs.
 	 */
 	public static boolean isRunning() {
 		return running;

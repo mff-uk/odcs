@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -55,7 +56,7 @@ public class DataUnitFactory {
 						+ "be created.");
 			case RDF_Local:
 				// create DataUnit
-				RDFDataUnit localRepository = RDFDataUnitFactory
+				ManagableDataUnit localRepository = RDFDataUnitFactory
 						.createLocalRDFRepo(directory.getAbsolutePath(), id,
 						name, GraphUrl.translateDataUnitId(id));
 
@@ -68,7 +69,7 @@ public class DataUnitFactory {
 				);
 
 				// create repository
-				RDFDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
+				ManagableDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
 						config .getString(ConfigProperty.DATABASE_HOSTNAME),
 						config.getString(ConfigProperty.DATABASE_PORT),
 						config.getString(ConfigProperty.DATABASE_USER),
@@ -79,6 +80,9 @@ public class DataUnitFactory {
 				);
 				
 				return virtosoRepository;
+			case FILE:
+				// create the DataUnit and return it
+				return FileDataUnitFactory.create(name, directory);
 			default:
 				throw new DataUnitCreateException("Unknown DataUnit type.");
 		}

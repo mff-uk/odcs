@@ -4,7 +4,7 @@ import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -143,7 +143,7 @@ public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 		List<PipelineExecution> running = pipelineFacade
 				.getAllExecutions(PipelineExecutionStatus.RUNNING);
 		for (PipelineExecution execution : running) {
-			MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, execution.getId().toString());
+			MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
 			// hanging pipeline ..
 			sanitizer.sanitize(execution);
 			
@@ -153,14 +153,14 @@ public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 				LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			}
 			
-			MDC.remove(LogMessage.MDPU_EXECUTION_KEY_NAME);
+			MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
 		}
 
 		List<PipelineExecution> cancelling = pipelineFacade
 				.getAllExecutions(PipelineExecutionStatus.CANCELLING);
 		
 		for (PipelineExecution execution : cancelling) {
-			MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, execution.getId().toString());
+			MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
 			// hanging pipeline ..
 			sanitizer.sanitize(execution);
 			
@@ -170,7 +170,7 @@ public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 				LOG.warn("Seems like someone deleted our pipeline run.", ex);
 			}
 			
-			MDC.remove(LogMessage.MDPU_EXECUTION_KEY_NAME);
+			MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
 		}
 	}
 

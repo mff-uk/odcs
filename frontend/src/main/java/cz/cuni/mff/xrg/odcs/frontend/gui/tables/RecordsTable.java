@@ -1,30 +1,40 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
 
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tepi.filtertable.FilterGenerator;
 
 /**
  * Table with event records related to given pipeline execution.
@@ -43,15 +53,16 @@ public class RecordsTable extends CustomComponent {
 	 * Access to data for retrieving detail log information. TODO replace with
 	 * ContainerSource
 	 */
-	private final CachedSource<MessageRecord> dataSouce;
+	private final DbCachedSource<MessageRecord> dataSouce;
 	private final ReadOnlyContainer<MessageRecord> container;
 
 	/**
 	 * Default constructor. Initializes the layout.
 	 *
 	 * @param dataSouce
+	 * @param pageLenght  
 	 */
-	public RecordsTable(CachedSource<MessageRecord> dataSouce, int pageLenght) {
+	public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght) {
 		this.dataSouce = dataSouce;
 		this.container = new ReadOnlyContainer<>(dataSouce);
 		//build layout
@@ -62,6 +73,13 @@ public class RecordsTable extends CustomComponent {
 		mainLayout = new VerticalLayout();
 		messageTable = new IntlibPagedTable();
 		messageTable.setSelectable(true);
+		messageTable.setImmediate(true);
+
+		ComboBox dpuSelector = new ComboBox();
+		dpuSelector.setImmediate(true);
+		messageTable.setFilterGenerator(createFilterGenerator(dpuSelector));
+		messageTable.setFilterLayout();
+		messageTable.setFilterBarVisible(true);
 		messageTable.addItemClickListener(
 				new ItemClickEvent.ItemClickListener() {
 			@Override
@@ -75,6 +93,8 @@ public class RecordsTable extends CustomComponent {
 				}
 			}
 		});
+		messageTable.setColumnCollapsingAllowed(true);
+		messageTable.setColumnWidth("time", 115);
 		messageTable.setSizeFull();
 		messageTable.setPageLength(pageLenght);
 
@@ -97,6 +117,7 @@ public class RecordsTable extends CustomComponent {
 		// set container to the table -- we may possibly re-set this
 		// but that does not do anything bad
 		messageTable.setContainerDataSource(container);
+		refreshDpuSelector(execution);
 
 		if (isInitialized) {
 			// all has been done .. just set the page to the
@@ -114,6 +135,8 @@ public class RecordsTable extends CustomComponent {
 	 * Add generated columns and filters to the table.
 	 */
 	public void buildGeneratedColumns() {
+		messageTable.setColumnWidth("type", 32);
+		messageTable.setColumnAlignment("type", CustomTable.Align.CENTER);
 		messageTable.addGeneratedColumn("type", new CustomTable.ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId,
@@ -146,24 +169,24 @@ public class RecordsTable extends CustomComponent {
 				return emb;
 			}
 		});
-		messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
-				if (dpuId == null) {
-					return null;
-				}
-				Button logsLink = new Button("Logs");
-				logsLink.setStyleName(BaseTheme.BUTTON_LINK);
-				logsLink.addClickListener(new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
-					}
-				});
-				return logsLink;
-			}
-		});
+//		messageTable.addGeneratedColumn("", new CustomTable.ColumnGenerator() {
+//			@Override
+//			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+//				final Long dpuId = (Long) source.getItem(itemId).getItemProperty("dpuInstance.id").getValue();
+//				if (dpuId == null) {
+//					return null;
+//				}
+//				Button logsLink = new Button("Logs");
+//				logsLink.setStyleName(BaseTheme.BUTTON_LINK);
+//				logsLink.addClickListener(new Button.ClickListener() {
+//					@Override
+//					public void buttonClick(Button.ClickEvent event) {
+//						fireEvent(new OpenLogsEvent(RecordsTable.this, dpuId));
+//					}
+//				});
+//				return logsLink;
+//			}
+//		});
 		messageTable.setVisibleColumns();
 		messageTable.setFilterDecorator(new filterDecorator());
 	}
@@ -224,6 +247,11 @@ public class RecordsTable extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set table page length.
+	 *
+	 * @param pageLength New table page length.
+	 */
 	public void setPageLength(int pageLength) {
 		messageTable.setPageLength(pageLength);
 	}
@@ -260,4 +288,93 @@ public class RecordsTable extends CustomComponent {
 			return img;
 		}
 	};
+
+	private FilterGenerator createFilterGenerator(final ComboBox dpuSelector) {
+		return new FilterGenerator() {
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Object value) {
+				if (propertyId.equals("dpu")) {
+					if (value != null) {
+						Long id = ((DPUInstanceRecord) value).getId();
+						return new Compare.Equal("dpuInstance.id", id);
+					} else {
+						return null;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+				if (propertyId == null) {
+					return null;
+				}
+				if (propertyId.equals("dpu")) {
+					return dpuSelector;
+				}
+				return null;
+			}
+
+			@Override
+			public void filterRemoved(Object propertyId) {
+			}
+
+			@Override
+			public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+			}
+
+			@Override
+			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+				return null;
+			}
+
+			@Override
+			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+				return null;
+			}
+		};
+	}
+
+	private ComboBox refreshDpuSelector(PipelineExecution execution) {
+		// get DPU selector
+		ComboBox dpuSelector = (ComboBox) messageTable.getFilterField("dpu");
+		// refresh it's content
+		dpuSelector.removeAllItems();
+
+		if (execution == null) {
+			// no execution set .. 
+			return null;
+		}
+
+		if (isRunning(execution)) {
+
+			Node debugNode = execution.getDebugNode();
+			DependencyGraph dependencyGraph = debugNode == null
+					? new DependencyGraph(execution.getPipeline().getGraph())
+					: new DependencyGraph(execution.getPipeline().getGraph(), debugNode);
+			GraphIterator iterator = dependencyGraph.iterator();
+			while (iterator.hasNext()) {
+				DPUInstanceRecord item = iterator.next().getDpuInstance();
+				if (!dpuSelector.containsId(item)) {
+					dpuSelector.addItem(item);
+				}
+			}
+		} else {
+
+			ExecutionContextInfo ctx = execution.getContextReadOnly();
+			if (ctx != null) {
+				for (DPUInstanceRecord item : ctx.getDPUIndexes()) {
+					if (!dpuSelector.containsId(item)) {
+						dpuSelector.addItem(item);
+					}
+				}
+			}
+		}
+		return dpuSelector;
+	}
+
+	private boolean isRunning(PipelineExecution execution) {
+		PipelineExecutionStatus status = execution.getStatus();
+		return status == PipelineExecutionStatus.RUNNING || status == PipelineExecutionStatus.CANCELLING || status == PipelineExecutionStatus.QUEUED;
+	}
 }

@@ -6,8 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 
 /**
- * Base abstract class for a configuration dialog. DPU developer should extend 
- * his DPU's configuration dialog from {@link BaseConfigDialog} instead of this class. 
+ * Base abstract class for a configuration dialog.
  * 
  * @author Petyr
  * @param <C>
@@ -17,21 +16,29 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
 		extends CustomComponent {
 
 	/**
-	 * Deserialize configuration and call
-	 * {@link #setConfiguration(DPUConfigObject)}
+	 * Set context to the dialog. This method is called only once
+	 * before any other method.
+	 * 
+	 * @param newContext 
+	 */
+	public abstract void setContext(ConfigDialogContext newContext);
+	
+	/**
+	 * Configure dialog with given serialized configuration.
 	 * 
 	 * @param conf Serialized configuration object.
 	 * @throws ConfigException
 	 */
-	public abstract void setConfig(byte[] conf) throws ConfigException;
+	public abstract void setConfig(String conf) throws ConfigException;
 
 	/**
-	 * Return serialized result of {@link #getConfiguration()}
+	 * Return current configuration from dialog in serialized form. If the
+	 * configuration is invalid then throws.
 	 * 
 	 * @return Serialized configuration object.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
 	 */
-	public abstract byte[] getConfig() throws ConfigException;
+	public abstract String getConfig() throws ConfigException;
 
 	/**
 	 * Return text that should be used as a DPU tool tip. The text should
@@ -59,7 +66,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
      * Compare last configuration and current dialog's configuration. If any
      * exception is thrown then return false.
      * The last configuration is updated in calls {@link #getConfig()}
-     * and {@link #setConfig(byte[])}.
+     * and {@link #setConfig(java.lang.String) }.
      *  
      * @return False if configurations are valid and are different.
      */

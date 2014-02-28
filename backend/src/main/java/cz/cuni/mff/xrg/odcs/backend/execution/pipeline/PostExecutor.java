@@ -28,7 +28,7 @@ public interface PostExecutor extends Ordered {
 	 * @param execution
 	 * @param contexts
 	 * @param graph Dependency graph used for execution.
-	 * @return
+	 * @return False if the post-executor failed.
 	 */
 	public boolean postAction(PipelineExecution execution,
 			Map<Node, Context> contexts,

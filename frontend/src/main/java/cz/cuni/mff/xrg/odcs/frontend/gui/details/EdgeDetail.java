@@ -58,7 +58,9 @@ public class EdgeDetail extends Window {
 	/**
 	 * Basic constructor, takes {@link Edge} which detail should be showed.
 	 *
-	 * @param edge {@link Edge} which detail will be showed.
+	 * @param e 
+	 * @param readOnly 
+	 * @param dpuExplorer  
 	 */
 	public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
 		this.explorer = dpuExplorer;
@@ -142,6 +144,11 @@ public class EdgeDetail extends Window {
 				for (DataUnitDescription output : outputs) {
 					List<Integer> left = new ArrayList<>(1);
 					left.add(outputUnits.indexOf(output));
+					
+					if(input.getTypeName().contains("FileDataUnit") != output.getTypeName().contains("FileDataUnit")) {
+						Notification.show("Input and output data unit have incompatible type, mapping couldn't be created!", Notification.Type.WARNING_MESSAGE);
+						continue;
+					}
 
 					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
 					if (addMappingToList(mapping)) {

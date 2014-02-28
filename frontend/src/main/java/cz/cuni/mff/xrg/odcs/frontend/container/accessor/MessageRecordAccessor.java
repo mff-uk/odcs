@@ -13,13 +13,13 @@ import java.util.List;
  */
 public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 
-	private final List<String> all = Arrays.asList("id","time", "type", "dpuInstance.name", "shortMessage", "dpuInstance.id");
+	private final List<String> all = Arrays.asList("id", "type", "time", "dpu", "shortMessage", "dpuInstance.id");
 	
-	private final List<String> sortable = Arrays.asList("time", "type", "dpuInstance.name");
+	private final List<String> sortable = Arrays.asList("time", "type", "dpu");
 	
-	private final List<String> filterable = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
+	private final List<String> filterable = Arrays.asList("time", "type", "dpu", "shortMessage");
 	
-	private final List<String> visible = Arrays.asList("time", "type", "dpuInstance.name", "shortMessage");
+	private final List<String> visible = Arrays.asList("type", "time", "dpu", "shortMessage");
 	
 	private final List<String> toFetch = Arrays.asList("dpuInstance");
 	
@@ -57,11 +57,13 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 	public String getColumnName(String id) {
 		switch (id) {
 			case "time":
-				return "Date";
-			case "dpuInstance.name":
+				return "Timestamp";
+			case "dpu":
 				return "DPU Instance";
 			case "shortMessage":
 				return "Short message";
+			case "type":
+				return "type";
 			default:
 				return id;
 		}
@@ -76,7 +78,7 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 				return object.getTime();
 			case "type":
 				return object.getType();
-			case "dpuInstance.name":
+			case "dpu":
 				if(object.getDpuInstance() != null) {
 					return object.getDpuInstance().getName();
 				} else {
@@ -105,7 +107,7 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 				return Date.class;
 			case "type":
 				return MessageRecordType.class;
-			case "dpuInstance.name":
+			case "dpu":
 			case "shortMessage":
 				return String.class;
 			default:

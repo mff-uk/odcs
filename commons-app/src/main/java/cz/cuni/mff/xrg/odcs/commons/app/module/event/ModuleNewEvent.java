@@ -9,8 +9,12 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.event;
  */
 public class ModuleNewEvent extends ModuleEvent {
 
-	public ModuleNewEvent(Object source,
-			String directoryName) {
+	/**
+	 * 
+	 * @param source Event source.
+	 * @param directoryName DPU's directory name.
+	 */	
+	public ModuleNewEvent(Object source, String directoryName) {
 		super(source, directoryName);
 	}
 	

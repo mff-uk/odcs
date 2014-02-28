@@ -6,6 +6,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import static com.vaadin.server.DefaultErrorHandler.doDefault;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -147,8 +148,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 					}
 
 					// Display the error message in a custom fashion
-					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
-					Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
+					//String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
+					//Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
+					Notification.show("Unexpected error occured.", "Please reload the application.", Type.ERROR_MESSAGE);
 					// and log ...
 					LOG.error("Uncaught exception", cause);
 				} else {
@@ -278,6 +280,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		});
 	}
 
+	/**
+	 * Return to page which user tried to accessed before redirecting to login page.
+	 */
 	public void navigateAfterLogin() {
 		if (storedNavigation == null) {
 			navigatorHolder.navigateTo(Initial.class);
@@ -296,6 +301,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 		}
 	}
 
+	/**
+	 * Navigate to previous view.
+	 */
 	public void navigateToLastView() {
 		if (lastView != null) {
 			navigatorHolder.navigateTo(lastView);
@@ -304,30 +312,58 @@ public class AppEntry extends com.vaadin.ui.UI {
 		}
 	}
 
+	/**
+	 * Get current navigation.
+	 * @return Navigator.
+	 */
 	public ClassNavigator getNavigation() {
 		return navigatorHolder;
 	}
 
 	/**
-	 * Fetches spring bean. For cases when autowiring is not a possibility.
+	 * Fetches spring bean. For cases when auto-wiring is not a possibility.
 	 *
-	 * @param <T>
-	 * @param type
+	 * @param <T> 
+	 * @param type Class of the bean to fetch.
 	 * @return bean
 	 */
 	public <T extends Object> T getBean(Class<T> type) {
 		return context.getBean(type);
 	}
 
+	/**
+	 * Get main layout.
+	 * @return Main layout.
+	 */
 	public MenuLayout getMain() {
 		return main;
 	}
 
+	/**
+	 * Get backend client.
+	 * @return Backend client.
+	 */
 	public Client getBackendClient() {
 		return backendClient;
 	}
 
+	/**
+	 * Get refresh manager.
+	 * @return Refresh manager.
+	 */
 	public RefreshManager getRefreshManager() {
 		return refreshManager;
+	}
+
+	/**
+	 * Set URI fragment.
+	 * @param uriFragment New URI fragment.
+	 * @param throwEvents True to fire event.
+	 */
+	public void setUriFragment(String uriFragment, boolean throwEvents) {
+		Page.getCurrent().setUriFragment(uriFragment, throwEvents);
+		if(uriFragment.length() > 0) {
+			actualView = uriFragment.substring(1);
+		}
 	}
 }

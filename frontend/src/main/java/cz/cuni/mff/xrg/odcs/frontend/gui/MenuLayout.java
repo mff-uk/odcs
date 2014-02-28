@@ -147,22 +147,35 @@ public class MenuLayout extends CustomComponent {
 	/**
 	 * Return layout for application views.
 	 *
-	 * @return
+	 * @return layout for application views
 	 */
 	public Panel getViewLayout() {
 		return this.viewLayout;
 	}
 
+	/**
+	 * Refresh user bar.
+	 */
 	public void refreshUserBar() {
 		userName.setValue(authCtx.getUsername());
 		logOutButton.setVisible(authCtx.isAuthenticated());
 	}
 
+	/**
+	 * Refreshes the status of backend. Green/red icon in header.
+	 *
+	 * @param isRunning
+	 */
 	public void refreshBackendStatus(boolean isRunning) {
 		backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
 		backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.png" : "icons/offline.png"));
 	}
 
+	/**
+	 * Setup navigation and menu.
+	 * 
+	 * @param navigatorHolder 
+	 */
 	public void setNavigation(ClassNavigatorHolder navigatorHolder) {
 		this.navigator = navigatorHolder;
 		// init menuBar
@@ -175,6 +188,11 @@ public class MenuLayout extends CustomComponent {
 		menuItems.put("Administrator", menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator)));
 	}
 
+	/**
+	 * Sets active menu item. 
+	 *
+	 * @param viewName Item to set as active.
+	 */
 	public void setActiveMenuItem(String viewName) {
 		for (MenuItem item : menuBar.getItems()) {
 			item.setCheckable(true);

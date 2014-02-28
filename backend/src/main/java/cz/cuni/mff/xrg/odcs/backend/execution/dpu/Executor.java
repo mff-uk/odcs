@@ -179,7 +179,7 @@ public final class Executor implements Runnable {
 	 *
 	 * @param dpuInstance Instance of DPU to execute.
 	 * @param unitInfo
-	 * @return
+	 * @return False if any of the pre-executors failed.
 	 */
 	private boolean executePreExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {
@@ -201,7 +201,7 @@ public final class Executor implements Runnable {
 				LOG.error("The pre-executor throws", t);
 				// one event abour failure
 				eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
-					context, item, "The pre-executor throws an unexpected exception."));
+					context, item, "The pre-executor throws an unexpected exception. See logs for more details."));
 				// and second about .. the whole failure
 				eventPublisher.publishEvent(PipelineFailedEvent.create(
 						t, node.getDpuInstance(), execution, this));
@@ -264,7 +264,7 @@ public final class Executor implements Runnable {
 	 *
 	 * @param dpuInstance Instance of DPU that has been executed.
 	 * @param unitInfo
-	 * @return
+	 * @return False if any of the post-executors failed.
 	 */
 	private boolean executePostExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {
@@ -286,7 +286,7 @@ public final class Executor implements Runnable {
 				LOG.error("The post-executor throws", t);
 				// one event abour failure
 				eventPublisher.publishEvent(DPUEvent.createPostExecutorFailed(
-					context, item, "The post-executor throws an unexpected exception."));
+					context, item, "The post-executor throws an unexpected exception. See logs for more details."));
 				// and second about .. the whole failure
 				eventPublisher.publishEvent(PipelineFailedEvent.create(
 						t, node.getDpuInstance(), execution, this));

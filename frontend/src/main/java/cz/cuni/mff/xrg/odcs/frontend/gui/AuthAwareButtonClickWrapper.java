@@ -1,15 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Wrapper for {@link Button.ClickListener} keeping reference to authentication
+ * Wrapper for {@link ClickListener} keeping reference to authentication
  * details, which were available when this wrapper was constructed.
  *
  * <p>
- * It seems like {@link Button.ClickListener} is sometimes executed in a
+ * It seems like {@link ClickListener} is sometimes executed in a
  * dedicated thread, where authentication is lost. This wrapper should resolve
  * this situation by saving a local reference to {@link Authentication} while it
  * is constructed in authentication-aware thread. Then when event is triggered,
@@ -29,6 +30,11 @@ public class AuthAwareButtonClickWrapper implements Button.ClickListener {
 	 */
 	private Authentication authentication;
 
+	/**
+	 *  Constructor.
+	 * 
+	 * @param clickListener
+	 */
 	public AuthAwareButtonClickWrapper(Button.ClickListener clickListener) {
 		this.clickListener = clickListener;
 		authentication = SecurityContextHolder.getContext().getAuthentication();

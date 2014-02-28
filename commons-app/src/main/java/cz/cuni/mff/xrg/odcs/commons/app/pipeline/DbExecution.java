@@ -16,30 +16,26 @@ import java.util.Set;
 public interface DbExecution extends DbAccess<PipelineExecution> {
 
 	/**
-	 * 
-	 * @return 
+	 * @return all pipeline executions in the system
 	 */
 	public List<PipelineExecution> getAll();
 	
 	/**
-	 * 
 	 * @param pipeline
-	 * @return 
+	 * @return all executions for given pipeline
 	 */
 	public List<PipelineExecution> getAll(Pipeline pipeline);
 	
 	/**
-	 * 
 	 * @param status
-	 * @return 
+	 * @return all executions with given status
 	 */
 	public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 	
 	/**
-	 * 
 	 * @param pipeline
 	 * @param status
-	 * @return 
+	 * @return all executions of given pipeline with given status
 	 */
 	public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status);
 		

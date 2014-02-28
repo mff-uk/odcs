@@ -24,7 +24,7 @@ public class SPARQLTest {
 	public void constructAllTest() throws Exception {
 		// prepare dpu
 		SPARQLTransformer trans = new SPARQLTransformer();
-		
+
 		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
 		boolean isConstructType = true;
 
@@ -61,10 +61,10 @@ public class SPARQLTest {
 		SPARQLTransformer trans = new SPARQLTransformer();
 		boolean isConstructType = true;
 		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
-		
+
 		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
 				SPARQL_Update_Query, isConstructType);
-		
+
 		trans.configureDirectly(config);
 
 		// prepare test environment

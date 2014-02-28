@@ -13,15 +13,15 @@ public enum Messages {
 	/**
 	 * Unknown message, or error during communication.
 	 */	
-	UNKNOWN(0)
+	UNKNOWN(0),
 	/**
 	 * Request for database check, probably because of new work.
 	 */
-	,CHECK_DATABASE(1)
+	CHECK_DATABASE(1),
 	/**
 	 * Heartbeat message
 	 */
-	,HEARTBEAT(2);
+	HEARTBEAT(2);
 	
 	/**
 	 * Contains mapping from integers into the messages.
@@ -38,8 +38,7 @@ public enum Messages {
 	}
 	
 	/**
-	 * Return message.
-	 * @return
+	 * @return message
 	 */
 	public Integer getMessage() {
 		return this.id;
@@ -47,8 +46,9 @@ public enum Messages {
 	
 	/**
 	 * Translate Integer into the {@link Messages}.
+	 * 
 	 * @param id
-	 * @return
+	 * @return message corresponding to given id
 	 */
 	public static Messages getEnum(Integer id) {
 		if (TRANSLATOR.isEmpty()) {
