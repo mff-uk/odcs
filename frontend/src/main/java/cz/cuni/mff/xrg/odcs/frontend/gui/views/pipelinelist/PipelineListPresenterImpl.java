@@ -17,7 +17,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
@@ -40,6 +40,11 @@ import org.springframework.stereotype.Component;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 import org.vaadin.dialogs.ConfirmDialog;
 
+/**
+ * Implementation of {@link PipelineListPresenter}.
+ *
+ * @author Bogo
+ */
 @Component
 @Scope("prototype")
 @Address(url = "PipelineList")
@@ -64,7 +69,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	private Utils utils;
 	private ClassNavigator navigator;
 	private PipelineListData dataObject;
-	private CachedSource<Pipeline> cachedSource;
+	private DbCachedSource<Pipeline> cachedSource;
 	private RefreshManager refreshManager;
 	private Date lastLoad = new Date(0L);
 	/**
@@ -77,7 +82,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 	public Object enter() {
 		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new CachedSource<>(dbPipeline, pipelineAccessor);
+		cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
 		dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
 
 		// prepare view
@@ -136,6 +141,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		pipelineAccessor.clearExecCache();
 		cachedSource.invalidate();
 		dataObject.getContainer().refresh();
+		view.refreshTableControls();
 	}
 
 	@Override
@@ -156,10 +162,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		}
 		if (!executions.isEmpty()) {
 			Notification.show("Pipeline " + pipeline.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
-			return;
-		}
-		if (!permissions.hasPermission(pipeline, "delete")) {
-			Notification.show("Pipeline " + pipeline.getName() + " cannot be deleted. Public pipelne may be deleted only by pipeline authors and administrators", Notification.Type.WARNING_MESSAGE);
 			return;
 		}
 		String message = "Would you really like to delete the \"" + pipeline.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
@@ -188,6 +190,12 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		});
 	}
 
+	@Override
+	public boolean canDeletePipeline(long pipelineId) {
+		Pipeline pipeline = cachedSource.getObject(pipelineId);
+		return permissions.hasPermission(pipeline, "delete");
+	}
+	
 	@Override
 	public void scheduleEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
@@ -225,7 +233,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		String uriFragment = Page.getCurrent().getUriFragment();
 		ParametersHandler handler = new ParametersHandler(uriFragment);
 		handler.addParameter("page", newPageNumber.toString());
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 
 	@Override
@@ -247,6 +255,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 			}
 			handler.addParameter(propertyId, value);
 		}
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 }

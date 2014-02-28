@@ -67,7 +67,7 @@ public class Settings extends ViewComponent {
 
 	private VerticalLayout pipelinesLayout;
 
-	private VerticalLayout prefixesLayout;
+	//private VerticalLayout prefixesLayout;
 
 	private VerticalLayout tabsLayout;
 
@@ -79,15 +79,21 @@ public class Settings extends ViewComponent {
 
 	private Button pipelinesButton;
 
-	private Button prefixesButton;
+	//private Button prefixesButton;
 
 	private Button shownTab = null;
 
 	@Autowired
 	private UsersList usersList;
 
+	/**
+	 * Buttons layout for my account.
+	 */
 	public HorizontalLayout buttonMyAccountBar;
 
+	/**
+	 * Buttons layout for notifications.
+	 */
 	public HorizontalLayout buttonNotificationBar;
 
 	private EmailComponent email;
@@ -258,12 +264,12 @@ public class Settings extends ViewComponent {
 		});
 
 		//layout for Namespace Prefixes
-		prefixesLayout = new VerticalLayout();
-		prefixesLayout.setImmediate(true);
-		prefixesLayout.setWidth("100%");
-		prefixesLayout.setHeight("100%");
-		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
-		prefixesLayout.setStyleName("settings");
+//		prefixesLayout = new VerticalLayout();
+//		prefixesLayout.setImmediate(true);
+//		prefixesLayout.setWidth("100%");
+//		prefixesLayout.setHeight("100%");
+//		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
+//		prefixesLayout.setStyleName("settings");
 
 		//My account tab
 		accountButton = new NativeButton("My account");
@@ -369,31 +375,31 @@ public class Settings extends ViewComponent {
 		tabsLayout.setComponentAlignment(pipelinesButton, Alignment.TOP_RIGHT);
 
 		//Namespace prefixes tab
-		prefixesButton = new NativeButton("Namespace Prefixes");
-		prefixesButton.setHeight("40px");
-		prefixesButton.setWidth("170px");
-		prefixesButton.setStyleName("multiline");
-		prefixesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
-		prefixesButton.addClickListener(new ClickListener() {
-			private static final long serialVersionUID = 1L;
+//		prefixesButton = new NativeButton("Namespace Prefixes");
+//		prefixesButton.setHeight("40px");
+//		prefixesButton.setWidth("170px");
+//		prefixesButton.setStyleName("multiline");
+//		prefixesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+//		prefixesButton.addClickListener(new ClickListener() {
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void buttonClick(ClickEvent event) {
+//				if (shownTab.equals(accountButton)) {
+//					myAccountSaveConfirmation(prefixesButton, prefixesLayout);
+//				} else {
+//					if (shownTab.equals(notificationsButton)) {
+//						notificationSaveConfirmation(prefixesButton,
+//								prefixesLayout);
+//					} else {
+//						buttonPush(prefixesButton, prefixesLayout);
+//					}
+//				}
+//			}
+//		});
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (shownTab.equals(accountButton)) {
-					myAccountSaveConfirmation(prefixesButton, prefixesLayout);
-				} else {
-					if (shownTab.equals(notificationsButton)) {
-						notificationSaveConfirmation(prefixesButton,
-								prefixesLayout);
-					} else {
-						buttonPush(prefixesButton, prefixesLayout);
-					}
-				}
-			}
-		});
-
-		tabsLayout.addComponent(prefixesButton);
-		tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
+		//tabsLayout.addComponent(prefixesButton);
+		//tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
 
 		shownTab = accountButton;
 		mainLayout.addComponent(tabsLayout, 0, 0);
@@ -572,7 +578,7 @@ public class Settings extends ViewComponent {
 		accountButton.setStyleName("multiline");
 		usersButton.setStyleName("multiline");
 		pipelinesButton.setStyleName("multiline");
-		prefixesButton.setStyleName("multiline");
+		//prefixesButton.setStyleName("multiline");
 		notificationsButton.setStyleName("multiline");
 		shownTab = pressedButton;
 		shownTab.setStyleName("selectedtab");

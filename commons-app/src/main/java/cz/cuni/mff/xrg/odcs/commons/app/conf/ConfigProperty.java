@@ -4,12 +4,12 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
  * Recognized configuration properties.
  *
  * @author Jan Vojt
- * @copyright (c) 2013 Jan Vojt
  */
 public enum ConfigProperty {
 	
 	GENERAL_WORKINGDIR("general.workingdir"),
 
+	BACKEND_NAME("backend.name"),
 	BACKEND_HOST("backend.host"),
 	BACKEND_PORT("backend.port"),
 	BACKEND_LOG_DIR("backend.log.dir"),
@@ -17,6 +17,12 @@ public enum ConfigProperty {
 	BACKEND_DEFAULTRDF("backend.defaultRdf"),
 
 	EXECUTION_LOG_HISTORY("exec.log.history"),
+	EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
+	
+	/**
+	 * Used to generate url for pipeline execution in emails.
+	 */
+	FRONTEND_URL("frontend.url"),
 	
 	// namespaces for virtuoso configuration
 	RDBMS("database.sql"),
@@ -27,6 +33,8 @@ public enum ConfigProperty {
 	DATABASE_USER("user"),
 	DATABASE_PASSWORD("password"),
 	DATABASE_CHARSET("charset"),
+	DATABASE_NAME("dbname"),
+	DATABASE_PLATFORM("platform"),
 	DATABASE_RETRIES("retries"),
 	DATABASE_WAIT("wait"),
 	DATABASE_EXTENSION("useExtension"),

@@ -43,6 +43,11 @@ public class NamespacePrefixes {
 	@Autowired
 	private NamespacePrefixFacade namespacePrefixFacade;
 
+	/**
+	 * Build layout for namespace prefixes.
+	 *
+	 * @return Built layout for namespace prefixes
+	 */
 	public VerticalLayout buildNamespacePrefixesLayout() {
 
 
@@ -146,7 +151,7 @@ public class NamespacePrefixes {
 	/**
 	 * Container with data for {@link #prefixesTable}
 	 *
-	 * @param data. List of users
+	 * @param data 
 	 * @return result. IndexedContainer with data for users table
 	 */
 	@SuppressWarnings("unchecked")

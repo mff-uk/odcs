@@ -17,8 +17,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
@@ -26,11 +26,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import java.io.File;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,14 +68,19 @@ public class DPUPresenterImpl implements DPUPresenter {
 	private DPUFacade dpuFacade;
 	private Window.CloseListener createDPUCloseListener;
 	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
+	/**
+	 * Cache for pipelines using currently selected DPU template.
+	 */
+	private Map<Long, Pipeline> pipelinesWithDPU = new HashMap<>();
 
 	@Override
 	public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
 		// saving configuration
 		try {
 			dpuWrap.saveConfig();
+			Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
 		} catch (ConfigException e) {
-			dpuWrap.getDPUTemplateRecord().setRawConf(null);
+			Notification.show("The configuration have not been saved.",e.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} catch (DPUWrapException e) {
 			Notification.show(
 					"Unexpected error. The configuration may have not been saved.",
@@ -85,7 +90,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		// store into DB
 		dpuFacade.save(dpuWrap.getDPUTemplateRecord());
-		Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
+
 	}
 
 	void copyDPU(DPUTemplateRecord selectedDpu) {
@@ -111,7 +116,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 
 		DPUTemplateRecord copyDpuTemplate = dpuFacade.createCopy(selectedDpu);
 		copyDpuTemplate.setName(nameOfDpuCopy);
-		copyDpuTemplate.setParent(selectedDpu.getParent());
+		if(selectedDpu.getParent() != null)
+			copyDpuTemplate.setParent(selectedDpu.getParent());
+		else
+			copyDpuTemplate.setParent(selectedDpu);
 		dpuFacade.save(copyDpuTemplate);
 	}
 
@@ -154,7 +162,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 				names.append(iterator.next().getName());
 			}
 			names.append('.');
-			Notification.show("DPURecord can not be removed because it has been used in Pipelines: ", names.toString(), Notification.Type.WARNING_MESSAGE);
+			Notification.show("DPURecord can not be removed because it is being used in pipelines: ", names.toString(), Notification.Type.WARNING_MESSAGE);
 		}
 		return false;
 	}
@@ -163,13 +171,13 @@ public class DPUPresenterImpl implements DPUPresenter {
 	}
 
 	Pipeline getPipeline(Long pipeId) {
-		return pipelineFacade.getPipeline(pipeId);
+		return pipelinesWithDPU.get(pipeId);
 	}
 
 	IndexedContainer getPipelinesForDpu(DPUTemplateRecord dpu) {
 		IndexedContainer result = new IndexedContainer();
 		// visible columns of instancesTable
-		String[] visibleCols = new String[]{"id", "name", "description", "author", "actions"};
+		String[] visibleCols = new String[]{"id", "actions", "name"};
 
 		for (String p : visibleCols) {
 			// setting type of the columns
@@ -180,14 +188,26 @@ public class DPUPresenterImpl implements DPUPresenter {
 			}
 		}
 		// getting all Pipelines with specified DPU in it
-		Set<Pipeline> pipelines = new HashSet<>(pipelineFacade.getPipelinesUsingDPU(dpu));
+		List<Pipeline> pipelines;
+		if (permissions.hasPermission(dpu, "delete")) {
+			pipelines = pipelineFacade.getAllPipelinesUsingDPU(dpu);
+		} else {
+			pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
+		}
 
-		for (Pipeline pitem : pipelines) {
-			Item item = result.addItem(pitem.getId());
-			item.getItemProperty("id").setValue(pitem.getId());
-			item.getItemProperty("name").setValue(pitem.getName());
-			item.getItemProperty("description").setValue(pitem.getDescription());
-			item.getItemProperty("author").setValue(pitem.getOwner().getUsername());
+		pipelinesWithDPU = new HashMap<>();
+		for (Pipeline pipeline : pipelines) {
+
+			// add pipeline to cache
+			pipelinesWithDPU.put(pipeline.getId(), pipeline);
+
+			Item item = result.addItem(pipeline.getId());
+			if (item != null) {
+				item.getItemProperty("id").setValue(pipeline.getId());
+				item.getItemProperty("name").setValue(pipeline.getName());
+				//item.getItemProperty("description").setValue(pipeline.getDescription());
+				//item.getItemProperty("author").setValue(pipeline.getOwner().getUsername());
+			}
 		}
 
 		return result;
@@ -242,14 +262,14 @@ public class DPUPresenterImpl implements DPUPresenter {
 						view.saveDPUTemplate();
 						view.refresh();
 					}
-					view.selectNewDPU(dpu);
 					selectedDpu = dpu;
+					view.selectNewDPU(dpu);
 				}
 			});
 
 		} else {
-			view.selectNewDPU(dpu);
 			selectedDpu = dpu;
+			view.selectNewDPU(dpu);
 		}
 	}
 
@@ -266,9 +286,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 	}
 
 	/**
-	 * Return container with data that used in {@link #instancesTable}.
+	 * Return container with data used in table with instances of given DPU.
 	 *
-	 * @return result IndexedContainer for {@link #instancesTable}
+	 * @param dpu
+	 * @return result IndexedContainer for table
 	 */
 	@Override
 	public IndexedContainer getTableData(DPUTemplateRecord dpu) {
@@ -354,14 +375,27 @@ public class DPUPresenterImpl implements DPUPresenter {
 			Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
 			return;
 		}
+		pipelinesWithDPU.remove(pipe.getId());
 		pipelineFacade.delete(pipe);
 	}
 
 	@Override
-	public void pipelineStatusEventHandler(Long id) {
-		Pipeline pipe = getPipeline(id);
+	public void pipelineStatusEventHandler(Long pipelineId) {
+		Pipeline pipe = getPipeline(pipelineId);
 		pipelineStatus.setSelectedPipeline(pipe);
 		// open the window with status parameters.
 		UI.getCurrent().addWindow(pipelineStatus);
+	}
+
+	@Override
+	public boolean showPipelineDeleteButton(long pipelineId) {
+		Pipeline pipe = getPipeline(pipelineId);
+		return permissions.hasPermission(pipe, "delete");
+	}
+
+	@Override
+	public boolean showPipelineDetailButton(long pipelineId) {
+		Pipeline pipe = getPipeline(pipelineId);
+		return permissions.hasPermission(pipe, "view");
 	}
 }

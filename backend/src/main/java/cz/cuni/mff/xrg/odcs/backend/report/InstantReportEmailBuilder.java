@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend.report;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -19,12 +22,27 @@ class InstantReportEmailBuilder {
 	@Autowired
 	private DPUFacade dpuFacade;
 	
+	@Autowired
+	private AppConfig config;	
+	
 	public String build(PipelineExecution execution, Schedule schedule) {
 		StringBuilder body = new StringBuilder();
 
+		try {
+			final String name = config.getString(ConfigProperty.BACKEND_NAME);
+			body.append("<p>Instance: ");
+			body.append(name);
+			body.append("</p><br/>");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}		
+		
 		body.append("<b>Report for pipeline: </b>");
 		body.append(execution.getPipeline().getName());
 		body.append("<br/>");
+		body.append("<b>Execution id: </b>");
+		body.append(execution.getId().toString());
+		body.append("<br/>");		
 		body.append("<b>Execution starts at: </b>");
 		body.append(execution.getStart().toString());
 		body.append("<br/>");
@@ -33,6 +51,21 @@ class InstantReportEmailBuilder {
 		body.append("<br/>");
 		body.append("<b>Execution result: </b>");
 		body.append(execution.getStatus());
+		// add link to the execution detail if the url is specified
+		try {
+			String urlBase = config.getString(ConfigProperty.FRONTEND_URL);
+			if (!urlBase.endsWith("/")) {
+				urlBase = urlBase + "/";
+			}
+			urlBase = urlBase + "#!ExecutionList/exec=" + execution.getId().toString();
+			// generate link
+			body.append("<br/>");
+			body.append("<a href=/");
+			body.append(urlBase);
+			body.append("\" >Execution detail<a/> ");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}
 		body.append("<br/><br/>");
 		// append messages
 		final List<MessageRecord> messages = dpuFacade.getAllDPURecords(execution);
@@ -85,7 +118,6 @@ class InstantReportEmailBuilder {
 			// ...
 			body.append("</tr>");
 		}
-		
 		body.append("</table>");
 		
 		return body.toString();

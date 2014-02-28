@@ -55,7 +55,7 @@ CREATE TABLE "DB"."ODCS"."DPU_TEMPLATE"
   "description" LONG VARCHAR,  
   "configuration" LONG NVARCHAR,
   "parent_id" INTEGER,
-  "config_valid" SMALLINT,
+  "config_valid" SMALLINT NOT NULL,
 -- DPUTemplateRecord
   "user_id" INTEGER,
   "visibility" SMALLINT,
@@ -130,7 +130,7 @@ CREATE TABLE "DB"."ODCS"."EXEC_PIPELINE"
   "debug_mode" SMALLINT,
   "t_start" DATETIME,
   "t_end" DATETIME,
-  "context_id" INTEGER NOT NULL,
+  "context_id" INTEGER,
   "schedule_id" INTEGER,
   "silent_mode" SMALLINT,
   "debugnode_id" INTEGER,
@@ -142,7 +142,8 @@ CREATE TABLE "DB"."ODCS"."EXEC_PIPELINE"
 CREATE INDEX "ix_EXEC_PIPELINE_status" ON "DB"."ODCS"."EXEC_PIPELINE" ("status");
 CREATE INDEX "ix_EXEC_PIPELINE_pipeline_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("pipeline_id");
 CREATE INDEX "ix_EXEC_PIPELINE_debug_mode" ON "DB"."ODCS"."EXEC_PIPELINE" ("debug_mode");
-CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."ODCS"."EXEC_PIPELINE" ("t_start");
+-- Virtuoso 7 cannot handle the following index for some reason, see GH-952.
+-- CREATE INDEX "ix_EXEC_PIPELINE_t_start" ON "DB"."ODCS"."EXEC_PIPELINE" ("t_start");
 CREATE INDEX "ix_EXEC_PIPELINE_context_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("context_id");
 CREATE INDEX "ix_EXEC_PIPELINE_schedule_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("schedule_id");
 CREATE INDEX "ix_EXEC_PIPELINE_owner_id" ON "DB"."ODCS"."EXEC_PIPELINE" ("owner_id");
@@ -557,7 +558,9 @@ ALTER TABLE "DB"."ODCS"."PPL_OPEN_EVENT"
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- TRIGGERS      ###############################################################
+-- TRIGGERS      ######################################################
+
+-- BEGIN VIRTUOSO ONLY
 
 CREATE TRIGGER delete_instance_logs BEFORE DELETE ON "DB"."ODCS"."DPU_INSTANCE" REFERENCING old AS o
 {
@@ -590,23 +593,43 @@ CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" RE
     WHERE id = n.id;
 };
 
+-- END VIRTUOSO ONLY
+
+-- BEGIN MYSQL ONLY
+ -- all lines starting with comment in this section will be commented out for MySQL
+-- CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
+--  FOR EACH ROW SET NEW.t_last_change = NOW();
+-- END MYSQL ONLY
+
 -- TABLE FOR LOGS
 
 DROP TABLE "DB"."ODCS"."LOGGING";
 CREATE TABLE "DB"."ODCS"."LOGGING"
 (
-  "id" BIGINT NOT NULL IDENTITY,
+-- BEGIN VIRTUOSO ONLY
+  "id" INTEGER NOT NULL IDENTITY,
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+--  "id" INTEGER unsigned NOT NULL IDENTITY,
+-- END MYSQL ONLY
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" VARCHAR(254) NOT NULL,
   "message" LONG VARCHAR,
   "dpu" INTEGER,
-  "execution" INTEGER,
+  "execution" INTEGER NOT NULL,
   "stack_trace" LONG VARCHAR,
+  "relative_id" INTEGER,
   PRIMARY KEY (id)
+-- BEGIN VIRTUOSO ONLY
 );
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+-- ) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX "ix_LOGGING_dpu" ON "DB"."ODCS"."LOGGING" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "DB"."ODCS"."LOGGING" ("execution");
+CREATE INDEX "ix_LOGGIN_relative_id" ON "DB"."ODCS"."LOGGING" ("relative_id");
 
 -- File must end with empty line, so last query is followed by enter.

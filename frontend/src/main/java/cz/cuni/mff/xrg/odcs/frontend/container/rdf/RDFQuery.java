@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +43,13 @@ public class RDFQuery implements Query {
 
 	private ArrayList<Item> cachedItems;
 
-	private RDFDataUnit repository;
+	private ManagableRdfDataUnit repository;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param qd Query definition.
+	 */
 	public RDFQuery(RDFQueryDefinition qd) {
 		this.baseQuery = qd.getBaseQuery();
 		this.batchSize = qd.getBatchSize();
@@ -55,6 +60,11 @@ public class RDFQuery implements Query {
 
 	}
 
+	/**
+	 * Size of the query result.
+	 *
+	 * @return Size of the result.
+	 */
 	@Override
 	public int size() {
 
@@ -62,6 +72,7 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 		try {
+			repository.initialize();
 			int count;
 			String filteredQuery = setWhereCriteria(baseQuery);
 			LOG.debug("Size query started...");
@@ -78,6 +89,8 @@ public class RDFQuery implements Query {
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
 			LOG.debug("Size query exception", ex);
+		} finally {
+			repository.shutDown();
 		}
 		return 0;
 	}
@@ -107,6 +120,7 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 
+		repository.initialize();
 		String filteredQuery = setWhereCriteria(baseQuery);
 
 		QueryRestriction restriction = new QueryRestriction(filteredQuery);
@@ -200,38 +214,37 @@ public class RDFQuery implements Query {
 		return new BindingSetItem(headers, binding, id);
 	}
 
+	/**
+	 * Override from {@link Query}. Not applicable for our use.
+	 *
+	 * @param list
+	 * @param list1
+	 * @param list2
+	 */
 	@Override
 	public void saveItems(List<Item> list, List<Item> list1, List<Item> list2) {
 		throw new UnsupportedOperationException(
 				"RDFLazyQueryContainer is read-only.");
 	}
 
+	/**
+	 * Override from {@link Query}. Not applicable for our use.
+	 * @return not supported
+	 */
 	@Override
 	public boolean deleteAllItems() {
 		throw new UnsupportedOperationException(
 				"RDFLazyQueryContainer is read-only.");
 	}
 
+	/**
+	 * Override from {@link Query}. Not applicable for our use.
+	 * @return not supported
+	 */
 	@Override
 	public Item constructItem() {
 		throw new UnsupportedOperationException(
 				"RDFLazyQueryContainer is read-only.");
-	}
-
-	private boolean isSelectQuery(String query) throws InvalidQueryException {
-		if (query.length() < 9) {
-			//Due to expected exception format in catch block
-			throw new InvalidQueryException(new InvalidQueryException(
-					"Invalid query: " + query));
-		}
-		QueryPart queryPart = new QueryPart(query);
-		SPARQLQueryType type = queryPart.getSPARQLQueryType();
-
-		if (type == SPARQLQueryType.SELECT) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	private List<RDFTriple> getRDFTriplesData(Graph graph) {

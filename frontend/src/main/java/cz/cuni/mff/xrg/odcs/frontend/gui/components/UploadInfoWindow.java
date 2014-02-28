@@ -75,7 +75,7 @@ public class UploadInfoWindow extends Window implements StartedListener,
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				upload.interruptUpload();
-				DPUCreate.fl = 1;
+				DPUCreate.setFl(1);
 			}
 		});
 		cancelButton.setVisible(false);

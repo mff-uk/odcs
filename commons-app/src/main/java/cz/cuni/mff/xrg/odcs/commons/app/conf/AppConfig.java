@@ -42,7 +42,8 @@ public class AppConfig {
 	
 	/**
 	 * Constructor reads configuration file.
-	 * @return 
+	 * 
+	 * @return application configuration
 	 */
 	public static AppConfig loadFromHome() {
 		// we do not use slf4j as it is not initilized yet
@@ -58,7 +59,7 @@ public class AppConfig {
 	 * Constructor building from Spring resource.
 	 * 
 	 * @param resource configuration
-	 * @return 
+	 * @return application configuration
 	 */
 	public static AppConfig loadFrom(Resource resource) {
 		// we do not use slf4j as it is not initilized yet
@@ -74,7 +75,7 @@ public class AppConfig {
 	 * Loads configuration from input stream.
 	 * 
 	 * @param stream 
-	 * @return  
+	 * @return application configuration
 	 */
 	public static AppConfig loadFrom(InputStream stream) {
 		AppConfig config = new AppConfig();
@@ -93,7 +94,7 @@ public class AppConfig {
 	 * Gets value of given configuration property.
 	 * 
 	 * @param key
-	 * @return 
+	 * @return configuration value for given property
 	 */
 	public String getString(ConfigProperty key) {
 		String value = prop.getProperty(key.toString());
@@ -107,7 +108,7 @@ public class AppConfig {
 	 * Gets integer value of given configuration property.
 	 * 
 	 * @param key
-	 * @return 
+	 * @return integer value of given configuration property.
 	 */
 	public int getInteger(ConfigProperty key) {
 		String value = getString(key);
@@ -122,7 +123,7 @@ public class AppConfig {
 	 * Gets boolean value of given configuration property.
 	 * 
 	 * @param key
-	 * @return 
+	 * @return boolean value of given configuration property.
 	 */
 	public boolean getBoolean(ConfigProperty key) {
 		return Boolean.parseBoolean(getString(key));

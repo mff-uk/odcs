@@ -5,7 +5,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
-import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -48,13 +47,54 @@ public interface ExecutionListPresenter extends Presenter {
 	 */
 	public void debugEventHandler(long executionId);
 
+	/**
+	 * Stop refreshing.
+	 */
 	public void stopRefreshEventHandler();
+	
+	/**
+	 * Tells whether user has permission to stop pipeline execution, so we know
+	 * whether to render stop button.
+	 * 
+	 * @param executionId id of pipeline execution
+	 * @return true if user has permission to stop given pipeline execution,
+	 *		   false otherwise
+	 */
+	public boolean canStopExecution(long executionId);
 
+	/**
+	 * Start refreshing of given {@link DebuggingView}.
+	 * 
+	 * @param debugView Detail to refresh.
+	 * @param execution Execution of the detail.
+	 */
 	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
 
+	/**
+	 * Changes table page.
+	 * 
+	 * @param newPageNumber Page to select.
+	 * 
+	 */
 	public void pageChangedHandler(Integer newPageNumber);
 
-	public void filterParameterEventHander(String string, Object filterValue);
+	/**
+	 * Filters data by given parameter.
+	 * 
+	 * @param name Name of the filter. 
+	 * @param filterValue Value of the filter.
+	 * 
+	 */
+	public void filterParameterEventHander(String name, Object filterValue);
+	
+	/**
+	 * Navigates to given view.
+	 * 
+	 * @param where Class of the view.
+	 * @param param Params for the new view.
+	 * 
+	 */
+	public void navigateToEventHandler(Class where, Object param);
 
 	/**
 	 * View that can be used with the presenter.
@@ -65,7 +105,7 @@ public interface ExecutionListPresenter extends Presenter {
 		 * Generate view, that interact with given presenter.
 		 *
 		 * @param presenter
-		 * @return
+		 * @return view
 		 */
 		public Object enter(final ExecutionListPresenter presenter);
 
@@ -84,12 +124,34 @@ public interface ExecutionListPresenter extends Presenter {
 		 */
 		public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
 
+		/**
+		 * Refreshes the table.
+		 * 
+		 * @param modified Whether the data are modified.
+		 * 
+		 */
 		public void refresh(boolean modified);
 
+		/**
+		 * Selects execution with given id.
+		 * 
+		 * @param execId Id of execution to select.
+		 */
 		public void setSelectedRow(Long execId);
 
+		/**
+		 * Sets value of given filter.
+		 * 
+		 * @param name Name of filter.
+		 * @param value Value of filter.
+		 */
 		public void setFilter(String name, Object value);
 
+		/**
+		 * Navigates table to given page.
+		 * 
+		 * @param pageNumber Page to select.
+		 */
 		public void setPage(int pageNumber);
 	}
 
@@ -100,24 +162,48 @@ public interface ExecutionListPresenter extends Presenter {
 
 		private final ReadOnlyContainer<PipelineExecution> container;
 
+		/**
+		 * Gets container with {@link PipelineExecution}s.
+		 * @return Container.
+		 */
 		public ReadOnlyContainer<PipelineExecution> getContainer() {
 			return container;
 		}
 
+		/**
+		 * Constructor.
+		 *
+		 * @param container Container to hold.
+		 */
 		public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
 			this.container = container;
 		}
 	}
 
+	/**
+	 * Data for execution detail.
+	 *
+	 * @deprecated
+	 */
 	@Deprecated
 	public class ExecutionDetailData {
 	
 		private final ReadOnlyContainer<MessageRecord> messageContainer;
 
+		/**
+		 * Gets {@link MessageRecord} container.
+		 *
+		 * @return container
+		 */
 		public ReadOnlyContainer<MessageRecord> getMessageContainer() {
 			return messageContainer;
 		}
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param messageContainer Container to hold.
+		 */
 		public ExecutionDetailData(ReadOnlyContainer<MessageRecord> messageContainer) {
 			this.messageContainer = messageContainer;
 		}

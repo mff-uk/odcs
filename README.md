@@ -1,21 +1,55 @@
-ODCS
-======
+ODCleanStore
+============
 
 The tool uses data processing pipelines for obtaining, processing, and storing
 RDF data. It makes data processing highly customizable by employing custom data
 processing units, also provides data processing monitoring, debugging, and
-schedulling capabilities.
+scheduling capabilities.
 
-Configuration steps
--------------------
-1. Set credentials to Tomcat server in `frontend/pom.xml`.
-2. Set connection string, user name and password in `main/webapp/WEB-INF/classes/META-INF/persistence.xml`.
-3. Create configuration file.
-  - Sample configuration file is located in `/conf/config.properties` in the root
-    of the project. Configuration is to be stored in `$HOME/.odcs/config.properties`.
+
+Documentation
+-------------
+
+Please see http://www.ksi.mff.cuni.cz/~knap/odcs
+
 
 Installation steps
 ------------------
-- To deploy application to Apache Tomcat use `maven:deploy` target in project
-  `frontend` (or full name `org.apache.tomcat.maven:tomcat7-maven-plugin:2.0:deploy`)
-- Run backend application.
+
+Please see http://www.ksi.mff.cuni.cz/~knap/odcs/doc.html#install
+
+
+Licenses
+-------
+
+The following modules of the software are licensed under GNU Lesser General Public License, Version 3, https://www.gnu.org/licenses/lgpl-3.0.txt:
+ 
+  * commons
+  * commons-module
+  * commons-web
+  * dataunit-rdf
+  * dataunit-file
+  * ontology
+  * module-test
+  * module-base
+
+
+The following modules of the software are licensed under GNU General Public License, Version 3, https://www.gnu.org/licenses/gpl-3.0.txt:
+
+  * commons-app
+  * frontend
+  * backend
+  * dataunit
+  * dataunit-file-impl
+  * dataunit-rdf-impl
+  * RDF_File_Extractor
+  * RDF_File_Loader 
+  * SPARQL_Extractor 
+  * SPARQL_Loader 
+  * SPARQL_Transformer
+  * RDF_Data_Validator 
+  * Silk_Linker_Extractor
+
+For details, please see the particular module. 
+
+ 

@@ -75,12 +75,21 @@ public interface PipelineFacade extends Facade {
     void delete(Pipeline pipeline);
 
     /**
-     * Fetches all pipelines using give DPU template.
+     * Fetches pipelines using given DPU template which are visible to currently
+	 * logged-in user.
      *
      * @param dpu template
      * @return pipelines using DPU template
      */
     List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu);
+	
+    /**
+     * Fetches all pipelines using given DPU template.
+     *
+     * @param dpu template
+     * @return pipelines using DPU template
+     */
+    List<Pipeline> getAllPipelinesUsingDPU(DPUTemplateRecord dpu);
 
 	/**
 	 * Checks for duplicate pipeline names. The name of pipeline in second
@@ -89,7 +98,8 @@ public interface PipelineFacade extends Facade {
 	 * 
 	 * @param newName
 	 * @param pipeline to be renamed, or null
-	 * @return 
+	 * @return whether there already is a pipeline with the same name in the
+	 * system
 	 */
     boolean hasPipelineWithName(String newName, Pipeline pipeline);
 	
@@ -183,13 +193,12 @@ public interface PipelineFacade extends Facade {
     List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status);
 
     /**
-     * Return end time of latest execution of given status for given pipeline.
-     *
-     * Ignore null values.
+     * Return end time of latest execution time of given status for given
+	 * pipeline. Ignore null values.
      *
      * @param pipeline
      * @param status Execution status, used to filter pipelines.
-     * @return
+     * @return latest execution time of given status for given pipeline or null.
      */
     Date getLastExecTime(Pipeline pipeline, PipelineExecutionStatus status);
 
@@ -233,7 +242,8 @@ public interface PipelineFacade extends Facade {
      * &quot;update_last_change&quot;.
      *
      * @param lastLoad
-     * @return
+	 * @return whether there were any changes to pipeline executions since given
+	 * time
      */
     boolean hasModifiedExecutions(Date lastLoad);
 

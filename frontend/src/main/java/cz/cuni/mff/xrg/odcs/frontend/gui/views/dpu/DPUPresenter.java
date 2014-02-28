@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import com.vaadin.data.util.IndexedContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.dpu.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 import java.io.File;
 
@@ -84,17 +84,41 @@ public interface DPUPresenter extends Presenter {
 
 	/**
 	 * Get data(pipelines) for selected DPU.
-	 * @return 
+	 * @param dpu
+	 * @return data(pipelines) for selected DPU 
 	 */
 	public IndexedContainer getTableData(DPUTemplateRecord dpu);
 	
+	/**
+	 * Decides whether to show pipeline delete button in the listing
+	 * of pipelines using given DPU template.
+	 * 
+	 * @param pipelineId ID of pipeline to be deleted
+	 * @return true if user has permission to delete given pipeline,
+	 *		   false otherwise
+	 */
+	public boolean showPipelineDeleteButton(long pipelineId);
+
+	/**
+	 * Decides whether to show pipeline detail button in the listing
+	 * of pipelines using given DPU template.
+	 * 
+	 * @param pipelineId ID of the pipeline to display detail of
+	 * @return true if user has permission to view given pipeline,
+	 *		   false otherwise
+	 */
+	public boolean showPipelineDetailButton(long pipelineId);
+	
+	/**
+	 * View interface for DPU.
+	 */
 	public interface DPUView {
 	
 		/**
 		 * Generate view, that interact with given presenter.
 		 *
 		 * @param presenter
-		 * @return
+		 * @return generated view
 		 */
 		public Object enter(final DPUPresenter presenter);
 

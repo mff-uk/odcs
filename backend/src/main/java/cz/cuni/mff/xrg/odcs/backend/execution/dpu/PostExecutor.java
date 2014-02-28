@@ -31,7 +31,7 @@ public interface PostExecutor extends Ordered {
 	 * @param dpuInstance Respective DPU instance class.
 	 * @param execution Respective execution.
 	 * @param unitInfo DPU's ProcessingUnitInfo.
-	 * @return
+	 * @return False if the post-executor failed.
 	 */
 	public boolean postAction(Node node,
 			Map<Node, Context> contexts,

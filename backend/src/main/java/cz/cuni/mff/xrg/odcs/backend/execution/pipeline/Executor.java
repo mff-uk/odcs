@@ -24,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.LogMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -35,6 +34,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import ch.qos.logback.classic.Level;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 /**
  * Execute given pipeline. The {@link Executor} must be bind to the certain
@@ -176,7 +176,7 @@ public class Executor implements Runnable {
 	 * instantly return true.
 	 *
 	 * @param graph Dependency graph used for execution.
-	 * @return
+	 * @return False if any of the pre-executors failed.
 	 */
 	private boolean executePreExecutors(DependencyGraph graph) {
 		if (preExecutors == null) {
@@ -199,7 +199,7 @@ public class Executor implements Runnable {
 	 * instantly return true.
 	 *
 	 * @param graph Dependency graph that has been used for execution.
-	 * @return
+	 * @return False if any of the post-executors failed.
 	 */
 	private boolean executePostExecutors(DependencyGraph graph) {
 		if (postExecutors == null) {
@@ -263,7 +263,7 @@ public class Executor implements Runnable {
 	/**
 	 * Prepare and return instance of {@link DependencyGraph}.
 	 *
-	 * @return
+	 * @return Dependency graph for currently executed pipeline.
 	 */
 	private DependencyGraph prepareDependencyGraph() {
 		final Pipeline pipeline = execution.getPipeline();
@@ -308,7 +308,7 @@ public class Executor implements Runnable {
 
 			// put dpuInstance id to MDC, so we can identify logs related to the
 			// dpuInstance
-			MDC.put(LogMessage.MDC_DPU_INSTANCE_KEY_NAME,
+			MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
 					Long.toString(node.getDpuInstance().getId()));
 
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor = beanFactory
@@ -384,7 +384,7 @@ public class Executor implements Runnable {
 			}
 			execResult.add(dpuResults);
 			// remove MDC from logs
-			MDC.remove(LogMessage.MDC_DPU_INSTANCE_KEY_NAME);
+			MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
 
 		}
 
@@ -418,7 +418,7 @@ public class Executor implements Runnable {
 			MdcExecutionLevelFilter.add(executionId,
 					ch.qos.logback.classic.Level.INFO);
 		}
-		MDC.put(LogMessage.MDPU_EXECUTION_KEY_NAME, executionId);
+		MDC.put(Log.MDC_EXECUTION_KEY_NAME, executionId);
 
 		eventPublisher.publishEvent(PipelineInfo.createStart(execution, this));
 

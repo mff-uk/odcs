@@ -21,6 +21,13 @@ public class BindingSetItem implements Item {
 
 	private int id;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param headers List of headers.
+	 * @param binding Binding.
+	 * @param id Id.
+	 */
 	public BindingSetItem(List<String> headers, BindingSet binding, int id) {
 		this.headers = headers;
 		this.binding = binding;

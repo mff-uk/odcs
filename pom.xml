@@ -1,200 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>cz.cuni.mff.xrg.odcs</groupId>
-    <artifactId>odcs</artifactId>
-    <version>1.0.0</version>
-    <packaging>pom</packaging>
-    <name>ODCleanStore</name>
-    <description/>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cz.cuni.mff.xrg.odcs</groupId>
+	<artifactId>odcs</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>ODCleanStore</name>
+	<description/>
 
-    <properties>
-        <!-- specify java build version for commons?, backend and frontend -->
-        <project.java.version>1.7</project.java.version>
-        <!-- define used vaadin version -->
-        <vaadin.version>7.1.8</vaadin.version>
-        <!-- max vaadin version accepted be DPUs -->
-        <vaadin.version.max>8.0.0</vaadin.version.max>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- define output dirs -->
-        <project.output.lib>target\lib\</project.output.lib>
-        <project.output.lib.backend>target\lib\backend\</project.output.lib.backend>
-        <project.output.dpu>target\dpu\</project.output.dpu>
-        <!-- odcs version, used to create OSGI import/export package list used 
-        to enable custom user versions of DPUs by using <version> for this reason 
-        <version> can't be used to specify OSGI packages -->
-        <odcs.version>1.0.0</odcs.version>
-        <skipTests>false</skipTests>
-        <!-- spring version -->
-        <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
-        <org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
-        <!-- other third party libraries versions -->
-        <logback.version>1.0.13</logback.version>
-    </properties>
+	<properties>
+		<!-- specify java build version for commons?, backend and frontend -->
+		<project.java.version>1.7</project.java.version>
+		<!-- define used vaadin version 
+			!!! do not forget to update the version for OSGI's package export
+		-->
+		<vaadin.version>7.1.8</vaadin.version>
+		<!-- the minimal required vaadin version 
+			The lowest Vaadin version accepted by DPUs.
+		-->
+		<vaadin.version.min>7.1.8</vaadin.version.min>
+		<!-- max vaadin version accepted be DPUs 
+			The highest Vaadin version accepted by DPUs.
+		-->
+		<vaadin.version.max>8.0.0</vaadin.version.max>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- define output dirs -->
+		<project.output.lib>target/lib/</project.output.lib>
+		<project.output.lib.backend>target/lib/backend/</project.output.lib.backend>
+		<project.output.dpu>target/dpu/</project.output.dpu>
+		<!-- odcs version, used to create OSGI import/export package list used 
+		to enable custom user versions of DPUs by using <version> for this reason 
+		<version> can't be used to specify OSGI packages -->
+		<odcs.version>1.0.0</odcs.version>
+		<skipTests>false</skipTests>
+		<!-- spring version -->
+		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
+		<!-- other third party libraries versions -->
+		<logback.version>1.0.13</logback.version>
+	</properties>
 
-    <modules>
-        <!-- commons -->
-        <module>commons</module>
-        <!-- odcs libraries -->
-        <module>commons-app</module>
-        <module>rdf</module>
-        <module>commons-module</module>
-        <module>commons-web</module>		
-        <!-- application -->
-        <module>frontend</module>
-        <module>backend</module>
-        <!-- application additional libraries -->
-        <module>lib</module>
-        <!-- test environment for modules -->
-        <module>module-test</module>
-        <!-- build modules-->
-        <module>module-base</module>
-        <module>module</module>
-        <module>ontology</module>
-        <module>dataunit</module>
-    </modules>
+	<modules>
+		<!-- commons -->
+		<module>commons</module>
+		<!-- dataunits -->
+		<module>dataunit</module>
+		<module>dataunit-file</module>
+		<module>dataunit-file-impl</module>
+		<module>dataunit-rdf</module>
+		<module>dataunit-rdf-impl</module>
+		<!-- odcs libraries -->
+		<module>commons-app</module>
+		<module>commons-module</module>
+		<module>commons-web</module>		
+		<!-- application -->
+		<module>frontend</module>
+		<module>backend</module>
+		<!-- application additional libraries -->
+		<module>lib</module>
+		<!-- test environment for modules -->
+		<module>module-test</module>
+		<!-- build modules-->
+		<module>module-base</module>
+		<module>module</module>
+		<module>ontology</module>
+	</modules>
 
-    <scm>
-        <url/>
-        <connection/>
-        <developerConnection/>
-    </scm>
+	<scm>
+		<url/>
+		<connection/>
+		<developerConnection/>
+	</scm>
 
-    <developers>
-        <!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
-        </roles> </developer> -->
-    </developers>
+	<developers>
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
+		</roles> </developer> -->
+	</developers>
 
-    <contributors>
-        <contributor>
-            <name>Tomas Knap</name>
-            <email>knap@ksi.mff.cuni.cz</email>
-            <roles>
-                <role>project supervisor</role>
-            </roles>
-            <url>http://www.ksi.mff.cuni.cz/~knap</url>
-            <organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
-        </contributor>
-    </contributors>
+	<contributors>
+		<contributor>
+			<name>Tomas Knap</name>
+			<email>knap@ksi.mff.cuni.cz</email>
+			<roles>
+				<role>project supervisor</role>
+			</roles>
+			<url>http://www.ksi.mff.cuni.cz/~knap</url>
+			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
+		</contributor>
+	</contributors>
 
-    <repositories>
-        <repository>
-            <id>cz.cuni.mff.ms.xrg.odcl</id>
-            <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>cz.cuni.mff.ms.xrg.odcl.thirdparty</id>
-            <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
-        </repository>
-        <repository> <!-- spring repositories -->
-            <id>com.springsource.repository.bundles.release</id>
-            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
-        </repository>
-        <repository>
-            <id>com.springsource.repository.bundles.external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>cz.cuni.mff.ms.xrg.odcl</id>
+			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>cz.cuni.mff.ms.xrg.odcl.thirdparty</id>
+			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
+		</repository>
+		<repository> <!-- spring repositories -->
+			<id>com.springsource.repository.bundles.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.bundles.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+			<url>http://repository.springsource.com/maven/bundles/external</url>
+		</repository>
+	</repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>cz.cuni.mff.ms.xrg.odcl</id>
-            <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>cz.cuni.mff.ms.xrg.odcl</id>
+			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>${project.java.version}</source>
-                        <target>${project.java.version}</target>
-                    </configuration>
-                </plugin>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${project.java.version}</source>
+						<target>${project.java.version}</target>
+					</configuration>
+				</plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.14.1</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
-                            <version>2.14.1</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <excludedGroups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</excludedGroups>
-                    </configuration>
-                </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.14.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.14.1</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<includes>
+							<include>**/*.java</include>
+						</includes>
+						<excludedGroups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</excludedGroups>
+					</configuration>
+				</plugin>
 
-                <plugin>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.14.1</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
-                            <version>2.14.1</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <groups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</groups>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>integration-test</goal>
-                                <goal>verify</goal>
-                            </goals>
-                            <configuration>
-                                <includes>
-                                    <include>**/*.java</include>
-                                </includes>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+				<plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.14.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.14.1</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<groups>cz.cuni.mff.xrg.odcs.commons.IntegrationTest</groups>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+							<configuration>
+								<includes>
+									<include>**/*.java</include>
+								</includes>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		
-        <plugins>
+		<plugins>
 			
-            <!-- JRebel plugin for instant redeploy -->
-            <plugin>
-                <groupId>org.zeroturnaround</groupId>
-                <artifactId>jrebel-maven-plugin</artifactId>
-                <version>1.1.5</version>
-                <executions>
-                    <execution>
-                        <id>generate-rebel-xml</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<!-- JRebel plugin for instant redeploy -->
+			<plugin>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>jrebel-maven-plugin</artifactId>
+				<version>1.1.5</version>
+				<executions>
+					<execution>
+						<id>generate-rebel-xml</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			
-        </plugins>
-    </build>
+		</plugins>
+	</build>
 
-    <profiles>
-        <profile>
-            <id>skipTests</id>
-            <properties>
-                <skipTests>true</skipTests>
-            </properties>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<id>skipTests</id>
+			<properties>
+				<skipTests>true</skipTests>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

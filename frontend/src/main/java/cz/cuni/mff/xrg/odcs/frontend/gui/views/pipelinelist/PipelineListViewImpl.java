@@ -2,11 +2,13 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.CustomTable;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -32,17 +34,20 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineListViewImpl.class);
 	
+	/**
+	 * Column widths for pipeline table.
+	 */
+	private static final int COLUMN_ACTIONS_WIDTH = 324;
+	private static final int COLUMN_STATUS_WIDTH = 68;
+	private static final int COLUMN_DURATION_WIDTH = 80;
+	private static final int COLUMN_TIME_WIDTH = 115;
+	
 	private VerticalLayout mainLayout;
 	private IntlibPagedTable tablePipelines;
 	private Button btnCreatePipeline;
 	
 	@Autowired
 	private Utils utils;
-
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
-	}
 
 	private void buildPage(final PipelineListPresenter presenter) {
 		// common part: create layout
@@ -92,10 +97,18 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		mainLayout.addComponent(tablePipelines);
 		mainLayout.addComponent(tablePipelines.createControls());
 		tablePipelines.setPageLength(utils.getPageLength());
+		tablePipelines.setColumnCollapsingAllowed(true);
 
 		// add column
 		tablePipelines.setImmediate(true);
-		tablePipelines.addGeneratedColumn("", 4, createColumnGenerator(presenter));
+		tablePipelines.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
+		tablePipelines.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
+		tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+		tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);
+		tablePipelines.setColumnWidth("lastExecTime", COLUMN_TIME_WIDTH);
+
+		tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
+		tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
 		tablePipelines.setVisibleColumns();
 
 		tablePipelines.setFilterBarVisible(true);
@@ -139,48 +152,53 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
 		ActionColumnGenerator generator = new ActionColumnGenerator();
 		// add action buttons
-
-		generator.addButton("Edit", "80px", new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(long id) {
-				presenter.navigateToEventHandler(PipelineEdit.class, id);
-			}
-		});
-
-		generator.addButton("Copy", "80px", new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(long id) {
-				presenter.copyEventHandler(id);
-			}
-		});
-
-		generator.addButton("Delete", "80px", new ActionColumnGenerator.Action() {
-			@Override
-			protected void action(final long id) {
-				presenter.deleteEventHandler(id);
-			}
-		});
-
-		generator.addButton("Run", "80px", new ActionColumnGenerator.Action() {
+		
+		generator.addButton("Run", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.runEventHandler(id, false);
 			}
-		});
+		}, new ThemeResource("icons/running.png"));
 
-		generator.addButton("Debug", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.runEventHandler(id, true);
 			}
-		});
+		}, new ThemeResource("icons/debug.png"));
 
-		generator.addButton("Schedule", "80px", new ActionColumnGenerator.Action() {
+		generator.addButton("Schedule", null, new ActionColumnGenerator.Action() {
 			@Override
 			protected void action(long id) {
 				presenter.scheduleEventHandler(id);
 			}
-		});
+		}, new ThemeResource("icons/scheduled.png"));
+		
+		generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				presenter.copyEventHandler(id);
+			}
+		}, new ThemeResource("img/copy.png"));
+
+		generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(long id) {
+				presenter.navigateToEventHandler(PipelineEdit.class, id);
+			}
+		}, new ThemeResource("icons/gear.png"));
+
+		generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
+			@Override
+			protected void action(final long id) {
+				presenter.deleteEventHandler(id);
+			}
+		}, new ActionColumnGenerator.ButtonShowCondition() {
+			@Override
+			public boolean show(CustomTable source, long id) {
+				return presenter.canDeletePipeline(id);
+			}
+		}, new ThemeResource("icons/trash.png"));
 
 		return generator;
 	}
@@ -205,5 +223,10 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	@Override
 	public void setFilter(String key, Object value) {
 		tablePipelines.setFilterFieldValue(key, value);
+	}
+
+	@Override
+	public void refreshTableControls() {
+		tablePipelines.setCurrentPage(tablePipelines.getCurrentPage());
 	}
 }

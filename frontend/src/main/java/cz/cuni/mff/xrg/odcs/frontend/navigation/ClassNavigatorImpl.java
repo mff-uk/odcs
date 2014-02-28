@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
  *
  * The navigator also cooperate with spring and do autodiscovery for beans that
  * implements {@link View} or {@link Presenter} and add them as views. The
- * views, that are obtained from spring, must have {@link Adress} annotation.
+ * views, that are obtained from spring, must have {@link Address} annotation.
  *
  * @author Petyr
  */
@@ -25,6 +25,13 @@ public class ClassNavigatorImpl extends Navigator implements ClassNavigator {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(ClassNavigatorImpl.class);
 
+	/**
+	 * Implementation of {@link ClassNavigator}.
+	 * 
+	 * @param ui UI to navigate.
+	 * @param container Container which holds the views.
+	 * @param context Application context.
+	 */
 	public ClassNavigatorImpl(UI ui, SingleComponentContainer container, ApplicationContext context) {
 		super(ui, new UriFragmentManager(ui.getPage()),
 				new PresenterViewDisplay(container));

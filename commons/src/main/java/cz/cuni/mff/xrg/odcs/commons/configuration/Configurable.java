@@ -14,18 +14,18 @@ public interface Configurable <C extends DPUConfigObject> {
 	 * configure object. If the invalid configuration is given then 
 	 * {@link ConfigException} is thrown. For null the configuration
 	 * is left unchanged.
-	 * @param c Serialized configuration.
+	 * @param config Serialized configuration.
 	 * @throws ConfigException
 	 */
-	void configure(byte[] c) throws ConfigException;
+	void configure(String config) throws ConfigException;
 	
 	/**
 	 * Return serialized configuration object. If no configuration has 
-	 * been previously set by {@link #configure(byte[])} then serialized default
+	 * been previously set by {@link #configure(java.lang.String) } then serialized default
 	 * configuration should be returned.
 	 * @return Serialized configuration.
 	 * @throws ConfigException If the configuration can't be serialized.
 	 */
-	byte[] getConf() throws ConfigException;
+	String getConf() throws ConfigException;
 	
 }

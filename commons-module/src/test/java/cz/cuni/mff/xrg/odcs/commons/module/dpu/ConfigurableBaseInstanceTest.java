@@ -38,8 +38,8 @@ public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> 
 	public void nullSet() throws ConfigException {
 		DPUConfigObject oldConfig = config;
 		assertNotNull(oldConfig);
-		byte[] nullByteConfig = null;
-		this.configure(nullByteConfig);
+
+		this.configure(null);
 		
 		assertEquals(oldConfig, config);
 	}

@@ -18,22 +18,29 @@ public interface LogFacade extends Facade {
 
 
 	/**
-	 * Return true if there exist logs with given level for given dpu instance
+	 * Return true if there exist logs with given level for given DPU instance
 	 * of given pipeline execution.
 	 *
 	 * @param exec
 	 * @param level
-	 * @return
+	 * @return true if logs exist, false otherwise
 	 */
 	boolean existLogsGreaterOrEqual(PipelineExecution exec, Level level);
 
 	/**
 	 * Return list of all usable log's levels without aggregations. Ordered
 	 * descending by priority.
-	 * @return 
+	 * 
+	 * @return list of all log levels
 	 */
 	ArrayList<Level> getAllLevels();
 	
+	/**
+	 * Creates an input stream for logging.
+	 * 
+	 * @param filters Filters to apply.
+	 * @return Input stream with the logs in text form.
+	 */
 	InputStream getLogsAsStream(List<Object> filters);
 	
 }

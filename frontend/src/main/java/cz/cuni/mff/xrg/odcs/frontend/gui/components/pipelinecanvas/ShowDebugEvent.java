@@ -25,6 +25,11 @@ public class ShowDebugEvent extends Event {
 		this.debugNode = debugNode;
 	}
 
+	/**
+	 * Get debug node.
+	 *
+	 * @return debug node
+	 */
 	public Node getDebugNode() {
 		return debugNode;
 	}

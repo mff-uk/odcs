@@ -11,6 +11,9 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
  */
 public class PipelineNameAccessor extends ClassAccessorBase<Pipeline> {
 
+	/**
+	 * Constructor.
+	 */
 	public PipelineNameAccessor() {
 		super(Pipeline.class);
 

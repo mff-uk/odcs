@@ -8,6 +8,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.data.util.ItemSorter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -251,6 +252,9 @@ public class DPUTree extends CustomComponent {
 		mainLayout.addComponent(layoutTree);
 	}
 
+	/**
+	 * Fill DPU tree with data.
+	 */
 	public void fillTree() {
 		Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
 		Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
@@ -267,7 +271,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Adds custom ItemClickListener to the DPUTRee.
 	 *
-	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add
+	 * @param itemClickListener {@link ItemClickListener} to add
 	 * to DPU tree.
 	 */
 	public void addItemClickListener(
@@ -358,6 +362,11 @@ public class DPUTree extends CustomComponent {
 		}
 	}
 
+	/**
+	 * Set DPU tree expandable.
+	 *
+	 * @param expandable
+	 */
 	public void setExpandable(boolean expandable) {
 		this.isExpandable = expandable;
 		topLine.setVisible(isExpandable);

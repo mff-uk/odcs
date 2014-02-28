@@ -69,16 +69,25 @@ public class Scheduler extends ViewComponent {
 	 * View name.
 	 */
 	public static final String NAME = "Scheduler";
+
+	/**
+	 * Column widths for schedules table.
+	 */
+	private static final int COLUMN_STATUS_WIDTH = 39;
+	private static final int COLUMN_ACTIONS_WIDTH = 160;
+	private static final int COLUMN_TIME_WIDTH = 115;
+	private static final int COLUMN_DURATION_WIDTH = 77;
+
 	private VerticalLayout mainLayout;
 	/**
 	 * Table contains rules of pipeline scheduling.
 	 */
 	private IntlibPagedTable schedulerTable;
 	private IndexedContainer tableData;
-	static String[] visibleCols = new String[]{"schid", "pipeline", "description", "rule", "user",
-		"last", "next", "duration", "status", "commands"};
-	static String[] headers = new String[]{"ID", "Pipeline", "Description", "Rule", "User",
-		"Last", "Next", "Last run time", "Status", "Commands"};
+	static String[] visibleCols = new String[]{"commands", "status", "pipeline", "rule",
+		"last", "next", "duration"};
+	static String[] headers = new String[]{"Actions", "Status", "Pipeline", "Rule",
+		"Last", "Next", "Last run time"};
 	int style = DateFormat.MEDIUM;
 	static String filter;
 	private Schedule scheduleDel;
@@ -174,6 +183,8 @@ public class Scheduler extends ViewComponent {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						schedulerTable.resetFilters();
+						schedulerTable.setFilterFieldVisible("commands", false);
+						schedulerTable.setFilterFieldVisible("duration", false);
 					}
 				});
 		topLine.addComponent(buttonDeleteFilters);
@@ -193,12 +204,18 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setWidth("100%");
 		schedulerTable.setHeight("100%");
 		schedulerTable.setImmediate(true);
-		schedulerTable.setVisibleColumns((Object[]) visibleCols);
-		schedulerTable.setColumnHeaders(headers);
 		schedulerTable.setFilterBarVisible(true);
+		schedulerTable.setColumnCollapsingAllowed(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
+		schedulerTable.setColumnWidth("commands", COLUMN_ACTIONS_WIDTH);
+		schedulerTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
+		schedulerTable.setColumnWidth("last", COLUMN_TIME_WIDTH);
+		schedulerTable.setColumnWidth("next", COLUMN_TIME_WIDTH);
+		schedulerTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
+
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override
@@ -215,6 +232,8 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setFilterDecorator(new filterDecorator());
 		schedulerTable.setFilterFieldVisible("commands", false);
 		schedulerTable.setFilterFieldVisible("duration", false);
+		schedulerTable.setVisibleColumns((Object[]) visibleCols);
+		schedulerTable.setColumnHeaders(headers);
 		mainLayout.addComponent(schedulerTable);
 		mainLayout.addComponent(schedulerTable.createControls());
 		schedulerTable.setPageLength(utils.getPageLength());
@@ -334,15 +353,17 @@ public class Scheduler extends ViewComponent {
 				}
 			}
 
-			result.getContainerProperty(id, "schid").setValue(item.getId().toString());
-			if (item.getOwner() == null) {
-				result.getContainerProperty(id, "user").setValue(" ");
-			} else {
-				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
-			}
-			result.getContainerProperty(id, "pipeline").setValue(item.getPipeline().getName());
+			result.getContainerProperty(id, "schid").setValue(item.getId());
+//			if (item.getOwner() == null) {
+//				result.getContainerProperty(id, "user").setValue(" ");
+//			} else {
+//				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
+//			}
+			String pipeline = item.getPipeline().getName();
+			pipeline = pipeline.length() > 158 ? pipeline.substring(0, 156) + "..." : pipeline;
+			result.getContainerProperty(id, "pipeline").setValue(pipeline);
 			String description = StringUtils.abbreviate(item.getDescription(), Utils.getColumnMaxLenght());
-			result.getContainerProperty(id, "description").setValue(description);
+//			result.getContainerProperty(id, "description").setValue(description);
 
 			PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
 			result.getContainerProperty(id, "duration").setValue(DecorationHelper.getDuration(exec));
@@ -408,14 +429,16 @@ public class Scheduler extends ViewComponent {
 			Property propStatus = source.getItem(itemId).getItemProperty("status");
 			final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
 			HorizontalLayout layout = new HorizontalLayout();
+			layout.setSpacing(true);
 
 			if (propStatus.getType().equals(Boolean.class)) {
 				boolean testStatus = (Boolean) propStatus.getValue();
 				//If item in the scheduler table has Disabled status, then for that item will be shown
 				//Enable button
 				if (!testStatus) {
-					Button enableButton = new Button("Enable");
-					enableButton.setWidth("80px");
+					Button enableButton = new Button();
+					enableButton.setDescription("Enable");
+					enableButton.setIcon(new ThemeResource("icons/ok.png"));
 					enableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -429,8 +452,8 @@ public class Scheduler extends ViewComponent {
 				//Disable button
 				else {
 					Button disableButton = new Button();
-					disableButton.setCaption("Disable");
-					disableButton.setWidth("80px");
+					disableButton.setDescription("Disable");
+					disableButton.setIcon(new ThemeResource("icons/error.png"));
 					disableButton.addClickListener(new ClickListener() {
 						@Override
 						public void buttonClick(ClickEvent event) {
@@ -444,8 +467,8 @@ public class Scheduler extends ViewComponent {
 			}
 			//Edit button. Opens the window for editing given scheduling rule.
 			Button editButton = new Button();
-			editButton.setCaption("Edit");
-			editButton.setWidth("80px");
+			editButton.setDescription("Edit");
+			editButton.setIcon(new ThemeResource("icons/gear.png"));
 			editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -454,10 +477,10 @@ public class Scheduler extends ViewComponent {
 			});
 			layout.addComponent(editButton);
 
-			//Edit button. Delete scheduling rule from the table.
+			//Delete button. Delete scheduling rule from the table.
 			Button deleteButton = new Button();
-			deleteButton.setCaption("Delete");
-			deleteButton.setWidth("80px");
+			deleteButton.setDescription("Delete");
+			deleteButton.setIcon(new ThemeResource("icons/trash.png"));
 			deleteButton.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -465,7 +488,7 @@ public class Scheduler extends ViewComponent {
 
 					//open confirmation dialog
 					ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
-							"Delete " + scheduleDel.getPipeline().getName().toString() + " pipeline scheduling rule?", "Delete", "Cancel",
+							"Delete \"" + scheduleDel.getPipeline().getName().toString() + "\" pipeline scheduling rule?", "Delete", "Cancel",
 							new ConfirmDialog.Listener() {
 								private static final long serialVersionUID = 1L;
 

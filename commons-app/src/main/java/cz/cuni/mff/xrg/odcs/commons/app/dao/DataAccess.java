@@ -5,9 +5,16 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
  * 
  * @author Petyr
  *
- * @param <T>
+ * @param <T> Data object.
+ * @param <BUILDER> Query builder.
+ * @param <QUERY> Query for list or single item.
+ * @param <QUERY_SIZE> Query used for size.
  */
-public interface DataAccess <T extends DataObject> extends DataAccessRead<T> {
+public interface DataAccess <T extends DataObject, 
+		BUILDER extends DataQueryBuilder<T, QUERY, QUERY_SIZE>,
+		QUERY extends DataQuery<T>,
+		QUERY_SIZE extends DataQueryCount<T> > 
+	extends DataAccessRead<T, BUILDER, QUERY, QUERY_SIZE> {
 	
 	/**
 	 * Persist given object into database.

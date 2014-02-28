@@ -38,8 +38,7 @@ import org.springframework.context.ApplicationEventPublisher;
  */
 class ExecutionSanitizer {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ExecutionSanitizer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ExecutionSanitizer.class);
 
 	/**
 	 * Application's configuration.
@@ -67,12 +66,18 @@ class ExecutionSanitizer {
 	 * Fix possible problems with given execution. Logs of this method are
 	 * logged with the execution id of given {@link PipelineExecution}
 	 * 
-	 * Method does not save the changes into databse! So called must secure
+	 * Method does not save the changes into database! So called must secure
 	 * persisting of changes into database.
 	 * 
 	 * @param execution
 	 */
 	public void sanitize(PipelineExecution execution) {
+		// check for flags
+		if (execution.getStop()) {
+			sanitizeCancelling(execution);
+			return;
+		}
+		
 		switch (execution.getStatus()) {
 		case CANCELLING:
 			sanitizeCancelling(execution);

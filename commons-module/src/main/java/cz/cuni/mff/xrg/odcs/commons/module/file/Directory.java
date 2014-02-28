@@ -15,14 +15,20 @@ public final class Directory {
 	 */
 	private final File root;
 	
+	/**
+	 * Create a new directory wrap for given directory.
+	 * 
+	 * @param root Directory to wrap.
+	 */
 	public Directory(File root) {
 		this.root = root;
 	}
 	
 	/**
-	 * Return path the file in the current directory.
+	 * Return path to the file of given name in this directory.
+	 * 
 	 * @param fileName File name.
-	 * @return
+	 * @return Absolute path the file in the current directory.
 	 */
 	public File file(String fileName) {
 		return new File(root, fileName);
@@ -30,8 +36,9 @@ public final class Directory {
 
 	/**
 	 * Create sub-directory in current directory.
-	 * @param dirName
-	 * @return
+	 * 
+	 * @param dirName Name of directory.
+	 * @return Representation of created sub-directory.
 	 */
 	public Directory directory(String dirName) {
 		File result = new File(root, dirName);

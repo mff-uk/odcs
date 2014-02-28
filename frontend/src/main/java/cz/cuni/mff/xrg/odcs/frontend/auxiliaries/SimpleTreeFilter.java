@@ -16,6 +16,13 @@ public final class SimpleTreeFilter implements Filter {
 	final boolean ignoreCase;
 	final boolean onlyMatchPrefix;
 
+	/**
+	 * Constructor of simple tree filter.
+	 * 
+	 * @param filterString Filter value.
+	 * @param ignoreCase Whether to ignore case.
+	 * @param onlyMatchPrefix Whether to match only prefix.
+	 */
 	public SimpleTreeFilter(String filterString,
 			boolean ignoreCase, boolean onlyMatchPrefix) {
 

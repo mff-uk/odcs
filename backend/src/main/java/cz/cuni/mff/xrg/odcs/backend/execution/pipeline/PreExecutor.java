@@ -27,14 +27,15 @@ public interface PreExecutor extends Ordered {
 
 	/**
 	 * Should perform pre-execution actions. If return false then the execution
-	 * is cancelled. In such case it should publish event {@link PipelineEvent}
+	 * is cancelled. In such case it should publish instance of
+	 * {@link cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineEvent}
 	 * with problem description.
 	 * 
 	 * @param execution
 	 * @param contexts
 	 * @param graph Dependency graph used for execution.
 	 * @param success False if the execution it self will not be executed.
-	 * @return
+	 * @return False if the post-executor failed.
 	 */
 	public boolean preAction(PipelineExecution execution,
 			Map<Node, Context> contexts,

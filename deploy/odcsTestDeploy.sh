@@ -28,7 +28,10 @@ scp -r -P 42222 /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/target/lib
 
 #db import
 #TODO ask if import db?
-scp -r -P 42222 /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/db/virtuoso/rdbms/* knap@odcs.xrg.cz:/home/knap/tmp/odcs-test/$1
+ssh -p 42222 knap@odcs.xrg.cz mkdir /home/knap/tmp/odcs-test/$1/virtuoso
+ssh -p 42222 knap@odcs.xrg.cz mkdir /home/knap/tmp/odcs-test/$1/mysql
+scp -r -P 42222 /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/db/virtuoso/rdbms/* knap@odcs.xrg.cz:/home/knap/tmp/odcs-test/$1/virtuoso
+scp -r -P 42222 /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/db/mysql/rdbms/* knap@odcs.xrg.cz:/home/knap/tmp/odcs-test/$1/mysql
 #ssh -p 42222 knap@odcs.xrg.cz /usr/local/bin/isql-v -U dba -P dba01OD -S 1119 < ~/tmp/$1/schema.sql
 #ssh -p 42222 knap@odcs.xrg.cz /usr/local/bin/isql-v -U dba -P dba01OD -S 1119 < ~/tmp/$1/data.sql
 

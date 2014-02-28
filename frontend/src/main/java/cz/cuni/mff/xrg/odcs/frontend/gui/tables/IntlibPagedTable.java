@@ -34,6 +34,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 	
 	private HashMap<Object, Integer> positions;
 
+	/**
+	 * Constructor.
+	 */
 	public IntlibPagedTable() {
 		super();
 		positions = new HashMap<>();
@@ -44,7 +47,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 	 * Creates controls for navigating between pages of table. Hides the page
 	 * size selector.
 	 *
-	 * @return {@link ControlsLayout} for accessing table controls.
+	 * @return layout with table controls.
 	 */
 	@Override
 	public HorizontalLayout createControls() {
@@ -55,7 +58,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 		currentPageTextField.setConverter(new StringToIntegerConverter() {
 			@Override
 			protected NumberFormat getFormat(Locale locale) {
-				return super.getFormat(UI.getCurrent().getLocale());
+				NumberFormat nf = super.getFormat(UI.getCurrent().getLocale());
+				nf.setGroupingUsed(false);
+				return nf;
 			}
 		});
 		Label separatorLabel = new Label("&nbsp;/&nbsp;", ContentMode.HTML);
@@ -78,7 +83,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 			}
 		});
 		pageLabel.setWidth(null);
-		currentPageTextField.setColumns(3);
+		currentPageTextField.setColumns(5);
 		separatorLabel.setWidth(null);
 		totalPagesLabel.setWidth(null);
 
@@ -200,6 +205,13 @@ public class IntlibPagedTable extends PagedFilterTable {
 		setFilterFieldVisible(id, false);
 	}
 	
+	/**
+	 * Adds generated columns on specified position.
+	 *
+	 * @param id Id of column.
+	 * @param position Position of column.
+	 * @param generatedColumn Column.
+	 */
 	public void addGeneratedColumn(Object id, int position, ColumnGenerator generatedColumn) {
 		positions.put(id, position);
 		addGeneratedColumn(id, generatedColumn);
@@ -217,6 +229,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 		}
 	}
 
+	/**
+	 * Set visible columns from accessor, if available. Take actions columns into account.
+	 */
 	public void setVisibleColumns() {
 		PagedFilterTableContainer pagedContainer = getContainerDataSource();
 		if (pagedContainer != null) {
@@ -224,11 +239,11 @@ public class IntlibPagedTable extends PagedFilterTable {
 			if (c != null && c.getClass() == ReadOnlyContainer.class) {
 				LinkedList<String> visible = new LinkedList<>(((ReadOnlyContainer) c).getVisibles());
 				for(Object o : getVisibleColumns()) {
-					if(o.equals("")) {
+					if(o.equals("actions")) {
 						if(positions.containsKey(o)) {
-							visible.add(positions.get(o), "");
+							visible.add(positions.get(o), "actions");
 						} else {
-							visible.add("");
+							visible.add("actions");
 						}
 						break;
 					}
@@ -239,6 +254,9 @@ public class IntlibPagedTable extends PagedFilterTable {
 		
 	}
 
+	/**
+	 * Set filters on columns from accessor, if available.
+	 */
 	public void setFilterLayout() {
 		PagedFilterTableContainer pagedContainer = getContainerDataSource();
 		if (pagedContainer != null) {

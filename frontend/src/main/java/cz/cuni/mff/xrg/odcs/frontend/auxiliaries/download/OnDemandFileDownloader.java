@@ -16,6 +16,11 @@ public class OnDemandFileDownloader extends FileDownloader {
 	private static final long serialVersionUID = 1L;
 	private final OnDemandStreamResource onDemandStreamResource;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param onDemandStreamResource Resource to use for download.
+	 */
 	public OnDemandFileDownloader(
 			OnDemandStreamResource onDemandStreamResource) {
 		super(new StreamResource(onDemandStreamResource, ""));

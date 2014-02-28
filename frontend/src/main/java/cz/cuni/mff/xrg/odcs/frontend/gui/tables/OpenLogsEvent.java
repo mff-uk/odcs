@@ -12,11 +12,22 @@ public class OpenLogsEvent extends Event {
 	
 	private Long dpuId;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param source Source of the event.
+	 * @param dpuId Id of DPU which logs should be opened.
+	 */
 	public OpenLogsEvent(Component source, Long dpuId) {
 		super(source);
 		this.dpuId = dpuId;
 	}
 	
+	/**
+	 * Get Id of DPU which logs should be opened.
+	 *
+	 * @return Id of DPU which logs should be opened
+	 */
 	public Long getDpuId() {
 		return dpuId;
 	}

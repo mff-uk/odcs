@@ -22,14 +22,14 @@ class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
 	
 	@Override
 	public List<NamespacePrefix> getAllPrefixes() {
-		final String sringQuery = "SELECT e FROM NamespacePrefix e";
-		return executeList(sringQuery);		
+		final String stringQuery = "SELECT e FROM NamespacePrefix e";
+		return executeList(stringQuery);		
 	}
 
 	@Override
 	public NamespacePrefix getByName(String name) {
-		final String sringQuery = "SELECT e FROM NamespacePrefix e WHERE e.name = :name";
-		TypedQuery<NamespacePrefix> query = createTypedQuery(sringQuery);	
+		final String stringQuery = "SELECT e FROM NamespacePrefix e WHERE e.name = :name";
+		TypedQuery<NamespacePrefix> query = createTypedQuery(stringQuery);	
 		query.setParameter("name", name);
 		return execute(query);		
 	}

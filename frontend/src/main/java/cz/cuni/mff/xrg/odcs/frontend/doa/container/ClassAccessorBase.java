@@ -67,7 +67,7 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 		 * Get the information of type U from object.
 		 *
 		 * @param object
-		 * @return
+		 * @return information of type U from object
 		 */
 		public abstract U get(T object);
 
@@ -110,6 +110,11 @@ public class ClassAccessorBase<T extends DataObject> implements ClassAccessor<T>
 	 */
 	private final Class<T> entityClass;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param entityClass Class of the data objects.
+	 */
 	public ClassAccessorBase(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}

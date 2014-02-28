@@ -1,7 +1,11 @@
 package cz.cuni.mff.xrg.odcs.backend.report;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,12 +16,39 @@ import org.springframework.stereotype.Component;
 @Component
 class DailyReportEmailBuilder {
 	
+	@Autowired
+	private AppConfig config;
+	
 	public String build(List<PipelineExecution> executions) {
 		StringBuilder body = new StringBuilder();
+
+		try {
+			final String name = config.getString(ConfigProperty.BACKEND_NAME);
+			body.append("<p>Instance: ");
+			body.append(name);
+			body.append("</p><br/>");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}		
+		
+		String urlBase = null;
+		try {
+			urlBase = config.getString(ConfigProperty.FRONTEND_URL);
+			if (!urlBase.endsWith("/")) {
+				urlBase = urlBase + "/";
+			}
+			urlBase = urlBase + "#!ExecutionList/exec=";
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}
 		
 		body.append("<table border=2 cellpadding=2 >");
 		body.append("<tr bgcolor=\"#C0C0C0\">");
-		body.append("<th>pipeline</th><th>start</th><th>end</th><th>result</th>");
+		body.append("<th>pipeline</th><th>execution</th><th>start</th><th>end</th><th>result</th>");
+		// add column for link
+		if (urlBase != null) {
+			body.append("<th>detail</th>");
+		}
 		body.append("</tr>");
 		
 		for (PipelineExecution exec : executions) {
@@ -26,6 +57,10 @@ class DailyReportEmailBuilder {
 			body.append("<td>");
 			body.append(exec.getPipeline().getName());
 			body.append("</td>");
+			// execution id
+			body.append("<td>");
+			body.append(exec.getId().toString());
+			body.append("</td>");			
 			// start
 			body.append("<td>");
 			body.append(exec.getStart().toString());
@@ -60,12 +95,20 @@ class DailyReportEmailBuilder {
 					break;
 			}
 			body.append("</td>");
+			// link 
+			if (urlBase != null) {
+				body.append("<td> <a href=/");
+				body.append(urlBase);
+				body.append(exec.getId().toString());
+				body.append("\" >Execution detail<a/> </td>");
+			}
 			
 			// end line
 			body.append("</tr>");
-		}
-		
+		}		
 		body.append("</table>");
+		
+		body.append("<br>");
 		
 		return body.toString();
 	}

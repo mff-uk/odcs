@@ -3,7 +3,8 @@
  * {@link cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor}s 
  * and {@link cz.cuni.mff.xrg.odcs.backend.execution.dpu.PostExecutor}.
  * 
- * The package is auto-discovered for spring component. Use {@link Component}
+ * The package is auto-discovered for spring component. Use 
+ * {@link org.springframework.stereotype.Component}
  * annotation to automatically connect processor to the execution. 
  * 
  * The {@link cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl.PostExecutorBase}

@@ -71,7 +71,7 @@ public class EmailSender {
 	/**
 	 * Create email sender based on application configuration.
 	 * 
-	 * @param appConfig
+	 * @param appConfig Application configuration.
 	 */
 	public EmailSender(AppConfig appConfig) {
 
@@ -96,9 +96,9 @@ public class EmailSender {
 	 * Send email with HTML content. If the list of recipients
 	 * is empty then immediately return false.
 	 * 
-	 * @param subject
-	 * @param body
-	 * @param recipients
+	 * @param subject Email subject.
+	 * @param body Email content.
+	 * @param recipients List of recipients.
 	 * @return True if and only if email has been send. 
 	 */
 	public boolean send(String subject, String body, List<String> recipients) {
@@ -160,9 +160,9 @@ public class EmailSender {
 	/**
 	 * Sends email to a single recipient.
 	 * 
-	 * @param subject
-	 * @param body
-	 * @param recipient
+	 * @param subject Email subject.
+	 * @param body Email content.
+	 * @param recipient Email address of a single recipient.
 	 * @return True if and only if email has been send.
 	 */
 	public boolean send(String subject, String body, String recipient) {

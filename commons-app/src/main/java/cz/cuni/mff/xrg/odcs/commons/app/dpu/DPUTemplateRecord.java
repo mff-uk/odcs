@@ -20,10 +20,10 @@ import javax.persistence.*;
  * instance of given {@link DPUTemplateRecord}. Reference to template is
  * preserved in each DPU instance, so that updates of configuration can be
  * propagated to template's children.
- * 
+ *
  * @author Petyr
  * @author Jan Vojt
- * 
+ *
  */
 @Entity
 @Table(name = "dpu_template")
@@ -44,26 +44,25 @@ public class DPUTemplateRecord extends DPURecord
 	private String jarDescription;
 
 	/**
-	 * DPURecord type, determined by associated jar file.
-	 * It's transitive for non-root templates.
+	 * DPURecord type, determined by associated jar file. It's transitive for
+	 * non-root templates.
 	 */
 	@Enumerated(EnumType.ORDINAL)
 	private DPUType type;
 
 	/**
-	 * Name of directory where {@link #jarName} is located.
-	 * It's transitive for non-root templates.
-	 * 
-	 * @see AppConfig
+	 * Name of directory where {@link #jarName} is located. It's transitive for
+	 * non-root templates.
+	 *
+	 * @see cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig
 	 */
 	@Column(name = "jar_directory")
 	private String jarDirectory;
 
 	/**
-	 * DPU's jar file name.
-	 * It's transitive for non-root templates.
-	 * 
-	 * @see AppConfig
+	 * DPU's jar file name. It's transitive for non-root templates.
+	 *
+	 * @see cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig
 	 */
 	@Column(name = "jar_name")
 	private String jarName;
@@ -88,7 +87,7 @@ public class DPUTemplateRecord extends DPURecord
 
 	/**
 	 * Creates new {@link DPUTemplateRecord}.
-	 * 
+	 *
 	 * @param name Template name.
 	 * @param type {@link DPUType} of the template.
 	 */
@@ -99,13 +98,13 @@ public class DPUTemplateRecord extends DPURecord
 
 	/**
 	 * Copy constructor. New instance always has private shareType, no matter
- what setting was in original DPU.
-	 * 
+	 * what setting was in original DPU.
+	 *
 	 * @param dpu
 	 */
 	public DPUTemplateRecord(DPUTemplateRecord dpu) {
 		super(dpu);
-		shareType = ShareType.PRIVATE;		
+		shareType = ShareType.PRIVATE;
 		type = dpu.type;
 		parent = dpu.parent;
 		if (parent == null) {
@@ -117,12 +116,11 @@ public class DPUTemplateRecord extends DPURecord
 			jarName = null;
 			jarDescription = null;
 		}
-		
 	}
 
 	/**
 	 * Create template from given instance.
-	 * 
+	 *
 	 * @param dpuInstance
 	 */
 	public DPUTemplateRecord(DPUInstanceRecord dpuInstance) {
@@ -136,6 +134,10 @@ public class DPUTemplateRecord extends DPURecord
 				: dpuInstance.getTemplate().getJarDescription();
 	}
 
+	/**
+	 * 
+	 * @param owner New template owner.
+	 */
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
@@ -150,10 +152,20 @@ public class DPUTemplateRecord extends DPURecord
 		return shareType;
 	}
 
+	/**
+	 * 
+	 * @param visibility New template visibility.
+	 */
 	public void setVisibility(ShareType visibility) {
 		this.shareType = visibility;
 	}
 
+	/**
+	 * Description of used jar file. If the template is not root template 
+	 * ask it's parent template for description and return it.
+	 * 
+	 * @return Description of jar file.
+	 */
 	public String getJarDescription() {
 		if (parent == null) {
 			// top level DPU
@@ -163,6 +175,12 @@ public class DPUTemplateRecord extends DPURecord
 		}
 	}
 
+	/**
+	 * Set jar description. If the template is not root (ie. has parent)
+	 * then this call is ignored.
+	 * 
+	 * @param jarDescription New jar description.
+	 */
 	public void setJarDescription(String jarDescription) {
 		if (parent == null) {
 			// top level DPU
@@ -172,28 +190,53 @@ public class DPUTemplateRecord extends DPURecord
 		}
 	}
 
+	/**
+	 * 
+	 * @return Template parent, null if there is no parent for this template.
+	 */
 	public DPUTemplateRecord getParent() {
 		return parent;
 	}
 
-	public void setParent(DPUTemplateRecord parent) {
-		if (parent == null) {
-			// we are going under someone .. we use it's name and directory
+	/**
+	 * Set template parent. If the template has parent and new is set then
+	 * nothing special happen. 
+	 * If the dpu has parent and we set null, then the DPU copy jar information 
+	 * from it's parent to it self.
+	 * If the dpu has no parent and we assign one, then the DPU's jar
+	 * informations will be read from new parent. The current DPU's jar 
+	 * information of template will be in such case forgotten.
+	 * 
+	 * @param newParent New parent.
+	 */
+	public void setParent(DPUTemplateRecord newParent) {
+
+		if (this.parent == null && newParent != null) {
+			// it was top, now it's not .. so it can take the values
+			// from our new parent
 			jarDirectory = null;
 			jarName = null;
 			type = null;
+		} else if (this.parent != null && newParent == null) {
+			// we was not top, now we are .. we need to take the valuse
+			// from out parent and save them as ours
+			jarDirectory = this.parent.jarDirectory;
+			jarName = this.parent.jarName;
+			jarDescription = this.parent.jarDescription;
 		} else {
-			// we will be the top one .. if we are not now,
-			// store jar name and directory etc .. 
-			if (this.parent != null) {
-				jarDirectory = parent.jarDirectory;
-				jarName = parent.jarName;
-				type = parent.type;
-			}
+			// null -> null = no change, we preserve our data
+			// not null -> not null = no change, as we have nulls before and now
 		}
-		this.parent = parent;
+
+		this.parent = newParent;
 	}
 
+	/**
+	 * If the template has no parent then it set type to this template, otherwise
+	 * recall this function on the parent.
+	 * 
+	 * @param type New type.
+	 */
 	public void setType(DPUType type) {
 		if (parent == null) {
 			this.type = type;
@@ -213,7 +256,7 @@ public class DPUTemplateRecord extends DPURecord
 
 	/**
 	 * Load DPU's instance from associated jar file.
-	 * 
+	 *
 	 * @param moduleFacade ModuleFacade used to load DPU.
 	 * @throws ModuleException
 	 */
@@ -237,9 +280,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return name of jar-sub directory.
-	 * 
-	 * @return
+	 * @return name of jar-sub directory.
 	 */
 	public String getJarDirectory() {
 		if (parent == null) {
@@ -253,7 +294,7 @@ public class DPUTemplateRecord extends DPURecord
 	/**
 	 * Set jar directory for given DPU template. If the DPU has parent then
 	 * nothing happened.
-	 * 
+	 *
 	 * @param jarDirectory
 	 */
 	public void setJarDirectory(String jarDirectory) {
@@ -266,9 +307,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return name of given jar file.
-	 * 
-	 * @return
+	 * @return name of given jar file.
 	 */
 	public String getJarName() {
 		if (parent == null) {
@@ -282,7 +321,7 @@ public class DPUTemplateRecord extends DPURecord
 	/**
 	 * Set jar name for given DPU template. If the DPU has parent then nothing
 	 * happened.
-	 * 
+	 *
 	 * @param jarName
 	 */
 	public void setJarName(String jarName) {
@@ -295,9 +334,7 @@ public class DPUTemplateRecord extends DPURecord
 	}
 
 	/**
-	 * Return true if DPU jar can be replaced.
-	 * 
-	 * @return
+	 * @return true if DPU jar can be replaced, false otherwise.
 	 */
 	public boolean jarFileReplacable() {
 		return parent == null;

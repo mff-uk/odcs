@@ -10,25 +10,52 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
  */
 public class NotSupporteRDFFormatException extends ConfigException {
 
-    private final String message = "This RDF format is not supported.";
+	private final String message = "This RDF format is not supported.";
 
-    public NotSupporteRDFFormatException() {
-    }
+	/**
+	 * Create a new instance of {@link NotSupporteRDFFormatException} without
+	 * detail message.
+	 */
+	public NotSupporteRDFFormatException() {
+	}
 
-    public NotSupporteRDFFormatException(String message) {
-        super(message);
-    }
+	/**
+	 * Create new instance of {@link NotSupporteRDFFormatException} with
+	 * specific message.
+	 *
+	 * @param message String value of described message
+	 */
+	public NotSupporteRDFFormatException(String message) {
+		super(message);
+	}
 
-    public NotSupporteRDFFormatException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * Create new instance of {@link NotSupporteRDFFormatException} with cause
+	 * of throwing this exception.
+	 *
+	 * @param cause Cause of throwing exception
+	 */
+	public NotSupporteRDFFormatException(Throwable cause) {
+		super(cause);
+	}
 
-    public NotSupporteRDFFormatException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Create new instance of {@link NotSupporteRDFFormatException} with cause
+	 * of throwing this exception.
+	 *
+	 * @param cause Cause of throwing exception
+	 */
+	public NotSupporteRDFFormatException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
+	/**
+	 * Returns the error message as string.
+	 *
+	 * @return the error message as string.
+	 */
+	@Override
+	public String getMessage() {
+		return message;
+	}
 }

@@ -42,7 +42,7 @@ public class DependencyGraph implements Iterable<Node> {
 
 	/**
 	 * Constructs dependency graph containing only dependencies required to run
-	 * given  debugNode.
+	 * given debugNode.
 	 * 
 	 * @param graph pipeline graph to build dependencies from
 	 * @param debugNode node whose dependencies are used exclusively
@@ -54,20 +54,30 @@ public class DependencyGraph implements Iterable<Node> {
 		
 		// now create trimmed PipelineGraph containing only nodes needed to run
 		// debugNode
-		Set<Node> tNodes = getAllAncestors(debugNode);
-		tNodes.add(debugNode);
+		Set<Node> oNodes = getAllAncestors(debugNode);
+		oNodes.add(debugNode);
 		
-		Set<Edge> tEdges = new HashSet<>(graph.getEdges().size());
+		Set<Edge> nEdges = new HashSet<>(graph.getEdges().size());
 		for (Edge edge : graph.getEdges()) {
-			if (tNodes.contains(edge.getFrom())
-					&& tNodes.contains(edge.getTo())) {
-				tEdges.add(edge);
+			if (oNodes.contains(edge.getFrom())
+					&& oNodes.contains(edge.getTo())) {
+				// Copy edge so we do not work with the edge from original
+				// graph. Otherwise calling persist/merge on pipeline will
+				// cascade to edge where the trimmed graph might be found
+				// as a new entity. See GH-1156.
+				nEdges.add(new Edge(edge.getFrom(), edge.getTo(), edge.getScript()));
 			}
 		}
 		
 		PipelineGraph tGraph = new PipelineGraph();
-		tGraph.setNodes(tNodes);
-		tGraph.setEdges(tEdges);
+		tGraph.setEdges(nEdges);
+		
+		// If the debug node has no dependencies, it is the only node to be run,
+		// in which case it cannot be found through edges and we need to add
+		// it as a dependency manually (exclusive dependency).
+		if (tGraph.getNodes().isEmpty()) {
+			tGraph.addNode(debugNode);
+		}
 		
 		// rebuild dependencies in trimmed graph
 		buildDependencyGraph(tGraph);

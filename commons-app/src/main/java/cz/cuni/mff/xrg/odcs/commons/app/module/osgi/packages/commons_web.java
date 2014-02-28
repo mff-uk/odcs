@@ -8,6 +8,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
  */
 public class commons_web {
 	
+	/**
+	 * List of OSGI packages to export. Does not start nor end with separator.
+	 */	
 	public static final String PACKAGE_LIST = 
 		"com.steadystate.css.userdata;version=\"0.9.5\"," + 
 		"com.steadystate.css.parser.selectors;uses:=\"org.w3c.css.sac\";version=\"0.9.5\"," +

@@ -47,27 +47,26 @@ public class DPUModuleManipulator {
 	private ModuleChangeNotifier notifier;
 
 	/**
-	 * Create {@link DPUTemplateRecord} for given DPU. If success then return
-	 * new instance {@link DPUTemplateRecord} in such case the DPU is loaded
-	 * into application the DPU's and is presented in DPU's directory. The
-	 * visibility of new {@link DPUTemplateWrap} is set to
-	 * {@link VisibilityType#PRIVATE}.
-	 * 
-	 * Use setters to set additional DPU's fields like name, description,
-	 * visibility, ... those are not set by the {@link create} method.
-	 * 
-	 * In case throw {@link DPUCreateException}. Use
-	 * {@link DPUCreateException#getMessage()} to get description that can be
-	 * shown to the user.
-	 * 
-	 * When {@link DPUTemplateRecord} is loaded and instances is created then
-	 * execute validators to validate new DPU. If one of them failed the create
-	 * method failed and the DPU is not created.
-	 * 
-	 * @param sourceFile
-	 * @param name
+	 * Create {@link DPUTemplateRecord} for given DPU. If creation is successful
+	 * the DPU is loaded into application and is presented in DPU directory. The
+	 * visibility of new DPU is set to {@link ShareType#PRIVATE}. 
+	 * <p>
+	 * Use setters to set additional DPU fields like name, description,
+	 * visibility, ..., as those are not set by the {@link #create} method.
+	 * </p>
+	 * <p>
+	 * In case of error use {@link DPUCreateException#getMessage()} to get the
+	 * description that can be shown to user.
+	 * </p>
+	 * <p>
+	 * When {@link DPUTemplateRecord} is loaded and instance is created then
+	 * execute validators to validate new DPU. If one of them fails, the create
+	 * method fails and the DPU is not created.
+	 * </p>
+	 * @param sourceFile File from which load the dpu.
+	 * @param name DPU's name.
 	 * @param validators Validators for DPU checking, can be null.
-	 * @return
+	 * @return new instance of {@link DPUTemplateRecord}
 	 * @throws DPUCreateException
 	 */
 	public DPUTemplateRecord create(File sourceFile,
@@ -242,8 +241,8 @@ public class DPUModuleManipulator {
 	 * execute validators to validate new DPU. If one of them failed the create
 	 * method failed and the DPU is not created.
 	 * 
-	 * @param dpu
-	 * @param sourceDpuFile
+	 * @param dpu DPU to replace.
+	 * @param sourceDpuFile File that should replace given DPU's jar file.
 	 * @param validators Validators for DPU checking, can be null.
 	 * @throws DPUReplaceException
 	 */
@@ -399,7 +398,7 @@ public class DPUModuleManipulator {
 	 * Delete given DPU record from database, unload it's bundle if loaded and
 	 * also delete it's jar file.
 	 * 
-	 * @param dpu
+	 * @param dpu DPU to delete.
 	 */
 	public void delete(DPUTemplateRecord dpu) {
 		dpuFacade.delete(dpu);
@@ -425,7 +424,7 @@ public class DPUModuleManipulator {
 	 * Prepare directory with given name in DPU's directory. In case of failure
 	 * or if the directory is already used throw exception.
 	 * 
-	 * @param newDpuDirName
+	 * @param newDpuDirName Name of directory that should be created.
 	 * @return Existing directory.
 	 * @throws DPUCreateException
 	 */
@@ -452,10 +451,10 @@ public class DPUModuleManipulator {
 
 	/**
 	 * Validate the sourcePath. If the sourcePath is in right format then return
-	 * the name for DPU's directory otherwise throws.
+	 * the name for DPU's directory otherwise throws exception.
 	 * 
-	 * @param sourceFileName
-	 * @return
+	 * @param sourceFileName Name of DPU's jar file.
+	 * @return directory for DPU
 	 * @throws DPUCreateException
 	 */
 	protected static String getDirectoryName(String sourceFileName)
@@ -476,8 +475,8 @@ public class DPUModuleManipulator {
 	/**
 	 * Return file for the backUp to given DPU's jar file.
 	 * 
-	 * @param originalDPU
-	 * @return
+	 * @param originalDPU The original DPU's jar file.
+	 * @return file for the backup of given DPU's jar file
 	 */
 	protected File createBackUpName(File originalDPU) {
 		return new File(originalDPU.toString() + ".backup");
@@ -487,7 +486,7 @@ public class DPUModuleManipulator {
 	 * Try to create backup for given file. If the file do not exist then log
 	 * this information but do not thrown.
 	 * 
-	 * @param originalDpu
+	 * @param originalDpu The original DPU's jar file.
 	 * @throws DPUReplaceException
 	 */
 	protected void createBackUp(File originalDpu) throws DPUReplaceException {
@@ -526,7 +525,7 @@ public class DPUModuleManipulator {
 	 * to use it to recover original DPU's jar file. The function does not
 	 * require the originalDpu to has been deleted.
 	 * 
-	 * @param originalDpu
+	 * @param originalDpu The original DPU's jar file.
 	 */
 	protected void recoverFromBackUp(File originalDpu) {
 		File originalDpuBackUp = createBackUpName(originalDpu);
@@ -543,7 +542,7 @@ public class DPUModuleManipulator {
 	/**
 	 * Delete backUp if exist.
 	 * 
-	 * @param originalDpu
+	 * @param originalDpu The original DPU's jar file.
 	 */
 	protected void deleteBackUp(File originalDpu) {
 		File originalDpuBackUp = createBackUpName(originalDpu);

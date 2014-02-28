@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Time based cache for data. The data in cache remain valid until next call 
- * of {@link setKey(String, Date)} or until one second from last call of this 
+ * of {@link #setKey(String, Date)} or until one second from last call of this 
  * function elapsed.
  * 
  * @author Petyr
@@ -53,7 +53,7 @@ public class DataTimeCache<T> {
 	/**
 	 * Get object from cache if exist otherwise return null.
 	 * @param id
-	 * @return
+	 * @return object from cache if exist otherwise null
 	 */
 	public T get(Long id) {
 		if (cache.containsKey(id)) {
@@ -89,7 +89,7 @@ public class DataTimeCache<T> {
 	 * Return true if cache has valid data for given key.
 	 * @param accessKey
 	 * @param now
-	 * @return
+	 * @return true if cache has valid data for given key
 	 */
 	public boolean isValid(String accessKey, Date now) {
         if (this.accessKey == null || accessKey == null) {
@@ -102,7 +102,7 @@ public class DataTimeCache<T> {
 	
 	/**
 	 * Return keys of contained data.
-	 * @return
+	 * @return keys of contained data
 	 */
 	public List<Long> getKeys() {
 		return cacheIds;
@@ -111,7 +111,7 @@ public class DataTimeCache<T> {
 	/**
 	 * Return true if the cache contains data for given id.
 	 * @param id
-	 * @return 
+	 * @return true if the cache contains data for given id
 	 */
 	public boolean containsId(Long id) {
 		return cache.containsKey(id);

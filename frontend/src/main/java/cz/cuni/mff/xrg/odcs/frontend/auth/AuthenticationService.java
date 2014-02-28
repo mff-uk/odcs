@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auth;
 
 import com.vaadin.server.VaadinService;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -28,7 +29,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
@@ -63,6 +63,9 @@ public class AuthenticationService {
 	@Autowired
 	@Qualifier("authenticationManager")
 	private AuthenticationManager authManager;
+	
+	@Autowired
+	private AuthenticationContext authCtx;
 	
 	@Autowired
 	private LogoutHandler logoutHandler;
@@ -192,7 +195,7 @@ public class AuthenticationService {
 	 */
 	public void logout(HttpServletRequest httpRequest) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Authentication authentication = authCtx.getAuthentication();
 
 		logoutHandler.logout(httpRequest, null, authentication);
 
@@ -280,7 +283,7 @@ public class AuthenticationService {
 	 */
 	private void authenticate(Authentication authentication, HttpServletRequest request) {
 		request.getSession().setAttribute(SESSION_KEY, authentication);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+		authCtx.setAuthentication(authentication);
 	}
 	
 }

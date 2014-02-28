@@ -40,10 +40,20 @@ public class Edge implements DataObject {
 	@Column(name = "data_unit_name", nullable = true)
 	private String script;
 
+        /**
+         * Set script defining outputs to inputs mappings.
+         * 
+         * @param script 
+         */
 	public void setScript(String script) {
 		this.script = script;
 	}
 
+        /**
+         * Get script defining outputs to inputs mappings.
+         * 
+         * @return script defining outputs to inputs mappings.
+         */
 	public String getScript() {
 		return script;
 	}
@@ -79,27 +89,33 @@ public class Edge implements DataObject {
 	}
 
 	/**
-	 * Returns start node of edge
-	 *
-	 * @return
+	 * @return start node of edge
 	 */
 	public Node getFrom() {
 		return from;
 	}
 
 	/**
-	 * Returns end node of edge
-	 *
-	 * @return
+	 * @return end node of edge
 	 */
 	public Node getTo() {
 		return to;
 	}
 
+        /**
+         * Get graph this edge is in.
+         * 
+         * @return graph
+         */
 	public PipelineGraph getGraph() {
 		return graph;
 	}
 
+        /**
+         * Set graph this edge is in.
+         * 
+         * @param graph 
+         */
 	public void setGraph(PipelineGraph graph) {
 		this.graph = graph;
 	}

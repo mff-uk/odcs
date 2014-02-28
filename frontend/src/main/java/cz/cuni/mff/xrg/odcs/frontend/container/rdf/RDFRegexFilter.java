@@ -19,6 +19,12 @@ public class RDFRegexFilter implements Filter {
 	private String columnName;
 	private String regex;
 	
+	/**
+	 * Constructor.
+	 *
+	 * @param columnName Column to filter.
+	 * @param regex Regex to use.
+	 */
 	public RDFRegexFilter(String columnName, String regex) {
 		this.columnName = columnName;
 		this.regex = regex;
@@ -37,10 +43,20 @@ public class RDFRegexFilter implements Filter {
 		return true;
 	}
 	
+	/**
+	 * Get filtered column.
+	 *
+	 * @return filtered column name
+	 */
 	public String getColumnName() {
 		return columnName;
 	}
 	
+	/**
+	 * Get regex.
+	 *
+	 * @return regex
+	 */
 	public String getRegex() {
 		return regex;
 	}

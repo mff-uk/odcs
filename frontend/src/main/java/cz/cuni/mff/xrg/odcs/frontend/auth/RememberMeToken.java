@@ -25,20 +25,42 @@ public class RememberMeToken implements Serializable {
 	
 	private final String hash;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param username Username.
+	 * @param created Date of creation.
+	 * @param hash Password hash.
+	 */
 	public RememberMeToken(String username, Date created, String hash) {
 		this.username = username;
 		this.created = created;
 		this.hash = hash;
 	}
 	
+	/**
+	 * Get username.
+	 * 
+	 * @return Username.
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * Get date created.
+	 *
+	 * @return Date created.
+	 */
 	public Date getCreated() {
 		return created;
 	}
 
+	/**
+	 * Get password hash.
+	 *
+	 * @return Password hash.
+	 */
 	public String getHash() {
 		return hash;
 	}

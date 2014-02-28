@@ -5,6 +5,7 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
@@ -17,10 +18,11 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.CachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 import java.util.Date;
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tepi.filtertable.datefilter.DateInterval;
 import org.tepi.filtertable.numberfilter.NumberInterval;
 
 /**
@@ -42,37 +45,34 @@ import org.tepi.filtertable.numberfilter.NumberInterval;
 public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
-	
 	@Autowired
 	private DbExecution dbExecution;
-	
 	@Autowired
 	private DbMessageRecord dbMessageRecord;
-	
 	@Autowired
 	private PipelineFacade pipelineFacade;
-	
 	@Autowired
 	private PipelineHelper pipelineHelper;
-	
 	@Autowired
 	private ExecutionListView view;
-
 	@Autowired
-	private Utils utils;		
+	private Utils utils;
+	
+	@Autowired
+	private AuthAwarePermissionEvaluator permissionEvaluator;
 	
 	private ExecutionListData dataObject;
-	
-	private CachedSource<PipelineExecution> cachedSource;
-	
+	private DbCachedSource<PipelineExecution> cachedSource;
 	private RefreshManager refreshManager;
-	
 	private Date lastLoad = new Date(0L);
-	
+	private ClassNavigator navigator;
+
 	@Override
 	public Object enter() {
+		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
 		// prepare data object
-		cachedSource = new CachedSource<>(dbExecution, new ExecutionAccessor());
+		cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
+				utils.getPageLength());
 		ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
 		c.sort(new Object[]{"id"}, new boolean[]{false});
 		dataObject = new ExecutionListData(c);
@@ -86,13 +86,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				LOG.debug("ExecutionMonitor refreshed.");
 			}
 		});
-		
+
 		// set data object
 		view.setDisplay(dataObject);
 
 		// add initial name filter
 		view.setFilter("owner.username", utils.getUserName());
-		
+
 		// return main component
 		return viewObject;
 	}
@@ -121,6 +121,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 					case "isDebugging":
 					case "schedule":
 						view.setFilter(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
+						break;
+					case "start":
+						view.setFilter(entry.getKey(), ParametersHandler.getDateInterval(entry.getValue()));
 						break;
 					default:
 						view.setFilter(entry.getKey(), entry.getValue());
@@ -154,6 +157,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 			dataObject.getContainer().refresh();
 		}
 	}
+	
+	@Override
+	public boolean canStopExecution(long executionId) {
+		PipelineExecution exec = cachedSource.getObject(executionId);
+		return permissionEvaluator.hasPermission(exec, "save");
+	}
 
 	@Override
 	public void stopEventHandler(long executionId) {
@@ -164,7 +173,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	@Override
 	public void showDebugEventHandler(long executionId) {
 		PipelineExecution exec = getLightExecution(executionId);
-		if(exec == null) {
+		if (exec == null) {
 			Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);
 			return;
 		}
@@ -191,7 +200,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	 * Get light copy of execution.
 	 *
 	 * @param executionId
-	 * @return
+	 * @return light copy of execution
 	 */
 	private PipelineExecution getLightExecution(long executionId) {
 		return pipelineFacade.getExecution(executionId);
@@ -199,7 +208,8 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(
-				new CachedSource<>(dbMessageRecord, new MessageRecordAccessor()));
+				new DbCachedSource<>(dbMessageRecord, 
+						new MessageRecordAccessor(), utils.getPageLength()));
 	}
 
 	@Override
@@ -218,7 +228,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		String uriFragment = Page.getCurrent().getUriFragment();
 		ParametersHandler handler = new ParametersHandler(uriFragment);
 		handler.addParameter("page", newPageNumber.toString());
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 
 	@Override
@@ -234,12 +244,24 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 				case "id":
 					value = ParametersHandler.getStringForInterval((NumberInterval) filterValue);
 					break;
+				case "start":
+					value = ParametersHandler.getStringForInterval((DateInterval) filterValue);
+					break;
 				default:
 					value = filterValue.toString();
 					break;
 			}
 			handler.addParameter(propertyId, value);
 		}
-		Page.getCurrent().setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+	}
+
+	@Override
+	public void navigateToEventHandler(Class where, Object param) {
+		if (param == null) {
+			navigator.navigateTo(where);
+		} else {
+			navigator.navigateTo(where, param.toString());
+		}
 	}
 }

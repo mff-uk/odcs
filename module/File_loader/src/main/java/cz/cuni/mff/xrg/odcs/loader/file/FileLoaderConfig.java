@@ -35,23 +35,51 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 		this.validDataBefore = validDataBefore;
 	}
 
+	/**
+	 * Returns the path to file as string value.
+	 *
+	 * @return the path to file as string value.
+	 */
 	public String getFilePath() {
 		return FilePath;
 	}
 
+	/**
+	 * Returns selected {@link RDFFormatType} for RDF data.
+	 *
+	 * @return selected {@link RDFFormatType} for RDF data.
+	 */
 	public RDFFormatType getRDFFileFormat() {
 		return RDFFileFormat;
 	}
 
+	/**
+	 * Returns true, if each execution produces file with different name, false
+	 * otherwise.
+	 *
+	 * @return true, if each execution produces file with different name, false
+	 *         otherwise.
+	 */
 	public boolean isDiffName() {
 		return DiffName;
 	}
 
+	/**
+	 * Returns true, if data are validated before loading to file, false
+	 * otherwise.
+	 *
+	 * @return true, if data are validated before loading to file, false
+	 *         otherwise.
+	 */
 	public boolean isValidDataBefore() {
 		return validDataBefore;
 	}
-	
 
+	/**
+	 * Returns true, if DPU configuration is valid, false otherwise.
+	 *
+	 * @return true, if DPU configuration is valid, false otherwise.
+	 */
 	@Override
 	public boolean isValid() {
 		return FilePath != null

@@ -11,6 +11,9 @@ import java.util.Date;
  */
 public class NewLogAccessor extends ClassAccessorBase<Log> {
 
+	/**
+	 * Constructor.
+	 */
 	public NewLogAccessor() {
 		super(Log.class);
 
@@ -21,17 +24,17 @@ public class NewLogAccessor extends ClassAccessorBase<Log> {
 			}
 		});
 
-		add(Date.class, "timestamp", new ColumnGetter<Date>() {
-			@Override
-			public Date get(Log object) {
-				return new Date(object.getTimestamp());
-			}
-		});
-
-		add(Integer.class, "logLevel", new ColumnGetter<Integer>() {
+		add(Integer.class, "logLevel", "Type", new ColumnGetter<Integer>() {
 			@Override
 			public Integer get(Log object) {
 				return object.getLogLevel();
+			}
+		});
+
+		add(Date.class, "timestamp", "Timestamp", new ColumnGetter<Date>() {
+			@Override
+			public Date get(Log object) {
+				return new Date(object.getTimestamp());
 			}
 		});
 
@@ -42,24 +45,17 @@ public class NewLogAccessor extends ClassAccessorBase<Log> {
 			}
 		});
 
-		add(Long.class, "dpu", "dpu instance", false, true, new ColumnGetter<Long>() {
+		add(Long.class, "dpu", "DPU Instance", false, true, new ColumnGetter<Long>() {
 			@Override
 			public Long get(Log object) {
 				return object.getDpu();
 			}
 		});
 
-		add(String.class, "message", new ColumnGetter<String>() {
+		add(String.class, "message", "Message", new ColumnGetter<String>() {
 			@Override
 			public String get(Log object) {
 				return object.getMessage();
-			}
-		});
-
-		add(String.class, "source", new ColumnGetter<String>() {
-			@Override
-			public String get(Log object) {
-				return object.getSource();
 			}
 		});
 

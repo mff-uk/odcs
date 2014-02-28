@@ -15,14 +15,14 @@ public interface NamespacePrefixFacade extends Facade {
 	 * 
 	 * @param name
 	 * @param URI
-	 * @return 
+	 * @return created namespace prefix
 	 */
 	NamespacePrefix createPrefix(String name, String URI);
 	
 	/**
 	 * Fetch all RDF namespace prefixes defined in application.
 	 * 
-	 * @return 
+	 * @return list of all namespace prefixes in the system
 	 */
 	List<NamespacePrefix> getAllPrefixes();
 	
@@ -30,7 +30,7 @@ public interface NamespacePrefixFacade extends Facade {
 	 * Fetch a single namespace RDF prefix given by ID.
 	 * 
 	 * @param id
-	 * @return 
+	 * @return namespace prefix with given id
 	 */
 	NamespacePrefix getPrefix(long id);
 	
@@ -38,7 +38,7 @@ public interface NamespacePrefixFacade extends Facade {
 	 * Find prefix with given name in persistent storage.
 	 * 
 	 * @param name
-	 * @return 
+	 * @return namespace prefix with given name
 	 */
 	NamespacePrefix getPrefixByName(String name);
 	

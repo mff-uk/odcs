@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu;
 
 /**
- * Exception inform about problem in {@link Pipeline} structure. 
+ * Exception inform about problem in 
+ * {@link cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline} structure. 
  * 
  * @author Petyr
  *
