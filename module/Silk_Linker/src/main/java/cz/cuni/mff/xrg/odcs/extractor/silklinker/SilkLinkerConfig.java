@@ -4,8 +4,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  *
- * Put your DPU's configuration here.
- *
+ * Configuration for SilkLinker
+ * @author tomasknap
  */
 public class SilkLinkerConfig extends DPUConfigObjectBase {
 
@@ -19,10 +19,20 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
     
     private String confFileLabel = "";
 
+    /**
+     * Constructor
+     */
     public SilkLinkerConfig() {
         confFile = null;
     }
 
+    /**
+     * Constructor
+     * @param confFile Configuration file for Silk
+     * @param confFileLabel Label for the configuration file from which the configuration was created
+     * @param minConfirmed Minimum score for the links to be considered as confirmed    
+     * @param minToBeVerified Minimum score for the links to be considered as "to be verified"
+     */
     public SilkLinkerConfig(String confFile, String confFileLabel, String minConfirmed, String minToBeVerified) {
         this.confFile = confFile;
         this.confFileLabel = confFileLabel;
@@ -30,15 +40,27 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
         this.minLinksToBeVerified = minToBeVerified;
     }
     
+    /**
+     * Constructor
+     * @param confFile Configuration file for Silk
+     */
     public SilkLinkerConfig(String confFile) {
         this.confFile = confFile;
         
     }
 
+    /**
+     * Gets configuration file
+     * @return configuration file
+     */
     String getSilkConf() {
         return confFile;
     }
 
+    /**
+     * Gets label for the configuration file from which the configuration was created
+     * @return Label for the configuration file from which the configuration was created
+     */
     public String getConfFileLabel() {
         return confFileLabel;
     }
@@ -50,14 +72,18 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
         return confFile != null;
     }
 
-    public String getConfFile() {
-        return confFile;
-    }
-
+    /**
+     * Gets minimum score for the links to be considered as confirmed
+     * @return Minimum score for the links to be considered as confirmed
+     */
     public String getMinConfirmedLinks() {
         return minConfirmedLinks;
     }
 
+    /**
+     * Gets minimum score for the links to be considered as "to be verified"
+     * @return Minimum score for the links to be considered as "to be verified"
+     */
     public String getMinLinksToBeVerified() {
         return minLinksToBeVerified;
     }
