@@ -85,7 +85,7 @@ public class SPARQLLoaderRequestTest {
 					WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
 			assertEquals(repository.getTripleCount(), loader
-					.getSPARQLEnpointGraphSize(endpoint, defaultGraphURI));
+					.getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
 		} catch (RDFException e) {
 			fail(e.getMessage());

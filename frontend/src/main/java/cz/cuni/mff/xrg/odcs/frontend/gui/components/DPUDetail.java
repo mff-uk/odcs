@@ -191,6 +191,7 @@ public class DPUDetail extends Window {
 		dpuName.setValue(dpu.getName().trim());
 		if (dpu.useDPUDescription()) {
 			// leave dpuDescription blank
+                        dpuDescription.setValue("");
 		} else {
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
