@@ -105,7 +105,7 @@ public class LogMessageDetail extends Window {
 		fullMessageContent.setReadOnly(false);
 		// set the of main text box
 		if (log.getStackTrace() == null) {
-			fullMessageContent.setValue(HtmlUtils.htmlEscape(log.getMessage()));
+			fullMessageContent.setValue(log.getMessage());
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
@@ -119,7 +119,7 @@ public class LogMessageDetail extends Window {
 						log.getStackTrace(); //.replace("<", "&lt;").replace("&", "&amp;");
 				sb.append(stackTrace);
 			}
-			fullMessageContent.setValue(HtmlUtils.htmlEscape(sb.toString()));
+			fullMessageContent.setValue(sb.toString());
 		}
 		fullMessageContent.setReadOnly(true);
 		

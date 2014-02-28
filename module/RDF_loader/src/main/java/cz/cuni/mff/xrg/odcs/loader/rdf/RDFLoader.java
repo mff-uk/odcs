@@ -131,12 +131,35 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
 					retryTime, endpointParams);
 
+			for (String graph : defaultGraphsURI) {
+				Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
+						graph, graphSizeBefore, endpointURL.toString()));
+
+
+			}
+
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
 
-			context.sendMessage(MessageType.INFO, String.format(
-					"Loaded %s triples to SPARQL endpoint %s",
-					triplesCount, endpointURL.toString()));
+			for (String graph : defaultGraphsURI) {
+
+				Long graphSizeAfter = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
+						graph, graphSizeAfter, endpointURL.toString()));
+
+				long loadedTriples = loader.getLoadedTripleCount(graph);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Loaded %s triples to SPARQL endpoint %s",
+						loadedTriples, endpointURL.toString()));
+			}
 
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex

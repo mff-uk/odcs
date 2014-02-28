@@ -10,7 +10,7 @@ public class DataUnitCreateException extends DataUnitException {
 
 	/**
 	 * 
-	 * @param cause Cause of the {@link DataUnitCreateException|.
+	 * @param cause Cause of the {@link DataUnitCreateException}.
 	 */	
     public DataUnitCreateException(Throwable cause) {
         super(cause);
@@ -18,7 +18,7 @@ public class DataUnitCreateException extends DataUnitException {
 
 	/**
 	 * 
-	 * @param cause Cause of the {@link DataUnitCreateException|.
+	 * @param cause Cause of the {@link DataUnitCreateException}.
 	 */
     public DataUnitCreateException(String cause) {
         super(cause);

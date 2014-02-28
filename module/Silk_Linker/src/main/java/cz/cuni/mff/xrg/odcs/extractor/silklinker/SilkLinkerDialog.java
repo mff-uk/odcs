@@ -15,7 +15,6 @@ import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -214,6 +213,11 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
     }
     
 
+    /**
+     * Sets configuration from an object to dialog
+     * @param conf Configuration
+     * @throws ConfigException 
+     */
     @Override
     public void setConfiguration(SilkLinkerConfig conf) throws ConfigException {
         
@@ -231,6 +235,11 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
 
     }
 
+    /**
+     * Gets configuration from dialog to configuration object
+     * @return Configuration Object
+     * @throws ConfigException 
+     */
     @Override
     public SilkLinkerConfig getConfiguration() throws ConfigException {
     //get the conf from textArea

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.backend.logback;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import java.util.HashMap;
 
 /**
