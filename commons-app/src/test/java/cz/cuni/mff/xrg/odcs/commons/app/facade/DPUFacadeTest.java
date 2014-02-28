@@ -116,7 +116,7 @@ public class DPUFacadeTest {
         DPUInstanceRecord instanceRecord = new DPUInstanceRecord();
         DPUTemplateRecord templateRecord = new DPUTemplateRecord();
         DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate("testParent", DPUType.EXTRACTOR);
-        byte[] rawConfig = "<xml><a>value</a></xml".getBytes();
+        String rawConfig = "<xml><a>value</a></xml";
 
         instanceRecord.setName("testname");
         instanceRecord.setDescription("testdescription");
@@ -290,7 +290,7 @@ public class DPUFacadeTest {
         assertEquals(templateRecord.getDescription(), instanceRecord.getDescription());
         assertEquals(templateRecord.getJarPath(), instanceRecord.getJarPath());
         assertEquals(templateRecord.getName(), instanceRecord.getName());
-        assertArrayEquals(templateRecord.getRawConf(), instanceRecord.getRawConf());
+        assertEquals(templateRecord.getRawConf(), instanceRecord.getRawConf());
         assertEquals(templateRecord, instanceRecord.getTemplate());
         assertEquals(templateRecord.getType(), instanceRecord.getType());
     }
@@ -369,7 +369,7 @@ public class DPUFacadeTest {
 
         DPUInstanceRecord instanceRecord = new DPUInstanceRecord();
 
-        byte[] rawConfig = "<xml><a>value</a></xml".getBytes();
+        String rawConfig = "<xml><a>value</a></xml";
 
         instanceRecord.setName("testname");
         instanceRecord.setDescription("testdescription");
@@ -406,7 +406,7 @@ public class DPUFacadeTest {
 
         DPUInstanceRecord instanceRecord = new DPUInstanceRecord();
 
-        byte[] rawConfig = "<xml><a>value</a></xml".getBytes();
+        String rawConfig = "<xml><a>value</a></xml";
 
         instanceRecord.setName("testname");
         instanceRecord.setDescription("testdescription");
