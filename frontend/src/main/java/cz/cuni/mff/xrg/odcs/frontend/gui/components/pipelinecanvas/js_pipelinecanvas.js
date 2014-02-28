@@ -1772,7 +1772,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	}
 
 	jQuery(document).ready(function() {
-		$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+		$(".changingposition").css("max-height", Math.min($(window).height(), $("#container").height()) - 48 - Math.max(0, $("#container").offset().top));
 
 		$("#container").mousemove(function(e) {
 			lastPositionX = e.pageX;
@@ -1793,6 +1793,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				return;
 			}
 			tree.css("top", Math.max(0, $("#container").offset().top));
+			tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48 - Math.max(0, $("#container").offset().top));
 		});
 
 		$(window).resize(function() {
@@ -1800,7 +1801,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			if (tree.length === 0) {
 				return;
 			}
-			tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48);
+			tree.css("max-height", Math.min($(window).height(), $("#container").height()) - 48 - Math.max(0, $("#container").offset().top));
 		});
 	});
 

@@ -47,11 +47,15 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
     private static final Logger log = LoggerFactory.getLogger(
             SilkLinker.class);
+    
     @OutputDataUnit(name = "links_confirmed")
     public RDFDataUnit outputConfirmed;
     @OutputDataUnit(name = "links_to_be_verified")
     public RDFDataUnit outputToVerify;
 
+    /**
+     * Constructor
+     */
     public SilkLinker() {
         super(SilkLinkerConfig.class);
     }

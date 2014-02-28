@@ -147,6 +147,7 @@ public class EdgeDetail extends Window {
 					
 					if(input.getTypeName().contains("FileDataUnit") != output.getTypeName().contains("FileDataUnit")) {
 						Notification.show("Input and output data unit have incompatible type, mapping couldn't be created!", Notification.Type.WARNING_MESSAGE);
+						continue;
 					}
 
 					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
