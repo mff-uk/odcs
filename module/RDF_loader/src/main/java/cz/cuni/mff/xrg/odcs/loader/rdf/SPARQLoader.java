@@ -20,10 +20,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.*;
@@ -111,6 +108,12 @@ public class SPARQLoader {
 	public static long getDefaultChunkSize() {
 		return DEFAULT_CHUNK_SIZE;
 	}
+
+	/**
+	 * Responsible for mapping (graph name -> count of loaded RDF triple to this
+	 * graph)
+	 */
+	private Map<String, Long> graphSizeMap = new HashMap<>();
 
 	/**
 	 * Constructor for using in DPUs calling.
@@ -359,6 +362,33 @@ public class SPARQLoader {
 		return collection;
 	}
 
+	private void noteGraphSize(URL endpointURL, GraphPairCollection collection)
+			throws RDFException {
+
+		graphSizeMap.clear();
+
+		for (GraphPair nextPair : collection.getGraphPairs()) {
+			long size = getSPARQLEndpointGraphSize(endpointURL, nextPair
+					.getTempGraphName());
+
+			graphSizeMap.put(nextPair.getGraphName(), size);
+		}
+	}
+
+	/**
+	 * Return how many RDF triples was loaded to the given target graph.
+	 *
+	 * @param graph String value of URI graph where data are stored.
+	 * @return count of loaded RDF triples to the given target graph.
+	 */
+	public long getLoadedTripleCount(String graph) {
+		if (graphSizeMap.containsKey(graph)) {
+			return graphSizeMap.get(graph);
+		} else {
+			return 0;
+		}
+	}
+
 	private void loadGraphDataToEndpoint(URL endpointURL,
 			List<String> targetGraphs,
 			long chunkSize, InsertType insertType) throws RDFException {
@@ -372,6 +402,8 @@ public class SPARQLoader {
 					loadDataParts(endpointURL, collection.getTempGraphs(),
 							insertType,
 							chunkSize);
+					noteGraphSize(endpointURL, collection);
+
 					if (!context.canceled()) {
 						moveDataToTarget(endpointURL, collection);
 					}
@@ -422,7 +454,7 @@ public class SPARQLoader {
 				case FAIL:
 					//if target graph is not empty, exception is thrown
 
-					long SPARQLGraphSize = getSPARQLEnpointGraphSize(
+					long SPARQLGraphSize = getSPARQLEndpointGraphSize(
 							endpointURL, endpointGraph);
 
 
@@ -649,6 +681,24 @@ public class SPARQLoader {
 	}
 
 	/**
+	 * Returns graph size for given graph and SPARQL endpoint required
+	 * authentification.
+	 *
+	 * @param endpointURL   URL of SPARQL endpoint where we can find graph size.
+	 * @param endpointGraph String name of graph which size we can find out.
+	 * @param hostName      String value of hostname.
+	 * @param password      String value of password.
+	 * @return graph size for given graph and SPARQL endpoint.
+	 * @throws RDFException if endpoint is not available or cause problems.
+	 */
+	public long getSPARQLEndpointGraphSize(URL endpointURL, String endpointGraph,
+			String hostName, String password) throws RDFException {
+
+		Authentificator.authenticate(hostName, password);
+		return getSPARQLEndpointGraphSize(endpointURL, endpointGraph);
+	}
+
+	/**
 	 * Returns graph size for given graph and SPARQL endpoint.
 	 *
 	 * @param endpointURL   URL of SPARQL endpoint where we can find graph size.
@@ -656,7 +706,7 @@ public class SPARQLoader {
 	 * @return graph size for given graph and SPARQL endpoint.
 	 * @throws RDFException if endpoint is not available or cause problems.
 	 */
-	public long getSPARQLEnpointGraphSize(URL endpointURL,
+	public long getSPARQLEndpointGraphSize(URL endpointURL,
 			String endpointGraph)
 			throws RDFException {
 
