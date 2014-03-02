@@ -14,21 +14,21 @@ config="$HOME/.odcs/config.properties"
 target="odcs-export"
 warfile="frontend/target/odcleanstore.war"
 shellconf="/tmp/odcs-conf.sh"
-isqlv="isql-v"
+isqlv="isql"
 
 usage () {
-        echo "Usage: export [-p path] [-c path] [-v path] odcs-export"
-        echo
-        echo "-p        Path to the project root."
-        echo "          By default directory above the script location is used."
-        echo
-        echo "-c        Path where the backend configuration is to be created."
-        echo "          By default this is the path '$HOME/.odcs/config.properties'"
+	echo "Usage: export [-p path] [-c path] [-v path] odcs-export"
+	echo
+	echo "-p	Path to the project root."
+	echo "  	By default directory above the script location is used."
+	echo
+	echo "-c	Path where the backend configuration is to be created."
+	echo "  	By default this is the path '$HOME/.odcs/config.properties'"
 	echo
 	echo "-v	Command to use for Virtuoso isql client."
-	echo "  	By default 'isql-v' is used."
-        echo
-        echo "-h        Help."
+	echo "  	By default 'isql' is used."
+	echo
+	echo "-h	Help."
 }
 
 while getopts hp:c:t:v: opt; do
@@ -158,8 +158,13 @@ fi
 
 if [ "$database_sql_platform" == "mysql" ]; then
 
+        # MySQL uses charecter set names without dash
+        # -> make sure it is not there
+        mysql_charset=`echo "$database_sql_charset" | sed 's/-//g'`
+        echo $mysql_charset
+
 	echo "Importing MySQL database ..."
-	echo -e "CREATE DATABASE ${database_sql_dbname} DEFAULT CHARACTER SET ${database_sql_charset};"\
+	echo -e "CREATE DATABASE IF NOT EXISTS ${database_sql_dbname} DEFAULT CHARACTER SET ${mysql_charset};"\
 		"\nUSE ${database_sql_dbname};"\
 		| cat - "${unpackeddir}/schema.sql" "${unpackeddir}/data.sql"\
                 | mysql -h"$database_sql_hostname" -u"$database_sql_user" -p"$database_sql_password"

@@ -26,8 +26,8 @@ usage () {
 	echo "-t	Path to the directory where the export is to be created."
 	echo "  	By default this is the current working directory."
 	echo
-        echo "-v        Command to use for Virtuoso isql client."
-        echo "          By default 'isql-v' is used."
+	echo "-v	Command to use as Virtuoso dumping tool."
+	echo "  	By default 'dbdump' is used."
 	echo
 	echo "-h	Help."
 }
@@ -180,8 +180,13 @@ if [ "$database_sql_platform" == "mysql" ]; then
 	dbdatafile="$target/data.sql"
 	echo "Dumping data in MySQL database into '${target}/data.sql' ..."
 
+	# MySQL uses charecter set names without dash
+	# -> make sure it is not there
+	mysql_charset=`echo "$database_sql_charset" | sed 's/-//g'`
+	echo $mysql_charset
+
 	# dump data
-	echo "SET NAMES '${database_sql_charset}';" > "${basedir}/data.sql"
+	echo "SET NAMES '${mysql_charset}';" > "${target}/data.sql"
 	mysqldump --skip-triggers --no-create-info \
 		-h"$database_sql_hostname" -u"$database_sql_user" \
 		-p"$database_sql_password" "$database_sql_dbname" >> "${target}/data.sql"

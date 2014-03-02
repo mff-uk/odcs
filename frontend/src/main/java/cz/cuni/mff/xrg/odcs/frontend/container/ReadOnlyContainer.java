@@ -131,7 +131,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	@Override
 	public Item getItem(Object itemId) {
 		if (itemId == null) {
-			LOG.warn("Request fot null id ignored.");
+			LOG.warn("Request for null id ignored.");
 			return null;
 		}
 		
