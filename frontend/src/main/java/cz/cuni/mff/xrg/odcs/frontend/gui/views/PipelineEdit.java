@@ -1194,21 +1194,6 @@ public class PipelineEdit extends ViewComponent {
     }
 
     /**
-     * Resizes canvas according to changed width of browser window.
-     *
-     * @param width New width of browser window.
-     *
-     */
-    private void resizeCanvas(int width) {
-//		if (width > 1350) {
-//			int newWidth = 1050 + (width - 1350);
-//			pipelineCanvas.setWidth(newWidth, Unit.PIXELS);
-//			pipelineCanvas.resizeCanvas(630, newWidth);
-//			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
-//		}
-    }
-
-    /**
      * Validates fields with requirements on input. Shows errors as
      * notification.
      *

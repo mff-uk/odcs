@@ -100,8 +100,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		updateEdge: function(id, dataUnitName) {
 			updateEdge(id, dataUnitName);
 		},
-		resizeStage: function(height, width) {
-			resizeStage(height, width);
+		resizeStage: function(width, height) {
+			resizeStage(width, height);
 		},
 		zoomStage: function(zoom) {
 			zoomStage(zoom);
@@ -226,10 +226,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePos.x / scale, mousePos.y / scale));
 				lineLayer.batchDraw();
 			}
-			else if (visibleActionBar !== null) {
-				visibleActionBar.setVisible(false);
-				visibleActionBar = null;
-				dpuLayer.batchDraw();
+			else {
+				setVisibleActionBar(null, false);
 			}
 			if (bSelecting) {
 				setupSelectionBox();
@@ -389,9 +387,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 			GetSelected();
 
-			if (selectionBox !== null)
-				selectionBox.remove();
-
+			if (selectionBox !== null) {
+				selectionBox.destroy();
+			}
 			selectionBox = null;
 			bSelectionBoxVisible = false;
 			dpuLayer.draw();
@@ -412,6 +410,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		var selRecXEnd = parseInt(pos.x) + parseInt(selectionBox.getWidth() * scale);
 		var selRecYStart = parseInt(pos.y);
 		var selRecYEnd = parseInt(pos.y) + parseInt(selectionBox.getHeight() * scale);
+
+		var lastId = null;
 
 		for (var dpuId in dpus) {
 			var dpu = dpus[dpuId];
@@ -435,10 +435,14 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 					(selRecYStart <= grpYStart && selRecYEnd >= grpYEnd)) {
 				++selectedCount;
 				multiselect(dpuId, true);
+				lastId = dpu;
 			}
 		}
-		if (selectedCount >= 1) {
+		if (selectedCount > 1) {
 			stageMode = MULTISELECT_MODE;
+		} else if (selectedCount === 1) {
+			cancelMultiselect();
+			setSelectedDpu(lastId);
 		}
 	}
 
@@ -902,14 +906,56 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			}
 		});
 		group.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
 			if (stageMode === MULTISELECT_MODE) {
 				if (evt.ctrlKey) {
 					multiselect(dpu.id);
 				} else if (dpu.isInMultiselect) {
-					initGroupDrag();
+					bGroupDragging = true;
 				}
+			} else if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
+				var now = Date.now();
+				if (lastClickedDpu !== null && lastClickedTime !== null) {
+					if (lastClickedDpu === group && now - lastClickedTime < 500) {
+						lastClickedTime = null;
+						writeMessage(messageLayer, 'Detail requested');
+						rpcProxy.onDetailRequested(dpu.id);
+						return;
+					}
+				}
+				if (stageMode === DEVELOP_MODE) {
+					if (evt.ctrlKey) {
+						writeMessage(messageLayer, 'Format by CTRL');
+						stageMode = MULTISELECT_MODE;
+						setVisibleActionBar(actionBar, false);
+						if (selectedDpu !== null) {
+							var selectedDpuId = selectedDpu.id;
+							setSelectedDpu(null);
+							if (selectedDpuId !== dpu.id) {
+								multiselect(selectedDpuId);
+							}
+						}
+						multiselect(dpu.id);
+						return;
+					} else if (evt.shiftKey) {
+						writeMessage(messageLayer, 'New Edge - SHIFT');
+						var mousePosition = stage.getPointerPosition();
+						newConnLine = new Kinetic.Line({
+							points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
+							stroke: '#555',
+							strokeWidth: 1.5
+						});
+						stageMode = NEW_CONNECTION_MODE;
+						newConnStart = dpu;
+						writeMessage(messageLayer, 'Clicking on:' + dpu.name);
+						lineLayer.add(newConnLine);
+						lineLayer.draw();
+					}
+				}
+				setSelectedDpu(dpu);
+				lastClickedDpu = group;
+				lastClickedTime = now;
 			}
-			evt.cancelBubble = true;
 		});
 
 		// Registering for drag
@@ -922,35 +968,31 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dragId = id;
 			setVisibleActionBar(actionBar, false);
 		});
-		group.on('dragend', function(evt) {
-			if (checkMode()) {
-				return;
-			}
-			writeMessage(messageLayer, 'dragend');
-			isDragging = false;
-			dragId = 0;
-			var endPosition = group.getPosition();
-			if (endPosition === null) {
-				writeMessage(messageLayer, 'DPU removed - Out of Stage');
-				removeDpu(dpu);
-				rpcProxy.onDpuRemoved(dpu.id);
-				evt.cancelBubble = true;
-			} else {
-				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y), false);
-				writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
-				setVisibleActionBar(actionBar, true);
-			}
-		});
 
 		// Creating new connection
 		group.on('mouseup', function(evt) {
 			writeMessage(messageLayer, 'Clicked on Extractor');
 			evt.cancelBubble = true;
-			if(bGroupDragging) {
+			if (bGroupDragging) {
 				endGroupDrag();
 				return;
 			}
-
+			if (isDragging) {
+				writeMessage(messageLayer, 'dragend');
+				isDragging = false;
+				dragId = 0;
+				var endPosition = group.getPosition();
+				if (endPosition === null) {
+					writeMessage(messageLayer, 'DPU removed - Out of Stage');
+					removeDpu(dpu);
+					rpcProxy.onDpuRemoved(dpu.id);
+				} else {
+					rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y), false);
+					writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
+					setVisibleActionBar(actionBar, true);
+				}
+				return;
+			}
 			if (stageMode === NEW_CONNECTION_MODE) {
 				newConnLine.destroy();
 				newConnLine = null;
@@ -961,48 +1003,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 					rpcProxy.onConnectionAdded(idFrom, parseInt(idTo));
 				}
 				newConnStart = null;
-			} else if (stageMode === DEVELOP_MODE) {
-				if (evt.ctrlKey) {
-					writeMessage(messageLayer, 'Format by CTRL');
-					stageMode = MULTISELECT_MODE;
-					setVisibleActionBar(actionBar, false);
-					if (selectedDpu !== null) {
-						var selectedDpuId = selectedDpu.id;
-						setSelectedDpu(null);
-						if (selectedDpuId !== dpu.id) {
-							multiselect(selectedDpuId);
-						}
-					}
-					multiselect(dpu.id);
-				} else if (evt.shiftKey) {
-					writeMessage(messageLayer, 'New Edge - SHIFT');
-					var mousePosition = stage.getPointerPosition();
-					newConnLine = new Kinetic.Line({
-						points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
-						stroke: '#555',
-						strokeWidth: 1.5
-					});
-					stageMode = NEW_CONNECTION_MODE;
-					newConnStart = dpu;
-					writeMessage(messageLayer, 'Clicking on:' + dpu.name);
-					lineLayer.add(newConnLine);
-					lineLayer.draw();
-				}
-			}
-			if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
-				var now = Date.now();
-				if (lastClickedDpu !== null && lastClickedTime !== null) {
-					if (lastClickedDpu === group && now - lastClickedTime < 500) {
-						lastClickedTime = null;
-						writeMessage(messageLayer, 'Detail requested');
-						rpcProxy.onDetailRequested(dpu.id);
-						evt.cancelBubble = true;
-						return;
-					}
-				}
-				setSelectedDpu(dpu);
-				lastClickedDpu = group;
-				lastClickedTime = now;
 			}
 		});
 
@@ -1060,13 +1060,16 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		dpuLayer.add(groupDragBox);
 		dpuLayer.draw();
-		bGroupDragging = true;
 	}
 
 	var bInDoGroupDrag = false;
 	function doGroupDrag() {
 		if (bGroupDragging && !bInDoGroupDrag) {
 			bInDoGroupDrag = true;
+			if (groupDragBox === null) {
+				initGroupDrag();
+			}
+
 			var mousePos = stage.getPointerPosition();
 			var diffX = (mousePos.x - startMouseX) / scale;
 			var diffY = (mousePos.y - startMouseY) / scale;
@@ -1101,7 +1104,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		}
 
 		if (groupDragBox !== null) {
-			groupDragBox.remove();
+			groupDragBox.destroy();
 			groupDragBox = null;
 		}
 		dpuLayer.draw();
@@ -1147,7 +1150,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				visibleActionBar.setVisible(false);
 				visibleActionBar = null;
 			}
-			actionBar.setVisible(false);
+			if (actionBar !== null) {
+				actionBar.setVisible(false);
+			}
 		}
 		dpuLayer.draw();
 	}
@@ -1848,12 +1853,14 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		return [leftX, leftY, points[2], points[3]];
 	}
 
-	function resizeStage(height, width) {
-		//stage.height = height;
-		//stage.width = width;
-		//backgroundRect.height = height;
-		//backgroundRect.width = width;
-		//stage.draw();
+	function resizeStage(width, height) {
+		currentHeight = height;
+		currentWidth = width;
+		stage.setHeight(currentHeight * scale);
+		backgroundRect.setHeight(currentHeight);
+		stage.setWidth(currentWidth * scale);
+		backgroundRect.setWidth(currentWidth);
+		stage.draw();
 	}
 
 	function zoomStage(zoom) {

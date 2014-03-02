@@ -64,7 +64,7 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
      * @param height New height.
      * @param width New width.
      */
-    public void resizeStage(int height, int width);
+    public void resizeStage(int width, int height);
 
     /**
      * Enlarges canvas in given direction by given pixels.
