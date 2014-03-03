@@ -196,14 +196,17 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public FileHandler addNewFile(String name) throws DataUnitException {
 		accessCheck();
 
-		// check existance
-		ManageableHandler existing = getManageableByName(name);
+                // remove special chars from the name
+                String escapedName = escape(name);
+
+                // check existance
+		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
 			// ok, prepare path to file
-			final File newFilePath = new File(this.directory, name);
+			final File newFilePath = new File(this.directory, escapedName);
 			// create file handler
 			final FileHandlerImpl newFile
-					= new FileHandlerImpl(newFilePath, this, name, false);
+					= new FileHandlerImpl(newFilePath, this, escapedName, false);
 			this.handlers.add(newFile);
 			return newFile;
 		} else {
@@ -265,14 +268,18 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			throws DataUnitException {
 		accessCheck();
 
+                // remove special chars from the name
+                String escapedName = escape(name);
+
+                
 		// check existance
-		ManageableHandler existing = getManageableByName(name);
+		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
 			// ok, prepare path to file
-			final File newFilePath = new File(this.directory, name);
+			final File newFilePath = new File(this.directory, escapedName);
 			// create dir handler
 			final DirectoryHandlerImpl newDir
-					= new DirectoryHandlerImpl(newFilePath, this, name, false);
+					= new DirectoryHandlerImpl(newFilePath, this, escapedName, false);
 			this.handlers.add(newDir);
 			return newDir;
 		} else {
@@ -575,5 +582,20 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			}
 		}
 	}
+
+    private String escape(String origString) {
+            
+        
+        
+        String result = origString.replaceAll("[\\/:*?\"<>|]","");
+        if (!origString.equals(result)) {
+            LOG.warn("Name {} contained one or more special chars [\\/:*?\"<>|], which were removed. This may change the file/dir name unacceptably, so be careful.", origString);
+            LOG.debug("Resulting file/dir name after replacing special chars is {}", result);
+        }
+            
+        return result;
+        
+        
+    }
 
 }

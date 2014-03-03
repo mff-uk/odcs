@@ -51,6 +51,16 @@ public class DirectoryHandlerTest {
 		assertTrue(file.asFile().exists());
 		assertEquals("myFile", file.getName());
 	}
+        
+        @Test
+	public void testAddNewFile2() throws DataUnitException {
+                //adds name containing forward slash
+		DirectoryHandler handler = new DirectoryHandlerImpl(dirToUse);
+		FileHandler file = handler.addNewFile("http://myFile/x.txt");
+		assertTrue(file.asFile().exists());
+		assertEquals("/httpmyFilex.txt", file.getRootedPath());
+                assertEquals("httpmyFilex.txt", file.getName());
+	}
 
 	@Test
 	public void testAddNewDirectory() throws DataUnitException {

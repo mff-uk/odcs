@@ -484,4 +484,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param graphName  Graph name where statements are added.
 	 */
 	public void addStatementsToGraph(List<Statement> statements, URI graphName);
+
+//    public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException;
 }
