@@ -143,11 +143,11 @@ public class SPARQLTransformer
 
 			if (updateQuery == null) {
 				context.sendMessage(MessageType.ERROR,
-						"Query n." + queryCount + " for SPARQL transformer is null value");
+						"Query number " + queryCount + " is not defined");
 			} else if (updateQuery.trim().isEmpty()) {
 				context.sendMessage(MessageType.ERROR,
-						"Query n." + queryCount + " for SPARQL transformer is empty",
-						"SPARQL transformer must constains text of SPARQL query");
+						"Query number " + queryCount + " is not defined",
+						"SPARQL transformer must constain at least one SPARQL (Update) query");
 			}
 
 			try {
