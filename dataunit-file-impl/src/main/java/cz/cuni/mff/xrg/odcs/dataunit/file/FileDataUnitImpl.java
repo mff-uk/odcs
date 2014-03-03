@@ -1,13 +1,13 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
+import com.thoughtworks.xstream.XStream;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandlerImpl;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,17 +108,29 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	@Override
 	public void save(File directory) throws RuntimeException {
 		// use XStream serialization ?
-		final File file = new File(directory, "metadata.dat");
+		final File fileName = new File(directory, "metadata.dat");
+		try (OutputStream os = new FileOutputStream(fileName)) {
+			// write into the file
+			XStream xstream = new XStream();
+			xstream.toXML(this.rootDirHandler, os);
+		} catch (FileNotFoundException ex) {
+			LOG.error("Failed to save DataUnit.", ex);
+		} catch (IOException ex) {
+			LOG.error("Failed to write information into DataUnit save file.", ex);
+		}
+		
 	}
 
 	@Override
 	public void load(File directory) 
 			throws FileNotFoundException, RuntimeException {
 		// use XStream serialization ?
-		final  File file = new File(directory, "metadata.dat");
+		final File file = new File(directory, "metadata.dat");
 		if (!file.exists()) {
-			throw new FileNotFoundException();
+			throw new FileNotFoundException(file.toString());
 		}
+		XStream xstream = new XStream();
+		this.rootDirHandler = (DirectoryHandlerImpl)xstream.fromXML(file);
 	}
 
 	@Override

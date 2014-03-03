@@ -66,11 +66,27 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	var selectedDpu = null;
 
 	var scale = 1.0;
+	var currentWidth = 0;
+	var currentHeight = 0;
+
+	/** Mouse multiple selection variables */
+	var bSelecting = false;
+	var bSelectionBoxVisible = false;
+	var selectionBox = null;
+	var selectionX = 0;
+	var selectionY = 0;
+
+	var groupDragBox = null;
+	var bGroupDragging = false;
+	var startX = 0;
+	var startY = 0;
+	var startMouseX = 0;
+	var startMouseY = 0;
 
 	/** Registering RPC for calls from server-side**/
 	this.registerRpc({
-		init: function() {
-			init();
+		init: function(width, height) {
+			init(width, height);
 		},
 		addNode: function(dpuId, name, description, type, x, y, isNew) {
 			addDpu(dpuId, name, description, type, x, y, isNew);
@@ -84,8 +100,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		updateEdge: function(id, dataUnitName) {
 			updateEdge(id, dataUnitName);
 		},
-		resizeStage: function(height, width) {
-			resizeStage(height, width);
+		resizeStage: function(width, height) {
+			resizeStage(width, height);
 		},
 		zoomStage: function(zoom) {
 			zoomStage(zoom);
@@ -101,6 +117,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		},
 		formatDPUs: function(action) {
 			formatDPUs(action);
+		},
+		enlargeCanvas: function(direction, pixels) {
+			enlargeCanvas(direction, pixels);
 		}
 	});
 
@@ -160,23 +179,39 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	var visibleActionBar = null;
 
-	/** Init function which builds entire stage for pipeline */
-	function init() {
+	/** 
+	 * Init function which builds entire stage for pipeline 
+	 * 
+	 * @param {int} width canvas width
+	 * @param {int} height canvas height
+	 * */
+	function init(width, height) {
 		if (stage === null) {
 			stage = new Kinetic.Stage({
 				container: 'container',
-				width: 1600,
-				height: 630
+				width: width,
+				height: height
 			});
+			currentWidth = width;
+			currentHeight = height;
 		}
 
 		dpuLayer = new Kinetic.Layer();
 		lineLayer = new Kinetic.Layer();
 		messageLayer = new Kinetic.Layer();
 
+		stage.on('mousedown', function(evt)
+		{
+			bSelecting = true;
+		});
+
 		// MouseMove event on stage
 		stage.on('mousemove', function() {
 			if (checkMode()) {
+				return;
+			}
+			if (bGroupDragging) {
+				doGroupDrag();
 				return;
 			}
 			var mousePos = stage.getPointerPosition();
@@ -191,12 +226,35 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				newConnLine.setPoints(computeConnectionPoints3(newConnStart.group, mousePos.x / scale, mousePos.y / scale));
 				lineLayer.batchDraw();
 			}
-			else if (visibleActionBar !== null) {
-				visibleActionBar.setVisible(false);
-				visibleActionBar = null;
-				dpuLayer.batchDraw();
+			else {
+				setVisibleActionBar(null, false);
+			}
+			if (bSelecting) {
+				setupSelectionBox();
 			}
 		});
+
+		stage.on('mouseup', function(e) {
+			if (checkMode()) {
+				return;
+			}
+			if (bGroupDragging) {
+				endGroupDrag();
+			} else if (stageMode === NEW_CONNECTION_MODE) {
+				// Cancels NEW_CONNECTION_MODE
+				newConnLine.destroy();
+				newConnLine = null;
+				newConnStart = null;
+				stageMode = DEVELOP_MODE;
+				lineLayer.draw();
+			} else if (stageMode === MULTISELECT_MODE) {
+				cancelMultiselect();
+			} else {
+				setSelectedDpu(null);
+			}
+			checkSelectionEnd();
+		});
+
 
 		// Redraws Connection layer after drag
 		dpuLayer.on('draw', function() {
@@ -209,26 +267,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			x: 0,
 			y: 0,
 			fill: '#fff',
-			width: 1600,
-			height: 630
-		});
-
-		stage.on('click', function(evt) {
-			if (checkMode()) {
-				return;
-			}
-			if (stageMode === NEW_CONNECTION_MODE) {
-				// Cancels NEW_CONNECTION_MODE
-				newConnLine.destroy();
-				newConnLine = null;
-				newConnStart = null;
-				stageMode = DEVELOP_MODE;
-				lineLayer.draw();
-			} else if (stageMode === MULTISELECT_MODE) {
-				cancelMultiselect();
-			} else {
-				setSelectedDpu(null);
-			}
+			width: currentWidth,
+			height: currentHeight
 		});
 
 		backgroundLayer.add(backgroundRect);
@@ -278,6 +318,132 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 //		formattingActionBar = createFormattingActionBar();
 //		dpuLayer.add(formattingActionBar);
+	}
+
+	var inSetupSelectionBox = false;
+	function setupSelectionBox() {
+		if (bSelecting && !inSetupSelectionBox) {
+			inSetupSelectionBox = true;
+
+			var mousePos = stage.getPointerPosition();
+			var x = mousePos.x / scale;
+			var y = mousePos.y / scale;
+
+			if (!bSelectionBoxVisible)
+			{
+				selectionX = x;
+				selectionY = y;
+
+				//create the selection rectangle
+				selectionBox = new Kinetic.Rect({
+					x: selectionX,
+					y: selectionY,
+					height: 1,
+					width: 1,
+					fill: 'transparent',
+					stroke: 'black',
+					strokeWidth: 1
+				});
+				dpuLayer.add(selectionBox);
+				dpuLayer.draw();
+				bSelectionBoxVisible = true;
+			} else {
+				var height = 0;
+				var width = 0;
+				var newX = 0;
+				var newY = 0;
+
+				if (x > selectionX) {
+					newX = selectionX;
+				} else {
+					newX = x;
+				}
+
+				if (y > selectionY) {
+					newY = selectionY;
+				} else {
+					newY = y;
+				}
+
+				height = Math.abs(Math.abs(y) - Math.abs(selectionY));
+				width = Math.abs(Math.abs(x) - Math.abs(selectionX));
+
+				//Due to incorrect event firing on lines(border)
+				selectionBox.setHeight(height - 2);
+				selectionBox.setWidth(width - 3);
+				selectionBox.setX(newX + 2);
+				selectionBox.setY(newY + 1);
+				dpuLayer.draw();
+			}
+
+		}
+		inSetupSelectionBox = false;
+	}
+
+	function checkSelectionEnd() {
+		if (bSelecting)
+		{
+			bSelecting = false;
+
+			GetSelected();
+
+			if (selectionBox !== null) {
+				selectionBox.destroy();
+			}
+			selectionBox = null;
+			bSelectionBoxVisible = false;
+			dpuLayer.draw();
+		}
+	}
+
+	function GetSelected() {
+		//bail if there is no rectangle
+		if (selectionBox === null)
+			return;
+
+		var selectedCount = 0;
+
+		var pos = selectionBox.getAbsolutePosition();
+
+		//get the extents of the selection box
+		var selRecXStart = parseInt(pos.x);
+		var selRecXEnd = parseInt(pos.x) + parseInt(selectionBox.getWidth() * scale);
+		var selRecYStart = parseInt(pos.y);
+		var selRecYEnd = parseInt(pos.y) + parseInt(selectionBox.getHeight() * scale);
+
+		var lastId = null;
+
+		for (var dpuId in dpus) {
+			var dpu = dpus[dpuId];
+			if (dpu == null) {
+				continue;
+			}
+
+			var dpuGroup = dpu.group;
+			var rect = dpuGroup.get('Rect')[0];
+			var dpuPos = rect.getAbsolutePosition();
+
+
+			//get the extents of the group to compare to
+			var grpXStart = parseInt(dpuPos.x);
+			var grpXEnd = parseInt(dpuPos.x) + parseInt(rect.getWidth() * scale);
+			var grpYStart = parseInt(dpuPos.y);
+			var grpYEnd = parseInt(dpuPos.y) + parseInt(rect.getHeight() * scale);
+
+			//Are we inside the selection area?
+			if ((selRecXStart <= grpXStart && selRecXEnd >= grpXEnd) &&
+					(selRecYStart <= grpYStart && selRecYEnd >= grpYEnd)) {
+				++selectedCount;
+				multiselect(dpuId, true);
+				lastId = dpu;
+			}
+		}
+		if (selectedCount > 1) {
+			stageMode = MULTISELECT_MODE;
+		} else if (selectedCount === 1) {
+			cancelMultiselect();
+			setSelectedDpu(lastId);
+		}
 	}
 
 	/** 
@@ -432,13 +598,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpuLayer.draw();
 	}
 
-	function generateImageCallback(g) {
-		return function(img) {
-			g.add(img);
-			dpuLayer.draw();
-		};
-	}
-
 	/** 
 	 * Builds DPU object and creates its representations on the stage
 	 * 
@@ -533,9 +692,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		actionBar.add(rectAb);
 
-//		actionBar.on("mouseleave", function() {
-//			setVisibleActionBar(actionBar, false);
-//		});
+		actionBar.on("mouseleave", function() {
+			setVisibleActionBar(actionBar, false);
+		});
 
 		// New Connection command
 		var cmdConnection = new Kinetic.Image({
@@ -710,22 +869,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 		actionBar.add(cmdCopy);
 
-//		var imageGroup = new Kinetic.Group();
-//		imageGroup.add(rect);
-//		imageGroup.add(complexText);
-//		dpuLayer.add(imageGroup);
-
-//		imageGroup.toImage({
-//			width: rect.getWidth(),
-//			height: rect.getHeight(),
-//			/*
-//			 * when star has been converted into an image,
-//			 * use the image to instantiate image objects and
-//			 * then add them to the layer
-//			 */
-//			callback: generateImageCallback(group)
-//		});
-
 		var invalidStatus = new Kinetic.Image({
 			x: 2,
 			y: 2,
@@ -744,33 +887,75 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 		// Handling the visibility of actionBar
 		group.on('mouseenter', function(evt) {
+			if (bSelecting) {
+				return;
+			}
 			if (stageMode === DEVELOP_MODE) {
 				setVisibleActionBar(actionBar, true);
 				writeMessage(messageLayer, 'mouseentered');
 				evt.cancelBubble = true;
-			} else if (stageMode === MULTISELECT_MODE && dpu.isInMultiselect && !evt.ctrlKey) {
-//				formattingActionBar.setVisible(true);
-//				formattingActionBar.moveToTop();
-//				var pos = stage.getPointerPosition();
-//				pos.x = (pos.x) / scale;
-//				pos.y = (pos.y) / scale;
-//				formattingActionBar.setPosition(pos);
-//				dpuLayer.draw();
 			}
-		});
-
-		group.on('mouseleave', function() {
-			//setVisibleActionBar(actionBar, false);
-			//dpuLayer.draw();
-			if (stageMode === MULTISELECT_MODE) {
-				//formattingActionBar.setVisible(false);
-			}
-			dpuLayer.draw();
-			return;
 		});
 
 		group.on('mousemove', function(evt) {
+			if (bGroupDragging) {
+				doGroupDrag();
+			}
+			if (!bSelecting) {
+				evt.cancelBubble = true;
+			}
+		});
+		group.on('mousedown', function(evt) {
 			evt.cancelBubble = true;
+			if (stageMode === MULTISELECT_MODE) {
+				if (evt.ctrlKey) {
+					multiselect(dpu.id);
+				} else if (dpu.isInMultiselect) {
+					bGroupDragging = true;
+				}
+			} else if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
+				var now = Date.now();
+				if (lastClickedDpu !== null && lastClickedTime !== null) {
+					if (lastClickedDpu === group && now - lastClickedTime < 500) {
+						lastClickedTime = null;
+						writeMessage(messageLayer, 'Detail requested');
+						rpcProxy.onDetailRequested(dpu.id);
+						return;
+					}
+				}
+				if (stageMode === DEVELOP_MODE) {
+					if (evt.ctrlKey) {
+						writeMessage(messageLayer, 'Format by CTRL');
+						stageMode = MULTISELECT_MODE;
+						setVisibleActionBar(actionBar, false);
+						if (selectedDpu !== null) {
+							var selectedDpuId = selectedDpu.id;
+							setSelectedDpu(null);
+							if (selectedDpuId !== dpu.id) {
+								multiselect(selectedDpuId);
+							}
+						}
+						multiselect(dpu.id);
+						return;
+					} else if (evt.shiftKey) {
+						writeMessage(messageLayer, 'New Edge - SHIFT');
+						var mousePosition = stage.getPointerPosition();
+						newConnLine = new Kinetic.Line({
+							points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
+							stroke: '#555',
+							strokeWidth: 1.5
+						});
+						stageMode = NEW_CONNECTION_MODE;
+						newConnStart = dpu;
+						writeMessage(messageLayer, 'Clicking on:' + dpu.name);
+						lineLayer.add(newConnLine);
+						lineLayer.draw();
+					}
+				}
+				setSelectedDpu(dpu);
+				lastClickedDpu = group;
+				lastClickedTime = now;
+			}
 		});
 
 		// Registering for drag
@@ -783,91 +968,41 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dragId = id;
 			setVisibleActionBar(actionBar, false);
 		});
-		group.on('dragend', function(evt) {
-			if (checkMode()) {
-				return;
-			}
-			writeMessage(messageLayer, 'dragend');
-			isDragging = false;
-			dragId = 0;
-			var endPosition = group.getPosition();
-			if (endPosition === null) {
-				writeMessage(messageLayer, 'DPU removed - Out of Stage');
-				removeDpu(dpu);
-				rpcProxy.onDpuRemoved(dpu.id);
-				evt.cancelBubble = true;
-			} else {
-				rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y));
-				writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
-				setVisibleActionBar(actionBar, true);
-			}
-		});
 
 		// Creating new connection
-		group.on('click', function(evt) {
+		group.on('mouseup', function(evt) {
 			writeMessage(messageLayer, 'Clicked on Extractor');
-
+			evt.cancelBubble = true;
+			if (bGroupDragging) {
+				endGroupDrag();
+				return;
+			}
+			if (isDragging) {
+				writeMessage(messageLayer, 'dragend');
+				isDragging = false;
+				dragId = 0;
+				var endPosition = group.getPosition();
+				if (endPosition === null) {
+					writeMessage(messageLayer, 'DPU removed - Out of Stage');
+					removeDpu(dpu);
+					rpcProxy.onDpuRemoved(dpu.id);
+				} else {
+					rpcProxy.onDpuMoved(dpu.id, parseInt(endPosition.x), parseInt(endPosition.y), false);
+					writeMessage(messageLayer, 'x: ' + endPosition.x + ', y: ' + endPosition.y);
+					setVisibleActionBar(actionBar, true);
+				}
+				return;
+			}
 			if (stageMode === NEW_CONNECTION_MODE) {
 				newConnLine.destroy();
 				newConnLine = null;
 				stageMode = DEVELOP_MODE;
-				idFrom = newConnStart.id;
-				idTo = dpu.id; //getDpuByPosition(stage.getPointerPosition());
+				var idFrom = newConnStart.id;
+				var idTo = dpu.id; //getDpuByPosition(stage.getPointerPosition());
 				if (idTo !== 0) {
 					rpcProxy.onConnectionAdded(idFrom, parseInt(idTo));
 				}
 				newConnStart = null;
-			} else if (stageMode === MULTISELECT_MODE) {
-				multiselect(dpu.id);
-				evt.cancelBubble = true;
-			} else if (stageMode === DEVELOP_MODE) {
-				if (evt.ctrlKey) {
-					writeMessage(messageLayer, 'Format by CTRL');
-					stageMode = MULTISELECT_MODE;
-					setVisibleActionBar(actionBar, false);
-					if (selectedDpu !== null) {
-						var selectedDpuId = selectedDpu.id;
-						setSelectedDpu(null);
-						if (selectedDpuId !== dpu.id) {
-							multiselect(selectedDpuId);
-						}
-					}
-					multiselect(dpu.id);
-					//writeMessage(messageLayer, 'DPU removed - CTRL');
-					//removeDpu(dpu);
-					//rpcProxy.onDpuRemoved(dpu.id);
-				} else if (evt.shiftKey) {
-					writeMessage(messageLayer, 'New Edge - SHIFT');
-					var mousePosition = stage.getPointerPosition();
-					newConnLine = new Kinetic.Line({
-						points: computeConnectionPoints3(group, mousePosition.x / scale, mousePosition.y / scale),
-						stroke: '#555',
-						strokeWidth: 1.5
-					});
-					stageMode = NEW_CONNECTION_MODE;
-					newConnStart = dpu;
-					writeMessage(messageLayer, 'Clicking on:' + dpu.name);
-					lineLayer.add(newConnLine);
-					lineLayer.draw();
-				}
-				if (!isDragging) {
-					evt.cancelBubble = true;
-				}
-			}
-			if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
-				var now = Date.now();
-				if (lastClickedDpu !== null && lastClickedTime !== null) {
-					if (lastClickedDpu === group && now - lastClickedTime < 500) {
-						lastClickedTime = null;
-						writeMessage(messageLayer, 'Detail requested');
-						rpcProxy.onDetailRequested(dpu.id);
-						evt.cancelBubble = true;
-						return;
-					}
-				}
-				setSelectedDpu(dpu);
-				lastClickedDpu = group;
-				lastClickedTime = now;
 			}
 		});
 
@@ -880,7 +1015,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		dpuLayer.draw();
 
 		if (isNew) {
-			rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale));
+			rpcProxy.onDpuMoved(id, parseInt(posX / scale), parseInt(posY / scale), false);
 		}
 	}
 
@@ -888,16 +1023,109 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		return stageMode === STANDARD_MODE;
 	}
 
+	function initGroupDrag() {
+		var x = 10000;
+		var y = 10000;
+		var maxX = 0;
+		var maxY = 0;
+
+		for (var dpuId in dpus) {
+			var dpu = dpus[dpuId];
+			if (dpu !== null && dpu.isInMultiselect) {
+				var pos = dpu.group.getPosition();
+				var rect = dpu.group.get('Rect')[0];
+				var dpuMaxX = pos.x + rect.getWidth();
+				var dpuMaxY = pos.y + rect.getHeight();
+
+				x = Math.min(x, pos.x);
+				y = Math.min(y, pos.y);
+				maxX = Math.max(maxX, dpuMaxX);
+				maxY = Math.max(maxY, dpuMaxY);
+			}
+		}
+		startX = x;
+		startY = y;
+		var mousePos = stage.getPointerPosition();
+		startMouseX = mousePos.x;
+		startMouseY = mousePos.y;
+
+		groupDragBox = new Kinetic.Rect({
+			x: x,
+			y: y,
+			height: maxY - y,
+			width: maxX - x,
+			fill: 'transparent',
+			stroke: 'black',
+			strokeWidth: 1
+		});
+		dpuLayer.add(groupDragBox);
+		dpuLayer.draw();
+	}
+
+	var bInDoGroupDrag = false;
+	function doGroupDrag() {
+		if (bGroupDragging && !bInDoGroupDrag) {
+			bInDoGroupDrag = true;
+			if (groupDragBox === null) {
+				initGroupDrag();
+			}
+
+			var mousePos = stage.getPointerPosition();
+			var diffX = (mousePos.x - startMouseX) / scale;
+			var diffY = (mousePos.y - startMouseY) / scale;
+
+			if (groupDragBox !== null) {
+				groupDragBox.setX(startX + diffX);
+				groupDragBox.setY(startY + diffY);
+				dpuLayer.draw();
+			}
+			bInDoGroupDrag = false;
+		}
+	}
+
+	function endGroupDrag() {
+		bGroupDragging = false;
+		var mousePos = stage.getPointerPosition();
+		var diffX = (mousePos.x - startMouseX) / scale;
+		var diffY = (mousePos.y - startMouseY) / scale;
+
+		rpcProxy.onStoreHistory();
+
+		for (var dpuId in dpus) {
+			var dpu = dpus[dpuId];
+			if (dpu !== null && dpu.isInMultiselect) {
+				var dpuPosition = dpu.group.getPosition();
+				dpu.group.setX(dpuPosition.x + diffX);
+				dpu.group.setY(dpuPosition.y + diffY);
+
+				moveLine(dpu.id);
+				rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()), false);
+			}
+		}
+
+		if (groupDragBox !== null) {
+			groupDragBox.destroy();
+			groupDragBox = null;
+		}
+		dpuLayer.draw();
+	}
+
+	function multiselect(id) {
+		multiselect(id, false);
+	}
+
 	/**
 	 * Add or removes dpu with given id to/from multiselect.
 	 * 
 	 * @param {int} id Id of dpu to add to/remove from multiselect.
+	 * @param {boolean} forceSelect Force selection
 	 * 
 	 */
-	function multiselect(id) {
+	function multiselect(id, forceSelect) {
 		rpcProxy.onMultipleDPUsSelected(true);
 		var dpu = dpus[id];
-		dpu.isInMultiselect = !dpu.isInMultiselect;
+		dpu.isInMultiselect = !dpu.isInMultiselect || forceSelect;
+		dpu.group.setDraggable(!dpu.isInMultiselect);
 		var rect = dpu.group.get('Rect')[0];
 		if (dpu.isInMultiselect) {
 			rect.setStrokeWidth(4);
@@ -922,7 +1150,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				visibleActionBar.setVisible(false);
 				visibleActionBar = null;
 			}
-			actionBar.setVisible(false);
+			if (actionBar !== null) {
+				actionBar.setVisible(false);
+			}
 		}
 		dpuLayer.draw();
 	}
@@ -936,6 +1166,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			var dpu = dpus[dpuId];
 			if (dpu !== null && dpu.isInMultiselect) {
 				dpu.isInMultiselect = false;
+				dpu.group.setDraggable(true);
 				dpu.group.get('Rect')[0].setStrokeWidth(2);
 			}
 		}
@@ -1198,7 +1429,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 					group.setY(x);
 				}
 				moveLine(dpu.id);
-				rpcProxy.onDpuMoved(dpu.id, parseInt(group.getX()), parseInt(group.getY()));
+				rpcProxy.onDpuMoved(dpu.id, parseInt(group.getX()), parseInt(group.getY()), false);
 			}
 		}
 		dpuLayer.draw();
@@ -1257,9 +1488,52 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				newValue += dpu.group.get('Rect')[0].getHeight() + step;
 			}
 			moveLine(dpu.id);
-			rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()));
+			rpcProxy.onDpuMoved(dpu.id, parseInt(dpu.group.getX()), parseInt(dpu.group.getY()), false);
 		}
 		dpuLayer.draw();
+	}
+
+	/**
+	 * Enlarges canvas in given direction 
+	 * 
+	 * @param {String} direction
+	 * @param {int} pixels
+	 */
+	function enlargeCanvas(direction, pixels) {
+		//first, enlarge the stage
+		if (direction === "left" || direction === "right") {
+			var newWidth = stage.getSize().width + (pixels * scale);
+			stage.setWidth(newWidth);
+			backgroundRect.setWidth(newWidth);
+		} else if (direction === "top" || direction === "bottom") {
+			var newHeight = stage.getSize().height + (pixels * scale);
+			stage.setHeight(newHeight);
+			backgroundRect.setHeight(newHeight);
+		}
+
+		//Move all DPUs from given direction
+		//Not needed when we can move whole pipeline.
+//		for (var dpuId in dpus) {
+//			var dpu = dpus[dpuId];
+//			if (dpu !== null) {
+//				var group = dpu.group;
+//				var position = group.getPosition();
+//				if (direction === "left") {
+//					group.setX(position.x + pixels);
+//					moveLine(dpuId);
+//					rpcProxy.onDpuMoved(dpuId, parseInt(position.x), parseInt(position.y), true);
+//				} else if (direction === "top") {
+//					group.setY(group.getPosition().y + pixels);
+//					moveLine(dpuId);
+//					rpcProxy.onDpuMoved(dpuId, parseInt(position.x), parseInt(position.y), true);
+//				} else {
+//					//We don't need to do anything here.
+//				}
+//			}
+//		}
+
+		//Finally, redraw the stage
+		stage.draw();
 	}
 
 	/** 
@@ -1579,19 +1853,21 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		return [leftX, leftY, points[2], points[3]];
 	}
 
-	function resizeStage(height, width) {
-		//stage.height = height;
-		//stage.width = width;
-		//backgroundRect.height = height;
-		//backgroundRect.width = width;
-		//stage.draw();
+	function resizeStage(width, height) {
+		currentHeight = height;
+		currentWidth = width;
+		stage.setHeight(currentHeight * scale);
+		backgroundRect.setHeight(currentHeight);
+		stage.setWidth(currentWidth * scale);
+		backgroundRect.setWidth(currentWidth);
+		stage.draw();
 	}
 
 	function zoomStage(zoom) {
 		scale = zoom;
 		stage.setScale(zoom);
-		stage.setWidth(1600 * zoom);
-		stage.setHeight(630 * zoom);
+		stage.setWidth(currentWidth * zoom);
+		stage.setHeight(currentHeight * zoom);
 		stage.draw();
 	}
 
@@ -1805,4 +2081,5 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		});
 	});
 
-};
+}
+;
