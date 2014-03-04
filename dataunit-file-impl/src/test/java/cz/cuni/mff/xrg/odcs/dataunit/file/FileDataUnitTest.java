@@ -3,7 +3,9 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import org.apache.commons.io.FileUtils;
@@ -64,6 +66,36 @@ public class FileDataUnitTest {
 		} catch (DataUnitAccessException e) {
 			// ok
 		}
+		
+	}
+	
+	@Test
+	public void saveAndLoad() throws DataUnitException, FileNotFoundException {
+		ManageableFileDataUnit original = new FileDataUnitImpl("source", 
+				new File(dirToUse, "source"));
+		
+		DirectoryHandler dir = original.getRootDir().addNewDirectory("myDir");
+		dir.setUserData("user data");		
+		FileHandler file = dir.addNewFile("myFile");
+		
+		// save into the directory
+		original.save(dirToUse);
+		
+		ManageableFileDataUnit copy = new FileDataUnitImpl("source", 
+				new File(dirToUse, "source"));		
+		assertTrue(copy.getRootDir().isEmpty());
+		
+		// load
+		copy.load(dirToUse);
+		assertFalse(copy.getRootDir().isEmpty());
+		
+		DirectoryHandler dirCopy = (DirectoryHandler)
+				copy.getRootDir().getByName("myDir");
+		
+		assertEquals("user data", dirCopy.getUserData());		
+		assertNotNull(dirCopy.getByName("myFile"));
+		
+		assertNotNull(copy.getRootDir().getByRootedName(file.getRootedPath()));
 		
 	}
 	
