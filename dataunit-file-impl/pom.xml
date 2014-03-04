@@ -44,6 +44,13 @@
             <type>jar</type>
         </dependency>		
 		
+		<dependency> <!-- xml object de-serialization -->
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.5</version>
+			<scope>provided</scope> <!-- provided by frontend/backend -->
+		</dependency>		
+		
 	</dependencies>	
         
         <!-- define license -->
