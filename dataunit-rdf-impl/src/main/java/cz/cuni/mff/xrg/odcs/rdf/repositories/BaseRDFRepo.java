@@ -1315,7 +1315,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * repository data and return {@link OrderTupleQueryResultImpl} class as
 	 * result.
 	 *
-	 * This ordered select query don´t have to containt LIMIT nad OFFSET
+	 * This ordered select query must not containt LIMIT nad OFFSET
 	 * keywords.
 	 *
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
@@ -1333,31 +1333,31 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	public OrderTupleQueryResultImpl executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException {
 
-		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
-				SPARQLQueryType.SELECT);
-
-		boolean hasLimit = orderSelectQuery.toLowerCase().contains("limit");
-		boolean hasOffset = orderSelectQuery.toLowerCase().contains("offset");
-
-		if (validator.isQueryValid()) {
-
-			if (hasLimit) {
-				throw new InvalidQueryException(
-						"Query: " + orderSelectQuery + " contains LIMIT keyword which is forbidden.");
-			}
-
-			if (hasOffset) {
-				throw new InvalidQueryException(
-						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
-			}
+//		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
+//				SPARQLQueryType.SELECT);
+//
+//		boolean hasLimit = orderSelectQuery.toLowerCase().contains("limit");
+//		boolean hasOffset = orderSelectQuery.toLowerCase().contains("offset");
+//
+//		if (validator.isQueryValid()) {
+//
+//			if (hasLimit) {
+//				throw new InvalidQueryException(
+//						"Query: " + orderSelectQuery + " contains LIMIT keyword which is forbidden.");
+//			}
+//
+//			if (hasOffset) {
+//				throw new InvalidQueryException(
+//						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
+//			}
 
 			OrderTupleQueryResultImpl result = new OrderTupleQueryResultImpl(
 					orderSelectQuery, this);
 			return result;
-		} else {
-			throw new InvalidQueryException(
-					"Query: " + orderSelectQuery + " is not valid SELECT query");
-		}
+//		} else {
+//			throw new InvalidQueryException(
+//					"Query: " + orderSelectQuery + " is not valid SELECT query");
+//		}
 	}
 
 	/**
