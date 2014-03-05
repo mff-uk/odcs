@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -59,5 +60,22 @@ public class ConfigWrapTest {
 		DPUConfigObject newObject = configWrap.createInstance();
 		assertNotNull(newObject);
 	}	
+	
+	@Test
+	public void fieldCopy() {
+		SampleConfig source = new SampleConfig();
+		source.setFirst("1");
+		source.setSecond("2");
+		SampleConfig target = new SampleConfig();
+		
+		LinkedList<String> fieldNames = new LinkedList<>(); 
+		fieldNames.add("second");
+		
+		configWrap = new ConfigWrap(SampleConfig.class);
+		configWrap.copyFields(source, target, fieldNames);
+		
+		assertEquals("f", target.getFirst());
+		assertEquals("2", target.getSecond());
+	}
 	
 }
