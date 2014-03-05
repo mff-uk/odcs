@@ -48,7 +48,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	float currentZoom = 1.0f;
 	private int currentHeight = 630;
-	private int currentWidth = 1200;
+	private int currentWidth = 1240;
 	public static final int MIN_DISTANCE_FROM_BORDER = 100;
 	public static final int SIZE_INCREASE = 200;
 	public static final int MIN_X_CANVAS = 400;
@@ -629,6 +629,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			Position origPosition = node.getPosition();
 			node.setPosition(new Position(origPosition.getX() - overX, origPosition.getY() - overY));
 		}
+	}
+
+	public int getCanvasWidth() {
+		return (int) (currentWidth * currentZoom);
+	}
+
+	public int getCanvasHeight() {
+		return (int) (currentHeight * currentZoom);
 	}
 
 }
