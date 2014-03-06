@@ -1143,6 +1143,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			if (groupDragBox !== null) {
 				groupDragBox.destroy();
 				groupDragBox = null;
+				dpuLayer.draw();
 			}
 			return;
 		} 
