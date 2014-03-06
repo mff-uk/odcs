@@ -13,11 +13,11 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Class wrap {
- *
- * @line DPURecord} and provide functions that enable easy work with
+ * Class wrap {@line DPURecord} and provide functions that enable easy work with
  * configuration and configuration dialog.
  *
  * @author Petyr
@@ -25,6 +25,9 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
  */
 class DPURecordWrap {
 
+	private static final Logger LOG = LoggerFactory.getLogger(
+			DPURecordWrap.class);
+	
 	/**
 	 * Wrapped DPU.
 	 */
@@ -39,6 +42,11 @@ class DPURecordWrap {
 	 * True if represents the template.
 	 */
 	private final boolean isTemplate;
+	
+	/**
+	 * True if the {@link #configuredDialog()} has been called.
+	 */
+	private boolean dialogConfigured = false;
 	
 	protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
 		this.dpuRecord = dpuRecord;
@@ -106,6 +114,31 @@ class DPURecordWrap {
 	}
 
 	/**
+	 * Check if the configuration in configuration dialog has been changed.
+	 * The configuration is assumed to be changed if it satisfy all the 
+	 * following conditions:
+	 * <ul>
+	 * <li>DPU has configuration dialog.</li>
+	 * <li>The dialog has been obtained by calling {@link #getDialog().</li>
+	 * <li>The dialog has been configurated by calling {@link #configuredDialog()}</li>
+	 * </ul>
+	 * @return True if the configuration changed.
+	 */
+	public boolean hasConfigChanged() throws DPUWrapException {
+		if (configDialog == null || !dialogConfigured) {
+			return false;
+		}
+		// ok we satisfy necesary conditions, we may ask the dialog 
+		// for changes
+		try {
+			final boolean isChanged = configDialog.hasConfigChanged();
+			return isChanged;
+		} catch (Exception ex) {
+			throw new DPUWrapException("Configuration dialog throws an exception.", ex);
+		}
+	}
+	
+	/**
 	 * Load the configuration dialog for {@link #dpuRecord} and store it into
 	 * {@link #configDialog}. If the dialog is already loaded
 	 * ({@link #configDialog} is not null) then nothing is done. If the
@@ -158,6 +191,9 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
+		// we try to configure the dialog
+		dialogConfigured = true;
 		configDialog.setConfig(dpuRecord.getRawConf());
-	}	
+	}
+	
 }
