@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
@@ -48,7 +49,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	float currentZoom = 1.0f;
 	private int currentHeight = 630;
-	private int currentWidth = 1240;
+	private int currentWidth = 600; //1240;
 	public static final int MIN_DISTANCE_FROM_BORDER = 100;
 	public static final int SIZE_INCREASE = 200;
 	public static final int MIN_X_CANVAS = 400;
@@ -67,7 +68,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private DPUDetail detailDialog;
 	private Window.CloseListener detailCloseListener;
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
-	private EdgeFormater edgeFormater = new EdgeFormater();
+	private final EdgeFormater edgeFormater = new EdgeFormater();
 
 	private final int MAX_HISTORY_SIZE = 10;
 
@@ -285,12 +286,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @return {@link Position} with new size of canvas.
 	 */
 	public Position zoom(boolean isZoomIn) {
-		Position bounds = new Position(0, 0);
-		if (graph != null) {
-			bounds = graph.getBounds();
-		}
-		bounds.setX(bounds.getX() + DPU_WIDTH);
-		bounds.setY(bounds.getY() + DPU_HEIGHT);
+		
 		if (isZoomIn && currentZoom < 2) {
 			if (currentZoom < 1.5) {
 				currentZoom = 1.5f;
@@ -305,9 +301,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 		}
 		getRpcProxy(PipelineCanvasClientRpc.class).zoomStage(currentZoom);
-		bounds.setX((int) (bounds.getX() * currentZoom));
-		bounds.setY((int) (bounds.getY() * currentZoom));
-		//return bounds;
+		if (currentZoom < 1.5f) {
+			int minWidth = Page.getCurrent().getBrowserWindowWidth() - 60;
+			if (currentWidth < minWidth) {
+				currentWidth = minWidth;
+				getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(currentWidth, currentHeight);
+			}
+		}
+		//return new canvas size;
 		return new Position((int) (currentWidth * currentZoom), (int) (currentHeight * currentZoom));
 	}
 

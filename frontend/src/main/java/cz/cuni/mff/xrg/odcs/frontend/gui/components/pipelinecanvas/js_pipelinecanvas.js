@@ -931,6 +931,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				if (lastClickedDpu !== null && lastClickedTime !== null) {
 					if (lastClickedDpu === group && now - lastClickedTime < 500) {
 						lastClickedTime = null;
+						isDragging = false;
+						dragId = 0;
 						writeMessage(messageLayer, 'Detail requested');
 						rpcProxy.onDetailRequested(dpu.id);
 						return;
@@ -963,23 +965,17 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 						writeMessage(messageLayer, 'Clicking on:' + dpu.name);
 						lineLayer.add(newConnLine);
 						lineLayer.draw();
+					} else {
+						writeMessage(messageLayer, 'dragstart');
+						isDragging = true;
+						dragId = id;
+						setVisibleActionBar(actionBar, false);
 					}
 				}
 				setSelectedDpu(dpu);
 				lastClickedDpu = group;
 				lastClickedTime = now;
 			}
-		});
-
-		// Registering for drag
-		group.on('dragstart', function() {
-			if (checkMode()) {
-				return;
-			}
-			writeMessage(messageLayer, 'dragstart');
-			isDragging = true;
-			dragId = id;
-			setVisibleActionBar(actionBar, false);
 		});
 
 		// Creating new connection
@@ -1017,6 +1013,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				}
 				newConnStart = null;
 			}
+			checkSelectionEnd();
 		});
 
 		dpu.rect = rect;
