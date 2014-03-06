@@ -738,6 +738,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 				evt.cancelBubble = true;
 			}
 		});
+		cmdConnection.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdConnection.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
 		cmdConnection.on('mouseenter', function(evt) {
 			activateTooltip('Create new edge');
 			evt.cancelBubble = true;
@@ -763,6 +769,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'DPU detail requested');
 			rpcProxy.onDetailRequested(dpu.id);
+			evt.cancelBubble = true;
+		});
+		cmdDetail.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdDetail.on('mousedown', function(evt) {
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseenter', function(evt) {
@@ -793,6 +805,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			rpcProxy.onDpuRemoved(dpu.id);
 			evt.cancelBubble = true;
 		});
+		cmdRemove.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdRemove.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
 		cmdRemove.on('mouseenter', function(evt) {
 			activateTooltip('Remove DPU');
 			evt.cancelBubble = true;
@@ -818,6 +836,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpuLayer.draw();
 			writeMessage(messageLayer, 'Debug requested');
 			rpcProxy.onDebugRequested(dpu.id);
+			evt.cancelBubble = true;
+		});
+		cmdDebug.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdDebug.on('mouseup', function(evt) {
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseenter', function(evt) {
@@ -846,6 +870,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			multiselect(dpu.id);
 			evt.cancelBubble = true;
 		});
+		cmdFormat.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdFormat.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
 		cmdFormat.on('mouseenter', function(evt) {
 			activateTooltip('DPU layout formatting');
 			evt.cancelBubble = true;
@@ -870,6 +900,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			writeMessage(messageLayer, 'Copy clicked');
 			var mousePosition = stage.getPointerPosition();
 			rpcProxy.onDpuCopyRequested(dpu.id, parseInt(mousePosition.x / scale), parseInt(mousePosition.y / scale));
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mouseup', function(evt) {
 			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseenter', function(evt) {
@@ -923,8 +959,10 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			if (stageMode === MULTISELECT_MODE) {
 				if (evt.ctrlKey) {
 					multiselect(dpu.id);
+					return;
 				} else if (dpu.isInMultiselect) {
 					bGroupDragging = true;
+					return;
 				}
 			} else if (stageMode === DEVELOP_MODE || stageMode === STANDARD_MODE) {
 				var now = Date.now();
@@ -972,10 +1010,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 						setVisibleActionBar(actionBar, false);
 					}
 				}
-				setSelectedDpu(dpu);
-				lastClickedDpu = group;
-				lastClickedTime = now;
 			}
+			if(stageMode !== NEW_CONNECTION_MODE) {
+			setSelectedDpu(dpu);
+			cancelMultiselect();
+			lastClickedDpu = group;
+			lastClickedTime = now;
+		}
 		});
 
 		// Creating new connection
@@ -1098,6 +1139,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		var mousePos = stage.getPointerPosition();
 		var diffX = (mousePos.x - startMouseX) / scale;
 		var diffY = (mousePos.y - startMouseY) / scale;
+		if(diffX === 0 && diffY === 0 || groupDragBox === null) {
+			return;
+		} 
 
 		rpcProxy.onStoreHistory();
 
@@ -1145,7 +1189,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			writeMessage(messageLayer, 'Selecting DPU');
 		} else {
 			rect.setStrokeWidth(2);
-			highlightMultiDpuLines(dpu, false)
+			highlightMultiDpuLines(dpu, false);
 			writeMessage(messageLayer, 'Unselecting DPU');
 		}
 		dpuLayer.draw();
