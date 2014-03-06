@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Loads RDF data to SPARQL endpoint.
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -33,6 +35,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
 
+	/**
+	 * The repository for SPARQL loader.
+	 */
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
@@ -40,6 +45,13 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		super(RDFLoaderConfig.class);
 	}
 
+	/**
+	 * Execute the SPARQL loader.
+	 *
+	 * @param context SPARQL loader context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
@@ -119,12 +131,35 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
 					retryTime, endpointParams);
 
+			for (String graph : defaultGraphsURI) {
+				Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
+						graph, graphSizeBefore, endpointURL.toString()));
+
+
+			}
+
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
 
-			context.sendMessage(MessageType.INFO, String.format(
-					"Loaded %s triples to SPARQL endpoint %s",
-					triplesCount, endpointURL.toString()));
+			for (String graph : defaultGraphsURI) {
+
+				Long graphSizeAfter = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
+						graph, graphSizeAfter, endpointURL.toString()));
+
+				long loadedTriples = loader.getLoadedTripleCount(graph);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Loaded %s triples to SPARQL endpoint %s",
+						loadedTriples, endpointURL.toString()));
+			}
 
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
@@ -132,6 +167,11 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		}
 	}
 
+	/**
+	 * Returns the configuration dialogue for SPARQL loader.
+	 *
+	 * @return the configuration dialogue for SPARQL loader.
+	 */
 	@Override
 	public AbstractConfigDialog<RDFLoaderConfig> getConfigurationDialog() {
 		return new RDFLoaderDialog();

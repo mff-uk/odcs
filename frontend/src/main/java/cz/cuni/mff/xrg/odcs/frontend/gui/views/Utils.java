@@ -18,7 +18,7 @@ public class Utils {
 	/**
 	 * Get page length.
 	 *
-	 * @return
+	 * @return page length
 	 */
 	public int getPageLength() {
 		User user = authCtx.getUser();
@@ -34,7 +34,7 @@ public class Utils {
 	/**
 	 * Get username.
 	 *
-	 * @return
+	 * @return username
 	 */
 	public String getUserName() {
 		User user = authCtx.getUser();		
@@ -44,7 +44,7 @@ public class Utils {
 	/**
 	 * Get default max length of column.
 	 *
-	 * @return
+	 * @return default max length of column
 	 */
 	public static int getColumnMaxLenght() {
 		return 100;

@@ -134,6 +134,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			+ "\nIf fatal error is discovered, pipeline is stopped.";
 
 	/**
+	 * Checkbox defines if construct query could be split in more queries or
+	 * not.
+	 */
+	private CheckBox splitQuery;
+
+	/**
+	 * Text field defines number how many triples can be extracted at once.
+	 */
+	private TextField splitQuerySizeField;
+
+	/**
 	 * Set Count of attempts to reconnect if the connection fails. For infinite
 	 * loop use zero or negative integer
 	 */
@@ -354,7 +365,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value == null || value.equals("")) {
-					if (!getContext().isTemplate()){ 
+					if (!getContext().isTemplate()) {
 						ex = new InvalidValueException(
 								"SPARQL endpoint must be filled!");
 						throw ex;
@@ -961,6 +972,54 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		labelOpt.setValue("Options:");
 		verticalLayoutDetails.addComponent(labelOpt);
 
+		//Checkbox Split the SPARQL construct query to subqueries
+		splitQuery = new CheckBox();
+		splitQuery.setCaption("Split the SPARQL construct query to subqueries");
+		splitQuery.setValue(false);
+		splitQuery.setImmediate(false);
+		splitQuery.setWidth("-1px");
+		splitQuery.setHeight("-1px");
+		verticalLayoutDetails.addComponent(splitQuery);
+
+		splitQuerySizeField = new TextField(
+				"Every subquery contains at maximum (triples)");
+		splitQuerySizeField.setDescription(
+				"Fill number - maximum of RDF triples at once");
+		splitQuerySizeField.setValue("50000");
+		splitQuerySizeField.setNullRepresentation("");
+		splitQuerySizeField.setImmediate(true);
+		splitQuerySizeField.setWidth("100px");
+		splitQuerySizeField.setHeight("-1px");
+		splitQuerySizeField.setInputPrompt(
+				"Fill number - maximum of RDF triples at once");
+
+		splitQuerySizeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						Integer.parseInt(size);
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Count of maximum triples must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Count of triples is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(splitQuerySizeField);
+
+
+
 		// CheckBox Extraction fails if there is no triple extracted.
 		extractFail = new CheckBox();
 		extractFail
@@ -1094,7 +1153,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		boolean areValid = textFieldSparql.isValid()
 				&& retrySizeField.isValid()
 				&& retryTimeField.isValid()
-				&& areGraphsNameValid();
+				&& areGraphsNameValid()
+				&& splitQuerySizeField.isValid();
+
 		return areValid;
 	}
 
@@ -1141,6 +1202,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		} catch (Validator.InvalidValueException e) {
 			if (!errors.equals("") && !errors.endsWith("; ")) {
+				errors = errors + "; " + e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+
+		try {
+			splitQuerySizeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1297,7 +1369,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		
+
 		if (!allComponentAreValid()) {
 //			throw new ConfigException(ex.getMessage(), ex);
 			String message = validationMessage();
@@ -1342,10 +1414,16 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					queryParam, defaultGraphParam, namedGraphParam,
 					getDefaultGraphs(), getNamedGraphs(), requestType);
 
+			boolean useSplitConstruct = splitQuery.getValue();
+
+			int splitConstructSize = Integer.parseInt(splitQuerySizeField
+					.getValue());
+
 			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
 					hostName, password, SPARQLQuery,
 					extractFailed, useStatisticalHandler, failWhenErrors,
-					retrySize, retryTime, endpointParams);
+					retrySize, retryTime, endpointParams, useSplitConstruct,
+					splitConstructSize);
 
 			return config;
 		}
@@ -1400,6 +1478,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			String retryTime = String.valueOf(conf.getRetryTime());
 			retryTimeField.setValue(retryTime);
 
+			splitQuery.setValue(conf.isUsedSplitConstruct());
+
+			String SplitConstructSize = String.valueOf(conf
+					.getSplitConstructSize());
+			splitQuerySizeField.setValue(SplitConstructSize);
+
 			ExtractorEndpointParams endpointParams = conf.getEndpointParams();
 
 			if (endpointParams != null) {
@@ -1434,6 +1518,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of SPARQL extractor as string.
+	 *
+	 * @return desription of SPARQL extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();

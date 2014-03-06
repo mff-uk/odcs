@@ -286,10 +286,10 @@ public class DPUPresenterImpl implements DPUPresenter {
 	}
 
 	/**
-	 * Return container with data that used in {@link #instancesTable}.
+	 * Return container with data used in table with instances of given DPU.
 	 *
 	 * @param dpu
-	 * @return result IndexedContainer for {@link #instancesTable}
+	 * @return result IndexedContainer for table
 	 */
 	@Override
 	public IndexedContainer getTableData(DPUTemplateRecord dpu) {

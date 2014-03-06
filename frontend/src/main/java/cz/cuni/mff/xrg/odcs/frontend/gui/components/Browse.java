@@ -17,9 +17,12 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionCh
  */
 public class Browse extends CustomComponent {
 
-	private VerticalLayout mainLayout;
-	private DataUnitSelector selector;
-	private PipelineExecution execution;
+	private final VerticalLayout mainLayout;
+	
+	private final DataUnitSelector selector;
+	
+	private final PipelineExecution execution;
+	
 	private QueryView queryView;
 
 	/**
@@ -28,7 +31,10 @@ public class Browse extends CustomComponent {
 	 * @param execution
 	 */
 	public Browse(PipelineExecution execution) {
-
+		// set local execution
+		this.execution = execution;
+		
+		
 		mainLayout = new VerticalLayout();
 
 		selector = new DataUnitSelector(execution);

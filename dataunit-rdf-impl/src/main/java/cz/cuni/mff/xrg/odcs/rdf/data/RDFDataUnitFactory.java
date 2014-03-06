@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.data;
 
 import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 

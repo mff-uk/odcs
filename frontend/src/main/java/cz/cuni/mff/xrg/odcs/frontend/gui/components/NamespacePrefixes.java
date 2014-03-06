@@ -46,7 +46,7 @@ public class NamespacePrefixes {
 	/**
 	 * Build layout for namespace prefixes.
 	 *
-	 * @return
+	 * @return Built layout for namespace prefixes
 	 */
 	public VerticalLayout buildNamespacePrefixesLayout() {
 

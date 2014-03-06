@@ -15,7 +15,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Class responsible for extracting metadata from RDF data unit. 
  * @author tomasknap
  */
 public class FileRDFMetadataExtractor {
@@ -25,8 +25,12 @@ public class FileRDFMetadataExtractor {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(
 			FileRDFMetadataExtractor.class);
 
-	public FileRDFMetadataExtractor(BaseRDFRepo aThis) {
-		this.rdfDataUnit = aThis;
+	/**
+         * Constructor
+         * @param rdfDataUnit 
+         */
+        public FileRDFMetadataExtractor(BaseRDFRepo rdfDataUnit) {
+		this.rdfDataUnit = rdfDataUnit   ;
 	}
 
 	//returns list of mappings predicate-values
@@ -73,12 +77,18 @@ public class FileRDFMetadataExtractor {
 
 	}
 
+        /**
+         * Collects metadata for the given subject URI
+         * @param subjectURI Subject URI for which metadata is collected
+         * @param predicates Predicates holding metadataawhich are looked up in the rdf data unit
+         * @return Map of all metadata values for all desired predicates of the given subject URI
+         */
 	public Map<String, List<String>> getMetadataForSubject(String subjectURI,
-			List<String> optionalPredicates) {
+			List<String> predicates) {
 
 		Map<String, List<String>> metadata = new HashMap<>();
 
-		for (String predicate : optionalPredicates) {
+		for (String predicate : predicates) {
 			List<String> values = getMetadataValue(subjectURI, predicate);
 			if (!values.isEmpty()) {
 				metadata.put(predicate, values);
@@ -92,8 +102,14 @@ public class FileRDFMetadataExtractor {
 
 	}
 
-	public Map<String, List<String>> getMetadataForFilePath(String filePath,
-			List<String> optionalPredicates) {
+	/**
+         * Collects metadata for file identified via filePath
+         * @param filePath File path for a file in file data unit
+         * @param predicates Predicates holding metadataawhich are looked up in the rdf data unit
+         * @return Map of all metadata values for all desired predicates 
+         */
+        public Map<String, List<String>> getMetadataForFilePath(String filePath,
+			List<String> predicates) {
 
 		Map<String, List<String>> metadata = new HashMap<>();
 
@@ -131,7 +147,7 @@ public class FileRDFMetadataExtractor {
 						subjectURI, filePath);
 
 				//for the subject, try to get more metadata:
-				return getMetadataForSubject(subjectURI, optionalPredicates);
+				return getMetadataForSubject(subjectURI, predicates);
 			}
 		} catch (QueryEvaluationException ex) {
 			log.error(

@@ -54,7 +54,7 @@ public class ValueItem implements Item {
 	
 	/**
 	 * Return embedded object id.
-	 * @return 
+	 * @return embedded object id
 	 */
 	public Long getId() {
 		return objectId;

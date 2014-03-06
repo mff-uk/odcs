@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.navigation;
 
+import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -7,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Specify address under which the given object is accessible. Can be used
- * for {@link View} and {@link Presenter}.
+ * for {@link ViewComponent} and {@link Presenter}.
  * 
  * @author Petyr
  */
@@ -17,7 +19,7 @@ public @interface Address {
     
     /**
      * Address under which the view can be accessed.
-     * @return 
+     * @return address under which the view can be accessed
      */
     public String url() default "";
     

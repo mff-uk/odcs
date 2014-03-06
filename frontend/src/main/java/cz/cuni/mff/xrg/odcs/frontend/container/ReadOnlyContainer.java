@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * Implementation of read only container that use {@link DataAccessRead} as data
  * source.
  *
- * The container provide possibility to set {@link #coreFilters} in null {@link ReadOnlyContainer#ReadOnlyContainer(cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead, cz.cuni.mff.xrg.odcs.frontend.container.ClassAccessor, java.util.List)
+ * The container provide possibility to set core filters in null {@link #ReadOnlyContainer(cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource)}
  * those filters are then applied in every data query. The given list is used as
  * reference so changes in the list will be reflected by the container. There
  * are no guards for concurrent access, so it's up to the user to secure that
@@ -105,6 +105,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	 * Announce that the container has changed to tables.
 	 */
 	public void refresh() {
+		LOG.trace("{}.refresh()", classAccessor.getClass().getSimpleName());
 		final ReadOnlyContainer<T> container = this;
 
 		for (ItemSetChangeListener listener : changeListeners) {
@@ -121,7 +122,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	/**
 	 * Return object with given id.
 	 * @param id
-	 * @return 
+	 * @return object with given id
 	 */
 	T getObject(Long id) {
 		return source.getObject(id);
@@ -130,7 +131,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 	@Override
 	public Item getItem(Object itemId) {
 		if (itemId == null) {
-			LOG.warn("Request fot null id ignored.");
+			LOG.warn("Request for null id ignored.");
 			return null;
 		}
 		

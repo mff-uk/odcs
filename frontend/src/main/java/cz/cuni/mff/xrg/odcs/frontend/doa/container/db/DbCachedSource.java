@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
+import static cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource.Filterable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,17 +76,22 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 */
 	protected final ClassAccessor<T> classAccessor;
 
+	protected int pageSize;
+	
 	/**
 	 * Initialize the source with given data access. No core filters are used.
 	 *
 	 * @param access
 	 * @param classAccessor
+	 * @param pageSize
 	 */
-	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor) {
+	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor,
+			int pageSize) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = null;
 		this.classAccessor = classAccessor;
+		this.pageSize = pageSize;		
 	}
 
 	/**
@@ -96,13 +102,15 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * @param access
 	 * @param classAccessor
 	 * @param coreFilters
+	 * @param pageSize
 	 */
 	public DbCachedSource(DbAccessRead<T> access, ClassAccessor<T> classAccessor,
-			List<Filter> coreFilters) {
+			List<Filter> coreFilters, int pageSize) {
 		this.source = access;
 		this.queryBuilder = source.createQueryBuilder();
 		this.coreFilters = coreFilters;
 		this.classAccessor = classAccessor;
+		this.pageSize = pageSize;
 	}
 
 	/**
@@ -117,7 +125,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	/**
 	 * Return new default instance of variable.
 	 *
-	 * @return
+	 * @return new default instance of variable
 	 */
 	private T getDefault() {
 		try {
@@ -171,7 +179,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 *
 	 * @param startIndex
 	 * @param numberOfItems
-	 * @return
+	 * @return data on given indexes
 	 */
 	List<T> loadByIndex(int startIndex, int numberOfItems) {
 		applyFilters();
@@ -196,7 +204,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * @param id
 	 */
 	protected void loadById(Long id) {
-		LOG.trace("loadById({})", id);
+		LOG.trace("{}.loadById({})", classAccessor.getClass().getSimpleName(), id);
 		applyFilters();
 
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
@@ -225,12 +233,14 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 		}
 		// add to the data cache
 		data.put(item.getId(), item);
+		LOG.trace("{}.loadById({}) -> done", classAccessor.getClass().getSimpleName(), id);
 	}
 
 	/**
 	 * Re-apply all filters to the {@link #queryBuilder}. If it's filterable.
 	 */
 	protected void applyFilters() {
+		LOG.trace("{}.applyFilters()", classAccessor.getClass().getSimpleName());
 		// TODO we can optimize and do not set those filter twice .. 
 
 		if (queryBuilder instanceof DataQueryBuilder.Filterable) {
@@ -277,7 +287,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 	 * core filters are not modifiable by using other {@link DbCachedSource}
 	 * methods.
 	 *
-	 * @return
+	 * @return list of used core filters
 	 */
 	public List<Filter> getFiltersCore() {
 		return coreFilters;
@@ -305,16 +315,28 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 
 	@Override
 	public T getObjectByIndex(int index) {
+		LOG.trace("{}.getObjectByIndex({})", classAccessor.getClass().getSimpleName(), index);
 		if (dataIndexes.containsKey(index)) {
 			// we have the mapping index -> id
+			LOG.trace("{}.getObjectByIndex({}) -> cached", classAccessor.getClass().getSimpleName(), index);
 			return getObject(dataIndexes.get(index));
 		} else {
+			// cache whole page
+			getItemIds(index, pageSize);
+			// return required object
+			if (dataIndexes.containsKey(index)) {
+				return getObject(dataIndexes.get(index));
+			}
+			LOG.warn("Failed to cache line {} in group ({}, {})",
+					index, index, pageSize);
+			// try to load directely 
 			T item = loadByIndex(index);
 			if (item != null) {
 				// add to caches
 				addToCache(item, index);
 			}
 			// return new item .. can be null
+			LOG.trace("{}.getObjectByIndex({}) -> loaded", classAccessor.getClass().getSimpleName(), index);
 			return item;
 		}
 	}
@@ -333,7 +355,8 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
-
+		LOG.trace("{}.getItemIds({}, {})", classAccessor.getClass().getSimpleName(), startIndex, numberOfItems);
+		
 		List<Long> result = new ArrayList<>(numberOfItems);
 		// first try to load data from cache
 		int endIndex = startIndex + numberOfItems;
@@ -375,6 +398,7 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 			// maybe we can try to be smarter here ...
 		}
 
+		LOG.trace("{}.getItemIds({}, {}) -> done", classAccessor.getClass().getSimpleName(), startIndex, numberOfItems);
 		return result;
 	}
 
@@ -445,7 +469,14 @@ public class DbCachedSource<T extends DataObject>	implements ContainerSource<T>,
 				invalidate();
 				break;
 		}
-
 	}
 
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+	
 }

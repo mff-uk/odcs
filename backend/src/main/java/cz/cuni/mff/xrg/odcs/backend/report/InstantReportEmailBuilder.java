@@ -51,6 +51,21 @@ class InstantReportEmailBuilder {
 		body.append("<br/>");
 		body.append("<b>Execution result: </b>");
 		body.append(execution.getStatus());
+		// add link to the execution detail if the url is specified
+		try {
+			String urlBase = config.getString(ConfigProperty.FRONTEND_URL);
+			if (!urlBase.endsWith("/")) {
+				urlBase = urlBase + "/";
+			}
+			urlBase = urlBase + "#!ExecutionList/exec=" + execution.getId().toString();
+			// generate link
+			body.append("<br/>");
+			body.append("<a href=/");
+			body.append(urlBase);
+			body.append("\" >Execution detail<a/> ");
+		} catch (MissingConfigPropertyException e) {
+			// no name is presented
+		}
 		body.append("<br/><br/>");
 		// append messages
 		final List<MessageRecord> messages = dpuFacade.getAllDPURecords(execution);
@@ -104,11 +119,6 @@ class InstantReportEmailBuilder {
 			body.append("</tr>");
 		}
 		body.append("</table>");
-		
-		// add the working directory
-		body.append("<br>");
-		body.append("ODCS's working directory: ");
-		body.append(System.getProperty("user.dir"));
 		
 		return body.toString();
 	}

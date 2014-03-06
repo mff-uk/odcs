@@ -12,31 +12,31 @@ public enum MessageRecordType {
 	/**
 	 * Debug information from DPURecord.
 	 */
-	 DPU_DEBUG
+	 DPU_DEBUG,
 	/**
 	 * Closer unspecified information from DPURecord.
 	 */
-	,DPU_INFO
+	DPU_INFO,
 	/**
 	 * Warning from DPURecord.
 	 */
-	,DPU_WARNING
+	DPU_WARNING,
 	/**
 	 * Error from DPURecord.
 	 */
-	,DPU_ERROR
+	DPU_ERROR,
 	/**
 	 * Termination request.
 	 */
-	,DPU_TERMINATION_REQUEST
+	DPU_TERMINATION_REQUEST,
 	/**
 	 * Represent error message from pipeline.
 	 */
-	,PIPELINE_ERROR
+	PIPELINE_ERROR,
 	/**
 	 * Represent information about pipeline execution.
 	 */
-	,PIPELINE_INFO;
+	PIPELINE_INFO;
 		
 	/**
 	 * Convert {@link MessageType} to {@link MessageRecordType}.

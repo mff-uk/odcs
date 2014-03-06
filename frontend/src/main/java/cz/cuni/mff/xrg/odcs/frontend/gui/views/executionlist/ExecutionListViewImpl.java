@@ -101,25 +101,31 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
 	@Override
 	public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
+		LOG.trace("showExecutionDetail()");
 		presenter.stopRefreshEventHandler();
 		// secure existance of detail layout
 //		if (logLayout == null) {
 //			buildExecutionDetail(execution);
 //		} 
 		// will just set the debug view content
+		LOG.trace("showExecutionDetail() : buildDebugView");
 		buildDebugView(execution);
 		// no DPU specified
+		LOG.trace("showExecutionDetail() : setExecution");
 		debugView.setExecution(execution, null);
 		//debugView.setDisplay(detailDataObject);
-
+		LOG.trace("showExecutionDetail() : hsplit.setSecondComponent");
 		hsplit.setSecondComponent(logLayout);
 		// adjust hsplit
+		LOG.trace("showExecutionDetail() : adjust hsplit");
 		if (hsplit.isLocked()) {
 			debugView.setActiveTab("Events");
 			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
 			//hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
+		
+		LOG.trace("showExecutionDetail() -> done");
 	}
 
 	@Override
@@ -208,7 +214,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	 * Create and return {@link ActionColumnGenerator}.
 	 *
 	 * @param presenter
-	 * @return
+	 * @return {@link ActionColumnGenerator}
 	 */
 	private ActionColumnGenerator createColumnGenerator(final ExecutionListPresenter presenter) {
 		ActionColumnGenerator generator = new ActionColumnGenerator();
@@ -428,6 +434,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		executionTable.setWidth("100%");
 		executionTable.setHeight("100%");
 		executionTable.setImmediate(true);
+		executionTable.setColumnCollapsingAllowed(true);
 
 		executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
 		executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);

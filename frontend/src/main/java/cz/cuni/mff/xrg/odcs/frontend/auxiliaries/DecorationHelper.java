@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 public class DecorationHelper {
 
 	/**
-	 * Gets corresponding icon for given {@link ExecutionStatus}.
+	 * Gets corresponding icon for given {@link PipelineExecutionStatus}.
 	 *
 	 * @param status Status to get icon for.
 	 * @return Icon for given status.
@@ -71,7 +71,7 @@ public class DecorationHelper {
 	 * for duration lesser than zero.
 	 *
 	 * @param duration
-	 * @return 
+	 * @return Formatted duration.
 	 */
 	public static String formatDuration(long duration) {
 		if (duration < 0) {

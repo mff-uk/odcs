@@ -8,12 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Utility class with common functionality usable by data units
  * @author tomasknap
  */
 public class DataUnitUtils {
@@ -21,26 +19,30 @@ public class DataUnitUtils {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(
 			DataUnitUtils.class);
 
-        public static void printBytes(byte[] array, String name) {
-            for (int k = 0; k < array.length; k++) {
-                System.out.println(name + "[" + k + "]:" + array[k]);
-            }
-        }
-        
+//        public static void printBytes(byte[] array, String name) {
+//            for (int k = 0; k < array.length; k++) {
+//                System.out.println(name + "[" + k + "]:" + array[k]);
+//            }
+//        }
+//        
+        /**
+         * Stores string to a file
+         * @param s String being stored
+         * @param fileName Name of the file
+         * @return Reference to the created file
+         */
 	public static File storeStringToTempFile(String s, String fileName) {
 		return storeStringToTempFile(s, fileName, StandardCharsets.UTF_8);
 	}
 
 	/**
-	 * Stores string to a file
-	 *
-	 * TODO call directly removeTrailingQuotes(fileContent)?
-	 *
-	 * @param s
-	 * @param filePath
-	 * @param charset
-	 * @return Stored file
-	 */
+         * Stores string to a file
+         * 
+         * @param s String being stored
+         * @param filePath  The path to the file
+         * @param charset Encoding
+         * @return Reference to the created file
+         */
 	public static File storeStringToTempFile(String s, String filePath, Charset charset) {
 
 		if (s == null || s.isEmpty()) {
@@ -85,10 +87,21 @@ public class DataUnitUtils {
 
 	}
 
+        /**
+         * Reads content of a file to string
+         * @param path Path to a file
+         * @return Content of a file
+         */
 	public static String readFile(String path) {
 		return readFile(path, StandardCharsets.UTF_8);
 	}
 
+        /**
+         * Reads content of a file to string
+         * @param path Path to a file
+         * @param encoding Encoding 
+         * @return Content of a file
+         */
 	public static String readFile(String path, Charset encoding) {
 		byte[] encoded;
 		try {
@@ -101,6 +114,10 @@ public class DataUnitUtils {
 		return encoding.decode(ByteBuffer.wrap(encoded)).toString();
 	}
 
+        /**
+         * Checks existence of a directory
+         * @param file Path to the directory
+         */
 	public static void checkExistanceOfDir(String file) {
 		if (new File(file).mkdirs()) {
 			log.debug("Dir {} created", file);
@@ -109,20 +126,26 @@ public class DataUnitUtils {
 		}
 	}
 
-	public static String encode(String literalValue, String escapedMappings) {
-		String val = literalValue;
-		String[] split = escapedMappings.split("\\s*");
-		for (String s : split) {
-			String[] keyAndVal = s.split(":");
-			if (keyAndVal.length == 2) {
-				val = val.replaceAll(keyAndVal[0], keyAndVal[1]);
-
-			} else {
-				log.warn("Wrong format of escaped character mappings, skipping the mapping");
-
-			}
-		}
-		return val;
-	}
+//        /**
+//         * Encodes string with 
+//         * @param literalValue
+//         * @param escapedMappings
+//         * @return 
+//         */
+//	public static String encode(String literalValue, String escapedMappings) {
+//		String val = literalValue;
+//		String[] split = escapedMappings.split("\\s*");
+//		for (String s : split) {
+//			String[] keyAndVal = s.split(":");
+//			if (keyAndVal.length == 2) {
+//				val = val.replaceAll(keyAndVal[0], keyAndVal[1]);
+//
+//			} else {
+//				log.warn("Wrong format of escaped character mappings, skipping the mapping");
+//
+//			}
+//		}
+//		return val;
+//	}
        
 }

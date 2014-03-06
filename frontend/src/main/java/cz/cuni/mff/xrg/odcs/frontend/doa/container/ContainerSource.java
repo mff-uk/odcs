@@ -42,7 +42,7 @@ public interface ContainerSource<T extends DataObject> {
 		 * Return collection of filters that has been added and not removed by
 		 * {@link #addFilter(com.vaadin.data.Container.Filter)}.
 		 *
-		 * @return
+		 * @return collection of filters
 		 */
 		Collection<Container.Filter> getFilters();
 	}
@@ -64,7 +64,7 @@ public interface ContainerSource<T extends DataObject> {
 	/**
 	 * Return data size. Respects current filters.
 	 *
-	 * @return
+	 * @return data size
 	 */
 	 int size();
 
@@ -72,7 +72,7 @@ public interface ContainerSource<T extends DataObject> {
 	 * Return object of given id. Respects current filters.
 	 *
 	 * @param id
-	 * @return
+	 * @return object of given id
 	 */
 	 T getObject(Long id);
 
@@ -80,14 +80,14 @@ public interface ContainerSource<T extends DataObject> {
 	 * Return object with given index. Respects current filters.
 	 *
 	 * @param index
-	 * @return
+	 * @return object with given index
 	 */
 	T getObjectByIndex(int index);
 
 	/**
 	 * Return index of given id.
 	 * @param itemId
-	 * @return 
+	 * @return index of given id
 	 */
 	int indexOfId(Long itemId);
 	
@@ -96,7 +96,7 @@ public interface ContainerSource<T extends DataObject> {
 	 * filters.
 	 *
 	 * @param id
-	 * @return
+	 * @return if object of given id is present and available
 	 */
 	boolean containsId(Long id);
 
@@ -105,13 +105,13 @@ public interface ContainerSource<T extends DataObject> {
 	 *
 	 * @param startIndex
 	 * @param numberOfItems
-	 * @return
+	 * @return id's of items on given positions
 	 */
 	List<?> getItemIds(int startIndex, int numberOfItems);
 
 	/**
 	 * Return instance of used class accessor.
-	 * @return 
+	 * @return instance of used class accessor
 	 */
 	ClassAccessor<T> getClassAccessor();
 	

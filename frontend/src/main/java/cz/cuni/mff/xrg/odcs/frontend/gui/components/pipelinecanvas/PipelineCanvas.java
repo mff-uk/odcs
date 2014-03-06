@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Window.CloseEvent;
 
@@ -45,7 +46,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	final int DPU_HEIGHT = 100;
 	int dpuCount = 0;
 	int connCount = 0;
+
 	float currentZoom = 1.0f;
+	private int currentHeight = 630;
+	private int currentWidth = 600; //1240;
+	public static final int MIN_DISTANCE_FROM_BORDER = 100;
+	public static final int SIZE_INCREASE = 200;
+	public static final int MIN_X_CANVAS = 400;
+
 	private PipelineGraph graph;
 	private Stack<PipelineGraph> historyStack;
 	private Stack<DPUInstanceRecord> dpusToDelete = new Stack<>();
@@ -60,7 +68,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	private DPUDetail detailDialog;
 	private Window.CloseListener detailCloseListener;
 	private String canvasMode = PipelineEdit.DEVELOP_MODE;
-	private EdgeFormater edgeFormater = new EdgeFormater();
+	private final EdgeFormater edgeFormater = new EdgeFormater();
+
+	private final int MAX_HISTORY_SIZE = 10;
+
 	/**
 	 * Initial constructor with registering of server side RPC.
 	 */
@@ -99,11 +110,11 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 
 			@Override
-			public void onDpuMoved(int dpuId, int newX, int newY) {
+			public void onDpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
 				//storeHistoryGraph();
 				isModified = true;
 				fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
-				dpuMoved(dpuId, newX, newY);
+				dpuMoved(dpuId, newX, newY, autoAction);
 			}
 
 			@Override
@@ -146,7 +157,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 */
 	public void init() {
 		detailDialog = new DPUDetail(dpuFacade);
-		getRpcProxy(PipelineCanvasClientRpc.class).init();
+		getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
 	}
 
 	/**
@@ -228,7 +239,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Shows detail of given {@link DPUInstance} in new sub-window.
+	 * Shows detail of given {@link DPUInstanceRecord} in new sub-window.
 	 *
 	 * @param node {@link Node} containing DPU, which detail should be showed.
 	 */
@@ -264,8 +275,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param height New height of canvas in pixels.
 	 * @param width New width of canvas in pixels.
 	 */
-	public void resizeCanvas(int height, int width) {
-		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(height, width);
+	public void resizeCanvas(int width, int height) {
+		getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(width, height);
 	}
 
 	/**
@@ -275,12 +286,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @return {@link Position} with new size of canvas.
 	 */
 	public Position zoom(boolean isZoomIn) {
-		Position bounds = new Position(0, 0);
-		if (graph != null) {
-			bounds = graph.getBounds();
-		}
-		bounds.setX(bounds.getX() + DPU_WIDTH);
-		bounds.setY(bounds.getY() + DPU_HEIGHT);
+		
 		if (isZoomIn && currentZoom < 2) {
 			if (currentZoom < 1.5) {
 				currentZoom = 1.5f;
@@ -295,10 +301,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			}
 		}
 		getRpcProxy(PipelineCanvasClientRpc.class).zoomStage(currentZoom);
-		bounds.setX((int) (bounds.getX() * currentZoom));
-		bounds.setY((int) (bounds.getY() * currentZoom));
-		//return bounds;
-		return new Position((int) (1600 * currentZoom), (int) (630 * currentZoom));
+		if (currentZoom < 1.5f) {
+			int minWidth = Page.getCurrent().getBrowserWindowWidth() - 60;
+			if (currentWidth < minWidth) {
+				currentWidth = minWidth;
+				getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(currentWidth, currentHeight);
+			}
+		}
+		//return new canvas size;
+		return new Position((int) (currentWidth * currentZoom), (int) (currentHeight * currentZoom));
 	}
 
 	/**
@@ -317,7 +328,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	/**
 	 * Changes mode of the pipeline canvas.
 	 *
-	 * @param newMode 
+	 * @param newMode
 	 */
 	public void changeMode(String newMode) {
 		canvasMode = newMode;
@@ -348,8 +359,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	/**
 	 * Inform listeners, about supplied event.
-	 * 
-	 * @param event 
+	 *
+	 * @param event
 	 */
 	protected void fireEvent(Event event) {
 		Collection<Listener> ls = (Collection<Listener>) this.getListeners(com.vaadin.ui.Component.Event.class);
@@ -368,6 +379,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			getRpcProxy(PipelineCanvasClientRpc.class).clearStage();
 		}
 		this.graph = pg;
+		setupCanvasSize(graph);
+
 		LOG.debug("DPU mandatory fields check starting");
 		for (Node node : graph.getNodes()) {
 			DPUInstanceRecord dpu = node.getDpuInstance();
@@ -397,9 +410,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	 * @param dpuId Id of {@link Node} which was moved.
 	 * @param newX New X coordinate.
 	 * @param newY New Y coordinate.
+	 * @param autoAction
 	 */
-	private void dpuMoved(int dpuId, int newX, int newY) {
+	private void dpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
 		graph.moveNode(dpuId, newX, newY);
+		if (!autoAction) {
+			checkForResize(newX, newY);
+		}
 	}
 
 	/**
@@ -430,7 +447,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 			//Make undo button enabled.
 			fireEvent(new GraphChangedEvent(this, true));
 		}
-
+		while (historyStack.size() >= MAX_HISTORY_SIZE) {
+			historyStack.remove(0);
+		}
 		historyStack.push(clonedGraph);
 	}
 
@@ -492,4 +511,133 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	public void formatAction(String action) {
 		getRpcProxy(PipelineCanvasClientRpc.class).formatDPUs(action);
 	}
+
+	/**
+	 * Resizes canvas, incerases the size by given number of pixels in given
+	 * direction.
+	 *
+	 * @param direction Direction to enlarge cavnas in
+	 * @param pixels Number of pixels to enlarge canvas by
+	 */
+	private void resize(String direction, int pixels) {
+		getRpcProxy(PipelineCanvasClientRpc.class).enlargeCanvas(direction, pixels);
+	}
+
+	private void checkForResize(int newX, int newY) {
+		//Evaluate if the DPU position is near the borders
+		//If it is, enlarge canvas in given direction
+		boolean resized = false;
+
+//        if (newX < MIN_DISTANCE_FROM_BORDER) {
+//            resized = true;
+//            currentWidth += SIZE_INCREASE;
+//            resize("left", SIZE_INCREASE);
+//        } else 
+		if (currentWidth - (newX + DPU_WIDTH) < MIN_DISTANCE_FROM_BORDER) {
+			resized = true;
+			currentWidth += SIZE_INCREASE;
+			resize("right", SIZE_INCREASE);
+		}
+
+//        if (newY < MIN_DISTANCE_FROM_BORDER) {
+//            resized = true;
+//            currentHeight += SIZE_INCREASE;
+//            resize("top", SIZE_INCREASE);
+//        } else 
+		if (currentHeight - (newY + DPU_HEIGHT) < MIN_DISTANCE_FROM_BORDER) {
+			resized = true;
+			currentHeight += SIZE_INCREASE;
+			resize("bottom", SIZE_INCREASE);
+		}
+
+		if (resized) {
+			fireEvent(new ResizedEvent(this, (int) (currentWidth * currentZoom), (int) (currentHeight * currentZoom)));
+		}
+
+	}
+
+	private void setupCanvasSize(PipelineGraph graph) {
+		int minX = Integer.MAX_VALUE;
+		int maxX = 0;
+		int minY = Integer.MAX_VALUE;
+		int maxY = 0;
+
+		//Get min and max bounds of the graph
+		for (Node node : graph.getNodes()) {
+			Position nodePosition = node.getPosition();
+			if (nodePosition == null) {
+				continue;
+			}
+			int nodeX = nodePosition.getX();
+			if (nodeX < minX) {
+				minX = nodeX;
+			}
+			if (nodeX > maxX) {
+				maxX = nodeX;
+			}
+			int nodeY = nodePosition.getY();
+			if (nodeY < minY) {
+				minY = nodeY;
+			}
+			if (nodeY > maxY) {
+				maxY = nodeY;
+			}
+		}
+
+		//Add dimensions of DPUs
+		maxX += DPU_WIDTH;
+		maxY += DPU_HEIGHT;
+
+		//TODO: Add check for pipeline being bigger than computed canvas size, if not, do not reposition
+		//TODO: Confirm repositioning of pipeline...
+//        boolean translate = false;
+//        int overX = 0;
+//        int overY = 0;
+//        if (minX > MIN_X_CANVAS) {
+//            translate = true;
+//            overX = minX - MIN_X_CANVAS;
+//        }
+//        if (minY > MIN_DISTANCE_FROM_BORDER) {
+//            translate = true;
+//            overY = minY - MIN_DISTANCE_FROM_BORDER;
+//        }
+//
+//        if (translate) {
+//            translateGraph(graph, overX, overY);
+//        }
+		int proposedWidth = maxX + MIN_DISTANCE_FROM_BORDER;
+		int proposedHeight = maxY + MIN_DISTANCE_FROM_BORDER;
+
+		boolean sizeChanged = false;
+		if (proposedWidth > currentWidth) {
+			sizeChanged = true;
+			currentWidth = proposedWidth;
+		}
+		if (proposedHeight > currentHeight) {
+			sizeChanged = true;
+			currentHeight = proposedHeight;
+		}
+
+		if (sizeChanged) {
+			getRpcProxy(PipelineCanvasClientRpc.class).resizeStage(currentWidth, currentHeight);
+			fireEvent(new ResizedEvent(this, (int) (currentWidth * currentZoom), (int) (currentHeight * currentZoom)));
+		}
+
+	}
+
+	private void translateGraph(PipelineGraph graph, int overX, int overY) {
+		for (Node node : graph.getNodes()) {
+			Position origPosition = node.getPosition();
+			node.setPosition(new Position(origPosition.getX() - overX, origPosition.getY() - overY));
+		}
+	}
+
+	public int getCanvasWidth() {
+		return (int) (currentWidth * currentZoom);
+	}
+
+	public int getCanvasHeight() {
+		return (int) (currentHeight * currentZoom);
+	}
+
 }

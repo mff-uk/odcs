@@ -694,24 +694,15 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		}
 		boolean configChanged = false;
 		try {
-			if (selectedDpuWrap.getDialog() != null) {
-				configChanged = selectedDpuWrap.getDialog().hasConfigChanged();
-			}
-		} catch (FileNotFoundException e) {
-			Notification.show(
-					"File not found. ",
-					e.getMessage(), Notification.Type.ERROR_MESSAGE);
-			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-		} catch (ModuleException e) {
-			Notification.show(
-					"Module Exception. ",
-					e.getMessage(), Notification.Type.ERROR_MESSAGE);
-			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+			configChanged = selectedDpuWrap.hasConfigChanged();
 		} catch (DPUWrapException e) {
 			Notification.show(
-					"DPUWrap Exception. ",
+					"DPU's configuration dialog throws when asked for changes."
+							+ " It's assumed to be changed.",
 					e.getMessage(), Notification.Type.ERROR_MESSAGE);
-			LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+			LOG.error("hasConfigChanged() throws for DPU '{}'", 
+					selectedDpuWrap.getDPUTemplateRecord().getId(), e);
+			return true;
 		}
 
 		DPUTemplateRecord selectedDpu = selectedDpuWrap.getDPUTemplateRecord();
@@ -820,6 +811,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				createActionColumn());
 
 		instancesTable.setVisibleColumns("actions", "name");
+		instancesTable.setColumnCollapsingAllowed(true);
 
 		verticalLayoutInstances.addComponent(instancesTable);
 		verticalLayoutInstances.addComponent(instancesTable.createControls());
@@ -832,7 +824,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	/**
 	 * Validate DPU detail.
 	 *
-	 * @return
+	 * @return If DPU detail is valid
 	 */
 	public boolean validate() {
 		try {

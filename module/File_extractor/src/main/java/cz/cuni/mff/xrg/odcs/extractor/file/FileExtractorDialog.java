@@ -162,9 +162,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	public FileExtractorConfig getConfiguration() throws ConfigException {
 
 		if (getContext().isTemplate()) {
-			
 		}
-		
+
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
@@ -286,6 +285,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	}
 
+	/**
+	 * Returns desription of file extractor as string.
+	 *
+	 * @return desription of file extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		String path;
@@ -430,10 +434,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 									throw ex;
 								}
 							} else {
-								
-								if (!getContext().isTemplate() && stringValue.isEmpty()){
+
+								if (!getContext().isTemplate() && stringValue
+										.isEmpty()) {
 									String message = getValidMessageByFileExtractType(
-												extractType);
+											extractType);
 									ex = new EmptyValueException(message);
 									throw ex;
 

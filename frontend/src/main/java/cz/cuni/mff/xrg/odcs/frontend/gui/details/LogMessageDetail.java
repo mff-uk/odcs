@@ -11,6 +11,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import static com.vaadin.server.Sizeable.Unit;
 
 import java.util.Date;
 import org.apache.log4j.Level;
@@ -104,7 +105,7 @@ public class LogMessageDetail extends Window {
 		fullMessageContent.setReadOnly(false);
 		// set the of main text box
 		if (log.getStackTrace() == null) {
-			fullMessageContent.setValue(HtmlUtils.htmlEscape(log.getMessage()));
+			fullMessageContent.setValue(log.getMessage());
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
@@ -115,7 +116,7 @@ public class LogMessageDetail extends Window {
 				sb.append("<br/><br/>Stack trace:<br/>");
 				// just do replace in stack trace
 				final String stackTrace = 
-						log.getStackTrace().replace("<", "&lt;").replace("&", "&amp;");
+						log.getStackTrace(); //.replace("<", "&lt;").replace("&", "&amp;");
 				sb.append(stackTrace);
 			}
 			fullMessageContent.setValue(sb.toString());
@@ -129,8 +130,7 @@ public class LogMessageDetail extends Window {
 	 * Resizes content due to resize of whole dialog.
 	 *
 	 * @param height New height of whole dialog.
-	 * @param unit
-	 * @{link Unit} of height.
+	 * @param unit {@link Unit} of height.
 	 */
 	public void setContentHeight(float height, Sizeable.Unit unit) {
 		fullMessageContent.setHeight(height - 230, unit);

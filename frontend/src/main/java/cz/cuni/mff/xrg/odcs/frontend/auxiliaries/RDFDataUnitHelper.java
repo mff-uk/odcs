@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Local;
 import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
@@ -21,6 +22,8 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import java.io.File;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper for RDF DataUnits.
@@ -31,6 +34,9 @@ import java.util.Collection;
  */
 public class RDFDataUnitHelper {
 
+	private static final Logger LOG = LoggerFactory.getLogger(
+			RDFDataUnitHelper.class);
+	
 	/**
 	 * Return repository for specified RDF DataUnit.
 	 *
@@ -50,9 +56,17 @@ public class RDFDataUnitHelper {
 		}
 
 		// 
-		String dataUnitId = executionInfo.dpu(dpuInstance).createId(info
-				.getIndex());
-
+		if (executionInfo == null) {
+			LOG.error("executionInfo is null!");			
+			return null;
+		}
+		
+		DpuContextInfo dpuInfo = executionInfo.dpu(dpuInstance);
+		if(dpuInfo == null) {
+			LOG.error("DPU info is null!");
+			return null;
+		}
+		String dataUnitId = dpuInfo.createId(info.getIndex());
 
 		switch (info.getType()) {
 			case RDF_Local:

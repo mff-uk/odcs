@@ -27,7 +27,7 @@ public class FormattingEnabledEvent extends Event {
 	/**
 	 * Is formatting enabled.
 	 *
-	 * @return
+	 * @return If formatting is enabled
 	 */
 	public boolean isEnabled() {
 		return isEnabled;

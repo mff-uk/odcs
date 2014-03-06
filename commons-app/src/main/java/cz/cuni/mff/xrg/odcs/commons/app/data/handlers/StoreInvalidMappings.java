@@ -20,6 +20,10 @@ public class StoreInvalidMappings extends LogAndIgnore {
 		invalidMapping.add(item);
 	}
 
+	/**
+	 *  
+	 * @return List of examined invalid mappings.
+	 */
 	public List<String> getInvalidMapping() {
 		return invalidMapping;
 	}

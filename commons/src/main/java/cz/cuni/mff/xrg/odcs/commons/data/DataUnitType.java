@@ -8,18 +8,15 @@ package cz.cuni.mff.xrg.odcs.commons.data;
  */
 public enum DataUnitType {
 	/**
-	 * General RDF type, the application select repository type.
-	 * see @{link RDFDataRepository}
+	 * General RDF type, the repository will be selected by the application.
 	 */
 	RDF,
 	/**
-	 * RDF data unit type.
-	 * see @{link RDFDataRepository}
+	 * RDF data unit type with local storage.
 	 */
 	RDF_Local,
 	/**
-	 * RDF data unit type.
-	 * see @{link RDFDataRepository}
+	 * RDF data unit type with Virtuoso as RDF storage.
 	 */
 	RDF_Virtuoso,
 	/**

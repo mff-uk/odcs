@@ -10,6 +10,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
  */
 public class commons_module {
 	
+	/**
+	 * List of OSGI packages to export. Does not start nor end with separator.
+	 */	
 	public static final String PACKAGE_LIST = 
 		// on line can be the list or packages removeed rom the following line definition
 		"com.thoughtworks.xstream.annotations;uses:=\"com.thoughtworks.xstream.converters,com.thoughtworks.xstream.converters.reflection,com.thoughtworks.xstream.mapper,com.thoughtworks.xstream\";version=\"1.4.4\"," +

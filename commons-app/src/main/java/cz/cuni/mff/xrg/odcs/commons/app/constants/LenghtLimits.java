@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.constants;
 
 /**
  * The enum contains length limits based on database schema limitations.
+ * 
  * @author Petyr
  */
 public enum LenghtLimits {

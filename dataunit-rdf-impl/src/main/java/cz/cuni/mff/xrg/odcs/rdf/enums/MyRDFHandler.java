@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.rdf.enums;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-
 import java.io.OutputStream;
 import java.io.Writer;
 import org.openrdf.model.Statement;

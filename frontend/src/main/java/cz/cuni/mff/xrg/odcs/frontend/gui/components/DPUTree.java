@@ -8,6 +8,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.data.util.ItemSorter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -270,7 +271,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Adds custom ItemClickListener to the DPUTRee.
 	 *
-	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add
+	 * @param itemClickListener {@link ItemClickListener} to add
 	 * to DPU tree.
 	 */
 	public void addItemClickListener(

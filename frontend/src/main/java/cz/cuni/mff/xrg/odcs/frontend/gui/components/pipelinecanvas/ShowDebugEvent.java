@@ -28,7 +28,7 @@ public class ShowDebugEvent extends Event {
 	/**
 	 * Get debug node.
 	 *
-	 * @return
+	 * @return debug node
 	 */
 	public Node getDebugNode() {
 		return debugNode;

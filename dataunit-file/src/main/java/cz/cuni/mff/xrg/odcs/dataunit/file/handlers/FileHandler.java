@@ -25,7 +25,7 @@ public interface FileHandler extends Handler {
 	/**
 	 * Set file content to given string.
 	 * 
-	 * @param newContent 
+	 * @param newContent New file content.
 	 * @throws cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException 
 	 */
 	void setContent(String newContent) throws FileDataUnitException;

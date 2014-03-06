@@ -15,8 +15,10 @@ import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
 
 /**
+ * Interface provides managable methods for working with RDF data repository.
  *
  * @author Petyr
+ * @author Jiri Tomes
  */
 public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 
@@ -166,6 +168,4 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 * @return Info string message about removing application graphs.
 	 */
 	public String deleteApplicationGraphs();
-
-
 }

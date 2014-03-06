@@ -584,7 +584,7 @@ CREATE TRIGGER delete_node_fix BEFORE DELETE ON "DB"."ODCS"."PPL_NODE" REFERENCI
 	  OR node_to_id = n.id;
 };
 
-CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" REFERENCING new AS n
+CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" REFERENCING old AS o, new AS n
 {
   SET triggers OFF;
   UPDATE "DB"."ODCS"."EXEC_PIPELINE"
@@ -606,18 +606,30 @@ CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" RE
 DROP TABLE "DB"."ODCS"."LOGGING";
 CREATE TABLE "DB"."ODCS"."LOGGING"
 (
-  "id" BIGINT NOT NULL IDENTITY,
+-- BEGIN VIRTUOSO ONLY
+  "id" INTEGER NOT NULL IDENTITY,
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+--  "id" INTEGER unsigned NOT NULL IDENTITY,
+-- END MYSQL ONLY
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" VARCHAR(254) NOT NULL,
   "message" LONG VARCHAR,
   "dpu" INTEGER,
-  "execution" INTEGER,
+  "execution" INTEGER NOT NULL,
   "stack_trace" LONG VARCHAR,
+  "relative_id" INTEGER,
   PRIMARY KEY (id)
+-- BEGIN VIRTUOSO ONLY
 );
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+-- ) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX "ix_LOGGING_dpu" ON "DB"."ODCS"."LOGGING" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "DB"."ODCS"."LOGGING" ("execution");
+CREATE INDEX "ix_LOGGIN_relative_id" ON "DB"."ODCS"."LOGGING" ("relative_id");
 
 -- File must end with empty line, so last query is followed by enter.
