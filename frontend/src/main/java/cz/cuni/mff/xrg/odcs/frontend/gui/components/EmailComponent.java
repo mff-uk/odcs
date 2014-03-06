@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.Alignment;
@@ -14,14 +17,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
@@ -132,22 +133,21 @@ public class EmailComponent {
 					if (value.getClass() == String.class
 							&& !((String) value).isEmpty()) {
 						String inputEmail = (String) value;
-						if (!inputEmail.matches("[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})")) {
+						if (!EmailValidator.getInstance().isValid(inputEmail)) {
 							throw new InvalidValueException("wrong е-mail format");
 						}
 						
 						int count=0;
 						for (TextField emailField : listedEditText) {
 							if (emailField.getValue().equals(inputEmail)) count++;
-							if(count>1)
+							if(count>1) {
 								throw new InvalidValueException("duplicate e-mail");
+							}
 							
 						}
-
-						return;
+					} else {
+						throw new InvalidValueException("e-mail must be filled");
 					}
-
-					throw new InvalidValueException("e-mail must be filled");
 				}
 			});
 

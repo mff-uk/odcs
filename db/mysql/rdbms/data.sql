@@ -171,8 +171,8 @@ INSERT INTO `ppl_position`(id,pos_x,pos_y) VALUES(2,487,132);
 -- SELECT * FROM `rdf_ns_prefix`
 -- Table `rdf_ns_prefix` 0 rows output.
 -- SELECT * FROM `sch_email`
-INSERT INTO `sch_email`(id,e_user,e_domain) VALUES(1,'admin','example.com');
-INSERT INTO `sch_email`(id,e_user,e_domain) VALUES(2,'user','example.com');
+INSERT INTO `sch_email`(id,email) VALUES(1,'admin@example.com');
+INSERT INTO `sch_email`(id,email) VALUES(2,'user@example.com');
 -- Table `sch_email` 2 rows output.
 -- SELECT * FROM `sch_sch_notification`
 -- Table `sch_sch_notification` 0 rows output.
