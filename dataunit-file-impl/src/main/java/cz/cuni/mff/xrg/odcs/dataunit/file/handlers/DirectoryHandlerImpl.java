@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,118 @@ import org.slf4j.LoggerFactory;
  */
 public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
+	/**
+	 * Read only iterator for iterating over the tree structure of directory.
+	 */
+	private class FlatIterator implements Iterator<Handler> {
+		
+		/**
+		 * Current directory level.
+		 */
+		private DirectoryHandlerImpl directory;
+
+		/**
+		 * Index of next item on certain level that should be returned next
+		 * call.
+		 */
+		private final Stack<Integer> indexes;
+		
+		/**
+		 * Value that should be returned in next call of {@link #next()}.
+		 */
+		private ManageableHandler nextHandler;
+		
+		public FlatIterator(DirectoryHandlerImpl directory) {
+			this.directory = directory;
+			// add first index
+			indexes = new Stack<>();
+			indexes.push(0);
+			// and fetch the first handler
+			fetchNext();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return nextHandler != null;
+		}
+
+		@Override
+		public Handler next() {
+			// store the value to return
+			Handler toReturn = nextHandler;
+			// get next
+			fetchNext();
+			// return the value
+			return toReturn;
+		}
+
+		@Override
+		public void remove() {
+			// not supported
+		}
+	
+		/**
+		 * Get next handler and store it into the {@link #nextHandler}.
+		 * 
+		 * We sink into the directory after we leave it, ie. first we return
+		 * the directory and then it's content.
+		 */
+		private void fetchNext() {
+
+			if (indexes.isEmpty()) {
+				// no data here
+				nextHandler = null;
+				return;
+			}
+			
+			// first check if the nextHandler is directory, if it's 
+			// then go into the directory
+			if (nextHandler != null && nextHandler instanceof DirectoryHandlerImpl) {
+				// set new directory
+				final DirectoryHandlerImpl newDirectory = 
+						(DirectoryHandlerImpl)nextHandler;
+				boolean isEmpty = newDirectory.handlers.isEmpty();
+				// check for size
+				if (!newDirectory.handlers.isEmpty()) {
+					// not empty, we may go down into the directory
+					// we basicaly to this instead of go for
+					// the next item, so we do not increate the indexes					
+					directory = newDirectory;
+					// update last index, so when we return, we will be on 
+					// next item
+					nextHandler = directory.handlers.get(0);
+					// add index
+					indexes.push(1);					
+					return;
+				} else {
+					// directory is empty we consider it to be file and continue
+				}			
+			}
+			
+			if (indexes.peek()< directory.handlers.size()) {
+				// ok we may use next element
+				nextHandler = directory.handlers.get(indexes.peek());
+				// and increase the counter
+				indexes.push(indexes.pop() + 1);
+				return;
+			}
+			// we are at the last non directory element, so we go up
+			// set nextHandler to null, so after return we start with 
+			// clear history
+			nextHandler = null;
+			// remove index used for this level
+			indexes.pop();
+			// and go up in sense of directories
+			directory = (DirectoryHandlerImpl)directory.parent;
+			// call our selfs
+			fetchNext();
+		}
+		
+	}
+	
 	private static final Logger LOG = LoggerFactory.getLogger(
 			DirectoryHandlerImpl.class);
-
+ 
 	/**
 	 * Directory name.
 	 */
@@ -196,10 +306,10 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public FileHandler addNewFile(String name) throws DataUnitException {
 		accessCheck();
 
-                // remove special chars from the name
-                String escapedName = escape(name);
+		// remove special chars from the name
+		final String escapedName = escape(name);
 
-                // check existance
+		// check existance
 		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
 			// ok, prepare path to file
@@ -268,10 +378,9 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			throws DataUnitException {
 		accessCheck();
 
-                // remove special chars from the name
-                String escapedName = escape(name);
-
-                
+		// remove special chars from the name
+		final String escapedName = escape(name);
+               
 		// check existance
 		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
@@ -583,19 +692,25 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 	}
 
+	/**
+	 * Remove dangerous character from string so the string can be safely 
+	 * used as a file or directory name.
+	 * 
+	 * @param origString
+	 * @return 
+	 */
     private String escape(String origString) {
-            
-        
-        
-        String result = origString.replaceAll("[\\/:*?\"<>|]","");
+       String result = origString.replaceAll("[\\/:*?\"<>|]","");
         if (!origString.equals(result)) {
             LOG.warn("Name {} contained one or more special chars [\\/:*?\"<>|], which were removed. This may change the file/dir name unacceptably, so be careful.", origString);
             LOG.debug("Resulting file/dir name after replacing special chars is {}", result);
         }
-            
         return result;
-        
-        
     }
+
+	@Override
+	public Iterator<Handler> getFlatIterator() {
+		return new FlatIterator(this);
+	}
 
 }
