@@ -93,12 +93,12 @@ class PipelineFacadeImpl implements PipelineFacade {
 		Pipeline newPipeline = new Pipeline(pipeline);
 		
 		// determine new name for pipeline
-		String oName = "Copy of " + pipeline.getName();
-		String nName = oName;
+		String oName = pipeline.getName();
+		String nName;
 		int no = 1;
-		while (hasPipelineWithName(nName, null)) {
-			nName = oName + " #" + no++;
-		}
+		do {
+			nName = "Copy #" + (no++) + " of "+ oName;
+		} while (hasPipelineWithName(nName, null));
 		newPipeline.setName(nName);
 		newPipeline.setVisibility(ShareType.PRIVATE);
 		
