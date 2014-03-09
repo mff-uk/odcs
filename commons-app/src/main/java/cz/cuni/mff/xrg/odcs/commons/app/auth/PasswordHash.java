@@ -22,7 +22,7 @@ public class PasswordHash {
 
 	public static final int HASH_BYTE_SIZE = 32;
 
-	public static final int PBKDF2_ITERATIONS = 10;
+	public static final int PBKDF2_ITERATIONS = 100000;
 
 	public static final int ITERATION_INDEX = 0;
 
