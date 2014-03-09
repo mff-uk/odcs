@@ -262,11 +262,10 @@ CREATE INDEX `ix_SCH_USR_NOTIFICATION_user_id` ON `sch_usr_notification` (`user_
 CREATE TABLE `sch_email`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `e_user` VARCHAR(85),
-  `e_domain` VARCHAR(45),
+  `email` VARCHAR(255),
   PRIMARY KEY (`id`)
 );
-CREATE INDEX `ix_SCH_EMAIL_email` ON `sch_email` (`e_user`, `e_domain`);
+CREATE INDEX `ix_SCH_EMAIL_email` ON `sch_email` (`email`);
 
 CREATE TABLE `sch_sch_notification_email`
 (
