@@ -194,6 +194,82 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 		return splitConstructSize;
 	}
 
+	public String getSPARQL_endpoint() {
+		return SPARQL_endpoint;
+	}
+
+	public String getHost_name() {
+		return Host_name;
+	}
+
+	public String getSPARQL_query() {
+		return SPARQL_query;
+	}
+
+	public boolean isUseStatisticalHandler() {
+		return UseStatisticalHandler;
+	}
+
+	public List<String> getGraphsUri() {
+		return GraphsUri;
+	}
+
+	public boolean isUseSplitConstruct() {
+		return useSplitConstruct;
+	}
+	
+	public void setSPARQL_endpoint(String SPARQL_endpoint) {
+		this.SPARQL_endpoint = SPARQL_endpoint;
+	}
+
+	public void setHost_name(String Host_name) {
+		this.Host_name = Host_name;
+	}
+
+	public void setPassword(String Password) {
+		this.Password = Password;
+	}
+
+	public void setSPARQL_query(String SPARQL_query) {
+		this.SPARQL_query = SPARQL_query;
+	}
+
+	public void setExtractFail(boolean ExtractFail) {
+		this.ExtractFail = ExtractFail;
+	}
+
+	public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
+		this.UseStatisticalHandler = UseStatisticalHandler;
+	}
+
+	public void setFailWhenErrors(boolean failWhenErrors) {
+		this.failWhenErrors = failWhenErrors;
+	}
+
+	public void setRetryTime(Long retryTime) {
+		this.retryTime = retryTime;
+	}
+
+	public void setRetrySize(Integer retrySize) {
+		this.retrySize = retrySize;
+	}
+
+	public void setEndpointParams(ExtractorEndpointParams endpointParams) {
+		this.endpointParams = endpointParams;
+	}
+
+	public void setGraphsUri(List<String> GraphsUri) {
+		this.GraphsUri = GraphsUri;
+	}
+
+	public void setUseSplitConstruct(boolean useSplitConstruct) {
+		this.useSplitConstruct = useSplitConstruct;
+	}
+
+	public void setSplitConstructSize(Integer splitConstructSize) {
+		this.splitConstructSize = splitConstructSize;
+	}
+	
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *
@@ -216,26 +292,11 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
 	 */
 	@Override
 	public void onDeserialize() {
-
-		if (retrySize == null) {
-			retrySize = -1;
-		}
-		if (retryTime == null) {
-			retryTime = 1000L;
-		}
-
-		if (endpointParams == null) {
-			endpointParams = new ExtractorEndpointParams();
-
-			if (GraphsUri != null) {
-				for (String defaultGraph : GraphsUri) {
-					endpointParams.addDefaultGraph(defaultGraph);
-				}
+		if (endpointParams.getDefaultGraphURI().isEmpty() && GraphsUri != null) {
+			for (String defaultGraph : GraphsUri) {
+				endpointParams.addDefaultGraph(defaultGraph);
 			}
 		}
-
-		if (splitConstructSize == null) {
-			splitConstructSize = 50000;
-		}
 	}
+
 }
