@@ -61,5 +61,14 @@
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype" />
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
     <!-- TODO: we can use special package and factory class -->
+
+	<bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
+		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
+	</bean>
     
+	<bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
+		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
+	</bean>
 </beans>
