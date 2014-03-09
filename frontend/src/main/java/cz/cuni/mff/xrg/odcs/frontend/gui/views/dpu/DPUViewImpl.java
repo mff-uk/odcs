@@ -9,7 +9,9 @@ import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
@@ -26,7 +28,9 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
+
 import java.io.FileNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -538,7 +542,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				throw new Validator.InvalidValueException("Name must be filled!");
 			}
 		});
-		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
+		dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
 		dpuSettingsLayout.addComponent(dpuName, 1, 0);
 		dpuName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			private static final long serialVersionUID = 1L;

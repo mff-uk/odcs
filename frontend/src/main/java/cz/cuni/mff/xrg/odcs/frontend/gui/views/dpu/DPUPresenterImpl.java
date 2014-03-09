@@ -5,8 +5,10 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
@@ -25,12 +27,15 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +118,8 @@ public class DPUPresenterImpl implements DPUPresenter {
 			}
 			i++;
 		}
-
+		nameOfDpuCopy = StringUtils.abbreviate(nameOfDpuCopy, LenghtLimits.DPU_NAME);
+		
 		DPUTemplateRecord copyDpuTemplate = dpuFacade.createCopy(selectedDpu);
 		copyDpuTemplate.setName(nameOfDpuCopy);
 		if(selectedDpu.getParent() != null)

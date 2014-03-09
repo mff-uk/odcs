@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
@@ -77,11 +79,8 @@ public class DPUExplorer {
         }
         String jarDescription = attributes.get(DPU_JAR_DESCRIPTION_NAME);
         // check for length
-        if (jarDescription.length() > LenghtLimits.DPU_JAR_DESCRIPTION.limit()) {
-            jarDescription = jarDescription.substring(0,
-                    LenghtLimits.DPU_JAR_DESCRIPTION.limit());
-        }
-        return jarDescription;
+        
+        return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_JAR_DESCRIPTION);
     }
 
     /**

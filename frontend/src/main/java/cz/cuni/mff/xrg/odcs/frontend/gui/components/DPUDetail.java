@@ -13,6 +13,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -25,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
+
 import org.vaadin.dialogs.ConfirmDialog;
 
 /**
@@ -95,8 +97,7 @@ public class DPUDetail extends Window {
 				setCaption(dpuName.getValue().trim());
 			}
 		});
-		dpuName.addValidator(new MaxLengthValidator(
-				MaxLengthValidator.DPU_NAME_LENGTH));
+		dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
 		Label descriptionLabel = new Label("Description");
