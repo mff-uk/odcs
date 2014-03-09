@@ -62,6 +62,9 @@ public class UserFacadeTest {
 		User user = facade.getUserByUsername("jdoe");
 		assertNotNull(user);
 		assertEquals(1L, (long) user.getId());
+		
+		User user2 = facade.getUserByUsername("notexistinguser");
+		assertNull(user2);
 	}
 
 	/**

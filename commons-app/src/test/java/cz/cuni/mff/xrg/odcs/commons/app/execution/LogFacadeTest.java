@@ -1,17 +1,21 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import ch.qos.logback.classic.Level;
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import ch.qos.logback.classic.Level;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Test suite for fetching logs from database.
@@ -43,7 +47,12 @@ public class LogFacadeTest {
 
 	@Test
 	public void testStream() {		
-		assertNotNull(facade.getLogsAsStream(null));		
+		assertNotNull(facade.getLogsAsStream(null));
+		assertNotNull(facade.getLogsAsStream(Arrays.<Object>asList(Compare.greaterEqual("logLevel", Level.INFO.toInt()))));
+		assertNull(facade.getLogsAsStream(Arrays.<Object>asList(
+				Compare.greaterEqual("logLevel", Level.ERROR.toInt()),
+				Compare.less("logLevel", Level.ERROR.toInt())
+			)));
 	}
 	
 }
