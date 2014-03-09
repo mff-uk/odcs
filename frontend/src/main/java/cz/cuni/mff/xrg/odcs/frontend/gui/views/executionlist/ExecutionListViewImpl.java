@@ -1,5 +1,20 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tepi.filtertable.FilterGenerator;
+import org.tepi.filtertable.paged.PagedFilterTable;
+import org.tepi.filtertable.paged.PagedTableChangeEvent;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.IsNull;
@@ -10,6 +25,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomTable;
@@ -19,36 +36,20 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.CANCELLED;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.CANCELLING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FAILED;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_SUCCESS;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.FINISHED_WARNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator.Action;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.tepi.filtertable.FilterGenerator;
-import org.tepi.filtertable.paged.PagedFilterTable;
-import org.tepi.filtertable.paged.PagedTableChangeEvent;
 
 /**
  * Implementation of view for {@link ExecutionListPresenter}.
@@ -70,6 +71,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	private static final int COLUMN_DURATION_WIDTH = 53;
 	private static final int COLUMN_START_WIDTH = 115;
 	private static final int COLUMN_ACTIONS_WIDTH = 160;
+	private static final int FALLBACK_WIDTH = 720;
 	
 	private IntlibPagedTable monitorTable;
 	/**
@@ -84,6 +86,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	private ExecutionListPresenter presenter;
 	@Autowired
 	private Utils utils;
+	private Button showMaster ;
 
 	@Override
 	public Object enter(final ExecutionListPresenter presenter) {
@@ -120,7 +123,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		LOG.trace("showExecutionDetail() : adjust hsplit");
 		if (hsplit.isLocked()) {
 			debugView.setActiveTab("Events");
-			hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+			if (UI.getCurrent().getPage().getBrowserWindowWidth() < FALLBACK_WIDTH) {
+				hsplit.setSplitPosition(0, Unit.PERCENTAGE);
+				showMaster.setEnabled(true);
+			} else {
+				hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+				showMaster.setEnabled(false);
+			}
 			//hsplit.setHeight("-1px");
 			hsplit.setLocked(false);
 		}
@@ -322,6 +331,18 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		//Recursive call
 		//buildDebugView(execution);
 
+		showMaster = new Button("Back to Execution Monitor", new ClickListener() {
+
+			private static final long serialVersionUID = 4723715087122769012L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+				hsplit.setLocked(true);
+			}
+		});
+		showMaster.setEnabled(false);
+		logLayout.addComponent(showMaster);
 		logLayout.addComponent(debugView);
 		logLayout.setExpandRatio(debugView, 1.0f);
 
