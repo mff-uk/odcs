@@ -51,15 +51,32 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 		return queryPairs != null;
 	}
 
+	public String getSPARQL_Update_Query() {
+		return SPARQL_Update_Query;
+	}
+
+	public void setSPARQL_Update_Query(String SPARQL_Update_Query) {
+		this.SPARQL_Update_Query = SPARQL_Update_Query;
+	}
+
+	public boolean isIsConstructType() {
+		return isConstructType;
+	}
+
+	public void setIsConstructType(boolean isConstructType) {
+		this.isConstructType = isConstructType;
+	}	
+
+	public void setQueryPairs(List<SPARQLQueryPair> queryPairs) {
+		this.queryPairs = queryPairs;
+	}	
+	
 	/**
 	 * Fill missing configuration with default values.
 	 */
 	@Override
 	public void onDeserialize() {
-		if (queryPairs == null) {
-			queryPairs = new LinkedList<>();
-		}
-		if (SPARQL_Update_Query != null) {
+		if (SPARQL_Update_Query.isEmpty()) {
 			queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
 					isConstructType));
 		}

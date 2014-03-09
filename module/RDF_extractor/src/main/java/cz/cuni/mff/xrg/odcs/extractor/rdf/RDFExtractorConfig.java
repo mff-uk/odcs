@@ -8,7 +8,6 @@ import java.util.List;
  *
  * @author Petyr
  * @author Jiri Tomes
- *
  */
 public class RDFExtractorConfig extends DPUConfigObjectBase {
 

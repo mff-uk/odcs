@@ -75,6 +75,22 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 		return validDataBefore;
 	}
 
+	public void setFilePath(String FilePath) {
+		this.FilePath = FilePath;
+	}
+
+	public void setRDFFileFormat(RDFFormatType RDFFileFormat) {
+		this.RDFFileFormat = RDFFileFormat;
+	}
+
+	public void setDiffName(boolean DiffName) {
+		this.DiffName = DiffName;
+	}
+
+	public void setValidDataBefore(boolean validDataBefore) {
+		this.validDataBefore = validDataBefore;
+	}	
+	
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *
