@@ -246,7 +246,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
-		var imgPath = "VAADIN/themes/OdcsTheme/img/";
+		var imgPath = "VAADIN/themes/UnifiedViewsTheme/img/";
 		basePath = basePath + imgPath;
 
 		addConnectionIcon = new Image();

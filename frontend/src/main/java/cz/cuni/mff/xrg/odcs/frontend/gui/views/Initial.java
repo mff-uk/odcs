@@ -59,12 +59,12 @@ public class Initial extends ViewComponent {
 		label.setImmediate(false);
 		label.setWidth("-1px");
 		label.setHeight("-1px");
-		label.setValue("<p>Welcome to the administration interface of ODCleanStore - ETL tool for RDF data.</p>"
+		label.setValue("<p>Welcome to the administration interface of UnifiedViews - ETL tool for RDF data.</p>"
 				+ "<p>The tool uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>"
 				+ "makes data processing highly customizable by allowing to use custom plugins -- data processing units (DPUs) -- on the pipelines;<br/>"
 				+ "provides monitoring, debugging, and schedulling of ETL tasks.<br/>"
 				+ "</p>"
-				+ "<p>For more information, please visit the <a href=\"http://www.ksi.mff.cuni.cz/~knap/odcs/\"> website of the tool </a>. </p>");
+				+ "<p>For more information, please visit the <a href=\"https://grips.semantic-web.at/display/UDDOC/Introduction\"> UnifiedViews</a> documentation.</p>");
 
 		label.setContentMode(ContentMode.HTML);
 		mainLayout.addComponent(label, "top:40.0px;left:80.0px;");

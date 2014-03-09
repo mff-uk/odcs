@@ -79,7 +79,7 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>ODCleanStore</h1>");
+        logo.setValue("<h1>UnifiedViews</h1>");
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
 		

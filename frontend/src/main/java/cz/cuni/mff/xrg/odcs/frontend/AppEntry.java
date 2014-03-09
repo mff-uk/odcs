@@ -47,7 +47,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
  * @author Petyr
  *
  */
-@Theme("OdcsTheme")
+@Theme("UnifiedViewsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
