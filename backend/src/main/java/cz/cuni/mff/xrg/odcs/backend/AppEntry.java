@@ -1,5 +1,17 @@
 package cz.cuni.mff.xrg.odcs.backend;
 
+import java.io.File;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.h2.store.fs.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -8,27 +20,13 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
-import cz.cuni.mff.xrg.odcs.backend.communication.Server;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
-import java.io.File;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.h2.store.fs.FileUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Backend entry point.
@@ -57,16 +55,6 @@ public class AppEntry {
 	 * Spring context.
 	 */
 	private AbstractApplicationContext context = null;
-
-	/**
-	 * Server for network communication.
-	 */
-	private Server server = null;
-
-	/**
-	 * Separate thread for network server.
-	 */
-	private Thread serverThread = null;
 
 	/**
 	 * Parse program arguments.
@@ -102,28 +90,6 @@ public class AppEntry {
 		// load spring
 		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
 		context.registerShutdownHook();
-	}
-
-	/**
-	 * Initialise and start network TCP/IP server.
-	 *
-	 * @return False it the TCP/IP server cannot be initialized.
-	 */
-	private boolean initNetworkServer() {
-		// set TCP/IP server
-		LOG.info("Starting TCP/IP server ...");
-		server = context.getBean(Server.class);
-		try {
-			server.init();
-		} catch (CommunicationException e) {
-			LOG.error("Can't start TCP/IP server", e);
-			return false;
-		}
-		// start server in another thread
-		serverThread = new Thread(server, "TCP/IP server");
-		serverThread.setDaemon(true);
-		serverThread.start();
-		return true;
 	}
 
 	private RollingFileAppender createAppender(LoggerContext loggerContext, 
@@ -287,18 +253,6 @@ public class AppEntry {
 			// another application is already running
 			LOG.info("Another instance of ODCleanStore is probably running.");
 			context.close();
-			return;
-		}
-
-		// start server
-		if (initNetworkServer()) {
-			// continue
-		} else {
-			// terminate the execution			
-			context.close();
-			LOG.info("Closing application ...");
-			// release application log
-			AppLock.releaseLock();
 			return;
 		}
 

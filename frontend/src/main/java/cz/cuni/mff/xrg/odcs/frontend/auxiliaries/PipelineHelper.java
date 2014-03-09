@@ -1,16 +1,18 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.remoting.RemoteAccessException;
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CommunicationException;
+
+import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  *
@@ -20,6 +22,9 @@ public class PipelineHelper {
 	
 	@Autowired
 	private PipelineFacade pipelineFacade;
+
+	@Autowired
+	private CheckDatabaseService checkDatabaseService;
 
 	/**
 	 * Sets up parameters of pipeline execution and runs the pipeline.
@@ -47,13 +52,14 @@ public class PipelineHelper {
 		if (inDebugMode && debugNode != null) {
 			pipelineExec.setDebugNode(debugNode);
 		}
-		Client client = ((AppEntry)UI.getCurrent()).getBackendClient();
+//		Client client = ((AppEntry)UI.getCurrent()).getBackendClient();
 		try {
-			if (client.connect()) {
+//			if (client.connect()) {
 				pipelineFacade.save(pipelineExec);
-			}
-			client.checkDatabase();
-		} catch (CommunicationException e) {
+//			}
+//			client.checkDatabase();
+			checkDatabaseService.checkDatabase();
+		} catch (RemoteAccessException e) {
 			ConfirmDialog.show(UI.getCurrent(), "Pipeline execution", "Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?", "Schedule", "Cancel", new ConfirmDialog.Listener() {
 				@Override
 				public void onClose(ConfirmDialog cd) {
