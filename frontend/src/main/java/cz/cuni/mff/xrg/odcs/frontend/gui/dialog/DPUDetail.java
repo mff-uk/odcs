@@ -178,7 +178,7 @@ public class DPUDetail extends Window {
 		this.setCaption(String.format("%s detail%s", dpu.getName().trim(),
 				readOnly ? " - Read only mode" : ""));
 
-		generalDetail.loadFromDPU(dpu);
+		generalDetail.loadFromDPU(dpu, false);
 
 		btnSaveAndCommit.setEnabled(!readOnly);
 		btnSaveAsNew.setEnabled(!readOnly);

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -20,9 +21,19 @@ public class DPUGeneralDetail extends CustomComponent {
 
 	private final TextArea dpuDescription;
 
+	/**
+	 * True if the dialog content is read only.
+	 */
+	private boolean isReadOnly = false;	
+	
+	/**
+	 * Used to report change of insight property.
+	 */
+	private ValueChangeListener valueChangeListener = null;
+	
 	public DPUGeneralDetail() {
 		setWidth("100%");
-		setHeight("-1px");		
+		setHeight("-1px");
 		// create subcomponents
 		GridLayout mainLayout = new GridLayout(2, 2);
 		mainLayout.setWidth("100%");
@@ -44,7 +55,7 @@ public class DPUGeneralDetail extends CustomComponent {
 		dpuName.setRequiredError("DPU name must be filled!");
 		dpuName.addValidator(ValidatorFactory.CreateMaxLength("name",
 				LenghtLimits.DPU_NAME.limit()));
-
+		
 		mainLayout.addComponent(dpuName, 1, 0);
 
 		mainLayout.addComponent(new Label("Description"), 0, 1);
@@ -58,25 +69,54 @@ public class DPUGeneralDetail extends CustomComponent {
 
 		// set root
 		setCompositionRoot(mainLayout);
+		
+		// set on change listener
+		ValueChangeListener changeListener = new ValueChangeListener() {
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				// just recall if set
+				if (valueChangeListener != null && !isReadOnly) {
+					valueChangeListener.valueChange(event);
+				}
+			}
+		};
+		
+		dpuName.addValueChangeListener(changeListener);
+		dpuDescription.addValueChangeListener(changeListener);
 	}
 
+	/**
+	 * Set listener that is called in case of change of any property.
+	 * 
+	 * @param valueChangeListener 
+	 */
+	public void setValueChangeListener(ValueChangeListener valueChangeListener) {
+		this.valueChangeListener = valueChangeListener;
+	}	
+	
 	/**
 	 * Set values in component from the given {@link DPURecord}.
 	 *
 	 * @param dpu
+	 * @param readOnly True if the component should be read only.
 	 */
-	public void loadFromDPU(DPURecord dpu) {
+	public void loadFromDPU(DPURecord dpu, boolean readOnly) {
+		this.isReadOnly = readOnly;
+		
 		dpuName.setValue(dpu.getName());
-//		if (dpu.useDPUDescription()) {
-//			// leave dpuDescription blank
-//			dpuDescription.setValue("");
-//		} else {
-//			dpuDescription.setValue(dpu.getDescription().trim());
-//		}
+		if (dpu.useDPUDescription()) {
+			// leave dpuDescription blank
+			dpuDescription.setValue("");
+		} else {
+			dpuDescription.setValue(dpu.getDescription().trim());
+		}
+		dpuName.setEnabled(readOnly);
+		dpuDescription.setEnabled(readOnly);
 	}
 
 	/**
-	 * Save the values in component into the given {@link DPURecord}.
+	 * Save the values from component into the given {@link DPURecord}.
 	 *
 	 * @param dpu
 	 */
