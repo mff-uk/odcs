@@ -1,10 +1,18 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
+
+import virtuoso.jdbc4.VirtuosoException;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import static com.vaadin.server.DefaultErrorHandler.doDefault;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
@@ -15,9 +23,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -27,16 +35,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.dialogs.DefaultConfirmDialogFactory;
-import virtuoso.jdbc4.VirtuosoException;
-
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
 
 /**
@@ -60,7 +58,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private MenuLayout main;
 	@Autowired
 	private ClassNavigatorHolder navigatorHolder;
-	private Client backendClient;
 	private RefreshManager refreshManager;
 	private String storedNavigation = null;
 	private String lastView = null;
@@ -74,6 +71,12 @@ public class AppEntry extends com.vaadin.ui.UI {
 	
 	@Autowired
 	private AuthenticationService authService;
+	
+	@Autowired
+	private CheckDatabaseService checkDatabaseService;
+	
+	@Autowired
+	private HeartbeatService heartbeatService;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
@@ -127,15 +130,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		};
 		ConfirmDialog.setFactory(df);
-
-		this.addDetachListener(new DetachListener() {
-			@Override
-			public void detach(DetachEvent event) {
-				if (backendClient != null) {
-					backendClient.close();
-				}
-			}
-		});
 
 		ErrorHandler errorHandler = new DefaultErrorHandler() {
 			@Override
@@ -257,10 +251,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		});
 
-		backendClient = new Client(
-				appConfiguration.getString(ConfigProperty.BACKEND_HOST),
-				appConfiguration.getInteger(ConfigProperty.BACKEND_PORT));
-
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
 		addExtension(refresher);
@@ -270,7 +260,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 			@Override
 			public void refresh(Refresher source) {
-				boolean isRunning = getBackendClient().checkStatus();
+				boolean isRunning = heartbeatService.isAlive();
 				if (lastBackendStatus != isRunning) {
 					lastBackendStatus = isRunning;
 					main.refreshBackendStatus(lastBackendStatus);
@@ -337,14 +327,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 	 */
 	public MenuLayout getMain() {
 		return main;
-	}
-
-	/**
-	 * Get backend client.
-	 * @return Backend client.
-	 */
-	public Client getBackendClient() {
-		return backendClient;
 	}
 
 	/**
