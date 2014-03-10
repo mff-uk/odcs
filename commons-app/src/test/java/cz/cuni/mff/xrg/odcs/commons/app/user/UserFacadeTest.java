@@ -72,6 +72,15 @@ public class UserFacadeTest {
 		User user = facade.createUser("abcd", "abcd", new EmailAddress("jay@example.com"));
 		facade.save(user);
 	}
+	
+	/**
+	 * Test of save method, of class UserFacade.
+	 */
+	@Test @Transactional
+	public void testSave2() {
+		User user = facade.createUser("abcd", "abcd", new EmailAddress("jay+mailbox@example.com"));
+		facade.save(user);
+	}
 
 	/**
 	 * Test of delete method, of class UserFacade.

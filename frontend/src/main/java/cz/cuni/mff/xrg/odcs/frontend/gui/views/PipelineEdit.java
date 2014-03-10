@@ -25,11 +25,12 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -51,7 +52,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
-
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
@@ -59,7 +59,9 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -798,7 +800,7 @@ public class PipelineEdit extends ViewComponent {
 				throw new Validator.InvalidValueException("Name must be filled!");
 			}
 		});
-		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
+		pipelineName.addValidator(new MaxLengthValidator(LenghtLimits.PIPELINE_NAME));
 		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {

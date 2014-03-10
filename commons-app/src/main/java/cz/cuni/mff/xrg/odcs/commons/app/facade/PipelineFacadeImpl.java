@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
@@ -13,14 +14,17 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +103,8 @@ class PipelineFacadeImpl implements PipelineFacade {
 		while (hasPipelineWithName(nName, null)) {
 			nName = oName + " #" + no++;
 		}
-		newPipeline.setName(nName);
+		
+		newPipeline.setName( StringUtils.abbreviate(nName, LenghtLimits.PIPELINE_NAME) );
 		newPipeline.setVisibility(ShareType.PRIVATE);
 		
         if (authCtx != null) {

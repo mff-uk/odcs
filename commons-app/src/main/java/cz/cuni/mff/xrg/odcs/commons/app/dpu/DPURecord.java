@@ -115,8 +115,7 @@ public abstract class DPURecord {
 	 * @param newName New DPU name.
 	 */
 	public void setName(String newName) {
-		this.name = StringUtils.abbreviate(newName, LenghtLimits.DPU_NAME
-				.limit());
+		this.name = newName;
 	}
 
 	/**
