@@ -11,6 +11,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
  * Component with details of {@link DPUTemplateRecord}. Provide functionality
  * for reloading of existing files.
  *
+ * TODO: Should be used in DPU view 
+ * 
  * @author Škoda Petr
  */
 public class DPUTemplateDetail extends CustomComponent {
@@ -215,7 +217,7 @@ public class DPUTemplateDetail extends CustomComponent {
 		this.isReadOnly = readOnly;
 		contentSetPhase = true;
 
-		reloadFile.setEnabled(readOnly);
+		reloadFile.setEnabled(!readOnly);
 		// load data
 		final String jarPathText = dpu.getJarPath();
 		if (jarPathText.length() > 64) {
@@ -228,13 +230,14 @@ public class DPUTemplateDetail extends CustomComponent {
 
 		final ShareType selecteDpuVisibility = dpu.getShareType();
 		groupVisibility.setValue(selecteDpuVisibility);
-		groupVisibility.setEnabled(true);
+		
 		if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
 			groupVisibility.setValue(selecteDpuVisibility);
 			groupVisibility.setEnabled(false);
 		} else {
 			groupVisibility.setValue(selecteDpuVisibility);
-			groupVisibility.setEnabled(true);
+			// if we are not read only then enable
+			groupVisibility.setEnabled(!readOnly);
 		}
 
 		contentSetPhase = false;

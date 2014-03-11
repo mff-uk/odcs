@@ -111,8 +111,8 @@ public class DPUGeneralDetail extends CustomComponent {
 		} else {
 			dpuDescription.setValue(dpu.getDescription().trim());
 		}
-		dpuName.setEnabled(readOnly);
-		dpuDescription.setEnabled(readOnly);
+		dpuName.setEnabled(!readOnly);
+		dpuDescription.setEnabled(!readOnly);
 	}
 
 	/**
