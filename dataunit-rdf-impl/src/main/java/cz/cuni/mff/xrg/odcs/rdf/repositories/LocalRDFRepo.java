@@ -312,8 +312,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		addStatementsCollection(targetConnection, statements);
 		addStatementsCollection(targetConnection, statements, graphName);
 		statements.clear();
-		logger.debug(
-				"Merging data part {} were successful", processing);
+		logger.debug("Data part {} was successfully merged", processing);
 	}
 
 	private void addStatementsCollection(RepositoryConnection targetConnection,
