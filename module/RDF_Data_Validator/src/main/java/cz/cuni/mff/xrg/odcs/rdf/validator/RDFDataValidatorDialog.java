@@ -8,17 +8,11 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 /**
  * DPU's configuration dialog for setting directory path and others parameters
  * for saving validation report.
+ *
+ * @author Petyr
+ * @author Jiri Tomes
  */
 public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorConfig> {
-
-	private GridLayout mainLayout;
-
-	/**
-	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
-	 */
-	private TabSheet tabSheet;
-
-	private VerticalLayout verticalLayoutDetails;
 
 	private VerticalLayout verticalLayoutCore;
 
@@ -33,52 +27,22 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 	public RDFDataValidatorDialog() {
 		super(RDFDataValidatorConfig.class);
 		buildMainLayout();
-		setCompositionRoot(mainLayout);
-
 	}
 
 	/**
-	 * Builds main layout contains {@link #tabSheet} with all dialog components.
-	 *
-	 * @return mainLayout GridLayout with all components of configuration
-	 *         dialog.
+	 * Builds configuration dialog.
 	 */
-	private GridLayout buildMainLayout() {
-		// common part: create layout
-		mainLayout = new GridLayout(1, 1);
-		mainLayout.setImmediate(false);
-		mainLayout.setWidth("100%");
-		mainLayout.setHeight("100%");
-
+	private void buildMainLayout() {
 		// top-level component properties
 		setWidth("100%");
 		setHeight("100%");
 
-		// tabSheet
-		tabSheet = new TabSheet();
-		tabSheet.setImmediate(true);
-		tabSheet.setWidth("100%");
-		tabSheet.setHeight("100%");
-
 		// Core tab
 		verticalLayoutCore = buildVerticalLayoutCore();
 		verticalLayoutCore.setImmediate(false);
-		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100.0%");
-		tabSheet.addTab(verticalLayoutCore, "Core", null);
+		verticalLayoutCore.setSizeUndefined();
 
-		// Details tab
-		verticalLayoutDetails = new VerticalLayout();
-		verticalLayoutDetails.setImmediate(false);
-		verticalLayoutDetails.setWidth("100.0%");
-		verticalLayoutDetails.setHeight("100.0%");
-		verticalLayoutDetails.setMargin(false);
-		tabSheet.addTab(verticalLayoutDetails, "Details", null);
-
-		mainLayout.addComponent(tabSheet, 0, 0);
-		mainLayout.setComponentAlignment(tabSheet, Alignment.TOP_LEFT);
-
-		return mainLayout;
+		setCompositionRoot(verticalLayoutCore);
 	}
 
 	/**
@@ -92,8 +56,7 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		// common part: create layout
 		verticalLayoutCore = new VerticalLayout();
 		verticalLayoutCore.setImmediate(false);
-		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100.0%");
+		verticalLayoutCore.setSizeUndefined();
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
 
@@ -101,15 +64,13 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 		failExecution = new CheckBox(
 				"if invalid data find out, pipeline execution fails immediately");
 		failExecution.setImmediate(false);
-		failExecution.setWidth("-1px");
-		failExecution.setHeight("-1px");
+		failExecution.setSizeUndefined();
 		verticalLayoutCore.addComponent(failExecution);
 
 		createOutput = new CheckBox(
 				"Add triples to report output only if some data are invalid");
 		createOutput.setImmediate(false);
-		createOutput.setWidth("-1px");
-		createOutput.setHeight("-1px");
+		failExecution.setSizeUndefined();
 		verticalLayoutCore.addComponent(createOutput);
 
 		return verticalLayoutCore;
@@ -146,7 +107,6 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
 	 */
 	@Override
 	public RDFDataValidatorConfig getConfiguration() throws ConfigException {
-
 		boolean stopExecution = failExecution.getValue();
 		boolean sometimesOutput = createOutput.getValue();
 

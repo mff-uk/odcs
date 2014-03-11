@@ -412,7 +412,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		// Core tab
 		verticalLayoutCore = buildVerticalLayoutCore();
-		tabSheet.addTab(verticalLayoutCore, "Core", null);
+		// Panel add possibility to scroll
+		Panel panelCore = new Panel();
+		panelCore.setSizeFull();
+		panelCore.setContent(verticalLayoutCore);		
+		tabSheet.addTab(panelCore, "Core", null);
 
 		//SPARQL protocol tab
 		verticalLayoutProtocol = buildVerticalLayoutProtokol();
@@ -440,26 +444,26 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// common part: create layout
 		verticalLayoutCore = new VerticalLayout();
 		verticalLayoutCore.setImmediate(true);
-		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100%");
+		verticalLayoutCore.setWidth("100%");
+		verticalLayoutCore.setHeight("-1px");
 		verticalLayoutCore.setMargin(true);
+		verticalLayoutCore.setSpacing(true);
 
 
 		// Admin layout
 		gridLayoutAdm = new GridLayout();
 		gridLayoutAdm.setImmediate(true);
-		gridLayoutAdm.setWidth("100%");
-		gridLayoutAdm.setHeight("100%");
+		gridLayoutAdm.setSizeFull();
 		gridLayoutAdm.setMargin(false);
 		gridLayoutAdm.setColumns(2);
 		gridLayoutAdm.setRows(4);
-		gridLayoutAdm.setColumnExpandRatio(0, 0.10f);
-		gridLayoutAdm.setColumnExpandRatio(1, 0.90f);
+		gridLayoutAdm.setColumnExpandRatio(0, 0.0f);
+		gridLayoutAdm.setColumnExpandRatio(1, 1.0f);
 
 		// labelSparql
 		labelSparql = new Label();
 		labelSparql.setImmediate(true);
-		labelSparql.setWidth("-1px");
+		labelSparql.setWidth("85px");
 		labelSparql.setHeight("-1px");
 		labelSparql.setValue("SPARQL endpoint:");
 		gridLayoutAdm.addComponent(labelSparql, 0, 0);
@@ -736,7 +740,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		gridLayoutGraph = new GridLayout();
 		gridLayoutGraph.setImmediate(true);
 		gridLayoutGraph.setWidth("100%");
-		gridLayoutGraph.setHeight("100%");
+		gridLayoutGraph.setHeight("-1px");
 		gridLayoutGraph.setMargin(false);
 		gridLayoutGraph.setColumns(2);
 		gridLayoutGraph.setColumnExpandRatio(0, 0.95f);
@@ -750,7 +754,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutProtocol = new VerticalLayout();
 		verticalLayoutProtocol.setImmediate(true);
 		verticalLayoutProtocol.setWidth("100.0%");
-		verticalLayoutProtocol.setHeight("100.0%");
+		verticalLayoutProtocol.setHeight("-1px");
 		verticalLayoutProtocol.setMargin(true);
 		verticalLayoutProtocol.setSpacing(true);
 
@@ -823,7 +827,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		verticalLayoutDetails = new VerticalLayout();
 		verticalLayoutDetails.setImmediate(true);
 		verticalLayoutDetails.setWidth("100.0%");
-		verticalLayoutDetails.setHeight("100.0%");
+		verticalLayoutDetails.setHeight("-1px");
 		verticalLayoutDetails.setMargin(true);
 		verticalLayoutDetails.setSpacing(true);
 

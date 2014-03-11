@@ -209,7 +209,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	/**
 	 * Get description of chosed way, how to extract RDF data from SPARQL
-	 * endpoint: Uses in {@link #setConfiguration} for setiing
+	 * endpoint: Uses in {@link #setConfiguration} for setting
 	 * {@link #requestTypeOption}
 	 *
 	 * @param type Type of insert data parts:
@@ -248,7 +248,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	}
 
 	/**
-	 * Get type of REQUEST variant for extractomg RDF data from SPARQL endpoint:
+	 * Get type of REQUEST variant for extracting RDF data from SPARQL endpoint:
 	 * GET_URL_ENCODER,	POST_URL_ENCODER, POST_UNENCODED_QUERY. Uses in
 	 * {@link #getConfiguration} for determine the type by description that
 	 * located in {@link #requestTypeOption}
@@ -299,7 +299,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		// Core tab
 		gridLayoutCore = buildGridLayoutCore();
-		tabSheet.addTab(gridLayoutCore, "Core", null);
+		// Panel add possibility to scroll
+		Panel panelCore = new Panel();
+		panelCore.setSizeFull();
+		panelCore.setContent(gridLayoutCore);
+		tabSheet.addTab(panelCore, "Core", null);
 
 		//SPARQL protocol tab
 		verticalLayoutProtocol = buildVerticalLayoutProtokol();
@@ -326,22 +330,21 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private GridLayout buildGridLayoutCore() {
 
 		// common part: create layout
-		gridLayoutCore = new GridLayout();
+		gridLayoutCore = new GridLayout(2,6);
 		gridLayoutCore.setImmediate(false);
 		gridLayoutCore.setWidth("100%");
-		gridLayoutCore.setHeight("100%");
+		gridLayoutCore.setHeight("-1px");
 		gridLayoutCore.setMargin(true);
-		gridLayoutCore.setColumns(2);
-		gridLayoutCore.setRows(6);
-		gridLayoutCore.setColumnExpandRatio(0, 0.10f);
-		gridLayoutCore.setColumnExpandRatio(1, 0.90f);
+		gridLayoutCore.setSpacing(true);
+
+		gridLayoutCore.setColumnExpandRatio(0, 0.0f);
+		gridLayoutCore.setColumnExpandRatio(1, 1.0f);
 
 		// labelSparql
-		labelSparql = new Label();
+		labelSparql = new Label("SPARQL endpoint:");
 		labelSparql.setImmediate(false);
-		labelSparql.setWidth("-1px");
+		labelSparql.setWidth("80px");
 		labelSparql.setHeight("-1px");
-		labelSparql.setValue("SPARQL endpoint:");
 		gridLayoutCore.addComponent(labelSparql, 0, 0);
 		gridLayoutCore.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
@@ -352,11 +355,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		textFieldSparql.setHeight("-1px");
 		textFieldSparql.setInputPrompt("http://localhost:8890/sparql");
 
-
-
 		// Check if the caption for new item already exists in the list of item
 		// captions before approving it as a new item.
-
 
 		//textFieldSparql is mandatory fields
 		textFieldSparql.addValidator(new Validator() {
@@ -388,11 +388,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(textFieldSparql, 1, 0);
 
 		// labelNameAdm
-		labelNameAdm = new Label();
+		labelNameAdm = new Label("Name:");
 		labelNameAdm.setImmediate(false);
 		labelNameAdm.setWidth("-1px");
 		labelNameAdm.setHeight("-1px");
-		labelNameAdm.setValue("Name:");
 		gridLayoutCore.addComponent(labelNameAdm, 0, 1);
 
 		// Name textField 
@@ -406,11 +405,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(textFieldNameAdm, 1, 1);
 
 		// labelPass
-		labelPass = new Label();
+		labelPass = new Label("Password:");
 		labelPass.setImmediate(false);
 		labelPass.setWidth("-1px");
 		labelPass.setHeight("-1px");
-		labelPass.setValue("Password:");
 		gridLayoutCore.addComponent(labelPass, 0, 2);
 
 		//  Password field
@@ -423,11 +421,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(passwordFieldPass, 1, 2);
 
 		// default graph label
-		Label defaultGraphLabel = new Label();
+		Label defaultGraphLabel = new Label("Default Graph:");
 		defaultGraphLabel.setImmediate(false);
 		defaultGraphLabel.setWidth("-1px");
 		defaultGraphLabel.setHeight("-1px");
-		defaultGraphLabel.setValue("Default Graph:");
 		gridLayoutCore.addComponent(defaultGraphLabel, 0, 3);
 
 		//Default Graphs component
@@ -435,11 +432,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(defaultGraphLayout, 1, 3);
 
 		// named graph label
-		Label namedGraphLabel = new Label();
+		Label namedGraphLabel = new Label("Named Graph:");
 		namedGraphLabel.setImmediate(false);
 		namedGraphLabel.setWidth("-1px");
 		namedGraphLabel.setHeight("-1px");
-		namedGraphLabel.setValue("Named Graph:");
 		gridLayoutCore.addComponent(namedGraphLabel, 0, 4);
 
 		//Named Graphs component
@@ -447,11 +443,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(namedGraphLayout, 1, 4);
 
 		// labelConstr
-		labelConstr = new Label();
+		labelConstr = new Label("SPARQL  Construct:");
 		labelConstr.setImmediate(false);
 		labelConstr.setWidth("100%");
 		labelConstr.setHeight("-1px");
-		labelConstr.setValue("SPARQL  Construct:");
 		gridLayoutCore.addComponent(labelConstr, 0, 5);
 
 		// textAreaConstr
@@ -542,7 +537,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutProtocol = new VerticalLayout();
 		verticalLayoutProtocol.setImmediate(true);
 		verticalLayoutProtocol.setWidth("100.0%");
-		verticalLayoutProtocol.setHeight("100.0%");
+		verticalLayoutProtocol.setHeight("-1px");
 		verticalLayoutProtocol.setMargin(true);
 		verticalLayoutProtocol.setSpacing(true);
 
@@ -819,7 +814,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		namedGraphLayout = new GridLayout();
 		namedGraphLayout.setImmediate(false);
 		namedGraphLayout.setWidth("100%");
-		namedGraphLayout.setHeight("100%");
+		namedGraphLayout.setHeight("-1px");
 		namedGraphLayout.setMargin(false);
 		namedGraphLayout.setColumns(2);
 		namedGraphLayout.setColumnExpandRatio(0, 0.95f);
@@ -833,7 +828,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		defaultGraphLayout = new GridLayout();
 		defaultGraphLayout.setImmediate(false);
 		defaultGraphLayout.setWidth("100%");
-		defaultGraphLayout.setHeight("100%");
+		defaultGraphLayout.setHeight("-1px");
 		defaultGraphLayout.setMargin(false);
 		defaultGraphLayout.setColumns(2);
 		defaultGraphLayout.setColumnExpandRatio(0, 0.95f);
