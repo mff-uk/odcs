@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
@@ -162,12 +163,19 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * DataUnit directory.
 	 */
 	private boolean isLink;
-
+	
 	/**
 	 * List of stored handlers.
 	 */
 	private LinkedList<ManageableHandler> handlers;
 
+	/**
+	 * True if this {@link DirectoryHandlerImpl} log warning about wrong
+	 * file format.
+	 */
+	@XStreamOmitField
+	private boolean hasReportNameChange = false;
+	
 	/**
 	 * Create root handler for given directory. The given directory should be
 	 * empty. The name of such directory is en empty string.
@@ -702,8 +710,11 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
     private String escape(String origString) {
        String result = origString.replaceAll("[\\/:*?\"<>|]","");
         if (!origString.equals(result)) {
-            LOG.warn("Name {} contained one or more special chars [\\/:*?\"<>|], which were removed. This may change the file/dir name unacceptably, so be careful.", origString);
-            LOG.debug("Resulting file/dir name after replacing special chars is {}", result);
+			if (!hasReportNameChange) {
+				LOG.warn("At least one file/dir name has been changed as it contained special chars [\\/:*?\"<>|]. More details can be found as 'info' level logs.");
+				hasReportNameChange = true;
+			}
+			LOG.info("Name '{}' contained special chars and so it has been changed to '{}'.", origString, result);
         }
         return result;
     }
