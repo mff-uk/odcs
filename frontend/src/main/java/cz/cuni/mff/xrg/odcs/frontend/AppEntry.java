@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import java.net.ConnectException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,7 +262,11 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 			@Override
 			public void refresh(Refresher source) {
-				boolean isRunning = heartbeatService.isAlive();
+				boolean isRunning = false; 
+				try {
+					isRunning= heartbeatService.isAlive();
+				} catch (Exception ex) {
+				}
 				if (lastBackendStatus != isRunning) {
 					lastBackendStatus = isRunning;
 					main.refreshBackendStatus(lastBackendStatus);
