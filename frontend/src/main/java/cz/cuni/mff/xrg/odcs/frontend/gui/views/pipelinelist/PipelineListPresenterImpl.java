@@ -33,7 +33,6 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -90,14 +89,19 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-				if (hasModifiedExecutions) {
-					lastLoad = new Date();
-					refreshEventHandler();
+				if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+					boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+					if (hasModifiedExecutions) {
+						lastLoad = new Date();
+						refreshEventHandler();
+					}
+					LOG.debug("Pipeline list refreshed.");
+					lastRefreshFinished = new Date().getTime();
 				}
-				LOG.debug("Pipeline list refreshed.");
 			}
 		});
 
@@ -195,7 +199,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		Pipeline pipeline = cachedSource.getObject(pipelineId);
 		return permissions.hasPermission(pipeline, "delete");
 	}
-	
+
 	@Override
 	public void scheduleEventHandler(long id) {
 		Pipeline pipeline = getLightPipeline(id);
@@ -233,7 +237,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 		String uriFragment = Page.getCurrent().getUriFragment();
 		ParametersHandler handler = new ParametersHandler(uriFragment);
 		handler.addParameter("page", newPageNumber.toString());
-		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 
 	@Override
@@ -255,6 +259,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 			}
 			handler.addParameter(propertyId, value);
 		}
-		((AppEntry)UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+		((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
 	}
 }
