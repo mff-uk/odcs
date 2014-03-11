@@ -195,11 +195,14 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		mainLayout.addComponent(labelUpQuer, 0, 0);
 
 		initializeSparqlQueryList();
+		// Add panel that ensure scroll bars if needed
+		Panel panelQuery = new Panel();
+		panelQuery.setSizeFull();
+		panelQuery.setContent(gridLayoutQuery);
+		mainLayout.addComponent(panelQuery, 1, 0);
 
-		mainLayout.addComponent(gridLayoutQuery, 1, 0);
-
-		mainLayout.setColumnExpandRatio(0, 0.00001f);
-		mainLayout.setColumnExpandRatio(1, 0.99999f);
+		mainLayout.setColumnExpandRatio(0, 0.0f);
+		mainLayout.setColumnExpandRatio(1, 1.0f);
 
 		return mainLayout;
 	}
@@ -319,7 +322,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 					if (query.isEmpty()) {
 
-						validationErrorMessage = "SPARQL query is empty a must be filled";
+						validationErrorMessage = "SPARQL query is empty it must be filled";
 						throw new EmptyValueException(
 								"SPARQL query must be filled");
 
@@ -407,8 +410,9 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		gridLayoutQuery = new GridLayout();
 		gridLayoutQuery.setImmediate(true);
 		gridLayoutQuery.setWidth("100%");
-		gridLayoutQuery.setHeight("100%");
+		gridLayoutQuery.setHeight("-1px");
 		gridLayoutQuery.setMargin(false);
+		gridLayoutQuery.setSpacing(true);
 		gridLayoutQuery.setColumns(2);
 		gridLayoutQuery.setColumnExpandRatio(0, 0.95f);
 		gridLayoutQuery.setColumnExpandRatio(1, 0.05f);

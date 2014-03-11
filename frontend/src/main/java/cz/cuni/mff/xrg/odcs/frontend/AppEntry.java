@@ -45,25 +45,29 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
  * ((AppEntry)UI.getCurrent()).
  *
  * @author Petyr
- *
  */
 @Theme("OdcsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
-	/**
-	 * Spring application context.
-	 */
+
 	@Autowired
 	private ApplicationContext context;
+
 	@Autowired
 	private MenuLayout main;
+	
 	@Autowired
 	private ClassNavigatorHolder navigatorHolder;
+	
 	private Client backendClient;
+	
 	private RefreshManager refreshManager;
+	
 	private String storedNavigation = null;
+	
 	private String lastView = null;
+	
 	private String actualView = null;
 	
 	@Autowired
@@ -77,11 +81,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
-		//main = new MenuLayout();
-		main.enter();
+		main.build();
 		setContent(main);
 
 		// create a navigator to control the views
@@ -275,7 +277,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 					lastBackendStatus = isRunning;
 					main.refreshBackendStatus(lastBackendStatus);
 				}
-				// LOG.debug("Backend status refreshed.");
 			}
 		});
 	}
@@ -366,4 +367,5 @@ public class AppEntry extends com.vaadin.ui.UI {
 			actualView = uriFragment.substring(1);
 		}
 	}
+
 }

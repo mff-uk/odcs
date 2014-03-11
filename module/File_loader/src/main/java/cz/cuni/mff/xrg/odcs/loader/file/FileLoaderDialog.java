@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Maria
  * @author Jiri Tomes
- *
+ * 
  */
 public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
@@ -164,7 +164,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		verticalLayoutCore = new VerticalLayout();
 		verticalLayoutCore.setImmediate(false);
 		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100.0%");
+		verticalLayoutCore.setHeight("-1px");
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
 

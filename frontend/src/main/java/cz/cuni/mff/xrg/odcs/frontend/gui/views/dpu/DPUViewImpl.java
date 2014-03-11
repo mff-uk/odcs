@@ -9,6 +9,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickListener;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -97,7 +98,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	public Object enter(DPUPresenter presenter) {
 		this.presenter = presenter;
 		setupResizeListener();
-				buildMainLayout();
+		
+		buildMainLayout();
 		setCompositionRoot(mainLayout);
 		return this;
 	}
@@ -111,20 +113,16 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 * page.
 	 */
 	private VerticalLayout buildMainLayout() {
-
+		// top-level component properties
+		setSizeFull();
+		
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
-		mainLayout.setWidth("100%");
-		mainLayout.setHeight("100%");
+		mainLayout.setSizeFull();
 		mainLayout.setStyleName("mainLayout");
-
-
-		// top-level component properties
-		setWidth("100%");
-		setHeight("100%");
 
 		// Buttons on the top: "Create DPU", "Import DPU", "Export All"
 		HorizontalLayout buttonBar = new HorizontalLayout();
@@ -134,9 +132,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonCreateDPU.setCaption("Create DPU template");
 		buttonCreateDPU.setHeight("25px");
 		buttonCreateDPU.setWidth("150px");
-		buttonCreateDPU
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+		buttonCreateDPU.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
@@ -145,16 +141,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		});
 		buttonBar.addComponent(buttonCreateDPU);
 
-
 		Button buttonImportDPU = new Button();
 		buttonImportDPU.setVisible(false);
 		buttonImportDPU.setCaption("Import DPU template");
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("150px");
 		buttonImportDPU.setEnabled(false);
-		buttonImportDPU
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+		buttonImportDPU.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
@@ -181,10 +174,12 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonBar.addComponent(buttonExportAll);
 
 		mainLayout.addComponent(buttonBar);
-
+		mainLayout.setExpandRatio(buttonBar, 0.0f);
+		
 		//layout with  DPURecord tree and DPURecord details 
 		dpuLayout = buildDpuLayout();
 		mainLayout.addComponent(dpuLayout);
+		mainLayout.setExpandRatio(dpuLayout, 1.0f);
 
 		return mainLayout;
 	}
@@ -197,28 +192,24 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 	 * {@link #buildDPUDetailLayout}.
 	 */
 	private HorizontalLayout buildDpuLayout() {
-
 		dpuLayout = new HorizontalLayout();
 		dpuLayout.setSizeFull();
 		dpuLayout.setSpacing(true);
-//		dpuLayout.setRowExpandRatio(0, 0.01f);
-//		dpuLayout.setRowExpandRatio(1, 0.99f);
-//		
-//		dpuLayout.setColumnExpandRatio(0, 0.2f);
-//		dpuLayout.setColumnExpandRatio(1, 1);
-//		dpuLayout.setColumnExpandRatio(2, 1);
 
 		// Layout with the information that no DPU template was selected.
 		layoutInfo = new HorizontalLayout();
 		layoutInfo.setHeight("100%");
 		layoutInfo.setWidth("100%");
+		
 		Label infoLabel = new Label();
 		infoLabel.setImmediate(false);
 		infoLabel.setWidth("-1px");
 		infoLabel.setHeight("-1px");
-		infoLabel.setValue("<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select DPU template from the DPU template tree for displaying it's details.");
+		infoLabel.setValue("Select DPU template from the DPU template tree for displaying it's details.");
 		infoLabel.setContentMode(ContentMode.HTML);
+		
 		layoutInfo.addComponent(infoLabel);
+		layoutInfo.setComponentAlignment(infoLabel, Alignment.MIDDLE_CENTER);
 
 		//DPU Template Tree
 		dpuTree.setExpandable(false);
@@ -241,9 +232,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuTreePanel.setContent(dpuTree);
 
 		dpuLayout.addComponent(dpuTreePanel);
+		dpuLayout.setExpandRatio(dpuTreePanel, 0.0f);
+		
 		dpuLayout.addComponent(layoutInfo);
-		dpuLayout.setExpandRatio(layoutInfo, 5);
-		dpuLayout.setExpandRatio(dpuTreePanel, 0);
+		dpuLayout.setExpandRatio(layoutInfo, 1.0f);
+		
 
 		return dpuLayout;
 	}
@@ -267,6 +260,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		//DPU Details TabSheet
 		tabSheet = new TabSheet();
 		tabSheet.setSizeFull();
+		
 		tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -336,9 +330,12 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		tabSheet.addTab(verticalLayoutInstances, "DPU instances");
 
 		dpuDetailLayout.addComponent(tabSheet);
+		dpuDetailLayout.setExpandRatio(tabSheet, 1.0f);
+		
 		buttonDpuBar = buildDPUButtonBar();
-
 		dpuDetailLayout.addComponent(buttonDpuBar);
+		dpuDetailLayout.setExpandRatio(buttonDpuBar, 0.0f);
+		
 		return dpuDetailLayout;
 	}
 
@@ -471,7 +468,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuDescription.setReadOnly(!presenter.hasPermission("save"));
 
 		groupVisibility.setValue(selecteDpuVisibility);
-		groupVisibility.setEnabled(true);
 		if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
 			groupVisibility.setValue(selecteDpuVisibility);
 			groupVisibility.setEnabled(false);
@@ -502,7 +498,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		verticalLayoutData = new VerticalLayout();
 		verticalLayoutData.setImmediate(false);
 		verticalLayoutData.setWidth("100.0%");
-		verticalLayoutData.setHeight("100%");
 		verticalLayoutData.setMargin(true);
 
 		//Layout contains name description and visibility of DPU Template
@@ -512,8 +507,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuSettingsLayout.setSpacing(true);
 		dpuSettingsLayout.setWidth("100%");
 		dpuSettingsLayout.setHeight("100%");
-		dpuSettingsLayout.setColumnExpandRatio(0, 0.10f);
-		dpuSettingsLayout.setColumnExpandRatio(1, 0.90f);
+		dpuSettingsLayout.setColumnExpandRatio(0, 0.0f);
+		dpuSettingsLayout.setColumnExpandRatio(1, 1.0f);
 
 		//Name of DPU Template: label & TextField
 		Label nameLabel = new Label("Name:");
@@ -523,11 +518,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuSettingsLayout.addComponent(nameLabel, 0, 0);
 		dpuName = new TextField();
 		dpuName.setImmediate(true);
-		dpuName.setWidth("200px");
+		dpuName.setWidth("100%");
 		dpuName.setHeight("-1px");
 		//settings of mandatory
 		dpuName.addValidator(new Validator() {
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void validate(Object value) throws Validator.InvalidValueException {
@@ -541,7 +535,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		dpuName.addValidator(new MaxLengthValidator(MaxLengthValidator.DPU_NAME_LENGTH));
 		dpuSettingsLayout.addComponent(dpuName, 1, 0);
 		dpuName.addTextChangeListener(new FieldEvents.TextChangeListener() {
-			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
@@ -633,7 +626,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 				uploadInfoWindow.setClosable(false);
 			}
 		});
-
 
 		reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
 			private static final long serialVersionUID = 1L;
@@ -800,7 +792,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		instancesTable.setSortContainerPropertyId(property);
 		instancesTable.setSortAscending(true);
 		instancesTable.sort();
-
+		instancesTable.setPageLength(10);
 		instancesTable.setWidth("100%");
 		instancesTable.setImmediate(true);
 //		instancesTable.setVisibleColumns((Object[]) visibleCols);
