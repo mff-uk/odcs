@@ -210,18 +210,15 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 	public void addConnection(int dpuFrom, int dpuTo) {
 		String result = graph.validateNewEdge(dpuFrom, dpuTo);
 		Node to = graph.getNodeById(dpuTo);
-		if (result == null) {
-			if (dpuExplorer.getInputs(to.getDpuInstance()).isEmpty()) {
-				result = "Target DPU has no inputs.";
-			}
-		}
+
 		if (result == null) {
 			int connectionId = graph.addEdge(dpuFrom, dpuTo);
 			EdgeCompiler edgeCompiler = new EdgeCompiler();
 			Edge edge = graph.getEdgeById(connectionId);
 			DPUInstanceRecord from = graph.getNodeById(dpuFrom).getDpuInstance();
-			edgeCompiler.setDefaultMapping(edge, dpuExplorer.getOutputs(from), dpuExplorer.getInputs(to.getDpuInstance()));
 
+			edgeCompiler.createDefaultMapping(dpuExplorer, edge, from, to.getDpuInstance());
+			
 			getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edgeFormater.format(edge.getScript()));
 		} else {
 			Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);

@@ -25,12 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Window showing Edge detail. Used to create mappings between output and input
@@ -40,16 +37,24 @@ import org.slf4j.LoggerFactory;
  */
 public class EdgeDetail extends Window {
 
-	private final static Logger LOG = LoggerFactory.getLogger(EdgeDetail.class);
 	private final Edge edge;
+
 	private List<DataUnitDescription> outputUnits;
+
 	private List<DataUnitDescription> inputUnits;
-	private List<MutablePair<List<Integer>, Integer>> mappings;
+
+	private List<MutablePair<Integer, Integer>> mappings;
+
 	private Table outputSelect;
+
 	private Table inputSelect;
+
 	private ListSelect mappingsSelect;
-	private HashMap<String, MutablePair<List<Integer>, Integer>> map;
+
+	private HashMap<String, MutablePair<Integer, Integer>> map;
+
 	private DPUExplorer explorer;
+
 	/**
 	 * Class for working with edge's script.
 	 */
@@ -58,9 +63,9 @@ public class EdgeDetail extends Window {
 	/**
 	 * Basic constructor, takes {@link Edge} which detail should be showed.
 	 *
-	 * @param e 
-	 * @param readOnly 
-	 * @param dpuExplorer  
+	 * @param e
+	 * @param readOnly
+	 * @param dpuExplorer
 	 */
 	public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
 		this.explorer = dpuExplorer;
@@ -107,7 +112,6 @@ public class EdgeDetail extends Window {
 
 		outputSelect.setItemDescriptionGenerator(tooltipGenerator);
 
-
 		inputSelect = new Table("Input data units of the target DPU:");
 		inputSelect.setSelectable(true);
 		inputSelect.setWidth(250, Unit.PIXELS);
@@ -127,49 +131,79 @@ public class EdgeDetail extends Window {
 		Button mapButton = new Button("Map", new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				//Iterate whole collection to preserve order and identify same mapping with different order of selecting.
+				
 				Set<DataUnitDescription> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
-				Collection<DataUnitDescription> outputItems = (Collection<DataUnitDescription>) outputSelect.getItemIds();
+				Collection<DataUnitDescription> outputItems = (Collection<DataUnitDescription>) outputSelect
+						.getItemIds();
 				for (DataUnitDescription outputItem : outputItems) {
 					if (outputSelect.isSelected(outputItem)) {
 						outputs.add(outputItem);
 					}
 				}
-				DataUnitDescription input = (DataUnitDescription) inputSelect.getValue();
+				DataUnitDescription input = (DataUnitDescription) inputSelect
+						.getValue();
 				if (outputs.isEmpty() || input == null) {
-					Notification.show("At least one output and exactly one input must be selected!", Notification.Type.ERROR_MESSAGE);
+					Notification.show(
+							"At least one output and exactly one input must be selected!",
+							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-
+				
 				for (DataUnitDescription output : outputs) {
-					List<Integer> left = new ArrayList<>(1);
-					left.add(outputUnits.indexOf(output));
-					
-					if(input.getTypeName().contains("FileDataUnit") != output.getTypeName().contains("FileDataUnit")) {
-						Notification.show("Input and output data unit have incompatible type, mapping couldn't be created!", Notification.Type.WARNING_MESSAGE);
-						continue;
+					MutablePair<Integer, Integer> newMapping = 
+							new MutablePair<>(inputUnits.indexOf(input), 
+									outputUnits.indexOf(output));
+
+					if (!input.getTypeName().equals(output.getTypeName())) {
+						Notification.show(
+									"Input and output data unit have incompatible type, mapping couldn't be created!",
+									Notification.Type.WARNING_MESSAGE);
 					}
 
-					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(left, inputUnits.indexOf(input));
-					if (addMappingToList(mapping)) {
-						mappings.add(mapping);
+					if(addMappingToList(newMapping)) {
+						mappings.add(newMapping);
 					} else {
-						Notification.show("Selected mapping already exists!", Notification.Type.WARNING_MESSAGE);
-					}
+						Notification.show("Selected mapping already exists!",
+									Notification.Type.WARNING_MESSAGE);
+					}					
 				}
+								
+
+//				for (DataUnitDescription output : outputs) {
+//					List<Integer> left = new ArrayList<>(1);
+//					left.add(outputUnits.indexOf(output));
+//
+//					if (input.getTypeName().contains("FileDataUnit") != output
+//							.getTypeName().contains("FileDataUnit")) {
+//						Notification.show(
+//								"Input and output data unit have incompatible type, mapping couldn't be created!",
+//								Notification.Type.WARNING_MESSAGE);
+//						continue;
+//					}
+//
+//					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(
+//							left, inputUnits.indexOf(input));
+//					if (addMappingToList(mapping)) {
+//						mappings.add(mapping);
+//					} else {
+//						Notification.show("Selected mapping already exists!",
+//								Notification.Type.WARNING_MESSAGE);
+//					}
+//				}
 			}
 		});
 		mapButton.setWidth(130, Unit.PIXELS);
 		mapButton.setEnabled(!readOnly);
 		edgeSettingsLayout.addComponent(mapButton, 2, 1);
 
-		Button clearButton = new Button("Clear selection", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				outputSelect.setValue(null);
-				inputSelect.setValue(null);
-			}
-		});
+		Button clearButton = new Button("Clear selection",
+				new Button.ClickListener() {
+					@Override
+					public void buttonClick(Button.ClickEvent event) {
+						outputSelect.setValue(null);
+						inputSelect.setValue(null);
+					}
+				});
 		clearButton.setWidth(130, Unit.PIXELS);
 		edgeSettingsLayout.addComponent(clearButton, 2, 2);
 
@@ -180,25 +214,29 @@ public class EdgeDetail extends Window {
 		mappingsSelect.setNewItemsAllowed(false);
 		mappingsSelect.setImmediate(true);
 		// inputUnits and outputUnits are already set !
-		mappings = edgeCompiler.decompile(edge.getScript(), outputUnits, inputUnits);
+		mappings = edgeCompiler.translate(edge.getScript(), outputUnits,
+				inputUnits, null);
 
-		for (MutablePair<List<Integer>, Integer> mapping : mappings) {
+		for (MutablePair<Integer, Integer> mapping : mappings) {
 			addMappingToList(mapping);
 		}
 		edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
 
-		Button deleteButton = new Button("Delete mapping", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				Set<String> selectedMappings = (Set<String>) mappingsSelect.getValue();
-				for (String strMapping : selectedMappings) {
-					MutablePair<List<Integer>, Integer> mapping = map.get(strMapping);
-					map.remove(strMapping);
-					mappingsSelect.removeItem(strMapping);
-					mappings.remove(mapping);
-				}
-			}
-		});
+		Button deleteButton = new Button("Delete mapping",
+				new Button.ClickListener() {
+					@Override
+					public void buttonClick(Button.ClickEvent event) {
+						Set<String> selectedMappings = (Set<String>) mappingsSelect
+						.getValue();
+						for (String strMapping : selectedMappings) {
+							MutablePair<Integer, Integer> mapping = map
+							.get(strMapping);
+							map.remove(strMapping);
+							mappingsSelect.removeItem(strMapping);
+							mappings.remove(mapping);
+						}
+					}
+				});
 		deleteButton.setWidth(130, Unit.PIXELS);
 		deleteButton.setEnabled(!readOnly);
 		edgeSettingsLayout.addComponent(deleteButton, 2, 6);
@@ -220,13 +258,13 @@ public class EdgeDetail extends Window {
 
 		Button saveAndCommitButton = new Button("Save",
 				new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				if (save()) {
-					close();
-				}
-			}
-		});
+					@Override
+					public void buttonClick(Button.ClickEvent event) {
+						if (save()) {
+							close();
+						}
+					}
+				});
 		saveAndCommitButton.setEnabled(!readOnly);
 		saveAndCommitButton.setWidth(100, Unit.PIXELS);
 		buttonBar.addComponent(saveAndCommitButton);
@@ -253,7 +291,6 @@ public class EdgeDetail extends Window {
 //			}
 //		});
 //		buttonBar.addComponent(removeNamingButton);
-
 		mainLayout.addComponent(buttonBar);
 
 		this.setContent(mainLayout);
@@ -269,7 +306,8 @@ public class EdgeDetail extends Window {
 		if (!validate()) {
 			return false;
 		}
-		String script = edgeCompiler.compile(mappings, outputUnits, inputUnits);
+		String script = edgeCompiler
+				.translate(mappings, outputUnits, inputUnits, null);
 		edge.setScript(script);
 		return true;
 	}
@@ -286,21 +324,37 @@ public class EdgeDetail extends Window {
 
 	private Container getTableData(List<DataUnitDescription> data) {
 
-		BeanItemContainer container = new BeanItemContainer(DataUnitDescription.class);
+		BeanItemContainer container = new BeanItemContainer(
+				DataUnitDescription.class);
 		container.addAll(data);
 
 		return container;
 	}
 
-	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping) throws UnsupportedOperationException {
-		Iterator<Integer> iter = mapping.left.iterator();
-		String leftSide = outputUnits.get(iter.next()).getName();
-		while (iter.hasNext()) {
-			leftSide += ", " + outputUnits.get(iter.next()).getName();
-		}
-		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(mapping.right).getName());
+//	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping)
+//			throws UnsupportedOperationException {
+//		Iterator<Integer> iter = mapping.left.iterator();
+//		String leftSide = outputUnits.get(iter.next()).getName();
+//		while (iter.hasNext()) {
+//			leftSide += ", " + outputUnits.get(iter.next()).getName();
+//		}
+//		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(
+//				mapping.right).getName());
+//		map.put(strMapping, mapping);
+//		Item result = mappingsSelect.addItem(strMapping);
+//		return result != null;
+//	}
+
+	private boolean addMappingToList(MutablePair<Integer, Integer> mapping)
+			throws UnsupportedOperationException {
+		// create string representation of mapping
+		String strMapping = String.format("%s -> %s", outputUnits.get(
+				mapping.left).getName(), inputUnits.get(mapping.right).getName());
+		// add record to the mapping
 		map.put(strMapping, mapping);
+		// add to the component
 		Item result = mappingsSelect.addItem(strMapping);
 		return result != null;
 	}
+
 }
