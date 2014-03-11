@@ -38,7 +38,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	@InputDataUnit	
 	public RDFDataUnit rdfDataUnit;
 
-	@OutputDataUnit(name="input_redirection")
+	@OutputDataUnit(name = "input_redirection", optional = true)
 	public RDFDataUnit inputShadow;
 	
 	public FileLoader() {

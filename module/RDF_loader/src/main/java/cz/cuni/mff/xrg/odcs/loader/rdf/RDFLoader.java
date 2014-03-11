@@ -43,7 +43,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
-	@OutputDataUnit(name="input_redirection")
+	@OutputDataUnit(name = "input_redirection", optional = true)
 	public RDFDataUnit inputShadow;	
 	
 	public RDFLoader() {
