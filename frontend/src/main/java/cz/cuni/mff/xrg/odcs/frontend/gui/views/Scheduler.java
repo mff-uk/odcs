@@ -126,14 +126,19 @@ public class Scheduler extends ViewComponent {
 
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-				if (hasModifiedExecutions) {
-					lastLoad = new Date();
-					refreshData();
+				if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+					boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+					if (hasModifiedExecutions) {
+						lastLoad = new Date();
+						refreshData();
+					}
+					LOG.debug("Scheduler refreshed.");
+					lastRefreshFinished = new Date().getTime();
 				}
-				LOG.debug("Scheduler refreshed.");
 			}
 		});
 	}

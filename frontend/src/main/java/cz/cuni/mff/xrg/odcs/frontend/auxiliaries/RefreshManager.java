@@ -7,6 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import java.util.Date;
 
 import java.util.HashMap;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,16 @@ import org.slf4j.LoggerFactory;
 public class RefreshManager {
 
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(RefreshManager.class);
+	/**
+	 * Interval between refreshes.
+	 */
+	public static final int REFRESH_INTERVAL = 5000;
+	/**
+	 * Minimal interval between refreshes. If the time from last finished
+	 * refresh is smaller than this, next refresh is skipped.
+	 */
+	public static final int MIN_REFRESH_INTERVAL = 4000;
+
 	private Refresher refresher;
 	private HashMap<String, RefreshListener> listeners;
 	/**
@@ -99,34 +110,33 @@ public class RefreshManager {
 			boolean lastExecutionStatus = false;
 			boolean isLogsSet = false;
 
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
 				if (!isWorking) {
 					return;
 				}
-				execution = pipelineFacade.getExecution(execution.getId());
-				boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.QUEUED || execution.getStatus() == PipelineExecutionStatus.RUNNING || execution.getStatus() == PipelineExecutionStatus.CANCELLING);
+				if (new Date().getTime() - lastRefreshFinished > MIN_REFRESH_INTERVAL) {
+					execution = pipelineFacade.getExecution(execution.getId());
+					boolean isRunFinished = !(execution.getStatus() == PipelineExecutionStatus.QUEUED || execution.getStatus() == PipelineExecutionStatus.RUNNING || execution.getStatus() == PipelineExecutionStatus.CANCELLING);
 
-				if (debug.isRefreshingAutomatically()) {
-					lastExecutionStatus = true;
-					// do all the refresh job .. 
-					debug.refresh();
-					
-//					LogTable logs = debug.getLogTable();
-//					if (logs != null) {
-//						isLogsSet = logs.refresh(false, !lastFinished);
-//					}
-					//Notification.show("Refreshing", Notification.Type.HUMANIZED_MESSAGE);
-				} else {
-					lastExecutionStatus = false;
+					if (debug.isRefreshingAutomatically()) {
+						lastExecutionStatus = true;
+						// do all the refresh job .. 
+						debug.refresh();
+					} else {
+						lastExecutionStatus = false;
+					}
+					isRunFinished &= lastExecutionStatus;
+					if (isRunFinished) {
+						isWorking = false;
+						LOG.debug("Execution finished.");
+						LOG.debug("Refresh stopped.");
+					}
+					LOG.debug("DebuggingView refreshed.");
+					lastRefreshFinished = new Date().getTime();
 				}
-				isRunFinished &= lastExecutionStatus;
-				if (isRunFinished) {
-					isWorking = false;
-					LOG.debug("Execution finished.");
-					LOG.debug("Refresh stopped.");
-				}
-				LOG.debug("DebuggingView refreshed.");
 			}
 		};
 	}

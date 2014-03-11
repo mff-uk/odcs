@@ -38,6 +38,7 @@ import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
+import java.util.Date;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -69,13 +70,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private String lastView = null;
 	
 	private String actualView = null;
-	
+
 	@Autowired
-    private AppConfig appConfiguration;
-	
+	private AppConfig appConfiguration;
+
 	@Autowired
 	private AuthenticationContext authCtx;
-	
+
 	@Autowired
 	private AuthenticationService authService;
 
@@ -178,7 +179,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				if (!(event.getNewView() instanceof Login)
 						&& !authCtx.isAuthenticated()
 						&& !authService.tryRememberMeLogin(RequestHolder.getRequest())) {
-					
+
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
 					if (parameters != null) {
@@ -195,7 +196,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				refreshManager.removeListener(RefreshManager.PIPELINE_LIST);
 				refreshManager.removeListener(RefreshManager.SCHEDULER);
 				refreshManager.removeListener(RefreshManager.PIPELINE_EDIT);
-				
+
 				return true;
 			}
 
@@ -264,25 +265,30 @@ public class AppEntry extends com.vaadin.ui.UI {
 				appConfiguration.getInteger(ConfigProperty.BACKEND_PORT));
 
 		Refresher refresher = new Refresher();
-		refresher.setRefreshInterval(5000);
+		refresher.setRefreshInterval(RefreshManager.REFRESH_INTERVAL);
 		addExtension(refresher);
 		refreshManager = new RefreshManager(refresher);
 		refreshManager.addListener(RefreshManager.BACKEND_STATUS, new Refresher.RefreshListener() {
 			private boolean lastBackendStatus = false;
+			private long lastUpdateFinished = 0;
 
 			@Override
 			public void refresh(Refresher source) {
-				boolean isRunning = getBackendClient().checkStatus();
-				if (lastBackendStatus != isRunning) {
-					lastBackendStatus = isRunning;
-					main.refreshBackendStatus(lastBackendStatus);
+				if (new Date().getTime() - lastUpdateFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+					boolean isRunning = getBackendClient().checkStatus();
+					if (lastBackendStatus != isRunning) {
+						lastBackendStatus = isRunning;
+						main.refreshBackendStatus(lastBackendStatus);
+					}
+					lastUpdateFinished = new Date().getTime();
 				}
 			}
 		});
 	}
 
 	/**
-	 * Return to page which user tried to accessed before redirecting to login page.
+	 * Return to page which user tried to accessed before redirecting to login
+	 * page.
 	 */
 	public void navigateAfterLogin() {
 		if (storedNavigation == null) {
@@ -315,6 +321,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get current navigation.
+	 *
 	 * @return Navigator.
 	 */
 	public ClassNavigator getNavigation() {
@@ -324,7 +331,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Fetches spring bean. For cases when auto-wiring is not a possibility.
 	 *
-	 * @param <T> 
+	 * @param <T>
 	 * @param type Class of the bean to fetch.
 	 * @return bean
 	 */
@@ -334,6 +341,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get main layout.
+	 *
 	 * @return Main layout.
 	 */
 	public MenuLayout getMain() {
@@ -342,6 +350,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get backend client.
+	 *
 	 * @return Backend client.
 	 */
 	public Client getBackendClient() {
@@ -350,6 +359,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get refresh manager.
+	 *
 	 * @return Refresh manager.
 	 */
 	public RefreshManager getRefreshManager() {
@@ -358,12 +368,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Set URI fragment.
+	 *
 	 * @param uriFragment New URI fragment.
 	 * @param throwEvents True to fire event.
 	 */
 	public void setUriFragment(String uriFragment, boolean throwEvents) {
 		Page.getCurrent().setUriFragment(uriFragment, throwEvents);
-		if(uriFragment.length() > 0) {
+		if (uriFragment.length() > 0) {
 			actualView = uriFragment.substring(1);
 		}
 	}
