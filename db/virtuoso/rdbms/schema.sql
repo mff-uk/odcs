@@ -87,7 +87,6 @@ sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "directory" VARCHAR(255),
   "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );

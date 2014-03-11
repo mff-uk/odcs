@@ -88,7 +88,6 @@ CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `exec_dataunit_info`
 CREATE TABLE `exec_context_pipeline`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `directory` VARCHAR(255),
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
