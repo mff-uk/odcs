@@ -232,6 +232,7 @@ public class DPUDetail extends Window {
 		} catch (ConfigException e) {
 			Notification.show("Failed to save configuration. Reason:", e
 					.getMessage(), Type.ERROR_MESSAGE);
+			return false;
 		} catch (Exception e) {
 			Throwable rootCause = DecorationHelper.findFinalCause(e);
 			String text = String.format("Exception: %s, Message: %s",
