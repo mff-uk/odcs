@@ -137,6 +137,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 	private PostItem last;
 
 	/**
+	 * True it the input should be copied to the output.
+	 */
+	private CheckBox checkBoxCopyInput;
+	
+	/**
 	 * Basic constructor.
 	 */
 	public RDFLoaderDialog() {
@@ -558,6 +563,16 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 		verticalLayoutCore.addComponent(gridLayoutAdm);
 
+		// ......
+		
+		checkBoxCopyInput = new CheckBox();
+		checkBoxCopyInput.setCaption("Copy input to output");
+		checkBoxCopyInput.setImmediate(false);
+		checkBoxCopyInput.setWidth("-1px");
+		checkBoxCopyInput.setHeight("-1px");
+		
+		verticalLayoutCore.addComponent(checkBoxCopyInput);		
+		
 		return verticalLayoutCore;
 	}
 
@@ -1133,6 +1148,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 					chunkSize, validDataBefore, retryTime, retrySize,
 					endpointParams);
 
+			config.setPenetrable(checkBoxCopyInput.getValue());
+			
 			return config;
 		}
 	}
@@ -1203,6 +1220,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			}
 			refreshNamedGraphData();
 
+			checkBoxCopyInput.setValue(conf.isPenetrable());
+			
 		} catch (UnsupportedOperationException | Property.ReadOnlyException e) {
 			// throw setting exception
 			throw new ConfigException(e.getMessage(), e);
