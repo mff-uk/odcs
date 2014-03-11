@@ -37,7 +37,6 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
   "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
   "description" LONG VARCHAR,
-  "tool_tip" VARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord

@@ -40,7 +40,6 @@ CREATE TABLE `dpu_instance`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `tool_tip` VARCHAR (512),
   `configuration` TEXT,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
