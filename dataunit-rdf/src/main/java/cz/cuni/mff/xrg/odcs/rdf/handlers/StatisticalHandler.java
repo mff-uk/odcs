@@ -90,7 +90,7 @@ public class StatisticalHandler extends TripleCountHandler {
 						String.valueOf(addedCount)));
 			} else {
 				logger.debug(String.format(
-						"Have been parsed and added %s TRIPLES yet.",
+						"%s X triples extracted.",
 						String.valueOf(addedCount)));
 			}
 
