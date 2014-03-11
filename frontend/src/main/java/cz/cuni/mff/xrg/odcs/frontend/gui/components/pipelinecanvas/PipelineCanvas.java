@@ -49,7 +49,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
 	float currentZoom = 1.0f;
 	private int currentHeight = 630;
-	private int currentWidth = 600; //1240;
+	private int currentWidth = 1240;
 	public static final int MIN_DISTANCE_FROM_BORDER = 100;
 	public static final int SIZE_INCREASE = 200;
 	public static final int MIN_X_CANVAS = 400;

@@ -45,6 +45,22 @@ public class RDFDataValidatorConfig extends DPUConfigObjectBase {
 		return sometimesOutput;
 	}
 
+	public boolean isStopExecution() {
+		return stopExecution;
+	}
+
+	public void setStopExecution(boolean stopExecution) {
+		this.stopExecution = stopExecution;
+	}
+
+	public boolean isSometimesOutput() {
+		return sometimesOutput;
+	}
+
+	public void setSometimesOutput(boolean sometimesOutput) {
+		this.sometimesOutput = sometimesOutput;
+	}
+	
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *

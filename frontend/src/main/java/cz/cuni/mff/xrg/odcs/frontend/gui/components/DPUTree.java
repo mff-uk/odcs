@@ -65,8 +65,14 @@ public class DPUTree extends CustomComponent {
 		visibilityFilter = new Filter() {
 			@Override
 			public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+				if(itemId.getClass() != DPUTemplateRecord.class) {
+					return true;
+				}
 				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				return dpu.getShareType() == ShareType.PRIVATE;
+				if(dpu == null || dpu.getShareType() == null) {
+					return false;
+				}
+				return ShareType.PRIVATE.equals(dpu.getShareType());
 			}
 
 			@Override
@@ -228,6 +234,7 @@ public class DPUTree extends CustomComponent {
 				}
 			}
 		});
+		((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
 		((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
 			@Override
 			public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
@@ -283,7 +290,7 @@ public class DPUTree extends CustomComponent {
 	 * Reloads the contents of the DPUTree.
 	 */
 	public void refresh() {
-		fillTree(dpuTree);
+		fillTree();
 		markAsDirty();
 	}
 
@@ -338,6 +345,7 @@ public class DPUTree extends CustomComponent {
 				tree.expandItemsRecursively(itemId);
 			}
 		}
+		
 		((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
 	}
 
