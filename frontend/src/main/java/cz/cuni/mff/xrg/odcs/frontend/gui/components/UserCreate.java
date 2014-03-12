@@ -111,30 +111,6 @@ public class UserCreate extends Window {
 		userFullName = new TextField();
 		userFullName.setImmediate(true);
 		userFullName.setWidth("250px");
-		userFullName.addValidator(new Validator() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (value!=null && (value.getClass() == String.class
-						&& !((String) value).isEmpty())) {
-
-					String inputFullName = (String) value;
-					
-					Pattern namePattern1 =  Pattern.compile("([A-Za-zŽžÝýŮůÚúŤťŠšŘřÓóŇňÍíĚěÉéĎďČčÁáÄäÖößÜüÀàÈèÙùÂâÊêÎîÔôÛûÇçËëÏïÜüŸÿ]+\\s*)+", Pattern.UNICODE_CASE);
-					Matcher m = namePattern1.matcher(inputFullName);
-					if (!m.matches()) {
-						ex = new InvalidValueException("Full user name must start with a letter and can only consists of letters and spaces.");
-						throw ex;
-					}
-					if((m.end() - m.start()) < 2) {
-
-						ex = new InvalidValueException("Full user name must contains more than one symbol");
-						throw ex;
-					}	
-				}
-			}
-		});
 		userFullName.addValidator(new MaxLengthValidator(LenghtLimits.USER_FULLNAME));
 
 		userDetailsLayout.addComponent(new Label("Full user name:"), 0, 0);
