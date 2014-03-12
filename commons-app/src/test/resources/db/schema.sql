@@ -17,7 +17,6 @@ CREATE TABLE `DPU_INSTANCE`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `tool_tip` VARCHAR (512),
   `configuration` TEXT,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
@@ -35,7 +34,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `description` TEXT,  
   `configuration` TEXT,
   `parent_id` INTEGER,
-  `config_valid` SMALLINT,
+  `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
   `user_id` INTEGER,
   `visibility` SMALLINT,
@@ -67,7 +66,6 @@ CREATE SEQUENCE `seq_exec_context_pipeline` START WITH 100;
 CREATE TABLE `EXEC_CONTEXT_PIPELINE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `directory` VARCHAR(255),
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
@@ -110,7 +108,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
-  `context_id` INTEGER NOT NULL,
+  `context_id` INTEGER,
   `schedule_id` INTEGER,
   `silent_mode` SMALLINT,
   `debugnode_id` INTEGER,
@@ -132,7 +130,6 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -537,28 +534,48 @@ ALTER TABLE `PPL_OPEN_EVENT`
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- TRIGGERS      ###############################################################
+-- TRIGGERS      ######################################################
+
+-- BEGIN VIRTUOSO ONLY
 
 
 -- workaround for bug in virtuoso's implementation of cascades on delete
 -- see https://github.com/openlink/virtuoso-opensource/issues/56
 
 
+-- END VIRTUOSO ONLY
+
+-- BEGIN MYSQL ONLY
+
+-- CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
+--  FOR EACH ROW SET NEW.t_last_change = NOW();
+-- END MYSQL ONLY
+
 -- TABLE FOR LOGS
 
 CREATE TABLE `LOGGING`
 (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+-- BEGIN VIRTUOSO ONLY
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+--  `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
+-- END MYSQL ONLY
   `logLevel` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
   `message` TEXT,
   `dpu` INTEGER,
-  `execution` INTEGER,
+  `execution` INTEGER NOT NULL,
   `stack_trace` TEXT,
   `relative_id` INTEGER,
   PRIMARY KEY (id)
+-- BEGIN VIRTUOSO ONLY
 );
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+-- ) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX `ix_LOGGING_dpu` ON `LOGGING` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `LOGGING` (`execution`);

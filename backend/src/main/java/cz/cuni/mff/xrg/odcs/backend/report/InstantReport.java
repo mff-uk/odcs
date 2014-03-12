@@ -124,17 +124,16 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
 				if (schedule.getNotification() == null) {
 					if (schedule.getOwner() == null) {
 						// there is no owner to use to send email .. 
-						LOG.warn("Missing owner for schedule id: {} name: {}",
-								schedule.getId(),
-								schedule.getName());
+						LOG.warn("Missing owner for schedule id: {}",
+								schedule.getId()
+								);
 						return;
 					}
 
 					if (schedule.getOwner().getNotification() == null) {
 						// there is no rule to use to send email .. 
-						LOG.warn("Missing notificaiton rule for schedule id: {} name: {}",
-								schedule.getId(),
-								schedule.getName());
+						LOG.warn("Missing notificaiton rule for schedule id: {}",
+								schedule.getId());
 						return;
 					}
 
@@ -148,8 +147,8 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
 
 				if (emails.isEmpty()) {
 					// no one to send the email
-					LOG.debug("There is no addres to which send email for schedule id: {} name: {}",
-							schedule.getId(), schedule.getName());
+					LOG.debug("There is no addres to which send email for schedule id: {}",
+							schedule.getId());
 					return;
 				}
 
@@ -160,8 +159,8 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
 				recipients.addAll(emails);
 				
 				for (String email : emails) {
-					LOG.debug("Sending email for schedule {} on {}", 
-							schedule.getName(), email);
+					LOG.debug("Sending email for schedule {} " 
+							, email);
 				}			
 				
 				emailSender.send(subject, body, recipients);

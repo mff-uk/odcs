@@ -46,19 +46,19 @@ INSERT INTO PPL_NODE(id,graph_id,instance_id,position_id) VALUES(2,1,2,2);
 INSERT INTO PPL_EDGE(id,graph_id,node_from_id,node_to_id,data_unit_name)
  VALUES(1,1,1,2,NULL);
 
-INSERT INTO EXEC_CONTEXT_PIPELINE(id,directory)
- VALUES(1,'/tmp/intlib/context-dir');
+INSERT INTO EXEC_CONTEXT_PIPELINE(id)
+ VALUES(1);
 
 INSERT INTO EXEC_PIPELINE(id,status,pipeline_id,debug_mode,t_start,t_end,context_id,schedule_id,silent_mode,debugnode_id,stop)
  VALUES(1,5,1,0,NULL,NULL,1,NULL,1,NULL,0);
 
 -- schedule define by times when to run pipeline
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
- VALUES(1,NULL,NULL,1,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3,0,NULL);
+INSERT INTO EXEC_SCHEDULE(id,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
+ VALUES(1,NULL,1,1,0,1,1,'2013-07-22 19:07:48',NULL,1,3,0,NULL);
 
 -- schedule defined by "run after pipeline"
-INSERT INTO EXEC_SCHEDULE(id,name,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
- VALUES(2,NULL,NULL,2,1,1,1,0,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO EXEC_SCHEDULE(id,description,pipeline_id,user_id,just_once,enabled,type,first_exec,last_exec,time_period,period_unit,strict_timing,strict_tolerance)
+ VALUES(2,NULL,2,1,1,1,0,NULL,NULL,NULL,NULL,0,NULL);
 -- Test 2 should run after Test 1
 INSERT INTO EXEC_SCHEDULE_AFTER(schedule_id,pipeline_id) VALUES(2,1);
 

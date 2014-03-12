@@ -147,7 +147,6 @@ CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `exec_pipeline` (`owner_id`);
 CREATE TABLE `exec_schedule`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
