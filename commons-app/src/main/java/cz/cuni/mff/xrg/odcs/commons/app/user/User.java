@@ -85,19 +85,6 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 	}
 
 	/**
-	 * Constructs entity from required attributes.
-	 *
-	 * @param username user login
-	 * @param password already hashed password
-	 * @param email    contact email
-	 */
-	public User(String username, String password, EmailAddress email) {
-		this.username = username;
-		this.password = password;
-		this.email = email;
-	}
-
-	/**
 	 * Returns user name as unique identifier.
 	 *
 	 * @return user name as unique identifier.
