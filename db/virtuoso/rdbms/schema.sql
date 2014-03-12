@@ -314,8 +314,8 @@ sequence_set('seq_rdf_ns_prefix', 100, 1);
 CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(25) NOT NULL,
-  "uri" VARCHAR(255) NOT NULL,
+  "name" VARCHAR(255) NOT NULL,
+  "uri" VARCHAR(2048) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );

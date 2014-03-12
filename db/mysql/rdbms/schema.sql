@@ -302,8 +302,8 @@ CREATE TABLE `usr_user_role`
 CREATE TABLE `rdf_ns_prefix`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(25) NOT NULL,
-  `uri` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `uri` VARCHAR(2048) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
 );
