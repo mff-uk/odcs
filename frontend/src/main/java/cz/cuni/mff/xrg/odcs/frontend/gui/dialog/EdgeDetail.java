@@ -1,27 +1,17 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.details;
+package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +45,8 @@ public class EdgeDetail extends Window {
 
 	private DPUExplorer explorer;
 
+	private CheckBox runAfterEdge;
+	
 	/**
 	 * Class for working with edge's script.
 	 */

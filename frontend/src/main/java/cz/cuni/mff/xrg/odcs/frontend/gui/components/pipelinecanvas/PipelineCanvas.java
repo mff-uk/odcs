@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValidationException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
-import cz.cuni.mff.xrg.odcs.frontend.gui.details.EdgeDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 
 import java.util.Collection;
