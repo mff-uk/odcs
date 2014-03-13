@@ -143,8 +143,7 @@ public class EdgeDetail extends Window {
 				
 				for (DataUnitDescription output : outputs) {
 					MutablePair<Integer, Integer> newMapping = 
-							new MutablePair<>(inputUnits.indexOf(input), 
-									outputUnits.indexOf(output));
+							new MutablePair<>(outputUnits.indexOf(output), inputUnits.indexOf(input));
 
 					if (!input.getTypeName().equals(output.getTypeName())) {
 						Notification.show(
