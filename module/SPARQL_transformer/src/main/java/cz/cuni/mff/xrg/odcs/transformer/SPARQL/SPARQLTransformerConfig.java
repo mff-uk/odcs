@@ -76,7 +76,7 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
 	 */
 	@Override
 	public void onDeserialize() {
-		if (SPARQL_Update_Query.isEmpty()) {
+		if (SPARQL_Update_Query != null) {
 			queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
 					isConstructType));
 		}
