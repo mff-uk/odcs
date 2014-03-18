@@ -1,5 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
+import java.util.HashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -7,27 +12,17 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Scheduler;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
-import java.util.HashMap;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class represent main application component. The component contains menu bar
@@ -58,7 +53,7 @@ public class MenuLayout extends CustomComponent {
 	/**
 	 * Menu bar.
 	 */
-	private MenuBar menuBar;
+	private HorizontalLayout menuBar;
 	/**
 	 * Layout for application views.
 	 */
@@ -67,7 +62,7 @@ public class MenuLayout extends CustomComponent {
 	Button logOutButton;
 	Embedded backendStatus;
 	
-	HashMap<String, MenuItem> menuItems = new HashMap<>();
+	HashMap<String, Link> menuItems = new HashMap<>();
 
 	/**
 	 * The constructor should first build the main layout, set the composition
@@ -89,15 +84,10 @@ public class MenuLayout extends CustomComponent {
 
 		// top-level component properties
 		this.setWidth("100.0%");
-		//this.setSizeUndefined();
 
 		// menuBar
-		this.menuBar = new MenuBar();
+		this.menuBar = new HorizontalLayout();
 		this.menuBar.setImmediate(false);
-		this.menuBar.setWidth("100.0%");
-		this.menuBar.setHeight("45px");
-		this.menuBar.setHtmlContentAllowed(true);
-		//this.mainLayout.addComponent(menuBar);
 
 		backendStatus = new Embedded();
 		backendStatus.setWidth(16, Unit.PIXELS);
@@ -127,10 +117,10 @@ public class MenuLayout extends CustomComponent {
 		menuLine.setWidth(100, Unit.PERCENTAGE);
 		menuLine.setHeight(45, Unit.PIXELS);
 		menuLine.addStyleName("loginPanel");
-		menuLine.setComponentAlignment(menuBar, Alignment.MIDDLE_CENTER);
-		menuLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
-		menuLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
-		menuLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
+		menuLine.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+		menuLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
+		menuLine.setComponentAlignment(userName, Alignment.MIDDLE_RIGHT);
+		menuLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_RIGHT);
 		menuLine.setExpandRatio(menuBar, 1.0f);
 		this.mainLayout.addComponent(menuLine);
 
@@ -179,13 +169,39 @@ public class MenuLayout extends CustomComponent {
 	public void setNavigation(ClassNavigatorHolder navigatorHolder) {
 		this.navigator = navigatorHolder;
 		// init menuBar
-		menuItems.put("", menuBar.addItem("ODCleanStore", new NavigateToCommand(Initial.class, navigator)));
-		menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
-		menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
-		menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
+		menuBar.setStyleName("v-menubar-new");
+	
+		Link main = new Link("ODCleanStore", new ExternalResource("#!"));
+		main.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(main);
+		menuItems.put("", main);
+		
+		Link pipelines =  new Link("Pipelines", new ExternalResource("#!PipelineList"));
+		pipelines.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(pipelines);
+		menuItems.put("PipelineList", pipelines);
+		
+		Link dpuTemplates = new Link("DPU Templates", new ExternalResource("#!DPURecord"));
+		dpuTemplates.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(dpuTemplates);
+		menuItems.put("DPURecord", dpuTemplates);
+
+		Link executionList = new Link("Execution Monitor", new ExternalResource("#!ExecutionList"));
+		executionList.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(executionList);
+		menuItems.put("ExecutionList", executionList);
+		
+		Link scheduler = new Link("Scheduler", new ExternalResource("#!Scheduler"));
+		scheduler.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(scheduler);
+		menuItems.put("Scheduler", scheduler);
+		
+		Link settings = new Link("Settings", new ExternalResource("#!Administrator"));
+		settings.addStyleName("v-menubar-menuitem-new");
+		menuBar.addComponent(settings);
+		menuItems.put("Administrator", settings);
+
 //		menuItems.put("", menuBar.addItem("Browse Data", new NavigateToCommand(ViewNames.DATA_BROWSER.getUrl()));
-		menuItems.put("Scheduler", menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator)));
-		menuItems.put("Administrator", menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator)));
 	}
 
 	/**
@@ -194,35 +210,13 @@ public class MenuLayout extends CustomComponent {
 	 * @param viewName Item to set as active.
 	 */
 	public void setActiveMenuItem(String viewName) {
-		for (MenuItem item : menuBar.getItems()) {
-			item.setCheckable(true);
-			item.setChecked(false);
+		for (Link item : menuItems.values()) {
+			item.removeStyleName("v-menubar-menuitem-checked-new");
+			item.addStyleName("v-menubar-menuitem-new");
 		}
-		MenuItem activeMenu = menuItems.get(viewName);
+		Link activeMenu = menuItems.get(viewName);
 		if (activeMenu != null) {
-			activeMenu.setChecked(true);
-		}
-	}
-
-	/**
-	 * Class use as command to change sub-pages.
-	 *
-	 * @author Petyr
-	 */
-	private class NavigateToCommand implements Command {
-
-		private static final long serialVersionUID = 1L;
-		private Class<?> clazz;
-		private ClassNavigator navigator;
-
-		public NavigateToCommand(Class<?> clazz, ClassNavigator navigator) {
-			this.clazz = clazz;
-			this.navigator = navigator;
-		}
-
-		@Override
-		public void menuSelected(MenuItem selectedItem) {
-			navigator.navigateTo(this.clazz);
+			activeMenu.addStyleName("v-menubar-menuitem-checked-new");;
 		}
 	}
 }
