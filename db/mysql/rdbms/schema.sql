@@ -40,7 +40,6 @@ CREATE TABLE `dpu_instance`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `tool_tip` VARCHAR (512),
   `configuration` BLOB,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
@@ -88,7 +87,6 @@ CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `exec_dataunit_info`
 CREATE TABLE `exec_context_pipeline`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `directory` VARCHAR(255),
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
@@ -149,7 +147,6 @@ CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `exec_pipeline` (`owner_id`);
 CREATE TABLE `exec_schedule`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -305,8 +302,8 @@ CREATE TABLE `usr_user_role`
 CREATE TABLE `rdf_ns_prefix`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(25) NOT NULL,
-  `uri` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `uri` VARCHAR(2048) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
 );

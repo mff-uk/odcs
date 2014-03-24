@@ -33,12 +33,6 @@ public class Schedule implements DataObject, OwnedEntity {
 	private Long id;
 
 	/**
-	 * Plan's name.
-	 */
-	@Column
-	private String name;
-
-	/**
 	 * Plan's description.
 	 */
 	@Column
@@ -143,22 +137,6 @@ public class Schedule implements DataObject, OwnedEntity {
 	 * Empty constructor. Used by JPA. Do not use otherwise.
 	 */
 	public Schedule() {
-	}
-
-	/**
-	 *
-	 * @return name of the schedule.
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 *
-	 * @param newName New schedule name.
-	 */
-	public void setName(String newName) {
-		this.name = StringUtils.abbreviate(newName, LenghtLimits.SCHEDULE_NAME);
 	}
 
 	/**

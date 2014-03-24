@@ -1923,7 +1923,7 @@ public class PipelineFacadeTest {
 		assertEquals(newName1, nPpl1.getName());
 		assertEquals(ppl.getDescription(), nPpl1.getDescription());
 
-		Pipeline nPpl2 = facade.copyPipeline(ppl);
+		Pipeline nPpl2 = pipelineFacade.copyPipeline(ppl);
 		
 		// test copying for the second time
 		String newName2 = "Copy #3 of " + ppl.getName();
@@ -1931,7 +1931,7 @@ public class PipelineFacadeTest {
 		assertEquals(newName2, nPpl2.getName());
 		assertEquals(ppl.getDescription(), nPpl2.getDescription());
 		
-		Pipeline nPpl3 = facade.copyPipeline(nPpl2);
+		Pipeline nPpl3 = pipelineFacade.copyPipeline(nPpl2);
 		
 		// test copying for the second time
 		String newName3 = "Copy #1 of Copy #3 of " + ppl.getName();

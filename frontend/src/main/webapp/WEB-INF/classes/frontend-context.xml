@@ -65,10 +65,12 @@
 	<bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
 		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
 		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
+		<property name="refreshStubOnConnectFailure"><value>true</value></property>
 	</bean>
     
 	<bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
 		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
 		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
+		<property name="refreshStubOnConnectFailure"><value>true</value></property>
 	</bean>
 </beans>

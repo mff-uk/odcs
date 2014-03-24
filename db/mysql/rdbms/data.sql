@@ -9,7 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- get_all_tables: tablepattern="db.odcs.%",9
 -- Definitions of 27 tables were read in.
 -- SELECT * FROM `dpu_instance`
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','',
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql',
 '<object-stream>
   <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
     <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint>
@@ -23,7 +23,7 @@ INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,conf
     <UseStatisticalHandler>false</UseStatisticalHandler>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
 </object-stream>',1,1);
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','',
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf',
 '<object-stream>
   <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
     <FilePath>/tmp/dbpedia.rdf</FilePath>

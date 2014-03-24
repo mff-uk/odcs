@@ -37,7 +37,6 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
   "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
   "description" LONG VARCHAR,
-  "tool_tip" VARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
@@ -87,7 +86,6 @@ sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "directory" VARCHAR(255),
   "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );
@@ -152,7 +150,6 @@ sequence_set('seq_exec_schedule', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(1024),
   "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
@@ -317,8 +314,8 @@ sequence_set('seq_rdf_ns_prefix', 100, 1);
 CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(25) NOT NULL,
-  "uri" VARCHAR(255) NOT NULL,
+  "name" VARCHAR(255) NOT NULL,
+  "uri" VARCHAR(2048) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );

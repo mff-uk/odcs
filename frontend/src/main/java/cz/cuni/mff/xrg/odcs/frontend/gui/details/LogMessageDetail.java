@@ -9,11 +9,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.RichTextArea;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
+
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import static com.vaadin.server.Sizeable.Unit;
 
 import java.util.Date;
+
 import org.apache.log4j.Level;
 import org.springframework.web.util.HtmlUtils;
 
@@ -25,7 +28,7 @@ import org.springframework.web.util.HtmlUtils;
  */
 public class LogMessageDetail extends Window {
 
-	private final RichTextArea fullMessageContent;
+	private final TextArea fullMessageContent;
 	
 	private final Label timeContent = new Label();
 	
@@ -66,10 +69,11 @@ public class LogMessageDetail extends Window {
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 
-		fullMessageContent = new RichTextArea();
+		fullMessageContent = new TextArea();
 		fullMessageContent.setValue("");
 		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
+		fullMessageContent.setWordwrap(true);
 		mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
 		mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
 
@@ -108,12 +112,12 @@ public class LogMessageDetail extends Window {
 			fullMessageContent.setValue(log.getMessage());
 		} else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(HtmlUtils.htmlEscape(log.getMessage()));
+			sb.append(log.getMessage());
 		
 			if (log.getStackTrace().isEmpty()) {
 				// no stack trace
 			} else {
-				sb.append("<br/><br/>Stack trace:<br/>");
+				sb.append("\n\nStack trace:\n");
 				// just do replace in stack trace
 				final String stackTrace = 
 						log.getStackTrace(); //.replace("<", "&lt;").replace("&", "&amp;");

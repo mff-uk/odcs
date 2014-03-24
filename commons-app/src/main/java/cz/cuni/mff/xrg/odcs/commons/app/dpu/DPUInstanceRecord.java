@@ -25,12 +25,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	private DPUTemplateRecord template;
 
 	/**
-	 * DPURecord tool tip.
-	 */
-	@Column(name="tool_tip")
-	private String toolTip;	
-	
-	/**
 	 * Empty constructor because of JPA.
 	 */
 	public DPUInstanceRecord() {}
@@ -46,7 +40,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		template = dpuInstance.getTemplate();
-		toolTip = dpuInstance.getToolTip();
 	}
 	
 	/**
@@ -55,7 +48,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	 */
 	public DPUInstanceRecord(String name) {
 		super(name);
-		toolTip = null;
 	}
 	
 	/**
@@ -67,7 +59,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 		super(template);
 		// and set out variables
 		this.template = template;
-		this.toolTip = null;
 	}
 
 	/**
@@ -84,22 +75,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	 */
 	public void setTemplate(DPUTemplateRecord template) {
 		this.template = template;
-	}
-
-	/**
-	 * 
-	 * @return Tool tip for the DPU.
-	 */
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	/**
-	 * 
-	 * @param toolTip New DPU tool tip.
-	 */
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
 	}
 
 	@Override

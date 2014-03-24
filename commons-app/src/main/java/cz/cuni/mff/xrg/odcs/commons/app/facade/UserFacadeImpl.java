@@ -35,21 +35,17 @@ class UserFacadeImpl implements UserFacade {
 	 * Factory for a new User.
 	 * 
 	 * @param username
-	 * @param password
+	 * @param plainPassword
 	 * @param email
 	 * @return new user instance
 	 */
 	@Override
-	public User createUser(String username, String password, EmailAddress email) {
+	public User createUser(String username, String plainPassword, EmailAddress email) {
 		
-		String passHash = null;
-		try {
-			passHash = PasswordHash.createHash(password);
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
-			throw new RuntimeException("Could not hash user password.", ex);
-		}
-		
-		User user = new User(username, passHash, email);
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(plainPassword);
+		user.setEmail(email);
 		
 		// set default notification setting
 		UserNotificationRecord notify = new UserNotificationRecord();
