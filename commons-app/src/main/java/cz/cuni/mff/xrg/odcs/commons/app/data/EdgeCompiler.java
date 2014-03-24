@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.LogAndIgnore;
+import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.StoreInvalidMappings;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import java.util.LinkedList;
@@ -12,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class provides functionality that enables to create script for the single
@@ -58,53 +58,6 @@ public final class EdgeCompiler {
 	}
 
 	/**
-	 * Create script that maps output
-	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
-	 * (sourceNames) to input
-	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
-	 * (targetNames). Does not use
-	 * {@link cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade}.
-	 *
-	 * @param mappings Mappings to compile into script.
-	 * @param sources  List of sources data units descriptions.
-	 * @param targets  List of target data units descriptions.
-	 * @return Does not return null.
-	 * @deprecated Use translate instead
-	 */
-	public String compile(List<MutablePair<List<Integer>, Integer>> mappings,
-			List<DataUnitDescription> sources,
-			List<DataUnitDescription> targets) {
-		StringBuilder script = new StringBuilder();
-		// for each sourceNames we need action
-		for (int index = 0; index < sources.size(); ++index) {
-			boolean used = false;
-			// we need to know in which mapping is used
-			String source = sources.get(index).getName();
-			for (MutablePair<List<Integer>, Integer> item : mappings) {
-				if (item.left.contains(index)) {
-					if (used) {
-						// multiple usage
-						// TODO Petyr: throw exception
-					}
-					// dataUnit is used in this renaming
-					script.append(source);
-					script.append(' ');
-					script.append(EdgeInstructions.Rename.getValue());
-					script.append(' ');
-					script.append(targets.get(item.right).getName());
-					script.append(EdgeInstructions.Separator
-							.getValue());
-					used = true;
-				}
-			}
-			if (!used) {
-				// dataUnits are dropped automatically if they are not used
-			}
-		}
-		return script.toString();
-	}
-
-	/**
 	 * Translate given mapping into string representation. Does not check for
 	 * validity of mapping.
 	 *
@@ -127,6 +80,13 @@ public final class EdgeCompiler {
 		// add information about version into mapping
 //		script.append("#1");
 //		script.append(EdgeInstructions.Separator.getValue());
+
+		if (mappings.isEmpty()) {
+			// just run after mapping
+			script.append(EdgeInstructions.RunAfter.getValue());
+			return script.toString();
+		}
+
 		// go through the sources
 		for (MutablePair<Integer, Integer> mapping : mappings) {
 			if (mapping.left < 0 && mapping.left >= sources.size()) {
@@ -191,6 +151,9 @@ public final class EdgeCompiler {
 			}
 			if (cmd[1].equalsIgnoreCase(EdgeInstructions.Rename.getValue())) {
 				// rename action
+			} else if (cmd[1].equalsIgnoreCase(EdgeInstructions.RunAfter
+					.getValue())) {
+				// just run after command, has no special meaning
 			} else {
 				// other action -> ignore
 				handler.unknownCommand(item);
@@ -214,152 +177,28 @@ public final class EdgeCompiler {
 	}
 
 	/**
-	 * Decompile script and create mapping from based on given
-	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}s
-	 * names. Mapping is from sourceNames to targetNames. Does not use
-	 * {@link cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade}.
+	 * Construct default mapping from one {@link DPUInstanceRecord} to another.
 	 *
-	 * @param script  Script to decompile.
-	 * @param sources List of sources data units descriptions
-	 * @param targets List of targets data units descriptions.
-	 * @return Does not return null.
-	 * @deprecated Use translate instead
+	 * @param dpuExplorer
+	 * @param edge        Edge to save mapping into.
+	 * @param from        Source DPU.
+	 * @param to          Target DPU.
 	 */
-	public List<MutablePair<List<Integer>, Integer>> decompile(String script,
-			List<DataUnitDescription> sources,
-			List<DataUnitDescription> targets) {
-		List<MutablePair<List<Integer>, Integer>> mappings = new LinkedList<>();
-		// if script is empty return
-		if (script == null || script.isEmpty()) {
-			return mappings;
-		}
-		// parse commands
-		String[] commands = script.split(EdgeInstructions.Separator
-				.getValue());
-		for (String item : commands) {
-			String[] cmd = item.split(" ");
-			if (cmd.length != 3) {
-				// other then rename -> ignore
-				continue;
-			}
-			if (cmd[1].equalsIgnoreCase(EdgeInstructions.Rename
-					.getValue())) {
-				// rename action
-			} else {
-				// other action -> ignore
-				continue;
-			}
-			// get indexes
-			Integer sourceIndex = getIndex(sources, cmd[0]);
-			Integer targetIndex = getIndex(targets, cmd[2]);
-			if (sourceIndex == null || targetIndex == null) {
-				// mapping for no longer existing DataUnitDescription
-				continue;
-			}
+	public void createDefaultMapping(DPUExplorer dpuExplorer, Edge edge,
+			DPUInstanceRecord from, DPUInstanceRecord to) {
+		List<DataUnitDescription> source = dpuExplorer.getOutputs(from);
+		List<DataUnitDescription> target = dpuExplorer.getInputs(to);
 
-			// add mapping
-			MutablePair<List<Integer>, Integer> mapping = new MutablePair<>();
-			mapping.left = new LinkedList<>();
-			mapping.left.add(sourceIndex);
-			mapping.right = targetIndex;
-			mappings.add(mapping);
-		}
-		return mappings;
-	}
-
-	/**
-	 * Update script and remove invalid mappings.
-	 *
-	 * @param edge    Edge which script update.
-	 * @param sources List of sources data units descriptions
-	 * @param targets List of targets data units descriptions
-	 * @return List of invalid mappings.
-	 * @deprecated Use translate, for decompile with StoreInvalidMappings and
-	 * then compile it again
-	 */
-	public List<String> update(Edge edge,
-			List<DataUnitDescription> sources,
-			List<DataUnitDescription> targets) {
-		final List<String> invalidMappings = new LinkedList<>();
-		final String script = edge.getScript();
-		// if script is empty return
-		if (script == null || script.isEmpty()) {
-			return invalidMappings;
-		}
-		// parse commands
-		String[] commands = script.split(EdgeInstructions.Separator.getValue());
-		for (String item : commands) {
-			if (item.startsWith("#")) {
-				// version -> ignore for now
-				continue;
-			}
-			String[] cmd = item.split(" ");
-			if (cmd.length != 3) {
-				// other then rename -> ignore
-				continue;
-			}
-			if (cmd[1].equalsIgnoreCase(EdgeInstructions.Rename.getValue())) {
-				// rename action
-			} else {
-				// other action -> ignore
-				continue;
-			}
-			// get indexes
-			Integer sourceIndex = getIndex(sources, cmd[0]);
-			Integer targetIndex = getIndex(targets, cmd[2]);
-			if (sourceIndex == null || targetIndex == null) {
-				// mapping for no longer existing DataUnitDescription
-				invalidMappings.add(item);
-			}
-		}
-		if (!invalidMappings.isEmpty()) {
-			List<MutablePair<List<Integer>, Integer>> validMappings = decompile(
-					script, sources, targets);
-			edge.setScript(compile(validMappings, sources, targets));
-		}
-		return invalidMappings;
-	}
-
-	/**
-	 * Create default mapping if source.size() == target.size() == 1. And return
-	 * script for it.
-	 *
-	 * @param source List of sources data units descriptions
-	 * @param target List of targets data units descriptions
-	 * @return Empty string in case that the default mapping can not be created.
-	 */
-	public String createDefaultMapping(List<DataUnitDescription> source,
-			List<DataUnitDescription> target) {
 		if (source.size() == 1 && target.size() == 1) {
 			final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
 			mapping.add(new MutablePair<>(0, 0));
-			return translate(mapping, source, target, null);
+			edge.setScript(translate(mapping, source, target, null));
+		} else if (source.isEmpty() || target.isEmpty()) {
+			// no mapping
+			final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
+			edge.setScript(translate(mapping, source, target, null));
 		} else {
-			return "";
-		}
-	}
-
-	/**
-	 * Constructs default mapping if source DPU has exactly one output data unit
-	 * and target DPU also has exactly one input data unit. Any previous mapping
-	 * will be lost.
-	 *
-	 * @param edge   Edge which default mapping should be created.
-	 * @param source Description of source
-	 *               {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
-	 * @param target Description of source
-	 *               {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
-	 * @deprecated use createDefaultMapping instead
-	 */
-	public void setDefaultMapping(Edge edge, List<DataUnitDescription> source,
-			List<DataUnitDescription> target) {
-		if (source.size() == 1 && target.size() == 1) {
-			MutablePair<List<Integer>, Integer> defaultMapping = new MutablePair<>(
-					Arrays.asList(0), 0);
-			String script = compile(Arrays.asList(defaultMapping),
-					source, target);
-			edge.setScript(script);
-
+			edge.setScript("");
 		}
 	}
 
@@ -384,8 +223,8 @@ public final class EdgeCompiler {
 
 	/**
 	 *
-	 * @param graph Graph to check.
-	 * @param explorer 
+	 * @param graph    Graph to check.
+	 * @param explorer
 	 * @return validation report as string
 	 * @deprecated Use
 	 * {@link cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineValidator}
@@ -444,6 +283,32 @@ public final class EdgeCompiler {
 		} else {
 			return report;
 		}
+	}
+
+	/**
+	 * Update script and remove invalid mappings.
+	 *
+	 * @param edge    Edge which script update.
+	 * @param sources List of sources data units descriptions
+	 * @param targets List of targets data units descriptions
+	 * @return List of invalid mappings.
+	 */
+	public List<String> update(Edge edge,
+			List<DataUnitDescription> sources,
+			List<DataUnitDescription> targets) {
+
+		StoreInvalidMappings handler = new StoreInvalidMappings();
+
+		List<MutablePair<Integer, Integer>> mapping
+				= translate(edge.getScript(), sources, targets, handler);
+		if (handler.getInvalidMapping().isEmpty()) {
+			// all is ok
+			return new LinkedList<>();
+		}
+		
+		String newScript = translate(mapping, sources, targets, null);
+		edge.setScript(newScript);
+		return handler.getInvalidMapping();
 	}
 
 }

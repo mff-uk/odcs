@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Maria
  * @author Jiri Tomes
- *
+ * 
  */
 public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
@@ -59,6 +59,11 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	private Validator.InvalidValueException ex;
 
 	/**
+	 * True it the input should be copied to the output.
+	 */	
+	private CheckBox checkBoxCopyInput;
+	
+	/**
 	 * Basic constructor.
 	 */
 	public FileLoaderDialog() {
@@ -77,7 +82,6 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * Set format data to {@link #comboBoxFormat}
 	 */
 	private void mapData() {
-
 		List<RDFFormatType> formatTypes = RDFFormatType.getListOfRDFType();
 
 		for (RDFFormatType next : formatTypes) {
@@ -87,8 +91,6 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 		comboBoxFormat
 				.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
-
-
 	}
 
 	/**
@@ -162,7 +164,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		verticalLayoutCore = new VerticalLayout();
 		verticalLayoutCore.setImmediate(false);
 		verticalLayoutCore.setWidth("100.0%");
-		verticalLayoutCore.setHeight("100.0%");
+		verticalLayoutCore.setHeight("-1px");
 		verticalLayoutCore.setMargin(true);
 		verticalLayoutCore.setSpacing(true);
 
@@ -226,6 +228,16 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 		verticalLayoutCore.addComponent(horizontalLayoutFormat);
 
+		// ......
+		
+		checkBoxCopyInput = new CheckBox();
+		checkBoxCopyInput.setCaption("Copy input to output");
+		checkBoxCopyInput.setImmediate(false);
+		checkBoxCopyInput.setWidth("-1px");
+		checkBoxCopyInput.setHeight("-1px");
+		
+		verticalLayoutCore.addComponent(checkBoxCopyInput);
+		
 		return verticalLayoutCore;
 	}
 
@@ -256,6 +268,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 			FileLoaderConfig config = new FileLoaderConfig(filePath,
 					RDFFileFormat, diffName, validDataBefore);
+			
+			config.setPenetrable(checkBoxCopyInput.getValue());
+			
 			return config;
 		}
 
@@ -285,6 +300,8 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 			validateDataBefore.setValue(conf.isValidDataBefore());
 
+			checkBoxCopyInput.setValue(conf.isPenetrable());
+			
 		} catch (Property.ReadOnlyException | Converter.ConversionException e) {
 			// throw setting exception
 			throw new ConfigException(e.getMessage(), e);

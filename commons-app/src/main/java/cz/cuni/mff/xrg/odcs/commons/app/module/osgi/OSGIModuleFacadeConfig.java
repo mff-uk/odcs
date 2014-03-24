@@ -11,13 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.dataunit_file;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.*;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -58,12 +52,6 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.message;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
-			// Ontology
-			+ "cz.cuni.mff.xrg.odcs.ontology;version=\"1.0.0\","
-			//
-//			+ "org.apache.log4j;version=\"1.7.5\","
-//			+ "org.slf4j;version=\"1.7.5\","
-//			+ "com.thoughtworks.xstream,"
 			// RDF package
 			+ "org.openrdf.rio,"			
 			+ "cz.cuni.mff.xrg.odcs.rdf.data;version=\"1.0.0\","
@@ -77,9 +65,6 @@ class OSGIModuleFacadeConfig {
 			+ "cz.cuni.mff.xrg.odcs.rdf.impl;version=\"1.0.0\","
 			+ "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\"";
 	
-	
-	
-
 	/**
 	 * Contains list of packages exported from frontend. Does not start nor end
 	 * on separator.
@@ -172,6 +157,7 @@ class OSGIModuleFacadeConfig {
 		appendPackages(packageList, commons_module.PACKAGE_LIST);
 		appendPackages(packageList, rdf.PACKAGE_LIST);
 		appendPackages(packageList, dataunit_file.PACKAGE_LIST);
+		appendPackages(packageList, ontology.PACKAGE_LIST);
 
 		this.additionalPackages = packageList.toString();
 		// check if load data from backend's library directory

@@ -159,7 +159,6 @@ public class Scheduler extends ViewComponent {
 
 		// top-level component properties
 		setWidth("100%");
-		setHeight("100%");
 
 		//Layout for buttons Add new scheduling rule and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();

@@ -9,7 +9,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  *
  * @author Petyr
  * @author Jiri Tomes
- *
  */
 public class FileExtractorConfig extends DPUConfigObjectBase {
 

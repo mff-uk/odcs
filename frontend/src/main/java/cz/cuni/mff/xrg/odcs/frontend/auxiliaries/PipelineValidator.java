@@ -33,7 +33,7 @@ public class PipelineValidator {
 	/**
 	 * Validate edges of graph.
 	 *
-	 * @param graph Graph to valifate.
+	 * @param graph Graph to validate.
 	 * @return Is graph valid.
 	 * @throws cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValidationException
 	 */

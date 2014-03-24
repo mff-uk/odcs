@@ -129,7 +129,10 @@ public class DPUExplorer {
         for (AnnotationContainer<OutputDataUnit> item : outputs) {
             final OutputDataUnit annotation = item.getAnnotation();
             // create description			
-            result.add(DataUnitDescription.createOutput(annotation.name(), item.getField().getGenericType().toString(), annotation.description()));
+            result.add(DataUnitDescription.createOutput(annotation.name(), 
+					item.getField().getGenericType().toString(), 
+					annotation.description(),
+					annotation.optional()));
         }
         return result;
     }

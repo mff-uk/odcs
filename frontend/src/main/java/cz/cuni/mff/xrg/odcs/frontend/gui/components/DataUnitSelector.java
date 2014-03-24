@@ -30,8 +30,8 @@ import java.util.Set;
 public class DataUnitSelector extends CustomComponent {
 
 	private PipelineExecution pipelineExec;
-	GridLayout mainLayout;
-	ComboBox dpuSelector;
+	private GridLayout mainLayout;
+	private ComboBox dpuSelector;
 	private DPUInstanceRecord debugDpu;
 	private ExecutionInfo executionInfo;
 	private CheckBox inputDataUnits;
@@ -39,7 +39,7 @@ public class DataUnitSelector extends CustomComponent {
 	private ComboBox dataUnitSelector;
 	private Button browse;
 	private Label dataUnitGraph;
-
+	
 	/**
 	 * Constructor.
 	 * 

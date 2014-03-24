@@ -17,7 +17,6 @@ import java.lang.annotation.Target;
  * of other chars is not allowed.
  *
  * @author Petyr
- * @author Jiri Tomes
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -39,9 +38,9 @@ public @interface OutputDataUnit {
 
 	/**
 	 *
-	 * @return False the execution failed if there is no suitable DataUnit that
-	 *         can be used.
+	 * @return If it's false and the output is not used then the warning should
+	 *         be shown to the user.
 	 */
 	public boolean optional() default false;
-	
+
 }
