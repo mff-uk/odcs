@@ -60,10 +60,13 @@ public class SPARQLLoaderTest1 {
 
 	private static final String PASSWORD = "dba01OD";
 
-	private static final String DEFAULT_GRAPH = "http://test/loader/speed/2";
+	private static final String INPUT_GRAPH = "http://test/loader/speed/12/input";
+        private static final String OUTPUT_GRAPH = "http://test/loader/speed/12/output";
 
 	private static final String UPDATE_ENDPOINT = "http://odcs.xrg.cz:8900/sparql-auth";
         //private static final String UPDATE_ENDPOINT = "http://odcs.xrg.cz:8900/sparql-graph-crud-auth";
+
+        
         
 //        private static final String HOST_NAME = "localhost";
 //
@@ -73,22 +76,22 @@ public class SPARQLLoaderTest1 {
 //
 //	private static final String PASSWORD = "dba";
 //
-//	private static final String DEFAULT_GRAPH = "http://test/loader/speed/1";
+//	private static final String DEFAULT_GRAPH = "http://test/loader/speed/3/1";
 //
-//	//private static final String UPDATE_ENDPOINT = "http://odcs.xrg.cz:8900/sparql-auth";
-//        private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-auth";
+//	private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-auth";
+////        private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-graph-crud-auth";
 
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
 
 		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
-				USER, PASSWORD, DEFAULT_GRAPH, "input", new Properties());
+				USER, PASSWORD, INPUT_GRAPH, "input", new Properties());
 
 	}
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit) repository).delete();
+		//((ManagableRdfDataUnit) repository).delete();
 	}
 
 	
@@ -98,19 +101,23 @@ public class SPARQLLoaderTest1 {
 
 		Resource subject = repository.createURI("http://my.subject");
 		URI predicate = repository.createURI("http://my.predicate");
-		Value object = repository.createLiteral("My company s.r.o.");
+		Value object = repository.createLiteral("Mojefi resi ...");
+                Value object2 = repository.createLiteral("Y");
+                Value object3 = repository.createLiteral("ščřžýěéž");
 
                 repository.addTriple(subject, predicate, object);
+//                repository.addTriple(subject, predicate, object2);
+                repository.addTriple(subject, predicate, object3);
                 
 		tryInsertToSPARQLEndpoint();
 	}
         
-        @Test
-	public void InsertingFileToEndpointCRUD() {
+        //@Test
+	public void InsertingSmallFileToEndpointCRUD() {
 		//repository.cleanAllData();
 
 	
-            logger.info("Data extracted from file to the graph Started");
+            logger.info("Data extraction from file to the graph Started");
             
              //File f = new File("nsoud20000.ttl");
             try {
@@ -120,7 +127,29 @@ public class SPARQLLoaderTest1 {
                 logger.error(ex.getLocalizedMessage());
             }
 
-            logger.info("Data extracted from file to the graph DONE");
+            logger.info("Data extraction from file to the graph DONE");
+            
+
+		tryInsertToSPARQLEndpoint();
+	}
+        
+        //@Test
+	public void InsertingBiggerFileToEndpointCRUD() {
+		//repository.cleanAllData();
+
+	
+            logger.info("Data extraction from file to the graph Started");
+            
+             //File f = new File("nsoud20000.ttl");
+            try {
+                //repository.addTriple(subject, predicate, object);
+                //file has 40 MB
+                repository.addFromTurtleFile(new File("src/test/resources/profiles.ttl"));
+            } catch (RDFException ex) {
+                logger.error(ex.getLocalizedMessage());
+            }
+
+            logger.info("Data extraction from file to the graph DONE");
             
 
 		tryInsertToSPARQLEndpoint();
@@ -133,13 +162,13 @@ public class SPARQLLoaderTest1 {
 
 	private void tryInsertToSPARQLEndpoint() {
            
-		String goalGraphName = "http://tempGraph/test/loader";
+		String goalGraphName = OUTPUT_GRAPH;
 		URL endpoint = getUpdateEndpoint();
 
 		boolean isLoaded = false;
 
 		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				virtuosoParams);
+				virtuosoParams, true);
 		try {
 
                         

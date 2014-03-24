@@ -36,6 +36,8 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 	private Integer retrySize;
 
 	private LoaderEndpointParams endpointParams;
+        
+        private boolean useSparqlGraphProtocol = false;
 
 	public RDFLoaderConfig() {
 		this.SPARQL_endpoint = "";
@@ -49,6 +51,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retrySize = -1;
 		this.retryTime = 1000L;
 		this.endpointParams = new LoaderEndpointParams();
+                this.useSparqlGraphProtocol = false;
 
 	}
 
@@ -56,7 +59,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 			String Password,
 			List<String> GraphsUri, WriteGraphType graphOption,
 			InsertType insertOption, long chunkSize, boolean validDataBefore,
-			long retryTime, int retrySize, LoaderEndpointParams endpointParams) {
+			long retryTime, int retrySize, LoaderEndpointParams endpointParams, boolean useSparqlGraphProtocol) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
@@ -69,7 +72,16 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retryTime = retryTime;
 		this.retrySize = retrySize;
 		this.endpointParams = endpointParams;
+                this.useSparqlGraphProtocol = useSparqlGraphProtocol;
 	}
+
+    public void setUseSparqlGraphProtocol(boolean useSparqlGraphProtocol) {
+        this.useSparqlGraphProtocol = useSparqlGraphProtocol;
+    }
+
+    public boolean isUseSparqlGraphProtocol() {
+        return useSparqlGraphProtocol;
+    }
 
 	/**
 	 * Returns URL address of SPARQL endpoint as string.

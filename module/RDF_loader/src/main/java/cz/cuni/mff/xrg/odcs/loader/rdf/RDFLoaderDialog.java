@@ -8,6 +8,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -134,6 +136,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private CheckBox validateDataBefore;
 
+        private CheckBox useGraphProtocol;
+        
 	private PostItem last;
 
 	/**
@@ -805,8 +809,24 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		defaultGraphParamField.setInputPrompt("Default graph param:");
 
 		params.addComponent(defaultGraphParamField);
-
+                
 		verticalLayoutProtocol.addComponent(params);
+                
+                useGraphProtocol = new CheckBox("Use SPARQL Graph Protocol for loading data");
+
+//We do not disable other SPARQL protocols, because they are used for counting the resulting data.
+//                useGraphProtocol.addValueChangeListener(new ValueChangeListener() {
+//                    @Override
+//                    public void valueChange(ValueChangeEvent event) {
+//                        postTypeOption.setEnabled(!useGraphProtocol.getValue());
+//                        queryParamField.setEnabled(!useGraphProtocol.getValue());
+//                        defaultGraphParamField.setEnabled(!useGraphProtocol.getValue());
+//                        chunkParts.setEnabled(!useGraphProtocol.getValue());
+//                    }
+//                });
+                
+                verticalLayoutProtocol.addComponent(useGraphProtocol);
+                
 
 		return verticalLayoutProtocol;
 	}
@@ -1126,12 +1146,14 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 			LoaderEndpointParams endpointParams = new LoaderEndpointParams(
 					queryParam, defaultGraphParam, postType);
+                        
+                        Boolean useSparqlGraphProtocol = useGraphProtocol.getValue();
 
 			RDFLoaderConfig config = new RDFLoaderConfig(SPARQLEndpoint,
 					hostName, password, getDefaultGraphs(), graphType,
 					insertType,
 					chunkSize, validDataBefore, retryTime, retrySize,
-					endpointParams);
+					endpointParams, useSparqlGraphProtocol);
 
 			return config;
 		}
@@ -1192,6 +1214,8 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 			queryParamField.setValue(endpointParams.getQueryParam());
 			defaultGraphParamField.setValue(endpointParams
 					.getDefaultGraphParam());
+                        
+                        useGraphProtocol.setValue(conf.isUseSparqlGraphProtocol());
 
 			try {
 				defaultGraphs = conf.getGraphsUri();

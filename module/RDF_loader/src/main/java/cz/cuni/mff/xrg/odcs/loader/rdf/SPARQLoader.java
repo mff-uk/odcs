@@ -120,6 +120,9 @@ public class SPARQLoader {
 	 * graph)
 	 */
 	private Map<String, Long> graphSizeMap = new HashMap<>();
+    
+        //to hold config.useGraphProtocol
+        private final boolean useGraphProtocol;
 
 	/**
 	 * Constructor for using in DPUs calling.
@@ -136,10 +139,11 @@ public class SPARQLoader {
 	 *                       SPARQL endpoint.
 	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			int retrySize, long retryTime, LoaderEndpointParams endpointParams) {
+			int retrySize, long retryTime, LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
+                this.useGraphProtocol = useGraphProtocol;
 
 		setRetryConnectionSize(retrySize);
 		setRetryConnectionTime(retryTime);
@@ -156,15 +160,16 @@ public class SPARQLoader {
 	 *                       SPARQL endpoint.
 	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			LoaderEndpointParams endpointParams) {
+			LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
+                this.useGraphProtocol = useGraphProtocol;
 
 		setRetryConnectionSize(DEFAULT_LOADER_RETRY_SIZE);
 		setRetryConnectionTime(DEFAUTL_LOADER_RETRY_TIME);
 	}
-
+        
 	/**
 	 *
 	 * Set time in miliseconds how long to wait before trying to reconnect.
@@ -312,8 +317,7 @@ public class SPARQLoader {
 				final String endpointGraph = graphs.get(i);
 
 				//clean target graph if nessasarry - via using given WriteGraphType 
-				//TODO hack
-                                //prepareGraphTargetForLoading(endpointURL, endpointGraph, graphType);
+                                prepareGraphTargetForLoading(endpointURL, endpointGraph, graphType);
 
 				if (context.canceled()) {
 					logger.error(
@@ -405,13 +409,18 @@ public class SPARQLoader {
 			case STOP_WHEN_BAD_PART:
 			case SKIP_BAD_PARTS:
 				try {
-
-                                    
-                                    loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs(),
+                                       //loadGraphDataToEndpointWorker(URL endpointURL, List<String> targetGraphs, long chunkSize, InsertType insertType)
+                                       if (useGraphProtocol) {
+                                           //SPARQL graph protocol is used
+                                            loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs(),
 							insertType);
- //					loadDataParts(endpointURL, collection.getTempGraphs(),
-//							insertType,
-//							chunkSize);
+                                       }
+                                       else {
+                                           //normal execution, sparql-auth. 
+                                           loadDataParts(endpointURL, collection.getTempGraphs(),
+							insertType,
+							chunkSize);
+                                       }
                                     
 					noteGraphSize(endpointURL, collection);
 
@@ -430,9 +439,20 @@ public class SPARQLoader {
 			case REPEAT_IF_BAD_PART:
 				while (true) {
 					try {
-						loadDataParts(endpointURL, collection.getTempGraphs(),
-								insertType,
-								chunkSize);
+                                              if (useGraphProtocol) {
+                                                  //SPARQL graph protocol is used
+                                                   loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs(),
+                                                               insertType);
+                                              }
+                                              else {
+                                                  //normal execution, sparql-auth. 
+                                                  loadDataParts(endpointURL, collection.getTempGraphs(),
+                                                               insertType,
+                                                               chunkSize);
+                                              }	
+                                            
+                                            noteGraphSize(endpointURL, collection);
+                                        
 						if (!context.canceled()) {
 							moveDataToTarget(endpointURL, collection);
 						}
@@ -611,7 +631,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader result = getClearEndpointStreamReader(
+				try (InputStreamReader result = getWholeRepEndpointStreamReader(
 						endpointURL, moveQuery)) {
 				}
 
@@ -666,11 +686,15 @@ public class SPARQLoader {
 
 	}
 
-	private InputStreamReader getClearEndpointStreamReader(URL endpointURL,
+	private InputStreamReader getWholeRepEndpointStreamReader(URL endpointURL,
 			String query) throws RDFException {
 
-		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
-				query, RDFFormat.RDFXML);
+//		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
+//				query, RDFFormat.RDFXML);
+                //the graph is not specified, because it is in the query!
+                return getEndpointStreamReader(endpointURL, new LinkedList<String>(),
+				query);
+            
 	}
 
 	private InputStreamReader getEndpointStreamReader(URL endpointURL,
@@ -1032,7 +1056,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader inputStreamReader = getClearEndpointStreamReader(
+				try (InputStreamReader inputStreamReader = getWholeRepEndpointStreamReader(
 						endpointURL, deleteQuery)) {
 				}
 
@@ -1500,10 +1524,23 @@ public class SPARQLoader {
 
        private InputStreamReader sparqlGraphProtocolPOST(URL endpointURL, List<String> endpointGraph, String fileData) throws RDFException {
 
-                 logger.debug("Start sparqlGraphProtocolPOST");
+                logger.debug("Start sparqlGraphProtocolPOST");
               
-                 String graphProtocolEndpoint = "http://odcs.xrg.cz:8900/sparql-graph-crud-auth";
-                 
+//                String graphProtocolEndpoint = "http://localhost:8890/sparql-graph-crud-auth";
+                
+                String graphProtocolEndpoint = null;
+                if (endpointURL.toString().contains("sparql-auth")) {
+                    //sparql auth endpoint
+                    graphProtocolEndpoint = endpointURL.toString().replace("sparql-auth", "sparql-graph-crud-auth");
+                }
+                else if (endpointURL.toString().contains("sparql-auth")) {
+                    //only sparql endpoint
+                    graphProtocolEndpoint = endpointURL.toString().replace("sparql", "sparql-graph-crud");
+                }
+                else {
+                    logger.error("Strange endpoint address {}, CRUD endpoint was not set properly. Loader will probably not be able to connect to the target endpoint.  ", endpointURL.toString());
+                }
+                
                 //final String parameters = "?graph=http://test/loader/graphProtocol";     
                 String requestUriParameters = getGraphParam("graph", endpointGraph, true);
 		logger.debug("Target endpoint: {}", graphProtocolEndpoint);
@@ -1525,17 +1562,7 @@ public class SPARQLoader {
 
 		int retryCount = 0;
 
-                
-//                  FileReader fReader = null;
-//                File dataFile = new File(fileData);
-//                try {
-//                    fReader = new FileReader(dataFile);
-//                   
-//                } catch (FileNotFoundException ex) {
-//                    logger.error(ex.getLocalizedMessage());
-//                }
-                
-                   FileInputStream fis = null;
+                FileInputStream fis = null;
                 File dataFile = new File(fileData);
                 try {
                     fis = new FileInputStream(dataFile);
@@ -1559,34 +1586,33 @@ public class SPARQLoader {
                                 httpConnection.setDoInput(true);
                                 httpConnection.setDoOutput(true);
                                 
-                               
-                           
-                                
-                                int length = 100;
+                                int length = 10000;
                                 
                                 logger.debug("Start processing data file");
 				try (OutputStream os = httpConnection.getOutputStream()) {
                                         
-                                        int numberOfChars = 0;
-                                        while (numberOfChars > -1) {
-                                            //char[] chars = new char[(int) length];
-                                            byte[] bytes = new byte[(int) length];
-                                            
-                                            numberOfChars = fis.read(bytes);
-                                           
-                                            if (numberOfChars > -1) {
-                                                
-                                                //remove the space from the last request
-                                                String s = new String(bytes);
-                                                s = s.trim();
-                                                byte[] arrayWithoutWhitespace = s.getBytes();
-                                                
-                                                 //logger.debug("Data: {}", new String(arrayWithoutWhitespace));
-                                                 os.write(arrayWithoutWhitespace);
-                                                 
+                                    int numberOfChars;
+                                    do {
+                                        //to get the next bytes
+                                        byte[] nextBytes = new byte[(int) length];
+                                        numberOfChars = fis.read(nextBytes);
+                                        if (numberOfChars > -1) {
+                                            //we have some chars:
+                                            if (numberOfChars < length) {
+                                            //we have less chars.
+                                                    length = numberOfChars;
                                             }
-                                           
+                                            
+                                             //get bytes to be stored to the output
+                                            byte[] bytes = Arrays.copyOf(nextBytes, length);
+                                     
+                                            //write output
+                                            //logger.debug("Data: {}", new String(bytes));
+                                            os.write(bytes);
                                         }
+                                            
+                                    }  while(numberOfChars > -1);    
+                                            
                                     
                                         fis.close();
                                        

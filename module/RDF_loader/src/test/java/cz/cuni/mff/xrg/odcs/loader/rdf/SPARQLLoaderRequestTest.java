@@ -78,7 +78,7 @@ public class SPARQLLoaderRequestTest {
 
 		URL endpoint = getEndpoint();
 		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				params);
+				params, false);
 		try {
 			loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
 					PASSWORD,

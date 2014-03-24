@@ -129,7 +129,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime, endpointParams);
+					retryTime, endpointParams, config.isUseSparqlGraphProtocol());
 
 			for (String graph : defaultGraphsURI) {
 				Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
