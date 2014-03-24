@@ -11,7 +11,9 @@
 
     <!-- we use annotations to run tasks -->
     <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
-    <task:executor id="taskExecutor" pool-size="16" />
+    <!-- Used for asynch calls even for scheduled functions. -->
+	<task:executor id="taskExecutor" pool-size="8" />
+	<!-- Used for Scheduled tasks.-->
     <task:scheduler id="taskScheduler" pool-size="8" />
 	
 	<!-- Define aspects for managing DB reconnects. -->

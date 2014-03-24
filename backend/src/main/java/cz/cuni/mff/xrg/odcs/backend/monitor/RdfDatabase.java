@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -80,8 +79,7 @@ class RdfDatabase {
 	 * Try to connect to rdf repository and as a simple query. The execution of
 	 * this method should least a few seconds.
 	 */
-	@Async
-	@Scheduled(fixedDelay = 4 * 60 * 1000)
+	@Scheduled(fixedDelay = 4 * 1000 ) // * 60 * 1000)
 	public void executeQuery() {
 		if (!doCheck) {
 			return;
@@ -124,6 +122,11 @@ class RdfDatabase {
 			queryEnd = new Date();
 			return;
 		}
+		try {
+			Thread.sleep(1000 * 120);
+		} catch (InterruptedException ex) {
+			
+		}
 		
 		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(
@@ -154,7 +157,6 @@ class RdfDatabase {
 		queryEnd = new Date();
 	}
 
-	@Async
 	@Scheduled(fixedDelay = 1 * 60 * 1000)
 	public void check() {
 		if (!doCheck) {

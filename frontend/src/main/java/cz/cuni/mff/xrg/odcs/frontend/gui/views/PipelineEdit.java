@@ -186,9 +186,12 @@ public class PipelineEdit extends ViewComponent {
 		}
 
 		refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
+
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				if (pipeline != null) {
+				if (pipeline != null && new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
 					pipelineFacade.createOpenEvent(pipeline);
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
 					if (!pipelineFacade.isUpToDate(pipeline)) {
@@ -212,6 +215,7 @@ public class PipelineEdit extends ViewComponent {
 						paralelInfoLayout.setVisible(true);
 						buttonRefresh.setVisible(false);
 					}
+					lastRefreshFinished = new Date().getTime();
 				}
 				LOG.debug("Open pipelines checked.");
 			}
@@ -239,7 +243,6 @@ public class PipelineEdit extends ViewComponent {
 
 		// top-level component properties
 		//setSizeUndefined();
-
 		// label
 		label = new Label();
 		label.setImmediate(false);
@@ -417,7 +420,7 @@ public class PipelineEdit extends ViewComponent {
 		standardTab = tabSheet.addTab(new Label("Under construction"), "Standard");
 		standardTab.setEnabled(true);
 
-	//canvasPanel = new Panel(dadWrapper);
+		//canvasPanel = new Panel(dadWrapper);
 		developTab = tabSheet.addTab(dadWrapper, "Develop");
 		tabSheet.setSelectedTab(developTab);
 		tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -713,7 +716,7 @@ public class PipelineEdit extends ViewComponent {
 	private void setupComponentSize() {
 		int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 60;
 		int browserHeight = UI.getCurrent().getPage().getBrowserWindowHeight();
-		if(pipelineCanvas.getCanvasWidth() < browserWidth) {
+		if (pipelineCanvas.getCanvasWidth() < browserWidth) {
 			tabSheet.setWidth(pipelineCanvas.getCanvasWidth() + 40, Unit.PIXELS);
 		} else {
 			tabSheet.setWidth(100, Unit.PERCENTAGE);

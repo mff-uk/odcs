@@ -57,10 +57,10 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 	private ExecutionListView view;
 	@Autowired
 	private Utils utils;
-	
+
 	@Autowired
 	private AuthAwarePermissionEvaluator permissionEvaluator;
-	
+
 	private ExecutionListData dataObject;
 	private DbCachedSource<PipelineExecution> cachedSource;
 	private RefreshManager refreshManager;
@@ -80,10 +80,15 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 		Object viewObject = view.enter(this);
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				refreshEventHandler();
-				LOG.debug("ExecutionMonitor refreshed.");
+				if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+					refreshEventHandler();
+					LOG.debug("ExecutionMonitor refreshed.");
+					lastRefreshFinished = new Date().getTime();
+				}
 			}
 		});
 
@@ -157,7 +162,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 			dataObject.getContainer().refresh();
 		}
 	}
-	
+
 	@Override
 	public boolean canStopExecution(long executionId) {
 		PipelineExecution exec = cachedSource.getObject(executionId);
@@ -208,7 +213,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
 	private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
 		return new ReadOnlyContainer<>(
-				new DbCachedSource<>(dbMessageRecord, 
+				new DbCachedSource<>(dbMessageRecord,
 						new MessageRecordAccessor(), utils.getPageLength()));
 	}
 

@@ -12,7 +12,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
  *
  * @author Petyr
  * @author Jiri Tomes
- *
  */
 public class RDFLoaderConfig extends DPUConfigObjectBase {
 
@@ -182,6 +181,22 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		return retrySize;
 	}
 
+	public String getSPARQL_endpoint() {
+		return SPARQL_endpoint;
+	}
+
+	public void setSPARQL_endpoint(String SPARQL_endpoint) {
+		this.SPARQL_endpoint = SPARQL_endpoint;
+	}
+
+	public String getHost_name() {
+		return Host_name;
+	}
+
+	public void setHost_name(String Host_name) {
+		this.Host_name = Host_name;
+	}	
+	
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *
@@ -199,20 +214,5 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& retryTime > 0
 				&& endpointParams != null;
 	}
-
-	/**
-	 * Fill missing configuration with default values.
-	 */
-	@Override
-	public void onDeserialize() {
-		if (retrySize == null) {
-			retrySize = -1;
-		}
-		if (retryTime == null) {
-			retryTime = 1000L;
-		}
-		if (endpointParams == null) {
-			endpointParams = new LoaderEndpointParams();
-		}
-	}
+	
 }

@@ -122,6 +122,22 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 		return failWhenErrors;
 	}
 
+	public boolean isOnlyThisSuffix() {
+		return OnlyThisSuffix;
+	}
+
+	public void setOnlyThisSuffix(boolean OnlyThisSuffix) {
+		this.OnlyThisSuffix = OnlyThisSuffix;
+	}
+
+	public boolean isUseStatisticalHandler() {
+		return UseStatisticalHandler;
+	}
+
+	public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
+		this.UseStatisticalHandler = UseStatisticalHandler;
+	}	
+	
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *

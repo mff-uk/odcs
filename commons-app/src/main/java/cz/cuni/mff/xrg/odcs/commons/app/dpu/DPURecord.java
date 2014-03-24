@@ -54,7 +54,7 @@ public abstract class DPURecord {
 	 * DPU's configuration in serialized version.
 	 */
 	@Column(name = "configuration")
-	private String serializedConfiguration;
+	private byte[] serializedConfiguration;
 
 	/**
 	 * If true configuration is in valid state.
@@ -97,7 +97,7 @@ public abstract class DPURecord {
 			this.serializedConfiguration = null;
 		} else {
 			// deep copy
-			this.serializedConfiguration = dpuRecord.serializedConfiguration;
+			this.serializedConfiguration = dpuRecord.serializedConfiguration.clone();
 		}
 		this.configValid = dpuRecord.configValid;
 	}
@@ -195,7 +195,7 @@ public abstract class DPURecord {
 	 * @return raw configuration representation.
 	 */
 	public String getRawConf() {
-		return serializedConfiguration;
+		return new String(serializedConfiguration);
 	}
 
 	/**
@@ -204,7 +204,7 @@ public abstract class DPURecord {
 	 * @param conf
 	 */
 	public void setRawConf(String conf) {
-		serializedConfiguration = conf;
+		serializedConfiguration = conf.getBytes();
 	}
 
 	/**

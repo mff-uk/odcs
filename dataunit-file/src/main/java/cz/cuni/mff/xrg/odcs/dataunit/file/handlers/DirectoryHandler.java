@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Represent a directory from {@link FileDataUnit}. The sample how to 
@@ -19,6 +20,9 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * with given name already exists then the handler to the existing file is
 	 * returned.
 	 *
+	 * If the given name contains characters that can not be used as a file 
+	 * name then the name can be changed.
+	 * 
 	 * @param name File name please respect the limitation of file system for
 	 * file naming.
 	 * @return Null if given name is used by already existing directory.
@@ -51,6 +55,9 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * directory with given name already exists then the handler to the existing
 	 * directory is returned.
 	 *
+	 * If the given name contains characters that can not be used as a directory 
+	 * name then the name can be changed.
+	 * 
 	 * @param name Directory name please respect the limitation of file system
 	 * for directory naming.
 	 * @return Null if given name is used by already existing file.
@@ -151,5 +158,13 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * @return Null if the object for given rooted path does not exists.
 	 */
 	Handler getByRootedName(String queryName);
+	
+	/**
+	 * Return iterator that iterate over the tree structure of this
+	 * {@link DirectoryHandler}.
+	 * 
+	 * @return Read only iterator.
+	 */
+	Iterator<Handler> getFlatIterator();
 	
 }

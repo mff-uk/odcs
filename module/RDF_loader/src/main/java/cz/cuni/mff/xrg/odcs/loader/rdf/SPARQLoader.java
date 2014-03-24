@@ -515,14 +515,14 @@ public class SPARQLoader {
 				}
 
 				logger.info(
-						"Data " + processing + " part loaded successful");
+						"Data part " + processing + " loaded successful");
 
 			} catch (InsertPartException e) {
 				String message;
 
 				switch (insertType) {
 					case SKIP_BAD_PARTS: //go to next part
-						message = "Data " + processing + " part was skipped. "
+						message = "Data part " + processing + " was skipped. "
 								+ e.getMessage();
 						logger.warn(message);
 						break;

@@ -1445,6 +1445,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	public Dataset getDataSet() {
 		DatasetImpl dataSet = new DatasetImpl();
 		dataSet.addDefaultGraph(graph);
+		dataSet.addNamedGraph(graph);
 
 		return dataSet;
 	}

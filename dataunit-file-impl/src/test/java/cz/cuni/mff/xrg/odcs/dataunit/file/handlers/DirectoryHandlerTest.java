@@ -5,7 +5,9 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -195,6 +197,43 @@ public class DirectoryHandlerTest {
 		assertEquals("/directory", target.getByName("directory").getRootedPath());
 		assertEquals("/file", target.getByName("file").getRootedPath());
 		assertEquals("/toLink", target.getByName("toLink").getRootedPath());
+	}
+	
+	@Test
+	public void flatIteratorEmptyDirectory() {
+		DirectoryHandler source 
+				= new DirectoryHandlerImpl(new File(dirToUse, "source"));
+		Iterator<Handler> iter = source.getFlatIterator();
+		
+		assertNull(iter.next());
+		assertFalse(iter.hasNext());
+		assertNull(iter.next());
+		assertFalse(iter.hasNext());
+	}
+	
+	@Test
+	public void flatIterator() throws DataUnitException {
+		DirectoryHandler source 
+				= new DirectoryHandlerImpl(new File(dirToUse, "source"));
+		DirectoryHandler handlerA = source.addNewDirectory("dirA");
+		DirectoryHandler handlerAA = handlerA.addNewDirectory("dirAA");
+		FileHandler handlerAB = handlerA.addNewFile("fileAB");
+		DirectoryHandler handlerB = source.addNewDirectory("dirB");
+		
+		ArrayList<Handler> expected = new ArrayList<>(4);
+		expected.add(handlerA);
+		expected.add(handlerAA);
+		expected.add(handlerAB);
+		expected.add(handlerB);
+		
+		Iterator<Handler> sourceIter = source.getFlatIterator();
+		
+		for (Handler h : expected) {
+			assertTrue(sourceIter.hasNext());
+			Handler hSource = sourceIter.next();
+			assertEquals(h, hSource);
+		}
+		
 	}
 	
 }

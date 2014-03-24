@@ -41,7 +41,7 @@ CREATE TABLE `dpu_instance`
   `use_dpu_description` SMALLINT,
   `description` TEXT,
   `tool_tip` VARCHAR (512),
-  `configuration` TEXT,
+  `configuration` BLOB,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
@@ -56,7 +56,7 @@ CREATE TABLE `dpu_template`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,  
-  `configuration` TEXT,
+  `configuration` BLOB,
   `parent_id` INTEGER,
   `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
