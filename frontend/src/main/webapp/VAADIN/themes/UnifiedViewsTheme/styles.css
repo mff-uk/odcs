@@ -24,8 +24,8 @@
 }
 
 .v-menubar > .v-menubar-menuitem:first-child {
-    /* color: #fff; */
     font-weight: bold;
+    font-size: 24px;
 }
 
 .v-menubar > .v-menubar-menuitem:first-child .v-icon {

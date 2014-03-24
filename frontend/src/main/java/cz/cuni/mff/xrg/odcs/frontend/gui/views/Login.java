@@ -79,7 +79,7 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>UnifiedViews</h1>");
+        logo.setValue("<h1>Login</h1>");
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
 		
@@ -88,7 +88,7 @@ public class Login extends ViewComponent {
 		error.setVisible(false);
 		layout.addComponent(error);
 
-        login = new TextField("Login:");
+        login = new TextField("User:");
 		login.focus();
         layout.addComponent(login);
 
