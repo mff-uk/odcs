@@ -1465,8 +1465,8 @@ public class SPARQLoader {
         
         private void loadDataPartsUsingGraphStoreProtocol(URL endpointURL, List<String> endpointGraphs, InsertType insertType) throws RDFException {
 
-            logger.debug("Start loading data using graph store protocol");
-              String fileData = context.getWorkingDir() + File.separator + "data.ttl";
+            logger.info("Lading data using graph store protocol started");
+             String fileData = context.getWorkingDir() + File.separator + "data.ttl";
              FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(new File(fileData));
@@ -1474,7 +1474,7 @@ public class SPARQLoader {
                  logger.error(ex.getLocalizedMessage());
             }
              try {
-                 logger.debug("Data extracted to Turtle - Start");
+                 logger.debug("Phase 1 Started: data is serialized to Turtle file");
                 RepositoryConnection connection = rdfDataUnit.getConnection();
                 
                 GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
@@ -1492,7 +1492,7 @@ public class SPARQLoader {
                 
          
                 //FileOutputStream fos = new FileOutputStream(new File(queryResFile));
-               logger.debug("Data extracted to Turtle - Finish");
+                logger.debug("Phase 1 Finished: data is serialized to Turtle file");
                 
             } catch (MalformedQueryException ex) {
                 logger.error(ex.getLocalizedMessage());
@@ -1511,12 +1511,15 @@ public class SPARQLoader {
                  }
             }
 
-          logger.info("Stored data: {}", DataUnitUtils.readFile(fileData));
+           //logger.info("Stored data: {}", DataUnitUtils.readFile(fileData));
 //          String query = getInsertQueryGraphStoreProtocol();
 //          logger.debug("Query is: {}", query);
 
+           logger.debug("Phase 2 Started : data is being submitted to the server");  
            sparqlGraphProtocolPOST(endpointURL, endpointGraphs, fileData);
-           logger.debug("End loading data using graph store protocol");
+           logger.debug("Phase 2 Finished : data is being submitted to the server");  
+           
+           logger.info("Loading data using graph store protocol finished");
 
 
       }
@@ -1524,8 +1527,8 @@ public class SPARQLoader {
 
        private InputStreamReader sparqlGraphProtocolPOST(URL endpointURL, List<String> endpointGraph, String fileData) throws RDFException {
 
-                logger.debug("Start sparqlGraphProtocolPOST");
-              
+                //logger.debug("Start sparqlGraphProtocolPOST");
+                          
 //                String graphProtocolEndpoint = "http://localhost:8890/sparql-graph-crud-auth";
                 
                 String graphProtocolEndpoint = null;
@@ -1588,7 +1591,7 @@ public class SPARQLoader {
                                 
                                 int length = 10000;
                                 
-                                logger.debug("Start processing data file");
+                                logger.debug("RDF data is about to be submitted to the server");
 				try (OutputStream os = httpConnection.getOutputStream()) {
                                         
                                     int numberOfChars;
@@ -1619,7 +1622,7 @@ public class SPARQLoader {
 					os.flush();
                                         
 				}
-                                logger.debug("End of processing data file");
+                                logger.debug("RDF data was submitted to the server");
                                
                                 
                                   
