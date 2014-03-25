@@ -277,7 +277,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 					}
 					lastUpdateFinished = new Date().getTime();
 				}
-			}
 		});
 	}
 

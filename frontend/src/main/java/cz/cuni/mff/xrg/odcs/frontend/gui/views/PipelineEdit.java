@@ -1,5 +1,18 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
+
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -16,12 +29,28 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
@@ -29,16 +58,21 @@ import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
@@ -46,28 +80,12 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.FormattingEnabledEvent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.

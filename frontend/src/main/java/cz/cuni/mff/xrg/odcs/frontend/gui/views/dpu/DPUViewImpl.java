@@ -135,7 +135,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonCreateDPU.setCaption("Create DPU template");
 		buttonCreateDPU.setHeight("25px");
 		buttonCreateDPU.setWidth("150px");
-		buttonCreateDPU.addClickListener(new ClickListener() {
+		buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
@@ -150,7 +150,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 		buttonImportDPU.setHeight("25px");
 		buttonImportDPU.setWidth("150px");
 		buttonImportDPU.setEnabled(false);
-		buttonImportDPU.addClickListener(new ClickListener() {
+		buttonImportDPU.addClickListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(Button.ClickEvent event) {

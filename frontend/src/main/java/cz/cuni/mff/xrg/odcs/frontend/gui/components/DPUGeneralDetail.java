@@ -4,10 +4,16 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
-import cz.cuni.mff.xrg.odcs.frontend.gui.validator.ValidatorFactory;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 
 /**
  * Component for setting general information about DPU like name and
@@ -53,8 +59,7 @@ public class DPUGeneralDetail extends CustomComponent {
 		dpuName.setHeight(null);
 		dpuName.setRequired(true);
 		dpuName.setRequiredError("DPU name must be filled!");
-		dpuName.addValidator(ValidatorFactory.CreateMaxLength("name",
-				LenghtLimits.DPU_NAME.limit()));
+		dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
 		
 		mainLayout.addComponent(dpuName, 1, 0);
 
