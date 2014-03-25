@@ -227,9 +227,18 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& endpointParams != null;
 	}
         
-        @Override
-        public void onDeserialize() {
-            this.useSparqlGraphProtocol = false;
-        }
+        /**
+	 * Fill missing configuration with default values.
+	 */
+	@Override
+	public void onDeserialize() {
+		if (endpointParams == null) {
+			endpointParams = new LoaderEndpointParams();
+		}
+                
+//                if (useSparqlGraphProtocol == null) {
+//                    seSparqlGraphProtocol = false;
+//                }
+	}
 	
 }
