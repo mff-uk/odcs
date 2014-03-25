@@ -139,6 +139,18 @@ class DPURecordWrap {
 	}
 	
 	/**
+	 * Return description from the dialog.
+	 * 
+	 * @return Null in case of no dialog.
+	 */
+	public String getDescription() {
+		if (configDialog == null) {
+			return null;
+		}
+		return configDialog.getDescription();
+	}
+	
+	/**
 	 * Load the configuration dialog for {@link #dpuRecord} and store it into
 	 * {@link #configDialog}. If the dialog is already loaded
 	 * ({@link #configDialog} is not null) then nothing is done. If the
@@ -195,5 +207,5 @@ class DPURecordWrap {
 		dialogConfigured = true;
 		configDialog.setConfig(dpuRecord.getRawConf());
 	}
-	
+		
 }

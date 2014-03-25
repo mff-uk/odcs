@@ -13,7 +13,8 @@ public class EdgeFormater {
 	 * @param script Script to format.
 	 * @return Formatted script.
 	 */
-	public String format(final String script) {		
+	public String format(final String script) {
+		//final String removeRunAfter = script.replace(EdgeInstructions.RunAfter.getValue(), "");		
 		return script.replace(EdgeInstructions.Separator.getValue(), "\n");
 	}
 	

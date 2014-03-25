@@ -17,6 +17,10 @@ public enum EdgeInstructions {
 	 */
 	Rename("->"),
 	/**
+	 * No data are transfered, it's just run after edge.
+	 */
+	RunAfter("run_after"),
+	/**
 	 * Represent separation of two commands.
 	 */
 	Separator(";");

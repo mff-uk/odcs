@@ -3,12 +3,9 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomTable;
+import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -43,22 +40,24 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	private static final int COLUMN_TIME_WIDTH = 115;
 	
 	private VerticalLayout mainLayout;
+	
 	private IntlibPagedTable tablePipelines;
+	
 	private Button btnCreatePipeline;
 	
 	@Autowired
 	private Utils utils;
 
 	private void buildPage(final PipelineListPresenter presenter) {
+		// top-level component properties
+		setWidth("100%");
+		// we do not set heigth, so it enables scroll bars
+		
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
-
-		// top-level component properties
-		setWidth("100%");
-		setHeight("100%");
 
 		HorizontalLayout topLine = new HorizontalLayout();
 		topLine.setSpacing(true);
@@ -67,8 +66,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		btnCreatePipeline.setCaption("Create pipeline");
 		btnCreatePipeline.setHeight("25px");
 		btnCreatePipeline.setWidth("120px");
-		btnCreatePipeline
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+		btnCreatePipeline.addClickListener(new ClickListener() {
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				presenter.navigateToEventHandler(PipelineEdit.class, "New");
@@ -80,8 +79,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
 		buttonDeleteFilters.setWidth("120px");
-		buttonDeleteFilters
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+		buttonDeleteFilters.addClickListener(new ClickListener() {
+			
 			@Override
 			public void buttonClick(ClickEvent event) {
 				tablePipelines.resetFilters();

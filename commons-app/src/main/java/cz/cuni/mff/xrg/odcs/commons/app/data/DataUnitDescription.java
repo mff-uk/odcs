@@ -47,12 +47,14 @@ public class DataUnitDescription {
 	 * @param name Name of data unit.
 	 * @param typeName Type of data unit.
 	 * @param description Description of data unit.
+	 * @param optional True if the output data unit is optional.
 	 * @return description
 	 */
 	public static DataUnitDescription createOutput(String name,
 			String typeName,
-			String description) {
-		return new DataUnitDescription(name, typeName, description, false);
+			String description,
+			boolean optional) {
+		return new DataUnitDescription(name, typeName, description, optional);
 	}
 
 	/**

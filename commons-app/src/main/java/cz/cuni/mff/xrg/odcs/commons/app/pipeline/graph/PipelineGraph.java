@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import javax.persistence.*;
  * @author Jiri Tomes
  * @author Bogo
  * @author Jan Vojt
- *
  */
 @Entity
 @Table(name = "ppl_graph")
@@ -231,7 +229,7 @@ public class PipelineGraph implements DataObject {
 	}
 
 	/**
-	 * Duplicate methdod from adding edge to graph. Probably only one shall
+	 * Duplicate method from adding edge to graph. Probably only one shall
 	 * remain.
 	 *
 	 * @param fromId node id
@@ -294,7 +292,7 @@ public class PipelineGraph implements DataObject {
 	 * Updates Node position in graph.
 	 *
 	 * @param dpuId The DPU ID will that will be moved.
-	 * @param newX  The value od X point of node.
+	 * @param newX  The value of X point of node.
 	 * @param newY  The value of Y point of node
 	 */
 	public void moveNode(int dpuId, int newX, int newY) {
@@ -325,7 +323,7 @@ public class PipelineGraph implements DataObject {
 	}
 
 	/**
-	 * Validates new edge in graph. TODO refactor and use
+	 * Validates new edge in graph. TODO refractor and use
 	 * <code>Exception</code>s instead of
 	 * <code>String</code>s.
 	 *
@@ -338,9 +336,6 @@ public class PipelineGraph implements DataObject {
 		Node to = getNodeById(toId);
 
 		// Rules validation with corresponding error messages.
-		if (from.getDpuInstance().getType() == DPUType.LOADER) {
-			return "Loader cannot have an output edge!";
-		}
 		if (from.equals(to)) {
 			return "Loops are not allowed!";
 		}

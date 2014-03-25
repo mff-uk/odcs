@@ -39,6 +39,11 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
         
         private boolean useSparqlGraphProtocol = false;
 
+        /**
+	 * True if the input should be copied to the output.
+	 */
+	private boolean penetrable;	
+	
 	public RDFLoaderConfig() {
 		this.SPARQL_endpoint = "";
 		this.Host_name = "";
@@ -52,7 +57,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retryTime = 1000L;
 		this.endpointParams = new LoaderEndpointParams();
                 this.useSparqlGraphProtocol = false;
-
+                this.penetrable = false;
 	}
 
 	public RDFLoaderConfig(String SPARQL_endpoint, String Host_name,
@@ -73,6 +78,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retrySize = retrySize;
 		this.endpointParams = endpointParams;
                 this.useSparqlGraphProtocol = useSparqlGraphProtocol;
+                this.penetrable = false;
 	}
 
     public void setUseSparqlGraphProtocol(boolean useSparqlGraphProtocol) {
@@ -207,8 +213,16 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
 	public void setHost_name(String Host_name) {
 		this.Host_name = Host_name;
-	}	
-	
+	}
+
+	public boolean isPenetrable() {
+		return penetrable;
+	}
+
+	public void setPenetrable(boolean redirectInput) {
+		this.penetrable = redirectInput;
+	}
+		
 	/**
 	 * Returns true, if DPU configuration is valid, false otherwise.
 	 *

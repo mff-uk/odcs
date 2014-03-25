@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.*;
@@ -13,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
@@ -41,6 +43,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
+	@OutputDataUnit(name = "input_redirection", optional = true)
+	public RDFDataUnit inputShadow;	
+	
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
@@ -165,6 +170,10 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
 		}
+		
+		if (config.isPenetrable()) {
+			((ManagableRdfDataUnit)inputShadow).merge(rdfDataUnit);
+		}		
 	}
 
 	/**
