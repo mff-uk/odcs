@@ -239,9 +239,12 @@ public class MyDPU  {
 	<h2 id="basicTechs">Basic Technologies</h2>
 
 	<h3 id="osgi">OSGi bundles</h3>
-        <p>The DPUs developed are provided to the ODCleanStore in the form of OSGi bundles. The advantage of using OSGi bundles instead of simple JAR archives is that OSGi supports dynamic loadings of JAR files with their dependency resolving. Also every DPU may use its own set of dependencies (JAR libraries), which are hidden to other DPUs, thus, two DPUs may use two conflicting dependencies at once. </p>  
+        <p>The DPUs developed are provided to the ODCleanStore in the form of OSGi bundles. The OSGI can be view as the dependency management system.
+Bundle is a jar file with additional informations in MANIFEST.MF. The advantage of using OSGi bundles instead of simple JAR archives is that OSGi supports dynamic loadings of JAR files with their dependency resolving - OSGI uses information in jar's MANIFEST.MF to identify the dependencies of the bundle. Also every DPU may use its own set of dependencies (JAR libraries), which are hidden to other DPUs, thus, two DPUs may use two conflicting dependencies at once. </p>  
         
-        <p> Each OSGi bundle contains <code>maninifest.mf</code> file located in the bundle, <code>META-INF</code> folder. This files contains bundle description. The most important part contains settings for exported and imported packages. Sample of this part is as follows: 
+        <p> Each OSGi bundle contains <code>maninifest.mf</code> file located in the bundle, <code>META-INF</code> folder. This files contains bundle description. The most important part contains settings for exported and imported packages. The Export-Package is the list of packages provided by the bundle
+    while the Import-Package is the list of packages that the bundle requires from 
+    others to export in order to work properly. Sample of this part is as follows: 
 	
 	
 <div class="maven-pom"> <pre> <code>
@@ -258,7 +261,8 @@ Import-Package: com.vaadin.data,com.vaadin.data.util,com.vaadin.server,c
 </code> </pre> </div>
 
 <p> The <code>Export-Package</code> configuration option specifies packages that the DPU bundle provides to the external environment (ODCleanStore). On the other hand 
-	<code>Import-Package</code> configuration option lists dependencies of the bundle -- the packages that are required by the bundle and MUST be provide by the external environment (ODCleanStore) before the DPU is used. Dependencies are specified as packages, not JAR archives or classes in the  <code>maninifest.mf</code> file. </p>
+	<code>Import-Package</code> configuration option lists dependencies of the bundle -- the packages that the bundle requires from 
+    others. As a result, such dependencies MUST be provide by the external environment (ODCleanStore) before the DPU is used. Dependencies are specified as packages, not JAR archives or classes in the  <code>maninifest.mf</code> file. </p>
         
         Manifest file  <code>maninifest.mf</code> also contains lines with <code>DPU-MainClass</code> and
 	<code>DPU-Package</code> that are essential for bundle use. <code>DPU-MainClass</code> contains name of the main class of the DPU which is called when the DPU is executed on the pipeline. <code>DPU-Package</code> contains name of the package in which the main class is located.
