@@ -916,18 +916,18 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 *
 	 * @param graphInstance Concrete graph contains RDF triples.
 	 */
-	@Override
-	public void addTriplesFromGraph(Graph graphInstance) {
-
-		if (graphInstance != null) {
-			Iterator<Statement> it = graphInstance.iterator();
-
-			while (it.hasNext()) {
-				Statement statement = it.next();
-				addStatement(statement, graph);
-			}
-		}
-	}
+    @Override
+    public void addTriplesFromGraph(Graph graphInstance) {
+        if (graphInstance != null) {
+            try {
+                RepositoryConnection connection = getConnection();
+                connection.add(graphInstance, graph);
+            } catch (RepositoryException e) {
+                hasBrokenConnection = true;
+                logger.debug(e.getMessage());
+            }
+        }
+    }
 
 	/**
 	 * Make construct query over graph URIs in dataSet and return interface
