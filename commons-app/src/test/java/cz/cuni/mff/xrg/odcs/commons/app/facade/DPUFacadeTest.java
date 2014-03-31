@@ -74,30 +74,33 @@ public class DPUFacadeTest {
     public void testCreateCopy() {
         System.out.println("createCopy");
         DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate("testParent", DPUType.EXTRACTOR);
-        DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName", DPUType.EXTRACTOR);
-        templateRecord.setDescription("testDescription");
-        templateRecord.setId(-54L);
-        templateRecord.setJarDescription("testJarDescription");
-        templateRecord.setJarDirectory("testJarDirectory");
-        templateRecord.setJarName("testJarName");
+        parentTemplateRecord.setDescription("testDescription");
+        parentTemplateRecord.setId(-54L);
+        parentTemplateRecord.setJarDescription("testJarDescription");
+        parentTemplateRecord.setJarDirectory("testJarDirectory");
+        parentTemplateRecord.setJarName("testJarName");        
+		
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName", DPUType.EXTRACTOR);
+		// set description as only jarproperties are inherit from parent
+		templateRecord.setDescription("secondTestDescription");
         templateRecord.setParent(parentTemplateRecord);
 
         DPUTemplateRecord copyTemplateRecord = dpuFacade.createCopy(templateRecord);
         assertNotNull(copyTemplateRecord);
         assertEquals(DPUType.EXTRACTOR, copyTemplateRecord.getType());
-        assertEquals("testDescription", copyTemplateRecord.getDescription());
+        assertEquals("secondTestDescription", copyTemplateRecord.getDescription());
         assertEquals(null, copyTemplateRecord.getId());
         assertEquals("testName", copyTemplateRecord.getName());
-        assertEquals(null, copyTemplateRecord.getJarDescription());
-        assertEquals(null, copyTemplateRecord.getJarDirectory());
-        assertEquals(null, copyTemplateRecord.getJarName());
+        assertEquals("testJarDescription", copyTemplateRecord.getJarDescription());
+        assertEquals("testJarDirectory", copyTemplateRecord.getJarDirectory());
+        assertEquals("testJarName", copyTemplateRecord.getJarName());
         assertEquals(ShareType.PRIVATE, copyTemplateRecord.getShareType());
 
         templateRecord.setParent(null);
         DPUTemplateRecord copy1TemplateRecord = dpuFacade.createCopy(templateRecord);
         assertNotNull(copy1TemplateRecord);
         assertEquals(DPUType.EXTRACTOR, copy1TemplateRecord.getType());
-        assertEquals("testDescription", copy1TemplateRecord.getDescription());
+        assertEquals("secondTestDescription", copy1TemplateRecord.getDescription());
         assertEquals(null, copy1TemplateRecord.getId());
         assertEquals("testName", copy1TemplateRecord.getName());
         assertEquals("testJarDescription", copy1TemplateRecord.getJarDescription());

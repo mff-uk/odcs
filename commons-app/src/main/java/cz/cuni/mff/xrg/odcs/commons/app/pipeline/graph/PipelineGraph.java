@@ -9,9 +9,7 @@ import java.util.Set;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.*;
 
 /**
@@ -485,4 +483,46 @@ public class PipelineGraph implements DataObject {
 		}
 		return edgesFrom;
 	}
+	
+	/**
+	 * Returns true if two objects represent the same pipeline. This holds if
+	 * and only if
+	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 *
+	 * @param obj
+	 * @return true if both objects represent the same pipeline
+	 */	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final DataObject other = (DataObject)obj;
+		if (this.getId() == null) {
+			return super.equals(other);
+		}
+
+		return Objects.equals(this.getId(), other.getId());
+	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 *
+	 * @return The value of hashcode.
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null) {
+			return super.hashCode();
+		}
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.getId());
+		return hash;
+	}	
+	
 }

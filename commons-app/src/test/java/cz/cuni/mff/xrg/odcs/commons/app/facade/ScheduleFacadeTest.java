@@ -201,8 +201,8 @@ public class ScheduleFacadeTest {
         scheduleNotificationRecord.setEmails(emailAddresses);
         schedule.setNotification(scheduleNotificationRecord);
         scheduleFacade.save(schedule);
-        
-        scheduleFacade.deleteNotification(scheduleNotificationRecord);
+		
+        scheduleFacade.deleteNotification(schedule.getNotification());
         em.flush();
         
         Schedule schedule1 = scheduleFacade.getSchedule(schedule.getId());

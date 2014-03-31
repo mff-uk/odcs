@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -15,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
  */
 @Entity
 @Table(name = "dpu_instance")
-public class DPUInstanceRecord extends DPURecord implements DataObject {
+public class DPUInstanceRecord extends DPURecord {
 		
 	/**
 	 * Template used for creating this instance. 

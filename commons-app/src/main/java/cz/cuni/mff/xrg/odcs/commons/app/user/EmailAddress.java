@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
  */
 @Entity
 @Table(name = "sch_email")
-public class EmailAddress implements DataObject, Comparable<Object> {
+public class EmailAddress implements Comparable<Object>, DataObject {
 	
 	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
 	@SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
@@ -104,5 +104,5 @@ public class EmailAddress implements DataObject, Comparable<Object> {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+		
 }

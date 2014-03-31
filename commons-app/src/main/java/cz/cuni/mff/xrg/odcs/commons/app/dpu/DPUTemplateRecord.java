@@ -4,7 +4,6 @@ import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
@@ -28,7 +27,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord
-		implements OwnedEntity, SharedEntity, DataObject {
+		implements OwnedEntity, SharedEntity {
 
 	/**
 	 * Visibility in DPUTree.
@@ -107,6 +106,7 @@ public class DPUTemplateRecord extends DPURecord
 		shareType = ShareType.PRIVATE;
 		type = dpu.type;
 		parent = dpu.parent;
+		
 		if (parent == null) {
 			jarDirectory = dpu.jarDirectory;
 			jarName = dpu.jarName;
@@ -216,13 +216,15 @@ public class DPUTemplateRecord extends DPURecord
 			// from our new parent
 			jarDirectory = null;
 			jarName = null;
+			jarDescription = null;
 			type = null;
 		} else if (this.parent != null && newParent == null) {
 			// we was not top, now we are .. we need to take the valuse
 			// from out parent and save them as ours
-			jarDirectory = this.parent.jarDirectory;
-			jarName = this.parent.jarName;
-			jarDescription = this.parent.jarDescription;
+			jarDirectory = this.getParent().jarDirectory;
+			jarName = this.getParent().jarName;
+			jarDescription = this.getParent().jarDescription;
+			type = this.getParent().type;
 		} else {
 			// null -> null = no change, we preserve our data
 			// not null -> not null = no change, as we have nulls before and now

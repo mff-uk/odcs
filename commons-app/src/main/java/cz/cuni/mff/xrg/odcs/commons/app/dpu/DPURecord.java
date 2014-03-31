@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @MappedSuperclass
-public abstract class DPURecord {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DPURecord.class);
+public abstract class DPURecord implements DataObject {
 
 	/**
 	 * Primary key of graph stored in db
@@ -195,7 +193,11 @@ public abstract class DPURecord {
 	 * @return raw configuration representation.
 	 */
 	public String getRawConf() {
-		return new String(serializedConfiguration);
+		if (serializedConfiguration == null) {
+			return null;
+		} else {
+			return new String(serializedConfiguration);
+		}
 	}
 
 	/**

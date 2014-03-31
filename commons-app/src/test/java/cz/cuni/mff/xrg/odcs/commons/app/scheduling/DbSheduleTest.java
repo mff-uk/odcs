@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
@@ -11,6 +13,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Test suite for {@link DbSheduleImpl}
  * @author Petyr
@@ -18,10 +23,25 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback=true)
-public class DbSheduleImplTest {
+public class DbSheduleTest {
 	
 	@Autowired
-	private DbSchedule dbSchedule;
+	private DbSchedule scheduleDao;
+	
+	@Autowired
+	private DbPipeline pipelineDao;
+	
+	@Test 
+	@Transactional
+	public void testGetFollowers() {
+		
+		Pipeline pipe = pipelineDao.getInstance(1L);
+		List<Schedule> followers = scheduleDao.getFollowers(pipe, true);
+		
+		assertNotNull(followers);
+		assertEquals(1, followers.size());
+		assertEquals(2L, (long) followers.get(0).getId());
+	}	
 	
 	/**
 	 * Test of getAllSchedules method, of class ScheduleFacade.
@@ -29,12 +49,12 @@ public class DbSheduleImplTest {
 	@Test
 	@Transactional
 	public void testGetLastExecForRunAfter() {
-		Schedule schedule = dbSchedule.getInstance(2);
+		Schedule schedule = scheduleDao.getInstance(2);
 
 		Assert.assertNotNull(schedule);
 		
 		// just try to excute this
-		List<Date> times = dbSchedule.getLastExecForRunAfter(schedule);
+		List<Date> times = scheduleDao.getLastExecForRunAfter(schedule);
 		
 		Assert.assertNotNull(times);
 		Assert.assertEquals(1, times.size());

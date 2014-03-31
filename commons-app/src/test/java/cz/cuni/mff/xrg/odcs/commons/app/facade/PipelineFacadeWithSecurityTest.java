@@ -27,11 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+
+import static org.junit.Assert.*;
 
 /**
  * Test suite for pipeline facade interface.
@@ -108,7 +113,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		super.testDelete_Pipeline();
 	}
 	
-	@Test
+	@Test(expected=AccessDeniedException.class)
 	@Transactional
 	public void testDelete_Pipeline2() {
 		System.out.println("delete");
@@ -131,8 +136,9 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		em.clear();
 
 		pipelineFacade.delete(pipeline);
-		Pipeline pipeline3 = pipelineFacade.getPipeline(id);
-		assertNull(pipeline3);
+		
+		// pipeline no longer exist, so we expect AccessDeniedException
+		pipelineFacade.getPipeline(id);
 	}	
 	
 	@Override
@@ -140,81 +146,6 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 	@Transactional
 	public void testCopyPipeline() {
 		super.testCopyPipeline();
-	}
-	
-	@Test
-	@Transactional
-	public void testCopyPipeline2() {
-		System.out.println("copyPipeline");
-
-		Pipeline pipeline = pipelineFacade.createPipeline();
-		pipeline.setDescription("testDescription");
-		pipeline.setGraph(new PipelineGraph());
-		pipeline.setLastChange(new Date());
-		pipeline.setName("testName");
-		pipeline.setUser(authCtx.getUser());
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
-		pipeline.getConflicts().add(pipeline);
-		pipelineFacade.save(pipeline);
-
-		Pipeline pipeline2 = pipelineFacade.copyPipeline(pipeline);
-		assertNotNull(pipeline2);
-		assertNotSame(pipeline.getId(), pipeline2.getId());
-		assertEquals(pipeline.getDescription(), pipeline2.getDescription());
-		// assertEquals(pipeline.getGraph(), pipeline2.getGraph());
-		// assertEquals(pipeline.getLastChange(), pipeline2.getLastChange());
-		assertEquals("Copy of " + pipeline.getName(), pipeline2.getName());
-		assertEquals(pipeline.getOwner(), pipeline2.getOwner());
-		assertEquals(ShareType.PRIVATE, pipeline2.getShareType());
-		// assertEquals(pipeline.getConflicts(), pipeline2.getConflicts());
-
-		Pipeline pipeline3 = pipelineFacade.copyPipeline(pipeline);
-		assertNotNull(pipeline3);
-		assertNotSame(pipeline.getId(), pipeline3.getId());
-		assertEquals(pipeline.getDescription(), pipeline3.getDescription());
-		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of " + pipeline.getName() + " #1",
-				pipeline3.getName());
-		assertEquals(pipeline.getOwner(), pipeline3.getOwner());
-		assertEquals(ShareType.PRIVATE, pipeline3.getShareType());
-		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-
-		Pipeline pipeline4 = pipelineFacade.copyPipeline(pipeline);
-		assertNotNull(pipeline4);
-		assertNotSame(pipeline.getId(), pipeline4.getId());
-		assertEquals(pipeline.getDescription(), pipeline4.getDescription());
-		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of " + pipeline.getName() + " #2",
-				pipeline4.getName());
-		assertEquals(pipeline.getOwner(), pipeline4.getOwner());
-		assertEquals(ShareType.PRIVATE, pipeline4.getShareType());
-		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-
-		Pipeline pipeline5 = pipelineFacade.copyPipeline(pipeline4);
-		assertNotNull(pipeline5);
-		assertNotSame(pipeline.getId(), pipeline5.getId());
-		assertEquals(pipeline.getDescription(), pipeline5.getDescription());
-		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of Copy of " + pipeline.getName() + " #2",
-				pipeline5.getName());
-		assertEquals(pipeline.getOwner(), pipeline5.getOwner());
-		assertEquals(ShareType.PRIVATE, pipeline5.getShareType());
-		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
-
-		Pipeline pipeline6 = pipelineFacade.copyPipeline(pipeline4);
-		assertNotNull(pipeline6);
-		assertNotSame(pipeline.getId(), pipeline6.getId());
-		assertEquals(pipeline.getDescription(), pipeline6.getDescription());
-		// assertEquals(pipeline.getGraph(), pipeline3.getGraph());
-		// assertEquals(pipeline.getLastChange(), pipeline3.getLastChange());
-		assertEquals("Copy of Copy of " + pipeline.getName() + " #2 #1",
-				pipeline6.getName());
-		assertEquals(pipeline.getOwner(), pipeline6.getOwner());
-		assertEquals(ShareType.PRIVATE, pipeline6.getShareType());
-		// assertEquals(pipeline.getConflicts(), pipeline3.getConflicts());
 	}
 	
 	@Override
@@ -263,7 +194,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		Pipeline nPpl = pipelineFacade.copyPipeline(ppl);
 
 		// test copying for the first time
-		String newName = "Copy of " + ppl.getName();
+		String newName = "Copy #1 of " + ppl.getName();
 		assertNotSame(ppl, nPpl);
 		assertEquals(newName, nPpl.getName());
 		assertEquals(ppl.getDescription(), nPpl.getDescription());
@@ -271,7 +202,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		Pipeline nPpl1 = pipelineFacade.copyPipeline(ppl);
 
 		// test copying for the second time
-		String newName1 = "Copy of " + ppl.getName() + " #1";
+		String newName1 = "Copy #2 of " + ppl.getName();
 		assertNotSame(ppl, nPpl1);
 		assertEquals(newName1, nPpl1.getName());
 		assertEquals(ppl.getDescription(), nPpl1.getDescription());
@@ -283,9 +214,8 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 	public void testDeletePipeline() {
 		super.testDeletePipeline();
 	}
-	
-	
-	@Test
+		
+	@Test(expected=AccessDeniedException.class)
 	@Transactional
 	public void testDeletePipeline2() {
 
@@ -301,7 +231,96 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		em.flush();
 
 		assertEquals(pipes[0], pipelineFacade.getPipeline(pipes[0].getId()));
-		assertNull(pipelineFacade.getPipeline(pipes[1].getId()));
 		assertEquals(pipes[2], pipelineFacade.getPipeline(pipes[2].getId()));
+		// pipeline no longer exist, so we expect AccessDeniedException
+		assertNull(pipelineFacade.getPipeline(pipes[1].getId()));
 	}	
+	
+	/**
+	 * Test of createOpenEvent method, of class PipelineFacade.
+	 */
+	@Test
+	@Transactional
+	public void testCreateOpenEvent() {
+		System.out.println("createOpenEvent");
+		
+		DPUTemplateRecord parentTemplateRecord = dpuFacade.createTemplate(
+				"testParent", DPUType.EXTRACTOR);
+        parentTemplateRecord.setDescription("parentTestDescription");
+        parentTemplateRecord.setJarDescription("parenttestJarDescription");
+        parentTemplateRecord.setJarDirectory("parenttestJarDirectory");
+        parentTemplateRecord.setJarName("parenttestJarName");
+        	
+		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName",
+				DPUType.EXTRACTOR);
+		templateRecord.setDescription("testDescription");
+		templateRecord.setJarDescription("testJarDescription");
+		templateRecord.setJarDirectory("testJarDirectory");
+		templateRecord.setJarName("testJarName");
+		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setParent(parentTemplateRecord);
+		dpuFacade.save(parentTemplateRecord);
+		dpuFacade.save(templateRecord);
+        
+		DPUTemplateRecord templateRecord2 = dpuFacade.createTemplate("testName2",
+				DPUType.EXTRACTOR);
+		templateRecord2.setDescription("testDescription2");
+		templateRecord2.setJarDescription("testJarDescription2");
+		templateRecord2.setJarDirectory("testJarDirectory2");
+		templateRecord2.setJarName("testJarName2");
+		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setParent(parentTemplateRecord);
+		dpuFacade.save(templateRecord2);
+		
+		Pipeline pipeline = pipelineFacade.createPipeline();
+		pipeline.setDescription("testDescription");
+		PipelineGraph pipelineGraph = new PipelineGraph();
+		DPUInstanceRecord dpuInstanceRecord = dpuFacade
+				.createInstanceFromTemplate(templateRecord);
+		DPUInstanceRecord dpuInstanceRecord2 = dpuFacade
+				.createInstanceFromTemplate(templateRecord2);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord);
+		pipelineGraph.addDpuInstance(dpuInstanceRecord2);
+		pipeline.setGraph(pipelineGraph);
+		pipeline.setLastChange(new Date());
+		pipeline.setName("testName");
+		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
+		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.getConflicts().add(pipeline);
+		dpuFacade.save(dpuInstanceRecord);
+
+		pipelineFacade.createOpenEvent(pipeline);
+		if (authCtx != null) {
+			assertNull(openEventDao.getOpenEvent(pipeline, authCtx.getUser()));
+		}
+		
+		pipelineFacade.save(pipeline);
+		if (authCtx != null) {
+			pipelineFacade.createOpenEvent(pipeline);
+			OpenEvent openEvent = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent);
+			assertEquals(authCtx.getUser(), openEvent.getUser());
+			assertEquals(pipeline, openEvent.getPipeline());
+			Date timestamp = openEvent.getTimestamp();
+			
+			pipelineFacade.createOpenEvent(pipeline);
+			OpenEvent openEvent2 = openEventDao.getOpenEvent(pipeline, authCtx.getUser());
+			assertNotNull(openEvent2);
+			assertEquals(authCtx.getUser(), openEvent2.getUser());
+			assertEquals(pipeline, openEvent2.getPipeline());
+			
+			// test that we gate two same events
+// TODO: it dosn't work why?
+//			assertEquals(timestamp, openEvent.getTimestamp());
+			
+			assertEquals(openEvent.getTimestamp(), openEvent2.getTimestamp());
+			assertEquals(openEvent.getId(), openEvent2.getId());
+			assertEquals(openEvent, openEvent2);
+		} else {
+			// drop it, it has to test for null
+			pipelineFacade.createOpenEvent(pipeline);			
+		}
+	}
+	
+	
 }

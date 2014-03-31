@@ -9,6 +9,7 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains and manage information about execution for single
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "exec_context_dpu")
-public class ProcessingUnitInfo implements DataObject {
+public class ProcessingUnitInfo implements DataObject{
 
 	/**
 	 * Unique id of pipeline execution.
@@ -93,5 +94,46 @@ public class ProcessingUnitInfo implements DataObject {
 	public Long getId() {
 		return id;
 	}
+	
+	/**
+	 * Returns true if two objects represent the same pipeline. This holds if
+	 * and only if
+	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 *
+	 * @param obj
+	 * @return true if both objects represent the same pipeline
+	 */	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final DataObject other = (DataObject)obj;
+		if (this.getId() == null) {
+			return super.equals(other);
+		}
+
+		return Objects.equals(this.getId(), other.getId());
+	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 *
+	 * @return The value of hashcode.
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null) {
+			return super.hashCode();
+		}
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.getId());
+		return hash;
+	}	
 	
 }

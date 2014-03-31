@@ -15,16 +15,16 @@ INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(1,1);
 INSERT INTO USR_USER_ROLE(user_id,role_id) VALUES(2,1);
 
 -- Testing piepline (DBpedia with empty configurations)
-INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
- VALUES(1,'SPARQL Extractor',0,'Extracts RDF data.',0,'','RDF_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.');
-INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
- VALUES(2,'RDF File Extractor',0,'Extracts RDF data from a file.',0,'','File_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.');
-INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
- VALUES(3,'SPARQL Transformer',0,'SPARQL Transformer.',1,'','SPARQL_transformer-0.0.1.jar','',NULL,1,1,'No description in manifest.');
-INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
- VALUES(4,'SPARQL Loader',0,'Loads RDF data.',2,'','RDF_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.');
-INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description)
- VALUES(5,'RDF File Loader',0,'Loads RDF data into file.',2,'','File_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.');
+INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description,config_valid)
+ VALUES(1,'SPARQL Extractor',0,'Extracts RDF data.',0,'','RDF_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.',1);
+INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description,config_valid)
+ VALUES(2,'RDF File Extractor',0,'Extracts RDF data from a file.',0,'','File_extractor-0.0.1.jar','',NULL,1,1,'No description in manifest.',1);
+INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description,config_valid)
+ VALUES(3,'SPARQL Transformer',0,'SPARQL Transformer.',1,'','SPARQL_transformer-0.0.1.jar','',NULL,1,1,'No description in manifest.',1);
+INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description,config_valid)
+ VALUES(4,'SPARQL Loader',0,'Loads RDF data.',2,'','RDF_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.',1);
+INSERT INTO DPU_TEMPLATE(id,name,use_dpu_description,description,type,jar_directory,jar_name,configuration,parent_id,user_id,visibility,jar_description,config_valid)
+ VALUES(5,'RDF File Loader',0,'Loads RDF data into file.',2,'','File_loader-0.0.1.jar','',NULL,1,1,'No description in manifest.',1);
 
 INSERT INTO DPU_INSTANCE(id,name,use_dpu_description,description,configuration,dpu_id)
  VALUES(1,'SPARQL Extractor',0,'Extracts RDF data.',NULL,1);

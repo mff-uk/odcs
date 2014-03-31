@@ -6,10 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.*;
@@ -298,4 +295,46 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 	public User getOwner() {
 		return this;
 	}
+	
+	/**
+	 * Returns true if two objects represent the same pipeline. This holds if
+	 * and only if
+	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
+	 *
+	 * @param obj
+	 * @return true if both objects represent the same pipeline
+	 */	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final DataObject other = (DataObject)obj;
+		if (this.getId() == null) {
+			return super.equals(other);
+		}
+
+		return Objects.equals(this.getId(), other.getId());
+	}
+
+	/**
+	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+	 *
+	 * @return The value of hashcode.
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null) {
+			return super.hashCode();
+		}
+		int hash = 7;
+		hash = 97 * hash + Objects.hashCode(this.getId());
+		return hash;
+	}
+	
 }

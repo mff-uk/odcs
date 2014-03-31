@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -29,6 +30,9 @@ public class ScheduleFacadeTest {
 	
 	@Autowired
 	private ScheduleFacade scheduler;
+	
+	@Autowired
+	private PipelineFacade pipeline;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -114,4 +118,5 @@ public class ScheduleFacadeTest {
 		Schedule ret = scheduler.getSchedule(1L);
 		assertEquals(now, ret.getLastExecution());
 	}
+	
 }
