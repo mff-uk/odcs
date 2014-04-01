@@ -36,8 +36,10 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 	private Integer retrySize;
 
 	private LoaderEndpointParams endpointParams;
+        
+        private boolean useSparqlGraphProtocol = true;
 
-	/**
+        /**
 	 * True if the input should be copied to the output.
 	 */
 	private boolean penetrable;	
@@ -54,14 +56,15 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retrySize = -1;
 		this.retryTime = 1000L;
 		this.endpointParams = new LoaderEndpointParams();
-		this.penetrable = false;
+                this.useSparqlGraphProtocol = true;
+                this.penetrable = false;
 	}
 
 	public RDFLoaderConfig(String SPARQL_endpoint, String Host_name,
 			String Password,
 			List<String> GraphsUri, WriteGraphType graphOption,
 			InsertType insertOption, long chunkSize, boolean validDataBefore,
-			long retryTime, int retrySize, LoaderEndpointParams endpointParams) {
+			long retryTime, int retrySize, LoaderEndpointParams endpointParams, boolean useSparqlGraphProtocol) {
 
 		this.SPARQL_endpoint = SPARQL_endpoint;
 		this.Host_name = Host_name;
@@ -74,8 +77,17 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retryTime = retryTime;
 		this.retrySize = retrySize;
 		this.endpointParams = endpointParams;
-		this.penetrable = false;
+                this.useSparqlGraphProtocol = useSparqlGraphProtocol;
+                this.penetrable = false;
 	}
+
+    public void setUseSparqlGraphProtocol(boolean useSparqlGraphProtocol) {
+        this.useSparqlGraphProtocol = useSparqlGraphProtocol;
+    }
+
+    public boolean isUseSparqlGraphProtocol() {
+        return useSparqlGraphProtocol;
+    }
 
 	/**
 	 * Returns URL address of SPARQL endpoint as string.
@@ -227,6 +239,22 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 				&& retryTime != null
 				&& retryTime > 0
 				&& endpointParams != null;
+	}
+        
+        /**
+	 * Fill missing configuration with default values.
+	 */
+	@Override
+	public void onDeserialize() {
+		if (endpointParams == null) {
+			endpointParams = new LoaderEndpointParams();
+		}
+                
+                
+                
+//                if (useSparqlGraphProtocol == null) {
+//                    seSparqlGraphProtocol = false;
+//                }
 	}
 	
 }

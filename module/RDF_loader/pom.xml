@@ -23,7 +23,50 @@
 			<version>${odcs.version}</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>		
+		</dependency>
+               <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <version>4.3.3</version>
+                    <type>jar</type>
+<!--                    <scope>provided</scope>-->
+                </dependency>
+                
+<!--                <dependency>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                    <version>4.2.0</version>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                    <version>4.2.0</version>
+                </dependency>-->
+                
+                <dependency>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                    <version>1.9</version>
+                </dependency>
+                
+<!--                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                    <version>4.3.2</version>
+                </dependency>
+                
+                <dependency>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                    <version>1.1.3</version>
+                </dependency>-->
+
+<!--                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpmime</artifactId>
+                    <version>4.3.3</version>
+                </dependency>		-->
 	</dependencies>	
         
                         <!-- define license -->
