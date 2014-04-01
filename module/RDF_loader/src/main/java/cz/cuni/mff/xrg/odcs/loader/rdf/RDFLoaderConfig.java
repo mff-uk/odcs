@@ -37,7 +37,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
 	private LoaderEndpointParams endpointParams;
         
-        private boolean useSparqlGraphProtocol = false;
+        private boolean useSparqlGraphProtocol = true;
 
         /**
 	 * True if the input should be copied to the output.
@@ -56,7 +56,7 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		this.retrySize = -1;
 		this.retryTime = 1000L;
 		this.endpointParams = new LoaderEndpointParams();
-                this.useSparqlGraphProtocol = false;
+                this.useSparqlGraphProtocol = true;
                 this.penetrable = false;
 	}
 
@@ -249,6 +249,8 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 		if (endpointParams == null) {
 			endpointParams = new LoaderEndpointParams();
 		}
+                
+                
                 
 //                if (useSparqlGraphProtocol == null) {
 //                    seSparqlGraphProtocol = false;

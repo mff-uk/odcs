@@ -60,8 +60,8 @@ public class SPARQLLoaderTest1 {
 
 	private static final String PASSWORD = "dba01OD";
 
-	private static final String INPUT_GRAPH = "http://test/loader/speed/12/input";
-        private static final String OUTPUT_GRAPH = "http://test/loader/speed/12/output";
+	private static final String INPUT_GRAPH = "http://test/loader/speed/16/input";
+        private static final String OUTPUT_GRAPH = "http://test/loader/speed/16/output";
 
 	private static final String UPDATE_ENDPOINT = "http://odcs.xrg.cz:8900/sparql-auth";
         //private static final String UPDATE_ENDPOINT = "http://odcs.xrg.cz:8900/sparql-graph-crud-auth";
