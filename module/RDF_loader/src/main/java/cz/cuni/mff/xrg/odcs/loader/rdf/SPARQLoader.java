@@ -25,8 +25,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-//import org.apache.commons.httpclient.UsernamePasswordCredentials;
-//import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -1502,9 +1500,6 @@ public class SPARQLoader {
               
                 connection.commit();
                 
-                
-         
-                //FileOutputStream fos = new FileOutputStream(new File(queryResFile));
                 logger.debug("Phase 1 Finished: data is serialized to RDF/XML file");
                 
             } catch (MalformedQueryException ex) {
@@ -1553,7 +1548,6 @@ public class SPARQLoader {
                     CredentialsProvider credsProvider = new BasicCredentialsProvider();
                     credsProvider.setCredentials(
                         AuthScope.ANY,
-                        //new AuthScope("https://localhost", AuthScope.ANY_PORT),
                         new UsernamePasswordCredentials(userName, password));
 
                     //create new client using the given creadentials
@@ -1584,18 +1578,6 @@ public class SPARQLoader {
 		logger.debug("Parameters of the request: {}", requestUriParameters);
 		logger.debug("Request method: SPARQL Graph protocol");
 
-//                //prepare new credentialProvider
-//                CredentialsProvider credsProvider = new BasicCredentialsProvider();
-//                credsProvider.setCredentials(
-//                    AuthScope.ANY,
-//                    //new AuthScope("https://localhost", AuthScope.ANY_PORT),
-//                    new UsernamePasswordCredentials(userName, password));
-//                
-//                //create new client using the given creadentials
-//                CloseableHttpClient httpclient = HttpClients.custom()
-//                .setDefaultCredentialsProvider(credsProvider)
-//                .build();
-                
                 //prepare new post request
                 HttpPost post = new HttpPost(graphProtocolEndpoint + requestUriParameters);
                 if (authentizationRequired) { 
@@ -1633,190 +1615,6 @@ public class SPARQLoader {
        }
         
 
-//       private InputStreamReader sparqlGraphProtocolPOST(URL endpointURL, List<String> endpointGraph, String fileData) throws RDFException {
-//
-//                //logger.debug("Start sparqlGraphProtocolPOST");
-//                          
-////                String graphProtocolEndpoint = "http://localhost:8890/sparql-graph-crud-auth";
-//                
-//                String graphProtocolEndpoint = null;
-//                if (endpointURL.toString().contains("sparql-auth")) {
-//                    //sparql auth endpoint
-//                    graphProtocolEndpoint = endpointURL.toString().replace("sparql-auth", "sparql-graph-crud-auth");
-//                }
-//                else if (endpointURL.toString().contains("sparql-auth")) {
-//                    //only sparql endpoint
-//                    graphProtocolEndpoint = endpointURL.toString().replace("sparql", "sparql-graph-crud");
-//                }
-//                else {
-//                    logger.error("Strange endpoint address {}, CRUD endpoint was not set properly. Loader will probably not be able to connect to the target endpoint.  ", endpointURL.toString());
-//                }
-//                
-//                //final String parameters = "?graph=http://test/loader/graphProtocol";     
-//                String requestUriParameters = getGraphParam("graph", endpointGraph, true);
-//		logger.debug("Target endpoint: {}", graphProtocolEndpoint);
-//		logger.debug("Parameters of the request: {}", requestUriParameters);
-//		logger.debug("Request method: SPARLQ Graph protocol");
-//                
-//
-//		URL call = null;
-//		try {
-//			call = new URL(graphProtocolEndpoint + requestUriParameters);
-//
-//		} catch (MalformedURLException e) {
-//			final String message = "Malfolmed URL exception by construct extract URL. ";
-//			logger.debug(message);
-//			throw new RDFException(message + e.getMessage(), e);
-//		}
-//
-//		HttpURLConnection httpConnection = null;
-//
-//		int retryCount = 0;
-//
-//                //input stream (to read data to be sumbitted via POST)
-//                FileInputStream fis = null;
-//                
-//                //write data to the output stream
-//                OutputStream os;
-//                BufferedOutputStream bos = null;
-//                
-//		while (true) {
-//			try {
-//
-//                            
-//                                
-//                                File dataFile = new File(fileData);
-//                                try {
-//                                    fis = new FileInputStream(dataFile);
-//
-//                                } catch (FileNotFoundException ex) {
-//                                    logger.error("File to be extracted cannot be found: {}", ex.getLocalizedMessage());
-//                                    logger.debug("This is strange error because the file is created by the DPU itself. ");
-//                                    logger.warn("Loading ends immediately");
-//                                    return null;
-//                                }
-//                            
-//                                
-//                               
-//                                
-//				httpConnection = (HttpURLConnection) call.openConnection();
-//				
-//                                httpConnection.setRequestMethod("POST");
-//                                httpConnection.setRequestProperty("Content-Type", "text/turtle");
-//                                httpConnection.setRequestProperty("Content-Length", String.valueOf(dataFile.length()));
-//                             
-//
-//                                httpConnection.setUseCaches(false);
-//                                httpConnection.setDoInput(true);
-//                                httpConnection.setDoOutput(true);
-//                               
-//                                int length = 8192; //8KB
-//                                httpConnection.setFixedLengthStreamingMode(length);
-//                                
-//                                logger.debug("RDF data is about to be submitted to the server");
-//                                
-//                               
-//                                //write data to the output stream     
-//                                os = httpConnection.getOutputStream();
-//                                bos = new BufferedOutputStream(os);
-//                                
-//                                
-//                                int numberOfChars;
-//                                do {
-//                                    //to get the next bytes
-//                                    byte[] nextBytes = new byte[(int) length];
-//                                    numberOfChars = fis.read(nextBytes);
-//                                    if (numberOfChars > -1) {
-//                                        //we have some chars:
-//                                        if (numberOfChars < length) {
-//                                        //we have less chars.
-//                                                length = numberOfChars;
-//                                        }
-//
-//                                         //get bytes to be stored to the output
-//                                        byte[] bytes = Arrays.copyOf(nextBytes, length);
-//
-//                                        //write output
-//                                        //logger.debug("Data: {}", new String(bytes));
-//                                        bos.write(bytes);
-//                                        bos.flush();
-//                                    }
-//
-//                                }  while(numberOfChars > -1);    
-//                                     
-//                                //close the streams
-//                                fis.close();
-//                                bos.close();    
-//
-//                                logger.debug("RDF data was submitted to the server");
-//                               
-//
-//				int httpResponseCode = httpConnection.getResponseCode();
-//				String httpResponseMessage = httpConnection.getResponseMessage();
-//
-//                                logger.debug("Response received");
-//				logger.debug("HTTP Response code: {}", httpResponseCode);
-//				logger.debug("HTTP Response message: {}", httpResponseMessage);
-//
-//				int firstResponseNumber = getFirstResponseNumber(
-//						httpResponseCode);
-//
-//				if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
-//                                        //there is an error returned by the server, we do not try again and end
-//                                        //TODO certain error may be errors of the server, not of the message and we should try agains
-//					String errorMessage = getHTTPResponseErrorMessage(
-//							httpConnection);
-//                                        
-//                                        logger.error(errorMessage);
-//					throw new InsertPartException(
-//							errorMessage + "\n\n" + "URL endpoint: " + endpointURL
-//							.toString());
-//				} else {
-//                                        //everything ok, we end
-//					InputStreamReader inputStreamReader = new InputStreamReader(
-//							httpConnection.getInputStream(), Charset.forName(
-//							encode));
-//
-//					return inputStreamReader;
-//				}
-//
-//			} catch (UnknownHostException e) {
-//				final String message = "Unknown host: ";
-//				throw new RDFException(message + e.getMessage(), e);
-//
-//			} catch (IOException e) {
-//				retryCount++;
-//                                //there was a problem, we try again
-//                                logger.error("Problem when submitting data via HTTP POST request: {}", e.getLocalizedMessage());
-//				if (!retryConnectionAgain(retryCount, endpointURL.toString())) {
-//                                        //it should not try again, it already tried too many times
-//					final String errorMessage = "Count of retryConnection is OVER (TOTAL " + retryCount + " ATTEMPTS). "
-//							+ "Endpoint HTTP connection stream cannot be opened. ";
-//
-//					logger.debug(errorMessage);
-//
-//					if (httpConnection != null) {
-//						httpConnection.disconnect();
-//					}
-//
-//					throw new RDFException(errorMessage + e.getMessage(), e);
-//				}
-//                                //it tries again
-//
-//			}
-//                        finally {
-//                            try {
-//                                fis.close();
-//                                bos.close();
-//                            } catch (IOException ex) {
-//                                logger.error("Cannot close input stream: {}", ex.getLocalizedMessage());
-//                            }
-//
-//                        }
-//		}
-//       
-//       }
-        
 	/**
 	 *
 	 * @param endpointURL      URL of endpoint we can to connect to.
