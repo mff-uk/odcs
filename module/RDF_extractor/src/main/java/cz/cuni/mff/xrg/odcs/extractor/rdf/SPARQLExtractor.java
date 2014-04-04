@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
@@ -263,7 +262,6 @@ public class SPARQLExtractor {
 
 		try {
 			connection = dataUnit.getConnection();
-			Authentificator.authenticate(hostName, password);
 
 			extractDataFromEnpointGraph(endpointURL, query,
 					format, connection, handlerExtractType, extractFail);

@@ -1,13 +1,11 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -15,7 +13,6 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import org.junit.*;
-import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -167,8 +164,8 @@ public class SPARQLLoaderTest1 {
 
 		boolean isLoaded = false;
 
-		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				virtuosoParams, true);
+        SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
+                virtuosoParams, true, USER, PASSWORD);
 		try {
 
                         

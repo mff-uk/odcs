@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;
 
@@ -25,6 +24,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -96,7 +97,7 @@ public class SPARQLoader {
 	 */
 	private static final String encode = "UTF-8";
 
-	private RDFDataUnit rdfDataUnit;
+    private RDFDataUnit rdfDataUnit;
 
 	/**
 	 * Count of reconnection if connection failed. For infinite loop use zero or
@@ -115,6 +116,9 @@ public class SPARQLoader {
 	 * Request HTTP parameters neeed for setting target SPARQL endpoint.
 	 */
 	private LoaderEndpointParams endpointParams;
+
+    private String password;
+    private String username;
 
 	/**
 	 *
@@ -136,24 +140,26 @@ public class SPARQLoader {
 	/**
 	 * Constructor for using in DPUs calling.
 	 *
-	 * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
-	 *                       loading
-	 * @param context        Given DPU context for DPU over it are executed.
-	 * @param retrySize      Integer value as count of attempts to reconnect if
-	 *                       the connection fails. For infinite loop use zero or
-	 *                       negative integer
-	 * @param retryTime      Long value as time in miliseconds how long to wait
-	 *                       before trying to reconnect.
-	 * @param endpointParams Request HTTP parameters neeed for setting target
-	 *                       SPARQL endpoint.
-	 */
+     * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
+     *                       loading
+     * @param context        Given DPU context for DPU over it are executed.
+     * @param retrySize      Integer value as count of attempts to reconnect if
+*                       the connection fails. For infinite loop use zero or
+*                       negative integer
+     * @param retryTime      Long value as time in miliseconds how long to wait
+*                       before trying to reconnect.
+     * @param endpointParams Request HTTP parameters neeed for setting target
+     * @param username
+     * @param password
+     */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			int retrySize, long retryTime, LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
+                       int retrySize, long retryTime, LoaderEndpointParams endpointParams, boolean useGraphProtocol, String username, String password) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
                 this.useGraphProtocol = useGraphProtocol;
-
+        this.username = username;
+        this.password = password;
 		setRetryConnectionSize(retrySize);
 		setRetryConnectionTime(retryTime);
 	}
@@ -162,19 +168,21 @@ public class SPARQLoader {
 	 * Constructor for using in DPUs calling with default retrySize and
 	 * retryTime values.
 	 *
-	 * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
-	 *                       loading
-	 * @param context        Given DPU context for DPU over it are executed.
-	 * @param endpointParams Request HTTP parameters neeed for setting target
-	 *                       SPARQL endpoint.
-	 */
+     * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
+     *                       loading
+     * @param context        Given DPU context for DPU over it are executed.
+     * @param endpointParams Request HTTP parameters neeed for setting target
+     * @param username
+     * @param password
+     */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
+                       LoaderEndpointParams endpointParams, boolean useGraphProtocol, String username, String password) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
                 this.useGraphProtocol = useGraphProtocol;
-
+        this.username = username;
+        this.password = password;
 		setRetryConnectionSize(DEFAULT_LOADER_RETRY_SIZE);
 		setRetryConnectionTime(DEFAUTL_LOADER_RETRY_TIME);
 	}
@@ -313,7 +321,6 @@ public class SPARQLoader {
 		ParamController.testPositiveParameter(chunkSize,
 				"Chunk size must be number greater than 0");
 
-		Authentificator.authenticate(userName, password);
 
 		RepositoryConnection connection = null;
 
@@ -735,7 +742,6 @@ public class SPARQLoader {
 	public long getSPARQLEndpointGraphSize(URL endpointURL, String endpointGraph,
 			String hostName, String password) throws RDFException {
 
-		Authentificator.authenticate(hostName, password);
 		return getSPARQLEndpointGraphSize(endpointURL, endpointGraph);
 	}
 
@@ -1111,8 +1117,6 @@ public class SPARQLoader {
 				}
 			}
 		}
-
-
 	}
 
 	private void setPOSTConnection(HttpURLConnection httpConnection,
@@ -1120,14 +1124,22 @@ public class SPARQLoader {
 			String contentType) throws IOException {
 
 		httpConnection.setRequestMethod("POST");
-		httpConnection.setRequestProperty("Content-Type", contentType);
-		httpConnection.setRequestProperty("Accept", "*/*");
-		httpConnection.setRequestProperty("Content-Length", ""
+        String userPass = this.username + ":" + this.password;
+        Base64 coder = new Base64();
+        byte[] userPassEncoded = coder.encode(userPass.getBytes());
+        String basicAuth = "Basic " + new String(userPassEncoded);
+        httpConnection.setRequestProperty ("Authorization", basicAuth);
+        httpConnection.setRequestProperty("Content-Type", contentType);
+        httpConnection.setRequestProperty("Accept", "*/*");
+
+        httpConnection.setRequestProperty("Content-Length", ""
 				+ Integer.toString(parameters.length()));
 
 		httpConnection.setUseCaches(false);
 		httpConnection.setDoInput(true);
 		httpConnection.setDoOutput(true);
+
+
 
 	}
 
