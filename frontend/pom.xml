@@ -197,7 +197,7 @@
       </licenses>
         
     <build>
-        <finalName>odcleanstore</finalName>
+        <finalName>unifiedviews</finalName>
         <plugins>
 
             <plugin>
