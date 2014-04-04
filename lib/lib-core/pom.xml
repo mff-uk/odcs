@@ -32,6 +32,12 @@
 									<artifactId>commons-module</artifactId>
 									<version>${project.version}</version>
 								</dependency>
+                                                                
+                                                              <dependency> <!-- needed for SPARQL Loader - HTTP POST requests -->git 
+                                                                    <groupId>org.apache.httpcomponents</groupId>
+                                                                    <artifactId>httpcore-osgi</artifactId>
+                                                                    <version>4.3.2</version>
+                                                              </dependency>
 
 							</artifactItems>
 						</configuration>
