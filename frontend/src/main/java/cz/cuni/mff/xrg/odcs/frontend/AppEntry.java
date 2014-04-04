@@ -47,7 +47,7 @@ import java.util.Date;
  *
  * @author Petyr
  */
-@Theme("OdcsTheme")
+@Theme("UnifiedViewsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
