@@ -121,7 +121,7 @@ public class SPARQLExtractorLocalTest {
 	 * This is not unit test, as it depends on remote server -> commented out
 	 * for build, use only when debugging
 	 */
-	@Test
+	//@Test
 	public void extractDataFromSPARQLEndpointNamePasswordTest() {
 		try {
 			URL endpoint = new URL(QUERY_ENDPOINT.toString());

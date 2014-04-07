@@ -731,9 +731,9 @@ public class SPARQLoader {
 	/**
 	 * Returns graph size for given graph and SPARQL endpoint required
 	 * authentification.
-	 *
 	 * @param endpointURL   URL of SPARQL endpoint where we can find graph size.
-	 * @param endpointGraph String name of graph which size we can find out.
+     *
+     * @param endpointGraph String name of graph which size we can find out.
 	 * @param hostName      String value of hostname.
 	 * @param password      String value of password.
 	 * @return graph size for given graph and SPARQL endpoint.
@@ -1123,12 +1123,14 @@ public class SPARQLoader {
 			String parameters,
 			String contentType) throws IOException {
 
-		httpConnection.setRequestMethod("POST");
-        String userPass = this.username + ":" + this.password;
-        Base64 coder = new Base64();
-        byte[] userPassEncoded = coder.encode(userPass.getBytes());
-        String basicAuth = "Basic " + new String(userPassEncoded);
-        httpConnection.setRequestProperty ("Authorization", basicAuth);
+        httpConnection.setRequestMethod("POST");
+        if (this.username.length() > 0) {
+            String userPass = this.username + ":" + this.password;
+            Base64 coder = new Base64();
+            byte[] userPassEncoded = coder.encode(userPass.getBytes());
+            String basicAuth = "Basic " + new String(userPassEncoded);
+            httpConnection.setRequestProperty("Authorization", basicAuth);
+        }
         httpConnection.setRequestProperty("Content-Type", contentType);
         httpConnection.setRequestProperty("Accept", "*/*");
 

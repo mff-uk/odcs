@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import org.apache.commons.codec.binary.Base64;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType.*;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
@@ -91,8 +92,10 @@ public class SPARQLExtractor {
 	 * Request HTTP parameters neeed for setting SPARQL endpoint.
 	 */
 	private ExtractorEndpointParams endpointParams;
+    private String username;
+    private String password;
 
-	/**
+    /**
 	 * Create new instance of SPARQLExtractor with given parameters.
 	 *
 	 * @param dataUnit       Instance of RDFDataUnit repository neeed for
@@ -257,6 +260,9 @@ public class SPARQLExtractor {
 		ParamController.testNullParameter(query,
 				"Mandatory construct query is null");
 		ParamController.testEmptyParameter(query, "Construct query is empty");
+
+        this.username = hostName;
+        this.password = password;
 
 		RepositoryConnection connection = null;
 
@@ -506,11 +512,16 @@ public class SPARQLExtractor {
 
 				httpConnection = (HttpURLConnection) call.openConnection();
 				httpConnection.setRequestMethod("GET");
-
 				httpConnection.setUseCaches(false);
 				httpConnection.setDoInput(true);
 				httpConnection.setDoOutput(true);
-
+                if (this.username.length() > 0) {
+                    String userPass = this.username + ":" + this.password;
+                    Base64 coder = new Base64();
+                    byte[] userPassEncoded = coder.encode(userPass.getBytes());
+                    String basicAuth = "Basic " + new String(userPassEncoded);
+                    httpConnection.setRequestProperty("Authorization", basicAuth);
+                }
 				int httpResponseCode = httpConnection.getResponseCode();
 				String httpResponseMessage = httpConnection.getResponseMessage();
 
@@ -568,7 +579,14 @@ public class SPARQLExtractor {
 			String contentType) throws IOException {
 
 		httpConnection.setRequestMethod("POST");
-		httpConnection.setRequestProperty("Content-Type", contentType);
+        if (this.username.length() > 0) {
+            String userPass = this.username + ":" + this.password;
+            Base64 coder = new Base64();
+            byte[] userPassEncoded = coder.encode(userPass.getBytes());
+            String basicAuth = "Basic " + new String(userPassEncoded);
+            httpConnection.setRequestProperty("Authorization", basicAuth);
+        }
+        httpConnection.setRequestProperty("Content-Type", contentType);
 		httpConnection.setRequestProperty("Content-Length", ""
 				+ Integer.toString(parameters.getBytes().length));
 
