@@ -16,6 +16,7 @@ import org.junit.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -98,15 +99,17 @@ public class SPARQLLoaderTest1 {
 	public void InsertingTripleToEndpointCRUD() {
 		//repository.cleanAllData();
 
-		Resource subject = repository.createURI("http://my.subject");
-		URI predicate = repository.createURI("http://my.predicate");
-		Value object = repository.createLiteral("Mojefi resi ...");
-                Value object2 = repository.createLiteral("Y");
-                Value object3 = repository.createLiteral("ščřžýěéž");
 
         RepositoryConnection connection = null;
         try {
             connection = repository.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            Resource subject = factory.createURI("http://my.subject");
+            URI predicate = factory.createURI("http://my.predicate");
+            Value object = repository.createLiteral("Mojefi resi ...");
+            Value object2 = repository.createLiteral("Y");
+            Value object3 = repository.createLiteral("ščřžýěéž");
+
             connection.add(subject, predicate, object, repository.getDataGraph());
             connection.add(subject, predicate, object3, repository.getDataGraph());
         } catch (RepositoryException e) {

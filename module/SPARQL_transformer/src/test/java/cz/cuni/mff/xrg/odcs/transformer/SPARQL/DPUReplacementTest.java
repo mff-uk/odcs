@@ -78,10 +78,11 @@ public class DPUReplacementTest {
             RepositoryConnection connection = null;
             try {
                 connection = input.getConnection();
-                connection.add(input.createURI("http://s"), input.createURI(
-                        "http://p"), input.createURI("http://o"), input.getDataGraph());
-                connection.add(input.createURI("http://subject"), input.createURI(
-                        "http://predicate"), input.createURI("http://object"), input.getDataGraph());
+                ValueFactory factory = connection.getValueFactory();
+                connection.add(factory.createURI("http://s"), factory.createURI(
+                        "http://p"), factory.createURI("http://o"), input.getDataGraph());
+                connection.add(factory.createURI("http://subject"), factory.createURI(
+                        "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
@@ -91,7 +92,7 @@ public class DPUReplacementTest {
             try {
                 RepositoryConnection connection2 = optional.getConnection();
                 ValueFactory factory = connection2.getValueFactory();
-                connection2.add(factory.createBNode("n25"), optional
+                connection2.add(factory.createBNode("n25"), factory
                         .createURI("http://hasName"), optional.createLiteral("NAME"), optional.getDataGraph());
 
             } catch (RepositoryException e) {
@@ -149,13 +150,17 @@ public class DPUReplacementTest {
 
             RepositoryConnection connection = null;
             connection = input.getConnection();
-            connection.add(input.createURI("http://person"), input.createURI(
-					"http://predicate"), input.createURI("http://object"), input.getDataGraph());
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://person"), factory.createURI(
+					"http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
 
             RepositoryConnection connection2 = null;
             connection2 = optional.getConnection();
-            connection2.add(optional.createURI("http://person"), optional
+            ValueFactory factory2 = connection2.getValueFactory();
+
+
+            connection2.add(factory2.createURI("http://person"), factory2
 					.createURI("http://xmlns.com/foaf/0.1/givenName"), optional
 					.createLiteral("Bill"),optional.getDataGraph());
 

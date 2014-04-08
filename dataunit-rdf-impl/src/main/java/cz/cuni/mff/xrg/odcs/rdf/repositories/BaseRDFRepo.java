@@ -2045,20 +2045,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		this.isReadOnly = isReadOnly;
 	}
 
-
-	/**
-	 * Create new URI from String.
-	 *
-	 * @param uri String value for URI.
-	 * @return created URI.
-	 */
-	@Override
-	public URI createURI(String uri) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createURI(uri);
-
-	}
-
 	/**
 	 * Create new typed literal.
 	 *

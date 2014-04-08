@@ -18,6 +18,7 @@ import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -101,26 +102,25 @@ public class SPARQLLoaderRequestTest {
 		}
 	}
 
-	private void addDataToRepository() {
+    private void addDataToRepository() {
 
-		for (int i = 0; i < LOADED_TRIPLES; i++) {
-			Resource subject = repository.createURI("http://A" + String.valueOf(
-					i + 1));
+        try {
+            RepositoryConnection connection = repository.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            for (int i = 0; i < LOADED_TRIPLES; i++) {
+                Resource subject = factory.createURI("http://A" + String.valueOf(
+                        i + 1));
 
-			URI predicate = repository.createURI("http://B" + String.valueOf(
-					i + 1));
+                URI predicate = factory.createURI("http://B" + String.valueOf(
+                        i + 1));
 
-			Value object = repository.createLiteral("C" + String.valueOf(i + 1));
+                Value object = repository.createLiteral("C" + String.valueOf(i + 1));
 
-
-            RepositoryConnection connection = null;
-            try {
-                connection = repository.getConnection();
-                connection.add(subject, predicate, object);
-            } catch (RepositoryException e) {
-                logger.error("Error", e);
+                connection.add(subject, predicate, object, repository.getDataGraph());
             }
-		}
+        } catch (RepositoryException e) {
+            logger.error("Error", e);
+            }
 	}
 
 	@Test

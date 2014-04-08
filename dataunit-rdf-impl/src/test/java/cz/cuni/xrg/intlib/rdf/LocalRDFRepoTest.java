@@ -16,10 +16,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+import org.openrdf.model.*;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -95,15 +92,17 @@ public class LocalRDFRepoTest {
 	 * Test adding triple to repository.
 	 */
 	@Test
-	public void addTripleToRepositoryTest1() {
+	public void addTripleToRepositoryTest1() throws RepositoryException {
 
 		String namespace = "http://school/catedra/";
 		String subjectName = "KSI";
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		Resource subject = rdfRepo.createURI(namespace + subjectName);
-		URI predicate = rdfRepo.createURI(namespace + predicateName);
+        RepositoryConnection connection = rdfRepo.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI(namespace + subjectName);
+		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -114,14 +113,16 @@ public class LocalRDFRepoTest {
 	 * Test adding triple to repository.
 	 */
 	@Test
-	public void addTripleToRepositoryTest2() {
+	public void addTripleToRepositoryTest2() throws RepositoryException {
 		String namespace = "http://human/person/";
 		String subjectName = "Jirka";
 		String predicateName = "hasFriend";
 		String objectName = "Pavel";
 
-		Resource subject = rdfRepo.createURI(namespace + subjectName);
-		URI predicate = rdfRepo.createURI(namespace + predicateName);
+        RepositoryConnection connection = rdfRepo.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI(namespace + subjectName);
+		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -131,14 +132,16 @@ public class LocalRDFRepoTest {
 	 * Test adding triple to repository.
 	 */
 	@Test
-	public void addTripleToRepositoryTest3() {
+	public void addTripleToRepositoryTest3() throws RepositoryException {
 		String namespace = "http://namespace/intlib/";
 		String subjectName = "subject";
 		String predicateName = "object";
 		String objectName = "predicate";
 
-		Resource subject = rdfRepo.createURI(namespace + subjectName);
-		URI predicate = rdfRepo.createURI(namespace + predicateName);
+        RepositoryConnection connection = rdfRepo.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI(namespace + subjectName);
+		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
@@ -495,28 +498,24 @@ public class LocalRDFRepoTest {
 	 * Test SPARQL transform using SPARQL update query.
 	 */
 	@Test
-	public void transformUsingSPARQLUpdate() {
+	public void transformUsingSPARQLUpdate() throws RepositoryException {
 
 		String namespace = "http://sport/hockey/";
 		String subjectName = "Jagr";
 		String predicateName = "playes_in";
 		String objectName = "Dalas_Stars";
 
-		Resource subject = rdfRepo.createURI(namespace + subjectName);
-		URI predicate = rdfRepo.createURI(namespace + predicateName);
+        RepositoryConnection connection = rdfRepo.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI(namespace + subjectName);
+		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
 				+ "WHERE { ?who ?what 'Dalas_Stars' }";
 
-        RepositoryConnection connection = null;
-        try {
-            connection = rdfRepo.getConnection();
-            connection.add(subject, predicate, object, rdfRepo.getDataGraph());
-        } catch (RepositoryException e) {
-            LOG.error("Error", e);
-        }
+       connection.add(subject, predicate, object, rdfRepo.getDataGraph());
 
 
 		boolean beforeUpdate = rdfRepo.isTripleInRepository(
@@ -680,7 +679,7 @@ public class LocalRDFRepoTest {
         RepositoryConnection connection = null;
         try {
             connection = repository.getConnection();
-            connection.add(subject, predicate, object);
+            connection.add(subject, predicate, object, repository.getDataGraph());
         } catch (RepositoryException e) {
             LOG.error("Error", e);
         }
@@ -878,8 +877,10 @@ public class LocalRDFRepoTest {
 
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
-					}
-				}
+					} catch (RepositoryException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 			});
 
 			task.start();
@@ -895,15 +896,18 @@ public class LocalRDFRepoTest {
 	 *
 	 * @param repository repository used for adding triples.
 	 */
-	protected void addParalelTripleToRepository(ManagableRdfDataUnit repository) {
+	protected void addParalelTripleToRepository(ManagableRdfDataUnit repository) throws RepositoryException {
 
 		String namespace = "http://school/catedra/";
 		String subjectName = "KSI";
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-		Resource subject = rdfRepo.createURI(namespace + subjectName);
-		URI predicate = rdfRepo.createURI(namespace + predicateName);
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+
+		Resource subject = factory.createURI(namespace + subjectName);
+		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = rdfRepo.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, repository);

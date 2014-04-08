@@ -17,6 +17,7 @@ import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -64,22 +65,24 @@ public class SPARQLLoaderTest {
 	}
 
 	@Test
-	public void InsertingToEndpointTest1() {
+	public void InsertingToEndpointTest1() throws RepositoryException {
 		repository.cleanAllData();
-
-		Resource subject = repository.createURI("http://my.subject");
-		URI predicate = repository.createURI("http://my.predicate");
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        Resource subject = factory.createURI("http://my.subject");
+		URI predicate = factory.createURI("http://my.predicate");
 		Value object = repository.createLiteral("My company s.r.o. \"HOME\"");
 
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
 	@Test
-	public void InsertingToEndpointTest2() {
+	public void InsertingToEndpointTest2() throws RepositoryException {
 		repository.cleanAllData();
-
-		Resource subject = repository.createURI("http://my.subject");
-		URI predicate = repository.createURI("http://my.predicate");
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI("http://my.subject");
+		URI predicate = factory.createURI("http://my.predicate");
 		Value object = repository.createLiteral(
 				"This \"firma has 'firma' company\" Prague");
 
@@ -87,11 +90,12 @@ public class SPARQLLoaderTest {
 	}
 
 	@Test
-	public void InsertingToEndpointTest3() {
+	public void InsertingToEndpointTest3() throws RepositoryException {
 		repository.cleanAllData();
-
-		Resource subject = repository.createURI("http://my.subject");
-		URI predicate = repository.createURI("http://my.predicate");
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+		Resource subject = factory.createURI("http://my.subject");
+		URI predicate = factory.createURI("http://my.predicate");
 		Value object = repository.createLiteral(
 				"Test char <and > in <my text1> as example.");
 

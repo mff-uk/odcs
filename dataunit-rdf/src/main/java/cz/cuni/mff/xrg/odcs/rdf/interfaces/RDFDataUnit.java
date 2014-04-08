@@ -64,18 +64,6 @@ public interface RDFDataUnit extends DataUnit {
 
 
 	/**
-	 * Create new URI resource.
-	 *
-	 * @param uri String value for URI, e.g.,
-	 *            "http://linked.opendata.cz/resource/test".
-	 * @return created URI, e.g.,
-	 *         &lt;http://linked.opendata.cz/resource/test&gt.
-	 */
-
-    @Deprecated
-    public URI createURI(String uri);
-
-	/**
 	 * Create new typed literal.
 	 *
 	 * @param literalLabel String value for literal, e.g., "myValue".

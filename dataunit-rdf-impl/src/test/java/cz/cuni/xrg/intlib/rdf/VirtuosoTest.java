@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.Properties;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.openrdf.repository.RepositoryException;
 
 import static org.junit.Assert.*;
 
@@ -170,8 +171,12 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 							new Properties());
 
 					synchronized (virtuosoRepo) {
-						addParalelTripleToRepository(virtuosoRepo);
-						extractFromFileToRepository(virtuosoRepo);
+                        try {
+                            addParalelTripleToRepository(virtuosoRepo);
+                        } catch (RepositoryException e) {
+                            throw new RuntimeException(e);
+                        }
+                        extractFromFileToRepository(virtuosoRepo);
 						transformOverRepository(virtuosoRepo);
 						loadToFile(virtuosoRepo);
 					}
