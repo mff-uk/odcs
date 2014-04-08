@@ -114,7 +114,7 @@ public class SPARQLLoaderRequestTest {
                 URI predicate = factory.createURI("http://B" + String.valueOf(
                         i + 1));
 
-                Value object = repository.createLiteral("C" + String.valueOf(i + 1));
+                Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
                 connection.add(subject, predicate, object, repository.getDataGraph());
             }

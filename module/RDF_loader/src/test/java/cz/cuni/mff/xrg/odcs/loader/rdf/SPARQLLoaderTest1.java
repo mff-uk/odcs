@@ -106,9 +106,9 @@ public class SPARQLLoaderTest1 {
             ValueFactory factory = connection.getValueFactory();
             Resource subject = factory.createURI("http://my.subject");
             URI predicate = factory.createURI("http://my.predicate");
-            Value object = repository.createLiteral("Mojefi resi ...");
-            Value object2 = repository.createLiteral("Y");
-            Value object3 = repository.createLiteral("ščřžýěéž");
+            Value object = factory.createLiteral("Mojefi resi ...");
+            Value object2 = factory.createLiteral("Y");
+            Value object3 = factory.createLiteral("ščřžýěéž");
 
             connection.add(subject, predicate, object, repository.getDataGraph());
             connection.add(subject, predicate, object3, repository.getDataGraph());

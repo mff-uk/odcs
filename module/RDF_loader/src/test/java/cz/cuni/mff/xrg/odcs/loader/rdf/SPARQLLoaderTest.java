@@ -71,7 +71,7 @@ public class SPARQLLoaderTest {
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
-		Value object = repository.createLiteral("My company s.r.o. \"HOME\"");
+		Value object = factory.createLiteral("My company s.r.o. \"HOME\"");
 
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
@@ -83,7 +83,7 @@ public class SPARQLLoaderTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
-		Value object = repository.createLiteral(
+		Value object = factory.createLiteral(
 				"This \"firma has 'firma' company\" Prague");
 
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
@@ -96,7 +96,7 @@ public class SPARQLLoaderTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
-		Value object = repository.createLiteral(
+		Value object = factory.createLiteral(
 				"Test char <and > in <my text1> as example.");
 
 		tryInsertToSPARQLEndpoint(subject, predicate, object);

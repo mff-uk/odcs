@@ -93,7 +93,7 @@ public class DPUReplacementTest {
                 RepositoryConnection connection2 = optional.getConnection();
                 ValueFactory factory = connection2.getValueFactory();
                 connection2.add(factory.createBNode("n25"), factory
-                        .createURI("http://hasName"), optional.createLiteral("NAME"), optional.getDataGraph());
+                        .createURI("http://hasName"), factory.createLiteral("NAME"), optional.getDataGraph());
 
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
@@ -161,7 +161,7 @@ public class DPUReplacementTest {
 
 
             connection2.add(factory2.createURI("http://person"), factory2
-					.createURI("http://xmlns.com/foaf/0.1/givenName"), optional
+					.createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
 					.createLiteral("Bill"),optional.getDataGraph());
 
 			assertEquals(1L, input.getTripleCount());

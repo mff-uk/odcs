@@ -103,7 +103,7 @@ public class LocalRDFRepoTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = rdfRepo.createLiteral(objectName);
+		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
 
@@ -123,7 +123,7 @@ public class LocalRDFRepoTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = rdfRepo.createLiteral(objectName);
+		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
 	}
@@ -142,7 +142,7 @@ public class LocalRDFRepoTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = rdfRepo.createLiteral(objectName);
+		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
 	}
@@ -509,7 +509,7 @@ public class LocalRDFRepoTest {
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = rdfRepo.createLiteral(objectName);
+		Value object = factory.createLiteral(objectName);
 
 		String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
@@ -908,7 +908,7 @@ public class LocalRDFRepoTest {
 
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = rdfRepo.createLiteral(objectName);
+		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, repository);
 	}

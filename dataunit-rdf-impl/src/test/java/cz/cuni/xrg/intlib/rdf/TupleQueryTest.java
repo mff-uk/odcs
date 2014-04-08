@@ -76,11 +76,11 @@ public class TupleQueryTest {
 
 		URI predicate = factory.createURI("http://predicate");
 
-		Value objectLiteral = repository.createLiteral("object");
+		Value objectLiteral = factory.createLiteral("object");
 		Value object = factory.createURI("http://object");
 		Value objectBlank =  factory.createBNode("b23");
-		Value objectLanguageLiteral = repository.createLiteral("ob", "en");
-		Value objectTypedLiteral = repository.createLiteral("25",
+		Value objectLanguageLiteral = factory.createLiteral("ob", "en");
+		Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
 
@@ -135,7 +135,7 @@ public class TupleQueryTest {
         URI p = factory.createURI(expectedDataForVar[1]);
         URI pred = factory.createURI(expectedDataForVar[2]);
 
-        Value object = repository.createLiteral("object");
+        Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
 
@@ -186,7 +186,7 @@ public class TupleQueryTest {
 		Resource s = factory.createURI(expectedDataForVar[1]);
 
 		URI predicate = factory.createURI("http://predicate");
-		Value object = repository.createLiteral("object");
+		Value object = factory.createLiteral("object");
 
 
         connection.add(subject, predicate, object, repository.getDataGraph());
@@ -240,13 +240,13 @@ public class TupleQueryTest {
         Resource subjectBlank =  factory.createBNode("id");
 
         URI predicate = factory.createURI("http://predicate");
-        Value objectLiteral = repository.createLiteral("object");
+        Value objectLiteral = factory.createLiteral("object");
         Value object = factory.createURI("http://object");
 
         factory = connection.getValueFactory();
         Value objectBlank = factory.createBNode("b23");
-        Value objectLanguageLiteral = repository.createLiteral("ob", "en");
-        Value objectTypedLiteral = repository.createLiteral("25",
+        Value objectLanguageLiteral = factory.createLiteral("ob", "en");
+        Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
 
@@ -302,7 +302,7 @@ public class TupleQueryTest {
         URI p = factory.createURI(expectedDataForVar[1]);
         URI pred = factory.createURI(expectedDataForVar[2]);
 
-        Value object = repository.createLiteral("object");
+        Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
         connection.add(subject, predicate, object, repository.getDataGraph());
@@ -351,7 +351,7 @@ public class TupleQueryTest {
         Resource s = factory.createURI(expectedDataForVar[1]);
 
         URI predicate = factory.createURI("http://predicate");
-        Value object = repository.createLiteral("object");
+        Value object = factory.createLiteral("object");
 
 
         connection.add(subject, predicate, object, repository.getDataGraph());

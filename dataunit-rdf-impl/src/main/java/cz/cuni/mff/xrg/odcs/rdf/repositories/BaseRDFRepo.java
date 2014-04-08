@@ -2046,44 +2046,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Create new typed literal.
-	 *
-	 * @param literalLabel String value for literal.
-	 * @param dataType     URI of data type for {@literal}.
-	 * @return created typed literal.
-	 */
-	@Override
-	public Literal createLiteral(String literalLabel, URI dataType) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createLiteral(literalLabel, dataType);
-	}
-
-	/**
-	 * Create new language literal.
-	 *
-	 * @param literalLabel String value for literal.
-	 * @param language     String value for language.
-	 * @return created language literal.
-	 */
-	@Override
-	public Literal createLiteral(String literalLabel, String language) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createLiteral(literalLabel, language);
-	}
-
-	/**
-	 * Create new label literal.
-	 *
-	 * @param literalLabel String value for literal.
-	 * @return created language literal.
-	 */
-	@Override
-	public Literal createLiteral(String literalLabel) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createLiteral(literalLabel);
-	}
-
-	/**
 	 * Delete all the data from the {@link RDFDataUnit} but does not close or
 	 * destroy it. After this call the state of {@link RDFDataUnit} should be
 	 * the same as if it was newly created.

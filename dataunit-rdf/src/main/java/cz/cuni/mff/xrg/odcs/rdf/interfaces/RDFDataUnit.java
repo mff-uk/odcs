@@ -62,41 +62,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
 
-
-	/**
-	 * Create new typed literal.
-	 *
-	 * @param literalLabel String value for literal, e.g., "myValue".
-	 * @param dataType     URI of data type for the literal, e.g.,
-	 *                     "http://www.w3.org/2001/XMLSchema#dateTime". It does
-	 *                     not support prefixes.
-	 * @return Created typed literal, e.g.,
-	 *         """myValue"""^^<http://www.w3.org/2001/XMLSchema#dateTime>.
-	 */
-    @Deprecated
-    public Literal createLiteral(String literalLabel, URI dataType);
-
-	/**
-	 * Create new language literal.
-	 *
-	 * @param literalLabel String value for literal, e.g., "myValue".
-	 * @param language     String value for language tag, e.g. "de" for German
-	 *                     literal.
-	 * @return Created language literal, e.g.,{@code """myValue"""@de}.
-	 *
-	 */
-    @Deprecated
-    public Literal createLiteral(String literalLabel, String language);
-
-	/**
-	 * Create new label literal.
-	 *
-	 * @param literalLabel String value for literal, e.g., "myValue".
-	 * @return created language literal.
-	 */
-    @Deprecated
-    public Literal createLiteral(String literalLabel);
-
 	/**
 	 * Check if RDF triple is in repository.
 	 *
