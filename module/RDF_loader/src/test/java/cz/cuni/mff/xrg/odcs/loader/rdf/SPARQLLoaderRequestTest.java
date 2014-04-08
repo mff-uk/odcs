@@ -18,6 +18,9 @@ import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
@@ -109,7 +112,14 @@ public class SPARQLLoaderRequestTest {
 
 			Value object = repository.createLiteral("C" + String.valueOf(i + 1));
 
-			repository.addTriple(subject, predicate, object);
+
+            RepositoryConnection connection = null;
+            try {
+                connection = repository.getConnection();
+                connection.add(subject, predicate, object);
+            } catch (RepositoryException e) {
+                logger.error("Error", e);
+            }
 		}
 	}
 

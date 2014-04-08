@@ -9,6 +9,10 @@ import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.openrdf.model.Statement;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,7 +22,10 @@ public class DPUReplacementTest {
 
 	private static ManagableRdfDataUnit repository;
 
-	/**
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+
+
+    /**
 	 * Basic repository inicializing before test execution.
 	 */
 	@BeforeClass
@@ -66,14 +73,27 @@ public class DPUReplacementTest {
 
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            RepositoryConnection connection = null;
+            try {
+                connection = input.getConnection();
+                connection.add(input.createURI("http://s"), input.createURI(
+                        "http://p"), input.createURI("http://o"), input.getDataGraph());
+                connection.add(input.createURI("http://subject"), input.createURI(
+                        "http://predicate"), input.createURI("http://object"), input.getDataGraph());
 
-			input.addTriple(input.createURI("http://s"), input.createURI(
-					"http://p"), input.createURI("http://o"));
-			input.addTriple(input.createURI("http://subject"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
+            } catch (RepositoryException e) {
+                LOG.error("Error", e);
+            }
 
-			optional.addTriple(optional.createBlankNode("n25"), optional
-					.createURI("http://hasName"), optional.createLiteral("NAME"));
+
+            try {
+                RepositoryConnection connection2 = optional.getConnection();
+                connection2.add(optional.createBlankNode("n25"), optional
+                        .createURI("http://hasName"), optional.createLiteral("NAME"), optional.getDataGraph());
+
+            } catch (RepositoryException e) {
+                LOG.error("Error", e);
+            }
 
 			assertEquals(2L, input.getTripleCount());
 			assertEquals(1L, optional.getTripleCount());
@@ -124,12 +144,17 @@ public class DPUReplacementTest {
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
 
-			input.addTriple(input.createURI("http://person"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
+            RepositoryConnection connection = null;
+            connection = input.getConnection();
+            connection.add(input.createURI("http://person"), input.createURI(
+					"http://predicate"), input.createURI("http://object"), input.getDataGraph());
 
-			optional.addTriple(optional.createURI("http://person"), optional
+
+            RepositoryConnection connection2 = null;
+            connection2 = optional.getConnection();
+            connection2.add(optional.createURI("http://person"), optional
 					.createURI("http://xmlns.com/foaf/0.1/givenName"), optional
-					.createLiteral("Bill"));
+					.createLiteral("Bill"),optional.getDataGraph());
 
 			assertEquals(1L, input.getTripleCount());
 			assertEquals(1L, optional.getTripleCount());

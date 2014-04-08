@@ -63,24 +63,14 @@ public interface RDFDataUnit extends DataUnit {
 			List<String> predicates);
 
 	/**
-	 * Add one RDF triple (statement) to the repository. Subject, predicate,
-	 * object may be prepare by the corresponding methods createURI,
-	 * createBlankNode, or createLiteral
-	 *
-	 * @param subject   One of type for subject - URI, Blank node.
-	 * @param predicate URI for subject.
-	 * @param object    One of type for object - URI, Blank node or Literal.
-	 */
-	public void addTriple(Resource subject, URI predicate, Value object);
-
-	/**
 	 * Remove one RDF triple (statement) if contains in repository.
 	 *
 	 * @param subject   One of type for subject - URI,BlankNode.
 	 * @param predicate URI for subject.
 	 * @param object    One of type for object - URI,BlankNode or Literal.
 	 */
-	public void removeTriple(Resource subject, URI predicate, Value object);
+    @Deprecated
+    public void removeTriple(Resource subject, URI predicate, Value object);
 
 	/**
 	 * Create new blank node with the defined id.
@@ -88,7 +78,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param id String value of ID, e.g., b12345
 	 * @return created blank node, e.g., _:b12345.
 	 */
-	public BNode createBlankNode(String id);
+    @Deprecated
+    public BNode createBlankNode(String id);
 
 	/**
 	 * Create new URI resource.
@@ -98,7 +89,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return created URI, e.g.,
 	 *         &lt;http://linked.opendata.cz/resource/test&gt.
 	 */
-	public URI createURI(String uri);
+    @Deprecated
+    public URI createURI(String uri);
 
 	/**
 	 * Create new typed literal.
@@ -110,7 +102,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return Created typed literal, e.g.,
 	 *         """myValue"""^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 	 */
-	public Literal createLiteral(String literalLabel, URI dataType);
+    @Deprecated
+    public Literal createLiteral(String literalLabel, URI dataType);
 
 	/**
 	 * Create new language literal.
@@ -121,7 +114,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return Created language literal, e.g.,{@code """myValue"""@de}.
 	 *
 	 */
-	public Literal createLiteral(String literalLabel, String language);
+    @Deprecated
+    public Literal createLiteral(String literalLabel, String language);
 
 	/**
 	 * Create new label literal.
@@ -129,7 +123,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param literalLabel String value for literal, e.g., "myValue".
 	 * @return created language literal.
 	 */
-	public Literal createLiteral(String literalLabel);
+    @Deprecated
+    public Literal createLiteral(String literalLabel);
 
 	/**
 	 * Check if RDF triple is in repository.
@@ -139,7 +134,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param object    URI, blank node or literal for object
 	 * @return true if such RDF triple is in repository, false otherwise.
 	 */
-	public boolean isTripleInRepository(Resource subject,
+    @Deprecated
+    public boolean isTripleInRepository(Resource subject,
 			URI predicate, Value object);
 
 	/**
@@ -150,7 +146,9 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
-	public void addFromFile(File file) throws RDFException;
+    @Deprecated
+    //TODO move to rdf extractor
+    public void addFromFile(File file) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -161,7 +159,9 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
-	public void addFromFile(File file, RDFFormat format) throws RDFException;
+    //TODO move to rdf extractor
+    @Deprecated
+    public void addFromFile(File file, RDFFormat format) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -175,6 +175,8 @@ public interface RDFDataUnit extends DataUnit {
 	 *                           with no valid data
 	 * @throws RDFException when extraction fail.
 	 */
+    //TODO move to rdf extractor
+    @Deprecated
 	public void addFromFile(File file, RDFFormat format,
 			HandlerExtractType handlerExtractType) throws RDFException;
 
@@ -185,7 +187,9 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
-	public void addFromTurtleFile(File file) throws RDFException;
+    //TODO move to rdf extractor
+    @Deprecated
+    public void addFromTurtleFile(File file) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
@@ -194,6 +198,8 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
+    //TODO move to rdf extractor
+    @Deprecated
 	public void addFromRDFXMLFile(File file) throws RDFException;
 
 	/**
@@ -204,7 +210,9 @@ public interface RDFDataUnit extends DataUnit {
 	 *                   RDF/XML,etc.)
 	 * @throws RDFException when loading data to file fail.
 	 */
-	public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
+    //TODO move to rdf loader
+    @Deprecated
+    public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -216,7 +224,9 @@ public interface RDFDataUnit extends DataUnit {
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data to file fail.
 	 */
-	public void loadToFile(String filePath,
+    //TODO move to rdf loader
+    @Deprecated
+    public void loadToFile(String filePath,
 			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
 
 	/**
@@ -225,6 +235,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param updateQuery String value of update SPARQL query.
 	 * @throws RDFException when transformation fail.
 	 */
+    //TODO move to rdf transformer
+    @Deprecated
 	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
 
 	/**
@@ -234,6 +246,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param dataset     Set of graph URIs used for update query.
 	 * @throws RDFException when transformation fault.
 	 */
+    //TODO move to rdf transformer
+    @Deprecated
 	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
 			throws RDFException;
 
@@ -249,6 +263,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return File contains result of given SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
+    //TODO move to rdf transformer
+    @Deprecated
 	public File executeSelectQuery(String selectQuery,
 			String filePath, SelectFormatType selectType)
 			throws InvalidQueryException;
@@ -298,6 +314,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @throws InvalidQueryException when query is not valid or creating file
 	 *                               fail.
 	 */
+    //TODO move to rdf transformer ?
+    @Deprecated
 	public File executeConstructQuery(String constructQuery,
 			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 
@@ -309,6 +327,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
+    //TODO move to rdf transformer ?
+    @Deprecated
 	public Graph executeConstructQuery(
 			String constructQuery) throws InvalidQueryException;
 
@@ -321,6 +341,8 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return Interface Graph as result of construct SPARQL query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
+    //TODO move to rdf transformer ?
+    @Deprecated
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException;
 
@@ -329,6 +351,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @return size of triples in repository.
 	 */
+    @Deprecated
 	public long getTripleCount();
 
 	/**
@@ -337,6 +360,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
 	 *         repository/
 	 */
+    @Deprecated
 	public List<Statement> getTriples();
 
 	/**
@@ -377,6 +401,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *                               BlankNode, some type of Literal (in object
 	 *                               case))
 	 */
+    @Deprecated
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
@@ -429,6 +454,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param handler Type of handler where RDF parser used for parsing.
 	 * @return RDFParser for given RDF format and set RDF handler.
 	 */
+    @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
 	/**
@@ -485,5 +511,4 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public void addStatementsToGraph(List<Statement> statements, URI graphName);
 
-//    public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException;
 }

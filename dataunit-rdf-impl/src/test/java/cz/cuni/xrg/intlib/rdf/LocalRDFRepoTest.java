@@ -17,8 +17,12 @@ import java.nio.file.*;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import static org.junit.Assert.*;
 import org.slf4j.Logger;
@@ -506,7 +510,14 @@ public class LocalRDFRepoTest {
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
 				+ "WHERE { ?who ?what 'Dalas_Stars' }";
 
-		rdfRepo.addTriple(subject, predicate, object);
+        RepositoryConnection connection = null;
+        try {
+            connection = rdfRepo.getConnection();
+            connection.add(subject, predicate, object, rdfRepo.getDataGraph());
+        } catch (RepositoryException e) {
+            LOG.error("Error", e);
+        }
+
 
 		boolean beforeUpdate = rdfRepo.isTripleInRepository(
 				subject, predicate, object);
@@ -665,7 +676,15 @@ public class LocalRDFRepoTest {
 		boolean isInRepository = repository.isTripleInRepository(
 				subject, predicate, object);
 
-		repository.addTriple(subject, predicate, object);
+
+        RepositoryConnection connection = null;
+        try {
+            connection = repository.getConnection();
+            connection.add(subject, predicate, object);
+        } catch (RepositoryException e) {
+            LOG.error("Error", e);
+        }
+
 		long expectedSize = repository.getTripleCount();
 
 		if (isInRepository) {

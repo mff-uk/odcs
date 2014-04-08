@@ -16,6 +16,9 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Binding;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -54,7 +57,7 @@ public class TupleQueryTest {
 	 * Test executing ordered SELECT query for object.
 	 */
 	@Test
-	public void OrderTupleQueryResultTestForObject() {
+	public void OrderTupleQueryResultTestForObject() throws RepositoryException {
 		String orderSelectQuery = "SELECT ?x ?y ?z where {?x ?y ?z} ORDER BY ?x ?y ?z";
 
 		String[] expectedNames = {"x", "y", "z"};
@@ -77,13 +80,15 @@ public class TupleQueryTest {
 		Value objectTypedLiteral = repository.createLiteral("25",
 				repository.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-		repository.addTriple(subject, predicate, objectLiteral);
-		repository.addTriple(subjectBlank, predicate, object);
-		repository.addTriple(subjectBlank, predicate, objectBlank);
-		repository.addTriple(subject, predicate, objectLanguageLiteral);
-		repository.addTriple(subject, predicate, objectTypedLiteral);
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(subjectBlank, predicate, object,repository.getDataGraph());
+        connection.add(subjectBlank, predicate, objectBlank,repository.getDataGraph());
+        connection.add(subject, predicate, objectLanguageLiteral,repository.getDataGraph());
+        connection.add(subject, predicate, objectTypedLiteral,repository.getDataGraph());
 
-		assertEquals(5L, repository.getTripleCount());
+        assertEquals(5L, repository.getTripleCount());
 
 		try {
 			OrderTupleQueryResult result = repository
@@ -112,7 +117,7 @@ public class TupleQueryTest {
 	 * Test executing ordered SELECT query for predicate.
 	 */
 	@Test
-	public void OrderTupleQueryResultTestForPredicate() {
+	public void OrderTupleQueryResultTestForPredicate() throws RepositoryException {
 		String orderSelectQuery = "SELECT ?b ?c where {?a ?b ?c} ORDER BY ?a ?b ?c";
 		String[] expectedNames = {"b", "c"};
 
@@ -129,9 +134,12 @@ public class TupleQueryTest {
 		Value object = repository.createLiteral("object");
 		Value objectBlank = repository.createBlankNode("blank");
 
-		repository.addTriple(subject, predicate, object);
-		repository.addTriple(subjectBlank, p, object);
-		repository.addTriple(subject, pred, objectBlank);
+
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(subjectBlank, p, object, repository.getDataGraph());
+        connection.add(subject, pred, objectBlank, repository.getDataGraph());
 
 		assertEquals(3L, repository.getTripleCount());
 
@@ -162,7 +170,7 @@ public class TupleQueryTest {
 	 * Test executing ordered SELECT query for subject.
 	 */
 	@Test
-	public void OrderTupleQueryResultTestForSubject() {
+	public void OrderTupleQueryResultTestForSubject() throws RepositoryException {
 		String orderSelectQuery = "SELECT ?x ?y WHERE {?x ?y ?z} ORDER BY ?x ?y ?z";
 
 		String[] expectedNames = {"x", "y"};
@@ -176,9 +184,11 @@ public class TupleQueryTest {
 		URI predicate = repository.createURI("http://predicate");
 		Value object = repository.createLiteral("object");
 
-		repository.addTriple(subject, predicate, object);
-		repository.addTriple(s, predicate, object);
 
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(s, predicate, object, repository.getDataGraph());
 		assertEquals(2L, repository.getTripleCount());
 
 
@@ -209,7 +219,7 @@ public class TupleQueryTest {
 	 * Test executing SELECT query for object.
 	 */
 	@Test
-	public void TupleQueryResultTestForObject() {
+	public void TupleQueryResultTestForObject() throws RepositoryException {
 
 		String selectQuery = "SELECT ?x ?y ?z where {?x ?y ?z}";
 		String[] expectedNames = {"x", "y", "z"};
@@ -232,11 +242,14 @@ public class TupleQueryTest {
 		Value objectTypedLiteral = repository.createLiteral("25",
 				repository.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-		repository.addTriple(subject, predicate, objectLiteral);
-		repository.addTriple(subjectBlank, predicate, object);
-		repository.addTriple(subjectBlank, predicate, objectBlank);
-		repository.addTriple(subject, predicate, objectLanguageLiteral);
-		repository.addTriple(subject, predicate, objectTypedLiteral);
+
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, objectLiteral, repository.getDataGraph());
+        connection.add(subjectBlank, predicate, object, repository.getDataGraph());
+        connection.add(subjectBlank, predicate, objectBlank, repository.getDataGraph());
+        connection.add(subject, predicate, objectLanguageLiteral, repository.getDataGraph());
+        connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
 
 		assertEquals(5L, repository.getTripleCount());
 
@@ -267,7 +280,7 @@ public class TupleQueryTest {
 	 * Test executing SELECT query for predicate.
 	 */
 	@Test
-	public void TupleQueryResultTestForPredicate() {
+	public void TupleQueryResultTestForPredicate() throws RepositoryException {
 
 		String selectQuery = "SELECT ?b ?c where {?a ?b ?c}";
 		String[] expectedNames = {"b", "c"};
@@ -285,10 +298,11 @@ public class TupleQueryTest {
 		Value object = repository.createLiteral("object");
 		Value objectBlank = repository.createBlankNode("blank");
 
-		repository.addTriple(subject, predicate, object);
-		repository.addTriple(subjectBlank, p, object);
-		repository.addTriple(subject, pred, objectBlank);
-
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(subjectBlank, p, object, repository.getDataGraph());
+        connection.add(subject, pred, objectBlank, repository.getDataGraph());
 		assertEquals(3L, repository.getTripleCount());
 
 		try {
@@ -318,7 +332,7 @@ public class TupleQueryTest {
 	 * Test executing SELECT query for subject.
 	 */
 	@Test
-	public void TupleQueryResultTestForSubject() {
+	public void TupleQueryResultTestForSubject() throws RepositoryException {
 
 		String selectQuery = "SELECT ?x ?y where {?x ?y ?z}";
 		String[] expectedNames = {"x", "y"};
@@ -332,10 +346,13 @@ public class TupleQueryTest {
 		URI predicate = repository.createURI("http://predicate");
 		Value object = repository.createLiteral("object");
 
-		repository.addTriple(subject, predicate, object);
-		repository.addTriple(s, predicate, object);
 
-		assertEquals(2L, repository.getTripleCount());
+        RepositoryConnection connection = null;
+        connection = repository.getConnection();
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(s, predicate, object, repository.getDataGraph());
+
+        assertEquals(2L, repository.getTripleCount());
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();

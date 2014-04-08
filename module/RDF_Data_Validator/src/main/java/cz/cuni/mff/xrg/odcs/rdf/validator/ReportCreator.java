@@ -85,21 +85,24 @@ public class ReportCreator {
 
 			count++;
 
-			repository.addTriple(getSubject(count), new URIImpl("rdf:type"),
-					new URIImpl(ODCS_VAL + conflictType.toString()));
-
-			repository.addTriple(getSubject(count), getPredicate("subject"),
-					getObject(sub));
-			repository.addTriple(getSubject(count), getPredicate("predicate"),
-					getObject(pred));
-			repository.addTriple(getSubject(count), getPredicate("object"),
-					getObject(obj));
-
-			repository.addTriple(getSubject(count), getPredicate("reason"),
-					getObject(message));
-			repository
-					.addTriple(getSubject(count), getPredicate("sourceLine"),
-					getObject(line));
+            RepositoryConnection connection = null;
+            try {
+                connection = repository.getConnection();
+                connection.add(getSubject(count), new URIImpl("rdf:type"),
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("subject"),
+                        getObject(sub), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("predicate"),
+                        getObject(pred), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("object"),
+                        getObject(obj), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("reason"),
+                        getObject(message), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("sourceLine"),
+                        getObject(line), repository.getDataGraph());
+            } catch (RepositoryException e) {
+                logger.error("Error", e);
+            }
 
 		}
 	}

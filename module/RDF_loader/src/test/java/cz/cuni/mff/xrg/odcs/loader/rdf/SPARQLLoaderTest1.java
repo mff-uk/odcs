@@ -16,6 +16,8 @@ import org.junit.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
@@ -102,10 +104,15 @@ public class SPARQLLoaderTest1 {
                 Value object2 = repository.createLiteral("Y");
                 Value object3 = repository.createLiteral("ščřžýěéž");
 
-                repository.addTriple(subject, predicate, object);
-//                repository.addTriple(subject, predicate, object2);
-                repository.addTriple(subject, predicate, object3);
-                
+        RepositoryConnection connection = null;
+        try {
+            connection = repository.getConnection();
+            connection.add(subject, predicate, object, repository.getDataGraph());
+            connection.add(subject, predicate, object3, repository.getDataGraph());
+        } catch (RepositoryException e) {
+            logger.error("Error", e);
+        }
+
 		tryInsertToSPARQLEndpoint();
 	}
         
