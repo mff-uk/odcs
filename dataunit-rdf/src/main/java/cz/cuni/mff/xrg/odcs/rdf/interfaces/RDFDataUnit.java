@@ -62,14 +62,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
 
-	/**
-	 * Create new blank node with the defined id.
-	 *
-	 * @param id String value of ID, e.g., b12345
-	 * @return created blank node, e.g., _:b12345.
-	 */
-    @Deprecated
-    public BNode createBlankNode(String id);
 
 	/**
 	 * Create new URI resource.
@@ -79,6 +71,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return created URI, e.g.,
 	 *         &lt;http://linked.opendata.cz/resource/test&gt.
 	 */
+
     @Deprecated
     public URI createURI(String uri);
 

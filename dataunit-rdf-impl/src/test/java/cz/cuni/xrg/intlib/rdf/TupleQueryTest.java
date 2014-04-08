@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 
@@ -68,20 +69,21 @@ public class TupleQueryTest {
 			"\"object\"", "http://object", "_:b23",
 			"\"ob\"@en", "\"25\"^^<http://www.w3.org/2001/XMLSchema#integer>"};
 
+        RepositoryConnection connection = repository.getConnection();
 		Resource subject = repository.createURI("http://subject");
-		Resource subjectBlank = repository.createBlankNode("id");
+        ValueFactory factory = connection.getValueFactory();
+        Resource subjectBlank =  factory.createBNode("id");
 
 		URI predicate = repository.createURI("http://predicate");
 
 		Value objectLiteral = repository.createLiteral("object");
 		Value object = repository.createURI("http://object");
-		Value objectBlank = repository.createBlankNode("b23");
+		Value objectBlank =  factory.createBNode("b23");
 		Value objectLanguageLiteral = repository.createLiteral("ob", "en");
 		Value objectTypedLiteral = repository.createLiteral("25",
 				repository.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-        RepositoryConnection connection = null;
-        connection = repository.getConnection();
+
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(subjectBlank, predicate, object,repository.getDataGraph());
         connection.add(subjectBlank, predicate, objectBlank,repository.getDataGraph());
@@ -124,19 +126,19 @@ public class TupleQueryTest {
 		String expectedVarName = "b";
 		String[] expectedDataForVar = {"http://predicate", "http://p", "http://pred"};
 
-		Resource subject = repository.createURI("http://subject");
-		Resource subjectBlank = repository.createBlankNode("id");
+        RepositoryConnection connection =  repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        Resource subjectBlank =  factory.createBNode("id");
+        Resource subject = repository.createURI("http://subject");
 
-		URI predicate = repository.createURI(expectedDataForVar[0]);
-		URI p = repository.createURI(expectedDataForVar[1]);
-		URI pred = repository.createURI(expectedDataForVar[2]);
+        URI predicate = repository.createURI(expectedDataForVar[0]);
+        URI p = repository.createURI(expectedDataForVar[1]);
+        URI pred = repository.createURI(expectedDataForVar[2]);
 
-		Value object = repository.createLiteral("object");
-		Value objectBlank = repository.createBlankNode("blank");
+        Value object = repository.createLiteral("object");
+        Value objectBlank = factory.createBNode("blank");
 
 
-        RepositoryConnection connection = null;
-        connection = repository.getConnection();
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(subjectBlank, p, object, repository.getDataGraph());
         connection.add(subject, pred, objectBlank, repository.getDataGraph());
@@ -231,20 +233,24 @@ public class TupleQueryTest {
 			"\"ob\"@en", "\"25\"^^<http://www.w3.org/2001/XMLSchema#integer>"};
 
 		Resource subject = repository.createURI("http://subject");
-		Resource subjectBlank = repository.createBlankNode("id");
 
-		URI predicate = repository.createURI("http://predicate");
 
-		Value objectLiteral = repository.createLiteral("object");
-		Value object = repository.createURI("http://object");
-		Value objectBlank = repository.createBlankNode("b23");
-		Value objectLanguageLiteral = repository.createLiteral("ob", "en");
-		Value objectTypedLiteral = repository.createLiteral("25",
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        Resource subjectBlank =  factory.createBNode("id");
+
+
+        URI predicate = repository.createURI("http://predicate");
+        Value objectLiteral = repository.createLiteral("object");
+        Value object = repository.createURI("http://object");
+
+        factory = connection.getValueFactory();
+        Value objectBlank = factory.createBNode("b23");
+        Value objectLanguageLiteral = repository.createLiteral("ob", "en");
+        Value objectTypedLiteral = repository.createLiteral("25",
 				repository.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
 
-        RepositoryConnection connection = null;
-        connection = repository.getConnection();
         connection.add(subject, predicate, objectLiteral, repository.getDataGraph());
         connection.add(subjectBlank, predicate, object, repository.getDataGraph());
         connection.add(subjectBlank, predicate, objectBlank, repository.getDataGraph());
@@ -288,18 +294,18 @@ public class TupleQueryTest {
 		String expectedVarName = "b";
 		String[] expectedDataForVar = {"http://predicate", "http://p", "http://pred"};
 
-		Resource subject = repository.createURI("http://subject");
-		Resource subjectBlank = repository.createBlankNode("id");
+        RepositoryConnection connection = repository.getConnection();
+        Resource subject = repository.createURI("http://subject");
+        ValueFactory factory = connection.getValueFactory();
+        Resource subjectBlank =  factory.createBNode("id");
 
-		URI predicate = repository.createURI(expectedDataForVar[0]);
-		URI p = repository.createURI(expectedDataForVar[1]);
-		URI pred = repository.createURI(expectedDataForVar[2]);
+        URI predicate = repository.createURI(expectedDataForVar[0]);
+        URI p = repository.createURI(expectedDataForVar[1]);
+        URI pred = repository.createURI(expectedDataForVar[2]);
 
-		Value object = repository.createLiteral("object");
-		Value objectBlank = repository.createBlankNode("blank");
+        Value object = repository.createLiteral("object");
+        Value objectBlank = factory.createBNode("blank");
 
-        RepositoryConnection connection = null;
-        connection = repository.getConnection();
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(subjectBlank, p, object, repository.getDataGraph());
         connection.add(subject, pred, objectBlank, repository.getDataGraph());

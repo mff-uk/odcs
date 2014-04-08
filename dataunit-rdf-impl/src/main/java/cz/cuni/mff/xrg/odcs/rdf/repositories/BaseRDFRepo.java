@@ -2047,18 +2047,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 
 	/**
-	 * Create new blank node with defined id.
-	 *
-	 * @param id String value of ID.
-	 * @return created blank node.
-	 */
-	@Override
-	public BNode createBlankNode(String id) {
-		ValueFactory factory = repository.getValueFactory();
-		return factory.createBNode(id);
-	}
-
-	/**
 	 * Create new URI from String.
 	 *
 	 * @param uri String value for URI.

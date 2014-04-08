@@ -8,7 +8,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -88,7 +90,8 @@ public class DPUReplacementTest {
 
             try {
                 RepositoryConnection connection2 = optional.getConnection();
-                connection2.add(optional.createBlankNode("n25"), optional
+                ValueFactory factory = connection2.getValueFactory();
+                connection2.add(factory.createBNode("n25"), optional
                         .createURI("http://hasName"), optional.createLiteral("NAME"), optional.getDataGraph());
 
             } catch (RepositoryException e) {
