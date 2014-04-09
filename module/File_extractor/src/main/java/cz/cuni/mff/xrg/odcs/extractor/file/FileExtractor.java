@@ -16,6 +16,8 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		LOG.debug("baseURI: {}", baseURI);
 		LOG.debug("onlyThisSuffix: {}", onlyThisSuffix);
 		LOG.debug("useStatisticHandler: {}", useStatisticHandler);
-
+        long triplesCount = 0;
 		try {
 			rdfDataUnit.extractFromFile(extractType, format, path, fileSuffix,
 					baseURI, onlyThisSuffix, handlerExtractType);
@@ -88,14 +90,18 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 				context.sendMessage(MessageType.WARNING,
 						"Statistical and error handler has found during parsing problems triples (these triples were not added)",
 						problems);
-			}
-		} catch (RDFException e) {
-			context.sendMessage(MessageType.ERROR, e.getMessage(), e
-					.fillInStackTrace().toString());
-		}
-		final long triplesCount = rdfDataUnit.getTripleCount();
-		LOG.info("Extracted {} triples", triplesCount);
-	}
+                RepositoryConnection connection = rdfDataUnit.getConnection();
+                triplesCount = connection.size(rdfDataUnit.getDataGraph());
+            }
+        } catch (RDFException e) {
+            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                    .fillInStackTrace().toString());
+        } catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                    .fillInStackTrace().toString());
+        }
+        LOG.info("Extracted {} triples", triplesCount);
+    }
 
 	/**
 	 * Returns the configuration dialogue for File extractor.

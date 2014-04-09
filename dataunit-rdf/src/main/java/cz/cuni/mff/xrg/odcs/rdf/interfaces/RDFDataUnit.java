@@ -271,14 +271,6 @@ public interface RDFDataUnit extends DataUnit {
 			throws InvalidQueryException;
 
 	/**
-	 * Return count of triples stored in repository.
-	 *
-	 * @return size of triples in repository.
-	 */
-    @Deprecated
-	public long getTripleCount();
-
-	/**
 	 * Return all triples(statements) in reposiotory as list.
 	 *
 	 * @return List<code>&lt;Statement&gt;</code> list of all triples in

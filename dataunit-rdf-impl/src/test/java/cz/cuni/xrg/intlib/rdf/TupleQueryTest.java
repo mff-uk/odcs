@@ -90,7 +90,8 @@ public class TupleQueryTest {
         connection.add(subject, predicate, objectLanguageLiteral,repository.getDataGraph());
         connection.add(subject, predicate, objectTypedLiteral,repository.getDataGraph());
 
-        assertEquals(5L, repository.getTripleCount());
+        
+        assertEquals(5L, connection.size(repository.getDataGraph()));
 
 		try {
 			OrderTupleQueryResult result = repository
@@ -143,7 +144,7 @@ public class TupleQueryTest {
         connection.add(subjectBlank, p, object, repository.getDataGraph());
         connection.add(subject, pred, objectBlank, repository.getDataGraph());
 
-		assertEquals(3L, repository.getTripleCount());
+		assertEquals(3L, connection.size(repository.getDataGraph()));
 
 		try {
 			OrderTupleQueryResult result = repository
@@ -191,7 +192,7 @@ public class TupleQueryTest {
 
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(s, predicate, object, repository.getDataGraph());
-		assertEquals(2L, repository.getTripleCount());
+		assertEquals(2L, connection.size(repository.getDataGraph()));
 
 
 		try {
@@ -256,7 +257,7 @@ public class TupleQueryTest {
         connection.add(subject, predicate, objectLanguageLiteral, repository.getDataGraph());
         connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
 
-		assertEquals(5L, repository.getTripleCount());
+		assertEquals(5L, connection.size(repository.getDataGraph()));
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();
@@ -308,7 +309,7 @@ public class TupleQueryTest {
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(subjectBlank, p, object, repository.getDataGraph());
         connection.add(subject, pred, objectBlank, repository.getDataGraph());
-		assertEquals(3L, repository.getTripleCount());
+		assertEquals(3L, connection.size(repository.getDataGraph()));
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();
@@ -357,7 +358,7 @@ public class TupleQueryTest {
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(s, predicate, object, repository.getDataGraph());
 
-        assertEquals(2L, repository.getTripleCount());
+        assertEquals(2L, connection.size(repository.getDataGraph()));
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();

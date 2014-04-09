@@ -22,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +125,15 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			}
 		}
 
-		final long triplesCount = rdfDataUnit.getTripleCount();
+        RepositoryConnection connection = null;
+        long triplesCount = 0;
+        try {
+            connection = rdfDataUnit.getConnection();
+            triplesCount = connection.size(rdfDataUnit.getDataGraph());
+        } catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        }
 
 		String tripleInfoMessage = String.format(
 				"Prepare for loading %s triples to SPARQL endpoint %s",

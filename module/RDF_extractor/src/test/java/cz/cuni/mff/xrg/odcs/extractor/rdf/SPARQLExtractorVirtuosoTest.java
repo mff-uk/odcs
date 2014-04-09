@@ -11,6 +11,9 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
+
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.*;
@@ -66,7 +69,7 @@ public class SPARQLExtractorVirtuosoTest {
 	}
 
 	@Test
-	public void extractNSoud() {
+	public void extractNSoud() throws RepositoryException {
 		try {
 
 			RDFFormat usedRDFFormat = RDFFormat.NTRIPLES;
@@ -75,7 +78,8 @@ public class SPARQLExtractorVirtuosoTest {
 			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/legislation/nsoud.cz";
 			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o} limit 5000";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
@@ -92,7 +96,7 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
 
@@ -102,14 +106,15 @@ public class SPARQLExtractorVirtuosoTest {
 	}
 
 	//@Test
-	public void extractBigDataFromEndpoint() {
+	public void extractBigDataFromEndpoint() throws RepositoryException {
 
 		try {
 			URL endpointURL = new URL("http://internal.opendata.cz:8890/sparql");
 			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/seznam.gov.cz/ovm/list/notransform";
 			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+			long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
@@ -123,9 +128,9 @@ public class SPARQLExtractorVirtuosoTest {
 
 			} catch (RDFException e) {
 				fail(e.getMessage());
-			}
+            }
 
-			long sizeAfter = repository.getTripleCount();
+            long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
 
@@ -135,14 +140,15 @@ public class SPARQLExtractorVirtuosoTest {
 	}
 
 	@Test
-	public void extractDataFromSPARQLEndpointTest() {
+	public void extractDataFromSPARQLEndpointTest() throws RepositoryException {
 
 		try {
 			URL endpointURL = new URL("http://dbpedia.org/sparql");
 			String defaultGraphUri = "http://dbpedia.org";
 			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
@@ -157,7 +163,7 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
 
@@ -171,14 +177,15 @@ public class SPARQLExtractorVirtuosoTest {
 	 * for build, use only when debugging
 	 */
 	@Test
-	public void extractDataFromSPARQLEndpointNamePasswordTest() {
+	public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException {
 		try {
 			URL endpoint = new URL(QUERY_ENDPOINT.toString());
 			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 10";
 
 			RDFFormat format = RDFFormat.N3;
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 
@@ -192,7 +199,7 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
 

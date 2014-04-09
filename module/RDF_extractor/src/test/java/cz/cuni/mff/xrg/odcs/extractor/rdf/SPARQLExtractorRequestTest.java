@@ -13,6 +13,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
@@ -54,7 +56,7 @@ public class SPARQLExtractorRequestTest {
 		return environment.getContext();
 	}
 
-	private void extractFromEndpoint(ExtractorEndpointParams params) {
+	private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
 		URL endpoint = getEndpoint();
 		String query = String.format(
 				"CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
@@ -65,7 +67,8 @@ public class SPARQLExtractorRequestTest {
 
 		try {
 			extractor.extractFromSPARQLEndpoint(endpoint, query);
-			assertEquals(repository.getTripleCount(), EXTRACTED_TRIPLES);
+            RepositoryConnection connection = repository.getConnection();
+			assertEquals(connection.size(repository.getDataGraph()), EXTRACTED_TRIPLES);
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		}
@@ -82,7 +85,7 @@ public class SPARQLExtractorRequestTest {
 	}
 
 	@Test
-	public void GetSimpleTest() {
+	public void GetSimpleTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "";
 		String namedGraphParam = "";
@@ -95,7 +98,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void GetDefaultGraphParamTest() {
+	public void GetDefaultGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "";
@@ -110,7 +113,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void GetAllGraphParamTest() {
+	public void GetAllGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "named-graph-uri";
@@ -126,7 +129,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeSimpleTest() {
+	public void POSTEncodeSimpleTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "";
 		String namedGraphParam = "";
@@ -139,7 +142,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeDefaultGraphParamTest() {
+	public void POSTEncodeDefaultGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "";
@@ -154,7 +157,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeAllGraphParamTest() {
+	public void POSTEncodeAllGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "named-graph-uri";

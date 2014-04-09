@@ -18,6 +18,9 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,14 +107,23 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime, endpointParams);
+            RepositoryConnection connection = null;
 
-			if (usedSplitConstruct) {
-				if (splitConstructSize <= 0) {
-					context.sendMessage(MessageType.ERROR,
+            long lastrepoSize = 0;
+            try {
+                connection = rdfDataUnit.getConnection();
+                lastrepoSize = connection.size(rdfDataUnit.getDataGraph());
+            } catch (RepositoryException e) {
+                context.sendMessage(MessageType.ERROR,
+                        "connection to repository broke down");
+            }
+
+            if (usedSplitConstruct) {
+                if (splitConstructSize <= 0) {
+                    context.sendMessage(MessageType.ERROR,
 							"Split construct size must be positive number");
-				}
+                }
 
-				long lastrepoSize = rdfDataUnit.getTripleCount();
 
 				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
 						constructQuery, splitConstructSize);
@@ -127,7 +139,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 							hostName, password, RDFFormat.NTRIPLES,
 							handlerExtractType, false);
 
-					long newrepoSize = rdfDataUnit.getTripleCount();
+                    long newrepoSize = connection.size(rdfDataUnit.getDataGraph());
 
 					checkParsingProblems(useStatisticHandler, context);
 					if (lastrepoSize < newrepoSize) {
@@ -151,8 +163,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 				checkParsingProblems(useStatisticHandler, context);
 			}
-
-			final long triplesCount = rdfDataUnit.getTripleCount();
+			final long triplesCount = connection.size(rdfDataUnit.getDataGraph());
 
 			String tripleInfoMessage = String.format(
 					"Extracted %s triples from SPARQL endpoint %s",
@@ -172,8 +183,11 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
-		}
-	}
+		} catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        }
+    }
 
 	private void checkParsingProblems(boolean useStatisticHandler,
 			DPUContext context) {

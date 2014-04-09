@@ -19,6 +19,8 @@ import org.openrdf.model.Graph;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -225,11 +227,18 @@ public class SPARQLTransformer
 						.fillInStackTrace().toString());
 			}
 		}
+        try {
+            RepositoryConnection connection = intputDataUnit.getConnection();
+            RepositoryConnection connection2 = outputDataUnit.getConnection();
+            final long beforeTriplesCount = connection.size(intputDataUnit.getDataGraph());
+            final long afterTriplesCount = connection2.size(outputDataUnit.getDataGraph());
+            LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
+                    queryCount, beforeTriplesCount, afterTriplesCount);
+        } catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        }
 
-		final long beforeTriplesCount = intputDataUnit.getTripleCount();
-		final long afterTriplesCount = outputDataUnit.getTripleCount();
-		LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
-				queryCount, beforeTriplesCount, afterTriplesCount);
 	}
 
 	private void prepareRepository(List<RDFDataUnit> inputs) {

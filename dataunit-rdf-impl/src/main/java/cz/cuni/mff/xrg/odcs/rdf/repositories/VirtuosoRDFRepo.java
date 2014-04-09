@@ -96,11 +96,12 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 
 		try {
 			repository.initialize();
+            RepositoryConnection connection = getConnection();
 			logger.info(
 					"Virtuoso repository with data graph <{}> successfully initialized.",
 					defaultGraph);
 			logger.info("Virtuoso repository contains {} TRIPLES",
-					getTripleCount());
+                    connection.size(this.getDataGraph()));
 
 
 		} catch (RepositoryException ex) {
@@ -199,11 +200,12 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				}
 
 				try {
+                    RepositoryConnection secondConnection = second.getConnection();
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
 					logger.info("START merging {} triples from <{}> TO <{}>.",
-							second.getTripleCount(), sourceGraphName,
+                            secondConnection.size(second.getDataGraph()), sourceGraphName,
 							targetGraphName);
 
 					result.evaluate();
@@ -274,9 +276,9 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				try {
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
-
+                    RepositoryConnection connection = getConnection();
 					logger.info("START merging {} triples from <{}> TO <{}>.",
-							getTripleCount(), sourceGraphName, targetGraphName);
+                            connection.size(getDataGraph()), sourceGraphName, targetGraphName);
 
 					result.evaluate();
 

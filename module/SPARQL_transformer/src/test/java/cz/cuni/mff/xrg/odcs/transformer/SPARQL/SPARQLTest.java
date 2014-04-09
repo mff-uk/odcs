@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
@@ -41,14 +42,15 @@ public class SPARQLTest {
 				"metadata.ttl", RDFFormat.TURTLE);
 		RDFDataUnit output = env.createRdfOutput("output", false);
 
-		// some triples has been loaded 
-		assertTrue(input.getTripleCount() > 0);
+		// some triples has been loaded
+        RepositoryConnection connection = input.getConnection();
+		assertTrue(connection.size(input.getDataGraph()) > 0);
 		// run
 		try {
 			env.run(trans);
-
+            RepositoryConnection connection2 = output.getConnection();
 			// verify result
-			assertTrue(input.getTripleCount() == output.getTripleCount());
+			assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
 		} finally {
 			// release resources
 			env.release();
@@ -74,14 +76,16 @@ public class SPARQLTest {
 				"metadata.ttl", RDFFormat.TURTLE);
 		RDFDataUnit output = env.createRdfOutput("output", true);
 
-		// some triples has been loaded 
-		assertTrue(input.getTripleCount() > 0);
+        RepositoryConnection connection = input.getConnection();
+        RepositoryConnection connection2 = output.getConnection();
+		// some triples has been loaded
+		assertTrue(connection.size(input.getDataGraph()) > 0);
 		// run
 		try {
 			env.run(trans);
 
 			// verify result
-			assertTrue(input.getTripleCount() == output.getTripleCount());
+			assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
 		} finally {
 			// release resources
 			env.release();

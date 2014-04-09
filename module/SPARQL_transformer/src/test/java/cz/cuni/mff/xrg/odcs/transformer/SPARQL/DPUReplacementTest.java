@@ -89,16 +89,15 @@ public class DPUReplacementTest {
             connection2.add(factory2.createBNode("n25"), factory2
                     .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getDataGraph());
 
-
-			assertEquals(2L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+			assertEquals(2L, connection.size(input.getDataGraph()));
+			assertEquals(1L, connection2.size(optional.getDataGraph()));
 
 			RDFDataUnit output = env.createRdfOutput("output", false);
 
 			env.run(transformer);
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
+            RepositoryConnection connection3 = output.getConnection();
+			assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 			env.release();
 
 
@@ -155,15 +154,15 @@ public class DPUReplacementTest {
 					.createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
 					.createLiteral("Bill"),optional.getDataGraph());
 
-			assertEquals(1L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+            assertEquals(1L, connection.size(input.getDataGraph()));
+            assertEquals(1L, connection2.size(optional.getDataGraph()));
 
 			RDFDataUnit output = env.createRdfOutput("output", false);
 
 			env.run(transformer);
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
+            RepositoryConnection connection3 = output.getConnection();
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 
 			List<Statement> outputTriples = output.getTriples();
 

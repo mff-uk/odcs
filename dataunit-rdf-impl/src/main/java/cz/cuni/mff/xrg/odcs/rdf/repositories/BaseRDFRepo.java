@@ -440,9 +440,14 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public long getPartsCount(long chunkSize) {
-
-		long triples = getTripleCount();
-		long partsCount = triples / chunkSize;
+        long triples = 0;
+        try {
+            RepositoryConnection connection = getConnection();
+            triples = connection.size(this.graph);
+        } catch (RepositoryException e) {
+            logger.error("Error", e);
+        }
+        long partsCount = triples / chunkSize;
 
 		if (partsCount * chunkSize != triples) {
 			partsCount++;
@@ -645,32 +650,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			logger.debug(e.getMessage());
 		}
 
-	}
-
-	/**
-	 * Return count of triples stored in repository.
-	 *
-	 * @return size of triples in repository.
-	 */
-	@Override
-	public long getTripleCount() {
-		long size = 0;
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			if (graph != null) {
-				size = connection.size(graph);
-			} else {
-				size = connection.size();
-			}
-
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			logger.debug(ex.getMessage());
-		}
-
-		return size;
 	}
 
 	/**

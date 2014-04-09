@@ -220,15 +220,15 @@ public class LocalRDFRepo extends BaseRDFRepo {
 
 		try {
 			lazySource = sourceDataUnit.getRepositoryResult();
-
+            RepositoryConnection sourceDataUnitConn = sourceDataUnit.getConnection();
 			targetConnection = repository.getConnection();
 
 			if (targetConnection != null) {
 
 				logger.info(
 						"Merging {} triples from <{}> TO <{}>.",
-						sourceDataUnit.getTripleCount(),
-						sourceDataUnit.getDataGraph().stringValue(),
+                        sourceDataUnitConn.size(sourceDataUnit.getDataGraph()),
+                        sourceDataUnit.getDataGraph().stringValue(),
 						getDataGraph().stringValue());
 
 				long addedParts = 0;

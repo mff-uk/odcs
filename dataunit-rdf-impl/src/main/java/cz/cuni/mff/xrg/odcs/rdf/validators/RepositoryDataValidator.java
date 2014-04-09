@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.BasicParserSettings;
@@ -124,8 +125,16 @@ public class RepositoryDataValidator implements DataValidator {
 	public boolean areDataValid() {
 
 		boolean isValid = false;
+        long tripleCount = -1;
+        try{
+            RepositoryConnection connection = input.getConnection();
+            tripleCount = connection.size(input.getDataGraph());
+        }catch (Exception e) {
+            message = e.getMessage();
+            logger.error(message);
+        }
 
-		if (input.getTripleCount() == 0) {
+		if (tripleCount == 0) {
 			isValid = true;
 		} else {
 

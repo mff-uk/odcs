@@ -264,13 +264,14 @@ public class LocalRDFRepoTest {
 	 * Test extracting data using Statistical handler.
 	 */
 	@Test
-	public void extractUsingStatisticHandler() {
+	public void extractUsingStatisticHandler() throws RepositoryException {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -280,7 +281,7 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -289,7 +290,7 @@ public class LocalRDFRepoTest {
 	 * Test extracting data using not existed file.
 	 */
 	@Test
-	public void extractNotExistedFile() {
+	public void extractNotExistedFile() throws RepositoryException {
 		File dirFile = new File("NotExistedFile");
 
 		String suffix = ".rdf";
@@ -297,7 +298,8 @@ public class LocalRDFRepoTest {
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -306,7 +308,7 @@ public class LocalRDFRepoTest {
 					handlerType);
 			fail();
 		} catch (RDFException e) {
-			long newSize = rdfRepo.getTripleCount();
+			long newSize = connection.size(rdfRepo.getDataGraph());
 			assertEquals(size, newSize);
 		}
 
@@ -316,14 +318,15 @@ public class LocalRDFRepoTest {
 	 * Test extracting data from RDF/XML files.
 	 */
 	@Test
-	public void extract_RDFXML_FilesToRepository() {
+	public void extract_RDFXML_FilesToRepository() throws RepositoryException {
 
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -333,7 +336,7 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -341,17 +344,18 @@ public class LocalRDFRepoTest {
 	/**
 	 * Test extracting data from N3 files.
 	 */
-	@Test
-	public void extract_N3_FilesToRepository() {
+    @Test
+    public void extract_N3_FilesToRepository() throws RepositoryException {
 
-		String suffix = "shakespeare.n3";
-		String baseURI = "";
-		boolean useSuffix = true;
-		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
+        String suffix = "shakespeare.n3";
+        String baseURI = "";
+        boolean useSuffix = true;
+        HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
-		long size = rdfRepo.getTripleCount();
 
-		try {
+        try {
 			rdfRepo.extractFromFile(
 					FileExtractType.PATH_TO_DIRECTORY, RDFFormat.N3,
 					testFileDir, suffix, baseURI, useSuffix, handlerType);
@@ -360,7 +364,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -369,14 +373,15 @@ public class LocalRDFRepoTest {
 	 * Test extracting data from TTL files.
 	 */
 	@Test
-	public void extract_TTL_FilesToRepository() {
+	public void extract_TTL_FilesToRepository() throws RepositoryException {
 
 		String suffix = ".ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -387,7 +392,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize =  connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -396,14 +401,16 @@ public class LocalRDFRepoTest {
 	 * Test extracting data from N-TRIPLES files.
 	 */
 	@Test
-	public void extract_NTRIPLES_FilesToRepository() {
+	public void extract_NTRIPLES_FilesToRepository() throws RepositoryException {
 
 		String suffix = ".nt";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
+
 
 		try {
 			rdfRepo.extractFromFile(
@@ -414,7 +421,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -423,14 +430,15 @@ public class LocalRDFRepoTest {
 	 * Test extracting data from TRIG files.
 	 */
 	@Test
-	public void extract_TRIG_FilesToRepository() {
+	public void extract_TRIG_FilesToRepository() throws RepositoryException {
 
 		String suffix = ".trig";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -441,7 +449,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -450,14 +458,15 @@ public class LocalRDFRepoTest {
 	 * Test extracting data from TRIX files.
 	 */
 	@Test
-	public void extract_TRIX_FilesToRepository() {
+	public void extract_TRIX_FilesToRepository() throws RepositoryException {
 
 		String suffix = ".trix";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -468,7 +477,7 @@ public class LocalRDFRepoTest {
 
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize =  connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
@@ -530,14 +539,15 @@ public class LocalRDFRepoTest {
         assertFalse(afterUpdate);
 	}
 
-	private void TEDextractFile1ToRepository() {
+	private void TEDextractFile1ToRepository() throws RepositoryException {
 
 		String suffix = "ted4.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+		long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -547,19 +557,21 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize =  connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(newSize > size);
 	}
 
-	private void TEDextractFile2ToRepository() {
+	private void TEDextractFile2ToRepository() throws RepositoryException {
 
 		String suffix = "ted4b.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = rdfRepo.getTripleCount();
+
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(
@@ -569,7 +581,7 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		boolean triplesAdded = newSize > size;
 
@@ -614,13 +626,14 @@ public class LocalRDFRepoTest {
 	 * file.
 	 */
 	@Test
-	public void TEDPipelineTest() {
+	public void TEDPipelineTest() throws RepositoryException {
 		TEDextractFile1ToRepository();
 		TEDextractFile2ToRepository();
 		TEDTransformSPARQL();
 		TEDloadtoTTLFile();
 
-		long addedData = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+		long addedData = connection.size(rdfRepo.getDataGraph());
 
 		assertTrue(addedData > 0);
 	}
@@ -649,9 +662,10 @@ public class LocalRDFRepoTest {
 	 * Test if repository is empty.
 	 */
 	@Test
-	public void isRepositoryEmpty() {
+	public void isRepositoryEmpty() throws RepositoryException {
 		rdfRepo.cleanAllData();
-		assertEquals(0, rdfRepo.getTripleCount());
+        RepositoryConnection connection = rdfRepo.getConnection();
+		assertEquals(0, connection.size(rdfRepo.getDataGraph()));
 	}
 
 	/**
@@ -668,15 +682,16 @@ public class LocalRDFRepoTest {
 	private void testNewTriple(Resource subject, URI predicate,
 			Value object, ManagableRdfDataUnit repository) throws RepositoryException {
 
-		long size = repository.getTripleCount();
-		boolean isInRepository = false;
 
-        RepositoryConnection connection = null;
-        connection = repository.getConnection();
+
+        boolean isInRepository = false;
+
+        RepositoryConnection connection = repository.getConnection();
+        long size = connection.size(repository.getDataGraph());
         connection.hasStatement(subject, predicate, object, true, repository.getDataGraph());
         connection.add(subject, predicate, object, repository.getDataGraph());
 
-		long expectedSize = repository.getTripleCount();
+		long expectedSize =  connection.size(repository.getDataGraph());
 
 		if (isInRepository) {
 			assertEquals(expectedSize, size);
@@ -704,14 +719,15 @@ public class LocalRDFRepoTest {
 		directory.delete();
 	}
 
-	private void extractBigDataFileToRepository() {
+	private void extractBigDataFileToRepository() throws RepositoryException {
 
 		String suffix = "bigdata.ttl";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
@@ -720,7 +736,7 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		LOG.debug("EXTRACTING from FILE - OK");
 		LOG.debug(
@@ -910,26 +926,29 @@ public class LocalRDFRepoTest {
 	 *
 	 * @param repository repository used for extracting
 	 */
-	protected void extractFromFileToRepository(ManagableRdfDataUnit repository) {
+	protected void extractFromFileToRepository(ManagableRdfDataUnit repository)  {
 		String suffix = ".rdf";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
-		long size = repository.getTripleCount();
+        long size = 0;
+        long newSize = -1;
+        try {
+            RepositoryConnection connection = repository.getConnection();
+            size = connection.size(repository.getDataGraph());
+            repository.extractFromFile(
+                    FileExtractType.PATH_TO_DIRECTORY, null,
+                    testFileDir, suffix, baseURI, useSuffix, handlerType);
+            newSize = connection.size(repository.getDataGraph());
+        } catch (RDFException e) {
+            fail(e.getMessage());
+        } catch (RepositoryException e) {
+            fail(e.getMessage());
+        }
 
-		try {
-			repository.extractFromFile(
-					FileExtractType.PATH_TO_DIRECTORY, null,
-					testFileDir, suffix, baseURI, useSuffix, handlerType);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		long newSize = repository.getTripleCount();
-
-		assertTrue(newSize > size);
-	}
+        assertTrue(newSize > size);
+    }
 
 	/**
 	 * Test transforming SPARQL update query on give repository instance.

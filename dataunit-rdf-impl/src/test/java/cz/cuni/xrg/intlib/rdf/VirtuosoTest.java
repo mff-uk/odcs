@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.Properties;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import static org.junit.Assert.*;
@@ -124,13 +125,14 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
-	private void extractTwoGigaFile() {
+	private void extractTwoGigaFile() throws RepositoryException {
 		String suffix = "ted1.n3";
 		String baseURI = "";
 		boolean useSuffix = true;
 		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
-		long size = rdfRepo.getTripleCount();
+        RepositoryConnection connection = rdfRepo.getConnection();
+        long size = connection.size(rdfRepo.getDataGraph());
 
 		try {
 			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
@@ -139,7 +141,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		long newSize = rdfRepo.getTripleCount();
+		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		LOG.debug("EXTRACTING from FILE - OK");
 		LOG.debug(

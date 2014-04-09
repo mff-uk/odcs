@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +83,15 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 			}
 		}
 
-
-		final long triplesCount = rdfDataUnit.getTripleCount();
+        RepositoryConnection connection = null;
+        long triplesCount = 0;
+        try {
+            connection = rdfDataUnit.getConnection();
+            triplesCount = connection.size(rdfDataUnit.getDataGraph());
+        } catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        }
 		logger.info("Loading {} triples", triplesCount);
 
 		try {
