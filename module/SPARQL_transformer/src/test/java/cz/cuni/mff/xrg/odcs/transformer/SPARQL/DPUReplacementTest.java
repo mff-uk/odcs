@@ -76,28 +76,19 @@ public class DPUReplacementTest {
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
             RepositoryConnection connection = null;
-            try {
-                connection = input.getConnection();
-                ValueFactory factory = connection.getValueFactory();
-                connection.add(factory.createURI("http://s"), factory.createURI(
-                        "http://p"), factory.createURI("http://o"), input.getDataGraph());
-                connection.add(factory.createURI("http://subject"), factory.createURI(
-                        "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
-
-            } catch (RepositoryException e) {
-                LOG.error("Error", e);
-            }
+            connection = input.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://s"), factory.createURI(
+                    "http://p"), factory.createURI("http://o"), input.getDataGraph());
+            connection.add(factory.createURI("http://subject"), factory.createURI(
+                    "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
 
-            try {
-                RepositoryConnection connection2 = optional.getConnection();
-                ValueFactory factory = connection2.getValueFactory();
-                connection2.add(factory.createBNode("n25"), factory
-                        .createURI("http://hasName"), factory.createLiteral("NAME"), optional.getDataGraph());
+            RepositoryConnection connection2 = optional.getConnection();
+            ValueFactory factory2 = connection2.getValueFactory();
+            connection2.add(factory2.createBNode("n25"), factory2
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getDataGraph());
 
-            } catch (RepositoryException e) {
-                LOG.error("Error", e);
-            }
 
 			assertEquals(2L, input.getTripleCount());
 			assertEquals(1L, optional.getTripleCount());

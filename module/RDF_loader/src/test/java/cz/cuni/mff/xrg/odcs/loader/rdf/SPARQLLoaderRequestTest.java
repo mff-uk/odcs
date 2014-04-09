@@ -76,7 +76,7 @@ public class SPARQLLoaderRequestTest {
 	}
 
 	private void loadToEndpoint(LoaderEndpointParams params,
-			String defaultGraphURI) {
+			String defaultGraphURI) throws RepositoryException {
 
 		addDataToRepository();
 
@@ -102,29 +102,25 @@ public class SPARQLLoaderRequestTest {
 		}
 	}
 
-    private void addDataToRepository() {
+    private void addDataToRepository() throws RepositoryException {
 
-        try {
-            RepositoryConnection connection = repository.getConnection();
-            ValueFactory factory = connection.getValueFactory();
-            for (int i = 0; i < LOADED_TRIPLES; i++) {
-                Resource subject = factory.createURI("http://A" + String.valueOf(
-                        i + 1));
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        for (int i = 0; i < LOADED_TRIPLES; i++) {
+            Resource subject = factory.createURI("http://A" + String.valueOf(
+                    i + 1));
 
-                URI predicate = factory.createURI("http://B" + String.valueOf(
-                        i + 1));
+            URI predicate = factory.createURI("http://B" + String.valueOf(
+                    i + 1));
 
-                Value object = factory.createLiteral("C" + String.valueOf(i + 1));
+            Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
-                connection.add(subject, predicate, object, repository.getDataGraph());
-            }
-        } catch (RepositoryException e) {
-            logger.error("Error", e);
-            }
-	}
+            connection.add(subject, predicate, object, repository.getDataGraph());
+        }
+    }
 
 	@Test
-	public void POSTEncodeTest() {
+	public void POSTEncodeTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "using-graph-uri";
 

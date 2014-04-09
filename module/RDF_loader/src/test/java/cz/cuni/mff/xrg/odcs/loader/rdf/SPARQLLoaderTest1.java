@@ -96,28 +96,22 @@ public class SPARQLLoaderTest1 {
 
 	
         //@Test
-	public void InsertingTripleToEndpointCRUD() {
-		//repository.cleanAllData();
+    public void InsertingTripleToEndpointCRUD() throws RepositoryException {
+        //repository.cleanAllData();
 
+        RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        Resource subject = factory.createURI("http://my.subject");
+        URI predicate = factory.createURI("http://my.predicate");
+        Value object = factory.createLiteral("Mojefi resi ...");
+        Value object2 = factory.createLiteral("Y");
+        Value object3 = factory.createLiteral("ščřžýěéž");
 
-        RepositoryConnection connection = null;
-        try {
-            connection = repository.getConnection();
-            ValueFactory factory = connection.getValueFactory();
-            Resource subject = factory.createURI("http://my.subject");
-            URI predicate = factory.createURI("http://my.predicate");
-            Value object = factory.createLiteral("Mojefi resi ...");
-            Value object2 = factory.createLiteral("Y");
-            Value object3 = factory.createLiteral("ščřžýěéž");
+        connection.add(subject, predicate, object, repository.getDataGraph());
+        connection.add(subject, predicate, object3, repository.getDataGraph());
 
-            connection.add(subject, predicate, object, repository.getDataGraph());
-            connection.add(subject, predicate, object3, repository.getDataGraph());
-        } catch (RepositoryException e) {
-            logger.error("Error", e);
-        }
-
-		tryInsertToSPARQLEndpoint();
-	}
+        tryInsertToSPARQLEndpoint();
+    }
         
         //@Test
 	public void InsertingSmallFileToEndpointCRUD() {

@@ -130,15 +130,10 @@ public class SPARQLLoaderTest {
 	}
 
 	private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
-			Value object) {
+			Value object) throws RepositoryException {
 
-        RepositoryConnection connection = null;
-        try {
-            connection = repository.getConnection();
-            connection.add(subject, predicate, object);
-        } catch (RepositoryException e) {
-            logger.error("Error", e);
-        }
+        RepositoryConnection connection = repository.getConnection();
+        connection.add(subject, predicate, object);
 
 		String goalGraphName = "http://tempGraph";
 		URL endpoint = getUpdateEndpoint();
