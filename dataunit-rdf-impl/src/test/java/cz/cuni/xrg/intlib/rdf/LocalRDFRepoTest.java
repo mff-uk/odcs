@@ -515,11 +515,9 @@ public class LocalRDFRepoTest {
 				+ "INSERT { ?who ?what 'Boston_Bruins' } "
 				+ "WHERE { ?who ?what 'Dalas_Stars' }";
 
-       connection.add(subject, predicate, object, rdfRepo.getDataGraph());
+        connection.add(subject, predicate, object, rdfRepo.getDataGraph());
 
-
-		boolean beforeUpdate = rdfRepo.isTripleInRepository(
-				subject, predicate, object);
+		boolean beforeUpdate = connection.hasStatement(subject, predicate, object, true, rdfRepo.getDataGraph());
 		assertTrue(beforeUpdate);
 
 		try {
@@ -528,9 +526,8 @@ public class LocalRDFRepoTest {
 			fail(e.getMessage());
 		}
 
-		boolean afterUpdate = rdfRepo.isTripleInRepository(
-				subject, predicate, object);
-		assertFalse(afterUpdate);
+        boolean afterUpdate = connection.hasStatement(subject, predicate, object, true, rdfRepo.getDataGraph());
+        assertFalse(afterUpdate);
 	}
 
 	private void TEDextractFile1ToRepository() {
@@ -669,20 +666,15 @@ public class LocalRDFRepoTest {
 	}
 
 	private void testNewTriple(Resource subject, URI predicate,
-			Value object, ManagableRdfDataUnit repository) {
+			Value object, ManagableRdfDataUnit repository) throws RepositoryException {
 
 		long size = repository.getTripleCount();
-		boolean isInRepository = repository.isTripleInRepository(
-				subject, predicate, object);
-
+		boolean isInRepository = false;
 
         RepositoryConnection connection = null;
-        try {
-            connection = repository.getConnection();
-            connection.add(subject, predicate, object, repository.getDataGraph());
-        } catch (RepositoryException e) {
-            LOG.error("Error", e);
-        }
+        connection = repository.getConnection();
+        connection.hasStatement(subject, predicate, object, true, repository.getDataGraph());
+        connection.add(subject, predicate, object, repository.getDataGraph());
 
 		long expectedSize = repository.getTripleCount();
 

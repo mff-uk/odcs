@@ -63,18 +63,6 @@ public interface RDFDataUnit extends DataUnit {
 			List<String> predicates);
 
 	/**
-	 * Check if RDF triple is in repository.
-	 *
-	 * @param subject   URI or blank node for subject
-	 * @param predicate URI for predicate
-	 * @param object    URI, blank node or literal for object
-	 * @return true if such RDF triple is in repository, false otherwise.
-	 */
-    @Deprecated
-    public boolean isTripleInRepository(Resource subject,
-			URI predicate, Value object);
-
-	/**
 	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
 	 * serialization of RDF data
 	 *

@@ -674,38 +674,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Return if RDF triple is in repository.
-	 *
-	 * @param subject   URI or blank node for subject
-	 * @param predicate URI for predicate
-	 * @param object    URI, blank node or literal for object
-	 * @return true if such statement is in repository, false otherwise.
-	 */
-	@Override
-	public boolean isTripleInRepository(Resource subject,
-			URI predicate, Value object) {
-		boolean hasTriple = false;
-
-		Statement statement = new StatementImpl(subject, predicate, object);
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			if (graph != null) {
-				hasTriple = connection.hasStatement(statement, true, graph);
-			} else {
-				hasTriple = connection.hasStatement(statement, true);
-			}
-
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			logger.debug(ex.getMessage());
-		}
-
-		return hasTriple;
-	}
-
-	/**
 	 * Removes all RDF data from repository.
 	 */
 	@Override
