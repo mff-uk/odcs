@@ -17,6 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 
 /**
  * This class allows for SPARQL CONSTRUCT/UPDATE queries possible to replace
@@ -108,7 +110,7 @@ public class PlaceholdersHelper {
 	 *         construct/update query based on DPU name can be executed. Need
 	 *         only if method {@link #needExecutableRepository()} returns TRUE;
 	 */
-	public ManagableRdfDataUnit getExecutableTempRepository() {
+	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
 		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
 				"executable");
 		for (RDFDataUnit repository : usedRepositories) {
@@ -117,7 +119,9 @@ public class PlaceholdersHelper {
 
 			while (iterator.hasNextTriples()) {
 				List<Statement> triples = iterator.getTriples();
-				tempRepository.addStatementsToGraph(triples, dataGraph);
+                RepositoryConnection connection = null;
+                connection = repository.getConnection();
+                connection.add(triples, dataGraph);
 			}
 		}
 		return tempRepository;

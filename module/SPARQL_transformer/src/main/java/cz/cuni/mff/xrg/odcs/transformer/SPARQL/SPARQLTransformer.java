@@ -225,8 +225,11 @@ public class SPARQLTransformer
 			} catch (RDFDataUnitException ex) {
 				context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 						.fillInStackTrace().toString());
-			}
-		}
+			} catch (RepositoryException e) {
+                context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                        .fillInStackTrace().toString());
+            }
+        }
         try {
             RepositoryConnection connection = intputDataUnit.getConnection();
             RepositoryConnection connection2 = outputDataUnit.getConnection();

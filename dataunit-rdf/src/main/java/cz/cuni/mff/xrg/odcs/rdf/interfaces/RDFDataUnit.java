@@ -404,15 +404,4 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public Dataset getDataSet();
 
-	/**
-	 * Add statements to defined graph name. Data in this graph could be used
-	 * only in SPARQL queries for named graph cause. If graph graph is different
-	 * from default, others methods don`t know anything about here stored
-	 * triples.
-	 *
-	 * @param statements connection of statements you want to add
-	 * @param graphName  Graph name where statements are added.
-	 */
-	public void addStatementsToGraph(List<Statement> statements, URI graphName);
-
 }
