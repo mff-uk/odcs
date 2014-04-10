@@ -365,10 +365,6 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
-	/**
-	 * Removes all RDF data from repository.
-	 */
-	public void cleanAllData();
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.

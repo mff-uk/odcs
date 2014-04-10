@@ -80,8 +80,9 @@ public class SPARQLExtractorRequestTest {
 	}
 
 	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
+	public void cleanRepository() throws RepositoryException {
+        RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
 	}
 
 	@Test

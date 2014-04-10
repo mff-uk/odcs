@@ -663,8 +663,8 @@ public class LocalRDFRepoTest {
 	 */
 	@Test
 	public void isRepositoryEmpty() throws RepositoryException {
-		rdfRepo.cleanAllData();
         RepositoryConnection connection = rdfRepo.getConnection();
+        connection.clear(rdfRepo.getDataGraph());
 		assertEquals(0, connection.size(rdfRepo.getDataGraph()));
 	}
 

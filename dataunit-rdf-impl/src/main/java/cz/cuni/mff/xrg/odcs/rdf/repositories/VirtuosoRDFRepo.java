@@ -124,7 +124,12 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	@Override
 	public void delete() {
 		if (repository.isInitialized()) {
-			cleanAllData();
+            try {
+                RepositoryConnection connection = getConnection();
+                connection.clear(graph);
+            } catch (RepositoryException ex) {
+                logger.debug(ex.getMessage());
+            }
 		}
 
 		release();

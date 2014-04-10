@@ -55,8 +55,9 @@ public class SPARQLLoaderRequestTest {
 	}
 
 	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
+	public void cleanRepository() throws RepositoryException {
+        RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
 	}
 
 	private DPUContext getTestContext() {

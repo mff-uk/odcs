@@ -102,21 +102,27 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	}
 
 	@Override
-	public void delete() {
-		if (repository.isInitialized()) {
-			cleanAllData();
-		}
-		File dataDir = repository.getDataDir();
-		release();
-		while (repository.isInitialized()) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException ex) {
-				logger.debug("Thread sleeping interupted {}", ex.getMessage());
-			}
-		}
-		deleteDataDirectory(dataDir);
-	}
+    public void delete() {
+        if (repository.isInitialized()) {
+            try {
+                RepositoryConnection connection = getConnection();
+                connection.clear(graph);
+            } catch (RepositoryException ex) {
+                logger.debug(ex.getMessage());
+            }
+
+        }
+        File dataDir = repository.getDataDir();
+        release();
+        while (repository.isInitialized()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                logger.debug("Thread sleeping interupted {}", ex.getMessage());
+            }
+        }
+        deleteDataDirectory(dataDir);
+    }
 
 	@Override
 	public void release() {

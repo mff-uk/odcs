@@ -46,8 +46,9 @@ public class SPARQLExtractorLocalTest {
 	}
 
 	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
+	public void cleanRepository() throws RepositoryException {
+        RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
 	}
 
 	@AfterClass

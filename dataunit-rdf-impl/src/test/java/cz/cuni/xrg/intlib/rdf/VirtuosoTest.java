@@ -38,14 +38,15 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	/**
 	 * Basic setting before initializing test class.
 	 */
-	@BeforeClass
-	public static void setUpLogger() {
+    @BeforeClass
+    public static void setUpLogger() throws RepositoryException {
 
-		rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
-				hostName, port, user, password, defaultGraph, "",
-				new Properties());
-		rdfRepo.cleanAllData();
-	}
+        rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
+                hostName, port, user, password, defaultGraph, "",
+                new Properties());
+        RepositoryConnection connection = rdfRepo.getConnection();
+        connection.clear(rdfRepo.getDataGraph());
+    }
 
 	/**
 	 * Basic setting before test execution.

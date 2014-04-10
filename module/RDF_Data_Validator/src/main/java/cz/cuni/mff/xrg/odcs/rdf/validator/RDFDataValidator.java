@@ -13,6 +13,8 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	}
 
 	private void makeValidationReport(DataValidator validator,
-			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException {
+			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
 
 		context.sendMessage(MessageType.INFO,
 				"Start creating VALIDATION REPORT", String.format(
@@ -80,7 +82,8 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
 
 		if (stopExecution) {
-			dataOutput.cleanAllData();
+            RepositoryConnection connection = dataOutput.getConnection();
+            connection.clear(dataOutput.getDataGraph());
 			throw new RDFException(
 					"RDFDataValidator found some invalid data - pipeline execution is stopped");
 		}
@@ -142,8 +145,11 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		} catch (RDFException e) {
 			context.sendMessage(MessageType.ERROR, e.getMessage(), e
 					.fillInStackTrace().toString());
-		}
+		} catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                    .fillInStackTrace().toString());
+        }
 
 
-	}
+    }
 }

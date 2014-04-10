@@ -66,8 +66,8 @@ public class SPARQLLoaderTest {
 
 	@Test
 	public void InsertingToEndpointTest1() throws RepositoryException {
-		repository.cleanAllData();
         RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
@@ -78,8 +78,8 @@ public class SPARQLLoaderTest {
 
 	@Test
 	public void InsertingToEndpointTest2() throws RepositoryException {
-		repository.cleanAllData();
         RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
@@ -91,8 +91,8 @@ public class SPARQLLoaderTest {
 
 	@Test
 	public void InsertingToEndpointTest3() throws RepositoryException {
-		repository.cleanAllData();
         RepositoryConnection connection = repository.getConnection();
+        connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");

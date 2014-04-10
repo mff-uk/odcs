@@ -384,9 +384,14 @@ public class SPARQLExtractor {
 
 		} catch (RDFCancelException e) {
 			logger.debug(e.getMessage());
-			dataUnit.cleanAllData();
+            try {
+                connection.clear(dataUnit.getDataGraph());
+            } catch (RepositoryException e1) {
+                logger.debug(e.getMessage());
+                throw new RDFException(e1.getMessage(), e1);
+            }
 
-		} catch (RDFHandlerException | RDFParseException ex) {
+        } catch (RDFHandlerException | RDFParseException ex) {
 			logger.error(ex.getMessage(), ex);
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {

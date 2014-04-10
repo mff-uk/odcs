@@ -652,29 +652,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	}
 
-	/**
-	 * Removes all RDF data from repository.
-	 */
-	@Override
-	public void cleanAllData() {
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			if (graph != null) {
-				connection.clear(graph);
-			} else {
-				connection.clear();
-			}
-
-			//connection.commit();
-
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			logger.debug(ex.getMessage());
-		}
-
-	}
 
 	/**
 	 *
@@ -1972,8 +1949,15 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	@Override
 	public void clean() {
 		// to clean documentaion in MergableDataUnit
-		cleanAllData();
-	}
+        try {
+            RepositoryConnection connection = getConnection();
+            connection.clear(graph);
+        } catch (RepositoryException ex) {
+            hasBrokenConnection = true;
+            logger.debug(ex.getMessage());
+        }
+
+    }
 
 	/**
 	 * Method called after restarting after DB. Calling method
