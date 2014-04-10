@@ -434,29 +434,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 *
-	 * @param chunkSize size of triples/statements in one part.
-	 * @return Count of parts as split data in reposioty by defined chunkSize .
-	 */
-	@Override
-	public long getPartsCount(long chunkSize) {
-        long triples = 0;
-        try {
-            RepositoryConnection connection = getConnection();
-            triples = connection.size(this.graph);
-        } catch (RepositoryException e) {
-            logger.error("Error", e);
-        }
-        long partsCount = triples / chunkSize;
-
-		if (partsCount * chunkSize != triples) {
-			partsCount++;
-		}
-
-		return partsCount;
-	}
-
-	/**
 	 * Return iterable collection of all statemens in repository. Needed for
 	 * adding/merge large collection when is not possible to return all
 	 * statements (RDF triples).

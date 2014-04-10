@@ -238,9 +238,14 @@ public class LocalRDFRepo extends BaseRDFRepo {
 						getDataGraph().stringValue());
 
 				long addedParts = 0;
-				long partsCount = sourceDataUnit.getPartsCount(
-						DEFAULT_MERGE_PART_SIZE);
 
+
+                long size = sourceDataUnitConn.size(sourceDataUnit.getDataGraph());
+                long partsCount = size / DEFAULT_MERGE_PART_SIZE;
+                if (size % DEFAULT_MERGE_PART_SIZE > 0) {
+                    partsCount++;
+                }
+                        
 				List<Statement> statements = getNextDataPart(lazySource,
 						DEFAULT_MERGE_PART_SIZE);
 

@@ -537,7 +537,18 @@ public class SPARQLoader {
 
 		String part = getInsertQueryPart(chunkSize, counter);
 
-		long partsCount = rdfDataUnit.getPartsCount(chunkSize);
+		long partsCount = 0;
+        try {
+            RepositoryConnection connection = rdfDataUnit.getConnection();
+            long size = connection.size(rdfDataUnit.getDataGraph());
+            partsCount = size / chunkSize;
+            if (size % chunkSize > 0) {
+                partsCount++;
+            }
+        } catch (RepositoryException e) {
+            logger.error(e.getMessage(), e);
+        }
+
 
 		while (part != null) {
 			counter++;

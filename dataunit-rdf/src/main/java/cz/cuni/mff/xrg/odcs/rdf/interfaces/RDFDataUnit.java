@@ -309,7 +309,6 @@ public interface RDFDataUnit extends DataUnit {
 	 *                               BlankNode, some type of Literal (in object
 	 *                               case))
 	 */
-    @Deprecated
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
@@ -362,7 +361,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param handler Type of handler where RDF parser used for parsing.
 	 * @return RDFParser for given RDF format and set RDF handler.
 	 */
-    @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
 
@@ -383,13 +381,6 @@ public interface RDFDataUnit extends DataUnit {
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
-	/**
-	 * Returns count of parts in repository by defined chunkSize.
-	 *
-	 * @param chunkSize size of triples/statements in one part.
-	 * @return Count of parts in repository by defined chunkSize.
-	 */
-	public long getPartsCount(long chunkSize);
 
 	/**
 	 * Method called after restarting after DB. Calling method
