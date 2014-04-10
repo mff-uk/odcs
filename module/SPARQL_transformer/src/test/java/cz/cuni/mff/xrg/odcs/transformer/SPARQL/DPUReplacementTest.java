@@ -13,6 +13,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,18 +165,18 @@ public class DPUReplacementTest {
             RepositoryConnection connection3 = output.getConnection();
             assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 
-			List<Statement> outputTriples = output.getTriples();
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getDataGraph());
 
-			boolean newInsertedTripleFound = false;
-			for (Statement next : outputTriples) {
-				if (expectedObjectName.equals(next.getObject().stringValue())) {
-					newInsertedTripleFound = true;
-					break;
-				}
-			}
+            boolean newInsertedTripleFound = false;
+            while (outputTriples.hasNext()) {
+                Statement next = outputTriples.next();
+                if (expectedObjectName.equals(next.getObject().stringValue())) {
+                    newInsertedTripleFound = true;
+                    break;
+                }
+            }
 
 			assertTrue("New inserted triple not found", newInsertedTripleFound);
-
 
 		} catch (Exception e) {
 			fail(e.getMessage());

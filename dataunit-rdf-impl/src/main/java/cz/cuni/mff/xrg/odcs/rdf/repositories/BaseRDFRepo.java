@@ -459,7 +459,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	/**
 	 * Return iterable collection of all statemens in repository. Needed for
 	 * adding/merge large collection when is not possible to return all
-	 * statements (RDF triples) at once in method as in {@link #getTriples() }.
+	 * statements (RDF triples).
 	 *
 	 * @return Iterable collection of Statements need for lazy
 	 */
@@ -674,36 +674,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			logger.debug(ex.getMessage());
 		}
 
-	}
-
-	/**
-	 * Return all triples(statements) in reposiotory as list.
-	 *
-	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
-	 *         repository/
-	 */
-	@Override
-	public List<Statement> getTriples() {
-
-		List<Statement> statemens = new ArrayList<>();
-
-		if (repository != null) {
-
-			try {
-				RepositoryResult<Statement> lazy = getRepositoryResult();
-
-				while (lazy.hasNext()) {
-					Statement next = lazy.next();
-					statemens.add(next);
-				}
-
-			} catch (RepositoryException ex) {
-				hasBrokenConnection = true;
-				logger.debug(ex.getMessage(), ex);
-			}
-
-		}
-		return statemens;
 	}
 
 	/**
@@ -1888,23 +1858,25 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * @return collection of {@link RDFTriple} with all triples from actually
 	 *         set named graph.
 	 */
-	public List<RDFTriple> getRDFTriplesInRepository() {
+	public List<RDFTriple> getRDFTriplesInRepository() throws RepositoryException {
 
-		List<RDFTriple> triples = new ArrayList<>();
-		List<Statement> statements = getTriples();
+        List<RDFTriple> triples = new ArrayList<>();
+        RepositoryConnection connection = getConnection();
+        RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true, graph);
 
 		int count = 0;
 
-		for (Statement next : statements) {
-			String subject = next.getSubject().stringValue();
-			String predicate = next.getPredicate().stringValue();
-			String object = next.getObject().stringValue();
+        while(statements.hasNext()) {
+            Statement next = statements.next();
+            String subject = next.getSubject().stringValue();
+            String predicate = next.getPredicate().stringValue();
+            String object = next.getObject().stringValue();
 
-			count++;
+            count++;
 
-			RDFTriple triple = new RDFTriple(count, subject, predicate, object);
-			triples.add(triple);
-		}
+            RDFTriple triple = new RDFTriple(count, subject, predicate, object);
+            triples.add(triple);
+        }
 
 		return triples;
 	}

@@ -270,14 +270,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException;
 
-	/**
-	 * Return all triples(statements) in reposiotory as list.
-	 *
-	 * @return List<code>&lt;Statement&gt;</code> list of all triples in
-	 *         repository/
-	 */
-    @Deprecated
-	public List<Statement> getTriples();
 
 	/**
 	 *

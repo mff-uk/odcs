@@ -351,45 +351,40 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		RepositoryConnection sourceConnection = null;
 		RepositoryConnection targetConnection = null;
 
-		try {
-			sourceConnection = repository.getConnection();
+        try {
+            sourceConnection = repository.getConnection();
 
-			if (!sourceConnection.isEmpty()) {
+            if (!sourceConnection.isEmpty()) {
+                RepositoryResult<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true, graph);
+                targetConnection = targetRepository.getConnection();
+                Resource targetGraph = ((ManagableRdfDataUnit) targetRepo).getDataGraph();
 
-				List<Statement> sourceStatemens = this.getTriples();
+                if (targetGraph != null) {
+                    targetConnection.add(sourceStatemens, targetGraph);
+                } else {
+                    targetConnection.add(sourceStatemens);
+                }
 
-				targetConnection = targetRepository.getConnection();
+            }
+        } catch (RepositoryException ex) {
+            logger.debug(ex.getMessage(), ex);
 
-				Resource targetGraph = ((ManagableRdfDataUnit) targetRepo)
-						.getDataGraph();
-
-				if (targetGraph != null) {
-					targetConnection.add(sourceStatemens, targetGraph);
-				} else {
-					targetConnection.add(sourceStatemens);
-				}
-
-			}
-		} catch (RepositoryException ex) {
-
-			logger.debug(ex.getMessage(), ex);
-
-		} finally {
-			if (sourceConnection != null) {
-				try {
-					sourceConnection.close();
-				} catch (RepositoryException ex) {
-					logger.debug(ex.getMessage(), ex);
-				}
-			}
-			if (targetConnection != null) {
-				try {
-					targetConnection.close();
-				} catch (RepositoryException ex) {
-					logger.debug(ex.getMessage(), ex);
-				}
-			}
-		}
+        } finally {
+            if (sourceConnection != null) {
+                try {
+                    sourceConnection.close();
+                } catch (RepositoryException ex) {
+                    logger.debug(ex.getMessage(), ex);
+                }
+            }
+            if (targetConnection != null) {
+                try {
+                    targetConnection.close();
+                } catch (RepositoryException ex) {
+                    logger.debug(ex.getMessage(), ex);
+                }
+            }
+        }
 
 	}
 

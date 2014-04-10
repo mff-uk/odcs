@@ -146,7 +146,7 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	/**
 	 * Return iterable collection of all statemens in repository. Needed for
 	 * adding/merge large collection when is not possible to return all
-	 * statements (RDF triples) at once in method as in {@link #getTriples() }.
+	 * statements (RDF triples).
 	 *
 	 * @return Iterable collection of Statements need for lazy
 	 */
