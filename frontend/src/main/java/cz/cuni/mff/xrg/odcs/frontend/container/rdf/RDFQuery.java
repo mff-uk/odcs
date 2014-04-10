@@ -6,7 +6,6 @@ import com.vaadin.ui.Notification;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
@@ -18,6 +17,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -158,7 +158,7 @@ public class RDFQuery implements Query {
 			List<Item> items = new ArrayList<>();
 			switch (type) {
 				case SELECT:
-					MyTupleQueryResult result = (MyTupleQueryResult) data;
+					TupleQueryResult result = (TupleQueryResult) data;
 					int id = 0;
 					while (result.hasNext()) {
 						items.add(

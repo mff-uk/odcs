@@ -15,7 +15,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.enums.MyRDFHandler;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
@@ -28,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import info.aduna.iteration.EmptyIteration;
+import info.aduna.iteration.Iterations;
 
 import java.io.*;
 import java.net.*;
@@ -584,11 +584,11 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 		try {
 			String select = "select distinct ?g where {graph ?g {?s ?p ?o}}";
-			MyTupleQueryResult tupleResult = executeSelectQueryAsTuples(select);
+			TupleQueryResult tupleResult = executeSelectQueryAsTuples(select);
 
 			String prefix = GraphUrl.getGraphPrefix();
 
-			for (BindingSet set : tupleResult.asList()) {
+			for (BindingSet set : Iterations.asList(tupleResult)) {
 
 				for (String name : set.getBindingNames()) {
 					String graphName = set.getValue(name).stringValue();
@@ -1090,7 +1090,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		Map<String, List<String>> map = new LinkedHashMap<>();
 
 		List<BindingSet> listBindings = new ArrayList<>();
-		MyTupleQueryResult result = null;
+		TupleQueryResult result = null;
 		try {
 			result = executeSelectQueryAsTuples(selectQuery);
 
@@ -1100,7 +1100,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				map.put(name, new LinkedList<String>());
 			}
 
-			listBindings = result.asList();
+			listBindings = Iterations.asList(result);
 		} catch (QueryEvaluationException ex) {
 			throw new InvalidQueryException(
 					"This query is probably not valid. " + ex
@@ -1369,7 +1369,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * @throws InvalidQueryException when query is not valid.
 	 */
 	@Override
-	public MyTupleQueryResult executeSelectQueryAsTuples(
+	public TupleQueryResult executeSelectQueryAsTuples(
 			String selectQuery)
 			throws InvalidQueryException {
 
@@ -1388,10 +1388,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				logger.debug(
 						"Query {} has not null result.", selectQuery);
 
-				MyTupleQueryResult result = new MyTupleQueryResult(
-						connection,
-						tupleResult);
-				return result;
+				return tupleResult;
 
 			} catch (QueryEvaluationException ex) {
 				throw new InvalidQueryException(

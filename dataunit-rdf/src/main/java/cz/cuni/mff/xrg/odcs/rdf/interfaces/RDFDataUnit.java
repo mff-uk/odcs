@@ -10,7 +10,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
-import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 import java.io.File;
@@ -25,6 +24,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Dataset;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
@@ -261,7 +261,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return MyTupleQueryResult representation of SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
-	public MyTupleQueryResultIf executeSelectQueryAsTuples(
+	public TupleQueryResult executeSelectQueryAsTuples(
 			String selectQuery) throws InvalidQueryException;
 
 	/**
