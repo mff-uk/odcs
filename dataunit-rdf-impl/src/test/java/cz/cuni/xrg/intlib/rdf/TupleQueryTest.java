@@ -2,7 +2,6 @@ package cz.cuni.xrg.intlib.rdf;
 
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.help.MyTupleQueryResultIf;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import static org.junit.Assert.*;
+import org.openrdf.query.TupleQueryResult;
 
 /**
  *
@@ -261,7 +261,7 @@ public class TupleQueryTest {
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();
-			MyTupleQueryResultIf tupleQueryResult = repository
+			TupleQueryResult tupleQueryResult = repository
 					.executeSelectQueryAsTuples(selectQuery);
 
 			List<String> names = tupleQueryResult.getBindingNames();
@@ -313,7 +313,7 @@ public class TupleQueryTest {
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();
-			MyTupleQueryResultIf tupleQueryResult = repository
+			TupleQueryResult tupleQueryResult = repository
 					.executeSelectQueryAsTuples(selectQuery);
 
 			List<String> names = tupleQueryResult.getBindingNames();
@@ -362,7 +362,7 @@ public class TupleQueryTest {
 
 		try {
 			List<BindingSet> bindings = new ArrayList<>();
-			MyTupleQueryResultIf tupleQueryResult = repository
+			TupleQueryResult tupleQueryResult = repository
 					.executeSelectQueryAsTuples(selectQuery);
 
 			List<String> names = tupleQueryResult.getBindingNames();
