@@ -19,10 +19,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  *
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml","classpath:commons-app-test-context-security.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(defaultRollback = true)
-public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {
+//@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml","classpath:commons-app-test-context-security.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@TransactionConfiguration(defaultRollback = true)
+public class ScheduleFacadeWithSecurityTest { //extends ScheduleFacadeTest {
 	@Autowired
 	@Qualifier("authenticationManager")
 	private AuthenticationManager authManager;
@@ -31,12 +31,12 @@ public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {
 	private UserFacade userFacade;
 
 	
-	@Before
-	public void before() {
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			User user = userFacade.getUserByUsername("jdoe");
-			TestingAuthenticationToken token = new TestingAuthenticationToken(user,user.getPassword());
-			SecurityContextHolder.getContext().setAuthentication(authManager.authenticate(token));
-		}
-	}
+//	@Before
+//	public void before() {
+//		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+//			User user = userFacade.getUserByUsername("jdoe");
+//			TestingAuthenticationToken token = new TestingAuthenticationToken(user,user.getPassword());
+//			SecurityContextHolder.getContext().setAuthentication(authManager.authenticate(token));
+//		}
+//	}
 }
