@@ -177,41 +177,42 @@ public class ScheduleFacadeTest {
         assertNull(schedule1);
     }
 
-    /**
-     * Test of deleteNotification method, of class ScheduleFacade.
-     */
-    @Test
-    @Transactional
-    public void testDeleteNotification() {
-        System.out.println("deleteNotification");
-        Pipeline pipeline = pipelineFacade.createPipeline();
-        pipelineFacade.save(pipeline);
-
-        Schedule schedule = scheduleFacade.createSchedule();
-        assertNull(schedule.getId());
-        schedule.setType(ScheduleType.PERIODICALLY);
-        schedule.setPipeline(pipeline);
-        
-        ScheduleNotificationRecord scheduleNotificationRecord = new ScheduleNotificationRecord();
-        EmailAddress emailAddress = new  EmailAddress("user@example.com");
-        Set<EmailAddress> emailAddresses = new HashSet<>();
-        emailAddresses.add(emailAddress);
-        
-        scheduleNotificationRecord.setSchedule(schedule);
-        scheduleNotificationRecord.setEmails(emailAddresses);
-        schedule.setNotification(scheduleNotificationRecord);
-        scheduleFacade.save(schedule);
-		
-        scheduleFacade.deleteNotification(schedule.getNotification());
-        em.flush();
-        
-        Schedule schedule1 = scheduleFacade.getSchedule(schedule.getId());
-        assertNotNull(schedule1);
-        assertEquals(schedule, schedule1);
-        
-        ScheduleNotificationRecord scheduleNotificationRecord1 = schedule1.getNotification();
-        assertNull(scheduleNotificationRecord1);
-    }
+//	Does not work
+//    /**
+//     * Test of deleteNotification method, of class ScheduleFacade.
+//     */
+//    @Test
+//    @Transactional
+//    public void testDeleteNotification() {
+//        System.out.println("deleteNotification");
+//        Pipeline pipeline = pipelineFacade.createPipeline();
+//        pipelineFacade.save(pipeline);
+//
+//        Schedule schedule = scheduleFacade.createSchedule();
+//        assertNull(schedule.getId());
+//        schedule.setType(ScheduleType.PERIODICALLY);
+//        schedule.setPipeline(pipeline);
+//        
+//        ScheduleNotificationRecord scheduleNotificationRecord = new ScheduleNotificationRecord();
+//        EmailAddress emailAddress = new  EmailAddress("user@example.com");
+//        Set<EmailAddress> emailAddresses = new HashSet<>();
+//        emailAddresses.add(emailAddress);
+//        
+//        scheduleNotificationRecord.setSchedule(schedule);
+//        scheduleNotificationRecord.setEmails(emailAddresses);
+//        schedule.setNotification(scheduleNotificationRecord);
+//        scheduleFacade.save(schedule);
+//		
+//        scheduleFacade.deleteNotification(schedule.getNotification());
+//        em.flush();
+//        
+//        Schedule schedule1 = scheduleFacade.getSchedule(schedule.getId());
+//        assertNotNull(schedule1);
+//        assertEquals(schedule, schedule1);
+//        
+//        ScheduleNotificationRecord scheduleNotificationRecord1 = schedule1.getNotification();
+//        assertNull(scheduleNotificationRecord1);
+//    }
 
     /**
      * Test of execute method, of class ScheduleFacade.
@@ -506,5 +507,64 @@ public class ScheduleFacadeTest {
         assertTrue(executions2.get(0).getSchedule().isEnabled());
         assertEquals(pipeline2, executions2.get(0).getPipeline());
         assertEquals(schedule2, executions2.get(0).getSchedule());    
-    }    
+    }
+	
+	/**
+	 * Test of getAllSchedules method, of class ScheduleFacade.
+	 */
+	@Test
+	public void testGetAllSchedules() {
+		List<Schedule> result = scheduleFacade.getAllSchedules();
+		assertEquals(2, result.size());
+	}	
+
+	/**
+	 * Test of fetching email notification settings for schedule.
+	 */
+	@Test
+	public void testGetNotification() {
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		
+		assertNotNull(sch);
+		assertNotNull(sch.getNotification());
+		assertNotNull(sch.getNotification().getEmails());
+		assertEquals(1, sch.getNotification().getEmails().size());
+		
+		EmailAddress email = sch.getNotification().getEmails().iterator().next();
+		assertEquals("scheduler@example.com", email.getEmail());
+	}
+	
+	/**
+	 * Test deleting schedule notification.
+	 */
+	@Test @Transactional
+	public void testDeleteScheduleNotification() {
+		
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		assertNotNull(sch);
+		assertNotNull(sch.getNotification());
+		
+		scheduleFacade.deleteNotification(sch.getNotification());
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduleFacade.getSchedule(1L);
+		assertNotNull(ret);
+		assertNull(ret.getNotification());
+	}
+	
+	@Test @Transactional
+	public void testChangeLastExecution() {
+		Date now = new Date();
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		sch.setLastExecution(now);
+		scheduleFacade.save(sch);
+		
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduleFacade.getSchedule(1L);
+		assertEquals(now, ret.getLastExecution());
+	}	
+	
 }
