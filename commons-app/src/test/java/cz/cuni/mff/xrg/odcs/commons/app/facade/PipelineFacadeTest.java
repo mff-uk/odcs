@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import org.springframework.test.annotation.DirtiesContext;
 
 // TODO Test create the instances directly what may cause problem with for example security context.
 //	The create methods on facades should be used instead.
@@ -55,6 +56,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PipelineFacadeTest {
 
 	@PersistenceContext

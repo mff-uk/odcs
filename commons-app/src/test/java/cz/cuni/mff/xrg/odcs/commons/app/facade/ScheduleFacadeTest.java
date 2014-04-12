@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * Test suite for schedule facade interface. Each test is run in own
@@ -40,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 @ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ScheduleFacadeTest {
 
     @PersistenceContext
