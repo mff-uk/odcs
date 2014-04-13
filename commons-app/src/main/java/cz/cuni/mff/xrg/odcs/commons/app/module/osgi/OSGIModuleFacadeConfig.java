@@ -35,12 +35,6 @@ class OSGIModuleFacadeConfig {
 	private static final String LIB_DIRECTORY = "lib";
 
 	/**
-	 * Name for directory in {@link #LIB_DIRECTORY} where special libraries for
-	 * backend (Vaadin, .. ) are stored.
-	 */
-	private static final String LIB_BACKEND_DIRECTORY = "backend";
-
-	/**
 	 * Contains list of common packages to export. Must not end with comma.
 	 */
 	private static final String PACKAGE_BASE = 
@@ -85,6 +79,8 @@ class OSGIModuleFacadeConfig {
 	/**
 	 * If true then libraries from {#link {@link #LIB_BACKEND_DIRECTORY} are
 	 * also loaded.
+	 * 
+	 * This value is not used now as there are no libraries only for backend. 
 	 */
 	private final boolean useBackendLibs;
 
@@ -191,10 +187,6 @@ class OSGIModuleFacadeConfig {
 	 */
 	public List<String> getDpuLibFolder() {
 		List<String> result = new LinkedList<>();
-		if (useBackendLibs) {
-			result.add(rootDirectory + File.separator + LIB_DIRECTORY
-					+ File.separator + LIB_BACKEND_DIRECTORY);
-		}
 		result.add(rootDirectory + File.separator + LIB_DIRECTORY);
 
 		return result;
