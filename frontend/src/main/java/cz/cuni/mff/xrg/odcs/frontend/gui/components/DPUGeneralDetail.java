@@ -7,9 +7,12 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPURecordWrap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Component for setting general information about DPU like name and
@@ -19,7 +22,14 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPURecordWrap;
  */
 public class DPUGeneralDetail extends CustomComponent {
 
+	private static final Logger LOG = LoggerFactory.getLogger(
+			DPUGeneralDetail.class);
+	
 	private final TextField dpuName;
+	
+	private final TextField dpuTemplateName;
+	
+	private final Label dpuTemplateNameLabel;
 
 	private final TextArea dpuDescription;
 
@@ -39,7 +49,7 @@ public class DPUGeneralDetail extends CustomComponent {
 		setWidth("100%");
 		setHeight("-1px");
 		// create subcomponents
-		GridLayout mainLayout = new GridLayout(2, 3);
+		GridLayout mainLayout = new GridLayout(2, 4);
 		mainLayout.setWidth("100%");
 		mainLayout.setSpacing(true);
 		mainLayout.setMargin(new MarginInfo(false, false, true, false));
@@ -60,13 +70,21 @@ public class DPUGeneralDetail extends CustomComponent {
 		dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
 		mainLayout.addComponent(dpuName, 1, 0);
 
-		mainLayout.addComponent(new Label("Description"), 0, 1);
+		dpuTemplateNameLabel = new Label("Parent");
+		mainLayout.addComponent(dpuTemplateNameLabel, 0, 1);
+		dpuTemplateName = new TextField();
+		dpuTemplateName.setWidth("100%");
+		dpuTemplateName.setHeight(null);
+		dpuTemplateName.setEnabled(false);
+		mainLayout.addComponent(dpuTemplateName, 1, 1);
+		
+		mainLayout.addComponent(new Label("Description"), 0, 2);
 		dpuDescription = new TextArea();
 		dpuDescription.setWidth("100%");
 		dpuDescription.setHeight("60px");
-		mainLayout.addComponent(dpuDescription, 1, 1);
+		mainLayout.addComponent(dpuDescription, 1, 2);
 
-		mainLayout.addComponent(new Label("Use custom description"), 0, 2);
+		mainLayout.addComponent(new Label("Use custom description"), 0, 3);
 		useUserDescription = new CheckBox();
 		useUserDescription.addValueChangeListener(new ValueChangeListener() {
 			@Override
@@ -75,7 +93,7 @@ public class DPUGeneralDetail extends CustomComponent {
 				dpuDescription.setEnabled(useUserDesc);
 			}
 		});
-		mainLayout.addComponent(useUserDescription, 1, 2);
+		mainLayout.addComponent(useUserDescription, 1, 3);
 		
 		// expand column with the text boxes
 		mainLayout.setColumnExpandRatio(1, 1.0f);
@@ -118,6 +136,24 @@ public class DPUGeneralDetail extends CustomComponent {
 		
 		dpuName.setValue(dpu.getName());
 		
+		if (dpu instanceof DPUInstanceRecord) {
+			DPUInstanceRecord instance = (DPUInstanceRecord)dpu;
+			// use template name
+			if (instance.getTemplate() == null) {
+				dpuTemplateName.setValue("no parent is set!");
+				LOG.error("No parent for dpu instance id: {}", dpu.getId());
+			} else {
+				dpuTemplateName.setValue(instance.getTemplate().getName());
+			}
+
+			dpuTemplateName.setVisible(true);
+			dpuTemplateNameLabel.setVisible(true);
+
+		} else {
+			dpuTemplateName.setVisible(false);
+			dpuTemplateNameLabel.setVisible(false);
+		}
+				
 		if (dpu.useDPUDescription()) {
 			// generated description used
 			dpuDescription.setValue("");
