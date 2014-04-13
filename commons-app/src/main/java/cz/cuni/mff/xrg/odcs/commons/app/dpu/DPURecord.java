@@ -95,7 +95,8 @@ public abstract class DPURecord implements DataObject {
 			this.serializedConfiguration = null;
 		} else {
 			// deep copy
-			this.serializedConfiguration = dpuRecord.serializedConfiguration.clone();
+			this.serializedConfiguration = dpuRecord.serializedConfiguration
+					.clone();
 		}
 		this.configValid = dpuRecord.configValid;
 	}
@@ -118,26 +119,24 @@ public abstract class DPURecord implements DataObject {
 
 	/**
 	 *
-	 * @return False if the DPU description should be generated from
-	 *         configuration in case that the user provided description is
-	 *         empty.
+	 * @return If true then the value of {@link #description} has been created
+	 *         by DPU's dialog.
 	 */
 	public boolean useDPUDescription() {
 		return useDPUDescription;
 	}
 
 	/**
-	 * 
-	 * @param useDPUDescription False if the DPU description should be generated from
-	 *         configuration in case that the user provided description is
-	 *         empty.
+	 *
+	 * @param useDPUDescription If true then the value of {@link #description}
+	 *                          has been created by DPU's dialog.
 	 */
 	public void setUseDPUDescription(boolean useDPUDescription) {
 		this.useDPUDescription = useDPUDescription;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return DPU's description.
 	 */
 	public String getDescription() {
@@ -145,13 +144,14 @@ public abstract class DPURecord implements DataObject {
 	}
 
 	/**
-	 * 
-	 * @param newDescription New DPU description. 
+	 *
+	 * @param newDescription New DPU description.
 	 */
 	public void setDescription(String newDescription) {
 		this.description = newDescription;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}

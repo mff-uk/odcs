@@ -222,7 +222,7 @@ public class DPUDetail extends Window {
 			}
 			// validate can throw, so should be before any actual saving
 			dpuInstance.saveConfig();
-			generalDetail.saveToDPU(dpuInstance.getDPUInstanceRecord());
+			generalDetail.saveToDPU(dpuInstance.getDPUInstanceRecord(), dpuInstance);
 		} catch (SPARQLValidationException e) {
 			Notification.show("Query Validator",
 					"Validation of " + e.getQueryNumber() + ". query failed: "
