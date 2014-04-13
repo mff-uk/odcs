@@ -25,7 +25,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -78,9 +77,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	@Autowired
 	private AuthenticationService authService;
-	
-	@Autowired
-	private CheckDatabaseService checkDatabaseService;
 	
 	@Autowired
 	private HeartbeatService heartbeatService;
@@ -260,24 +256,26 @@ public class AppEntry extends com.vaadin.ui.UI {
 		refresher.setRefreshInterval(RefreshManager.REFRESH_INTERVAL);
 		addExtension(refresher);
 		refreshManager = new RefreshManager(refresher);
-		refreshManager.addListener(RefreshManager.BACKEND_STATUS, new Refresher.RefreshListener() {
-			private boolean lastBackendStatus = false;
-			private long lastUpdateFinished = 0;
-
-			@Override
-			public void refresh(Refresher source) {
-				boolean isRunning = false; 
-				try {
-					isRunning= heartbeatService.isAlive();
-				} catch (Exception ex) {
-				}
-					if (lastBackendStatus != isRunning) {
-						lastBackendStatus = isRunning;
-						main.refreshBackendStatus(lastBackendStatus);
+		refreshManager.addListener(RefreshManager.BACKEND_STATUS,
+				new Refresher.RefreshListener() {
+					private boolean lastBackendStatus = false;
+					private long lastUpdateFinished = 0;
+					@Override
+					public void refresh(Refresher source) {
+						boolean isRunning = false;
+						try {
+							isRunning = heartbeatService.isAlive();
+						} catch (Exception ex) {
+							// backend is offline, it's ok .. isRunning is false
+							// so we can continue
+						}
+						if (lastBackendStatus != isRunning) {
+							lastBackendStatus = isRunning;
+							main.refreshBackendStatus(lastBackendStatus);
+						}
+						lastUpdateFinished = new Date().getTime();
 					}
-					lastUpdateFinished = new Date().getTime();
-				}
-		});
+				});
 	}
 
 	/**

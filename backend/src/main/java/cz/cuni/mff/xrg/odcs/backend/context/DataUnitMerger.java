@@ -71,8 +71,8 @@ class DataUnitMerger {
 			
 			DataUnit rightDataUnit = iterRight.next();
 			String rightDataUnitName = rightDataUnit.getDataUnitName();
-			// name for new DataUnit, use right's name as default
-			String leftDataUnitName = rightDataUnitName;
+			// name for new DataUnit
+			String leftDataUnitName;
 			// get command
 			String cmd = this.findRule(rightDataUnitName, instruction);
 			if (cmd.isEmpty()) {
@@ -105,7 +105,7 @@ class DataUnitMerger {
 			for(ManagableDataUnit item : left.getDataUnits()) {
 				if (item.getDataUnitName().compareTo(leftDataUnitName) == 0 && 
 						item.getType() == rightDataUnit.getType()) {
-					LOG.debug("merge into existing dataUnit: {}", rightDataUnitName);
+					LOG.debug("merge into existing dataUnit: {}", leftDataUnitName);
 					// DataUnit with same name and type already exist, use it
 					leftDataUnit = item;
 					break;
@@ -115,7 +115,7 @@ class DataUnitMerger {
 			// create new data unit (in context into which we merge)			
 			if (leftDataUnit == null) {
 				try {
-					LOG.debug("creating new dataUnit: {}", rightDataUnitName);
+					LOG.debug("creating new dataUnit: {}", leftDataUnitName);
 					leftDataUnit = left.addDataUnit(rightDataUnit.getType(), leftDataUnitName);
 				} catch (DataUnitCreateException e) {
 					throw new ContextException("Failed to create input object.", e);
