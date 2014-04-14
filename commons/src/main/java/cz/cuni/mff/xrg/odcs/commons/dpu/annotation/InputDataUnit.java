@@ -37,7 +37,7 @@ public @interface InputDataUnit {
 	 *         equal to the {@link #name} can be used. Otherwise the
 	 *         {@link #name} determine only preference.
 	 */
-	public boolean relaxed() default true;
+	public boolean relaxed() default false;
 
 	/**
 	 * 
