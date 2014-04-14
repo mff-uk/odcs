@@ -113,14 +113,13 @@ public class PlaceholdersHelper {
 	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
 		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
 				"executable");
-		for (RDFDataUnit repository : usedRepositories) {
-			URI dataGraph = repository.getDataGraph();
-			LazyTriples iterator = repository.getTriplesIterator();
+        RepositoryConnection connection = tempRepository.getConnection();
+        for (RDFDataUnit repository : usedRepositories) {
+            URI dataGraph = repository.getDataGraph();
+            LazyTriples iterator = repository.getTriplesIterator();
 
-			while (iterator.hasNextTriples()) {
-				List<Statement> triples = iterator.getTriples();
-                RepositoryConnection connection = null;
-                connection = repository.getConnection();
+            while (iterator.hasNextTriples()) {
+                List<Statement> triples = iterator.getTriples();
                 connection.add(triples, dataGraph);
 			}
 		}
