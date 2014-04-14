@@ -39,6 +39,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.openrdf.model.*;
 import org.openrdf.model.URI;
 import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
@@ -868,8 +869,10 @@ public class SPARQLoader {
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
 					constructQuery);
-
-			graphQuery.setDataset(rdfDataUnit.getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
+            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+			graphQuery.setDataset(dataSet);
 
 			GraphQueryResult result = graphQuery.evaluate();
 			return result;
@@ -1514,9 +1517,11 @@ public class SPARQLoader {
                 RepositoryConnection connection = rdfDataUnit.getConnection();
                 
                 GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
-
-	        graphQuery.setDataset(rdfDataUnit.getDataSet());
-                logger.debug("Dataset: {}", rdfDataUnit.getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
+            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+	        graphQuery.setDataset(dataSet);
+                logger.debug("Dataset: {}", dataSet);
 
                 connection.begin();
                 

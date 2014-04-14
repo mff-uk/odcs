@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.LinkedList;
 import java.util.List;
 import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -93,8 +94,10 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
 				TupleQuery tupleQuery = connection.prepareTupleQuery(
 						QueryLanguage.SPARQL, selectQuery);
-
-				tupleQuery.setDataset(repository.getDataSet());
+                DatasetImpl dataSet = new DatasetImpl();
+                dataSet.addDefaultGraph(repository.getDataGraph());
+                dataSet.addNamedGraph(repository.getDataGraph());
+				tupleQuery.setDataset(dataSet);
 
 				TupleQueryResult result = tupleQuery.evaluate();
 				return result;

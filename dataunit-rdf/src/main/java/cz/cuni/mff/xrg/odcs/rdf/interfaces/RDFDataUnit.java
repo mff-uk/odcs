@@ -388,11 +388,4 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public void restartConnection();
 
-	/**
-	 * Returns dataset for graphs set in reposiotory as default.
-	 *
-	 * @return dataset for graphs set in reposiotory as default.
-	 */
-	public Dataset getDataSet();
-
 }

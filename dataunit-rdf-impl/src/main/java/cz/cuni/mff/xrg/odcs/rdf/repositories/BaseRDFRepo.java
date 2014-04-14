@@ -500,7 +500,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	@Override
 	public void executeSPARQLUpdateQuery(String updateQuery)
 			throws RDFException {
-		executeSPARQLUpdateQuery(updateQuery, getDataSet());
+        DatasetImpl dataSet = new DatasetImpl();
+        dataSet.addDefaultGraph(this.getDataGraph());
+        dataSet.addNamedGraph(this.getDataGraph());
+		executeSPARQLUpdateQuery(updateQuery, dataSet);
 	}
 
 	/**
@@ -739,8 +742,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
 					constructQuery);
-
-			graphQuery.setDataset(getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(this.getDataGraph());
+            dataSet.addNamedGraph(this.getDataGraph());
+			graphQuery.setDataset(dataSet);
 
 			logger.debug("Query {} is valid.", constructQuery);
 
@@ -864,7 +869,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
-		return executeConstructQuery(constructQuery, getDataSet());
+        DatasetImpl dataSet = new DatasetImpl();
+        dataSet.addDefaultGraph(this.getDataGraph());
+        dataSet.addNamedGraph(this.getDataGraph());
+		return executeConstructQuery(constructQuery, dataSet);
 	}
 
 	/**
@@ -889,8 +897,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
-
-			tupleQuery.setDataset(getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(this.getDataGraph());
+            dataSet.addNamedGraph(this.getDataGraph());
+			tupleQuery.setDataset(dataSet);
 
 			logger.debug("Query {} is valid.", selectQuery);
 
@@ -1050,8 +1060,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
 					constructQuery);
-
-			graphQuery.setDataset(getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(this.getDataGraph());
+            dataSet.addNamedGraph(this.getDataGraph());
+			graphQuery.setDataset(dataSet);
 			try {
 				GraphQueryResult result = graphQuery.evaluate();
 
@@ -1103,8 +1115,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, sizeQuery);
-
-			tupleQuery.setDataset(getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(this.getDataGraph());
+            dataSet.addNamedGraph(this.getDataGraph());
+			tupleQuery.setDataset(dataSet);
 			try {
 				TupleQueryResult tupleResult = tupleQuery.evaluate();
 				if (tupleResult.hasNext()) {
@@ -1249,8 +1263,10 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, selectQuery);
-
-			tupleQuery.setDataset(getDataSet());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(this.getDataGraph());
+            dataSet.addNamedGraph(this.getDataGraph());
+			tupleQuery.setDataset(dataSet);
 
 			logger.debug("Query {} is valid.", selectQuery);
 
@@ -1303,19 +1319,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 						"DataUnit is not instance of RDFDataRepository.");
 			}
 		}
-	}
-
-	/**
-	 *
-	 * @return dataset for graphs set in reposiotory as default.
-	 */
-	@Override
-	public Dataset getDataSet() {
-		DatasetImpl dataSet = new DatasetImpl();
-		dataSet.addDefaultGraph(graph);
-		dataSet.addNamedGraph(graph);
-
-		return dataSet;
 	}
 
 	/**
