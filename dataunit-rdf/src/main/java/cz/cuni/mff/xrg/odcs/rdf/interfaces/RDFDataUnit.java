@@ -1,5 +1,19 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import org.openrdf.model.Graph;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParser;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
@@ -9,26 +23,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.query.Dataset;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParser;
 
 /**
  * Interface provides methods for working with RDF data repository.
@@ -274,26 +269,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException;
 
-
-	/**
-	 *
-	 * @return instance with iterator behavior for lazy returning all triples in
-	 *         repository, which are split to parts using default split value
-	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
-	 */
-    @Deprecated
-	public LazyTriples getTriplesIterator();
-
-	/**
-	 *
-	 * @param splitSize number of triples returns in each return part using
-	 *                  method {@link LazyTriples#getTriples() }.
-	 * @return instance with iterator behavior for lazy returning all triples in
-	 *         repository, which are split to parts - each has triples at most
-	 *         as defined splitSize.
-	 */
-    @Deprecated
-	public LazyTriples getTriplesIterator(long splitSize);
 
 	/**
 	 * Copy all data from repository to targetRepository.

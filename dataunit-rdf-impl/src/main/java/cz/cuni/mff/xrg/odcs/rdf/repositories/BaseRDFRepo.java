@@ -1,44 +1,14 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.enums.MyRDFHandler;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
-import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
-import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-import info.aduna.iteration.EmptyIteration;
-import info.aduna.iteration.Iterations;
-
 import java.io.*;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.openrdf.model.*;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
@@ -54,6 +24,26 @@ import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.enums.*;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
+import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
+import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
+import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+import info.aduna.iteration.EmptyIteration;
+import info.aduna.iteration.Iterations;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -630,37 +620,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			logger.debug(e.getMessage());
 		}
 
-	}
-
-
-	/**
-	 *
-	 * @return instance with iterator behavior for lazy returning all triples in
-	 *         repository, which are split to parts using default split value
-	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
-	 */
-	@Override
-	public LazyTriples getTriplesIterator() {
-
-		LazyTriples result = new LazyTriples(getRepositoryResult());
-
-		return result;
-	}
-
-	/**
-	 *
-	 * @param splitSize number of triples returns in each return part using
-	 *                  method {@link LazyTriples#getTriples() }.
-	 * @return instance with iterator behavior for lazy returning all triples in
-	 *         repository, which are split to parts - each has triples at most
-	 *         as defined splitSize.
-	 */
-	@Override
-	public LazyTriples getTriplesIterator(long splitSize) {
-
-		LazyTriples result = new LazyTriples(getRepositoryResult(), splitSize);
-
-		return result;
 	}
 
 	private MyRDFHandler getHandlerForConstructQuery(File file,

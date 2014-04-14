@@ -5,7 +5,6 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -19,6 +18,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 
 /**
  * This class allows for SPARQL CONSTRUCT/UPDATE queries possible to replace
@@ -113,15 +113,12 @@ public class PlaceholdersHelper {
 	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
 		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
 				"executable");
-        RepositoryConnection connection = tempRepository.getConnection();
+        RepositoryConnection tempRepositoryConnection = tempRepository.getConnection();
         for (RDFDataUnit repository : usedRepositories) {
             URI dataGraph = repository.getDataGraph();
-            LazyTriples iterator = repository.getTriplesIterator();
-
-            while (iterator.hasNextTriples()) {
-                List<Statement> triples = iterator.getTriples();
-                connection.add(triples, dataGraph);
-			}
+            RepositoryConnection usedRepositoryConnection = repository.getConnection();
+            RepositoryResult<Statement> triples = usedRepositoryConnection.getStatements(null, null, null, true, repository.getDataGraph());
+            tempRepositoryConnection.add(triples, dataGraph);
 		}
 		return tempRepository;
 	}
