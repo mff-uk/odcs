@@ -38,16 +38,16 @@ import org.slf4j.LoggerFactory;
  * Take care about calling appropriate {@link PreExecutor}s and
  * {@link PostExecutor}.
  *
- * The {@link Executor} must be bind to the given {@link PipelineExecution} and
+ * The {@link DPUExecutor} must be bind to the given {@link PipelineExecution} and
  * {@link DPUInstanceRecord} by calling
  * {@link #bind(Node, Map, PipelineExecution, Date)} method before use.
  *
  * @author Petyr
  *
  */
-public final class Executor implements Runnable {
+public final class DPUExecutor implements Runnable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DPUExecutor.class);
 
 	/**
 	 * Pipeline facade.
@@ -172,9 +172,9 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Execute {@link PreExecutor} from {@link Executor#preExecutors}. If any
+	 * Execute {@link PreExecutor} from {@link DPUExecutor#preExecutors}. If any
 	 * {@link PreExecutor} return false then return false. If there are no
-	 * {@link PreExecutor} ({@link Executor#preExecutors} == null) then
+	 * {@link PreExecutor} ({@link DPUExecutor#preExecutors} == null) then
 	 * instantly return true.
 	 *
 	 * @param dpuInstance Instance of DPU to execute.
@@ -257,9 +257,9 @@ public final class Executor implements Runnable {
 	}
 
 	/**
-	 * Execute {@link PostExecutor} from {@link Executor#postExecutors}. If any
+	 * Execute {@link PostExecutor} from {@link DPUExecutor#postExecutors}. If any
 	 * {@link PostExecutor} return false then return false. If there are no
-	 * {@link PostExecutor} ({@link Executor#postExecutors} == null) then
+	 * {@link PostExecutor} ({@link DPUExecutor#postExecutors} == null) then
 	 * instantly return true.
 	 *
 	 * @param dpuInstance Instance of DPU that has been executed.

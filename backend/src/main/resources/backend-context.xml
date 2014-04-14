@@ -69,7 +69,7 @@
               scope="prototype" lazy-init="true" />
 
     <!-- DPU executor -->
-    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor"
+    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor"
               scope="prototype" lazy-init="true" />
 
     <!-- data unit factory class -->

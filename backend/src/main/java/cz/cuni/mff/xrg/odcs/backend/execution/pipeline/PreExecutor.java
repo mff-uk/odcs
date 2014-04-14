@@ -5,7 +5,7 @@ import java.util.Map;
 import org.springframework.core.Ordered;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
