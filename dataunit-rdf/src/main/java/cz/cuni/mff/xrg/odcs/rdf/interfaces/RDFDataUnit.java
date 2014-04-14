@@ -47,6 +47,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param predicates Predicates being searched
 	 * @return Pairs predicate-value for the given subject URI
 	 */
+    @Deprecated
 	public Map<String, List<String>> getRDFMetadataForSubjectURI(
 			String subjectURI,
 			List<String> predicates);
@@ -59,6 +60,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param predicates Predicates being searched
 	 * @return Pairs predicate-value for the given filePath
 	 */
+    @Deprecated
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
 
@@ -201,6 +203,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return MyTupleQueryResult representation of SPARQL select query.
 	 * @throws InvalidQueryException when query is not valid.
 	 */
+    @Deprecated
 	public TupleQueryResult executeSelectQueryAsTuples(
 			String selectQuery) throws InvalidQueryException;
 
@@ -222,6 +225,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @throws InvalidQueryException when query is not valid or containst LIMIT
 	 *                               or OFFSET keyword.
 	 */
+    @Deprecated
 	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException;
 
@@ -277,6 +281,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *         repository, which are split to parts using default split value
 	 *         (see {@link LazyTriples#DEFAULT_SPLIT_SIZE}).
 	 */
+    @Deprecated
 	public LazyTriples getTriplesIterator();
 
 	/**
@@ -287,6 +292,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *         repository, which are split to parts - each has triples at most
 	 *         as defined splitSize.
 	 */
+    @Deprecated
 	public LazyTriples getTriplesIterator(long splitSize);
 
 	/**
@@ -294,6 +300,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @param targetRepo goal repository where RDF data are added.
 	 */
+    @Deprecated
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
 
 	/**
@@ -309,6 +316,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *                               BlankNode, some type of Literal (in object
 	 *                               case))
 	 */
+    @Deprecated
 	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
@@ -318,6 +326,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @throws RepositoryException If something went wrong during the creation
 	 *                             of the Connection.
 	 */
+    @Deprecated
 	public RepositoryConnection getConnection() throws RepositoryException;
 
 	/**
@@ -340,6 +349,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *                           with no valid data.
 	 * @throws RDFException when extraction fail.
 	 */
+    @Deprecated
 	public void extractFromFile(FileExtractType extractType,
 			RDFFormat format,
 			String path, String suffix,
@@ -361,6 +371,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param handler Type of handler where RDF parser used for parsing.
 	 * @return RDFParser for given RDF format and set RDF handler.
 	 */
+    @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
 
@@ -378,6 +389,7 @@ public interface RDFDataUnit extends DataUnit {
 	 *                                      overwritting.
 	 * @throws RDFException                 when loading data to file fail.
 	 */
+    @Deprecated
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
@@ -386,6 +398,7 @@ public interface RDFDataUnit extends DataUnit {
 	 * Method called after restarting after DB. Calling method
 	 * {@link #getConnection()} provides to get new instance of connection.
 	 */
+    @Deprecated
 	public void restartConnection();
 
 }
