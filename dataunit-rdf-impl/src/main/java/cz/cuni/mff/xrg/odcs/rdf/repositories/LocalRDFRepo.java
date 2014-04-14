@@ -341,6 +341,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	@Override
 	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
 
+		logger.debug("{}.copyAllDataToTargetDataUnit({})", getDataUnitName(), targetRepo.getDataUnitName());
+		
 		if (targetRepo == null) {
 			throw new IllegalArgumentException(
 					"Instance of RDFDataRepository is null");
