@@ -182,8 +182,9 @@ public class AnnotationsInput implements PreExecutor {
 				annotation.name());
 		if (nameMatch.isEmpty()) {
 			if (annotation.relaxed()) {
-				LOG.debug("Assign DataUnit names: {} for field: {}",
-						annotation.name(), field.getName());
+				LOG.debug("in: {}.{} = {}", context.getDPU().getName(),  field.getName(), 
+					typeMatch.getFirst().getDataUnitName());					
+				
 				// just use first with good type
 				return setDataUnit(field, dpuInstance, typeMatch.getFirst(),
 						context);
@@ -200,8 +201,13 @@ public class AnnotationsInput implements PreExecutor {
 				return false;
 			}
 		} else {
-			LOG.debug("Assign DataUnit URI: {} for field: {}", nameMatch
-					.getFirst().getDataUnitName(), field.getName());
+			if (nameMatch.size() > 1) {
+				LOG.warn("Multiple matches for {}", annotation.name());
+			}
+						
+			LOG.debug("in: {}.{} = {}", context.getDPU().getName(),  field.getName(), 
+				nameMatch.getFirst().getDataUnitName());		
+			
 			// use first with required name
 			return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
 					context);

@@ -219,7 +219,7 @@ final class DataUnitManager {
 		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);
 		if (dpuInfo == null) {
 			// no data for this DPU
-			LOG.trace("No info from, skipped.");
+			LOG.trace("dpuInfo == null, not data has been realoded");
 			return;
 		}
 		
