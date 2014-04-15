@@ -39,8 +39,8 @@ class ContextDeleter {
 	 */
 	public void delete(Context context, boolean preserveContextInfo) {
 		// delete data
-		delete(context.getInputsManager());
-		delete(context.getOutputsManager());
+		context.getInputsManager().delete();
+		context.getOutputsManager().delete();
 
 		// should we delete directories ?
 		if (context.isDebugging()) {
@@ -73,19 +73,6 @@ class ContextDeleter {
 			// delete context info
 			deleteContextInfo(contextInfo);
 		}
-	}
-
-	/**
-	 * Delete {@link ManagableDataUnit} from given {@link DataUnitManager} and
-	 * delete record about them.
-	 * 
-	 * @param dataUnitManage
-	 */
-	private void delete(DataUnitManager dataUnitManage) {
-		for (ManagableDataUnit dataUnit : dataUnitManage.getDataUnits()) {
-			dataUnit.delete();
-		}
-		dataUnitManage.getDataUnits().clear();
 	}
 
 	/**
