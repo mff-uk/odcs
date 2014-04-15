@@ -187,7 +187,6 @@ final class DataUnitManager {
 	 * Call delete on all stored DataUnits and them delete them from 
 	 * this instance.
 	 */
-	@Deprecated
 	public void delete() {
 		for (ManagableDataUnit item : dataUnits) {
 			item.delete();

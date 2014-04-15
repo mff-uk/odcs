@@ -229,15 +229,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException;
 
-
-	/**
-	 * Copy all data from repository to targetRepository.
-	 *
-	 * @param targetRepo goal repository where RDF data are added.
-	 */
-    @Deprecated
-	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo);
-
 	/**
 	 * Returns graph contains all RDF triples as result of describe query for
 	 * given Resource URI. If graph is empty, there is are no triples for

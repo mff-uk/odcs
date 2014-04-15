@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
@@ -41,34 +42,13 @@ public class SPARQLUpdateValidator implements QueryValidator {
 	public boolean isQueryValid() {
 		boolean isValid = true;
 
-		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
-
-		RepositoryConnection connection = null;
 		try {
-			connection = emptyRepo.getDataRepository().getConnection();
-
-			connection.prepareUpdate(QueryLanguage.SPARQL,
-					updateQuery);
-
+			QueryParserUtil.parseUpdate(QueryLanguage.SPARQL,
+					updateQuery, null);
 		} catch (MalformedQueryException e) {
 			message = e.getCause().getMessage();
 			isValid = false;
-
-		} catch (RepositoryException ex) {
-			throw new RuntimeException(
-					"Connection to repository is not available. "
-					+ ex.getMessage(), ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					throw new RuntimeException(ex.getMessage(), ex);
-				}
-			}
 		}
-
-		emptyRepo.delete();
 
 		return isValid;
 	}
