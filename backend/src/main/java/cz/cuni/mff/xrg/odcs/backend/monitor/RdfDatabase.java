@@ -122,11 +122,6 @@ class RdfDatabase {
 			queryEnd = new Date();
 			return;
 		}
-		try {
-			Thread.sleep(1000 * 120);
-		} catch (InterruptedException ex) {
-			
-		}
 		
 		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(
