@@ -59,36 +59,16 @@ public class RDFDataUnitFactory {
 	 * @return New {@link LocalRDFRepo} instance in default set temp directory.
 	 */
 	public static LocalRDFRepo createLocalRDFRepo(String dataUnitName) throws RuntimeException {
-		return RDFDataUnitFactory.createLocalRepoInTempDirectory(dataUnitName,
-				repoDirName, repoFileName);
-	}
-
-	/**
-	 * Create RDFDataUnit as Local RDF repository in temp directory "dirName",
-	 * in this directory create file with "fileName" where is repository stored.
-	 *
-	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
-	 *                     String.
-	 * @param dirName      String name of dir.
-	 * @param id           String value of id.
-	 *
-	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return New {@link LocalRDFRepo} instance.
-	 */
-	private static LocalRDFRepo createLocalRepoInTempDirectory(
-			String dataUnitName,
-			String dirName,
-			String id) throws RuntimeException {
 		Path repoPath = null;
 
 		try {
-			repoPath = Files.createTempDirectory(dirName);
+			repoPath = Files.createTempDirectory(repoDirName);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
 		return RDFDataUnitFactory.createLocalRDFRepo(repoPath.toString(),
-				id, dataUnitName, "http://default");
+				repoFileName, dataUnitName, "http://default");		
 	}
 
 	/**
