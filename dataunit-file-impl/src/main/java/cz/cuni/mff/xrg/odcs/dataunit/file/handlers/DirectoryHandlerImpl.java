@@ -422,7 +422,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			if (existing instanceof DirectoryHandler) {
 				// ok we can work with this
 			} else {
-				// it's not a file
+				// it's not a directory
 				return null;
 			}
 
@@ -465,12 +465,33 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		Handler newHandler;
 		try {
 			if (e instanceof ManageableFileHandler) {
+				// this is final no child will be added
 				final ManageableFileHandler fileHandler = (ManageableFileHandler) e;
 				newHandler = addExistingFile(fileHandler.asFile(), options);
 			} else if (e instanceof ManageableDirectoryHandler) {
+				// we have to add the whole sub directory here ..
 				final ManageableDirectoryHandler dirHandler
 						= (ManageableDirectoryHandler) e;
-				newHandler = addExistingDirectory(dirHandler.asFile(), options);
+				// try if sub-dir exists
+				newHandler = getByName(e.getName());
+				if (newHandler == null) {
+					// no such directory here .. we just add as existing
+					newHandler = addExistingDirectory(dirHandler.asFile(), options);
+				} else {
+					// there already is handler with such name, 
+					// so we just add the content
+					if (newHandler instanceof ManageableDirectoryHandler) {
+						// existing is directory, we do merge
+						ManageableDirectoryHandler newDir = (ManageableDirectoryHandler)newHandler;
+						// add content of the directory (merge)
+						newDir.addAll(dirHandler);
+					} else {
+						// existing is file .. so we add as a new directory
+						LOG.warn("Addition of directory ({}) ignored as there is file of a same name.", 
+								newHandler.getRootedPath());
+						return false;
+					}
+				}
 			} else {
 				// unknown ..
 				return false;
