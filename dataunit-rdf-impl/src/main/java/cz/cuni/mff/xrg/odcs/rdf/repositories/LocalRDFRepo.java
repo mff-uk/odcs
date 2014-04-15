@@ -344,61 +344,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 		}
 	}
 
-	/**
-	 * Copy all data from repository to targetRepository.
-	 *
-	 * @param targetRepo goal repository where RDF data are added.
-	 */
-	@Override
-	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
-
-		if (targetRepo == null) {
-			throw new IllegalArgumentException(
-					"Instance of RDFDataRepository is null");
-		}
-		Repository targetRepository = ((ManagableRdfDataUnit) targetRepo)
-				.getDataRepository();
-
-		RepositoryConnection sourceConnection = null;
-		RepositoryConnection targetConnection = null;
-
-        try {
-            sourceConnection = repository.getConnection();
-
-            if (!sourceConnection.isEmpty()) {
-                RepositoryResult<Statement> sourceStatemens = sourceConnection.getStatements(null, null, null, true, graph);
-                targetConnection = targetRepository.getConnection();
-                Resource targetGraph = ((ManagableRdfDataUnit) targetRepo).getDataGraph();
-
-                if (targetGraph != null) {
-                    targetConnection.add(sourceStatemens, targetGraph);
-                } else {
-                    targetConnection.add(sourceStatemens);
-                }
-
-            }
-        } catch (RepositoryException ex) {
-            logger.debug(ex.getMessage(), ex);
-
-        } finally {
-            if (sourceConnection != null) {
-                try {
-                    sourceConnection.close();
-                } catch (RepositoryException ex) {
-                    logger.debug(ex.getMessage(), ex);
-                }
-            }
-            if (targetConnection != null) {
-                try {
-                    targetConnection.close();
-                } catch (RepositoryException ex) {
-                    logger.debug(ex.getMessage(), ex);
-                }
-            }
-        }
-
-	}
-
 	private File getFileForDirectory(File directory) {
 
 		if (!directory.exists()) {

@@ -205,85 +205,12 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 				}
 
 				try {
-                    RepositoryConnection secondConnection = second.getConnection();
 					GraphQuery result = targetConnection.prepareGraphQuery(
 							QueryLanguage.SPARQL, mergeQuery);
 
 					logger.info("START merging {} triples from <{}> TO <{}>.",
-                            secondConnection.size(second.getDataGraph()), sourceGraphName,
+                            targetConnection.size(getDataGraph()), sourceGraphName,
 							targetGraphName);
-
-					result.evaluate();
-
-					logger.info("Merged SUCCESSFUL");
-
-				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
-				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED: {}", ex.getMessage());
-				}
-
-			}
-
-		} catch (RepositoryException ex) {
-			logger.error(ex.getMessage(), ex);
-
-		} finally {
-			if (targetConnection != null) {
-				try {
-					targetConnection.close();
-				} catch (RepositoryException ex) {
-					logger.error(ex.getMessage(), ex);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Copy all data from repository to targetRepository.
-	 *
-	 * @param targetRepo goal repository where RDF data are added.
-	 */
-	@Override
-	public void copyAllDataToTargetDataUnit(RDFDataUnit targetRepo) {
-
-		if (targetRepo == null) {
-			throw new IllegalArgumentException(
-					"Instance of RDFDataRepository is null");
-		}
-
-		Repository targetRepository = ((ManagableRdfDataUnit) targetRepo).getDataRepository();
-		RepositoryConnection targetConnection = null;
-
-		try {
-
-			targetConnection = targetRepository.getConnection();
-
-			if (targetConnection != null) {
-
-				String sourceGraphName = getDataGraph().stringValue();
-				String targetGraphName = ((ManagableRdfDataUnit) targetRepo).getDataGraph().stringValue();
-
-				String mergeQuery;
-
-				if (virtuosoSyntax) {
-					mergeQuery = String.format("DEFINE sql:log-enable %d \n"
-							+ "ADD <%s> TO <%s>",
-							LOG_LEVEL,
-							sourceGraphName,
-							targetGraphName);
-				} else {
-					mergeQuery = String
-							.format("ADD <%s> TO <%s>", sourceGraphName,
-							targetGraphName);
-				}
-
-				try {
-					GraphQuery result = targetConnection.prepareGraphQuery(
-							QueryLanguage.SPARQL, mergeQuery);
-                    RepositoryConnection connection = getConnection();
-					logger.info("START merging {} triples from <{}> TO <{}>.",
-                            connection.size(getDataGraph()), sourceGraphName, targetGraphName);
 
 					result.evaluate();
 
