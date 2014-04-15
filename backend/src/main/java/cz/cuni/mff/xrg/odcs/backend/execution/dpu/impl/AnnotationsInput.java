@@ -29,21 +29,21 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
  * there is {@link InputDataUnit} annotation on field then create or assign
  * suitable DataUnit. If there is no {@link DataUnit} suitable then publish
  * event and return false.
- * 
- * Executed for every state. If the DPU has been already finished 
- * then we will still need {@link DataUnit}s at the end of the execution.
- * 
+ *
+ * Executed for every state. If the DPU has been already finished then we will
+ * still need {@link DataUnit}s at the end of the execution.
+ *
  * @author Petyr
- * 
+ *
  */
 @Component
 public class AnnotationsInput implements PreExecutor {
 
 	public static final int ORDER = AnnotationsOutput.ORDER + 1000;
-	
+
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AnnotationsInput.class);
-	
+
 	/**
 	 * Event publisher used to publish error event.
 	 */
@@ -81,11 +81,11 @@ public class AnnotationsInput implements PreExecutor {
 	/**
 	 * Set value to given field for given instance. In case of error publish
 	 * event and return false.
-	 * 
-	 * @param field Field to set.
+	 *
+	 * @param field    Field to set.
 	 * @param instance Instance.
-	 * @param value Value to set.
-	 * @param context Used to publish exception.
+	 * @param value    Value to set.
+	 * @param context  Used to publish exception.
 	 * @return True if the field has been set.
 	 */
 	protected boolean setDataUnit(Field field,
@@ -103,17 +103,18 @@ public class AnnotationsInput implements PreExecutor {
 			return false;
 		}
 		return true;
-	}	
-	
+	}
+
 	/**
 	 * Filter given list of {@link ManagableDataUnit}s by using {@link Class}.
-	 * 
+	 *
 	 * @param candidates
 	 * @param type
 	 * @return List with {@link ManagableDataUnit} can be empty, can not be
 	 *         null.
 	 */
-	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
+	protected LinkedList<ManagableDataUnit> filter(
+			List<ManagableDataUnit> candidates,
 			Class<?> type) {
 		LinkedList<ManagableDataUnit> result = new LinkedList<>();
 		for (ManagableDataUnit item : candidates) {
@@ -127,13 +128,14 @@ public class AnnotationsInput implements PreExecutor {
 	/**
 	 * Filter given list of {@link ManagableDataUnit}s according to their URI.
 	 * Is case insensitive.
-	 * 
+	 *
 	 * @param candidates
-	 * @param name Required name of DataUnits.
+	 * @param name       Required name of DataUnits.
 	 * @return List with {@link ManagableDataUnit} can be empty, can not be
 	 *         null.
 	 */
-	protected LinkedList<ManagableDataUnit> filter(List<ManagableDataUnit> candidates,
+	protected LinkedList<ManagableDataUnit> filter(
+			List<ManagableDataUnit> candidates,
 			String name) {
 		LinkedList<ManagableDataUnit> result = new LinkedList<>();
 		for (ManagableDataUnit item : candidates) {
@@ -143,19 +145,20 @@ public class AnnotationsInput implements PreExecutor {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Execute the input annotation ie. get input {@link DataUnit} from
 	 * {@link Context} and assign it to annotated field. If annotationContainer
 	 * is null then instantly return true. If error appear then publish event
 	 * and return false.
-	 * 
+	 *
 	 * @param annotationContainer Annotation container.
 	 * @param dpuInstance
 	 * @param context
 	 * @return False in case of error.
 	 */
-	protected boolean annotationInput(AnnotationContainer<InputDataUnit> annotationContainer,
+	protected boolean annotationInput(
+			AnnotationContainer<InputDataUnit> annotationContainer,
 			Object dpuInstance,
 			Context context) {
 		if (annotationContainer == null) {
@@ -181,37 +184,29 @@ public class AnnotationsInput implements PreExecutor {
 		LinkedList<ManagableDataUnit> nameMatch = filter(typeMatch,
 				annotation.name());
 		if (nameMatch.isEmpty()) {
-			if (annotation.relaxed()) {
-				LOG.debug("in: {}.{} = {}", context.getDPU().getName(),  field.getName(), 
-					typeMatch.getFirst().getDataUnitName());					
-				
-				// just use first with good type
-				return setDataUnit(field, dpuInstance, typeMatch.getFirst(),
-						context);
-			} else {
-				// check if not optional
-				if (annotation.optional()) {
-					return true;
-				}
-				// error
-				final String message = "Can't find DataUnit with required name for field:"
-						+ field.getName();
-				eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(
-						context, this, message));
-				return false;
+			// check if not optional
+			if (annotation.optional()) {
+				return true;
 			}
+			// error
+			final String message = "Can't find DataUnit with required name for field:"
+					+ field.getName();
+			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(
+					context, this, message));
+			return false;
 		} else {
 			if (nameMatch.size() > 1) {
 				LOG.warn("Multiple matches for {}", annotation.name());
 			}
-						
-			LOG.debug("in: {}.{} = {}", context.getDPU().getName(),  field.getName(), 
-				nameMatch.getFirst().getDataUnitName());		
-			
+
+			LOG.debug("in: {}.{} = {}", context.getDPU().getName(), field
+					.getName(),
+					nameMatch.getFirst().getDataUnitName());
+
 			// use first with required name
 			return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
 					context);
 		}
 	}
-	
+
 }
