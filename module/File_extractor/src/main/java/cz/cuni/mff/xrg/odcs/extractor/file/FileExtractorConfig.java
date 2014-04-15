@@ -12,7 +12,11 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  */
 public class FileExtractorConfig extends DPUConfigObjectBase {
 
-	private String Path;
+    public void setPath(String path) {
+        Path = path;
+    }
+
+    private String Path;
 
 	private String FileSuffix;
 
@@ -26,7 +30,23 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 
 	private boolean failWhenErrors;
 
-	public FileExtractorConfig() {
+    public void setFileSuffix(String fileSuffix) {
+        FileSuffix = fileSuffix;
+    }
+
+    public void setRDFFormatValue(RDFFormatType RDFFormatValue) {
+        this.RDFFormatValue = RDFFormatValue;
+    }
+
+    public void setFileExtractType(FileExtractType fileExtractType) {
+        this.fileExtractType = fileExtractType;
+    }
+
+    public void setFailWhenErrors(boolean failWhenErrors) {
+        this.failWhenErrors = failWhenErrors;
+    }
+
+    public FileExtractorConfig() {
 		this.Path = "";
 		this.FileSuffix = "";
 		this.RDFFormatValue = RDFFormatType.AUTO;

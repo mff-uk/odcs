@@ -119,20 +119,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
-	 * serialization of RDF data
-	 *
-	 * @param file File contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void addFromFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.RDFXML, "",
-				HandlerExtractType.STANDARD_HANDLER);
-	}
-
-	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file   File contains RDF data to extract.
@@ -143,74 +129,14 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public void addFromFile(File file, RDFFormat format) throws RDFException {
-		extractFromFile(file, format, "", HandlerExtractType.STANDARD_HANDLER);
+        if (file == null) {
+            throw new RDFException("Given file for extraction is null");
+        }
+
+        extractFromFile(FileExtractType.PATH_TO_FILE, format, file
+                .getAbsolutePath(), "", "", false, HandlerExtractType.STANDARD_HANDLER);
 	}
 
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file               File which contains RDF data to extract.
-	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
-	 *                           RDFXML, Turtle, ..) if RDF format can not be
-	 *                           detected from file suffix.
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void addFromFile(File file, RDFFormat format,
-			HandlerExtractType handlerExtractType) throws RDFException {
-
-		extractFromFile(file, format, "", handlerExtractType);
-	}
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file    File contains RDF data to extract.
-	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
-	 *                Turtle, ..) if RDF format can not be detected from file
-	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void extractFromFile(File file, RDFFormat format, String baseURI)
-			throws RDFException {
-
-		extractFromFile(file, format, baseURI,
-				HandlerExtractType.STANDARD_HANDLER);
-	}
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file               File contains RDF data to extract.
-	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
-	 *                           RDFXML, Turtle, ..) if RDF format can not be
-	 *                           detected from file suffix.
-	 * @param baseURI            String name of defined used URI prefix
-	 *                           namespace used by all triples.
-	 *                           HandlerExtractType handlerExtractType
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data.
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void extractFromFile(File file, RDFFormat format, String baseURI,
-			HandlerExtractType handlerExtractType) throws RDFException {
-
-		if (file == null) {
-			throw new RDFException("Given file for extraction is null");
-		}
-
-		extractFromFile(FileExtractType.PATH_TO_FILE, format, file
-				.getAbsolutePath(), "", baseURI, false, handlerExtractType);
-	}
 
 	/**
 	 * Extract RDF triples from TURTLE file to repository.
@@ -221,21 +147,12 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public void addFromTurtleFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.TURTLE, "",
-				HandlerExtractType.STANDARD_HANDLER);
-	}
+        if (file == null) {
+            throw new RDFException("Given file for extraction is null");
+        }
 
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file File which contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void addFromRDFXMLFile(File file) throws RDFException {
-		extractFromFile(file, RDFFormat.RDFXML, "",
-				HandlerExtractType.STANDARD_HANDLER);
+        extractFromFile(FileExtractType.PATH_TO_FILE, RDFFormat.TURTLE, file
+                .getAbsolutePath(), "", "", false, HandlerExtractType.STANDARD_HANDLER);
 	}
 
 	/**

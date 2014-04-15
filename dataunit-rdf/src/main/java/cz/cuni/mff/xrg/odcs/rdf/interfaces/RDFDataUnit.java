@@ -60,18 +60,6 @@ public interface RDFDataUnit extends DataUnit {
 			List<String> predicates);
 
 	/**
-	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
-	 * serialization of RDF data
-	 *
-	 * @param file File contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    @Deprecated
-    //TODO move to rdf extractor
-    public void addFromFile(File file) throws RDFException;
-
-	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
 	 * @param file   File contains RDF data to extract.
@@ -80,48 +68,20 @@ public interface RDFDataUnit extends DataUnit {
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
-    //TODO move to rdf extractor
+    //TODO test enviroment
     @Deprecated
     public void addFromFile(File file, RDFFormat format) throws RDFException;
 
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file               File which contains RDF data to extract.
-	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
-	 *                           RDFXML, Turtle, ..) if RDF format can not be
-	 *                           detected from file suffix.
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-	public void addFromFile(File file, RDFFormat format,
-			HandlerExtractType handlerExtractType) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
 	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.
 	 */
-    //TODO move to rdf extractor
+    //TODO move to Silk Linker
     @Deprecated
     public void addFromTurtleFile(File file) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file File which contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-	public void addFromRDFXMLFile(File file) throws RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
