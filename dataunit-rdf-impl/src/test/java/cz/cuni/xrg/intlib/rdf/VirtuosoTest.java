@@ -176,11 +176,11 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 					synchronized (virtuosoRepo) {
                         try {
                             addParalelTripleToRepository(virtuosoRepo);
+                            extractFromFileToRepository(virtuosoRepo);
                         } catch (RepositoryException e) {
                             throw new RuntimeException(e);
                         }
-                        extractFromFileToRepository(virtuosoRepo);
-						transformOverRepository(virtuosoRepo);
+                        transformOverRepository(virtuosoRepo);
 						loadToFile(virtuosoRepo);
 					}
 					virtuosoRepo.delete();
