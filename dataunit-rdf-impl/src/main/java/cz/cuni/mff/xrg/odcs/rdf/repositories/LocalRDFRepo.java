@@ -150,27 +150,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 */
 	@Override
 	public void load(File directory) {
-		/*
-		 logger.info(
-		 "LOAD INPUT graph <{}> in dir: {}",
-		 graph.stringValue(), directory.toString());
-
-		 File file = getFileForDirectory(directory);
-
-		 final String suffix = "";
-		 final String baseURI = "";
-		 final boolean useSuffix = false;
-		 final HandlerExtractType handlerExtractType = HandlerExtractType.STANDARD_HANDLER;
-		 try {
-		 extractFromFile(FileExtractType.PATH_TO_FILE, null,
-		 file.getAbsolutePath(), suffix,
-		 baseURI,
-		 useSuffix,
-		 handlerExtractType);
-
-		 } catch (RDFException e) {
-		 throw new RuntimeException(e.getMessage(), e);
-		 }*/
 	}
 
 	/**
