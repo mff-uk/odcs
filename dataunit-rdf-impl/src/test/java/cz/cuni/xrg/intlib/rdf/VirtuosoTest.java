@@ -126,29 +126,6 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
-	private void extractTwoGigaFile() throws RepositoryException {
-		String suffix = "ted1.n3";
-		String baseURI = "";
-		boolean useSuffix = true;
-		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
-
-        RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getDataGraph());
-
-		try {
-			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
-					testFileDir, suffix, baseURI, useSuffix, handlerType);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		long newSize = connection.size(rdfRepo.getDataGraph());
-
-		LOG.debug("EXTRACTING from FILE - OK");
-		LOG.debug(
-				"EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
-	}
-
 	/**
 	 * Testing paralell pipeline running.
 	 */
