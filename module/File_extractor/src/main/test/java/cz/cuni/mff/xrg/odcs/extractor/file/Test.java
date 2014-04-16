@@ -1,9 +1,7 @@
-package test;
+package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import java.net.URL;
 
-import cz.cuni.mff.xrg.odcs.extractor.file.FileExtractor;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig;
 import org.openrdf.repository.RepositoryConnection;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
