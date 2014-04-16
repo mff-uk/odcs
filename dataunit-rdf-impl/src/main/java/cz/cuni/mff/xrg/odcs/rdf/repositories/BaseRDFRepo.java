@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -120,79 +121,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 
 
-	private void extractDataFromFileSource(File dirFile, RDFFormat format,
-			String baseURI, HandlerExtractType handlerExtractType) throws RDFException {
-
-		if (dirFile.isFile()) {
-			addFileToRepository(format, dirFile, baseURI,
-					handlerExtractType,
-					graph);
-		} else {
-			throw new RDFException(
-					"Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
-		}
-	}
-
-	private void extractDataFromDirectorySource(File dirFile, String suffix,
-			boolean useSuffix, RDFFormat format, String baseURI,
-			HandlerExtractType handlerExtractType, boolean skipFiles)
-			throws RDFException {
-
-		if (dirFile.isDirectory()) {
-			File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
-
-			addFilesInDirectoryToRepository(format, files, baseURI,
-					handlerExtractType, skipFiles,
-					graph);
-		} else {
-			throw new RDFException(
-					"Path to directory \"" + dirFile.getAbsolutePath()
-					+ "\" doesnt exist");
-		}
-	}
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param file       File where data be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws RDFException when loading data to file fail.
-	 */
-	@Override
-	public void loadToFile(File file, RDFFormatType formatType) throws RDFException {
-
-		ParamController.testNullParameter(file,
-				"Given file for loading is null.");
-
-		//ParamController.testEmptyParameter(file, "File name is empty");
-
-		if (!file.exists()) {
-			createNewFile(file);
-
-		}
-
-		writeDataIntoFile(file, formatType);
-
-	}
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath   Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
-	 */
-	@Override
-	public void loadToFile(String filePath,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
-
-		loadToFile(filePath, formatType, false, false);
-	}
-
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
@@ -232,7 +160,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				String uniqueFileName = UniqueNameGenerator
 						.getNextName(dataFile.getName());
 
-				dataFile = new File(directory, uniqueFileName);
+                dataFile = new File(directory, uniqueFileName);
 				createNewFile(dataFile);
 
 			} else if (canFileOverWrite) {
@@ -460,49 +388,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	}
 
-//        @Override 
-//        public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException {
-//
-//            try {
-//                RepositoryConnection connection = getConnection();
-//
-//
-//
-//
-//                StringWriter sw = new StringWriter();
-//                //PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-//                RDFWriter writer = Rio.createWriter(RDFFormat.NTRIPLES, sw);
-//
-//
-//                connection.prepareGraphQuery(QueryLanguage.SPARQL, constructQuery).evaluate(writer);
-//                logger.info("Evaluating query {}", constructQuery);
-//
-//                String out = sw.toString();
-//                logger.debug("Out: {}", sw.toString());
-//                return out;
-//                //return "";
-//
-//
-//
-//            } catch (RepositoryException ex) {
-//                hasBrokenConnection = true;
-//                logger.error("Connection to RDF repository failed. {}", ex
-//                        .getMessage(), ex);
-//            } catch (MalformedQueryException ex) {
-//                logger.error(ex.getLocalizedMessage());
-//            } catch (QueryEvaluationException ex) {
-//                 logger.error(ex.getLocalizedMessage());
-//            } catch (RDFHandlerException ex) {
-//                 logger.error(ex.getLocalizedMessage());
-////            } catch (UnsupportedEncodingException ex) {
-////                java.util.logging.Logger.getLogger(BaseRDFRepo.class.getName()).log(Level.SEVERE, null, ex);
-////            } catch (IOException ex) {
-////                 logger.error(ex.getLocalizedMessage());
-////            }
-//            }
-//            throw new InvalidQueryException("Executing query " + constructQuery + " failed");
-//        }
-//        
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -1208,198 +1093,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 	}
 
-	private void extractDataFileFromHTTPSource(String path, RDFFormat format,
-			String baseURI,
-			HandlerExtractType handlerExtractType) throws RDFException {
-		URL urlPath;
-		try {
-			urlPath = new URL(path);
-		} catch (MalformedURLException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		}
-
-		try {
-			try (InputStreamReader inputStreamReader = new InputStreamReader(
-					urlPath.openStream(), Charset.forName(encode))) {
-
-				//in case that RDF format is AUTO or not fixed.
-				if (format == null) {
-					format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
-				}
-
-				RepositoryConnection connection = getConnection();
-
-				switch (handlerExtractType) {
-					case STANDARD_HANDLER:
-						parseFileUsingStandardHandler(format, inputStreamReader,
-								baseURI, connection);
-						break;
-					case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
-						parseFileUsingStatisticalHandler(format,
-								inputStreamReader,
-								baseURI, connection, false);
-						break;
-					case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
-						parseFileUsingStatisticalHandler(format,
-								inputStreamReader,
-								baseURI, connection, true);
-						break;
-				}
-			}
-
-		} catch (IOException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			throw new RDFException(ex.getMessage(), ex);
-		}
-	}
-
-	private void addFilesInDirectoryToRepository(RDFFormat format, File[] files,
-			String baseURI,
-			HandlerExtractType handlerExtractType, boolean skipFiles,
-			Resource... graphs)
-			throws RDFException {
-
-		if (files == null) {
-			return; // nothing to add
-		}
-
-		for (int i = 0; i < files.length; i++) {
-			File nextFile = files[i];
-
-			try {
-				addFileToRepository(format, nextFile, baseURI,
-						handlerExtractType, graphs);
-
-			} catch (RDFException e) {
-
-				if (skipFiles) {
-					final String message = String.format(
-							"RDF data from file <%s> was skiped", nextFile
-							.getAbsolutePath());
-					logger.error(message);
-
-				} else {
-					throw new RDFException(e.getMessage(), e);
-				}
-
-			}
-		}
-	}
-
-	private File[] getFilesBySuffix(File dirFile, String suffix,
-			boolean useAceptedSuffix) {
-
-		if (useAceptedSuffix) {
-			final String aceptedSuffix = suffix.toUpperCase();
-
-			FilenameFilter acceptedFileFilter = new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if (name.toUpperCase().endsWith(aceptedSuffix)) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
-
-			return dirFile.listFiles(acceptedFileFilter);
-
-		} else {
-			return dirFile.listFiles();
-		}
-
-	}
-
-	private void addFileToRepository(RDFFormat fileFormat, File dataFile,
-			String baseURI,
-			HandlerExtractType handlerExtractType, Resource... graphs) throws RDFException {
-
-		//in case that RDF format is AUTO or not fixed.
-		if (fileFormat == null) {
-			fileFormat = RDFFormat.forFileName(dataFile.getAbsolutePath(),
-					RDFFormat.RDFXML);
-		}
-
-		try (InputStreamReader is = new InputStreamReader(new FileInputStream(
-				dataFile), Charset.forName(encode))) {
-
-			RepositoryConnection connection = getConnection();
-
-			switch (handlerExtractType) {
-				case STANDARD_HANDLER:
-					parseFileUsingStandardHandler(fileFormat, is, baseURI,
-							connection);
-					break;
-				case ERROR_HANDLER_CONTINUE_WHEN_MISTAKE:
-					parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
-							connection, false);
-					break;
-				case ERROR_HANDLER_FAIL_WHEN_MISTAKE:
-					parseFileUsingStatisticalHandler(fileFormat, is, baseURI,
-							connection, true);
-					break;
-			}
-
-			//connection.commit();
-
-		} catch (IOException ex) {
-			logger.debug(ex.getMessage(), ex);
-			throw new RDFException("IO Exception: " + ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			logger.debug(ex.getMessage(), ex);
-			throw new RDFException(
-					"Error by adding file to repository " + ex.getMessage(), ex);
-		}
-	}
-
-	private void parseFileUsingStatisticalHandler(RDFFormat fileFormat,
-			InputStreamReader is, String baseURI,
-			RepositoryConnection connection, boolean failWhenErrors) throws RDFException {
-
-		StatisticalHandler handler = new StatisticalHandler(connection);
-		parseFileUsingHandler(handler, fileFormat, is, baseURI);
-
-		if (handler.hasFindedProblems()) {
-			String problems = handler.getFindedProblemsAsString();
-
-			logger.error(problems);
-			if (failWhenErrors) {
-				throw new RDFException(problems);
-			}
-		}
-	}
-
-	private void parseFileUsingStandardHandler(RDFFormat fileFormat,
-			InputStreamReader is, String baseURI,
-			RepositoryConnection connection) throws RDFException {
-
-		TripleCountHandler handler = new TripleCountHandler(connection);
-		parseFileUsingHandler(handler, fileFormat, is, baseURI);
-	}
-
-	private void parseFileUsingHandler(TripleCountHandler handler,
-			RDFFormat fileFormat,
-			InputStreamReader is, String baseURI) throws RDFException {
-
-		handler.setGraphContext(graph);
-		RDFParser parser = getRDFParser(fileFormat, handler);
-
-		try {
-                        getConnection().begin();
-                        
-			parser.parse(is, baseURI);
-                        
-                        getConnection().commit();
-		} catch (IOException | RDFParseException | RDFHandlerException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-                    throw new RDFException(ex.getMessage(), ex);
-            }
-	}
 
 	private void setErrorsListenerToParser(RDFParser parser,
 			final StatisticalHandler handler) {
@@ -1425,70 +1118,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				handler.addError(msg, lineNo, colNo);
 			}
 		});
-	}
-
-	/**
-	 * Add RDF data contains in string in given RDF format to set graphs in
-	 * repository.
-	 *
-	 * @param rdfString String value of RDF data you want to add to repository.
-	 * @param format    RDF format of data used in rdfString.
-	 * @param graphs    Graphs where RDF will be stored.
-	 * @throws RDFException if data in rdfString are not in given RDF format.
-	 */
-	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
-			Resource... graphs) throws RDFException {
-
-		try {
-
-			RepositoryConnection connection = getConnection();
-			StringReader reader = new StringReader(rdfString);
-
-			if (graphs != null) {
-
-				connection.add(reader, "", format, graphs);
-			} else {
-				connection.add(reader, "", format);
-			}
-
-			//connection.commit();
-
-
-		} catch (RepositoryException e) {
-			hasBrokenConnection = true;
-			logger.debug(e.getMessage());
-
-		} catch (IOException | RDFParseException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		}
-	}
-
-
-	/**
-	 * Add concrete statement to repository.
-	 *
-	 * @param statement Triple you can add to repository.
-	 * @param graphs    Graphs as resources where are statement add to.
-	 */
-	protected void addStatement(Statement statement, Resource... graphs) {
-
-		try {
-
-			RepositoryConnection connection = getConnection();
-			if (graphs != null) {
-				connection.add(statement, graphs);
-			} else {
-				connection.add(statement);
-			}
-
-			//connection.commit();
-
-		} catch (RepositoryException e) {
-			hasBrokenConnection = true;
-			logger.debug(e.getMessage());
-
-
-		}
 	}
 
 	/**
@@ -1565,36 +1194,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 					"Repository was not destroyed - potencial problems with locks .");
 			logger.debug(ex.getMessage());
 		}
-	}
-
-	/**
-	 * Returns collection of {@link RDFTriple} with all triples from actually
-	 * set named graph.
-	 *
-	 * @return collection of {@link RDFTriple} with all triples from actually
-	 *         set named graph.
-	 */
-	public List<RDFTriple> getRDFTriplesInRepository() throws RepositoryException {
-
-        List<RDFTriple> triples = new ArrayList<>();
-        RepositoryConnection connection = getConnection();
-        RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true, graph);
-
-		int count = 0;
-
-        while(statements.hasNext()) {
-            Statement next = statements.next();
-            String subject = next.getSubject().stringValue();
-            String predicate = next.getPredicate().stringValue();
-            String object = next.getObject().stringValue();
-
-            count++;
-
-            RDFTriple triple = new RDFTriple(count, subject, predicate, object);
-            triples.add(triple);
-        }
-
-		return triples;
 	}
 
 	@Override
