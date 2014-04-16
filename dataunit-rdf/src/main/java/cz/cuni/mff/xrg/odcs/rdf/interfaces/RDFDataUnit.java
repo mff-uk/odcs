@@ -15,8 +15,6 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -58,17 +56,6 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file File which contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to Silk Linker
-    @Deprecated
-    public void addFromTurtleFile(File file) throws RDFException;
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -242,32 +229,6 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public RepositoryConnection getConnection() throws RepositoryException;
 
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param extractType        One of defined enum type for extraction data
-	 *                           from file.
-	 * @param format             One of RDFFormat value for parsing triples, if
-	 *                           value is null RDFFormat is selected by
-	 *                           filename.
-	 * @param path               String path to file/directory
-	 * @param suffix             String suffix of fileName (example: ".ttl",
-	 *                           ".xml", etc)
-	 * @param baseURI            String name of defined used URI prefix
-	 *                           namespace used by all triples.
-	 * @param useSuffix          boolean value, if extract files only with
-	 *                           defined suffix or not.
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data.
-	 * @throws RDFException when extraction fail.
-	 */
-    @Deprecated
-	public void extractFromFile(FileExtractType extractType,
-			RDFFormat format,
-			String path, String suffix,
-			String baseURI,
-			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
 	 * Returns URI representation of graph where RDF data are stored.

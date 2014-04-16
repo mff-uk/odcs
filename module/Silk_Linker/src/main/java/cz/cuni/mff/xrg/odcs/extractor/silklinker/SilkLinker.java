@@ -29,6 +29,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -264,9 +268,12 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             else {
                 log.error("File with confirmed links was NOT generated");
             }
-            
-            outputConfirmed.addFromTurtleFile(f);
-        } catch (RDFException ex) {
+
+            RepositoryConnection connection = outputConfirmed.getConnection();
+            String baseURI = "";
+            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getDataGraph());
+
+        } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
@@ -283,10 +290,11 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             else {
                 log.error("File with links to be verfied was NOT generated");
             }
-            
-            
-            outputToVerify.addFromTurtleFile(f);
-        } catch (RDFException ex) {
+
+            RepositoryConnection connection = outputToVerify.getConnection();
+            String baseURI = "";
+            connection.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getDataGraph());
+        } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
