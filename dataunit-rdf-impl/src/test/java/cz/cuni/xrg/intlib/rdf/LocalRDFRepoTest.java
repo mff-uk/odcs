@@ -246,28 +246,6 @@ public class LocalRDFRepoTest {
 		}
 	}
 
-	/**
-	 * Testing overwriting file.
-	 */
-	@Test
-	public void loadOverWriteFail() {
-
-		String fileName = "CanNotOverWrite_output.rdf";
-		RDFFormatType format = RDFFormatType.RDFXML;
-
-		try {
-			rdfRepo.loadToFile(getFilePath(fileName),
-					format);
-			rdfRepo.loadToFile(getFilePath(fileName),
-					format);
-			fail();
-
-		} catch (CannotOverwriteFileException ex) {
-			// test passed
-		} catch (RDFException e) {
-			fail();
-		}
-	}
 
 	/**
 	 * Test extracting data using Statistical handler.
