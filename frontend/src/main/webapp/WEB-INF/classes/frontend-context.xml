@@ -77,4 +77,7 @@
 		<!-- if the RMI servrs is offline on start up then don't die -->
 		<property name="lookupStubOnStartup" value="false" />
 	</bean>
+	
+	<bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat" />
+	
 </beans>
