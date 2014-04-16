@@ -1,35 +1,38 @@
 package cz.cuni.xrg.intlib.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.openrdf.model.*;
-import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
-import static org.junit.Assert.*;
-
 import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 
 /**
  *
