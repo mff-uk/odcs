@@ -283,7 +283,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.RDFXML, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -314,8 +315,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.RDFXML, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -342,8 +343,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.RDFXML, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -371,8 +372,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.N3, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -401,7 +402,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TURTLE, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -432,7 +434,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.NTRIPLES, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -462,7 +465,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TRIG, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -494,7 +498,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TRIX, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -579,7 +584,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TURTLE, rdfRepo.getDataGraph());
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -607,8 +613,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TURTLE, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -767,8 +773,8 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.TURTLE, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -978,8 +984,8 @@ public class LocalRDFRepoTest {
 
         for (File file : files) {
             try {
-                connection.add(file, baseURI, RDFFormat.RDFXML, rdfRepo.getDataGraph());
-            } catch (RDFParseException e) {
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
