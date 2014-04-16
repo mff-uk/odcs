@@ -254,7 +254,8 @@ public class TestEnvironment {
         try {
             RepositoryConnection connection = rdf.getConnection();
             String baseURI = "";
-            connection.add(inputFile, baseURI, RDFFormat.RDFXML, rdf.getDataGraph());
+            RDFFormat fileFormat = RDFFormat.forFileName(inputFile.getAbsolutePath(), RDFFormat.RDFXML);
+            connection.add(inputFile, baseURI, fileFormat, rdf.getDataGraph());
         } catch (Exception e) {
             throw new RDFException("Problem with repository: "
                     + resourceName);
