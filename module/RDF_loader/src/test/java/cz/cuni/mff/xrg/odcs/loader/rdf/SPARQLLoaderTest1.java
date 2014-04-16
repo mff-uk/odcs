@@ -113,53 +113,6 @@ public class SPARQLLoaderTest1 {
         tryInsertToSPARQLEndpoint();
     }
         
-        //@Test
-	public void InsertingSmallFileToEndpointCRUD() {
-		//repository.cleanAllData();
-
-	
-            logger.info("Data extraction from file to the graph Started");
-            
-             //File f = new File("nsoud20000.ttl");
-            try {
-                //repository.addTriple(subject, predicate, object);
-                repository.addFromTurtleFile(new File("src/test/resources/nsoud20000.ttl"));
-            } catch (RDFException ex) {
-                logger.error(ex.getLocalizedMessage());
-            }
-
-            logger.info("Data extraction from file to the graph DONE");
-            
-
-		tryInsertToSPARQLEndpoint();
-	}
-        
-        //@Test
-	public void InsertingBiggerFileToEndpointCRUD() {
-		//repository.cleanAllData();
-
-	
-            logger.info("Data extraction from file to the graph Started");
-            
-             //File f = new File("nsoud20000.ttl");
-            try {
-                //repository.addTriple(subject, predicate, object);
-                //file has 40 MB
-                repository.addFromTurtleFile(new File("src/test/resources/profiles.ttl"));
-            } catch (RDFException ex) {
-                logger.error(ex.getLocalizedMessage());
-            }
-
-            logger.info("Data extraction from file to the graph DONE");
-            
-
-		tryInsertToSPARQLEndpoint();
-	}
-
-	
-
-
-	
 
 	private void tryInsertToSPARQLEndpoint() {
            
