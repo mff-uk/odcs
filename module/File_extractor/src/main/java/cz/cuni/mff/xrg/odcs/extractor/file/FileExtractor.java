@@ -22,7 +22,6 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;

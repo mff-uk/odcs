@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 /**
