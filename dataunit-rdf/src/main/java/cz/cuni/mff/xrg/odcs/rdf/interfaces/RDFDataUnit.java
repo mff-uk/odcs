@@ -62,19 +62,6 @@ public interface RDFDataUnit extends DataUnit {
 	/**
 	 * Extract RDF triples from RDF file to repository.
 	 *
-	 * @param file   File contains RDF data to extract.
-	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
-	 *               ..) if RDF format can not be detected from file suffix.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO test enviroment
-    @Deprecated
-    public void addFromFile(File file, RDFFormat format) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
 	 * @param file File which contains RDF data to extract.
 	 *
 	 * @throws RDFException when extraction fail.

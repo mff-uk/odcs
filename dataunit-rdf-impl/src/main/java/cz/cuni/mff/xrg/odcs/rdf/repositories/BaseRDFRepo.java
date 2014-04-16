@@ -118,25 +118,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				predicates);
 	}
 
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file   File contains RDF data to extract.
-	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
-	 *               ..) if RDF format can not be detected from file suffix.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	@Override
-	public void addFromFile(File file, RDFFormat format) throws RDFException {
-        if (file == null) {
-            throw new RDFException("Given file for extraction is null");
-        }
-
-        extractFromFile(FileExtractType.PATH_TO_FILE, format, file
-                .getAbsolutePath(), "", "", false, HandlerExtractType.STANDARD_HANDLER);
-	}
-
 
 	/**
 	 * Extract RDF triples from TURTLE file to repository.
