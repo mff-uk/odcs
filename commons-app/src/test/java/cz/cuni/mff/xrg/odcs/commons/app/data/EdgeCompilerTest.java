@@ -21,10 +21,10 @@ public class EdgeCompilerTest {
 	@Test
 	public void mappingToListAndBack() {
 		List<DataUnitDescription> sources = new LinkedList<>();
-		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_C", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_D", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_A", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_B", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_C", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_D", "", "", false));
 		List<DataUnitDescription> targets = new LinkedList<>();
 		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
@@ -50,9 +50,9 @@ public class EdgeCompilerTest {
 	@Test
 	public void mappingToListAndBackManyToOne() {
 		List<DataUnitDescription> sources = new LinkedList<>();
-		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_C", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_A", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_B", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_C", "", "", false));
 		List<DataUnitDescription> targets = new LinkedList<>();
 		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
@@ -76,10 +76,10 @@ public class EdgeCompilerTest {
 	@Test
 	public void backCompability() {
 		List<DataUnitDescription> sources = new LinkedList<>();
-		sources.add(DataUnitDescription.createOutput("out_A", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_B", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_C", "", ""));
-		sources.add(DataUnitDescription.createOutput("out_D", "", ""));
+		sources.add(DataUnitDescription.createOutput("out_A", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_B", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_C", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_D", "", "", false));
 		List<DataUnitDescription> targets = new LinkedList<>();
 		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
 		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
@@ -100,6 +100,26 @@ public class EdgeCompilerTest {
 				edgeCompiler.translate(script, sources, targets, null);
 		// and should be the same
 		assertArrayEquals(mappings.toArray(), outputMappings.toArray());
-	}	
+	}
+	
+	@Test
+	public void emptyMapping() {
+		List<DataUnitDescription> sources = new LinkedList<>();
+		sources.add(DataUnitDescription.createOutput("out_A", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_B", "", "", false));
+		sources.add(DataUnitDescription.createOutput("out_C", "", "", false));
+		List<DataUnitDescription> targets = new LinkedList<>();
+		targets.add(DataUnitDescription.createInput("in_A", "", "", false));
+		targets.add(DataUnitDescription.createInput("in_B", "", "", false));
+		// create mapping 
+		List<MutablePair<Integer, Integer>> mappings = new LinkedList<>();
+		// convert into script ..
+		String script = edgeCompiler.translate(mappings, sources, targets, null);		
+		// convert back from script
+		List<MutablePair<Integer, Integer>> outputMappings =
+				edgeCompiler.translate(script, sources, targets, null);
+		
+		assertTrue(outputMappings.isEmpty());
+	}
 	
 }

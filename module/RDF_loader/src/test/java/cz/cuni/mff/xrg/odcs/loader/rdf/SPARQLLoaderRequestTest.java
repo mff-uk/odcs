@@ -78,14 +78,14 @@ public class SPARQLLoaderRequestTest {
 
 		URL endpoint = getEndpoint();
 		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				params);
+				params, false);
 		try {
 			loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
 					PASSWORD,
 					WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
 			assertEquals(repository.getTripleCount(), loader
-					.getSPARQLEnpointGraphSize(endpoint, defaultGraphURI));
+					.getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
 		} catch (RDFException e) {
 			fail(e.getMessage());

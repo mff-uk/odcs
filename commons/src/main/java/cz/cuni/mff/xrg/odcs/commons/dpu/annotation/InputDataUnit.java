@@ -32,15 +32,6 @@ public @interface InputDataUnit {
 
 	/**
 	 * 
-	 * @return If false then only
-	 *         {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} with name
-	 *         equal to the {@link #name} can be used. Otherwise the
-	 *         {@link #name} determine only preference.
-	 */
-	public boolean relaxed() default true;
-
-	/**
-	 * 
 	 * @return False the execution failed if there is no suitable
 	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} that can be used.
 	 */

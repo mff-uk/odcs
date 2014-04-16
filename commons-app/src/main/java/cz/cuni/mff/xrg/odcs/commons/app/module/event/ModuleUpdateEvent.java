@@ -10,6 +10,12 @@ public class ModuleUpdateEvent extends ModuleEvent {
 	
 	private final String jarName;
 	
+	/**
+	 * 
+	 * @param source Event source.
+	 * @param directoryName DPU's directory name.
+	 * @param jarName New DPU's jar name.
+	 */	
 	public ModuleUpdateEvent(Object source,
 			String directoryName,
 			String jarName) {
@@ -17,6 +23,10 @@ public class ModuleUpdateEvent extends ModuleEvent {
 		this.jarName = jarName;
 	}
 
+	/**
+	 * 
+	 * @return New name of DPU's jar file.
+	 */
 	public String getJarName() {
 		return jarName;
 	}

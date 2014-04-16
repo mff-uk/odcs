@@ -178,6 +178,12 @@
 		 </exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
     </dependencies>
 
   <!-- define license -->
@@ -191,7 +197,7 @@
       </licenses>
         
     <build>
-        <finalName>odcleanstore</finalName>
+        <finalName>unifiedviews</finalName>
         <plugins>
 
             <plugin>
@@ -299,10 +305,6 @@
             <resource>
                 <directory>src/main/java</directory>
             </resource>
-            <resource>
-                <directory>src/main/java/cz/cuni/mff/xrg/odcs/frontend/gui/components/pipelinecanvas</directory>
-            </resource>
-            
                     <!-- add license from LICENSE.md to the generated JAR file -->
       
 <!--            <resource>

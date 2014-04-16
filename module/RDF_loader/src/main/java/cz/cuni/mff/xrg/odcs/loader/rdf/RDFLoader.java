@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.*;
@@ -13,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
@@ -24,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Loads RDF data to SPARQL endpoint.
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -33,13 +37,26 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 	private final Logger LOG = LoggerFactory.getLogger(RDFLoader.class);
 
+	/**
+	 * The repository for SPARQL loader.
+	 */
 	@InputDataUnit
 	public RDFDataUnit rdfDataUnit;
 
+	@OutputDataUnit(name = "input_redirection", optional = true)
+	public RDFDataUnit inputShadow;	
+	
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
 
+	/**
+	 * Execute the SPARQL loader.
+	 *
+	 * @param context SPARQL loader context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
@@ -117,21 +134,53 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime, endpointParams);
+					retryTime, endpointParams, config.isUseSparqlGraphProtocol());
+
+			for (String graph : defaultGraphsURI) {
+				Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
+						graph, graphSizeBefore, endpointURL.toString()));
+
+
+			}
 
 			loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
 					hostName, password, graphType, insertType, chunkSize);
 
-			context.sendMessage(MessageType.INFO, String.format(
-					"Loaded %s triples to SPARQL endpoint %s",
-					triplesCount, endpointURL.toString()));
+			for (String graph : defaultGraphsURI) {
+
+				Long graphSizeAfter = loader.getSPARQLEndpointGraphSize(
+						endpointURL, graph, hostName, password);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
+						graph, graphSizeAfter, endpointURL.toString()));
+
+				long loadedTriples = loader.getLoadedTripleCount(graph);
+
+				context.sendMessage(MessageType.INFO, String.format(
+						"Loaded %s triples to SPARQL endpoint %s",
+						loadedTriples, endpointURL.toString()));
+			}
 
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
 		}
+		
+		if (config.isPenetrable()) {
+			((ManagableRdfDataUnit)inputShadow).merge(rdfDataUnit);
+		}		
 	}
 
+	/**
+	 * Returns the configuration dialogue for SPARQL loader.
+	 *
+	 * @return the configuration dialogue for SPARQL loader.
+	 */
 	@Override
 	public AbstractConfigDialog<RDFLoaderConfig> getConfigurationDialog() {
 		return new RDFLoaderDialog();

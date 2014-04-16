@@ -31,26 +31,26 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * {@link OutputDataUnit} annotation on field then create or assign suitable
  * DataUnit. If there is no {@link DataUnit} suitable then publish event and
  * return false.
- * 
+ *
  * Executed for every state.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 @Component
 public class AnnotationsOutput implements PreExecutor {
 
 	public static final int ORDER = ContextPreparator.ORDER + 1000;
-	
+
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AnnotationsOutput.class);
-	
+
 	/**
 	 * Event publisher used to publish error event.
 	 */
 	@Autowired
 	private ApplicationEventPublisher eventPublish;
-	
+
 	@Override
 	public int getOrder() {
 		return ORDER;
@@ -82,11 +82,11 @@ public class AnnotationsOutput implements PreExecutor {
 	/**
 	 * Set value to given field for given instance. In case of error publish
 	 * event and return false.
-	 * 
-	 * @param field Field to set.
+	 *
+	 * @param field    Field to set.
 	 * @param instance Instance.
-	 * @param value Value to set.
-	 * @param context Used to publish exception.
+	 * @param value    Value to set.
+	 * @param context  Used to publish exception.
 	 * @return True if the field has been set.
 	 */
 	protected boolean setDataUnit(Field field,
@@ -105,34 +105,34 @@ public class AnnotationsOutput implements PreExecutor {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Translate {@link Class} into {@link DataUnitType}.
-	 * 
+	 *
 	 * @param classType
 	 * @return Null if the class can not be translated.
 	 */
 	protected DataUnitType classToDataUnitType(Class<?> classType) {
 		if (classType == RDFDataUnit.class) {
 			return DataUnitType.RDF;
-		}
-                else if (classType == FileDataUnit.class) {
+		} else if (classType == FileDataUnit.class) {
 			return DataUnitType.FILE;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Execute the output annotation ie. create output {@link DataUnit} and
 	 * assign it to the annotated field. If annotation is null then instantly
 	 * return true. If error appear then publish event and return false.
-	 * 
+	 *
 	 * @param annotationContainer Annotation container.
 	 * @param dpuInstance
 	 * @param context
 	 * @return False in case of error.
 	 */
-	protected boolean annotationOutput(AnnotationContainer<OutputDataUnit> annotationContainer,
+	protected boolean annotationOutput(
+			AnnotationContainer<OutputDataUnit> annotationContainer,
 			Object dpuInstance,
 			Context context) {
 		if (annotationContainer == null) {
@@ -140,8 +140,8 @@ public class AnnotationsOutput implements PreExecutor {
 		}
 		final Field field = annotationContainer.getField();
 		final OutputDataUnit annotation = annotationContainer.getAnnotation();
-                LOG.debug("Data unit name is: {}", annotation.name());
-                
+		LOG.debug("Data unit name is: {}", annotation.name());
+
 		// get type
 		final DataUnitType type = classToDataUnitType(field.getType());
 		if (type == null) {
@@ -151,8 +151,8 @@ public class AnnotationsOutput implements PreExecutor {
 					this, message));
 			return false;
 		}
-                LOG.debug("Data unit type is: {}", type.toString());
-                
+		LOG.debug("Data unit type is: {}", type.toString());
+		
 		// let's create dataUnit
 		ManagableDataUnit dataUnit;
 		try {
@@ -167,10 +167,10 @@ public class AnnotationsOutput implements PreExecutor {
 					this, message));
 			return false;
 		}
-		LOG.debug("Create output DataUnit for field: {}", field.getName());
+		LOG.debug("out: {}.{} = {}", context.getDPU().getName(),  field.getName(), 
+				dataUnit.getDataUnitName());
 		// and set it
 		return setDataUnit(field, dpuInstance, dataUnit, context);
 	}
-	
-	
+
 }

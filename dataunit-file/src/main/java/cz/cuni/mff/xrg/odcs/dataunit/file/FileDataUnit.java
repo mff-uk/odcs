@@ -38,6 +38,8 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
 public interface FileDataUnit extends DataUnit {
 
 	/**
+	 * Return root {@link DirectoryHandler} that provides access to the
+	 * all FileDataUnit's data.
 	 * @return Handler to the root directory.
 	 */
 	DirectoryHandler getRootDir();

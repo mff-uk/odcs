@@ -134,6 +134,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			+ "\nIf fatal error is discovered, pipeline is stopped.";
 
 	/**
+	 * Checkbox defines if construct query could be split in more queries or
+	 * not.
+	 */
+	private CheckBox splitQuery;
+
+	/**
+	 * Text field defines number how many triples can be extracted at once.
+	 */
+	private TextField splitQuerySizeField;
+
+	/**
 	 * Set Count of attempts to reconnect if the connection fails. For infinite
 	 * loop use zero or negative integer
 	 */
@@ -198,7 +209,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 	/**
 	 * Get description of chosed way, how to extract RDF data from SPARQL
-	 * endpoint: Uses in {@link #setConfiguration} for setiing
+	 * endpoint: Uses in {@link #setConfiguration} for setting
 	 * {@link #requestTypeOption}
 	 *
 	 * @param type Type of insert data parts:
@@ -237,7 +248,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	}
 
 	/**
-	 * Get type of REQUEST variant for extractomg RDF data from SPARQL endpoint:
+	 * Get type of REQUEST variant for extracting RDF data from SPARQL endpoint:
 	 * GET_URL_ENCODER,	POST_URL_ENCODER, POST_UNENCODED_QUERY. Uses in
 	 * {@link #getConfiguration} for determine the type by description that
 	 * located in {@link #requestTypeOption}
@@ -288,7 +299,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		// Core tab
 		gridLayoutCore = buildGridLayoutCore();
-		tabSheet.addTab(gridLayoutCore, "Core", null);
+		// Panel add possibility to scroll
+		Panel panelCore = new Panel();
+		panelCore.setSizeFull();
+		panelCore.setContent(gridLayoutCore);
+		tabSheet.addTab(panelCore, "Core", null);
 
 		//SPARQL protocol tab
 		verticalLayoutProtocol = buildVerticalLayoutProtokol();
@@ -315,22 +330,21 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	private GridLayout buildGridLayoutCore() {
 
 		// common part: create layout
-		gridLayoutCore = new GridLayout();
+		gridLayoutCore = new GridLayout(2,6);
 		gridLayoutCore.setImmediate(false);
 		gridLayoutCore.setWidth("100%");
-		gridLayoutCore.setHeight("100%");
+		gridLayoutCore.setHeight("-1px");
 		gridLayoutCore.setMargin(true);
-		gridLayoutCore.setColumns(2);
-		gridLayoutCore.setRows(6);
-		gridLayoutCore.setColumnExpandRatio(0, 0.10f);
-		gridLayoutCore.setColumnExpandRatio(1, 0.90f);
+		gridLayoutCore.setSpacing(true);
+
+		gridLayoutCore.setColumnExpandRatio(0, 0.0f);
+		gridLayoutCore.setColumnExpandRatio(1, 1.0f);
 
 		// labelSparql
-		labelSparql = new Label();
+		labelSparql = new Label("SPARQL endpoint:");
 		labelSparql.setImmediate(false);
-		labelSparql.setWidth("-1px");
+		labelSparql.setWidth("80px");
 		labelSparql.setHeight("-1px");
-		labelSparql.setValue("SPARQL endpoint:");
 		gridLayoutCore.addComponent(labelSparql, 0, 0);
 		gridLayoutCore.setComponentAlignment(labelSparql, Alignment.TOP_LEFT);
 
@@ -341,11 +355,8 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		textFieldSparql.setHeight("-1px");
 		textFieldSparql.setInputPrompt("http://localhost:8890/sparql");
 
-
-
 		// Check if the caption for new item already exists in the list of item
 		// captions before approving it as a new item.
-
 
 		//textFieldSparql is mandatory fields
 		textFieldSparql.addValidator(new Validator() {
@@ -354,7 +365,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			@Override
 			public void validate(Object value) throws InvalidValueException {
 				if (value == null || value.equals("")) {
-					if (!getContext().isTemplate()){ 
+					if (!getContext().isTemplate()) {
 						ex = new InvalidValueException(
 								"SPARQL endpoint must be filled!");
 						throw ex;
@@ -377,11 +388,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(textFieldSparql, 1, 0);
 
 		// labelNameAdm
-		labelNameAdm = new Label();
+		labelNameAdm = new Label("Name:");
 		labelNameAdm.setImmediate(false);
 		labelNameAdm.setWidth("-1px");
 		labelNameAdm.setHeight("-1px");
-		labelNameAdm.setValue("Name:");
 		gridLayoutCore.addComponent(labelNameAdm, 0, 1);
 
 		// Name textField 
@@ -395,11 +405,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(textFieldNameAdm, 1, 1);
 
 		// labelPass
-		labelPass = new Label();
+		labelPass = new Label("Password:");
 		labelPass.setImmediate(false);
 		labelPass.setWidth("-1px");
 		labelPass.setHeight("-1px");
-		labelPass.setValue("Password:");
 		gridLayoutCore.addComponent(labelPass, 0, 2);
 
 		//  Password field
@@ -412,11 +421,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(passwordFieldPass, 1, 2);
 
 		// default graph label
-		Label defaultGraphLabel = new Label();
+		Label defaultGraphLabel = new Label("Default Graph:");
 		defaultGraphLabel.setImmediate(false);
 		defaultGraphLabel.setWidth("-1px");
 		defaultGraphLabel.setHeight("-1px");
-		defaultGraphLabel.setValue("Default Graph:");
 		gridLayoutCore.addComponent(defaultGraphLabel, 0, 3);
 
 		//Default Graphs component
@@ -424,11 +432,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(defaultGraphLayout, 1, 3);
 
 		// named graph label
-		Label namedGraphLabel = new Label();
+		Label namedGraphLabel = new Label("Named Graph:");
 		namedGraphLabel.setImmediate(false);
 		namedGraphLabel.setWidth("-1px");
 		namedGraphLabel.setHeight("-1px");
-		namedGraphLabel.setValue("Named Graph:");
 		gridLayoutCore.addComponent(namedGraphLabel, 0, 4);
 
 		//Named Graphs component
@@ -436,11 +443,10 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		gridLayoutCore.addComponent(namedGraphLayout, 1, 4);
 
 		// labelConstr
-		labelConstr = new Label();
+		labelConstr = new Label("SPARQL  Construct:");
 		labelConstr.setImmediate(false);
 		labelConstr.setWidth("100%");
 		labelConstr.setHeight("-1px");
-		labelConstr.setValue("SPARQL  Construct:");
 		gridLayoutCore.addComponent(labelConstr, 0, 5);
 
 		// textAreaConstr
@@ -531,7 +537,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		verticalLayoutProtocol = new VerticalLayout();
 		verticalLayoutProtocol.setImmediate(true);
 		verticalLayoutProtocol.setWidth("100.0%");
-		verticalLayoutProtocol.setHeight("100.0%");
+		verticalLayoutProtocol.setHeight("-1px");
 		verticalLayoutProtocol.setMargin(true);
 		verticalLayoutProtocol.setSpacing(true);
 
@@ -808,7 +814,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		namedGraphLayout = new GridLayout();
 		namedGraphLayout.setImmediate(false);
 		namedGraphLayout.setWidth("100%");
-		namedGraphLayout.setHeight("100%");
+		namedGraphLayout.setHeight("-1px");
 		namedGraphLayout.setMargin(false);
 		namedGraphLayout.setColumns(2);
 		namedGraphLayout.setColumnExpandRatio(0, 0.95f);
@@ -822,7 +828,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		defaultGraphLayout = new GridLayout();
 		defaultGraphLayout.setImmediate(false);
 		defaultGraphLayout.setWidth("100%");
-		defaultGraphLayout.setHeight("100%");
+		defaultGraphLayout.setHeight("-1px");
 		defaultGraphLayout.setMargin(false);
 		defaultGraphLayout.setColumns(2);
 		defaultGraphLayout.setColumnExpandRatio(0, 0.95f);
@@ -961,6 +967,54 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		labelOpt.setValue("Options:");
 		verticalLayoutDetails.addComponent(labelOpt);
 
+		//Checkbox Split the SPARQL construct query to subqueries
+		splitQuery = new CheckBox();
+		splitQuery.setCaption("Split the SPARQL construct query to subqueries");
+		splitQuery.setValue(false);
+		splitQuery.setImmediate(false);
+		splitQuery.setWidth("-1px");
+		splitQuery.setHeight("-1px");
+		verticalLayoutDetails.addComponent(splitQuery);
+
+		splitQuerySizeField = new TextField(
+				"Every subquery contains at maximum (triples)");
+		splitQuerySizeField.setDescription(
+				"Fill number - maximum of RDF triples at once");
+		splitQuerySizeField.setValue("50000");
+		splitQuerySizeField.setNullRepresentation("");
+		splitQuerySizeField.setImmediate(true);
+		splitQuerySizeField.setWidth("100px");
+		splitQuerySizeField.setHeight("-1px");
+		splitQuerySizeField.setInputPrompt(
+				"Fill number - maximum of RDF triples at once");
+
+		splitQuerySizeField.addValidator(new Validator() {
+			@Override
+			public void validate(Object value) throws Validator.InvalidValueException {
+
+				if (value != null) {
+					String size = value.toString().trim();
+
+					try {
+						Integer.parseInt(size);
+
+					} catch (NumberFormatException e) {
+						ex = new Validator.InvalidValueException(
+								"Count of maximum triples must be a number");
+						throw ex;
+					}
+
+				} else {
+					throw new Validator.EmptyValueException(
+							"Count of triples is a null");
+				}
+			}
+		});
+
+		verticalLayoutDetails.addComponent(splitQuerySizeField);
+
+
+
 		// CheckBox Extraction fails if there is no triple extracted.
 		extractFail = new CheckBox();
 		extractFail
@@ -1094,7 +1148,9 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		boolean areValid = textFieldSparql.isValid()
 				&& retrySizeField.isValid()
 				&& retryTimeField.isValid()
-				&& areGraphsNameValid();
+				&& areGraphsNameValid()
+				&& splitQuerySizeField.isValid();
+
 		return areValid;
 	}
 
@@ -1141,6 +1197,17 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
 		} catch (Validator.InvalidValueException e) {
 			if (!errors.equals("") && !errors.endsWith("; ")) {
+				errors = errors + "; " + e.getMessage();
+			} else {
+				errors = errors + e.getMessage();
+			}
+		}
+
+		try {
+			splitQuerySizeField.validate();
+
+		} catch (Validator.InvalidValueException e) {
+			if (!errors.equals("")) {
 				errors = errors + "; " + e.getMessage();
 			} else {
 				errors = errors + e.getMessage();
@@ -1297,7 +1364,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 	 */
 	@Override
 	public RDFExtractorConfig getConfiguration() throws ConfigException {
-		
+
 		if (!allComponentAreValid()) {
 //			throw new ConfigException(ex.getMessage(), ex);
 			String message = validationMessage();
@@ -1342,10 +1409,16 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 					queryParam, defaultGraphParam, namedGraphParam,
 					getDefaultGraphs(), getNamedGraphs(), requestType);
 
+			boolean useSplitConstruct = splitQuery.getValue();
+
+			int splitConstructSize = Integer.parseInt(splitQuerySizeField
+					.getValue());
+
 			RDFExtractorConfig config = new RDFExtractorConfig(SPARQLEndpoint,
 					hostName, password, SPARQLQuery,
 					extractFailed, useStatisticalHandler, failWhenErrors,
-					retrySize, retryTime, endpointParams);
+					retrySize, retryTime, endpointParams, useSplitConstruct,
+					splitConstructSize);
 
 			return config;
 		}
@@ -1400,6 +1473,12 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 			String retryTime = String.valueOf(conf.getRetryTime());
 			retryTimeField.setValue(retryTime);
 
+			splitQuery.setValue(conf.isUsedSplitConstruct());
+
+			String SplitConstructSize = String.valueOf(conf
+					.getSplitConstructSize());
+			splitQuerySizeField.setValue(SplitConstructSize);
+
 			ExtractorEndpointParams endpointParams = conf.getEndpointParams();
 
 			if (endpointParams != null) {
@@ -1434,6 +1513,11 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 		}
 	}
 
+	/**
+	 * Returns desription of SPARQL extractor as string.
+	 *
+	 * @return desription of SPARQL extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		StringBuilder description = new StringBuilder();

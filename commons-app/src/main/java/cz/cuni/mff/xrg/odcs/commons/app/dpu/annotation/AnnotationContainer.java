@@ -22,16 +22,30 @@ public class AnnotationContainer<T> {
 	 */
 	public T annotation;
 	
-	public Field getField() {
-		return field;
-	}
-
-	public T getAnnotation() {
-		return annotation;
-	}
-
+	/**
+	 * Create AnnotationContainer.
+	 * @param field Field.
+	 * @param annotation Annotation of given filed.
+	 */
 	public AnnotationContainer(Field field, T annotation) {
 		this.field = field;
 		this.annotation = annotation;
 	}
+	
+	/**
+	 * 
+	 * @return Filed on which is the annotation. 
+	 */
+	public Field getField() {
+		return field;
+	}
+
+	/**
+	 * 
+	 * @return Represented annotation.
+	 */
+	public T getAnnotation() {
+		return annotation;
+	}
+	
 }

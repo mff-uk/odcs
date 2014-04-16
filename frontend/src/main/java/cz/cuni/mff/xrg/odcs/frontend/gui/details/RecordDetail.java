@@ -9,8 +9,11 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
+import static com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.RichTextArea;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Shows detail of selected event record.
@@ -19,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
  */
 public class RecordDetail extends Window {
 
-	TextArea fullMessageContent;
+	RichTextArea fullMessageContent;
 	private Label pipelineExecutionContent;
 	private Label timeContent;
 	private Label instanceContent;
@@ -67,7 +70,7 @@ public class RecordDetail extends Window {
 		Label messageLabel = new Label("Message:");
 		mainLayout.addComponent(messageLabel, 0, 4);
 
-		fullMessageContent = new TextArea();
+		fullMessageContent = new RichTextArea();
 		fullMessageContent.setValue(record.getFullMessage());
 		fullMessageContent.setReadOnly(true);
 		fullMessageContent.setSizeFull();
@@ -108,8 +111,7 @@ public class RecordDetail extends Window {
 	 * Resizes content due to resize of whole dialog.
 	 *
 	 * @param height New height of whole dialog.
-	 * @param unit
-	 * @{link Unit} of height.
+	 * @param unit {@link Unit} of height.
 	 */
 	public void setContentHeight(float height, Unit unit) {
 		fullMessageContent.setHeight(height - 250, unit);

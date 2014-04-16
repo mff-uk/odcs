@@ -35,7 +35,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	@InputDataUnit
 	public RDFDataUnit dataInput;
 
-	/*
+	/**
 	 * Output RDF data repository with only validate triples get from input.
 	 */
 	@OutputDataUnit(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
@@ -51,6 +51,11 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		super(RDFDataValidatorConfig.class);
 	}
 
+	/**
+	 * Returns the configuration dialogue for RDF Data validator.
+	 *
+	 * @return the configuration dialogue for RDF Data validator.
+	 */
 	@Override
 	public AbstractConfigDialog<RDFDataValidatorConfig> getConfigurationDialog() {
 		return new RDFDataValidatorDialog();
@@ -81,6 +86,13 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		}
 	}
 
+	/**
+	 * Execute the RDF Data validator.
+	 *
+	 * @param context RDF Data validator context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,

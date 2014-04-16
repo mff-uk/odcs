@@ -108,7 +108,7 @@ public class SPARQLLoaderTest {
 
 			try {
 				SPARQLoader loader = new SPARQLoader(repository,
-						getTestContext(), virtuosoParams);
+						getTestContext(), virtuosoParams, false);
 
 				loader.loadToSPARQLEndpoint(endpointURL, defaultGraphUri, name,
 						password, graphType, insertType);
@@ -134,7 +134,7 @@ public class SPARQLLoaderTest {
 		boolean isLoaded = false;
 
 		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				virtuosoParams);
+				virtuosoParams, false);
 		try {
 
 			loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,

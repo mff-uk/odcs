@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.*;
@@ -15,10 +16,13 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
+ * Loads RDF data into file.
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -28,13 +32,26 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
 	private final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
-	@InputDataUnit
+	/**
+	 * The repository for file loader.
+	 */
+	@InputDataUnit	
 	public RDFDataUnit rdfDataUnit;
 
+	@OutputDataUnit(name = "input_redirection", optional = true)
+	public RDFDataUnit inputShadow;
+	
 	public FileLoader() {
 		super(FileLoaderConfig.class);
 	}
 
+	/**
+	 * Execute the file loader.
+	 *
+	 * @param context File loader context.
+	 * @throws DataUnitException if this DPU fails.
+	 * @throws DPUException      if this DPU fails.
+	 */
 	@Override
 	public void execute(DPUContext context) throws DPUException, DataUnitException {
 
@@ -74,10 +91,18 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 		} catch (RDFException | CannotOverwriteFileException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
-
+		}
+		
+		if (config.isPenetrable()) {
+			((ManagableRdfDataUnit)inputShadow).merge(rdfDataUnit);
 		}
 	}
 
+	/**
+	 * Returns the configuration dialogue for file loader.
+	 *
+	 * @return the configuration dialogue for file loader.
+	 */
 	@Override
 	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
 		return new FileLoaderDialog();

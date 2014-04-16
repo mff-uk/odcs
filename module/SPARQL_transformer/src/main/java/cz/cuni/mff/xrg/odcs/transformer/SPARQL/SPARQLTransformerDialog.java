@@ -38,11 +38,14 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 	private Button buttonQueryAdd;
 
 	/**
-	 * Mapping pairs(query,isSpecialContructQuery)
+	 * Mapping pairs(query,QueryObject).
 	 */
-	private Map<String, Boolean> map = new HashMap<>();
+	private Map<String, QueryObject> map = new HashMap<>();
 
 	private String validationErrorMessage = "No errors";
+
+	//number of invalid query
+	private int invalidQueryNumber = -1;
 
 	/**
 	 * Constructor.
@@ -101,17 +104,22 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 		//Right SPARQL VALIDATOR - default false
 		if (!areSparqlQueriesValid()) {
-			throw new SPARQLValidationException(validationErrorMessage);
+			throw new SPARQLValidationException(validationErrorMessage,
+					invalidQueryNumber);
 		} else {
 			saveEditedTexts();
 
 			List<SPARQLQueryPair> queryPairs = new LinkedList<>();
 
 			for (String query : getSPARQLQueries()) {
-				boolean isConstructQuery = map.get(query);
+				QueryObject queryObject = map.get(query);
 
-				if (isConstructQuery && !hasValidMoreGraphsForContruct(query)) {
-					throw new SPARQLValidationException(validationErrorMessage);
+				boolean isConstructQuery = queryObject.isConstructQuery();
+				int queryNumber = queryObject.getQueryNumber();
+
+				if (!hasValidMoreGraphsForQuery(query)) {
+					throw new SPARQLValidationException(validationErrorMessage,
+							queryNumber);
 				}
 				queryPairs.add(new SPARQLQueryPair(query, isConstructQuery));
 			}
@@ -137,10 +145,10 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 	}
 
-	private boolean hasValidMoreGraphsForContruct(String contructQuery) {
+	private boolean hasValidMoreGraphsForQuery(String query) {
 
 		PlaceholdersHelper helper = new PlaceholdersHelper();
-		List<String> extractedNames = helper.getExtractedDPUNames(contructQuery);
+		List<String> extractedNames = helper.getExtractedDPUNames(query);
 
 		if (extractedNames.isEmpty()) {
 			return true;
@@ -187,11 +195,14 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		mainLayout.addComponent(labelUpQuer, 0, 0);
 
 		initializeSparqlQueryList();
+		// Add panel that ensure scroll bars if needed
+		Panel panelQuery = new Panel();
+		panelQuery.setSizeFull();
+		panelQuery.setContent(gridLayoutQuery);
+		mainLayout.addComponent(panelQuery, 1, 0);
 
-		mainLayout.addComponent(gridLayoutQuery, 1, 0);
-
-		mainLayout.setColumnExpandRatio(0, 0.00001f);
-		mainLayout.setColumnExpandRatio(1, 0.99999f);
+		mainLayout.setColumnExpandRatio(0, 0.0f);
+		mainLayout.setColumnExpandRatio(1, 1.0f);
 
 		return mainLayout;
 	}
@@ -296,15 +307,22 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 			textFieldQuery.setData(row);
 			textFieldQuery.setValue(item.trim());
 			textFieldQuery.setInputPrompt(
-					"PREFIX br:<http://purl.org/business-register#>\nMODIFY\nDELETE { ?s pc:contact ?o}\nINSERT { ?s br:contact ?o}\nWHERE {\n\t     ?s a gr:BusinessEntity .\n\t      ?s pc:contact ?o\n}");
+					"PREFIX s: <http://schema.org>\n"
+					+ "DELETE { ?address s:geo ?geo}\n"
+					+ "INSERT { ?place s:geo ?geo}\n"
+					+ "WHERE { ?address a s:postalAddress; \n"
+					+ "^s:address ?place; \n"
+					+ "s:geo ?geo .}");
 			textFieldQuery.addValidator(new Validator() {
 				@Override
 				public void validate(Object value) throws InvalidValueException {
 					final String query = textFieldQuery.getValue().trim();
 
+					invalidQueryNumber = (int) textFieldQuery.getData() + 1;
+
 					if (query.isEmpty()) {
 
-						validationErrorMessage = "SPARQL query is empty a must be filled";
+						validationErrorMessage = "SPARQL query is empty it must be filled";
 						throw new EmptyValueException(
 								"SPARQL query must be filled");
 
@@ -319,7 +337,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 
 					if (isConstructValid) {
 						//query is valid
-						map.put(query, true);
+						map.put(query, new QueryObject(invalidQueryNumber,
+								true));
 						return;
 					} else {
 						//if is construct query, but no valid
@@ -332,7 +351,8 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 					}
 
 					if (isUpdateValid) {
-						map.put(query, false);
+						map.put(query, new QueryObject(invalidQueryNumber,
+								false));
 					} else {
 						validationErrorMessage = updateValidator
 								.getErrorMessage();
@@ -390,12 +410,50 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		gridLayoutQuery = new GridLayout();
 		gridLayoutQuery.setImmediate(true);
 		gridLayoutQuery.setWidth("100%");
-		gridLayoutQuery.setHeight("100%");
+		gridLayoutQuery.setHeight("-1px");
 		gridLayoutQuery.setMargin(false);
+		gridLayoutQuery.setSpacing(true);
 		gridLayoutQuery.setColumns(2);
 		gridLayoutQuery.setColumnExpandRatio(0, 0.95f);
 		gridLayoutQuery.setColumnExpandRatio(1, 0.05f);
 
 		refreshSparqlQueryData();
+	}
+}
+
+class QueryObject {
+
+	private int queryNumber;
+
+	private boolean isConstructQuery;
+
+	/**
+	 * Create the new instance of {@link QueryObject}.
+	 *
+	 * @param queryNumber      the number of SPARQL query in dialogue
+	 * @param isConstructQuery if is the construct query or not.
+	 */
+	public QueryObject(int queryNumber, boolean isConstructQuery) {
+		this.queryNumber = queryNumber;
+		this.isConstructQuery = isConstructQuery;
+	}
+
+	/**
+	 * Returns true, if the query is the construct query, false othrrwise.
+	 *
+	 * @return true, if the query is the construct query, false othrrwise.
+	 *
+	 */
+	public boolean isConstructQuery() {
+		return isConstructQuery;
+	}
+
+	/**
+	 * Return the number of SPARQL query in dialogue.
+	 *
+	 * @return The number of SPARQL query in dialogue.
+	 */
+	public int getQueryNumber() {
+		return queryNumber;
 	}
 }

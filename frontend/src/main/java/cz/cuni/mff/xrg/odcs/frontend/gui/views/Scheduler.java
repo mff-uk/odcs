@@ -69,7 +69,7 @@ public class Scheduler extends ViewComponent {
 	 * View name.
 	 */
 	public static final String NAME = "Scheduler";
-	
+
 	/**
 	 * Column widths for schedules table.
 	 */
@@ -77,7 +77,7 @@ public class Scheduler extends ViewComponent {
 	private static final int COLUMN_ACTIONS_WIDTH = 160;
 	private static final int COLUMN_TIME_WIDTH = 115;
 	private static final int COLUMN_DURATION_WIDTH = 77;
-	
+
 	private VerticalLayout mainLayout;
 	/**
 	 * Table contains rules of pipeline scheduling.
@@ -126,14 +126,19 @@ public class Scheduler extends ViewComponent {
 
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-				if (hasModifiedExecutions) {
-					lastLoad = new Date();
-					refreshData();
+				if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+					boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+					if (hasModifiedExecutions) {
+						lastLoad = new Date();
+						refreshData();
+					}
+					LOG.debug("Scheduler refreshed.");
+					lastRefreshFinished = new Date().getTime();
 				}
-				LOG.debug("Scheduler refreshed.");
 			}
 		});
 	}
@@ -154,7 +159,6 @@ public class Scheduler extends ViewComponent {
 
 		// top-level component properties
 		setWidth("100%");
-		setHeight("100%");
 
 		//Layout for buttons Add new scheduling rule and Clear Filters on the top.
 		HorizontalLayout topLine = new HorizontalLayout();
@@ -183,6 +187,8 @@ public class Scheduler extends ViewComponent {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						schedulerTable.resetFilters();
+						schedulerTable.setFilterFieldVisible("commands", false);
+						schedulerTable.setFilterFieldVisible("duration", false);
 					}
 				});
 		topLine.addComponent(buttonDeleteFilters);
@@ -203,6 +209,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setHeight("100%");
 		schedulerTable.setImmediate(true);
 		schedulerTable.setFilterBarVisible(true);
+		schedulerTable.setColumnCollapsingAllowed(true);
 		//Commands column. Contains commands buttons: Enable/Disable, Edit, Delete
 		schedulerTable.addGeneratedColumn("commands",
 				new actionColumnGenerator());
@@ -212,7 +219,7 @@ public class Scheduler extends ViewComponent {
 		schedulerTable.setColumnWidth("next", COLUMN_TIME_WIDTH);
 		schedulerTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
 		schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
-		
+
 		//Debug column. Contains debug icons.
 		schedulerTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
 			@Override

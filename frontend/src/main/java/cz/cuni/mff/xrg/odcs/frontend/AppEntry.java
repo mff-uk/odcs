@@ -1,10 +1,20 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import java.net.ConnectException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
+
+import virtuoso.jdbc4.VirtuosoException;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
-import static com.vaadin.server.DefaultErrorHandler.doDefault;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
@@ -15,9 +25,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.Client;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -27,17 +36,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.dialogs.DefaultConfirmDialogFactory;
-import virtuoso.jdbc4.VirtuosoException;
-
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
+import java.util.Date;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -45,43 +45,47 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
  * ((AppEntry)UI.getCurrent()).
  *
  * @author Petyr
- *
  */
-@Theme("OdcsTheme")
+@Theme("UnifiedViewsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
-	/**
-	 * Spring application context.
-	 */
+
 	@Autowired
 	private ApplicationContext context;
+
 	@Autowired
 	private MenuLayout main;
+	
 	@Autowired
 	private ClassNavigatorHolder navigatorHolder;
-	private Client backendClient;
+	
+	
 	private RefreshManager refreshManager;
+	
 	private String storedNavigation = null;
+	
 	private String lastView = null;
+	
 	private String actualView = null;
-	
+
 	@Autowired
-    private AppConfig appConfiguration;
-	
+	private AppConfig appConfiguration;
+
 	@Autowired
 	private AuthenticationContext authCtx;
-	
+
 	@Autowired
 	private AuthenticationService authService;
+	
+	@Autowired
+	private HeartbeatService heartbeatService;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
-
 		// create main application uber-view and set it as app. content
 		// in panel, for possible vertical scrolling
-		//main = new MenuLayout();
-		main.enter();
+		main.build();
 		setContent(main);
 
 		// create a navigator to control the views
@@ -128,15 +132,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 		};
 		ConfirmDialog.setFactory(df);
 
-		this.addDetachListener(new DetachListener() {
-			@Override
-			public void detach(DetachEvent event) {
-				if (backendClient != null) {
-					backendClient.close();
-				}
-			}
-		});
-
 		ErrorHandler errorHandler = new DefaultErrorHandler() {
 			@Override
 			public void error(com.vaadin.server.ErrorEvent event) {
@@ -148,8 +143,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 					}
 
 					// Display the error message in a custom fashion
-					String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
-					Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
+					//String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
+					//Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
+					Notification.show("Unexpected error occured.", "Please reload the application.", Type.ERROR_MESSAGE);
 					// and log ...
 					LOG.error("Uncaught exception", cause);
 				} else {
@@ -175,7 +171,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				if (!(event.getNewView() instanceof Login)
 						&& !authCtx.isAuthenticated()
 						&& !authService.tryRememberMeLogin(RequestHolder.getRequest())) {
-					
+
 					storedNavigation = event.getViewName();
 					String parameters = event.getParameters();
 					if (parameters != null) {
@@ -192,7 +188,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 				refreshManager.removeListener(RefreshManager.PIPELINE_LIST);
 				refreshManager.removeListener(RefreshManager.SCHEDULER);
 				refreshManager.removeListener(RefreshManager.PIPELINE_EDIT);
-				
+
 				return true;
 			}
 
@@ -256,31 +252,35 @@ public class AppEntry extends com.vaadin.ui.UI {
 			}
 		});
 
-		backendClient = new Client(
-				appConfiguration.getString(ConfigProperty.BACKEND_HOST),
-				appConfiguration.getInteger(ConfigProperty.BACKEND_PORT));
-
 		Refresher refresher = new Refresher();
-		refresher.setRefreshInterval(5000);
+		refresher.setRefreshInterval(RefreshManager.REFRESH_INTERVAL);
 		addExtension(refresher);
 		refreshManager = new RefreshManager(refresher);
-		refreshManager.addListener(RefreshManager.BACKEND_STATUS, new Refresher.RefreshListener() {
-			private boolean lastBackendStatus = false;
-
-			@Override
-			public void refresh(Refresher source) {
-				boolean isRunning = getBackendClient().checkStatus();
-				if (lastBackendStatus != isRunning) {
-					lastBackendStatus = isRunning;
-					main.refreshBackendStatus(lastBackendStatus);
-				}
-				// LOG.debug("Backend status refreshed.");
-			}
-		});
+		refreshManager.addListener(RefreshManager.BACKEND_STATUS,
+				new Refresher.RefreshListener() {
+					private boolean lastBackendStatus = false;
+					private long lastUpdateFinished = 0;
+					@Override
+					public void refresh(Refresher source) {
+						boolean isRunning = false;
+						try {
+							isRunning = heartbeatService.isAlive();
+						} catch (Exception ex) {
+							// backend is offline, it's ok .. isRunning is false
+							// so we can continue
+						}
+						if (lastBackendStatus != isRunning) {
+							lastBackendStatus = isRunning;
+							main.refreshBackendStatus(lastBackendStatus);
+						}
+						lastUpdateFinished = new Date().getTime();
+					}
+				});
 	}
 
 	/**
-	 * Return to page which user tried to accessed before redirecting to login page.
+	 * Return to page which user tried to accessed before redirecting to login
+	 * page.
 	 */
 	public void navigateAfterLogin() {
 		if (storedNavigation == null) {
@@ -313,6 +313,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get current navigation.
+	 *
 	 * @return Navigator.
 	 */
 	public ClassNavigator getNavigation() {
@@ -322,7 +323,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 	/**
 	 * Fetches spring bean. For cases when auto-wiring is not a possibility.
 	 *
-	 * @param <T> 
+	 * @param <T>
 	 * @param type Class of the bean to fetch.
 	 * @return bean
 	 */
@@ -332,22 +333,17 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Get main layout.
-	 * @return 
+	 *
+	 * @return Main layout.
 	 */
 	public MenuLayout getMain() {
 		return main;
 	}
 
 	/**
-	 * Get backend client.
-	 * @return Backend client.
-	 */
-	public Client getBackendClient() {
-		return backendClient;
-	}
-
-	/**
+	 *
 	 * Get refresh manager.
+	 *
 	 * @return Refresh manager.
 	 */
 	public RefreshManager getRefreshManager() {
@@ -356,13 +352,15 @@ public class AppEntry extends com.vaadin.ui.UI {
 
 	/**
 	 * Set URI fragment.
+	 *
 	 * @param uriFragment New URI fragment.
 	 * @param throwEvents True to fire event.
 	 */
 	public void setUriFragment(String uriFragment, boolean throwEvents) {
 		Page.getCurrent().setUriFragment(uriFragment, throwEvents);
-		if(uriFragment.length() > 0) {
+		if (uriFragment.length() > 0) {
 			actualView = uriFragment.substring(1);
 		}
 	}
+
 }

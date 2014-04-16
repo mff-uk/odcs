@@ -23,7 +23,21 @@
 			<version>${odcs.version}</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>		
+		</dependency>
+               <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <version>4.3.3</version>
+                    <type>jar</type>
+                </dependency>
+                
+                
+                <dependency>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                    <version>1.9</version>
+                </dependency>
+                
 	</dependencies>	
         
                         <!-- define license -->

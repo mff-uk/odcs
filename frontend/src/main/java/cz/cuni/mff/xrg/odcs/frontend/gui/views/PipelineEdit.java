@@ -1,5 +1,18 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
+import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
+
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -11,32 +24,55 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
@@ -44,25 +80,12 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.DetailClosedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.FormattingEnabledEvent;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedEvent;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
-import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
-
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -91,6 +114,7 @@ public class PipelineEdit extends ViewComponent {
 	DPUTree dpuTree;
 	TabSheet tabSheet;
 	DragAndDropWrapper dadWrapper;
+	Panel canvasPanel;
 	Button undo;
 	/**
 	 * Constant representing standard mode of pipeline edit.
@@ -160,6 +184,13 @@ public class PipelineEdit extends ViewComponent {
 	public void enter(ViewChangeEvent event) {
 		refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
 		buildMainLayout();
+		UI.getCurrent().getPage().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
+
+			@Override
+			public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
+				setupComponentSize();
+			}
+		});
 		setCompositionRoot(mainLayout);
 		// ..
 		this.loadPipeline(event);
@@ -173,9 +204,12 @@ public class PipelineEdit extends ViewComponent {
 		}
 
 		refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
+
+			private long lastRefreshFinished = 0;
+
 			@Override
 			public void refresh(Refresher source) {
-				if (pipeline != null) {
+				if (pipeline != null && new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
 					pipelineFacade.createOpenEvent(pipeline);
 					List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
 					if (!pipelineFacade.isUpToDate(pipeline)) {
@@ -199,6 +233,7 @@ public class PipelineEdit extends ViewComponent {
 						paralelInfoLayout.setVisible(true);
 						buttonRefresh.setVisible(false);
 					}
+					lastRefreshFinished = new Date().getTime();
 				}
 				LOG.debug("Open pipelines checked.");
 			}
@@ -214,10 +249,10 @@ public class PipelineEdit extends ViewComponent {
 	 * @return {@link VerticalLayout} is the main layout of the view.
 	 */
 	private VerticalLayout buildMainLayout() {
+		isExpanded = true;
 
 		//verticalSplit = new VerticalSplitPanel();
 		//verticalSplit.setSizeFull();
-
 		// common part: create layout
 		mainLayout = new VerticalLayout();
 		mainLayout.setImmediate(true);
@@ -225,8 +260,7 @@ public class PipelineEdit extends ViewComponent {
 		mainLayout.setStyleName("mainLayout");
 
 		// top-level component properties
-		setSizeUndefined();
-
+		//setSizeUndefined();
 		// label
 		label = new Label();
 		label.setImmediate(false);
@@ -285,12 +319,12 @@ public class PipelineEdit extends ViewComponent {
 					return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
 				} else if (c instanceof HorizontalLayout) {
 					if (c.equals(buttonBar)) {
-						return "position: fixed; bottom: 17px; left: 20px; background: #eee; padding: 3px";
+						return "position: fixed; bottom: 0px; left: 20px; background: #eee;";
 					} else if (c.equals(paralelInfoLayout)) {
 						return "position: fixed; left:400px; top: 300px;";
 					}
 				} else if (c instanceof VerticalLayout) {
-					return "position: fixed; right: 20px; top: 300px;";
+					return "position: fixed; right: 40px; top: 300px;";
 				}
 				return null;
 			}
@@ -354,6 +388,17 @@ public class PipelineEdit extends ViewComponent {
 				formattingBar.setEnabled(((FormattingEnabledEvent) event).isEnabled());
 			}
 		});
+		pipelineCanvas.addListener(new Listener() {
+
+			@Override
+			public void componentEvent(Event event) {
+				if (event.getClass() != ResizedEvent.class) {
+					return;
+				}
+				ResizedEvent resizedEvent = (ResizedEvent) event;
+				calculateCanvasDimensions(resizedEvent.getWidth(), resizedEvent.getHeight());
+			}
+		});
 
 		dadWrapper = new DragAndDropWrapper(pipelineCanvas);
 		dadWrapper.setDragStartMode(DragAndDropWrapper.DragStartMode.NONE);
@@ -379,8 +424,7 @@ public class PipelineEdit extends ViewComponent {
 				if (obj.getClass() == DPUTemplateRecord.class) {
 					DPUTemplateRecord dpu = (DPUTemplateRecord) obj;
 					if (dpuFacade.getAllTemplates().contains(dpu)) {
-						pipelineCanvas.addDpu(dpu, mouse.getClientX() - 20 + UI.getCurrent().getScrollLeft(), mouse.getClientY() - 280 + UI
-								.getCurrent().getScrollTop());
+						pipelineCanvas.addDpu(dpu, mouse.getClientX() - 20, mouse.getClientY() - (isExpanded ? 350 : 150));
 					} else {
 						LOG.warn("Invalid drop operation.");
 					}
@@ -394,6 +438,7 @@ public class PipelineEdit extends ViewComponent {
 		standardTab = tabSheet.addTab(new Label("Under construction"), "Standard");
 		standardTab.setEnabled(true);
 
+		//canvasPanel = new Panel(dadWrapper);
 		developTab = tabSheet.addTab(dadWrapper, "Develop");
 		tabSheet.setSelectedTab(developTab);
 		tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -416,9 +461,6 @@ public class PipelineEdit extends ViewComponent {
 				}
 			}
 		});
-
-		tabSheet.setWidth(1080, Unit.PIXELS);
-		tabSheet.setHeight(670, Unit.PIXELS);
 		tabSheet.setImmediate(true);
 
 		layout.addComponent(tabSheet);
@@ -436,8 +478,6 @@ public class PipelineEdit extends ViewComponent {
 		leftPanel.setContent(dpuTree);
 		leftPanel.setSizeUndefined();
 		layout.addComponent(leftPanel);
-
-
 
 		editConflicts = new Label();
 		editConflicts.setImmediate(true);
@@ -468,7 +508,7 @@ public class PipelineEdit extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Position bounds = pipelineCanvas.zoom(true);
-				calculateCanvasDimensions(bounds);
+				calculateCanvasDimensions(bounds.getX(), bounds.getY());
 			}
 		});
 		zoomIn.setIcon(new ThemeResource("icons/zoom_in.png"), "Zoom in");
@@ -478,7 +518,7 @@ public class PipelineEdit extends ViewComponent {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Position bounds = pipelineCanvas.zoom(false);
-				calculateCanvasDimensions(bounds);
+				calculateCanvasDimensions(bounds.getX(), bounds.getY());
 			}
 		});
 		zoomOut.setDescription("Zoom out");
@@ -500,7 +540,6 @@ public class PipelineEdit extends ViewComponent {
 		//undo.setWidth("110px");
 		HorizontalLayout topActions = new HorizontalLayout(zoomIn, zoomOut, undo);
 
-
 		formattingBar = createFormattingBar();
 		formattingBar.setEnabled(false);
 		VerticalLayout actionBar = new VerticalLayout(topActions, formattingBar);
@@ -508,7 +547,6 @@ public class PipelineEdit extends ViewComponent {
 		actionBar.setSizeUndefined();
 
 		layout.addComponent(actionBar);
-
 
 		buttonBar = new HorizontalLayout();
 
@@ -527,7 +565,6 @@ public class PipelineEdit extends ViewComponent {
 		HorizontalLayout leftPartOfButtonBar = new HorizontalLayout();
 		leftPartOfButtonBar.setSpacing(true);
 		leftPartOfButtonBar.setMargin(new MarginInfo(false, true, false, false));
-
 
 		Button buttonValidate = new Button("Validate");
 		buttonValidate.setHeight("25px");
@@ -666,17 +703,13 @@ public class PipelineEdit extends ViewComponent {
 		});
 		saveLayout.addComponent(buttonSaveAndCloseAndDebug);
 
-
 		rightPartOfButtonBar.addComponent(saveLayout);
 
 		buttonCancel = new Button("Close");
 
-		buttonCancel.setHeight(
-				"25px");
-		buttonCancel.setWidth(
-				"100px");
-		buttonCancel.addClickListener(
-				new com.vaadin.ui.Button.ClickListener() {
+		buttonCancel.setHeight("25px");
+		buttonCancel.setWidth("100px");
+		buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				//pipelineName.discard();
@@ -688,15 +721,27 @@ public class PipelineEdit extends ViewComponent {
 		rightPartOfButtonBar.addComponent(buttonCancel);
 		buttonBar.addComponent(rightPartOfButtonBar);
 
-		buttonBar.setSpacing(
-				true);
+		buttonBar.setSpacing(true);
 		layout.addComponent(buttonBar);
 
 		mainLayout.addComponent(layout);
 		Position bounds = pipelineCanvas.zoom(true);
 
-		calculateCanvasDimensions(bounds);
+		calculateCanvasDimensions(bounds.getX(), bounds.getY());
 		return mainLayout;
+	}
+
+	private void setupComponentSize() {
+		int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 60;
+		int browserHeight = UI.getCurrent().getPage().getBrowserWindowHeight();
+		if (pipelineCanvas.getCanvasWidth() < browserWidth) {
+			tabSheet.setWidth(pipelineCanvas.getCanvasWidth() + 40, Unit.PIXELS);
+		} else {
+			tabSheet.setWidth(100, Unit.PERCENTAGE);
+		}
+		int tabSheetHeight = browserHeight - (isExpanded ? 340 : 150);
+		tabSheet.setHeight(Math.min(tabSheetHeight, pipelineCanvas.getCanvasHeight() + 60), Unit.PIXELS);
+		tabSheet.markAsDirty();
 	}
 
 	private void showConflictPipeline() {
@@ -726,7 +771,7 @@ public class PipelineEdit extends ViewComponent {
 	 * Check for permission.
 	 *
 	 * @param type Required permission.
-	 * @return
+	 * @return If the user has given permission
 	 */
 	public boolean hasPermission(String type) {
 		return permissions.hasPermission(pipeline, type);
@@ -737,6 +782,7 @@ public class PipelineEdit extends ViewComponent {
 		btnMinimize.setVisible(expand);
 		btnExpand.setVisible(!expand);
 		pipelineSettingsLayout.setVisible(expand);
+		setupComponentSize();
 	}
 
 	/**
@@ -775,7 +821,7 @@ public class PipelineEdit extends ViewComponent {
 				throw new Validator.InvalidValueException("Name must be filled!");
 			}
 		});
-		pipelineName.addValidator(new MaxLengthValidator(MaxLengthValidator.NAME_LENGTH));
+		pipelineName.addValidator(new MaxLengthValidator(LenghtLimits.PIPELINE_NAME));
 		pipelineName.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent event) {
@@ -872,7 +918,6 @@ public class PipelineEdit extends ViewComponent {
 //		// add column
 //		permissionsTable.addGeneratedColumn("Actions", new actionColumnGenerator() );
 //		pipelineSettingsLayout.addComponent(permissionsTable, 1, 2);
-
 		pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
 		pipelineSettingsLayout.setMargin(true);
 		pipelineSettingsLayout.setSpacing(true);
@@ -893,6 +938,10 @@ public class PipelineEdit extends ViewComponent {
 
 	private void setupButtons() {
 		setupButtons(isModified());
+	}
+
+	private void setupButtons(boolean isModified) {
+		setupButtons(isModified, this.pipeline.getId() == null);
 	}
 
 	private void savePipelineAsNew() {
@@ -935,11 +984,12 @@ public class PipelineEdit extends ViewComponent {
 		return true;
 	}
 
-	private void setupButtons(boolean enabled) {
+	private void setupButtons(boolean enabled, boolean isNew) {
 		buttonSave.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndClose.setEnabled(enabled && hasPermission("save"));
 		buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("save"));
-		buttonCopy.setEnabled(hasPermission("copy"));
+		buttonCopy.setEnabled(!isNew && hasPermission("copy"));
+		buttonCopyAndClose.setEnabled(!isNew && hasPermission("copy"));
 	}
 
 	/**
@@ -996,7 +1046,6 @@ public class PipelineEdit extends ViewComponent {
 		buttonLine.addComponentAsFirst(topLineFiller);
 		buttonLine.setExpandRatio(topLineFiller, 1.0f);
 
-
 		VerticalLayout layout = new VerticalLayout(debug, buttonLine);
 		debugWindow.setContent(layout);
 
@@ -1036,9 +1085,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 		pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
 		pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
-		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(this.pipeline.getShareType());
 		setupButtons(false);
 		return pipeline;
 	}
@@ -1082,8 +1129,8 @@ public class PipelineEdit extends ViewComponent {
 	/**
 	 * Saves current pipeline.
 	 *
-	 * @param successAction 
-	 * @return
+	 * @param successAction
+	 * @return If current pipeline was saved
 	 */
 	protected boolean savePipeline(final String successAction) {
 		if (!validate()) {
@@ -1120,9 +1167,7 @@ public class PipelineEdit extends ViewComponent {
 	}
 
 	private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-		if (visibility != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(visibility);
 
 		undo.setEnabled(false);
 		this.pipeline.setName(pipelineName.getValue());
@@ -1171,43 +1216,21 @@ public class PipelineEdit extends ViewComponent {
 	 *
 	 * @param zoomBounds {@link Position} with bounds of pipeline graph.
 	 */
-	private void calculateCanvasDimensions(Position zoomBounds) {
-		int browserWidth = 1050 + (UI.getCurrent().getPage().getBrowserWindowWidth() - 1350);
-		int browserHeight = 630;
-		if (zoomBounds.getX() > browserWidth) {
-			browserWidth = zoomBounds.getX();
-			//enable horizontal scrollbar
-		}
-		if (zoomBounds.getY() > browserHeight) {
-			browserHeight = zoomBounds.getY();
-			//enable vertical scrollbar
-		}
-		pipelineCanvas.setWidth(browserWidth, Unit.PIXELS);
-		pipelineCanvas.setHeight(browserHeight, Unit.PIXELS);
-		dadWrapper.setSizeUndefined();
-		tabSheet.setWidth(browserWidth + 40, Unit.PIXELS);
-		tabSheet.setHeight(browserHeight + 60, Unit.PIXELS);
-		mainLayout.setSizeUndefined();
-		mainLayout.markAsDirty();
-
-		//pipelineCanvas.resizeCanvas(browserHeight, browserWidth);
-		//tabSheet.setWidth(browserWidth + 20, Unit.PIXELS);
-		//tabSheet.setHeight(browserHeight + 40, Unit.PIXELS);
-	}
-
-	/**
-	 * Resizes canvas according to changed width of browser window.
-	 *
-	 * @param width New width of browser window.
-	 *
-	 */
-	private void resizeCanvas(int width) {
-//		if (width > 1350) {
-//			int newWidth = 1050 + (width - 1350);
-//			pipelineCanvas.setWidth(newWidth, Unit.PIXELS);
-//			pipelineCanvas.resizeCanvas(630, newWidth);
-//			tabSheet.setWidth(1070 + (width - 1350), Unit.PIXELS);
+	private void calculateCanvasDimensions(int width, int height) {
+//		int minWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 100;
+//		int minHeight = (int)tabSheet.getHeight() - 60;
+//		if (width < minWidth) {
+//			width = minWidth;
+//			//enable horizontal scrollbar
 //		}
+//		if (height < minHeight) {
+//			height = minHeight;
+//			//enable vertical scrollbar
+//		}
+		pipelineCanvas.setWidth(width, Unit.PIXELS);
+		pipelineCanvas.setHeight(height, Unit.PIXELS);
+		dadWrapper.setSizeUndefined();
+		setupComponentSize();
 	}
 
 	/**
@@ -1263,9 +1286,7 @@ public class PipelineEdit extends ViewComponent {
 		pipelineName.setValue(this.pipeline.getName());
 		pipelineDescription.setValue(this.pipeline.getDescription());
 		pipelineVisibility.setValue(this.pipeline.getShareType());
-		if (this.pipeline.getShareType() != ShareType.PRIVATE) {
-			pipelineVisibility.setItemEnabled(ShareType.PRIVATE, false);
-		}
+		setupVisibilityOptions(this.pipeline.getShareType());
 		setupButtons(false);
 	}
 
@@ -1326,10 +1347,16 @@ public class PipelineEdit extends ViewComponent {
 
 	private void setIdLabel(Long id) {
 		boolean hasId = id != null;
-		if(id != null) {
+		if (id != null) {
 			idValue.setValue(id.toString());
 		}
 		idValue.setVisible(hasId);
 		idLabel.setVisible(hasId);
+	}
+
+	private void setupVisibilityOptions(ShareType visibility) {
+		pipelineVisibility.setItemEnabled(ShareType.PRIVATE, visibility == ShareType.PRIVATE);
+		boolean publicRoAvalilable = visibility != ShareType.PUBLIC_RW || authCtx.getUser().equals(this.pipeline.getOwner()) || authCtx.getUser().getRoles().contains(Role.ROLE_ADMIN);
+		pipelineVisibility.setItemEnabled(ShareType.PUBLIC_RO, publicRoAvalilable);
 	}
 }

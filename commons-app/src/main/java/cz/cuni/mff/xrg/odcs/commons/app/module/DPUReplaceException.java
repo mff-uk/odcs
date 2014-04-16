@@ -8,8 +8,12 @@ package cz.cuni.mff.xrg.odcs.commons.app.module;
  */
 public class DPUReplaceException extends Exception {
 
-	public DPUReplaceException(String message) {
-		super(message);
+	/**
+	 * 
+	 * @param cause Cause of the {@link DPUCreateException}.
+	 */			
+	public DPUReplaceException(String cause) {
+		super(cause);
 	}
 	
 }

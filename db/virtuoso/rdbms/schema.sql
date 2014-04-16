@@ -37,7 +37,6 @@ CREATE TABLE "DB"."ODCS"."DPU_INSTANCE"
   "name" VARCHAR(1024),
   "use_dpu_description" SMALLINT,
   "description" LONG VARCHAR,
-  "tool_tip" VARCHAR (512),
   "configuration" LONG NVARCHAR,
   "config_valid" SMALLINT,
 -- DPUInstaceRecord
@@ -87,7 +86,6 @@ sequence_set('seq_exec_context_pipeline', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_CONTEXT_PIPELINE"
 (
   "id" INTEGER IDENTITY,
-  "directory" VARCHAR(255),
   "dummy" SMALLINT, -- remove if table contains a column without default value
   PRIMARY KEY ("id")
 );
@@ -152,7 +150,6 @@ sequence_set('seq_exec_schedule', 100, 1);
 CREATE TABLE "DB"."ODCS"."EXEC_SCHEDULE"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(1024),
   "description" LONG VARCHAR,
   "pipeline_id" INTEGER NOT NULL,
   "user_id" INTEGER, -- TODO set NOT NULL when users are implemented in frontend
@@ -272,11 +269,10 @@ sequence_set('seq_sch_email', 100, 1);
 CREATE TABLE "DB"."ODCS"."SCH_EMAIL"
 (
   "id" INTEGER IDENTITY,
-  "e_user" VARCHAR(85),
-  "e_domain" VARCHAR(45),
+  "email" VARCHAR(255),
   PRIMARY KEY ("id")
 );
-CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("e_user", "e_domain");
+CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("email");
 
 CREATE TABLE "DB"."ODCS"."SCH_SCH_NOTIFICATION_EMAIL"
 (
@@ -299,7 +295,7 @@ CREATE TABLE "DB"."ODCS"."USR_USER"
   "id" INTEGER IDENTITY,
   "username" VARCHAR(25) NOT NULL,
   "email_id" INTEGER,
-  "u_password" CHAR(132) NOT NULL,
+  "u_password" CHAR(142) NOT NULL,
   "full_name" VARCHAR(55),
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),
@@ -318,8 +314,8 @@ sequence_set('seq_rdf_ns_prefix', 100, 1);
 CREATE TABLE "DB"."ODCS"."RDF_NS_PREFIX"
 (
   "id" INTEGER IDENTITY,
-  "name" VARCHAR(25) NOT NULL,
-  "uri" VARCHAR(255) NOT NULL,
+  "name" VARCHAR(255) NOT NULL,
+  "uri" VARCHAR(2048) NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );
@@ -584,7 +580,7 @@ CREATE TRIGGER delete_node_fix BEFORE DELETE ON "DB"."ODCS"."PPL_NODE" REFERENCI
 	  OR node_to_id = n.id;
 };
 
-CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" REFERENCING new AS n
+CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" REFERENCING old AS o, new AS n
 {
   SET triggers OFF;
   UPDATE "DB"."ODCS"."EXEC_PIPELINE"
@@ -606,18 +602,30 @@ CREATE TRIGGER update_last_change AFTER UPDATE ON "DB"."ODCS"."EXEC_PIPELINE" RE
 DROP TABLE "DB"."ODCS"."LOGGING";
 CREATE TABLE "DB"."ODCS"."LOGGING"
 (
-  "id" BIGINT NOT NULL IDENTITY,
+-- BEGIN VIRTUOSO ONLY
+  "id" INTEGER NOT NULL IDENTITY,
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+--  "id" INTEGER unsigned NOT NULL IDENTITY,
+-- END MYSQL ONLY
   "logLevel" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" VARCHAR(254) NOT NULL,
   "message" LONG VARCHAR,
   "dpu" INTEGER,
-  "execution" INTEGER,
+  "execution" INTEGER NOT NULL,
   "stack_trace" LONG VARCHAR,
+  "relative_id" INTEGER,
   PRIMARY KEY (id)
+-- BEGIN VIRTUOSO ONLY
 );
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+-- ) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX "ix_LOGGING_dpu" ON "DB"."ODCS"."LOGGING" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "DB"."ODCS"."LOGGING" ("execution");
+CREATE INDEX "ix_LOGGIN_relative_id" ON "DB"."ODCS"."LOGGING" ("relative_id");
 
 -- File must end with empty line, so last query is followed by enter.

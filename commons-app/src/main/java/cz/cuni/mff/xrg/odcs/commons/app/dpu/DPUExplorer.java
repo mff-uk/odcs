@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
@@ -40,7 +42,7 @@ public class DPUExplorer {
     /**
      * Try to find out given DPU instance type.
      *
-     * @param DPUInstance
+     * @param DPUInstance Dpu instance to get type of.
      * @param relativePath Relative path to the DPU.
      * @return Null if nothing about type can be found.
      */
@@ -64,7 +66,7 @@ public class DPUExplorer {
      * directory. This method does not load DPU into system. The description is
      * length is limited based on {@link LenghtLimits}.
      *
-     * @param dpu {@link DPUTemplateRecord} to explore
+     * @param dpu {@link DPUTemplateRecord} to explore.
      * @return Description stored in manifest file or null in case of error.
      */
     public String getJarDescription(DPUTemplateRecord dpu) {
@@ -77,18 +79,15 @@ public class DPUExplorer {
         }
         String jarDescription = attributes.get(DPU_JAR_DESCRIPTION_NAME);
         // check for length
-        if (jarDescription.length() > LenghtLimits.DPU_JAR_DESCRIPTION.limit()) {
-            jarDescription = jarDescription.substring(0,
-                    LenghtLimits.DPU_JAR_DESCRIPTION.limit());
-        }
-        return jarDescription;
+        
+        return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_JAR_DESCRIPTION);
     }
 
     /**
      * Return list of input {@link DataUnitInfo}'s descriptions for given DPU.
 	 * Need to load instance of given DPU.
      *
-     * @param dpu
+     * @param dpu DPU to get inputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getInputs(DPURecord dpu) {
@@ -116,7 +115,7 @@ public class DPUExplorer {
      * Return list of output {@link DataUnitInfo}'s descriptions for given DPU.
 	 * Need to load instance of given DPU.
      *
-     * @param dpu
+     * @param dpu DPU to get outputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getOutputs(DPURecord dpu) {
@@ -130,7 +129,10 @@ public class DPUExplorer {
         for (AnnotationContainer<OutputDataUnit> item : outputs) {
             final OutputDataUnit annotation = item.getAnnotation();
             // create description			
-            result.add(DataUnitDescription.createOutput(annotation.name(), item.getField().getGenericType().toString(), annotation.description()));
+            result.add(DataUnitDescription.createOutput(annotation.name(), 
+					item.getField().getGenericType().toString(), 
+					annotation.description(),
+					annotation.optional()));
         }
         return result;
     }
@@ -138,7 +140,7 @@ public class DPUExplorer {
     /**
      * Load and return instance of given DPU. Does use {@link #moduleFacade}.
      *
-     * @param dpu
+     * @param dpu DPU to get class of.
      * @return Does not return null.
      */
     private Object getInstance(DPURecord dpu) {

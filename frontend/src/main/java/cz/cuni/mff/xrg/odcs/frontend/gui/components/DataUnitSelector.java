@@ -30,8 +30,8 @@ import java.util.Set;
 public class DataUnitSelector extends CustomComponent {
 
 	private PipelineExecution pipelineExec;
-	GridLayout mainLayout;
-	ComboBox dpuSelector;
+	private GridLayout mainLayout;
+	private ComboBox dpuSelector;
 	private DPUInstanceRecord debugDpu;
 	private ExecutionInfo executionInfo;
 	private CheckBox inputDataUnits;
@@ -39,7 +39,7 @@ public class DataUnitSelector extends CustomComponent {
 	private ComboBox dataUnitSelector;
 	private Button browse;
 	private Label dataUnitGraph;
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -283,7 +283,7 @@ public class DataUnitSelector extends CustomComponent {
 	/**
 	 * Get selected DPU.
 	 *
-	 * @return
+	 * @return selected DPU
 	 */
 	public DPUInstanceRecord getSelectedDPU() {
 		return debugDpu;
@@ -292,7 +292,7 @@ public class DataUnitSelector extends CustomComponent {
 	/**
 	 * Get selected data unit.
 	 *
-	 * @return
+	 * @return selected data unit
 	 */
 	public DataUnitInfo getSelectedDataUnit() {
 		return (DataUnitInfo) dataUnitSelector.getValue();
@@ -301,7 +301,7 @@ public class DataUnitSelector extends CustomComponent {
 	/**
 	 * Get execution info.
 	 *
-	 * @return
+	 * @return execution info
 	 */
 	public ExecutionInfo getInfo() {
 		return executionInfo;
@@ -368,7 +368,7 @@ public class DataUnitSelector extends CustomComponent {
 		/**
 		 * Get data unit info.
 		 *
-		 * @return
+		 * @return data unit info
 		 */
 		public DataUnitInfo getInfo() {
 			return info;
@@ -377,7 +377,7 @@ public class DataUnitSelector extends CustomComponent {
 		/**
 		 * Get DPU.
 		 *
-		 * @return
+		 * @return DPU
 		 */
 		public DPUInstanceRecord getDpu() {
 			return dpu;

@@ -40,8 +40,7 @@ CREATE TABLE `dpu_instance`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `tool_tip` VARCHAR (512),
-  `configuration` TEXT,
+  `configuration` BLOB,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
@@ -56,7 +55,7 @@ CREATE TABLE `dpu_template`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,  
-  `configuration` TEXT,
+  `configuration` BLOB,
   `parent_id` INTEGER,
   `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
@@ -88,7 +87,6 @@ CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `exec_dataunit_info`
 CREATE TABLE `exec_context_pipeline`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `directory` VARCHAR(255),
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
@@ -149,7 +147,6 @@ CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `exec_pipeline` (`owner_id`);
 CREATE TABLE `exec_schedule`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -262,11 +259,10 @@ CREATE INDEX `ix_SCH_USR_NOTIFICATION_user_id` ON `sch_usr_notification` (`user_
 CREATE TABLE `sch_email`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `e_user` VARCHAR(85),
-  `e_domain` VARCHAR(45),
+  `email` VARCHAR(255),
   PRIMARY KEY (`id`)
 );
-CREATE INDEX `ix_SCH_EMAIL_email` ON `sch_email` (`e_user`, `e_domain`);
+CREATE INDEX `ix_SCH_EMAIL_email` ON `sch_email` (`email`);
 
 CREATE TABLE `sch_sch_notification_email`
 (
@@ -288,7 +284,7 @@ CREATE TABLE `usr_user`
   `id` INTEGER AUTO_INCREMENT,
   `username` VARCHAR(25) NOT NULL,
   `email_id` INTEGER,
-  `u_password` CHAR(132) NOT NULL,
+  `u_password` CHAR(142) NOT NULL,
   `full_name` VARCHAR(55),
   `table_rows` INTEGER,
   PRIMARY KEY (`id`),
@@ -306,8 +302,8 @@ CREATE TABLE `usr_user_role`
 CREATE TABLE `rdf_ns_prefix`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(25) NOT NULL,
-  `uri` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `uri` VARCHAR(2048) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
 );
@@ -559,18 +555,24 @@ CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
 DROP TABLE IF EXISTS `logging`;
 CREATE TABLE `logging`
 (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+-- BEGIN MYSQL ONLY
+ `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
+-- END MYSQL ONLY
   `logLevel` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
   `message` TEXT,
   `dpu` INTEGER,
-  `execution` INTEGER,
+  `execution` INTEGER NOT NULL,
   `stack_trace` TEXT,
+  `relative_id` INTEGER,
   PRIMARY KEY (id)
-);
+-- BEGIN MYSQL ONLY
+) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX `ix_LOGGING_dpu` ON `logging` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `logging` (`execution`);
+CREATE INDEX `ix_LOGGIN_relative_id` ON `logging` (`relative_id`);
 
 -- File must end with empty line, so last query is followed by enter.

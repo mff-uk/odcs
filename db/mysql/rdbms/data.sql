@@ -9,7 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- get_all_tables: tablepattern="db.odcs.%",9
 -- Definitions of 27 tables were read in.
 -- SELECT * FROM `dpu_instance`
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql','',
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,configuration,config_valid,dpu_id) VALUES(1,'SPARQL Extractor',1,'Extract from SPARQL: http://dbpedia.org/sparql',
 '<object-stream>
   <cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
     <SPARQL__endpoint>http://dbpedia.org/sparql</SPARQL__endpoint>
@@ -23,7 +23,7 @@ INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,conf
     <UseStatisticalHandler>false</UseStatisticalHandler>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
 </object-stream>',1,1);
-INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,tool_tip,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf','',
+INSERT INTO `dpu_instance`(id,name,use_dpu_description,description,configuration,config_valid,dpu_id) VALUES(2,'RDF File Loader',1,'Load to: /tmp/dbpedia.rdf',
 '<object-stream>
   <cz.cuni.mff.xrg.odcs.loader.file.FileLoaderConfig>
     <FilePath>/tmp/dbpedia.rdf</FilePath>
@@ -54,6 +54,8 @@ INSERT INTO `dpu_template`(id,name,use_dpu_description,description,configuration
       <namedGraphURI class="linked-list"/>
       <requestType>POST_URL_ENCODER</requestType>
     </endpointParams>
+    <useSplitConstruct>false</useSplitConstruct>
+    <splitConstructSize>50000</splitConstructSize>
   </cz.cuni.mff.xrg.odcs.extractor.rdf.RDFExtractorConfig>
 </object-stream>',NULL,1,1,1,0,'SPARQL_Extractor','SPARQL_Extractor-1.0.0.jar','Extracts RDF data from SPARQL.');
 
@@ -169,8 +171,8 @@ INSERT INTO `ppl_position`(id,pos_x,pos_y) VALUES(2,487,132);
 -- SELECT * FROM `rdf_ns_prefix`
 -- Table `rdf_ns_prefix` 0 rows output.
 -- SELECT * FROM `sch_email`
-INSERT INTO `sch_email`(id,e_user,e_domain) VALUES(1,'admin','example.com');
-INSERT INTO `sch_email`(id,e_user,e_domain) VALUES(2,'user','example.com');
+INSERT INTO `sch_email`(id,email) VALUES(1,'admin@example.com');
+INSERT INTO `sch_email`(id,email) VALUES(2,'user@example.com');
 -- Table `sch_email` 2 rows output.
 -- SELECT * FROM `sch_sch_notification`
 -- Table `sch_sch_notification` 0 rows output.
@@ -185,8 +187,8 @@ INSERT INTO `sch_usr_notification_email`(notification_id,email_id) VALUES(1,1);
 INSERT INTO `sch_usr_notification_email`(notification_id,email_id) VALUES(2,2);
 -- Table `sch_usr_notification_email` 2 rows output.
 -- SELECT * FROM `usr_user`
-INSERT INTO `usr_user`(id,username,email_id,u_password,full_name,table_rows) VALUES(1,'admin',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Admin',20);
-INSERT INTO `usr_user`(id,username,email_id,u_password,full_name,table_rows) VALUES(2,'user',2,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John User',20);
+INSERT INTO `usr_user`(id,username,email_id,u_password,full_name,table_rows) VALUES(1,'admin',1,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John Admin',20);
+INSERT INTO `usr_user`(id,username,email_id,u_password,full_name,table_rows) VALUES(2,'user',2,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John User',20);
 -- Table `usr_user` 2 rows output.
 -- SELECT * FROM `usr_user_role`
 INSERT INTO `usr_user_role`(user_id,role_id) VALUES(1,0);

@@ -44,24 +44,26 @@ public class DataUnitDescription {
 	 * Create description for output
 	 * {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
 	 *
-	 * @param name
-	 * @param typeName
-	 * @param description
+	 * @param name Name of data unit.
+	 * @param typeName Type of data unit.
+	 * @param description Description of data unit.
+	 * @param optional True if the output data unit is optional.
 	 * @return description
 	 */
 	public static DataUnitDescription createOutput(String name,
 			String typeName,
-			String description) {
-		return new DataUnitDescription(name, typeName, description, false);
+			String description,
+			boolean optional) {
+		return new DataUnitDescription(name, typeName, description, optional);
 	}
 
 	/**
 	 * Create description for input {@link cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo}.
 	 *
-	 * @param name
-	 * @param typeName
-	 * @param description
-	 * @param optional
+	 * @param name Name of data unit.
+	 * @param typeName Type of data unit.
+	 * @param description Description of data unit.
+	 * @param optional True if the input data unit is optional.
 	 * @return description
 	 */
 	public static DataUnitDescription createInput(String name,
@@ -71,14 +73,26 @@ public class DataUnitDescription {
 		return new DataUnitDescription(name, typeName, description, optional);
 	}
 
+	/**
+	 * 
+	 * @return Name of data unit.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return String representation of data unit type.
+	 */
 	public String getTypeName() {
 		return typeName;
 	}
 
+	/**
+	 * 
+	 * @return Description of data unit provided by dpu.
+	 */
 	public String getDescription() {
 		return description;
 	}

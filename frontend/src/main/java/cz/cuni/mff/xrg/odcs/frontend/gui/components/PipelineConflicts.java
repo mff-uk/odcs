@@ -26,7 +26,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 
 /**
- * Dialog for pipeline conflict creation. Called from the {@link #PipelineEdit}.
+ * Dialog for pipeline conflict creation.
  *
  * @author Maria Kukhar
  * @author Petyr
@@ -106,7 +106,7 @@ public class PipelineConflicts extends Window {
 	/**
 	 * Is component initialized.
 	 *
-	 * @return
+	 * @return If component is initialized
 	 */
 	public boolean isInitialized() {
 		return isInitialized;
@@ -215,7 +215,7 @@ public class PipelineConflicts extends Window {
 	/**
 	 * Get result.
 	 *
-	 * @return
+	 * @return result
 	 */
 	public boolean getResult() {
 		return result;

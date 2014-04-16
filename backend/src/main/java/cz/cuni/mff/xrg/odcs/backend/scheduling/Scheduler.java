@@ -81,8 +81,8 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 			if (nextExecution == null) {
 				// do not run .. is disabled, missed it's time  
 			} else if (nextExecution.before(now)) {
-				LOG.debug("Executing id:{} name: {} time of execution is {}", 
-					schedule.getId(), schedule.getName(), 
+				LOG.debug("Executing id:{} time of execution is {}", 
+					schedule.getId(), 
 					nextExecution);
 				scheduleFacade.execute(schedule);
 			}

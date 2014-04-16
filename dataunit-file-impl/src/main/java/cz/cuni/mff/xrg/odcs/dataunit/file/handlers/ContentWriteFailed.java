@@ -9,6 +9,10 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
  */
 public class ContentWriteFailed extends FileDataUnitException {
 	
+	/**
+	 * 
+	 * @param cause Cause of the {@link ContentWriteFailed}.
+	 */
 	public ContentWriteFailed(Throwable cause) {
 		super(cause);
 	}

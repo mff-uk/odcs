@@ -5,10 +5,11 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * Represent a directory from {@link FileDataUnit}. The sample how to 
- * iterate over directory content is in documentation for {@link FileDataUnit}.
+ * Represent a directory from {@link FileDataUnit}. The sample how to iterate
+ * over directory content is in documentation for {@link FileDataUnit}.
  *
  * @author Petyr
  */
@@ -19,8 +20,11 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * with given name already exists then the handler to the existing file is
 	 * returned.
 	 *
+	 * If the given name contains characters that can not be used as a file name
+	 * then the name can be changed.
+	 *
 	 * @param name File name please respect the limitation of file system for
-	 * file naming.
+	 *             file naming.
 	 * @return Null if given name is used by already existing directory.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
@@ -38,8 +42,8 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * In case of the name of file is already used the same policy as in case of
 	 * {@link #addNewFile(java.lang.String)} is used.
 	 *
-	 * @param file Path to existing file.
-	 * @param options
+	 * @param file    Path to existing file.
+	 * @param options Options used do add file.
 	 * @return Null if given name is used by already existing directory.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
@@ -51,8 +55,11 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * directory with given name already exists then the handler to the existing
 	 * directory is returned.
 	 *
+	 * If the given name contains characters that can not be used as a directory
+	 * name then the name can be changed.
+	 *
 	 * @param name Directory name please respect the limitation of file system
-	 * for directory naming.
+	 *             for directory naming.
 	 * @return Null if given name is used by already existing file.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
@@ -64,7 +71,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * method.
 	 *
 	 * @param directory Path to existing directory.
-	 * @param options
+	 * @param options   Options used do add file.
 	 * @return Null if given name is used by already existing file.
 	 * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
 	 */
@@ -76,7 +83,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * {@link #add(cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler, cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd)}
 	 * with the default {@link OptionsAdd} parameter.
 	 *
-	 * @param e
+	 * @param e Handler to add.
 	 * @return True if the handler has been added.
 	 */
 	@Override
@@ -89,8 +96,8 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * {@link #addExistingFile(java.io.File, cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd) }.
 	 * Also copy the user data.
 	 *
-	 * @param e
-	 * @param options
+	 * @param e       Handler to add.
+	 * @param options Options used do add handler.
 	 * @return True if the handler has been added.
 	 */
 	boolean add(Handler e, OptionsAdd options);
@@ -100,7 +107,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * {@link #addAll(java.util.Collection, cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd)}
 	 * with the default {@link OptionsAdd} parameter.
 	 *
-	 * @param c
+	 * @param c Collection of handlers to add.
 	 * @return True at least one element has been added.
 	 */
 	@Override
@@ -111,8 +118,8 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * {@link #add(cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler, cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd)}
 	 * on every element of given collection.
 	 *
-	 * @param c
-	 * @param options
+	 * @param c       Collection of handlers to add.
+	 * @param options Options used do add file.
 	 * @return True at least one element has been added.
 	 */
 	boolean addAll(Collection<? extends Handler> c, OptionsAdd options);
@@ -121,7 +128,7 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	 * If given object is {@link FileHandler} or {@link DirectoryHandler} and is
 	 * in directory then remove. Also if it's not link then delete it's content.
 	 *
-	 * @param o
+	 * @param o Handler to remove.
 	 * @return True if an object has been removed as a result of this call.
 	 */
 	@Override
@@ -130,18 +137,34 @@ public interface DirectoryHandler extends Collection<Handler>, Handler {
 	/**
 	 * This method is not supported. If call just return false.
 	 *
-	 * @param c
+	 * @param c Handler to retain.
 	 * @return False.
 	 */
 	@Override
 	boolean retainAll(Collection<?> c);
 
 	/**
-	 * Return handler to object wit given name.
+	 * Return handler to object with the given name.
 	 *
-	 * @param name
+	 * @param queryName Name of required handler.
 	 * @return Null is no handler for this name is in this directory.
 	 */
-	Handler getByName(String name);
+	Handler getByName(String queryName);
+
+	/**
+	 * Return handler to object with given rooted name.
+	 *
+	 * @param queryName Rooted name of required handler, should start with '/'.
+	 * @return Null if the object for given rooted path does not exists.
+	 */
+	Handler getByRootedName(String queryName);
+
+	/**
+	 * Return iterator that iterate over the tree structure of this
+	 * {@link DirectoryHandler}.
+	 *
+	 * @return Read only iterator.
+	 */
+	Iterator<Handler> getFlatIterator();
 
 }

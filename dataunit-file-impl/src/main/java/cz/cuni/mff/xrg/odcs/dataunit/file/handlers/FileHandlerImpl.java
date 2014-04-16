@@ -4,8 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

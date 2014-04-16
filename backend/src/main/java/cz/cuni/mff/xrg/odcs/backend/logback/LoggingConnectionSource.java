@@ -18,10 +18,22 @@ public class LoggingConnectionSource extends DriverManagerConnectionSource {
 	/**
 	 * Database connection pool.
 	 */
-	private DataSource dataSource;
+	private final DataSource dataSource;
 	
 	public LoggingConnectionSource(DataSource source) {
 		dataSource = source;
+	}
+
+	/**
+	 * Initializes connection connection source. Driver class name needs to be
+	 * set here to be able to detect connection properties.
+	 */
+	@Override
+	public void start() {
+		if (dataSource instanceof BasicDataSource) {
+			setDriverClass(((BasicDataSource)dataSource).getDriverClassName());
+		}
+		super.start();
 	}
 
 	/**

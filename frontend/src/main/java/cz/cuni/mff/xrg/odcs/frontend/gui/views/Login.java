@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.TransactionException;
 
 /**
  * LOGIN screen of application.
@@ -79,7 +80,7 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>ODCleanStore</h1>");
+        logo.setValue("<h1>Login</h1>");
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
 		
@@ -88,7 +89,7 @@ public class Login extends ViewComponent {
 		error.setVisible(false);
 		layout.addComponent(error);
 
-        login = new TextField("Login:");
+        login = new TextField("User:");
 		login.focus();
         layout.addComponent(login);
 
@@ -131,7 +132,13 @@ public class Login extends ViewComponent {
 			error.setValue(String.format("Invalid credentials for username %s.", login.getValue()));
 			error.setVisible(true);
 			error.setSizeUndefined();
-		} 
+		} catch (TransactionException ex) {
+			password.setValue("");
+			LOG.error("SQL error.", ex);
+			error.setValue("Database error, check connection and configuration.");
+			error.setVisible(true);
+			error.setSizeUndefined();
+		}
     }
 
 	@Override

@@ -26,23 +26,26 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
+
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Dialog for the DPU template creation. Called from the {@link #DPU}. Allows to
- * upload a JAR file and on base of it create a new DPU template that will be
- * stored to the DPU template tree.
+ * Dialog for the DPU template creation. Allows to upload a JAR file and on base
+ * of it create a new DPU template that will be stored to the DPU template tree.
  *
  * @author Maria Kukhar
  *
@@ -107,7 +110,6 @@ public class DPUCreate extends Window {
 		this.setModal(true);
 		this.setCaption("DPU Template Creation");
 
-
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
 		mainLayout.setMargin(true);
@@ -140,6 +142,7 @@ public class DPUCreate extends Window {
 
 			}
 		});
+		dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
 		dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
 		//Description of DPU Template: label & TextArea
@@ -363,9 +366,7 @@ public class DPUCreate extends Window {
 
 		uploadFileLayout.addComponent(uploadFile);
 
-
 		return uploadFileLayout;
-
 
 	}
 

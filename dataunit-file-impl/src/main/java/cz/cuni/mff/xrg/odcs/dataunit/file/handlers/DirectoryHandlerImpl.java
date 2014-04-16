@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +21,118 @@ import org.slf4j.LoggerFactory;
  */
 public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DirectoryHandlerImpl.class);
+	/**
+	 * Read only iterator for iterating over the tree structure of directory.
+	 */
+	private class FlatIterator implements Iterator<Handler> {
+		
+		/**
+		 * Current directory level.
+		 */
+		private DirectoryHandlerImpl directory;
 
+		/**
+		 * Index of next item on certain level that should be returned next
+		 * call.
+		 */
+		private final Stack<Integer> indexes;
+		
+		/**
+		 * Value that should be returned in next call of {@link #next()}.
+		 */
+		private ManageableHandler nextHandler;
+		
+		public FlatIterator(DirectoryHandlerImpl directory) {
+			this.directory = directory;
+			// add first index
+			indexes = new Stack<>();
+			indexes.push(0);
+			// and fetch the first handler
+			fetchNext();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return nextHandler != null;
+		}
+
+		@Override
+		public Handler next() {
+			// store the value to return
+			Handler toReturn = nextHandler;
+			// get next
+			fetchNext();
+			// return the value
+			return toReturn;
+		}
+
+		@Override
+		public void remove() {
+			// not supported
+		}
+	
+		/**
+		 * Get next handler and store it into the {@link #nextHandler}.
+		 * 
+		 * We sink into the directory after we leave it, ie. first we return
+		 * the directory and then it's content.
+		 */
+		private void fetchNext() {
+
+			if (indexes.isEmpty()) {
+				// no data here
+				nextHandler = null;
+				return;
+			}
+			
+			// first check if the nextHandler is directory, if it's 
+			// then go into the directory
+			if (nextHandler != null && nextHandler instanceof DirectoryHandlerImpl) {
+				// set new directory
+				final DirectoryHandlerImpl newDirectory = 
+						(DirectoryHandlerImpl)nextHandler;
+				boolean isEmpty = newDirectory.handlers.isEmpty();
+				// check for size
+				if (!newDirectory.handlers.isEmpty()) {
+					// not empty, we may go down into the directory
+					// we basicaly to this instead of go for
+					// the next item, so we do not increate the indexes					
+					directory = newDirectory;
+					// update last index, so when we return, we will be on 
+					// next item
+					nextHandler = directory.handlers.get(0);
+					// add index
+					indexes.push(1);					
+					return;
+				} else {
+					// directory is empty we consider it to be file and continue
+				}			
+			}
+			
+			if (indexes.peek()< directory.handlers.size()) {
+				// ok we may use next element
+				nextHandler = directory.handlers.get(indexes.peek());
+				// and increase the counter
+				indexes.push(indexes.pop() + 1);
+				return;
+			}
+			// we are at the last non directory element, so we go up
+			// set nextHandler to null, so after return we start with 
+			// clear history
+			nextHandler = null;
+			// remove index used for this level
+			indexes.pop();
+			// and go up in sense of directories
+			directory = (DirectoryHandlerImpl)directory.parent;
+			// call our selfs
+			fetchNext();
+		}
+		
+	}
+	
+	private static final Logger LOG = LoggerFactory.getLogger(
+			DirectoryHandlerImpl.class);
+ 
 	/**
 	 * Directory name.
 	 */
@@ -35,7 +147,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * Root of the respective {@link FileDataUnit}.
 	 */
 	private DirectoryHandler parent;
-	
+
 	/**
 	 * User data.
 	 */
@@ -51,20 +163,27 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * DataUnit directory.
 	 */
 	private boolean isLink;
-
+	
 	/**
 	 * List of stored handlers.
 	 */
 	private LinkedList<ManageableHandler> handlers;
 
 	/**
-	 * Create root handler for given directory. The given directory should be 
-	 * empty.
+	 * True if this {@link DirectoryHandlerImpl} log warning about wrong
+	 * file format.
+	 */
+	@XStreamOmitField
+	private boolean hasReportNameChange = false;
+	
+	/**
+	 * Create root handler for given directory. The given directory should be
+	 * empty. The name of such directory is en empty string.
 	 *
-	 * @param directory
+	 * @param directory Root directory.
 	 */
 	public DirectoryHandlerImpl(File directory) {
-		this.name = directory.getName();
+		this.name = "";
 		this.directory = directory;
 		this.parent = null;
 		this.userData = null;
@@ -79,12 +198,13 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * Create new handler for existing directory. Also scan and add it's content
 	 * recursively.
 	 *
-	 * @param directory
-	 * @param parent
-	 * @param name
-	 * @param isLink
+	 * @param directory Directory to use in {@link DirectoryHandler}.
+	 * @param parent    Parent {@link DirectoryHandler}.
+	 * @param name      Name of the {@DirectoryHandler}, should be same as the name directory.
+	 * @param isLink    True if asLink.
 	 */
-	private DirectoryHandlerImpl(File directory, DirectoryHandler parent, String name, boolean isLink) {
+	private DirectoryHandlerImpl(File directory, DirectoryHandler parent,
+			String name, boolean isLink) {
 		// set fields
 		this.name = name;
 		this.directory = directory;
@@ -102,13 +222,56 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	@Override
 	public String getRootedPath() {
 		if (parent == null) {
-			return "";
+			return getName();
 		} else {
 			final String parentPath = parent.getRootedPath();
 			return parentPath + "/" + getName();
 		}
 	}
-	
+
+	@Override
+	public Handler getByRootedName(String queryName) {
+		// null check
+		if (queryName == null) {
+			return null;
+		}
+		// parse into array and check it's size
+		final String[] names = queryName.split("/");
+		if (names.length < 2) {
+			return null;
+		}
+		// check for first name, it should be empty string
+		if (names[0].compareToIgnoreCase("") != 0) {
+			return null;
+		}
+		// ok, start the search process
+		return getByRootedName(names, 1);
+	}
+
+	/**
+	 * Return handler to object with given rooted name.
+	 *
+	 * @param names Array of names.
+	 * @param index Index of last user value (name) in names.
+	 * @return Null if the object for given rooted path does not exists.
+	 */
+	private Handler getByRootedName(String[] names, int index) {
+		final String queryName = names[index++];
+		final Handler handler = getByName(queryName);
+
+		if (index == names.length) {
+			// we are at the end .. return what ever we have
+			return handler;
+		}
+		if (handler instanceof DirectoryHandlerImpl) {
+			// the last we have is directory, continue in query
+			return ((DirectoryHandlerImpl) handler)
+					.getByRootedName(names, index);
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -151,14 +314,17 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public FileHandler addNewFile(String name) throws DataUnitException {
 		accessCheck();
 
+		// remove special chars from the name
+		final String escapedName = escape(name);
+
 		// check existance
-		ManageableHandler existing = getManageableByName(name);
+		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
 			// ok, prepare path to file
-			final File newFilePath = new File(this.directory, name);
+			final File newFilePath = new File(this.directory, escapedName);
 			// create file handler
 			final FileHandlerImpl newFile
-					= new FileHandlerImpl(newFilePath, this, name, false);
+					= new FileHandlerImpl(newFilePath, this, escapedName, false);
 			this.handlers.add(newFile);
 			return newFile;
 		} else {
@@ -220,14 +386,17 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			throws DataUnitException {
 		accessCheck();
 
+		// remove special chars from the name
+		final String escapedName = escape(name);
+               
 		// check existance
-		ManageableHandler existing = getManageableByName(name);
+		ManageableHandler existing = getManageableByName(escapedName);
 		if (existing == null) {
 			// ok, prepare path to file
-			final File newFilePath = new File(this.directory, name);
+			final File newFilePath = new File(this.directory, escapedName);
 			// create dir handler
 			final DirectoryHandlerImpl newDir
-					= new DirectoryHandlerImpl(newFilePath, this, name, false);
+					= new DirectoryHandlerImpl(newFilePath, this, escapedName, false);
 			this.handlers.add(newDir);
 			return newDir;
 		} else {
@@ -242,7 +411,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	@Override
-	public DirectoryHandler addExistingDirectory(File directory, OptionsAdd options)
+	public DirectoryHandler addExistingDirectory(File directory,
+			OptionsAdd options)
 			throws DataUnitException {
 		accessCheck();
 
@@ -252,7 +422,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			if (existing instanceof DirectoryHandler) {
 				// ok we can work with this
 			} else {
-				// it's not a file
+				// it's not a directory
 				return null;
 			}
 
@@ -279,7 +449,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		}
 		// now in file is the link to file for which we want to create handler
 		DirectoryHandlerImpl newHandler
-				= new DirectoryHandlerImpl(directory, this, newName, options.isLink());
+				= new DirectoryHandlerImpl(directory, this, newName, options
+						.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -294,12 +465,33 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		Handler newHandler;
 		try {
 			if (e instanceof ManageableFileHandler) {
+				// this is final no child will be added
 				final ManageableFileHandler fileHandler = (ManageableFileHandler) e;
 				newHandler = addExistingFile(fileHandler.asFile(), options);
 			} else if (e instanceof ManageableDirectoryHandler) {
+				// we have to add the whole sub directory here ..
 				final ManageableDirectoryHandler dirHandler
 						= (ManageableDirectoryHandler) e;
-				newHandler = addExistingDirectory(dirHandler.asFile(), options);
+				// try if sub-dir exists
+				newHandler = getByName(e.getName());
+				if (newHandler == null) {
+					// no such directory here .. we just add as existing
+					newHandler = addExistingDirectory(dirHandler.asFile(), options);
+				} else {
+					// there already is handler with such name, 
+					// so we just add the content
+					if (newHandler instanceof ManageableDirectoryHandler) {
+						// existing is directory, we do merge
+						ManageableDirectoryHandler newDir = (ManageableDirectoryHandler)newHandler;
+						// add content of the directory (merge)
+						newDir.addAll(dirHandler);
+					} else {
+						// existing is file .. so we add as a new directory
+						LOG.warn("Addition of directory ({}) ignored as there is file of a same name.", 
+								newHandler.getRootedPath());
+						return false;
+					}
+				}
 			} else {
 				// unknown ..
 				return false;
@@ -332,8 +524,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	@Override
-	public Handler getByName(String name) {
-		return getManageableByName(name);
+	public Handler getByName(String queryName) {
+		return getManageableByName(queryName);
 	}
 
 	@Override
@@ -359,8 +551,9 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			/**
 			 * Iterator over underlying collection.
 			 */
-			private final Iterator<ManageableHandler> iterator = handlers.iterator();
-			
+			private final Iterator<ManageableHandler> iterator = handlers
+					.iterator();
+
 			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
@@ -417,7 +610,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			return true;
 		} else {
 			// unknown
-			LOG.warn("Method remove(Object) has been called on unexpected object type: %s",
+			LOG.warn(
+					"Method remove(Object) has been called on unexpected object type: %s",
 					o.getClass().getName());
 			return false;
 		}
@@ -469,12 +663,12 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	}
 
 	/**
-	 * @param name
+	 * @param queryName
 	 * @return handler of given name or null
 	 */
-	private ManageableHandler getManageableByName(String name) {
+	private ManageableHandler getManageableByName(String queryName) {
 		for (ManageableHandler handler : this.handlers) {
-			if (handler.getName().compareTo(name) == 0) {
+			if (handler.getName().compareTo(queryName) == 0) {
 				return handler;
 			}
 		}
@@ -487,7 +681,8 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 */
 	private void accessCheck() {
 		if (isReadOnly) {
-			throw new DataUnitAccessException("Can't modify read only FileDataUnit.");
+			throw new DataUnitAccessException(
+					"Can't modify read only FileDataUnit.");
 		} else if (isLink) {
 			throw new DataUnitAccessException("Can't modify linked directory.");
 		}
@@ -524,6 +719,30 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 				LOG.warn("Unknown file '%s' type ignored during scan.", newName);
 			}
 		}
+	}
+
+	/**
+	 * Remove dangerous character from string so the string can be safely 
+	 * used as a file or directory name.
+	 * 
+	 * @param origString
+	 * @return 
+	 */
+    private String escape(String origString) {
+       String result = origString.replaceAll("[\\/:*?\"<>|]","");
+        if (!origString.equals(result)) {
+			if (!hasReportNameChange) {
+				LOG.warn("At least one file/dir name has been changed as it contained special chars [\\/:*?\"<>|]. More details can be found as 'info' level logs.");
+				hasReportNameChange = true;
+			}
+			LOG.info("Name '{}' contained special chars and so it has been changed to '{}'.", origString, result);
+        }
+        return result;
+    }
+
+	@Override
+	public Iterator<Handler> getFlatIterator() {
+		return new FlatIterator(this);
 	}
 
 }

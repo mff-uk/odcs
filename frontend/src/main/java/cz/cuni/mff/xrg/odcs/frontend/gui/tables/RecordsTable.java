@@ -93,6 +93,8 @@ public class RecordsTable extends CustomComponent {
 				}
 			}
 		});
+		messageTable.setColumnCollapsingAllowed(true);
+		messageTable.setColumnWidth("time", 115);
 		messageTable.setSizeFull();
 		messageTable.setPageLength(pageLenght);
 

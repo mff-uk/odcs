@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import java.util.List;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
@@ -15,46 +16,46 @@ public interface ClassAccessor<T extends DataObject> {
 
 	/**
 	 * Return list of object's id.
-	 * @return
+	 * @return list of object's id
 	 */
 	public List<String> all();
 	
 	/**
-	 * Return subset of {@link #allIds()}. This subset will be enabled for
+	 * Return subset of {@link #all()}. This subset will be enabled for
 	 * sorting.
-	 * @return
+	 * @return sortable subset of id's
 	 */
 	public List<String> sortable();
 	
 	/**
-	 * Return subset of {@link #allIds()}. This subset will be enabled for 
+	 * Return subset of {@link #all()}. This subset will be enabled for 
 	 * filtering.
-	 * @return
+	 * @return filterable subset of id's
 	 */
 	public List<String> filterable();
 	
 	/**
-	 * Return subset of {@link all()}. This subset will be visible.
-	 * @return 
+	 * Return subset of {@link #all()}. This subset will be visible.
+	 * @return visible subset of id's
 	 */
 	public List<String> visible();
 	
 	/**
 	 * List of properties to fetch.
-	 * @return 
+	 * @return List of properties to fetch.
 	 */
 	public List<String> toFetch();
 	
 	/**
 	 * Return entity class.
-	 * @return
+	 * @return entity class
 	 */
 	public Class<T> getEntityClass();
 	
 	/**
 	 * Return name of column for given id.
 	 * @param id
-	 * @return
+	 * @return name of column for given id
 	 */
 	public String getColumnName(String id);
 	
@@ -62,14 +63,14 @@ public interface ClassAccessor<T extends DataObject> {
 	 * Return value of object's given variable.
      * @param object
 	 * @param id Variable identification.
-	 * @return
+	 * @return value of object's given variable
 	 */
 	public Object getValue(T object, String id);
 	
 	/**
 	 * Return type for given variable.
 	 * @param id Variable identification.
-	 * @return
+	 * @return type for given variable
 	 */
 	public Class<?> getType(String id);
 }

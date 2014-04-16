@@ -10,10 +10,11 @@ public class EdgeFormater {
 	/**
 	 * Format the script string so it can be shown to user.
 	 * 
-	 * @param script
-	 * @return formatted string
+	 * @param script Script to format.
+	 * @return Formatted script.
 	 */
-	public String format(final String script) {		
+	public String format(final String script) {
+		//final String removeRunAfter = script.replace(EdgeInstructions.RunAfter.getValue(), "");		
 		return script.replace(EdgeInstructions.Separator.getValue(), "\n");
 	}
 	

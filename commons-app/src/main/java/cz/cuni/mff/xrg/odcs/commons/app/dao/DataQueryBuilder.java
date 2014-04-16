@@ -28,7 +28,7 @@ public interface DataQueryBuilder<T extends DataObject,
          * Remove previously applied sort and set new.
 		 * 
          * @param propertyName Set to null to remove sorting.
-         * @param asc
+         * @param asc True to sort as ASC false to sort as DESC.
          * @return query builder
          */
         DataQueryBuilder<T, QUERY, QUERY_SIZE> sort(String propertyName, boolean asc);

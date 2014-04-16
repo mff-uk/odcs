@@ -33,6 +33,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.openrdf.model.*;
@@ -801,6 +802,49 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	}
 
+//        @Override 
+//        public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException {
+//
+//            try {
+//                RepositoryConnection connection = getConnection();
+//
+//
+//
+//
+//                StringWriter sw = new StringWriter();
+//                //PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+//                RDFWriter writer = Rio.createWriter(RDFFormat.NTRIPLES, sw);
+//
+//
+//                connection.prepareGraphQuery(QueryLanguage.SPARQL, constructQuery).evaluate(writer);
+//                logger.info("Evaluating query {}", constructQuery);
+//
+//                String out = sw.toString();
+//                logger.debug("Out: {}", sw.toString());
+//                return out;
+//                //return "";
+//
+//
+//
+//            } catch (RepositoryException ex) {
+//                hasBrokenConnection = true;
+//                logger.error("Connection to RDF repository failed. {}", ex
+//                        .getMessage(), ex);
+//            } catch (MalformedQueryException ex) {
+//                logger.error(ex.getLocalizedMessage());
+//            } catch (QueryEvaluationException ex) {
+//                 logger.error(ex.getLocalizedMessage());
+//            } catch (RDFHandlerException ex) {
+//                 logger.error(ex.getLocalizedMessage());
+////            } catch (UnsupportedEncodingException ex) {
+////                java.util.logging.Logger.getLogger(BaseRDFRepo.class.getName()).log(Level.SEVERE, null, ex);
+////            } catch (IOException ex) {
+////                 logger.error(ex.getLocalizedMessage());
+////            }
+//            }
+//            throw new InvalidQueryException("Executing query " + constructQuery + " failed");
+//        }
+//        
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -872,18 +916,18 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 *
 	 * @param graphInstance Concrete graph contains RDF triples.
 	 */
-	@Override
-	public void addTriplesFromGraph(Graph graphInstance) {
-
-		if (graphInstance != null) {
-			Iterator<Statement> it = graphInstance.iterator();
-
-			while (it.hasNext()) {
-				Statement statement = it.next();
-				addStatement(statement, graph);
-			}
-		}
-	}
+    @Override
+    public void addTriplesFromGraph(Graph graphInstance) {
+        if (graphInstance != null) {
+            try {
+                RepositoryConnection connection = getConnection();
+                connection.add(graphInstance, graph);
+            } catch (RepositoryException e) {
+                hasBrokenConnection = true;
+                logger.debug(e.getMessage());
+            }
+        }
+    }
 
 	/**
 	 * Make construct query over graph URIs in dataSet and return interface
@@ -1271,7 +1315,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 * repository data and return {@link OrderTupleQueryResultImpl} class as
 	 * result.
 	 *
-	 * This ordered select query don´t have to containt LIMIT nad OFFSET
+	 * This ordered select query must not containt LIMIT nad OFFSET
 	 * keywords.
 	 *
 	 * For no problem behavior check you setting "MaxSortedRows" param in your
@@ -1289,31 +1333,31 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	public OrderTupleQueryResultImpl executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException {
 
-		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
-				SPARQLQueryType.SELECT);
-
-		boolean hasLimit = orderSelectQuery.toLowerCase().contains("limit");
-		boolean hasOffset = orderSelectQuery.toLowerCase().contains("offset");
-
-		if (validator.isQueryValid()) {
-
-			if (hasLimit) {
-				throw new InvalidQueryException(
-						"Query: " + orderSelectQuery + " contains LIMIT keyword which is forbidden.");
-			}
-
-			if (hasOffset) {
-				throw new InvalidQueryException(
-						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
-			}
+//		QueryValidator validator = new SPARQLQueryValidator(orderSelectQuery,
+//				SPARQLQueryType.SELECT);
+//
+//		boolean hasLimit = orderSelectQuery.toLowerCase().contains("limit");
+//		boolean hasOffset = orderSelectQuery.toLowerCase().contains("offset");
+//
+//		if (validator.isQueryValid()) {
+//
+//			if (hasLimit) {
+//				throw new InvalidQueryException(
+//						"Query: " + orderSelectQuery + " contains LIMIT keyword which is forbidden.");
+//			}
+//
+//			if (hasOffset) {
+//				throw new InvalidQueryException(
+//						"Query: " + orderSelectQuery + " contains OFFSET keyword which is forbidden.");
+//			}
 
 			OrderTupleQueryResultImpl result = new OrderTupleQueryResultImpl(
 					orderSelectQuery, this);
 			return result;
-		} else {
-			throw new InvalidQueryException(
-					"Query: " + orderSelectQuery + " is not valid SELECT query");
-		}
+//		} else {
+//			throw new InvalidQueryException(
+//					"Query: " + orderSelectQuery + " is not valid SELECT query");
+//		}
 	}
 
 	/**
@@ -1401,6 +1445,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	public Dataset getDataSet() {
 		DatasetImpl dataSet = new DatasetImpl();
 		dataSet.addDefaultGraph(graph);
+		dataSet.addNamedGraph(graph);
 
 		return dataSet;
 	}
@@ -1689,10 +1734,16 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		RDFParser parser = getRDFParser(fileFormat, handler);
 
 		try {
+                        getConnection().begin();
+                        
 			parser.parse(is, baseURI);
+                        
+                        getConnection().commit();
 		} catch (IOException | RDFParseException | RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
-		}
+		} catch (RepositoryException ex) {
+                    throw new RDFException(ex.getMessage(), ex);
+            }
 	}
 
 	private void setErrorsListenerToParser(RDFParser parser,

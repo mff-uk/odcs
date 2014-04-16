@@ -8,6 +8,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.data.util.ItemSorter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -64,8 +65,14 @@ public class DPUTree extends CustomComponent {
 		visibilityFilter = new Filter() {
 			@Override
 			public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+				if(itemId.getClass() != DPUTemplateRecord.class) {
+					return true;
+				}
 				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				return dpu.getShareType() == ShareType.PRIVATE;
+				if(dpu == null || dpu.getShareType() == null) {
+					return false;
+				}
+				return ShareType.PRIVATE.equals(dpu.getShareType());
 			}
 
 			@Override
@@ -227,6 +234,7 @@ public class DPUTree extends CustomComponent {
 				}
 			}
 		});
+		((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
 		((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
 			@Override
 			public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
@@ -270,7 +278,7 @@ public class DPUTree extends CustomComponent {
 	/**
 	 * Adds custom ItemClickListener to the DPUTRee.
 	 *
-	 * @param itemClickListener {@link ItemClickEvent.ItemClickListener} to add
+	 * @param itemClickListener {@link ItemClickListener} to add
 	 * to DPU tree.
 	 */
 	public void addItemClickListener(
@@ -282,7 +290,7 @@ public class DPUTree extends CustomComponent {
 	 * Reloads the contents of the DPUTree.
 	 */
 	public void refresh() {
-		fillTree(dpuTree);
+		fillTree();
 		markAsDirty();
 	}
 
@@ -337,6 +345,7 @@ public class DPUTree extends CustomComponent {
 				tree.expandItemsRecursively(itemId);
 			}
 		}
+		
 		((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
 	}
 

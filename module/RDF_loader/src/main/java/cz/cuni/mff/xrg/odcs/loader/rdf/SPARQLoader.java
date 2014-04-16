@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -20,12 +21,20 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.openrdf.model.*;
 import org.openrdf.model.URI;
 import org.openrdf.query.*;
@@ -33,6 +42,9 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +125,15 @@ public class SPARQLoader {
 	}
 
 	/**
+	 * Responsible for mapping (graph name -> count of loaded RDF triple to this
+	 * graph)
+	 */
+	private Map<String, Long> graphSizeMap = new HashMap<>();
+    
+        //to hold config.useGraphProtocol
+        private final boolean useGraphProtocol;
+
+	/**
 	 * Constructor for using in DPUs calling.
 	 *
 	 * @param rdfDataUnit    Instance of RDFDataUnit repository neeed for
@@ -127,10 +148,11 @@ public class SPARQLoader {
 	 *                       SPARQL endpoint.
 	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			int retrySize, long retryTime, LoaderEndpointParams endpointParams) {
+			int retrySize, long retryTime, LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
+                this.useGraphProtocol = useGraphProtocol;
 
 		setRetryConnectionSize(retrySize);
 		setRetryConnectionTime(retryTime);
@@ -147,15 +169,16 @@ public class SPARQLoader {
 	 *                       SPARQL endpoint.
 	 */
 	public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
-			LoaderEndpointParams endpointParams) {
+			LoaderEndpointParams endpointParams, boolean useGraphProtocol) {
 		this.rdfDataUnit = rdfDataUnit;
 		this.context = context;
 		this.endpointParams = endpointParams;
+                this.useGraphProtocol = useGraphProtocol;
 
 		setRetryConnectionSize(DEFAULT_LOADER_RETRY_SIZE);
 		setRetryConnectionTime(DEFAUTL_LOADER_RETRY_TIME);
 	}
-
+        
 	/**
 	 *
 	 * Set time in miliseconds how long to wait before trying to reconnect.
@@ -303,8 +326,7 @@ public class SPARQLoader {
 				final String endpointGraph = graphs.get(i);
 
 				//clean target graph if nessasarry - via using given WriteGraphType 
-				prepareGraphTargetForLoading(endpointURL, endpointGraph,
-						graphType);
+                                prepareGraphTargetForLoading(endpointURL, endpointGraph, graphType);
 
 				if (context.canceled()) {
 					logger.error(
@@ -315,8 +337,7 @@ public class SPARQLoader {
 			}
 
 			//starting to load data to target SPARQL endpoint
-			loadGraphDataToEndpoint(endpointURL, graphs, chunkSize,
-					insertType);
+			loadGraphDataToEndpoint(endpointURL, graphs, chunkSize, insertType, userName, password);
 
 
 		} catch (RepositoryException ex) {
@@ -359,9 +380,37 @@ public class SPARQLoader {
 		return collection;
 	}
 
+	private void noteGraphSize(URL endpointURL, GraphPairCollection collection)
+			throws RDFException {
+
+		graphSizeMap.clear();
+
+		for (GraphPair nextPair : collection.getGraphPairs()) {
+			long size = getSPARQLEndpointGraphSize(endpointURL, nextPair
+					.getTempGraphName());
+
+			graphSizeMap.put(nextPair.getGraphName(), size);
+		}
+	}
+
+	/**
+	 * Return how many RDF triples was loaded to the given target graph.
+	 *
+	 * @param graph String value of URI graph where data are stored.
+	 * @return count of loaded RDF triples to the given target graph.
+	 */
+	public long getLoadedTripleCount(String graph) {
+		if (graphSizeMap.containsKey(graph)) {
+			return graphSizeMap.get(graph);
+		} else {
+			return 0;
+		}
+	}
+
 	private void loadGraphDataToEndpoint(URL endpointURL,
 			List<String> targetGraphs,
-			long chunkSize, InsertType insertType) throws RDFException {
+			long chunkSize, InsertType insertType, String userName,
+			String password) throws RDFException {
 
 		final GraphPairCollection collection = getGraphPairs(targetGraphs);
 
@@ -369,9 +418,19 @@ public class SPARQLoader {
 			case STOP_WHEN_BAD_PART:
 			case SKIP_BAD_PARTS:
 				try {
-					loadDataParts(endpointURL, collection.getTempGraphs(),
+                                       if (useGraphProtocol) {
+                                           //SPARQL graph protocol is used
+                                            loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs(), userName, password);
+                                       }
+                                       else {
+                                           //normal execution, sparql-auth. 
+                                           loadDataParts(endpointURL, collection.getTempGraphs(),
 							insertType,
 							chunkSize);
+                                       }
+                                    
+					noteGraphSize(endpointURL, collection);
+
 					if (!context.canceled()) {
 						moveDataToTarget(endpointURL, collection);
 					}
@@ -387,9 +446,19 @@ public class SPARQLoader {
 			case REPEAT_IF_BAD_PART:
 				while (true) {
 					try {
-						loadDataParts(endpointURL, collection.getTempGraphs(),
-								insertType,
-								chunkSize);
+                                              if (useGraphProtocol) {
+                                                  //SPARQL graph protocol is used
+                                                   loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs(), userName, password);
+                                              }
+                                              else {
+                                                  //normal execution, sparql-auth. 
+                                                  loadDataParts(endpointURL, collection.getTempGraphs(),
+                                                               insertType,
+                                                               chunkSize);
+                                              }	
+                                            
+                                            noteGraphSize(endpointURL, collection);
+                                        
 						if (!context.canceled()) {
 							moveDataToTarget(endpointURL, collection);
 						}
@@ -422,7 +491,7 @@ public class SPARQLoader {
 				case FAIL:
 					//if target graph is not empty, exception is thrown
 
-					long SPARQLGraphSize = getSPARQLEnpointGraphSize(
+					long SPARQLGraphSize = getSPARQLEndpointGraphSize(
 							endpointURL, endpointGraph);
 
 
@@ -483,14 +552,14 @@ public class SPARQLoader {
 				}
 
 				logger.info(
-						"Data " + processing + " part loaded successful");
+						"Data part " + processing + " loaded successful");
 
 			} catch (InsertPartException e) {
 				String message;
 
 				switch (insertType) {
 					case SKIP_BAD_PARTS: //go to next part
-						message = "Data " + processing + " part was skipped. "
+						message = "Data part " + processing + " was skipped. "
 								+ e.getMessage();
 						logger.warn(message);
 						break;
@@ -568,7 +637,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader result = getClearEndpointStreamReader(
+				try (InputStreamReader result = getWholeRepEndpointStreamReader(
 						endpointURL, moveQuery)) {
 				}
 
@@ -623,11 +692,15 @@ public class SPARQLoader {
 
 	}
 
-	private InputStreamReader getClearEndpointStreamReader(URL endpointURL,
+	private InputStreamReader getWholeRepEndpointStreamReader(URL endpointURL,
 			String query) throws RDFException {
 
-		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
-				query, RDFFormat.RDFXML);
+//		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
+//				query, RDFFormat.RDFXML);
+                //the graph is not specified, because it is in the query!
+                return getEndpointStreamReader(endpointURL, new LinkedList<String>(),
+				query);
+            
 	}
 
 	private InputStreamReader getEndpointStreamReader(URL endpointURL,
@@ -649,6 +722,24 @@ public class SPARQLoader {
 	}
 
 	/**
+	 * Returns graph size for given graph and SPARQL endpoint required
+	 * authentification.
+	 *
+	 * @param endpointURL   URL of SPARQL endpoint where we can find graph size.
+	 * @param endpointGraph String name of graph which size we can find out.
+	 * @param hostName      String value of hostname.
+	 * @param password      String value of password.
+	 * @return graph size for given graph and SPARQL endpoint.
+	 * @throws RDFException if endpoint is not available or cause problems.
+	 */
+	public long getSPARQLEndpointGraphSize(URL endpointURL, String endpointGraph,
+			String hostName, String password) throws RDFException {
+
+		Authentificator.authenticate(hostName, password);
+		return getSPARQLEndpointGraphSize(endpointURL, endpointGraph);
+	}
+
+	/**
 	 * Returns graph size for given graph and SPARQL endpoint.
 	 *
 	 * @param endpointURL   URL of SPARQL endpoint where we can find graph size.
@@ -656,7 +747,7 @@ public class SPARQLoader {
 	 * @return graph size for given graph and SPARQL endpoint.
 	 * @throws RDFException if endpoint is not available or cause problems.
 	 */
-	public long getSPARQLEnpointGraphSize(URL endpointURL,
+	public long getSPARQLEndpointGraphSize(URL endpointURL,
 			String endpointGraph)
 			throws RDFException {
 
@@ -971,7 +1062,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
-				try (InputStreamReader inputStreamReader = getClearEndpointStreamReader(
+				try (InputStreamReader inputStreamReader = getWholeRepEndpointStreamReader(
 						endpointURL, deleteQuery)) {
 				}
 
@@ -1160,6 +1251,7 @@ public class SPARQLoader {
 
 		while (true) {
 			try {
+                            
 				httpConnection = (HttpURLConnection) call.openConnection();
 
 				setPOSTConnection(httpConnection, parameters,
@@ -1203,8 +1295,10 @@ public class SPARQLoader {
 			} catch (IOException e) {
 				retryCount++;
 
+                                logger.error("There was problem submitting the file {}", e.getLocalizedMessage());
 				if (!retryConnectionAgain(retryCount, endpointURL.toString())) {
-
+                                        //it should not try again
+                                    
 					final String errorMessage = "Count of retryConnection is OVER (TOTAL " + retryCount + " ATTEMPTS). "
 							+ "Endpoint HTTP connection stream cannot be opened. ";
 
@@ -1216,6 +1310,7 @@ public class SPARQLoader {
 
 					throw new RDFException(errorMessage + e.getMessage(), e);
 				}
+                                //otherwise, it si trying to connect again
 
 
 			}
@@ -1273,6 +1368,252 @@ public class SPARQLoader {
 		}
 		return result;
 	}
+        
+        
+        private String getInsertQueryGraphStoreProtocol() throws RDFException {
+
+	
+
+		StringBuilder builder = new StringBuilder();
+
+
+		int retryCount = 0;
+                int count = 0;
+		while (true) {
+			try {
+
+                            logger.debug("PProcessing of triples started");
+				
+
+                             try {
+                                RepositoryConnection connection = rdfDataUnit.getConnection();
+                                
+                                String queryResFile = "";
+                                FileOutputStream fos = new FileOutputStream(new File(queryResFile));
+                                RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, fos);
+                           
+                                
+                                connection.prepareGraphQuery(QueryLanguage.SPARQL,"CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ").evaluate(writer);
+                            } catch (MalformedQueryException ex) {
+                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (FileNotFoundException ex) {
+                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (QueryEvaluationException ex) {
+                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (RDFHandlerException ex) {
+                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (RepositoryException ex) {
+                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                                
+                                 GraphQueryResult lazy = getTriplesPart("CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c}");
+				while (lazy.hasNext()) {
+
+					Statement next = lazy.next();
+
+					Resource subject = next.getSubject();
+					URI predicate = next.getPredicate();
+					Value object = next.getObject();
+
+					StringBuilder appendLine = new StringBuilder();
+
+					appendLine.append(getSubjectInsertText(subject));
+					appendLine.append(" ");
+					appendLine.append(getPredicateInsertText(predicate));
+					appendLine.append(" ");
+					appendLine.append(getObjectInsertText(object));
+					appendLine.append(" .");
+
+					builder.append(appendLine);
+                                        
+                                        count++;
+					
+				}
+
+                                logger.debug("PProcessed {} triples", count);
+				if (count > 0) {
+					
+					lazy.close();
+					return builder.toString();
+				}
+
+				return null;
+
+			} catch (InvalidQueryException | QueryEvaluationException e) {
+
+				if (context.canceled()) {
+					//stop loading Parts
+					logger.error("Loading data was canceled by user !!!");
+					break;
+				}
+
+				rdfDataUnit.restartConnection();
+				builder.delete(0, builder.length());
+				retryCount++;
+				String error = String.format("Problem preparing data to be loaded - ATTEMPT number %s: ", 
+						retryCount);
+
+				if (retryCount > RETRY_CONNECTION_SIZE && RETRY_CONNECTION_SIZE >= 0) {
+					throw new RDFException(error + e.getMessage(), e);
+
+				} else {
+					logger.debug(error + e.getMessage());
+					try {
+						//sleep and attempt to reconnect
+						Thread.sleep(RETRY_CONNECTION_TIME);
+
+					} catch (InterruptedException ex) {
+						logger.debug(ex.getMessage(), ex);
+					}
+				}
+
+			}
+
+		}
+		return null;
+	}
+        
+        private void loadDataPartsUsingGraphStoreProtocol(URL endpointURL, List<String> endpointGraphs, String userName,
+			String password) throws RDFException {
+
+            logger.info("Loading data using graph store protocol started");
+             String fileData = context.getWorkingDir() + File.separator + "data.ttl";
+             FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(new File(fileData));
+            } catch (FileNotFoundException ex) {
+                 logger.error(ex.getLocalizedMessage());
+            }
+             try {
+                 logger.debug("Phase 1 Started: data is serialized to RDF/XML file");
+                RepositoryConnection connection = rdfDataUnit.getConnection();
+                
+                GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
+
+	        graphQuery.setDataset(rdfDataUnit.getDataSet());
+                logger.debug("Dataset: {}", rdfDataUnit.getDataSet());
+
+                connection.begin();
+                
+                RDFWriter writer = Rio.createWriter(RDFFormat.RDFXML, fos);
+		graphQuery.evaluate(writer);
+              
+                connection.commit();
+                
+                logger.debug("Phase 1 Finished: data is serialized to RDF/XML file");
+                
+            } catch (MalformedQueryException ex) {
+                logger.error(ex.getLocalizedMessage());
+            } catch (QueryEvaluationException ex) {
+               logger.error(ex.getLocalizedMessage());
+            } catch (RDFHandlerException ex) {
+                logger.error(ex.getLocalizedMessage());
+            } catch (RepositoryException ex) {
+                logger.error(ex.getLocalizedMessage());
+            }finally {
+                 try {
+                     fos.flush();
+                     fos.close();
+                 } catch (IOException ex) {
+                     logger.error(ex.getLocalizedMessage());
+                 }
+            }
+
+           logger.debug("Phase 2 Started : data is being submitted to the server");  
+           sparqlGraphProtocolPOSTTest(endpointURL, endpointGraphs, fileData, userName, password);
+           logger.debug("Phase 2 Finished : data is being submitted to the server");  
+           
+           logger.info("Loading data using graph store protocol finished");
+
+
+      }
+
+        
+        private void sparqlGraphProtocolPOSTTest(URL endpointURL, List<String> endpointGraph, String fileData, String userName,
+			String password) throws RDFException {
+
+                String graphProtocolEndpoint = null;
+                
+                //create new client using the given creadentials
+                CloseableHttpClient httpclient = null;
+                boolean authentizationRequired = false;
+                
+                if (endpointURL.toString().contains("sparql-auth")) {
+                    //sparql auth endpoint
+                    graphProtocolEndpoint = endpointURL.toString().replace("sparql-auth", "sparql-graph-crud-auth");
+                    //use https:// so that there is no extra negotiation
+                    //graphProtocolEndpoint = graphProtocolEndpoint.replaceFirst("http://", "https://");
+                    
+                    //prepare new credentialProvider
+                    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                    credsProvider.setCredentials(
+                        AuthScope.ANY,
+                        new UsernamePasswordCredentials(userName, password));
+
+                    //create new client using the given creadentials
+                    httpclient = HttpClients.custom()
+                    .setDefaultCredentialsProvider(credsProvider)
+                    .build();
+                    
+                    authentizationRequired = true;
+                    
+                }
+                else if (endpointURL.toString().contains("sparql")) {
+                    //only sparql endpoint
+                    graphProtocolEndpoint = endpointURL.toString().replace("sparql", "sparql-graph-crud");
+                    
+                    //no authentization needed
+                    //create new client using the given creadentials
+                    httpclient = HttpClients.custom()          
+                    .build();
+                    
+                }
+                else {
+                    logger.error("Strange endpoint address {}, CRUD endpoint was not set properly. Loader will probably not be able to connect to the target endpoint.  ", endpointURL.toString());
+                }
+                
+                //final String parameters = "?graph=http://test/loader/graphProtocol";     
+                String requestUriParameters = getGraphParam("graph", endpointGraph, true);
+		logger.debug("Target endpoint: {}", graphProtocolEndpoint);
+		logger.debug("Parameters of the request: {}", requestUriParameters);
+		logger.debug("Request method: SPARQL Graph protocol");
+
+                //prepare new post request
+                HttpPost post = new HttpPost(graphProtocolEndpoint + requestUriParameters);
+                if (authentizationRequired) { 
+                    post.addHeader("X-Requested-Auth", "Digest");
+                    //Basic authentication not supported by Virtuoso
+                    //using Digest authentication which is supported by Virtuoso
+                } 
+               
+                
+                post.addHeader("Content-Type", "application/xml"); 
+                //text/turtle not supported by Virtuoso
+                //post.addHeader("Content-Type", "text/turtle");
+                
+                //create new file entity being submitted via HTTP POST
+                 FileEntity fileEntity = new FileEntity(
+                    new File(fileData), ContentType.create("application/rdf+xml", "UTF-8"));
+                 post.setEntity(fileEntity);
+                 //TODO chunked mode is not working, problem with Virtuoso?
+                 //fileEntity.setChunked(true);
+                 logger.info("Is the transfer chunked? {}", fileEntity.isChunked());
+
+
+                logger.info("Executing HTTP POST Request " + post.getRequestLine());
+                if (httpclient == null) {
+                    context.sendMessage(MessageType.ERROR, "Graph Store Protocol: HTTP POST failed, http client cannot be initialized");
+                }
+                try {
+                    HttpResponse response = httpclient.execute(post);
+                    logger.info("Result: {}, {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                
+                } catch(IOException e) {
+                    context.sendMessage(MessageType.ERROR, "Graph Store Protocol: HTTP POST failed, " + e.getLocalizedMessage());
+                }
+                
+       }
+        
 
 	/**
 	 *
@@ -1397,4 +1738,8 @@ public class SPARQLoader {
 			return 0;
 		}
 	}
+
+   
+
+   
 }

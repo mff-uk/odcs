@@ -14,8 +14,7 @@ public final class vaadin {
 	public static final String VERSION = "7.1.10";
 	
 	/**
-	 * List of OSGI packages to export. Does not start nor 
-	 * end with separator.
+	 * List of OSGI packages to export. Does not start nor end with separator.
 	 */
 	public static final String PACKAGES = 
 		"VAADIN.widgetsets;version=\"" + VERSION + "\"," +

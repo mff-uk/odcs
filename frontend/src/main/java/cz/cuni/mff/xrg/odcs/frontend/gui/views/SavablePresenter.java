@@ -9,7 +9,7 @@ public interface SavablePresenter extends Presenter {
     
     /**
      * Return true if there are unsaved changes in presenter.
-     * @return 
+     * @return If is modified
      */
     boolean isModified();
     

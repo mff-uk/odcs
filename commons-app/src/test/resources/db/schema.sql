@@ -17,7 +17,6 @@ CREATE TABLE `DPU_INSTANCE`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `tool_tip` VARCHAR (512),
   `configuration` TEXT,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
@@ -35,7 +34,7 @@ CREATE TABLE `DPU_TEMPLATE`
   `description` TEXT,  
   `configuration` TEXT,
   `parent_id` INTEGER,
-  `config_valid` SMALLINT,
+  `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
   `user_id` INTEGER,
   `visibility` SMALLINT,
@@ -67,7 +66,6 @@ CREATE SEQUENCE `seq_exec_context_pipeline` START WITH 100;
 CREATE TABLE `EXEC_CONTEXT_PIPELINE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `directory` VARCHAR(255),
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
 );
@@ -110,7 +108,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
-  `context_id` INTEGER NOT NULL,
+  `context_id` INTEGER,
   `schedule_id` INTEGER,
   `silent_mode` SMALLINT,
   `debugnode_id` INTEGER,
@@ -132,7 +130,6 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(1024),
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -252,11 +249,10 @@ CREATE SEQUENCE `seq_sch_email` START WITH 100;
 CREATE TABLE `SCH_EMAIL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `e_user` VARCHAR(85),
-  `e_domain` VARCHAR(45),
+  `email` VARCHAR(255),
   PRIMARY KEY (`id`)
 );
-CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`e_user`, `e_domain`);
+CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`email`);
 
 CREATE TABLE `SCH_SCH_NOTIFICATION_EMAIL`
 (
@@ -279,7 +275,7 @@ CREATE TABLE `USR_USER`
   `id` INTEGER AUTO_INCREMENT,
   `username` VARCHAR(25) NOT NULL,
   `email_id` INTEGER,
-  `u_password` CHAR(132) NOT NULL,
+  `u_password` CHAR(142) NOT NULL,
   `full_name` VARCHAR(55),
   `table_rows` INTEGER,
   PRIMARY KEY (`id`),
@@ -298,8 +294,8 @@ CREATE SEQUENCE `seq_rdf_ns_prefix` START WITH 100;
 CREATE TABLE `RDF_NS_PREFIX`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(25) NOT NULL,
-  `uri` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `uri` VARCHAR(2048) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
 );
@@ -538,29 +534,51 @@ ALTER TABLE `PPL_OPEN_EVENT`
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- TRIGGERS      ###############################################################
+-- TRIGGERS      ######################################################
+
+-- BEGIN VIRTUOSO ONLY
 
 
 -- workaround for bug in virtuoso's implementation of cascades on delete
 -- see https://github.com/openlink/virtuoso-opensource/issues/56
 
 
+-- END VIRTUOSO ONLY
+
+-- BEGIN MYSQL ONLY
+
+-- CREATE TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
+--  FOR EACH ROW SET NEW.t_last_change = NOW();
+-- END MYSQL ONLY
+
 -- TABLE FOR LOGS
 
 CREATE TABLE `LOGGING`
 (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+-- BEGIN VIRTUOSO ONLY
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+--  `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
+-- END MYSQL ONLY
   `logLevel` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
   `message` TEXT,
   `dpu` INTEGER,
-  `execution` INTEGER,
+  `execution` INTEGER NOT NULL,
   `stack_trace` TEXT,
+  `relative_id` INTEGER,
   PRIMARY KEY (id)
+-- BEGIN VIRTUOSO ONLY
 );
+-- END VIRTUOSO ONLY
+-- BEGIN MYSQL ONLY
+-- ) ENGINE=MyISAM;
+-- END MYSQL ONLY
 
 CREATE INDEX `ix_LOGGING_dpu` ON `LOGGING` (`dpu`);
 CREATE INDEX `ix_LOGGIN_execution` ON `LOGGING` (`execution`);
+CREATE INDEX `ix_LOGGIN_relative_id` ON `LOGGING` (`relative_id`);
 
 -- File must end with empty line, so last query is followed by enter.

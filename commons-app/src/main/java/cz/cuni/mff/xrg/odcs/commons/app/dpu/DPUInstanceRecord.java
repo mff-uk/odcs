@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -15,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
  */
 @Entity
 @Table(name = "dpu_instance")
-public class DPUInstanceRecord extends DPURecord implements DataObject {
+public class DPUInstanceRecord extends DPURecord {
 		
 	/**
 	 * Template used for creating this instance. 
@@ -24,12 +23,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	@JoinColumn(name="dpu_id")
 	private DPUTemplateRecord template;
 
-	/**
-	 * DPURecord tool tip.
-	 */
-	@Column(name="tool_tip")
-	private String toolTip;	
-	
 	/**
 	 * Empty constructor because of JPA.
 	 */
@@ -46,7 +39,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
 		super(dpuInstance);
 		template = dpuInstance.getTemplate();
-		toolTip = dpuInstance.getToolTip();
 	}
 	
 	/**
@@ -55,7 +47,6 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 	 */
 	public DPUInstanceRecord(String name) {
 		super(name);
-		toolTip = null;
 	}
 	
 	/**
@@ -67,23 +58,22 @@ public class DPUInstanceRecord extends DPURecord implements DataObject {
 		super(template);
 		// and set out variables
 		this.template = template;
-		this.toolTip = null;
 	}
 
+	/**
+	 * 
+	 * @return Used {@link DPUTemplateRecord}.
+	 */
 	public DPUTemplateRecord getTemplate() {
 		return template;
 	}
 
+	/**
+	 * 
+	 * @param template New {@link DPUTemplateRecord}.
+	 */
 	public void setTemplate(DPUTemplateRecord template) {
 		this.template = template;
-	}
-
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
 	}
 
 	@Override

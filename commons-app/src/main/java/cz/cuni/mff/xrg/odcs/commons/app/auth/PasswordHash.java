@@ -22,7 +22,7 @@ public class PasswordHash {
 
 	public static final int HASH_BYTE_SIZE = 32;
 
-	public static final int PBKDF2_ITERATIONS = 10;
+	public static final int PBKDF2_ITERATIONS = 100000;
 
 	public static final int ITERATION_INDEX = 0;
 
@@ -47,7 +47,7 @@ public class PasswordHash {
 	 * @param password the password to hash
 	 * @return a salted PBKDF2 hash of the password
 	 */
-	public static String createHash(char[] password)
+	private static String createHash(char[] password)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// Generate a random salt
 		SecureRandom random = new SecureRandom();
@@ -79,7 +79,7 @@ public class PasswordHash {
 	 * @param correctHash the hash of the valid password
 	 * @return true if the password is correct, false if not
 	 */
-	public static boolean validatePassword(char[] password, String correctHash)
+	private static boolean validatePassword(char[] password, String correctHash)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// Decode the hash into its parameters
 		String[] params = correctHash.split(":");

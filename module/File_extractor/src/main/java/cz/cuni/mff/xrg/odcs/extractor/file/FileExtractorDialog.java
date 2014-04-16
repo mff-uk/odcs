@@ -30,8 +30,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
  *
  * @author Maria Kukhar
  * @author Jiri Tomes
- *
- *
+ * 
  */
 public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
@@ -162,9 +161,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	public FileExtractorConfig getConfiguration() throws ConfigException {
 
 		if (getContext().isTemplate()) {
-			
 		}
-		
+
 		if (!textFieldPath.isValid()) {
 			throw new ConfigException(ex.getMessage(), ex);
 		} else {
@@ -229,8 +227,6 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
 	 * where the configuration object may be edited.
 	 *
-	 * @throws ConfigException Exception not used in current implementation of
-	 *                         this method.
 	 * @param conf Object holding configuration which is used to initialize
 	 *             fields in the configuration dialog.
 	 */
@@ -286,6 +282,10 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	}
 
+	/**
+	 * 
+	 * @return description of file extractor as string.
+	 */
 	@Override
 	public String getDescription() {
 		String path;
@@ -384,7 +384,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		gridLayoutCore = new GridLayout(1, 4);
 		gridLayoutCore.setImmediate(false);
 		gridLayoutCore.setWidth("100%");
-		gridLayoutCore.setHeight("100%");
+		gridLayoutCore.setHeight("-1px");
 		gridLayoutCore.setMargin(true);
 		gridLayoutCore.setSpacing(true);
 
@@ -394,8 +394,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 		// OptionGroup for path type definition
 		pathType = new OptionGroup();
 		pathType.setImmediate(true);
-		pathType.setWidth("-1px");
-		pathType.setHeight("-1px");
+		pathType.setSizeUndefined();
 		pathType.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -430,10 +429,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 									throw ex;
 								}
 							} else {
-								
-								if (!getContext().isTemplate() && stringValue.isEmpty()){
+
+								if (!getContext().isTemplate() && stringValue
+										.isEmpty()) {
 									String message = getValidMessageByFileExtractType(
-												extractType);
+											extractType);
 									ex = new EmptyValueException(message);
 									throw ex;
 

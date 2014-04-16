@@ -1,16 +1,17 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.SucceededListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Wrapper for {@link Upload.SucceededListener} keeping reference to
+ * Wrapper for {@link SucceededListener} keeping reference to
  * authentication details, which were available when this wrapper was
  * constructed.
  *
  * <p>
- * It seems like {@link Upload.SucceededListener} is sometimes executed in a
+ * It seems like {@link SucceededListener} is sometimes executed in a
  * dedicated thread, where authentication is lost. This wrapper should resolve
  * this situation by saving a local reference to {@link Authentication} while it
  * is constructed in authentication-aware thread. Then when event is triggered,

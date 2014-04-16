@@ -15,16 +15,14 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
 
 /**
- * Class wrap {
- *
- * @line DPURecord} and provide functions that enable easy work with
+ * Class wrap {@line DPURecord} and provide functions that enable easy work with
  * configuration and configuration dialog.
  *
  * @author Petyr
  *
  */
-class DPURecordWrap {
-
+public class DPURecordWrap {
+	
 	/**
 	 * Wrapped DPU.
 	 */
@@ -40,6 +38,11 @@ class DPURecordWrap {
 	 */
 	private final boolean isTemplate;
 	
+	/**
+	 * True if the {@link #configuredDialog()} has been called.
+	 */
+	private boolean dialogConfigured = false;
+	
 	protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
 		this.dpuRecord = dpuRecord;
 		this.isTemplate = isTemplate;
@@ -51,6 +54,7 @@ class DPURecordWrap {
 	 * This function does not save data into database.
 	 *
 	 * @throws ConfigException
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
 	 */
 	public void saveConfig() throws ConfigException, DPUWrapException {
 		if (configDialog == null) {
@@ -70,7 +74,7 @@ class DPURecordWrap {
 	 * Return configuration dialog for wrapped DPU. The configuration is not
 	 * set. To set dialog configuration call {@link #configuredDialog}
 	 *
-	 * @return
+	 * @return configuration dialog for wrapped DPU
 	 * @throws ModuleException
 	 * @throws FileNotFoundException
 	 */
@@ -92,6 +96,7 @@ class DPURecordWrap {
 	 * configuration. Otherwise do nothing.
 	 *
 	 * @throws ConfigException
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
 	 */
 	public void configuredDialog()
 			throws ConfigException, DPUWrapException {
@@ -105,6 +110,44 @@ class DPURecordWrap {
 		}
 	}
 
+	/**
+	 * Check if the configuration in configuration dialog has been changed.
+	 * The configuration is assumed to be changed if it satisfy all the 
+	 * following conditions:
+	 * <ul>
+	 * <li>DPU has configuration dialog.</li>
+	 * <li>The dialog has been obtained by calling {@link #getDialog().</li>
+	 * <li>The dialog has been configurated by calling {@link #configuredDialog()}</li>
+	 * </ul>
+	 * @return True if the configuration changed.
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
+	 */
+	public boolean hasConfigChanged() throws DPUWrapException {
+		if (configDialog == null || !dialogConfigured) {
+			return false;
+		}
+		// ok we satisfy necesary conditions, we may ask the dialog 
+		// for changes
+		try {
+			final boolean isChanged = configDialog.hasConfigChanged();
+			return isChanged;
+		} catch (Exception ex) {
+			throw new DPUWrapException("Configuration dialog throws an exception.", ex);
+		}
+	}
+	
+	/**
+	 * Return description from the dialog.
+	 * 
+	 * @return Null in case of no dialog.
+	 */
+	public String getDescription() {
+		if (configDialog == null) {
+			return null;
+		}
+		return configDialog.getDescription();
+	}
+	
 	/**
 	 * Load the configuration dialog for {@link #dpuRecord} and store it into
 	 * {@link #configDialog}. If the dialog is already loaded
@@ -158,6 +201,9 @@ class DPURecordWrap {
 			// no dialog .. nothing to do 
 			return;
 		}
+		// we try to configure the dialog
+		dialogConfigured = true;
 		configDialog.setConfig(dpuRecord.getRawConf());
-	}	
+	}
+		
 }
