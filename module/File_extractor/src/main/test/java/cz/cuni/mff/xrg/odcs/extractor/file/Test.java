@@ -1,16 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileExtractor;
-import cz.cuni.mff.xrg.odcs.extractor.file.FileExtractorConfig;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.rio.RDFFormat;
-
 import java.net.URL;
 
-import static org.junit.Assert.assertTrue;
+import org.openrdf.repository.RepositoryConnection;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class Test {
 
