@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -13,21 +11,17 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.manager.LocalRepositoryManager;
 import org.openrdf.repository.manager.RepositoryProvider;
-import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
-import org.openrdf.sail.nativerdf.NativeStore;
 import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
@@ -110,12 +104,8 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	}
 	
 	@Override
-<<<<<<< HEAD
 	public String getDataUnitName() {
 		return dataUnitName;
-=======
-	public void load(File directory) {
->>>>>>> 86a82bc48522d9f1b8d16599f7995aff474d332f
 	}
 	
 	@Override
