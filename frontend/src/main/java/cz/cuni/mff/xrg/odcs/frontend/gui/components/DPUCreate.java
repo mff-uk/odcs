@@ -34,7 +34,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 
 import javax.annotation.PostConstruct;
@@ -97,6 +96,9 @@ public class DPUCreate extends Window {
 	@Autowired
 	private DPUModuleManipulator dpuManipulator;
 
+	@Autowired
+	private List<DPUValidator> validators;
+	
 	/**
 	 * Basic constructor.
 	 */
@@ -219,10 +221,6 @@ public class DPUCreate extends Window {
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
-
-				// prepare dpu validators
-				List<DPUValidator> validators = new LinkedList<>();
-				validators.add(new DPUDialogValidator());
 
 				final File sourceFile = fileUploadReceiver.getFile();
 				// create new representation

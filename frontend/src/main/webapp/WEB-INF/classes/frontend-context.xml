@@ -11,6 +11,10 @@
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
 	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
 
+	<!-- Scan validators -->
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.dpu.validator"/>
+	
+	
     <!-- Application configuration is taken from war file, so we override it. -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
         <constructor-arg value="/WEB-INF/config.properties" />
