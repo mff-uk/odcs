@@ -2,8 +2,8 @@ package cz.cuni.xrg.intlib.rdf;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -20,8 +20,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,9 @@ public class LocalRDFRepoTest {
 	 */
 	protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	/**
+    final private String encode = "UTF-8";
+
+    /**
 	 * Basic setting before test execution.
 	 */
 	@Before
@@ -96,6 +97,16 @@ public class LocalRDFRepoTest {
 	public void isRepositoryCreated() {
 		assertNotNull(rdfRepo);
 	}
+
+    private void load(String fileName) throws FileNotFoundException, RepositoryException, RDFHandlerException {
+        FileOutputStream out = new FileOutputStream(getFilePath(fileName));
+        OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
+        RDFWriter rdfWriter = Rio.createWriter(Rio.getWriterFormatForFileName(fileName), os);
+        RepositoryConnection connection = rdfRepo.getConnection();
+        connection.export(rdfWriter, rdfRepo.getDataGraph());
+        connection.close();
+
+    }
 
 	/**
 	 * Test adding triple to repository.
@@ -168,82 +179,13 @@ public class LocalRDFRepoTest {
 	public void loadRDFtoXMLFile() {
 
 		String fileName = "RDF_output.rdf";
-		RDFFormatType format = RDFFormatType.RDFXML;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
 
 		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
+            load(fileName);
+		} catch ( Exception ex) {
 			fail(ex.getMessage());
 		}
 
-	}
-
-	/**
-	 * Test loading data to N3 file.
-	 */
-	@Test
-	public void loadRDFtoN3File() {
-
-		String fileName = "N3_output.n3";
-		RDFFormatType format = RDFFormatType.N3;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
-	}
-
-	/**
-	 * Test loading data to TRIG file.
-	 */
-	@Test
-	public void loadRDFtoTRIGFile() {
-
-		String fileName = "TRIG_output.trig";
-		RDFFormatType format = RDFFormatType.TRIG;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
-	}
-
-	/**
-	 * Test loading data to TTL file.
-	 */
-	@Test
-	public void loadRDFtoTURTLEFile() {
-
-		String fileName = "TURTLE_output.ttl";
-		RDFFormatType format = RDFFormatType.TTL;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
 	}
 
 
@@ -494,26 +436,6 @@ public class LocalRDFRepoTest {
 		assertTrue(newSize > size);
 	}
 
-	/**
-	 * Test loading data to RDF/XML file.
-	 */
-	@Test
-	public void loadAllToXMLfile() {
-
-		String fileName = "AllData_output.rdf";
-		RDFFormatType format = RDFFormatType.RDFXML;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
-	}
 
 	/**
 	 * Test SPARQL transform using SPARQL update query.
@@ -625,23 +547,6 @@ public class LocalRDFRepoTest {
 
 	}
 
-	private void TEDloadtoTTLFile() {
-
-		String fileName = "output-ted-test.ttl";
-		RDFFormatType format = RDFFormatType.TTL;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
-	}
-
 	/**
 	 * Test running pipeline 'TED' - 2 extraction, 1 transform, 1 load to TTL
 	 * file.
@@ -651,7 +556,6 @@ public class LocalRDFRepoTest {
 		TEDextractFile1ToRepository();
 		TEDextractFile2ToRepository();
 		TEDTransformSPARQL();
-		TEDloadtoTTLFile();
 
         RepositoryConnection connection = rdfRepo.getConnection();
 		long addedData = connection.size(rdfRepo.getDataGraph());
@@ -850,24 +754,6 @@ public class LocalRDFRepoTest {
 		LOG.debug("Transform Query 3 - OK");
 	}
 
-	private void loadBigDataToN3File() {
-
-		String fileName = "BIG_Data.n3";
-		RDFFormatType format = RDFFormatType.N3;
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			rdfRepo.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
-
-		LOG.debug("LOADING from FILE - OK");
-	}
 
 	/**
 	 * Run 'BIG' pipeline - 3 transformer, 1 loader to N3 file.
@@ -880,7 +766,6 @@ public class LocalRDFRepoTest {
 		BigTransformQuery1();
 		BigTransformQuery2();
 		BigTransformQuery3();
-		loadBigDataToN3File();
 	}
 
 	/**
@@ -1013,18 +898,11 @@ public class LocalRDFRepoTest {
 	 */
 	protected void loadToFile(ManagableRdfDataUnit repository) {
 		String fileName = "TTL_output.ttl";
-		RDFFormatType format = RDFFormatType.TTL;
 
-		boolean canBeOverWriten = true;
-		boolean isNameUnique = false;
-
-		try {
-			repository.loadToFile(
-					getFilePath(fileName), format, canBeOverWriten,
-					isNameUnique);
-
-		} catch (CannotOverwriteFileException | RDFException ex) {
-			fail(ex.getMessage());
-		}
+        try {
+            load(fileName);
+        } catch ( Exception ex) {
+            fail(ex.getMessage());
+        }
 	}
 }

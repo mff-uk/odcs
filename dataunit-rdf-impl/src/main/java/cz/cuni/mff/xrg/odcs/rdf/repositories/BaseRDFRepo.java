@@ -146,61 +146,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath         Path to file, where RDF data will be saved.
-	 * @param formatType       Type of RDF format for saving data (example:
-	 *                         TURTLE, RDF/XML,etc.)
-	 * @param canFileOverWrite boolean value, if existing file can be
-	 *                         overwritten.
-	 * @param isNameUnique     boolean value, if every pipeline execution has
-	 *                         his unique name.
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
-	 */
-	@Override
-	public void loadToFile(String filePath, RDFFormatType formatType,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
-
-		ParamController.testNullParameter(filePath,
-				"Mandatory file path in File_loader is null.");
-		ParamController.testEmptyParameter(filePath,
-				"Mandatory file path in File_loader is empty.");
-
-		File dataFile = new File(filePath);
-		File directory = new File(dataFile.getParent());
-
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
-
-		if (!dataFile.exists()) {
-			createNewFile(dataFile);
-
-		} else {
-			if (isNameUnique) {
-                //TODO resolve this, java has own unique name generator
-				String uniqueFileName = UniqueNameGenerator
-						.getNextName(dataFile.getName());
-
-                dataFile = new File(directory, uniqueFileName);
-				createNewFile(dataFile);
-
-			} else if (canFileOverWrite) {
-				createNewFile(dataFile);
-			} else {
-				logger.debug("File existed and cannot be overwritten");
-				throw new CannotOverwriteFileException();
-			}
-
-		}
-
-		writeDataIntoFile(dataFile, formatType);
-
-	}
-
-	/**
 	 * Return iterable collection of all statemens in repository. Needed for
 	 * adding/merge large collection when is not possible to return all
 	 * statements (RDF triples).
@@ -1051,46 +996,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		return updateQuery;
 
 
-	}
-
-	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
-			throws RDFException {
-
-		try (OutputStreamWriter os = new OutputStreamWriter(
-				new FileOutputStream(
-				dataFile.getAbsoluteFile()), Charset
-				.forName(encode))) {
-
-			if (formatType == RDFFormatType.AUTO) {
-				String fileName = dataFile.getName();
-				RDFFormat newFormat = RDFFormat.forFileName(fileName,
-						RDFFormat.RDFXML);
-				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
-			}
-
-			MyRDFHandler handler = new MyRDFHandler(os, formatType);
-
-			RepositoryConnection connection = getConnection();
-
-			if (dataGraph != null) {
-				connection.export(handler, dataGraph);
-			} else {
-				connection.export(handler);
-			}
-
-			//connection.commit();
-
-		} catch (IOException ex) {
-			throw new RDFException("Problems with file stream:" + ex
-					.getMessage(), ex);
-		} catch (RDFHandlerException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			throw new RDFException(
-					"Repository connection failed while trying to load into XML file."
-					+ ex.getMessage(), ex);
-		}
 	}
 
 	private void setErrorsListenerToParser(RDFParser parser,
