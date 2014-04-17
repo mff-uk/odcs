@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -57,6 +57,10 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 */
 	public LocalRDFRepo(String repositoryPath, String dataUnitName,
 			String dataGraph) {
+		this.dataUnitName = dataUnitName;
+		this.requestedConnections = new ArrayList<>();
+		this.ownerThread = Thread.currentThread();
+
 		setDataGraph(dataGraph);
 		try {
 			LocalRepositoryManager localRepositoryManager = RepositoryProvider
@@ -205,22 +209,24 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
 					targetGraphName);
 
-			GraphQuery result = connection.prepareGraphQuery(
+			//GraphQuery result = 
+			Update update =connection.prepareUpdate(
 					QueryLanguage.SPARQL, mergeQuery);
-
+	
+			update.execute();
+			
 			LOG.info("START merging {} triples from <{}> to <{}>.",
 					connection.size(getDataGraph()), sourceGraphName,
 					targetGraphName);
 
-			result.evaluate();
 
 			LOG.info("Merge SUCCESSFUL");
 
 		} catch (MalformedQueryException ex) {
 			LOG.error("NOT VALID QUERY: {}", ex);
-		} catch (QueryEvaluationException ex) {
-			LOG.error("MERGING STOPPED: {}", ex);
 		} catch (RepositoryException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (UpdateExecutionException ex) {
 			LOG.error(ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {

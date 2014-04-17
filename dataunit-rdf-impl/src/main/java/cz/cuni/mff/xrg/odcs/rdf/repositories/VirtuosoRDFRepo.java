@@ -65,7 +65,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		
 		setDataGraph(dataGraph);
 
-		this.repository = new VirtuosoRepository(host, user, password, null);
+		this.repository = new VirtuosoRepository(host, user, password);
 		try {
 			repository.initialize();
 		} catch (RepositoryException ex) {
