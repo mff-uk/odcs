@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import org.openrdf.rio.helpers.BasicParserSettings;
  * {@link #findedProblems}. This defined target {@link RDFDataUnit} is more
  * described in method {@link #getGoalRepository()}. If target is
  * {@link #output} then valid data are loaded direct into {@link #output}, if
- * it´s instance of {@link LocalRDFRepo} than is destroyed after validation
+ * it´s instance of {@link LocalRDFDataUnit} than is destroyed after validation
  * ending proccess - execute method {@link #areDataValid().
  * }
  *
@@ -85,7 +85,7 @@ public class RepositoryDataValidator implements DataValidator {
 	 * If is defined output {@link RDFDataUnit} where to load RDF data than
 	 * return this {@link RDFDataUnit} instance, otherwise it´s created and
 	 * return new instance {@link RDFDataUnit } as implementation of
-	 * {@link LocalRDFRepo} which is used only for validation process and it´s
+	 * {@link LocalRDFDataUnit} which is used only for validation process and it´s
 	 * destroyed after data validation.
 	 *
 	 * See method {@link #areDataValid()} for more info.

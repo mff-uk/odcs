@@ -14,13 +14,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * Provide action that should be perform before every DPU execution. Must not
  * execute the DPU. T
  * 
- * The {@link PreExecutor}s are used as a singletons, so they
+ * The {@link DPUPreExecutor}s are used as a singletons, so they
  * must be able to run concurrently on multiple instances.
  * 
  * The PreExecutors are executed in order that is defined by
  * {@link Ordered}
  * 
- * As the {@link PreExecutor}s are executed on every DPU .. even on 
+ * As the {@link DPUPreExecutor}s are executed on every DPU .. even on 
  * those that have been finished previously (pause/resume .. or backend 
  * has been shutdown) .. they should not modify the content. If they 
  * do please filter their usage for non {@link DPUExecutionState#FINISHED}
@@ -33,7 +33,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * @author Petyr
  * 
  */
-public interface PreExecutor extends Ordered {
+public interface DPUPreExecutor extends Ordered {
 	
 	/**
 	 * Should perform pre-execution actions. If return false then the execution

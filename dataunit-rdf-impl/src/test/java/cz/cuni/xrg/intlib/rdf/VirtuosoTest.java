@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  *
@@ -141,7 +141,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 				@Override
 				public void run() {
 
-					VirtuosoRDFRepo virtuosoRepo = RDFDataUnitFactory
+					VirtuosoRDFDataUnit virtuosoRepo = RDFDataUnitFactory
 							.createVirtuosoRDFRepo(
 							hostName,
 							port,

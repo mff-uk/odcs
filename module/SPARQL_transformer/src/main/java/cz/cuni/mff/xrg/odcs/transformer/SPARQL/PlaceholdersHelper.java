@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +111,7 @@ public class PlaceholdersHelper {
 	 *         only if method {@link #needExecutableRepository()} returns TRUE;
 	 */
 	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
-		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
+		LocalRDFDataUnit tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
 				"executable");
         RepositoryConnection tempRepositoryConnection = tempRepository.getConnection();
         for (RDFDataUnit repository : usedRepositories) {

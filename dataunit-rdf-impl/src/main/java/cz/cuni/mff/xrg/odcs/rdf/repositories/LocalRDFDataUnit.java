@@ -30,8 +30,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  *
  * @author Jiri Tomes
  */
-public class LocalRDFRepo extends BaseRDFRepo {
-	private static final Logger LOG = LoggerFactory.getLogger(LocalRDFRepo.class);
+public class LocalRDFDataUnit extends BaseRDFRepo {
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRDFDataUnit.class);
 	
 	public static final String GLOBAL_REPOSITORY_ID = "sdavhniw2uv3ni32u3fkhj";
 	
@@ -55,7 +55,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * @param dataUnitName
 	 *            DataUnit's name. If not used in Pipeline can be empty String.
 	 */
-	public LocalRDFRepo(String repositoryPath, String dataUnitName,
+	public LocalRDFDataUnit(String repositoryPath, String dataUnitName,
 			String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
@@ -194,7 +194,7 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 */
 	@Override
 	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-		if (!(otherDataUnit instanceof LocalRDFRepo)) {
+		if (!(otherDataUnit instanceof LocalRDFDataUnit)) {
 			throw new IllegalArgumentException("Incompatible repository type");
 		}
 		
@@ -209,7 +209,6 @@ public class LocalRDFRepo extends BaseRDFRepo {
 			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
 					targetGraphName);
 
-			//GraphQuery result = 
 			Update update =connection.prepareUpdate(
 					QueryLanguage.SPARQL, mergeQuery);
 	

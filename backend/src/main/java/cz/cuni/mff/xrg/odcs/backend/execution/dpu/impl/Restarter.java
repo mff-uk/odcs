@@ -31,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
  * 
  */
 @Component
-public class Restarter extends PreExecutorBase {
+public class Restarter extends DPUPreExecutorBase {
 
 	public static final int ORDER = Ordered.LOWEST_PRECEDENCE;
 

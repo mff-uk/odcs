@@ -32,7 +32,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 
 /**
  *
@@ -897,7 +897,7 @@ public class LocalRDFRepoTest {
 					try {
 						Path path = Files.createTempDirectory("directory");
 
-						LocalRDFRepo localRepository = RDFDataUnitFactory
+						LocalRDFDataUnit localRepository = RDFDataUnitFactory
 								.createLocalRDFRepo(path
 								.toString(),  "", "http://default");
 

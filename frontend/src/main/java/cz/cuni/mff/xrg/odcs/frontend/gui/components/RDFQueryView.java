@@ -422,7 +422,7 @@ public class RDFQueryView extends QueryView {
 	/**
 	 * Prepare data file for download after SELECT or CONSTRUCT query.
 	 *
-	 * @param repository {@link LocalRDFRepo} of selected graph.
+	 * @param repository {@link LocalRDFDataUnit} of selected graph.
 	 * @param query {@link String} containing query to execute on repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */

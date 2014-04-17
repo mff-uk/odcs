@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;

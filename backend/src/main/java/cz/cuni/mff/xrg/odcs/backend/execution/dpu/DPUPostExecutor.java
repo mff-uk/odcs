@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
  * Provide action that should be perform pipeline execution.
- * The {@link PostExecutor}s are used as a singletons, so they
+ * The {@link DPUPostExecutor}s are used as a singletons, so they
  * must be able to run concurrently on multiple instances.
  * 
  * The PreExecutors are executed in order that is defined by
@@ -20,7 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * @author Petyr
  *
  */
-public interface PostExecutor extends Ordered {
+public interface DPUPostExecutor extends Ordered {
 	
 	/**
 	 * Should perform post-execution actions. If return false then the execution

@@ -15,8 +15,8 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
@@ -82,7 +82,7 @@ public class RDFDataUnitHelper {
 
 					String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
-					LocalRDFRepo repository = RDFDataUnitFactory
+					LocalRDFDataUnit repository = RDFDataUnitFactory
 							.createLocalRDFRepo(dpuStorage.getAbsolutePath(),
 							
 							info.getName(), namedGraph);
@@ -111,7 +111,7 @@ public class RDFDataUnitHelper {
 	 * @return New instance of virtuoso repository with set from configuration
 	 *         file placed on home directory path.
 	 */
-	public static VirtuosoRDFRepo getVirtuosoRepository(String namedGraph) {
+	public static VirtuosoRDFDataUnit getVirtuosoRepository(String namedGraph) {
 		AppConfig appConfig = ((AppEntry) UI.getCurrent()).getBean(
 				AppConfig.class).getSubConfiguration(
 				ConfigProperty.RDF);
@@ -126,7 +126,7 @@ public class RDFDataUnitHelper {
 		final String password =
 				appConfig.getString(ConfigProperty.DATABASE_PASSWORD);
 
-		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
+		VirtuosoRDFDataUnit virtuosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(
 				hostName,
 				port,

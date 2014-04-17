@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
- * Take care about calling appropriate {@link PreExecutor}s and
- * {@link PostExecutor}.
+ * Take care about calling appropriate {@link DPUPreExecutor}s and
+ * {@link DPUPostExecutor}.
  *
  * The {@link DPUExecutor} must be bind to the given {@link PipelineExecution} and
  * {@link DPUInstanceRecord} by calling
@@ -62,18 +62,18 @@ public final class DPUExecutor implements Runnable {
 	private ModuleFacade moduleFacade;
 
 	/**
-	 * List of all {@link PreExecutor}s to execute before running DPU. Can be
+	 * List of all {@link DPUPreExecutor}s to execute before running DPU. Can be
 	 * null.
 	 */
 	@Autowired(required = false)
-	private List<PreExecutor> preExecutors;
+	private List<DPUPreExecutor> dPUPreExecutors;
 
 	/**
-	 * List of all {@link PostExecutor}s to execute after DPU execution has
+	 * List of all {@link DPUPostExecutor}s to execute after DPU execution has
 	 * finished. Can be null.
 	 */
 	@Autowired(required = false)
-	private List<PostExecutor> postExecutors;
+	private List<DPUPostExecutor> dPUPostExecutors;
 
 	/**
 	 * Publisher instance for publishing pipeline execution events.
@@ -114,12 +114,12 @@ public final class DPUExecutor implements Runnable {
 	 */
 	@PostConstruct
 	public void init() {
-		if (preExecutors != null) {
-			Collections.sort(preExecutors,
+		if (dPUPreExecutors != null) {
+			Collections.sort(dPUPreExecutors,
 					AnnotationAwareOrderComparator.INSTANCE);
 		}
-		if (postExecutors != null) {
-			Collections.sort(postExecutors,
+		if (dPUPostExecutors != null) {
+			Collections.sort(dPUPostExecutors,
 					AnnotationAwareOrderComparator.INSTANCE);
 		}
 
@@ -172,9 +172,9 @@ public final class DPUExecutor implements Runnable {
 	}
 
 	/**
-	 * Execute {@link PreExecutor} from {@link DPUExecutor#preExecutors}. If any
-	 * {@link PreExecutor} return false then return false. If there are no
-	 * {@link PreExecutor} ({@link DPUExecutor#preExecutors} == null) then
+	 * Execute {@link DPUPreExecutor} from {@link DPUExecutor#dPUPreExecutors}. If any
+	 * {@link DPUPreExecutor} return false then return false. If there are no
+	 * {@link DPUPreExecutor} ({@link DPUExecutor#dPUPreExecutors} == null) then
 	 * instantly return true.
 	 *
 	 * @param dpuInstance Instance of DPU to execute.
@@ -183,12 +183,12 @@ public final class DPUExecutor implements Runnable {
 	 */
 	private boolean executePreExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {
-		if (preExecutors == null) {
+		if (dPUPreExecutors == null) {
 			return true;
 		}
 
 		boolean result = true;
-		for (PreExecutor item : preExecutors) {
+		for (DPUPreExecutor item : dPUPreExecutors) {
 			LOG.trace("Executing pre-executor: {}", item.getClass().getSimpleName());
 			
 			try {
@@ -257,9 +257,9 @@ public final class DPUExecutor implements Runnable {
 	}
 
 	/**
-	 * Execute {@link PostExecutor} from {@link DPUExecutor#postExecutors}. If any
-	 * {@link PostExecutor} return false then return false. If there are no
-	 * {@link PostExecutor} ({@link DPUExecutor#postExecutors} == null) then
+	 * Execute {@link DPUPostExecutor} from {@link DPUExecutor#dPUPostExecutors}. If any
+	 * {@link DPUPostExecutor} return false then return false. If there are no
+	 * {@link DPUPostExecutor} ({@link DPUExecutor#dPUPostExecutors} == null) then
 	 * instantly return true.
 	 *
 	 * @param dpuInstance Instance of DPU that has been executed.
@@ -268,12 +268,12 @@ public final class DPUExecutor implements Runnable {
 	 */
 	private boolean executePostExecutors(Object dpuInstance,
 			ProcessingUnitInfo unitInfo) {
-		if (postExecutors == null) {
+		if (dPUPostExecutors == null) {
 			return true;
 		}
 
 		boolean result = true;
-		for (PostExecutor item : postExecutors) {
+		for (DPUPostExecutor item : dPUPostExecutors) {
 			LOG.trace("Executing post-executor: {}", item.getClass().getSimpleName());
 			try 
 			{

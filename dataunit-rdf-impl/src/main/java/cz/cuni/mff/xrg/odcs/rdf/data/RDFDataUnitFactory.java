@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.data;
 
 import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,12 +39,12 @@ public class RDFDataUnitFactory {
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @param namedGraph   String name of graph, where RDF data are saved.
-	 * @return New {@link LocalRDFRepo} instance.
+	 * @return New {@link LocalRDFDataUnit} instance.
 	 */
-	public static LocalRDFRepo createLocalRDFRepo(String repoPath, 
+	public static LocalRDFDataUnit createLocalRDFRepo(String repoPath, 
 			String dataUnitName, String namedGraph) {
 
-		LocalRDFRepo localRepo = new LocalRDFRepo(repoPath, dataUnitName, namedGraph);
+		LocalRDFDataUnit localRepo = new LocalRDFDataUnit(repoPath, dataUnitName, namedGraph);
 		return localRepo;
 	}
 
@@ -55,9 +55,9 @@ public class RDFDataUnitFactory {
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @throws RuntimeException if temp directory for repository can not create.
-	 * @return New {@link LocalRDFRepo} instance in default set temp directory.
+	 * @return New {@link LocalRDFDataUnit} instance in default set temp directory.
 	 */
-	public static LocalRDFRepo createLocalRDFRepo(String dataUnitName) throws RuntimeException {
+	public static LocalRDFDataUnit createLocalRDFRepo(String dataUnitName) throws RuntimeException {
 		Path repoPath = null;
 
 		try {
@@ -87,10 +87,10 @@ public class RDFDataUnitFactory {
 	 *                     String.
 	 * @param config	      configuration for
 	 *                     {@link FailureTolerantRepositoryWrapper}
-	 * @return New {@link VirtuosoRDFRepo} instance.
+	 * @return New {@link VirtuosoRDFDataUnit} instance.
 	 * @throws RepositoryException 
 	 */
-	public static VirtuosoRDFRepo createVirtuosoRDFRepo(
+	public static VirtuosoRDFDataUnit createVirtuosoRDFRepo(
 			String hostName,
 			String port,
 			String user,
@@ -104,7 +104,7 @@ public class RDFDataUnitFactory {
 		final String JDBC = "jdbc:virtuoso://" + hostName + ":"
 				+ port + "/charset=UTF-8/log_enable=2";
 
-		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(
+		VirtuosoRDFDataUnit virtuosoRepo = new VirtuosoRDFDataUnit(
 				JDBC, user, password, dataUnitName, namedGraph);
 
 		return virtuosoRepo;

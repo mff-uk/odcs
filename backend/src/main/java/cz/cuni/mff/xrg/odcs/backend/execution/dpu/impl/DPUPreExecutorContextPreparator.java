@@ -31,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * 
  */
 @Component
-class ContextPreparator extends PreExecutorBase {
+class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
 
 	/**
 	 * Pre-executor order.
@@ -42,12 +42,12 @@ class ContextPreparator extends PreExecutorBase {
 	 * Event publisher used to publish error event.
 	 */
 	@Autowired
-	private ApplicationEventPublisher eventPublish;	
+	private ApplicationEventPublisher eventPublisher;	
 	
 	@Autowired
 	private ContextFacade contextFacade;
 	
-	public ContextPreparator() {
+	public DPUPreExecutorContextPreparator() {
 		super(Arrays.asList(DPUExecutionState.PREPROCESSING));	
 	}
 	
@@ -91,7 +91,7 @@ class ContextPreparator extends PreExecutorBase {
 					message.append("node.getDpuInstance().getName()");
 					message.append("'");
 					// publish message
-					eventPublish.publishEvent(
+					eventPublisher.publishEvent(
 							DPUEvent.createPreExecutorFailed(context, this, message.toString()));
 					return false;
 				}
@@ -99,7 +99,7 @@ class ContextPreparator extends PreExecutorBase {
 				try {
 					contextFacade.merge(context, sourceContext, edge.getScript());
 				} catch (ContextException e) {
-					eventPublish.publishEvent(
+					eventPublisher.publishEvent(
 							DPUEvent.createPreExecutorFailed(context, this,
 									"Failed to merge contexts.", e));
 					return false;

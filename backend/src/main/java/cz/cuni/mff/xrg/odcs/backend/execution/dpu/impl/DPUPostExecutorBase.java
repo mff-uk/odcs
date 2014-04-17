@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PostExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
- * Extended base implementation {@link PostExecutor}. Offers execution only for
+ * Extended base implementation {@link DPUPostExecutor}. Offers execution only for
  * given {@link DPUExecutionState}s.
  * 
  * Put the post-executor code into 
@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * @author Petyr
  * 
  */
-abstract class PostExecutorBase implements PostExecutor {
+abstract class DPUPostExecutorBase implements DPUPostExecutor {
 
 	/**
 	 * Contains states on which this execution will be executed, other states
@@ -30,24 +30,11 @@ abstract class PostExecutorBase implements PostExecutor {
 	private final List<DPUExecutionState> executionStates;
 
 	/**
-	 * If true then execution only if the state of the DPU is in
-	 * {@link executionStates} if false then executed otherwise.
-	 */
-	private final boolean polarity;
-
-	/**
 	 * @param executionStates List of {@link DPUExecutionState} on which run
 	 *            {@link #execute(Node, Map, Object, PipelineExecution, ProcessingUnitInfo)}
 	 */
-	public PostExecutorBase(List<DPUExecutionState> executionStates) {
+	public DPUPostExecutorBase(List<DPUExecutionState> executionStates) {
 		this.executionStates = executionStates;
-		this.polarity = true;
-	}
-
-	public PostExecutorBase(List<DPUExecutionState> executionStates,
-			boolean polarity) {
-		this.executionStates = executionStates;
-		this.polarity = polarity;
 	}
 
 	@Override
@@ -57,9 +44,7 @@ abstract class PostExecutorBase implements PostExecutor {
 			PipelineExecution execution,
 			ProcessingUnitInfo unitInfo) {
 		// shall we execute ?
-		final boolean contains = executionStates.contains(unitInfo.getState());
-
-		if ((contains && polarity) || (!contains && !polarity)) {
+		if (executionStates.contains(unitInfo.getState())) {
 			return execute(node, contexts, dpuInstance, execution, unitInfo);
 		} else {
 			return true;

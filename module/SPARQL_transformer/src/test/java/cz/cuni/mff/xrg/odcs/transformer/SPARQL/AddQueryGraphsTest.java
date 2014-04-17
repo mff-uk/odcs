@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class AddQueryGraphsTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			AddQueryGraphsTest.class);
 
-	private static LocalRDFRepo repository;
+	private static LocalRDFDataUnit repository;
 
 	private static String GRAPH_NAME;
 

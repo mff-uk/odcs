@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -128,7 +128,7 @@ class RdfDatabase {
 			
 		}
 		
-		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
+		VirtuosoRDFDataUnit virtuosoRepository = RDFDataUnitFactory
 				.createVirtuosoRDFRepo(
 						hostName,
 						port,

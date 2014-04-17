@@ -24,9 +24,9 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  *
  * @author Jiri Tomes
  */
-public final class VirtuosoRDFRepo extends BaseRDFRepo {
+public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFDataUnit.class);
 
 	/**
 	 * DataUnit's name.
@@ -57,7 +57,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 *                      empty String.
 	 * @throws RepositoryException 
 	 */
-	public VirtuosoRDFRepo(String host, String user, String password,
+	public VirtuosoRDFDataUnit(String host, String user, String password,
 			String dataUnitName, String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
@@ -203,7 +203,7 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 */
 	@Override
 	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-		if (!(otherDataUnit instanceof VirtuosoRDFRepo)) {
+		if (!(otherDataUnit instanceof VirtuosoRDFDataUnit)) {
 			throw new IllegalArgumentException("Incompatible repository type");
 		}
 		
