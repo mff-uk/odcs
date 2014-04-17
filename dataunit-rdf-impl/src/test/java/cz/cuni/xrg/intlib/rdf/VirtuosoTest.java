@@ -1,22 +1,24 @@
 package cz.cuni.xrg.intlib.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Properties;
-import org.junit.*;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import static org.junit.Assert.*;
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 
 /**
  *
@@ -125,29 +127,6 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
-	private void extractTwoGigaFile() throws RepositoryException {
-		String suffix = "ted1.n3";
-		String baseURI = "";
-		boolean useSuffix = true;
-		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
-
-        RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getDataGraph());
-
-		try {
-			rdfRepo.extractFromFile(FileExtractType.PATH_TO_FILE, null,
-					testFileDir, suffix, baseURI, useSuffix, handlerType);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		long newSize = connection.size(rdfRepo.getDataGraph());
-
-		LOG.debug("EXTRACTING from FILE - OK");
-		LOG.debug(
-				"EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
-	}
-
 	/**
 	 * Testing paralell pipeline running.
 	 */
@@ -174,11 +153,11 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 					synchronized (virtuosoRepo) {
                         try {
                             addParalelTripleToRepository(virtuosoRepo);
+                            extractFromFileToRepository(virtuosoRepo);
                         } catch (RepositoryException e) {
                             throw new RuntimeException(e);
                         }
-                        extractFromFileToRepository(virtuosoRepo);
-						transformOverRepository(virtuosoRepo);
+                        transformOverRepository(virtuosoRepo);
 						loadToFile(virtuosoRepo);
 					}
 					virtuosoRepo.clean();

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.enums;
+package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import java.util.HashMap;
 import java.util.Map;

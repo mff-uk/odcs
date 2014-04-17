@@ -23,39 +23,6 @@ import org.openrdf.rio.RDFFormat;
 public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 
 	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file    File contains RDF data to extract.
-	 * @param format  Specifies concrete {@link RDFFormat} (e.g., RDFXML,
-	 *                Turtle, ..) if RDF format can not be detected from file
-	 *                suffix.
-	 * @param baseURI String name of defined used URI prefix namespace used by
-	 *                all triples.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI)
-			throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file               File contains RDF data to extract.
-	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
-	 *                           RDFXML, Turtle, ..) if RDF format can not be
-	 *                           detected from file suffix.
-	 * @param baseURI            String name of defined used URI prefix
-	 *                           namespace used by all triples.
-	 *                           HandlerExtractType handlerExtractType
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data.
-	 * @throws RDFException when extraction fail.
-	 */
-	public void extractFromFile(File file, RDFFormat format, String baseURI,
-			HandlerExtractType handlerExtractType) throws RDFException;
-
-	/**
 	 * Make select query over repository data and return tables as result.
 	 *
 	 * @param selectQuery String representation of SPARQL query.

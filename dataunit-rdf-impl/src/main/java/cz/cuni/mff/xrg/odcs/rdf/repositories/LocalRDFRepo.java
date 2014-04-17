@@ -110,8 +110,12 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	}
 	
 	@Override
+<<<<<<< HEAD
 	public String getDataUnitName() {
 		return dataUnitName;
+=======
+	public void load(File directory) {
+>>>>>>> 86a82bc48522d9f1b8d16599f7995aff474d332f
 	}
 	
 	@Override

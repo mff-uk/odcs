@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,8 +250,17 @@ public class TestEnvironment {
 					+ resourceName);
 		}
 		File inputFile = new File(url.getPath());
-		// return file
-		rdf.addFromFile(inputFile, format);
+        // return file
+        try {
+            RepositoryConnection connection = rdf.getConnection();
+            String baseURI = "";
+            RDFFormat fileFormat = RDFFormat.forFileName(inputFile.getAbsolutePath(), RDFFormat.RDFXML);
+            connection.add(inputFile, baseURI, fileFormat, rdf.getDataGraph());
+        } catch (Exception e) {
+            throw new RDFException("Problem with repository: "
+                    + resourceName);
+        }
+
 		addInput(name, rdf);
 		return rdf;
 	}

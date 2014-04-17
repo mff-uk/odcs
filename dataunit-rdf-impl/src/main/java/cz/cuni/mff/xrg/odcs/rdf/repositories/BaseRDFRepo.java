@@ -1,16 +1,48 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import java.io.*;
+import info.aduna.iteration.EmptyIteration;
+import info.aduna.iteration.Iterations;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.*;
+import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
+import org.openrdf.query.Binding;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.TupleQueryResultHandlerException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
@@ -21,14 +53,23 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
-import org.openrdf.rio.*;
+import org.openrdf.rio.ParseErrorListener;
+import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.enums.*;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.MyRDFHandler;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -43,8 +84,6 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import info.aduna.iteration.EmptyIteration;
-import info.aduna.iteration.Iterations;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -114,6 +153,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				predicates);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
 	 * serialization of RDF data
@@ -344,25 +384,9 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 
 		writeDataIntoFile(file, formatType);
+=======
+>>>>>>> 86a82bc48522d9f1b8d16599f7995aff474d332f
 
-	}
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath   Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
-	 */
-	@Override
-	public void loadToFile(String filePath,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException {
-
-		loadToFile(filePath, formatType, false, false);
-	}
 
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
@@ -403,7 +427,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				String uniqueFileName = UniqueNameGenerator
 						.getNextName(dataFile.getName());
 
-				dataFile = new File(directory, uniqueFileName);
+                dataFile = new File(directory, uniqueFileName);
 				createNewFile(dataFile);
 
 			} else if (canFileOverWrite) {
@@ -631,49 +655,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	}
 
-//        @Override 
-//        public String executeConstructQuery2(String constructQuery, RDFFormatType rdfFormatType, String file) throws InvalidQueryException {
-//
-//            try {
-//                RepositoryConnection connection = getConnection();
-//
-//
-//
-//
-//                StringWriter sw = new StringWriter();
-//                //PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-//                RDFWriter writer = Rio.createWriter(RDFFormat.NTRIPLES, sw);
-//
-//
-//                connection.prepareGraphQuery(QueryLanguage.SPARQL, constructQuery).evaluate(writer);
-//                logger.info("Evaluating query {}", constructQuery);
-//
-//                String out = sw.toString();
-//                logger.debug("Out: {}", sw.toString());
-//                return out;
-//                //return "";
-//
-//
-//
-//            } catch (RepositoryException ex) {
-//                hasBrokenConnection = true;
-//                logger.error("Connection to RDF repository failed. {}", ex
-//                        .getMessage(), ex);
-//            } catch (MalformedQueryException ex) {
-//                logger.error(ex.getLocalizedMessage());
-//            } catch (QueryEvaluationException ex) {
-//                 logger.error(ex.getLocalizedMessage());
-//            } catch (RDFHandlerException ex) {
-//                 logger.error(ex.getLocalizedMessage());
-////            } catch (UnsupportedEncodingException ex) {
-////                java.util.logging.Logger.getLogger(BaseRDFRepo.class.getName()).log(Level.SEVERE, null, ex);
-////            } catch (IOException ex) {
-////                 logger.error(ex.getLocalizedMessage());
-////            }
-//            }
-//            throw new InvalidQueryException("Executing query " + constructQuery + " failed");
-//        }
-//        
 	/**
 	 * Make construct query over repository data and return file where RDF data
 	 * as result are saved.
@@ -1355,6 +1336,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 	}
 
+<<<<<<< HEAD
 	private void extractDataFileFromHTTPSource(String path, RDFFormat format,
 			String baseURI,
 			HandlerExtractType handlerExtractType) throws RDFException {
@@ -1547,6 +1529,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
                     throw new RDFException(ex.getMessage(), ex);
             }
 	}
+=======
+>>>>>>> 86a82bc48522d9f1b8d16599f7995aff474d332f
 
 	private void setErrorsListenerToParser(RDFParser parser,
 			final StatisticalHandler handler) {
@@ -1572,70 +1556,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 				handler.addError(msg, lineNo, colNo);
 			}
 		});
-	}
-
-	/**
-	 * Add RDF data contains in string in given RDF format to set graphs in
-	 * repository.
-	 *
-	 * @param rdfString String value of RDF data you want to add to repository.
-	 * @param format    RDF format of data used in rdfString.
-	 * @param graphs    Graphs where RDF will be stored.
-	 * @throws RDFException if data in rdfString are not in given RDF format.
-	 */
-	protected void addRDFStringToRepository(String rdfString, RDFFormat format,
-			Resource... graphs) throws RDFException {
-
-		try {
-
-			RepositoryConnection connection = getConnection();
-			StringReader reader = new StringReader(rdfString);
-
-			if (graphs != null) {
-
-				connection.add(reader, "", format, graphs);
-			} else {
-				connection.add(reader, "", format);
-			}
-
-			//connection.commit();
-
-
-		} catch (RepositoryException e) {
-			hasBrokenConnection = true;
-			logger.debug(e.getMessage());
-
-		} catch (IOException | RDFParseException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		}
-	}
-
-
-	/**
-	 * Add concrete statement to repository.
-	 *
-	 * @param statement Triple you can add to repository.
-	 * @param graphs    Graphs as resources where are statement add to.
-	 */
-	protected void addStatement(Statement statement, Resource... graphs) {
-
-		try {
-
-			RepositoryConnection connection = getConnection();
-			if (graphs != null) {
-				connection.add(statement, graphs);
-			} else {
-				connection.add(statement);
-			}
-
-			//connection.commit();
-
-		} catch (RepositoryException e) {
-			hasBrokenConnection = true;
-			logger.debug(e.getMessage());
-
-
-		}
 	}
 
 	/**
@@ -1694,6 +1614,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Returns collection of {@link RDFTriple} with all triples from actually
 	 * set named graph.
@@ -1724,6 +1645,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		return triples;
 	}
 
+=======
+>>>>>>> 86a82bc48522d9f1b8d16599f7995aff474d332f
 	@Override
 	public void close() throws IOException {
 		shutDown();

@@ -15,8 +15,6 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -58,97 +56,6 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
-
-	/**
-	 * Extract RDF triples from RDF file to data unit. It expects RDF/XML
-	 * serialization of RDF data
-	 *
-	 * @param file File contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    @Deprecated
-    //TODO move to rdf extractor
-    public void addFromFile(File file) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file   File contains RDF data to extract.
-	 * @param format Specifies concrete {@link RDFFormat} (e.g., RDFXML, Turtle,
-	 *               ..) if RDF format can not be detected from file suffix.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-    public void addFromFile(File file, RDFFormat format) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file               File which contains RDF data to extract.
-	 * @param format             Specifies concrete {@link RDFFormat} (e.g.,
-	 *                           RDFXML, Turtle, ..) if RDF format can not be
-	 *                           detected from file suffix.
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-	public void addFromFile(File file, RDFFormat format,
-			HandlerExtractType handlerExtractType) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file File which contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-    public void addFromTurtleFile(File file) throws RDFException;
-
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param file File which contains RDF data to extract.
-	 *
-	 * @throws RDFException when extraction fail.
-	 */
-    //TODO move to rdf extractor
-    @Deprecated
-	public void addFromRDFXMLFile(File file) throws RDFException;
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param file       File where data be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws RDFException when loading data to file fail.
-	 */
-    //TODO move to rdf loader
-    @Deprecated
-    public void loadToFile(File file, RDFFormatType formatType) throws RDFException;
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath   Path to file, where RDF data will be saved.
-	 * @param formatType Type of RDF format for saving data (example: TURTLE,
-	 *                   RDF/XML,etc.)
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fail.
-	 */
-    //TODO move to rdf loader
-    @Deprecated
-    public void loadToFile(String filePath,
-			RDFFormatType formatType) throws CannotOverwriteFileException, RDFException;
 
 	/**
 	 * Transform RDF in repository by SPARQL updateQuery.
@@ -294,32 +201,6 @@ public interface RDFDataUnit extends DataUnit {
 	 */
 	public RepositoryConnection getConnection() throws RepositoryException;
 
-	/**
-	 * Extract RDF triples from RDF file to repository.
-	 *
-	 * @param extractType        One of defined enum type for extraction data
-	 *                           from file.
-	 * @param format             One of RDFFormat value for parsing triples, if
-	 *                           value is null RDFFormat is selected by
-	 *                           filename.
-	 * @param path               String path to file/directory
-	 * @param suffix             String suffix of fileName (example: ".ttl",
-	 *                           ".xml", etc)
-	 * @param baseURI            String name of defined used URI prefix
-	 *                           namespace used by all triples.
-	 * @param useSuffix          boolean value, if extract files only with
-	 *                           defined suffix or not.
-	 * @param handlerExtractType Possibilies how to choose handler for data
-	 *                           extraction and how to solve finded problems
-	 *                           with no valid data.
-	 * @throws RDFException when extraction fail.
-	 */
-    @Deprecated
-	public void extractFromFile(FileExtractType extractType,
-			RDFFormat format,
-			String path, String suffix,
-			String baseURI,
-			boolean useSuffix, HandlerExtractType handlerExtractType) throws RDFException;
 
 	/**
 	 * Returns URI representation of graph where RDF data are stored.
