@@ -134,9 +134,9 @@ class RdfDatabase {
 						port,
 						user,
 						password,
-						"http://linked.opendata.cz/resource/odcs/internal/",
 						"",
-						rdfConfig.getProperties());
+						"http://linked.opendata.cz/resource/odcs/internal/"
+						);
 		try {
 			// ok we have the repository
 			virtuosoRepository.executeSelectQuery("select * where {?s ?p ?o} limit 1");

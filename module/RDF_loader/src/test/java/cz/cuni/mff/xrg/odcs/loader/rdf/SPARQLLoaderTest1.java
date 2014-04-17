@@ -85,7 +85,7 @@ public class SPARQLLoaderTest1 {
 	public static void setRDFDataUnit() throws RDFException {
 
 		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
-				USER, PASSWORD, INPUT_GRAPH, "input", new Properties());
+				USER, PASSWORD, "input", INPUT_GRAPH);
 
 	}
 

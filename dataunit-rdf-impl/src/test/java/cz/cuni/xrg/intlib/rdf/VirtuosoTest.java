@@ -42,8 +42,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     public static void setUpLogger() throws RepositoryException {
 
         rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
-                hostName, port, user, password, defaultGraph, "",
-                new Properties());
+                hostName, port, user, password, "", defaultGraph);
         RepositoryConnection connection = rdfRepo.getConnection();
         connection.clear(rdfRepo.getDataGraph());
     }
@@ -76,7 +75,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	 */
 	@AfterClass
 	public static void cleaning() {
-		rdfRepo.delete();
+		rdfRepo.clean();
+		rdfRepo.release();
 	}
 
 	/**
@@ -115,8 +115,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	@Test
 	public void repositoryCopy() {
 		ManagableRdfDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(
-				hostName, port, user, password, "http://goal", "",
-				new Properties());
+				hostName, port, user, password, "", "http://goal");
 		try {
 			goal.merge(rdfRepo);
 		} catch (IllegalArgumentException e) {
@@ -169,9 +168,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 							port,
 							user,
 							password,
-							namedGraph,
 							"",
-							new Properties());
+							namedGraph);
 
 					synchronized (virtuosoRepo) {
                         try {
@@ -183,7 +181,8 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 						transformOverRepository(virtuosoRepo);
 						loadToFile(virtuosoRepo);
 					}
-					virtuosoRepo.delete();
+					virtuosoRepo.clean();
+					virtuosoRepo.release();
 
 
 				}

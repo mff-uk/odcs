@@ -1,13 +1,16 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
 import com.thoughtworks.xstream.XStream;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandlerImpl;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
+
 import java.io.*;
 import java.util.logging.Level;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +58,6 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
-	public void madeReadOnly() {
-		this.rootDirHandler.setReadOnly(true);
-	}
-
-	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 		if (unit instanceof FileDataUnitImpl) {
 			// ok we can merge
@@ -74,20 +72,13 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
-	public void delete() {
+	public void release() {
 		final File dataDir = this.rootDirHandler.asFile();
-		// recreate the root directory handler
-		this.rootDirHandler = new DirectoryHandlerImpl(dataDir);
 		try {
 			FileUtils.forceDelete(dataDir);
 		} catch (IOException ex) {
 			LOG.error("Failed to delete root directory.", ex);
 		}
-	}
-
-	@Override
-	public void release() {
-		// no release is necesary .. we are always ready to be closed
 	}
 
 	@Override
@@ -123,19 +114,14 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
 	@Override
 	public void load(File directory) 
-			throws FileNotFoundException, RuntimeException {
+			throws  RuntimeException {
 		// use XStream serialization ?
 		final File file = new File(directory, "metadata.dat");
 		if (!file.exists()) {
-			throw new FileNotFoundException(file.toString());
+			throw new RuntimeException("File does not exist " + file.toString());
 		}
 		XStream xstream = new XStream();
 		this.rootDirHandler = (DirectoryHandlerImpl)xstream.fromXML(file);
-	}
-
-	@Override
-	public boolean isReadOnly() {
-		return rootDirHandler.isReadOnly();
 	}
 
 	@Override

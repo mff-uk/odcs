@@ -70,17 +70,6 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 			throws InvalidQueryException;
 
 	/**
-	 * Make RDF data merge over repository - data in repository merge with data
-	 * in second defined repository.
-	 *
-	 *
-	 * @param second Type of repository contains RDF data as implementation of
-	 *               RDFDataUnit interface.
-	 * @throws IllegalArgumentException if second repository as param is null.
-	 */
-	public void mergeRepositoryData(ManagableRdfDataUnit second) throws IllegalArgumentException;
-
-	/**
 	 * Return openRDF repository needed for almost every operation using RDF.
 	 *
 	 * @return openRDF repository.

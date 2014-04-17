@@ -55,13 +55,14 @@ public class SPARQLLoaderTest {
 	public static void setRDFDataUnit() throws RDFException {
 
 		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
-				USER, PASSWORD, DEFAULT_GRAPH, "input", new Properties());
+				USER, PASSWORD, "input", DEFAULT_GRAPH);
 
 	}
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit) repository).delete();
+		((ManagableRdfDataUnit) repository).clean();
+		((ManagableRdfDataUnit) repository).release();
 	}
 
 	@Test

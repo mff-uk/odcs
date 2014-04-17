@@ -4,8 +4,11 @@ import static cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment.virtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+
 import java.io.File;
 import java.util.Properties;
+
+import org.openrdf.repository.RepositoryException;
 
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
@@ -44,6 +47,7 @@ public class DataUnitFactory {
 	 * @param name Name of the DataUnit.
 	 * @param useVirtuoso False to use local repository, True to use Virtuoso.
 	 * @return New {@link ManagableRdfDataUnit}.
+	 * @throws RepositoryException 
 	 */
 	public ManagableRdfDataUnit createRDFDataUnit(String name,
 			boolean useVirtuoso) {
@@ -67,7 +71,7 @@ public class DataUnitFactory {
 		final String id = "dpu-test_" + number + "_" + name;
 		final String namedGraph = GraphUrl.translateDataUnitId(id);
 
-		return RDFDataUnitFactory.createLocalRDFRepo(repoPath, id, name,
+		return RDFDataUnitFactory.createLocalRDFRepo(repoPath, name,
 				namedGraph);
 	}
 
@@ -76,6 +80,7 @@ public class DataUnitFactory {
 	 *
 	 * @param name Name of DataUnit.
 	 * @return New {@link ManagableRdfDataUnit}.
+	 * @throws RepositoryException 
 	 */
 	private ManagableRdfDataUnit createVirtuosoRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
@@ -85,8 +90,8 @@ public class DataUnitFactory {
 
 		return RDFDataUnitFactory.createVirtuosoRDFRepo(virtuosoConfig.host,
 				virtuosoConfig.port, virtuosoConfig.user,
-				virtuosoConfig.password, namedGraph, dataUnitName,
-				new Properties());
+				virtuosoConfig.password, dataUnitName, namedGraph
+				);
 	}
 
 }

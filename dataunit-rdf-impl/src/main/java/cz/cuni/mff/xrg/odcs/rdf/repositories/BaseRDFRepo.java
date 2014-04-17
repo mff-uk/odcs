@@ -24,6 +24,7 @@ import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
@@ -62,7 +63,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	/**
 	 * Logging information about execution of method using openRDF.
 	 */
-	protected Logger logger;
+	private static final Logger logger = LoggerFactory.getLogger(BaseRDFRepo.class); 
 
 	/**
 	 * RDF data storage component.
@@ -72,12 +73,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	/**
 	 * Graph resource for saving RDF triples.
 	 */
-	protected URI graph;
-
-	/**
-	 * DataUnit's name.
-	 */
-	protected String dataUnitName;
+	protected URI dataGraph;
 
 	/**
 	 * Default used encoding.
@@ -301,7 +297,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		if (dirFile.isFile()) {
 			addFileToRepository(format, dirFile, baseURI,
 					handlerExtractType,
-					graph);
+					dataGraph);
 		} else {
 			throw new RDFException(
 					"Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
@@ -318,7 +314,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 			addFilesInDirectoryToRepository(format, files, baseURI,
 					handlerExtractType, skipFiles,
-					graph);
+					dataGraph);
 		} else {
 			throw new RDFException(
 					"Path to directory \"" + dirFile.getAbsolutePath()
@@ -439,7 +435,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			RepositoryConnection connection = getConnection();
 
 			repoResult = connection.getStatements(null, null, null, true,
-					graph);
+					dataGraph);
 
 		} catch (RepositoryException ex) {
 			hasBrokenConnection = true;
@@ -756,7 +752,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
         if (graphInstance != null) {
             try {
                 RepositoryConnection connection = getConnection();
-                connection.add(graphInstance, graph);
+                connection.add(graphInstance, dataGraph);
             } catch (RepositoryException e) {
                 hasBrokenConnection = true;
                 logger.debug(e.getMessage());
@@ -1257,30 +1253,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Merge (add) data from given DataUnit into this DataUnit. If the unit has
-	 * wrong type then the {@link IllegalArgumentException} should be thrown.
-	 * The method must not modify the current parameter (unit). The given
-	 * DataUnit is not in read-only mode.
-	 *
-	 * @param unit {@link DataUnit} to merge with
-	 * @throws IllegalArgumentException in case of unsupported unit type.
-	 */
-	@Override
-	public void merge(DataUnit unit) throws IllegalArgumentException {
-
-		if (unit != null) {
-			if (unit instanceof ManagableRdfDataUnit) {
-				ManagableRdfDataUnit rdfRepository = (ManagableRdfDataUnit) unit;
-				mergeRepositoryData(rdfRepository);
-
-			} else {
-				throw new IllegalArgumentException(
-						"DataUnit is not instance of RDFDataRepository.");
-			}
-		}
-	}
-
-	/**
 	 *
 	 * @param updateQuery String value of SPARQL update query.
 	 * @return String extension of given update query works with set repository
@@ -1302,7 +1274,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			String first = updateQuery.substring(0, index);
 			String second = updateQuery.substring(index, updateQuery.length());
 
-			String graphName = " WITH <" + graph.stringValue() + "> ";
+			String graphName = " WITH <" + dataGraph.stringValue() + "> ";
 
 			String newQuery = first + graphName + second;
 			return newQuery;
@@ -1329,7 +1301,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 				String myString = updateQuery.substring(start, end);
 				String graphName = myString.replace("{",
-						"{ GRAPH <" + graph.stringValue() + "> {");
+						"{ GRAPH <" + dataGraph.stringValue() + "> {");
 
 				second = second.replaceFirst("}", "} }");
 				String newQuery = first + graphName + second;
@@ -1362,8 +1334,8 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 			RepositoryConnection connection = getConnection();
 
-			if (graph != null) {
-				connection.export(handler, graph);
+			if (dataGraph != null) {
+				connection.export(handler, dataGraph);
 			} else {
 				connection.export(handler);
 			}
@@ -1560,7 +1532,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 			RDFFormat fileFormat,
 			InputStreamReader is, String baseURI) throws RDFException {
 
-		handler.setGraphContext(graph);
+		handler.setGraphContext(dataGraph);
 		RDFParser parser = getRDFParser(fileFormat, handler);
 
 		try {
@@ -1685,26 +1657,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 * Returns URI instance from given string URI representation.
-	 *
-	 * @param graphURI String representation of graph URI you can create
-	 * @return URI instance from given string URI representation.
-	 */
-	protected URI createNewGraph(String graphURI) {
-		if (graphURI.toLowerCase().startsWith("http://")) {
-
-			URI newGraph = new URIImpl(graphURI);
-			return newGraph;
-
-		} else {
-
-			String newGraphUri = "http://" + graphURI;
-			return createNewGraph(newGraphUri);
-
-		}
-	}
-
-	/**
 	 * Allow re-using repository after destroying repository - calling method
 	 * {@link #shutDown()}. After creating new instance is repository
 	 * automatically initialized. Calling this method has no effect, if is
@@ -1753,7 +1705,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
         List<RDFTriple> triples = new ArrayList<>();
         RepositoryConnection connection = getConnection();
-        RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true, graph);
+        RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true, dataGraph);
 
 		int count = 0;
 
@@ -1778,15 +1730,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	}
 
 	/**
-	 *
-	 * @return String name of data unit.
-	 */
-	@Override
-	public String getDataUnitName() {
-		return dataUnitName;
-	}
-
-	/**
 	 * Return openRDF repository needed for almost every operation using RDF.
 	 *
 	 * @return openRDF repository.
@@ -1803,7 +1746,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public URI getDataGraph() {
-		return graph;
+		return dataGraph;
 	}
 
 	/**
@@ -1813,47 +1756,25 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 */
 	@Override
 	public void setDataGraph(URI newDataGraph) {
-		graph = newDataGraph;
-		if (!isGraphDefault()) {
-			logger.info("Set new data graph - " + graph.stringValue());
-		}
+		dataGraph = newDataGraph;
+		logger.info("Set new data graph - " + dataGraph.stringValue());
 	}
-
-	private boolean isGraphDefault() {
-		if (graph != null) {
-			return graph.stringValue().equals(DEFAULT_GRAPH_NAME);
-		} else {
-			return false;
-		}
-	}
-
+	
 	/**
-	 * Return true if DataUnit is in read only state, false otherwise.
+	 * Set new graph as default for working data in RDF format.
 	 *
-	 * @return true if data in DataUnit are read only, false otherwise.
-	 * @see #madeReadOnly()
+	 * @param newStringDataGraph String name of graph as URI - starts with
+	 *                           prefix http://).
 	 */
 	@Override
-	public boolean isReadOnly() {
-		return isReadOnly;
-	}
+	public void setDataGraph(String newStringDataGraph) {
+		if (!newStringDataGraph.toLowerCase().startsWith("http://")) {
+			newStringDataGraph = "http://" + newStringDataGraph;
+		}
+		URI newGraph = new URIImpl(newStringDataGraph);
 
-	/**
-	 * Made this DataUnit read-only.
-	 */
-	@Override
-	public void madeReadOnly() {
-		setReadOnly(true);
-	}
-
-	/**
-	 * Set read only property to this DPU.
-	 *
-	 * @param isReadOnly true if is DPU should be read only, false otherwise.
-	 */
-	protected void setReadOnly(boolean isReadOnly) {
-		this.isReadOnly = isReadOnly;
-	}
+		setDataGraph(newGraph);
+	}	
 
 	/**
 	 * Delete all the data from the {@link RDFDataUnit} but does not close or
@@ -1865,7 +1786,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		// to clean documentaion in MergableDataUnit
         try {
             RepositoryConnection connection = getConnection();
-            connection.clear(graph);
+            connection.clear(dataGraph);
         } catch (RepositoryException ex) {
             hasBrokenConnection = true;
             logger.debug(ex.getMessage());
@@ -1895,7 +1816,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 	 *                             of the Connection.
 	 */
 	@Override
-	public synchronized RepositoryConnection getConnection() throws RepositoryException {
+	public RepositoryConnection getConnection() throws RepositoryException {
 
 		if (!repository.isInitialized()) {
 			repository.initialize();

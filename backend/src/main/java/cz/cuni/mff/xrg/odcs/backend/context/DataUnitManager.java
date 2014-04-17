@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 
 /**
  * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
@@ -170,15 +171,17 @@ final class DataUnitManager {
 	 */
 	public void save() {
 		for (ManagableDataUnit item : dataUnits) {
-			try {
-				// get directory
-				File directory = new File(workingDir,
-						context.getDataUnitStoragePath(dpuInstance,
-								indexes.get(item)));
-				// and save into directory
-				item.save(directory);
-			} catch (Exception e) {
-				LOG.error("Can't save DataUnit.", e);
+			if (item instanceof FileDataUnit) {
+				try {
+					// get directory
+					File directory = new File(workingDir,
+							context.getDataUnitStoragePath(dpuInstance,
+									indexes.get(item)));
+					// and save into directory
+					((FileDataUnit) item).save(directory);
+				} catch (Exception e) {
+					LOG.error("Can't save DataUnit.", e);
+				}
 			}
 		}
 	}
@@ -189,7 +192,7 @@ final class DataUnitManager {
 	 */
 	public void delete() {
 		for (ManagableDataUnit item : dataUnits) {
-			item.delete();
+			item.clean();
 		}
 		dataUnits.clear();
 	}
@@ -198,7 +201,6 @@ final class DataUnitManager {
 	 * Call release on all stored DataUnit and them delete them from
 	 * this instance.
 	 */
-	@Deprecated
 	public void release() {
 		for (ManagableDataUnit item : dataUnits) {
 			item.release();
@@ -254,11 +256,11 @@ final class DataUnitManager {
 				// check for existence of result directory, if exist load
 				File storageDirectory = new File(workingDir,
 						context.getDataUnitStoragePath(dpuInstance, index));
-				if (storageDirectory.exists()) {
+				if (storageDirectory.exists()&& (dataUnit instanceof FileDataUnit)) {
 					// load data from directory
 					try {
-						dataUnit.load(storageDirectory);
-					} catch (FileNotFoundException | RuntimeException e) {
+						((FileDataUnit) dataUnit).load(storageDirectory);
+					} catch (RuntimeException e) {
 						LOG.error("Failed to load data for DataUnit", e);
 					}
 				}

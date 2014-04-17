@@ -1,22 +1,34 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
-
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openrdf.model.*;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.repository.config.RepositoryConfig;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.manager.LocalRepositoryManager;
+import org.openrdf.repository.manager.RepositoryProvider;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.sail.nativerdf.NativeStore;
+import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Implementation of local RDF repository - RDF data are saved in files on hard
@@ -25,182 +37,152 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  */
 public class LocalRDFRepo extends BaseRDFRepo {
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRDFRepo.class);
+	
+	public static final String GLOBAL_REPOSITORY_ID = "sdavhniw2uv3ni32u3fkhj";
+	
+	private String dataUnitName;
+	
+	private Repository repository;
 
-	/**
-	 * Default name for data file.
-	 */
-	private final static String dumpName = "dump_dat.ttl";
-
-	/**
-	 * How many triples is possible to merge at once.
-	 */
-	private final static long DEFAULT_MERGE_PART_SIZE = 1000;
-
-	/**
-	 * Directory root, where is repository stored.
-	 */
-	private File WorkingRepoDirectory;
-
+	private List<RepositoryConnection> requestedConnections;
+	
+	private Thread ownerThread;
+	
 	/**
 	 * Public constructor - create new instance of repository in defined
 	 * repository Path.
-	 *
-	 * @param repositoryPath String value of path to directory where will be
-	 *                       repository stored.
-	 * @param fileName	      String value of file, where will be repository
-	 *                       stored.
-	 * @param namedGraph     String value of URI graph that will be set to
-	 *                       repository.
-	 * @param dataUnitName   DataUnit's name. If not used in Pipeline can be
-	 *                       empty String.
+	 * 
+	 * @param repositoryPath
+	 *            String value of path to directory where will be repository
+	 *            stored.
+	 * @param namedGraph
+	 *            String value of URI graph that will be set to repository.
+	 * @param dataUnitName
+	 *            DataUnit's name. If not used in Pipeline can be empty String.
 	 */
-	public LocalRDFRepo(String repositoryPath, String fileName,
-			String namedGraph, String dataUnitName) {
-		callConstructorSetting(repositoryPath, fileName, namedGraph,
-				dataUnitName);
-	}
-
-	private void callConstructorSetting(String repoPath, String fileName,
-			String namedGraph, String dataUnitName) {
-		setReadOnly(false);
-
-		File dataFile = new File(repoPath, fileName);
-
-		NativeStore nativeStore = new NativeStore(dataFile);
-		nativeStore.setForceSync(false);
-
-		logger = LoggerFactory.getLogger(LocalRDFRepo.class);
-		repository = new SailRepository(nativeStore);
-		repository.setDataDir(dataFile);
-
-		setDataGraph(namedGraph);
-		WorkingRepoDirectory = dataFile.getParentFile();
-
-		this.dataUnitName = dataUnitName;
-
+	public LocalRDFRepo(String repositoryPath, String dataUnitName,
+			String dataGraph) {
+		setDataGraph(dataGraph);
 		try {
-			repository.initialize();
-			logger.info(
-					"New local repository with data graph <{}> successfully initialized.",
-					getDataGraph().stringValue());
-
-		} catch (RepositoryException ex) {
-			logger.debug(ex.getMessage());
-
+			LocalRepositoryManager localRepositoryManager = RepositoryProvider
+					.getRepositoryManager(new File(repositoryPath));
+			repository = localRepositoryManager
+					.getRepository(GLOBAL_REPOSITORY_ID);
+			if (repository == null) {
+				localRepositoryManager.addRepositoryConfig(
+						new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
+						);
+				repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+			}
+			if (repository == null) {
+				throw new RuntimeException("Could not initialize repository");
+			}
+		} catch (RepositoryConfigException | RepositoryException ex) {
+			throw new RuntimeException("Could not initialize repository", ex);
 		}
+		
+		RepositoryConnection connection = null; 
+		try {
+            connection = getConnection();
+			LOG.info(
+					"Local repository with data graph <{}> successfully initialized.",
+					dataGraph);
+			LOG.info("Local repository contains {} TRIPLES",
+                    connection.size(this.getDataGraph()));
+		} catch (RepositoryException ex) {
+			throw new RuntimeException("Could not test initial connect to repository", ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}		
 	}
 
-	/**
-	 * Set new graph as default for working data in RDF format.
-	 *
-	 * @param newStringDataGraph String name of graph as URI - starts with
-	 *                           prefix http://).
-	 */
-	@Override
-	public void setDataGraph(String newStringDataGraph) {
-		setDataGraph(createNewGraph(newStringDataGraph));
-	}
-
-	@Override
-    public void delete() {
-        if (repository.isInitialized()) {
-            try {
-                RepositoryConnection connection = getConnection();
-                connection.clear(graph);
-            } catch (RepositoryException ex) {
-                logger.debug(ex.getMessage());
-            }
-
-        }
-        File dataDir = repository.getDataDir();
-        release();
-        while (repository.isInitialized()) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException ex) {
-                logger.debug("Thread sleeping interupted {}", ex.getMessage());
-            }
-        }
-        deleteDataDirectory(dataDir);
-    }
-
-	@Override
-	public void release() {
-		logger.info("Releasing DPU LocalRdf: {}", WorkingRepoDirectory
-				.toString());
-		shutDown();
-		logger.info("Relelased LocalRdf: {}", WorkingRepoDirectory
-				.toString());
-	}
-
-	/**
-	 * Return type of data unit interface implementation.
-	 *
-	 * @return DataUnit type.
-	 */
 	@Override
 	public DataUnitType getType() {
 		return DataUnitType.RDF_Local;
 	}
-
-	/**
-	 * Empty implementation - NativeStorage with file is already set.
-	 *
-	 * @param directory directory where repository file is stored.
-	 */
+	
 	@Override
-	public void load(File directory) {
-		/*
-		 logger.info(
-		 "LOAD INPUT graph <{}> in dir: {}",
-		 graph.stringValue(), directory.toString());
+	public String getDataUnitName() {
+		return dataUnitName;
+	}
+	
+	@Override
+	public RepositoryConnection getConnection() throws RepositoryException {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
+		
+		RepositoryConnection connection = repository.getConnection();
+		requestedConnections.add(connection);
+		return connection;
+	}
+	
 
-		 File file = getFileForDirectory(directory);
+	@Override
+	public void clean() {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
 
-		 final String suffix = "";
-		 final String baseURI = "";
-		 final boolean useSuffix = false;
-		 final HandlerExtractType handlerExtractType = HandlerExtractType.STANDARD_HANDLER;
-		 try {
-		 extractFromFile(FileExtractType.PATH_TO_FILE, null,
-		 file.getAbsolutePath(), suffix,
-		 baseURI,
-		 useSuffix,
-		 handlerExtractType);
-
-		 } catch (RDFException e) {
-		 throw new RuntimeException(e.getMessage(), e);
-		 }*/
+		RepositoryConnection connection = null; 
+		try {
+			connection = getConnection();
+			connection.clear(dataGraph);
+		} catch (RepositoryException ex) {
+			throw new RuntimeException("Could not delete repository", ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
 	}
 
-	/**
-	 * Save data from repository into given file. Empty implementation -
-	 * creating file is not neccasary for futher using.
-	 *
-	 * @param directory
-	 */
 	@Override
-	public void save(File directory) {
-
-		/*
-		 logger.info(
-		 "Save OUTPUT graph <{}> in dir: {}",
-		 graph.stringValue(), directory.toString());
-
-		 File file = getFileForDirectory(directory);
-
-		 RDFFormat format = RDFFormat.forFileName(file.getAbsolutePath(),
-		 RDFFormat.RDFXML);
-
-		 RDFFormatType formatType = RDFFormatType.getTypeByRDFFormat(format);
-
-		 logger.debug("saving to directory: {}", directory.getAbsolutePath());
-
-		 try {
-		 loadToFile(file.getAbsolutePath(), formatType, true, false);
-		 } catch (CannotOverwriteFileException | RDFException e) {
-		 throw new RuntimeException(e.getMessage(), e);
-		 }*/
+	public void release() {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
+		
+		List<RepositoryConnection> openedConnections = new ArrayList<>();
+		for (RepositoryConnection connection : requestedConnections) {
+			try {
+				if (connection.isOpen()) {
+					openedConnections.add(connection);
+				}
+			} catch (RepositoryException ex) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex1) {
+					LOG.warn("Error when closing connection", ex1);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
+		
+		if (!openedConnections.isEmpty()) {
+			LOG.error(String.valueOf(openedConnections.size()) + " connections remained opened after DPU execution.");
+			for (RepositoryConnection connection : openedConnections) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
 	}
 
 	/**
@@ -208,177 +190,52 @@ public class LocalRDFRepo extends BaseRDFRepo {
 	 * in second defined repository.
 	 *
 	 *
-	 * @param sourceDataUnit Type of repository contains RDF data as
-	 *                       implementation of RDFDataUnit interface.
-	 * @throws IllegalArgumentException if second repository as param is null.
+	 * @param otherDataUnit Type of repository contains RDF data as implementation of
+	 *               RDFDataUnit interface.
+	 * @throws IllegalArgumentException if otherDataUnit repository is not of compatible type (#RDFDataUnit).
 	 */
 	@Override
-	public void mergeRepositoryData(ManagableRdfDataUnit sourceDataUnit) throws IllegalArgumentException {
-
-		if (sourceDataUnit == null) {
-			throw new IllegalArgumentException(
-					"Instance of RDFDataRepository is null");
+	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
+		if (!(otherDataUnit instanceof LocalRDFRepo)) {
+			throw new IllegalArgumentException("Incompatible repository type");
 		}
-
-		RepositoryConnection targetConnection = null;
-
-		RepositoryResult<Statement> lazySource = null;
-
+		
+		final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
+		RepositoryConnection connection = null;
 		try {
-			lazySource = sourceDataUnit.getRepositoryResult();
-            RepositoryConnection sourceDataUnitConn = sourceDataUnit.getConnection();
-			targetConnection = repository.getConnection();
+			connection = getConnection();
 
-			if (targetConnection != null) {
+			String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
+			String targetGraphName = getDataGraph().stringValue();
 
-				logger.info(
-						"Merging {} triples from <{}> TO <{}>.",
-                        sourceDataUnitConn.size(sourceDataUnit.getDataGraph()),
-                        sourceDataUnit.getDataGraph().stringValue(),
-						getDataGraph().stringValue());
+			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
+					targetGraphName);
 
-				long addedParts = 0;
+			GraphQuery result = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL, mergeQuery);
 
+			LOG.info("START merging {} triples from <{}> to <{}>.",
+					connection.size(getDataGraph()), sourceGraphName,
+					targetGraphName);
 
-                long size = sourceDataUnitConn.size(sourceDataUnit.getDataGraph());
-                long partsCount = size / DEFAULT_MERGE_PART_SIZE;
-                if (size % DEFAULT_MERGE_PART_SIZE > 0) {
-                    partsCount++;
-                }
-                        
-				List<Statement> statements = getNextDataPart(lazySource,
-						DEFAULT_MERGE_PART_SIZE);
+			result.evaluate();
 
-				Resource sourceGraphName = sourceDataUnit.getDataGraph();
+			LOG.info("Merge SUCCESSFUL");
 
-				while (!statements.isEmpty()) {
-					addedParts++;
-
-					final String processing = getPartsProcessing(addedParts,
-							partsCount);
-
-					mergeNextDataPart(targetConnection, statements,
-							processing, sourceGraphName);
-
-					statements = getNextDataPart(lazySource,
-							DEFAULT_MERGE_PART_SIZE);
-				}
-
-
-				logger.info("Merged SUCCESSFUL");
-			}
-
-
+		} catch (MalformedQueryException ex) {
+			LOG.error("NOT VALID QUERY: {}", ex);
+		} catch (QueryEvaluationException ex) {
+			LOG.error("MERGING STOPPED: {}", ex);
 		} catch (RepositoryException ex) {
-			logger.error(ex.getMessage(), ex);
-
+			LOG.error(ex.getMessage(), ex);
 		} finally {
-			try {
-				if (lazySource != null) {
-					lazySource.close();
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
 				}
-				if (targetConnection != null) {
-					targetConnection.close();
-				}
-			} catch (RepositoryException ex) {
-				logger.error(ex.getMessage(), ex);
-			}
-
-		}
-	}
-
-	private List<Statement> getNextDataPart(
-			RepositoryResult<Statement> lazySource,
-			long chunkSize) throws RepositoryException {
-
-		List<Statement> result = new ArrayList<>();
-
-		long count = 0;
-
-		while (lazySource.hasNext()) {
-			if (count < chunkSize) {
-				Statement nextStatement = lazySource.next();
-				result.add(nextStatement);
-				count++;
-			} else {
-				break;
-			}
-		}
-
-		return result;
-	}
-
-	private String getPartsProcessing(long addedParts, long partsCount) {
-		final String processing = String.valueOf(addedParts) + "/" + String
-				.valueOf(partsCount);
-
-		return processing;
-	}
-
-	private void mergeNextDataPart(
-			RepositoryConnection targetConnection, List<Statement> statements,
-			String processing, Resource graphName)
-			throws RepositoryException {
-
-		addStatementsCollection(targetConnection, statements);
-		addStatementsCollection(targetConnection, statements, graphName);
-		statements.clear();
-		logger.debug("Data part {} was successfully merged", processing);
-	}
-
-	private void addStatementsCollection(RepositoryConnection targetConnection,
-			List<Statement> statements) throws RepositoryException {
-		if (graph != null) {
-			targetConnection.add(statements, graph);
-		} else {
-			targetConnection.add(statements);
-		}
-	}
-
-	private void addStatementsCollection(RepositoryConnection targetConnection,
-			List<Statement> statements, Resource graphName) throws RepositoryException {
-		if (graphName != null) {
-			targetConnection.add(statements, graphName);
-		} else {
-			targetConnection.add(statements);
-		}
-	}
-
-	private File getFileForDirectory(File directory) {
-
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
-
-		File file = new File(directory, dumpName);
-		return file;
-	}
-
-	/**
-	 *
-	 * @return file with working directory.
-	 */
-	public File getWorkingRepoDirectory() {
-		return WorkingRepoDirectory;
-	}
-
-	private void deleteDataDirectory(File dir) {
-
-		if (dir == null) {
-			return;
-		}
-
-		if (dir.isFile()) {
-			dir.delete();
-		} else if (dir.isDirectory()) {
-			File[] files = dir.listFiles();
-
-			if (files != null) {
-				for (File file : files) {
-					deleteDataDirectory(file);
-				}
-
-				dir.delete();
 			}
 		}
 	}

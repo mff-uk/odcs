@@ -1,12 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.impl.FailureSharedRepositoryConnection;
-import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.io.File;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -16,7 +12,11 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import virtuoso.sesame2.driver.VirtuosoRepository;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Implementation of Virtuoso repository - RDF data and intermediate results are
@@ -28,34 +28,21 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
 
-	private static final String VIRTUOSO_SYNTAX_KEY = "useExtension";
-
-	private String URL_Host_List;
-
-	private String user;
-
-	private String password;
-
-	private String defaultGraph;
+	/**
+	 * DataUnit's name.
+	 */
+	private String dataUnitName;
 	
-	/**
-	 * Virtuoso allows setting log level explicitly in a query.
-	 * If {@link #virtuosoSyntax Virtuoso specific syntax} is enabled, we set the
-	 * log level explicitly.
-	 */
-	private static final int LOG_LEVEL = 2;
+	private Repository repository;
 
-	/**
-	 * Use Virtuoso specific syntax for SPARQL if true. Parameter log-enable
-	 * with value {@value #LOG_LEVEL} disables logging and enables row-by-row
-	 * autocommit.
-	 */
-	private boolean virtuosoSyntax;
+	private List<RepositoryConnection> requestedConnections;
+	
+	private Thread ownerThread;
 
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
-	 * @param URL_Host_List the Virtuoso JDBC URL connection string or hostlist
+	 * @param host the Virtuoso JDBC URL connection string or hostlist
 	 *                      for pooled connection.
 	 *
 	 * @param user          the database user on whose behalf the connection is
@@ -63,86 +50,49 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 *
 	 * @param password      the user's password.
 	 *
-	 * @param defaultGraph  a default Graph name, used for Sesame calls, when
+	 * @param dataGraph  a default Graph name, used for Sesame calls, when
 	 *                      contexts list is empty, exclude exportStatements,
 	 *                      hasStatement, getStatements methods.
 	 * @param dataUnitName	 DataUnit's name. If not used in Pipeline can be
 	 *                      empty String.
-	 * @param config        configuration properties you want to set to
-	 *                      repository.
+	 * @throws RepositoryException 
 	 */
-	public VirtuosoRDFRepo(String URL_Host_List, String user, String password,
-			String defaultGraph, String dataUnitName, Properties config) {
-
-		this.URL_Host_List = URL_Host_List;
-		this.user = user;
-		this.password = password;
-		this.defaultGraph = defaultGraph;
+	public VirtuosoRDFRepo(String host, String user, String password,
+			String dataUnitName, String dataGraph) {
 		this.dataUnitName = dataUnitName;
-
-		logger = LoggerFactory.getLogger(VirtuosoRDFRepo.class);
-
-		setDataGraph(defaultGraph);
-
-		FailureTolerantRepositoryWrapper repoWrapper = new FailureTolerantRepositoryWrapper(
-				new VirtuosoRepository(URL_Host_List, user, password,
-				getDefaultGraph()),
-				config);
-
-		this.configureVirtuosoSyntax(config);
+		this.requestedConnections = new ArrayList<>();
+		this.ownerThread = Thread.currentThread();
 		
-		this.repository = repoWrapper;
-		this.repoConnection = new FailureSharedRepositoryConnection(repoWrapper);
+		setDataGraph(dataGraph);
 
+		this.repository = new VirtuosoRepository(host, user, password, null);
 		try {
 			repository.initialize();
-            RepositoryConnection connection = getConnection();
-			logger.info(
-					"Virtuoso repository with data graph <{}> successfully initialized.",
-					defaultGraph);
-			logger.info("Virtuoso repository contains {} TRIPLES",
-                    connection.size(this.getDataGraph()));
-
-
 		} catch (RepositoryException ex) {
-			logger.warn("Your Virtuoso might be offline.", ex);
+			throw new RuntimeException("Could not initialize repository", ex);
+		}
+		RepositoryConnection connection = null; 
+		try {
+            connection = getConnection();
+			LOG.info(
+					"Virtuoso repository with data graph <{}> successfully initialized.",
+					dataGraph);
+			LOG.info("Virtuoso repository contains {} TRIPLES",
+                    connection.size(this.getDataGraph()));
+		} catch (RepositoryException ex) {
+			throw new RuntimeException("Could not test initial connect to repository", ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
 		}
 	}
-
-	/**
-	 * Set new graph as default for working data in RDF format.
-	 *
-	 * @param newStringDataGraph String name of graph as URI - starts with
-	 *                           prefix http://).
-	 */
-	@Override
-	public void setDataGraph(String newStringDataGraph) {
-		setDataGraph(createNewGraph(newStringDataGraph));
-		this.defaultGraph=getDataGraph().toString();
-	}
-
-	@Override
-	public void delete() {
-		if (repository.isInitialized()) {
-            try {
-                RepositoryConnection connection = getConnection();
-                connection.clear(graph);
-            } catch (RepositoryException ex) {
-                logger.debug(ex.getMessage());
-            }
-		}
-
-		release();
-	}
-
-	@Override
-	public void release() {
-		shutDown();
-		logger.info("Virtuoso repository with data graph <"
-				+ getDefaultGraph()
-				+ "> succesfully shut down");
-	}
-
+	
 	/**
 	 * Return type of data unit interface implementation.
 	 *
@@ -153,14 +103,93 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 		return DataUnitType.RDF_Virtuoso;
 	}
 
+	/**
+	 *
+	 * @return String name of data unit.
+	 */
 	@Override
-	public void load(File directory) {
-		//no load from file - using Virtuoso for intermediate results.
+	public String getDataUnitName() {
+		return dataUnitName;
+	}
+	
+	@Override
+	public RepositoryConnection getConnection() throws RepositoryException {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
+		
+		RepositoryConnection connection = repository.getConnection();
+		requestedConnections.add(connection);
+		return connection;
+	}
+		
+
+	@Override
+	public void clean() {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
+
+		RepositoryConnection connection = null; 
+		try {
+			connection = getConnection();
+			connection.clear(dataGraph);
+		} catch (RepositoryException ex) {
+			throw new RuntimeException("Could not delete repository", ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
 	}
 
 	@Override
-	public void save(File directory) {
-		//no save to file - using Virtuoso for intermediate results.
+	public void release() {
+		if (!ownerThread.equals(Thread.currentThread())) {
+			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+		}
+		
+		List<RepositoryConnection> openedConnections = new ArrayList<>();
+		for (RepositoryConnection connection : requestedConnections) {
+			try {
+				if (connection.isOpen()) {
+					openedConnections.add(connection);
+				}
+			} catch (RepositoryException ex) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex1) {
+					LOG.warn("Error when closing connection", ex1);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
+		
+		if (!openedConnections.isEmpty()) {
+			LOG.error(String.valueOf(openedConnections.size()) + " connections remained opened after DPU execution.");
+			for (RepositoryConnection connection : openedConnections) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
+		
+		try {
+			repository.shutDown();
+			LOG.info("Virtuoso repository with data graph <"
+					+ getDataGraph()
+					+ "> succesfully shut down");
+		} catch (RepositoryException ex) {
+			LOG.error("Error in repository shutdown", ex);
+		}
 	}
 
 	/**
@@ -168,130 +197,59 @@ public final class VirtuosoRDFRepo extends BaseRDFRepo {
 	 * in second defined repository.
 	 *
 	 *
-	 * @param second Type of repository contains RDF data as implementation of
+	 * @param otherDataUnit Type of repository contains RDF data as implementation of
 	 *               RDFDataUnit interface.
-	 * @throws IllegalArgumentException if second repository as param is null.
+	 * @throws IllegalArgumentException if otherDataUnit repository is not of compatible type (#RDFDataUnit).
 	 */
 	@Override
-	public void mergeRepositoryData(ManagableRdfDataUnit second) throws IllegalArgumentException {
-		if (second == null) {
-			throw new IllegalArgumentException(
-					"Instance of RDFDataRepository is null");
+	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
+		if (!(otherDataUnit instanceof VirtuosoRDFRepo)) {
+			throw new IllegalArgumentException("Incompatible repository type");
 		}
-
-		RepositoryConnection targetConnection = null;
-
+		
+		final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
+		RepositoryConnection connection = null;
 		try {
+			connection = getConnection();
 
-			targetConnection = repository.getConnection();
+			String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
+			String targetGraphName = getDataGraph().stringValue();
 
-			if (targetConnection != null) {
 
-				String sourceGraphName = second.getDataGraph().stringValue();
-				String targetGraphName = getDataGraph().stringValue();
+			// mergeQuery = String.format("DEFINE sql:log-enable %d \n"
+			// + "ADD <%s> TO <%s>",
+			// LOG_LEVEL,
+			// sourceGraphName,
+			// targetGraphName);
+			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
+					targetGraphName);
 
-				String mergeQuery;
+			GraphQuery result = connection.prepareGraphQuery(
+					QueryLanguage.SPARQL, mergeQuery);
 
-				if (virtuosoSyntax) {
-					mergeQuery = String.format("DEFINE sql:log-enable %d \n"
-							+ "ADD <%s> TO <%s>",
-							LOG_LEVEL,
-							sourceGraphName,
-							targetGraphName);
-				} else {
-					mergeQuery = String
-							.format("ADD <%s> TO <%s>", sourceGraphName,
-							targetGraphName);
-				}
+			LOG.info("START merging {} triples from <{}> to <{}>.",
+					connection.size(getDataGraph()), sourceGraphName,
+					targetGraphName);
 
-				try {
-					GraphQuery result = targetConnection.prepareGraphQuery(
-							QueryLanguage.SPARQL, mergeQuery);
+			result.evaluate();
 
-					logger.info("START merging {} triples from <{}> TO <{}>.",
-                            targetConnection.size(getDataGraph()), sourceGraphName,
-							targetGraphName);
+			LOG.info("Merge SUCCESSFUL");
 
-					result.evaluate();
-
-					logger.info("Merged SUCCESSFUL");
-
-				} catch (MalformedQueryException ex) {
-					logger.debug("NOT VALID QUERY: {}", ex.getMessage());
-				} catch (QueryEvaluationException ex) {
-					logger.error("MERGING STOPPED: {}", ex.getMessage());
-				}
-
-			}
-
+		} catch (MalformedQueryException ex) {
+			LOG.error("NOT VALID QUERY: {}", ex);
+		} catch (QueryEvaluationException ex) {
+			LOG.error("MERGING STOPPED: {}", ex);
 		} catch (RepositoryException ex) {
-			logger.error(ex.getMessage(), ex);
-
+			LOG.error(ex.getMessage(), ex);
 		} finally {
-			if (targetConnection != null) {
+			if (connection != null) {
 				try {
-					targetConnection.close();
+					connection.close();
 				} catch (RepositoryException ex) {
-					logger.error(ex.getMessage(), ex);
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
 				}
 			}
 		}
 	}
-
-	/**
-	 *
-	 * @return the Virtuoso JDBC URL connection string or hostlist for poolled
-	 *         connection.
-	 */
-	public String getURL_Host_List() {
-		return URL_Host_List;
-	}
-
-	/**
-	 * Tells whether Virtuoso specific syntax for SPARQL is used. In such case
-	 * parameter log-enable with value {@link #LOG_LEVEL} disables logging and
-	 * enables row-by-row autocommit.
-	 *
-	 * @return whether Virtuoso specific syntax for SPARQL is used.
-	 *
-	 */
-	public boolean isUsedExtension() {
-		return virtuosoSyntax;
-	}
-
-	/**
-	 *
-	 * @return User name to Virtuoso connection.
-	 */
-	public String getUser() {
-		return user;
-	}
-
-	/**
-	 *
-	 * @return Password to virtuoso connection.
-	 */
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 *
-	 * @return Default graph name
-	 */
-	public String getDefaultGraph() {
-		return defaultGraph;
-	}
-	
-	
-	private void configureVirtuosoSyntax(Properties config) {
-		String sExtension = config.getProperty(VIRTUOSO_SYNTAX_KEY);
-		if (sExtension == null) {
-			LOG.info("Missing config property {}, using default value '{}'.",
-					VIRTUOSO_SYNTAX_KEY, virtuosoSyntax);
-		} else {
-			virtuosoSyntax = Boolean.parseBoolean(sExtension);
-		}
-	}
-
 }

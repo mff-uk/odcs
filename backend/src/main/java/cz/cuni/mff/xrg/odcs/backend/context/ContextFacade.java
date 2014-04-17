@@ -32,9 +32,6 @@ public class ContextFacade {
 	private ContextRestorer restorer;
 
 	@Autowired
-	private ContextSealer sealer;
-
-	@Autowired
 	private ContextSaver saver;
 	
 	/**
@@ -60,15 +57,6 @@ public class ContextFacade {
 		}
 		// and return
 		return context;
-	}
-
-	/**
-	 * Seal given context against modification from inside of DPU.
-	 *
-	 * @param context
-	 */
-	public void seal(Context context) {
-		sealer.seal(context);
 	}
 
 	/**

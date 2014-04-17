@@ -189,7 +189,7 @@ class ExecutionSanitizer {
 			try {
 				ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
 				// delete data .. 
-				dataUnit.delete();
+				dataUnit.clean();
 			} catch (DataUnitCreateException e) {
 				LOG.warn("Failed to reinstantiate dataUnit", e);
 			}

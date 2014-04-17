@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.backend.data;
 
 import java.io.File;
 
+import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -45,6 +46,7 @@ public class DataUnitFactory {
 	 * @param directory DataUnit's working directory.
 	 * @return DataUnit
 	 * @throws DataUnitCreateException
+	 * @throws RepositoryException 
 	 */
 	public ManagableDataUnit create(DataUnitType type,
 			String id,
@@ -57,7 +59,7 @@ public class DataUnitFactory {
 			case RDF_Local:
 				// create DataUnit
 				ManagableDataUnit localRepository = RDFDataUnitFactory
-						.createLocalRDFRepo(directory.getAbsolutePath(), id,
+						.createLocalRDFRepo(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR), 
 						name, GraphUrl.translateDataUnitId(id));
 
 				// create container with DataUnit and index
@@ -70,14 +72,12 @@ public class DataUnitFactory {
 
 				// create repository
 				ManagableDataUnit virtosoRepository = RDFDataUnitFactory.createVirtuosoRDFRepo(
-						config .getString(ConfigProperty.DATABASE_HOSTNAME),
+						config.getString(ConfigProperty.DATABASE_HOSTNAME),
 						config.getString(ConfigProperty.DATABASE_PORT),
 						config.getString(ConfigProperty.DATABASE_USER),
 						config.getString(ConfigProperty.DATABASE_PASSWORD),
-						GraphUrl.translateDataUnitId(id),
-						name,
-						config.getProperties()
-				);
+						name, 
+						GraphUrl.translateDataUnitId(id));
 				
 				return virtosoRepository;
 			case FILE:

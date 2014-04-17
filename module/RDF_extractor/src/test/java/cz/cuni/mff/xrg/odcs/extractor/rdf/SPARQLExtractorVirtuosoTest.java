@@ -3,11 +3,13 @@ package cz.cuni.mff.xrg.odcs.extractor.rdf;
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.openrdf.rio.RDFFormat;
+
 import static org.junit.Assert.*;
 
 /**
@@ -48,9 +51,8 @@ public class SPARQLExtractorVirtuosoTest {
 
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
-
 		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
-				USER, PASSWORD, DEFAULT_GRAPH, "input", new Properties());
+				USER, PASSWORD, "input", DEFAULT_GRAPH);
 
 	}
 
@@ -66,7 +68,8 @@ public class SPARQLExtractorVirtuosoTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).delete();
+		((ManagableRdfDataUnit)repository).clean();
+		((ManagableRdfDataUnit)repository).release();
 	}
 
 	@Test

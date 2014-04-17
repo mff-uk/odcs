@@ -628,23 +628,9 @@ public class SPARQLoader {
 	 */
 	private void moveDataToTarget(URL endpointURL, String tempGraph,
 			String targetGraph) throws RDFException {
-
-		boolean useExtension = false;
-
-		if (rdfDataUnit instanceof VirtuosoRDFRepo) {
-			VirtuosoRDFRepo repo = (VirtuosoRDFRepo) rdfDataUnit;
-			useExtension = repo.isUsedExtension();
-		}
-
 		String moveQuery;
 
-		if (useExtension) {
-			moveQuery = String.format("DEFINE sql:log-enable 2 \n"
-					+ "ADD <%s> TO <%s>", tempGraph, targetGraph);
-		} else {
-			moveQuery = String
-					.format("ADD <%s> TO <%s>", tempGraph, targetGraph);
-		}
+		moveQuery = String.format("ADD <%s> TO <%s>", tempGraph, targetGraph);
 
 		String start = String.format(
 				"Query for moving data from temp GRAPH <%s> to target GRAPH <%s> prepared.",

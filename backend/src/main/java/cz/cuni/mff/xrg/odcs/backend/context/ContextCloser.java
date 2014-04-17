@@ -19,23 +19,12 @@ class ContextCloser {
 	 */
 	public void close(Context context) {
 		// release data
-		release(context.getInputsManager());
-		release(context.getOutputsManager());
+		context.getInputsManager().release();
+		context.getOutputsManager().release();
 		
 		// we do not delete any directories or files
 	}
 
-	/**
-	 * Release {@link ManagableDataUnit} from given {@link DataUnitManager} and
-	 * delete record about them.
-	 * 
-	 * @param dataUnitManage
-	 */
-	private void release(DataUnitManager dataUnitManage) {
-		for (ManagableDataUnit dataUnit : dataUnitManage.getDataUnits()) {
-			dataUnit.release();
-		}
-		dataUnitManage.getDataUnits().clear();
-	}
+	
 
 }

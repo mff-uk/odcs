@@ -27,7 +27,8 @@ public class SplitConstructQueryTest {
 	 */
 	@AfterClass
 	public static void deleting() {
-		repository.delete();
+		repository.clean();
+		repository.release();
 	}
 
 	/**

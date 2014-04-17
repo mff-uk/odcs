@@ -84,7 +84,7 @@ public class RDFDataUnitHelper {
 
 					LocalRDFRepo repository = RDFDataUnitFactory
 							.createLocalRDFRepo(dpuStorage.getAbsolutePath(),
-							dataUnitId,
+							
 							info.getName(), namedGraph);
 
 					return repository;
@@ -132,9 +132,8 @@ public class RDFDataUnitHelper {
 				port,
 				user,
 				password,
-				namedGraph,
 				"",
-				appConfig.getProperties());
+				namedGraph);
 
 		return virtuosoRepository;
 	}

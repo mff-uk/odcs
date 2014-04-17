@@ -203,7 +203,8 @@ public class RepositoryDataValidator implements DataValidator {
 					tempFile.delete();
 				}
 				if (!hasOutput() && goalRepo != null) {
-					goalRepo.delete();
+					goalRepo.clean();
+					goalRepo.release();
 				}
 			}
 		}

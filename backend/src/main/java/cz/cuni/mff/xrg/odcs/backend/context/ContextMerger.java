@@ -60,7 +60,7 @@ class ContextMerger {
 				// not enough data .. skip
 			} else { // elements.length == 2
 				if (elements[0].compareToIgnoreCase(dataUnitName) == 0) {
-					// math !!
+					// match !!
 					return elements[1];
 				}
 			}

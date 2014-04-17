@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+import org.openrdf.repository.RepositoryException;
+
 /**
  * Class provides factory methods for creating conrete instance of RDFDataUnit
  * interface.
@@ -34,18 +36,15 @@ public class RDFDataUnitFactory {
 	 *
 	 * @param repoPath     String path to directory where can be repository
 	 *                     stored.
-	 * @param id           String file name - unique ID, where is repository in
-	 *                     directory stored.
 	 * @param dataUnitName DataUnit's name. If not used in Pipeline can be empty
 	 *                     String.
 	 * @param namedGraph   String name of graph, where RDF data are saved.
 	 * @return New {@link LocalRDFRepo} instance.
 	 */
-	public static LocalRDFRepo createLocalRDFRepo(String repoPath, String id,
+	public static LocalRDFRepo createLocalRDFRepo(String repoPath, 
 			String dataUnitName, String namedGraph) {
 
-		LocalRDFRepo localRepo = new LocalRDFRepo(repoPath, id, namedGraph,
-				dataUnitName);
+		LocalRDFRepo localRepo = new LocalRDFRepo(repoPath, dataUnitName, namedGraph);
 		return localRepo;
 	}
 
@@ -68,7 +67,7 @@ public class RDFDataUnitFactory {
 		}
 
 		return RDFDataUnitFactory.createLocalRDFRepo(repoPath.toString(),
-				repoFileName, dataUnitName, "http://default");		
+				 dataUnitName, "http://default");		
 	}
 
 	/**
@@ -89,15 +88,16 @@ public class RDFDataUnitFactory {
 	 * @param config	      configuration for
 	 *                     {@link FailureTolerantRepositoryWrapper}
 	 * @return New {@link VirtuosoRDFRepo} instance.
+	 * @throws RepositoryException 
 	 */
 	public static VirtuosoRDFRepo createVirtuosoRDFRepo(
 			String hostName,
 			String port,
 			String user,
 			String password,
-			String namedGraph,
 			String dataUnitName,
-			Properties config) {
+			String namedGraph
+			) {
 
 		//log_enable=2 -> disables logging, enables row-by-row autocommit, see
 		//http://docs.openlinksw.com/virtuoso/fn_log_enable.html
@@ -105,7 +105,7 @@ public class RDFDataUnitFactory {
 				+ port + "/charset=UTF-8/log_enable=2";
 
 		VirtuosoRDFRepo virtuosoRepo = new VirtuosoRDFRepo(
-				JDBC, user, password, namedGraph, dataUnitName, config);
+				JDBC, user, password, dataUnitName, namedGraph);
 
 		return virtuosoRepo;
 	}

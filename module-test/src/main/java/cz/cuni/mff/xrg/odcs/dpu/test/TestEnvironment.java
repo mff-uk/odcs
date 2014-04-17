@@ -393,7 +393,8 @@ public class TestEnvironment {
 		// release all DataUnits ..
 		for (ManagableDataUnit item : dataUnits) {
 			if (item != null) {
-				item.delete();
+				item.clean();
+				item.release();
 			}
 		}
 		dataUnits.clear();

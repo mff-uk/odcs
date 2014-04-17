@@ -77,7 +77,7 @@ public class LocalRDFRepoTest {
 		}
 
 		rdfRepo = RDFDataUnitFactory.createLocalRDFRepo(pathRepo.toString(),
-				"localRepo", "", "http://default");
+				"", "http://default");
 	}
 
 	/**
@@ -675,7 +675,8 @@ public class LocalRDFRepoTest {
 	public void cleanUp() {
 		deleteDirectory(pathRepo.toFile());
 		deleteDirectory(new File(outDir.toString()));
-		rdfRepo.delete();
+		rdfRepo.clean();
+		rdfRepo.release();
 
 	}
 
@@ -872,7 +873,7 @@ public class LocalRDFRepoTest {
 
 						LocalRDFRepo localRepository = RDFDataUnitFactory
 								.createLocalRDFRepo(path
-								.toString(), "local", "", "http://default");
+								.toString(),  "", "http://default");
 
 						synchronized (localRepository) {
 							addParalelTripleToRepository(localRepository);
@@ -881,7 +882,8 @@ public class LocalRDFRepoTest {
 							loadToFile(localRepository);
 						}
 
-						localRepository.delete();
+						localRepository.clean();
+						localRepository.release();
 
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);

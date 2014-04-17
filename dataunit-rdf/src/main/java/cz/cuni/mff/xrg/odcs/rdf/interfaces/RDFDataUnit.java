@@ -292,7 +292,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * @throws RepositoryException If something went wrong during the creation
 	 *                             of the Connection.
 	 */
-    @Deprecated
 	public RepositoryConnection getConnection() throws RepositoryException;
 
 	/**

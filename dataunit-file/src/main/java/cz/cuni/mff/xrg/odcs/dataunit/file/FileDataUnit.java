@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
+import java.io.File;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
 
@@ -43,5 +45,6 @@ public interface FileDataUnit extends DataUnit {
 	 * @return Handler to the root directory.
 	 */
 	DirectoryHandler getRootDir();
-
+	void save(File directory);
+	void load(File directory); 
 }
