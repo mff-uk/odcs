@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 public @interface InputDataUnit {
 
 	/**
-	 * Name which identify input
+	 * Name which identify input. Name is obligatory.
 	 * {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
 	 *
 	 * @return Name of {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
 	 */
-	public String name() default "input";
+	public String name();
 
 	/**
 	 * 

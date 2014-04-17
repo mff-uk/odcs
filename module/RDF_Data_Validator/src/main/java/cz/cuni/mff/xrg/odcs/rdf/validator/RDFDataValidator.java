@@ -34,7 +34,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	/**
 	 * Input RDF data repository with data we want to validate.
 	 */
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit dataInput;
 
 	/**

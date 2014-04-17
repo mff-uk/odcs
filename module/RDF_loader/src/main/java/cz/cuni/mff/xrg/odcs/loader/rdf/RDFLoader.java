@@ -42,7 +42,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	/**
 	 * The repository for SPARQL loader.
 	 */
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfDataUnit;
 
 	@OutputDataUnit(name = "input_redirection", optional = true)

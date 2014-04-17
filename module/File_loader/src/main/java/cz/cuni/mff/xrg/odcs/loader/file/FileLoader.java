@@ -37,7 +37,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	/**
 	 * The repository for file loader.
 	 */
-	@InputDataUnit	
+	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfDataUnit;
 
 	@OutputDataUnit(name = "input_redirection", optional = true)
