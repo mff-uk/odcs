@@ -1,15 +1,13 @@
 package cz.cuni.mff.xrg.odcs.rdf.data;
 
-import cz.cuni.mff.xrg.odcs.rdf.impl.FailureTolerantRepositoryWrapper;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
 import org.openrdf.repository.RepositoryException;
+
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Class provides factory methods for creating conrete instance of RDFDataUnit
