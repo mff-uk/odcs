@@ -136,7 +136,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
 	private CheckBox validateDataBefore;
 
-        private CheckBox useGraphProtocol;
+	private CheckBox useGraphProtocol;
         
 	private PostItem last;
 
@@ -574,7 +574,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 		// ......
 		
 		checkBoxCopyInput = new CheckBox();
-		checkBoxCopyInput.setCaption("Copy input to output");
+		checkBoxCopyInput.setCaption("Forward input also to (file data unit) output");
 		checkBoxCopyInput.setImmediate(false);
 		checkBoxCopyInput.setWidth("-1px");
 		checkBoxCopyInput.setHeight("-1px");
