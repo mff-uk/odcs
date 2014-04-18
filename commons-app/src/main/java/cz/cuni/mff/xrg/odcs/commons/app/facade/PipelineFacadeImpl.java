@@ -74,7 +74,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	@Override
     public Pipeline createPipeline() {
 		Pipeline newPipeline = new Pipeline();
-		newPipeline.setVisibility(ShareType.PRIVATE);
+		newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }
@@ -105,7 +105,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 		} while (hasPipelineWithName(nName, null));
 		
 		newPipeline.setName( StringUtils.abbreviate(nName, LenghtLimits.PIPELINE_NAME) );
-		newPipeline.setVisibility(ShareType.PRIVATE);
+		newPipeline.setShareType(ShareType.PRIVATE);
 		
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());

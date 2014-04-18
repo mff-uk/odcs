@@ -253,5 +253,5 @@ class DPUFacadeImpl implements DPUFacade {
 	public void delete(MessageRecord record) {
 		messageDao.delete(record);
 	}
-	
+
 }

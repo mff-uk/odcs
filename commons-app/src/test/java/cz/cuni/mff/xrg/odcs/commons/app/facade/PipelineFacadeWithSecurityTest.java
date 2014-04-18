@@ -122,7 +122,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		pipeline.setUser(authCtx.getUser());
 
@@ -283,7 +283,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 

@@ -156,5 +156,5 @@ public interface DPUFacade extends Facade {
 	 * @param record
 	 */
 	void delete(MessageRecord record);
-	
+
 }

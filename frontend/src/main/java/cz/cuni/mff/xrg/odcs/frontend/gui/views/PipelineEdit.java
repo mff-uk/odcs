@@ -1109,7 +1109,7 @@ public class PipelineEdit extends ViewComponent {
 			this.pipeline = pipelineFacade.createPipeline();
 			pipeline.setName("");
 			pipeline.setDescription("");
-			pipeline.setVisibility(ShareType.PRIVATE);
+			pipeline.setShareType(ShareType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			setIdLabel(null);
 			author.setValue(authCtx.getUsername());
@@ -1175,7 +1175,7 @@ public class PipelineEdit extends ViewComponent {
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pipelineDescription.commit();
 
-		this.pipeline.setVisibility(visibility);
+		this.pipeline.setShareType(visibility);
 		pipelineVisibility.commit();
 
 		pipelineFacade.save(this.pipeline);

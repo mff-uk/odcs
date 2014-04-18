@@ -154,7 +154,7 @@ public class DPUGeneralDetail extends CustomComponent {
 			dpuTemplateNameLabel.setVisible(false);
 		}
 				
-		if (dpu.useDPUDescription()) {
+		if (dpu.isUseDPUDescription()) {
 			// generated description used
 			dpuDescription.setValue("");
 			dpuDescription.setEnabled(false);
@@ -163,7 +163,7 @@ public class DPUGeneralDetail extends CustomComponent {
 			// we should be enabled, but we also have to respec readOnly
 			dpuDescription.setEnabled(!readOnly);
 		}
-		useUserDescription.setValue(!dpu.useDPUDescription());
+		useUserDescription.setValue(!dpu.isUseDPUDescription());
 				
 		dpuName.setEnabled(!readOnly);		
 		useUserDescription.setEnabled(!readOnly);
