@@ -14,7 +14,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.io.*;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -32,16 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ExportService {
 
-	private static final String PIPELINE_ENTRY = "pipeline.xml";
-
-	private static final String SCHEDULE_ENTRY = "schedule.xml";
-
-	private static final String DPU_JAR_ENTRY = "dpu_jar";
-
-	private static final String DPU_DATA_GLOBAL_ENTRY = "dpu_data_global";
-
-	private static final String DPU_DATA_USER_ENTRY = "dpu_data_user";
-
 	private static final Logger LOG = LoggerFactory.getLogger(
 			ExportService.class);
 
@@ -55,13 +44,13 @@ public class ExportService {
 	private AuthenticationContext authCtx;
 
 	/**
-	 * Create a temp file and export pipeline into it.
+	 * Create a temp file and exportPipeline pipeline into it.
 	 *
 	 * @param pipeline
-	 * @return File with exported pipeline.
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.TransferException
+	 * @return File with exportPipelineed pipeline.
+	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
 	 */
-	public File exportIntoTempFile(Pipeline pipeline) throws TransferException {
+	public File exportPipeline(Pipeline pipeline) throws ExportException {
 		// TODO we could utilize some central storage
 		final String relativePath = "odcs" + File.separator + "export"
 				+ File.separator;
@@ -82,12 +71,12 @@ public class ExportService {
 				LOG.trace("Failed to get temp file.", ex);
 				attemp++;
 				if (attemp > 10) {
-					throw new TransferException("Failed to get temp file.");
+					throw new ExportException("Failed to get temp file.");
 				}
 			}
 		}
 
-		export(pipeline, targetFile);
+		exportPipeline(pipeline, targetFile);
 		return targetFile;
 	}
 
@@ -96,17 +85,17 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @param targetFile
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.TransferException
+	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
 	 */
-	public void export(Pipeline pipeline, File targetFile)
-			throws TransferException {
+	public void exportPipeline(Pipeline pipeline, File targetFile)
+			throws ExportException {
 
 		if (authCtx == null) {
-			throw new TransferException("AuthenticationContext is null.");
+			throw new ExportException("AuthenticationContext is null.");
 		}
 		final User user = authCtx.getUser();
 		if (user == null) {
-			throw new TransferException("Unknown user.");
+			throw new ExportException("Unknown user.");
 		}
 
 		try (FileOutputStream fos = new FileOutputStream(targetFile);
@@ -131,9 +120,9 @@ public class ExportService {
 			}
 		} catch (IOException ex) {
 			targetFile.delete();
-			throw new TransferException(
+			throw new ExportException(
 					"Failed to prepare file with exported pipeline", ex);
-		} catch (TransferException ex) {
+		} catch (ExportException ex) {
 			targetFile.delete();
 			throw ex;
 		}
@@ -144,18 +133,18 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @param zipStream
-	 * @throws TransferException
+	 * @throws ExportException
 	 */
 	private void savePipeline(Pipeline pipeline, ZipOutputStream zipStream)
-			throws TransferException {
+			throws ExportException {
 		final XStream xStream = JPAXStream.createForPipeline();
 		try {
-			final ZipEntry ze = new ZipEntry(PIPELINE_ENTRY);
+			final ZipEntry ze = new ZipEntry(ArchiveStructure.PIPELINE.getValue());
 			zipStream.putNextEntry(ze);
 			// write into entry
 			xStream.toXML(pipeline, zipStream);
 		} catch (IOException ex) {
-			throw new TransferException("Failed to serialize pipeline.", ex);
+			throw new ExportException("Failed to serialize pipeline.", ex);
 		}
 	}
 
@@ -165,20 +154,20 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @param zipStream
-	 * @throws TransferException
+	 * @throws ExportException
 	 */
 	private void saveSchedule(Pipeline pipeline, ZipOutputStream zipStream)
-			throws TransferException {
+			throws ExportException {
 		final XStream xStream = JPAXStream.createForSchedule();
 		final List<Schedule> schedules = scheduleFacade
 				.getSchedulesFor(pipeline);
 		try {
-			final ZipEntry ze = new ZipEntry(SCHEDULE_ENTRY);
+			final ZipEntry ze = new ZipEntry(ArchiveStructure.SCHEDULE.getValue());
 			zipStream.putNextEntry(ze);
 			// write into entry
 			xStream.toXML(schedules, zipStream);
 		} catch (IOException ex) {
-			throw new TransferException("Failed to serialize schedule.", ex);
+			throw new ExportException("Failed to serialize schedule.", ex);
 		}
 	}
 
@@ -187,22 +176,22 @@ public class ExportService {
 	 *
 	 * @param template
 	 * @param zipStream
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.TransferException
+	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
 	 */
 	private void saveDPUJar(DPUTemplateRecord template,
 			ZipOutputStream zipStream)
-			throws TransferException {
+			throws ExportException {
 		// we copy the structure in dpu directory
 		final File source;
 		try {
 			source = resourceManager.getDPUJarFile(template);
 		} catch (MissingResourceException ex) {
-			throw new TransferException("Failed to get path to jar file.");
+			throw new ExportException("Failed to get path to jar file.");
 		}
 		byte[] buffer = new byte[4096];
 		try {
-			final ZipEntry ze = new ZipEntry(DPU_JAR_ENTRY + File.separator
-					+ template.getJarPath());
+			final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_JAR.getValue() + 
+					File.separator + template.getJarPath());
 			zipStream.putNextEntry(ze);
 			// move jar file into the zip file
 			try (FileInputStream in = new FileInputStream(source)) {
@@ -212,7 +201,7 @@ public class ExportService {
 				}
 			}
 		} catch (IOException ex) {
-			throw new TransferException("Failed to copy jar file.", ex);
+			throw new ExportException("Failed to copy jar file.", ex);
 		}
 	}
 
@@ -222,19 +211,19 @@ public class ExportService {
 	 * @param template
 	 * @param user
 	 * @param zipStream
-	 * @throws TransferException
+	 * @throws ExportException
 	 */
 	private void saveDPUDataUser(DPUTemplateRecord template, User user,
-			ZipOutputStream zipStream) throws TransferException {
+			ZipOutputStream zipStream) throws ExportException {
 		final File source;
 		try {
 			source = resourceManager.getDPUDataUserDir(template, user);
 		} catch (MissingResourceException ex) {
-			throw new TransferException("Failed to get path to jar file.");
+			throw new ExportException("Failed to get path to jar file.");
 		}
 
-		final String zipPrefix = DPU_DATA_USER_ENTRY + File.separator
-				+ template.getJarDirectory();
+		final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue() 
+				+ File.separator + template.getJarDirectory();
 
 		saveDirectory(source, zipPrefix, zipStream);
 	}
@@ -244,19 +233,19 @@ public class ExportService {
 	 *
 	 * @param template
 	 * @param zipStream
-	 * @throws TransferException
+	 * @throws ExportException
 	 */
 	private void saveDPUDataGlobal(DPUTemplateRecord template,
-			ZipOutputStream zipStream) throws TransferException {
+			ZipOutputStream zipStream) throws ExportException {
 		final File source;
 		try {
 			source = resourceManager.getDPUDataGlobalDir(template);
 		} catch (MissingResourceException ex) {
-			throw new TransferException("Failed to get path to jar file.");
+			throw new ExportException("Failed to get path to jar file.");
 		}
 
-		final String zipPrefix = DPU_DATA_GLOBAL_ENTRY + File.separator
-				+ template.getJarDirectory();
+		final String zipPrefix = ArchiveStructure.DPU_DATA_GLOBAL.getValue()
+				+ File.separator + template.getJarDirectory();
 
 		saveDirectory(source, zipPrefix, zipStream);
 	}
@@ -269,12 +258,12 @@ public class ExportService {
 	 * @param targetPrefix Path prefix in output zip, it should not end with
 	 *                     separator.
 	 * @param zipStream
-	 * @throws TransferException
+	 * @throws ExportException
 	 */
 	private void saveDirectory(File source, String targetPrefix,
-			ZipOutputStream zipStream) throws TransferException {
+			ZipOutputStream zipStream) throws ExportException {
 		if (!source.exists()) {
-			// nothing to export
+			// nothing to exportPipeline
 			LOG.trace("Skipping '{}' as it does not exist.", source.toString());
 			return;
 		}
@@ -286,7 +275,7 @@ public class ExportService {
 		try {
 			sourceLenght = source.getCanonicalPath().length() + 1;
 		} catch (IOException ex) {
-			throw new TransferException("Failed to get canonical path.", ex);
+			throw new ExportException("Failed to get canonical path.", ex);
 		}
 
 		final Collection<File> files = FileUtils.listFiles(source,
@@ -305,7 +294,7 @@ public class ExportService {
 				final ZipEntry ze = new ZipEntry(relativePath);
 				zipStream.putNextEntry(ze);
 			} catch (IOException ex) {
-				throw new TransferException("Preparation of zip entry failed",
+				throw new ExportException("Preparation of zip entry failed",
 						ex);
 			}
 			// transfer data
@@ -315,7 +304,7 @@ public class ExportService {
 					zipStream.write(buffer, 0, len);
 				}
 			} catch (IOException ex) {
-				throw new TransferException("Failed to add file into archive.",
+				throw new ExportException("Failed to add file into archive.",
 						ex);
 			}
 		}

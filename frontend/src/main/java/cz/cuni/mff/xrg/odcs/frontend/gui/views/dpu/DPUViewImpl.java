@@ -734,7 +734,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 			selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
 					.getValue().trim());
 			selectedDpuWrap.getDPUTemplateRecord()
-					.setVisibility((ShareType) groupVisibility
+					.setShareType((ShareType) groupVisibility
 					.getValue());
 			presenter.saveDPUEventHandler(selectedDpuWrap);
 		}

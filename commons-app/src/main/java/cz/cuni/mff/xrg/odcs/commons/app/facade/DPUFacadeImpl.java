@@ -152,6 +152,12 @@ class DPUFacadeImpl implements DPUFacade {
 		return templateDao.getChilds(parent);
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public DPUTemplateRecord getByDirectory(String jarDirectory) {
+		return templateDao.getByDirectory(jarDirectory);
+	}
+	
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
 
 	/**

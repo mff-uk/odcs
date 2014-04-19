@@ -63,7 +63,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.TransferException;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
@@ -749,11 +749,11 @@ public class PipelineEdit extends ViewComponent {
 			public InputStream getStream() {
 				// TODO we should add some waiting dialog here, or 
 				//	we can split the action -> prepare download, download
-				
+				LOG.debug("Constructing output stream.");
 				File pplFile;
 				try {
-					pplFile = exportService.exportIntoTempFile(pipeline);
-				} catch (TransferException ex) {
+					pplFile = exportService.exportPipeline(pipeline);
+				} catch (ExportException ex) {
 					LOG.error("Faield to export pipeline", ex);
 					Notification.show("Failed to export pipeline.", Notification.Type.ERROR_MESSAGE);
 					return null;
@@ -1042,7 +1042,7 @@ public class PipelineEdit extends ViewComponent {
 		buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("save"));
 		buttonCopy.setEnabled(!isNew && hasPermission("copy"));
 		buttonCopyAndClose.setEnabled(!isNew && hasPermission("copy"));
-		// we reuse copy permision for export
+		// we reuse copy permision for exportPipeline
 		buttonExport.setEnabled(hasPermission("copy"));
 	}
 

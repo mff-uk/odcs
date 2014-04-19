@@ -175,7 +175,7 @@ public class DPUModuleManipulator {
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
 		newTemplate.setJarDescription(jarDescription);
-		newTemplate.setVisibility(ShareType.PRIVATE);
+		newTemplate.setShareType(ShareType.PRIVATE);
 
 		// validate
 		if (validators != null) {

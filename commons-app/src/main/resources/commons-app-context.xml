@@ -117,7 +117,8 @@
    
 	<!-- service for pipeline import-export -->
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService" />
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService" />
 	
 	<bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager" />
-	
+		
 </beans>

@@ -159,7 +159,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 			for (DPUTemplateRecord dpu : getPrivateDPUs(pipeline)) {
 				if (ShareType.PRIVATE.equals(dpu.getShareType())) {
 					// we found a private DPU in public pipeline -> make public
-					dpu.setVisibility(ShareType.PUBLIC_RO);
+					dpu.setShareType(ShareType.PUBLIC_RO);
 					dpuFacade.save(dpu);
 				}
 			}

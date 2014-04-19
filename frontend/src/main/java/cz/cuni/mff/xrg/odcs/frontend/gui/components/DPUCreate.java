@@ -241,7 +241,7 @@ public class DPUCreate extends Window {
 				dpuTemplate = dpuWrap.getDPUTemplateRecord();
 				// now we know all, we can update the DPU template
 				dpuTemplate.setDescription(dpuDescription.getValue());
-				dpuTemplate.setVisibility((ShareType) groupVisibility.getValue());
+				dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
 				dpuFacade.save(dpuTemplate);
 				// and at the end we can close the dialog .. 
 				close();

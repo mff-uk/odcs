@@ -255,7 +255,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -266,7 +266,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		

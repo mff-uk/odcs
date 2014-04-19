@@ -253,7 +253,7 @@ public class DPUTemplateDetail extends CustomComponent {
 			// we are read only no changes to save
 			return;
 		}
-		dpu.setVisibility((ShareType) groupVisibility.getValue());
+		dpu.setShareType((ShareType) groupVisibility.getValue());
 	}
 
 }
