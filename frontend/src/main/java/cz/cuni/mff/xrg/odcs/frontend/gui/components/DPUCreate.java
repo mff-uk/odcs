@@ -95,9 +95,6 @@ public class DPUCreate extends Window {
 	private DPUFacade dpuFacade;
 	@Autowired
 	private DPUModuleManipulator dpuManipulator;
-
-	@Autowired
-	private List<DPUValidator> validators;
 	
 	/**
 	 * Basic constructor.
@@ -227,7 +224,7 @@ public class DPUCreate extends Window {
 				DPUTemplateWrap dpuWrap;
 				try {
 					dpuWrap = new DPUTemplateWrap(
-							dpuManipulator.create(sourceFile, dpuName.getValue(), validators));
+							dpuManipulator.create(sourceFile, dpuName.getValue()));
 				} catch (DPUCreateException e) {
 
 					dpuGeneralSettingsLayout.removeComponent(1, 3);

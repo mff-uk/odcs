@@ -72,9 +72,6 @@ public class DPUPresenterImpl implements DPUPresenter {
 	private DPUFacade dpuFacade;
 	private Window.CloseListener createDPUCloseListener;
 	
-	@Autowired
-	private List<DPUValidator> validators;
-	
 	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
 	/**
 	 * Cache for pipelines using currently selected DPU template.
@@ -239,7 +236,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 		}
 
 		try {
-			dpuManipulator.replace(dpu, newJar, validators);
+			dpuManipulator.replace(dpu, newJar);
 		} catch (DPUReplaceException e) {
 			Notification.show("Failed to replace DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return;
