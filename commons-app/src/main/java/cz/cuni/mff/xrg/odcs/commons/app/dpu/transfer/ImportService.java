@@ -172,7 +172,7 @@ public class ImportService {
 		if (result == null) {
 			try {
 				// we have to import new DPU
-				result = moduleManipulator.create(jarFile, template.getName(), null);
+				result = moduleManipulator.create(jarFile, template.getName());
 			} catch (DPUCreateException ex) {
 				throw new ImportException("Failed to import DPU", ex);
 			}			
