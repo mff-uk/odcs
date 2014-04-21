@@ -34,9 +34,13 @@
         <constructor-arg name="refreshDatabase" value="true"/>
     </bean>
 	
+	<!-- service for pipeline import-export -->
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService" />
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService" />
+
     <!-- bean that provide functionality for manipulating with DPUs -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
-
+	
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />

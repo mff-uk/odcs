@@ -1,15 +1,14 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer;
+package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import com.thoughtworks.xstream.XStream;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.xstream.JPAXStream;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -57,29 +56,35 @@ public class ImportService {
 	@Autowired
 	private DPUModuleManipulator moduleManipulator;
 
-	@Autowired
-	private UserFacade userFacade;
 
+	public Pipeline importPipeline(File zipFile) throws ImportException {
+		final File tempDir;
+		try {
+			tempDir = resourceManager.getNewImportTempDir();
+		} catch (MissingResourceException ex) {
+			throw new ImportException("Failed to get temp directory.", ex);
+		}
+		return importPipeline(zipFile, tempDir);
+	}	
 	
-	public void importPipeline(File zipFile, File tempDirectory,
-			ImportServiceConfiguration conf) throws ImportException {
+	public Pipeline importPipeline(File zipFile, File tempDirectory)
+			throws ImportException {
 		// delete tempDirectory
 		FileUtils.deleteQuietly(tempDirectory);
 
-		final User user = userFacade.getUserByUsername("admin");
-
-//		if (authCtx == null) {
-//			throw new ImportException("AuthenticationContext is null.");
-//		}
-//		final User user = authCtx.getUser();
-//		if (user == null) {
-//			throw new ImportException("Unknown user.");
-//		}		
+		if (authCtx == null) {
+			throw new ImportException("AuthenticationContext is null.");
+		}
+		final User user = authCtx.getUser();
+		if (user == null) {
+			throw new ImportException("Unknown user.");
+		}		
 		// unpack
+		Pipeline pipe;
 		try {
 			unpack(zipFile, tempDirectory);
 
-			Pipeline pipe = loadPipeline(tempDirectory);
+			pipe = loadPipeline(tempDirectory);
 			pipe.setUser(user);
 			pipe.setShareType(ShareType.PRIVATE);
 
@@ -106,7 +111,7 @@ public class ImportService {
 							+ template.getJarDirectory());
 					// import
 					templateToUse = importDPUTemplate(template, user, jarFile,
-							userDataFile, globalDataFile, conf);
+							userDataFile, globalDataFile);
 					// add to cache
 					importedTemplates.put(template, templateToUse);
 				}
@@ -129,6 +134,7 @@ public class ImportService {
 				LOG.warn("Failed to delete temp directory.");
 			}
 		}
+		return pipe;
 	}
 
 	/**
@@ -158,14 +164,13 @@ public class ImportService {
 	 * @param jarFile
 	 * @param userDataDir
 	 * @param globalDataDir
-	 * @param conf
 	 * @return Template that is stored in database and is equivalent to the
 	 *         given one.
 	 * @throws ImportException
 	 */
 	private DPUTemplateRecord importDPUTemplate(DPUTemplateRecord template,
-			User user, File jarFile, File userDataDir, File globalDataDir,
-			ImportServiceConfiguration conf) throws ImportException {
+			User user, File jarFile, File userDataDir, File globalDataDir)
+			throws ImportException {
 		// try to detect if there already exist same DPU
 		DPUTemplateRecord result = dpuFacade.getByDirectory(template
 				.getJarDirectory());
@@ -278,5 +283,5 @@ public class ImportService {
 		}
 
 	}
-
+	
 }

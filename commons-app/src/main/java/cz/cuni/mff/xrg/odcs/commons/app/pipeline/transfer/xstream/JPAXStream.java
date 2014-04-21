@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.xstream;
+package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;

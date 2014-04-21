@@ -1,10 +1,10 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer;
+package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import com.thoughtworks.xstream.XStream;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.xstream.JPAXStream;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -48,34 +48,21 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @return File with exportPipelineed pipeline.
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
+	 * @throws ExportException
 	 */
 	public File exportPipeline(Pipeline pipeline) throws ExportException {
-		// TODO we could utilize some central storage
-		final String relativePath = "odcs" + File.separator + "export"
-				+ File.separator;
-		final File tempDirectory = new File(FileUtils.getTempDirectory(),
-				relativePath);
-		
-		tempDirectory.mkdirs();
-		
-		// try to get unique file name
-		int attemp = 0;
-		File targetFile;
-		while (true) {
-			try {
-				targetFile = File.createTempFile("pipeline_", ".zip",
-						tempDirectory);
-				break;
-			} catch (Exception ex) {
-				LOG.trace("Failed to get temp file.", ex);
-				attemp++;
-				if (attemp > 10) {
-					throw new ExportException("Failed to get temp file.");
-				}
-			}
+		final File tempDir;
+		try {
+		tempDir = resourceManager.getNewExportTempDir();
+		} catch (MissingResourceException ex) {
+			throw new ExportException("Failed to get temp directory.", ex);
 		}
-
+		final StringBuilder fileName = new StringBuilder();
+		fileName.append("pipeline-");
+		fileName.append(pipeline.getId().toString());
+		fileName.append(".zip");
+		
+		final File targetFile = new File(tempDir, fileName.toString());		
 		exportPipeline(pipeline, targetFile);
 		return targetFile;
 	}
@@ -85,7 +72,7 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @param targetFile
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
+	 * @throws ExportException
 	 */
 	public void exportPipeline(Pipeline pipeline, File targetFile)
 			throws ExportException {
@@ -176,7 +163,7 @@ public class ExportService {
 	 *
 	 * @param template
 	 * @param zipStream
-	 * @throws cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportException
+	 * @throws ExportException
 	 */
 	private void saveDPUJar(DPUTemplateRecord template,
 			ZipOutputStream zipStream)
