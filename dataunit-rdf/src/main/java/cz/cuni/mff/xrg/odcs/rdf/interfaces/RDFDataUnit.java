@@ -220,7 +220,6 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
-
 	/**
 	 * Load all triples in repository to defined file in defined RDF format.
 	 *
@@ -238,5 +237,4 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
-
 }

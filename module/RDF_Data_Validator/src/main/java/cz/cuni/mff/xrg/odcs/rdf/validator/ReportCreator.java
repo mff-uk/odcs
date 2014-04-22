@@ -102,15 +102,6 @@ public class ReportCreator {
                         getObject(line), repository.getDataGraph());
             } catch (RepositoryException e) {
                 logger.error("Error", e);
-            } finally {
-            	if (connection != null) {
-    				try {
-    					connection.close();
-    				} catch (RepositoryException ex) {
-    					logger.warn("Error when closing connection", ex);
-    					// eat close exception, we cannot do anything clever here
-    				}
-    			}            	
             }
 
 		}

@@ -82,7 +82,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
  *
  * @author Jiri Tomes
  */
-public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
+public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
@@ -132,61 +132,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 			List<String> predicates) {
 		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
 				predicates);
-	}
-
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath         Path to file, where RDF data will be saved.
-	 * @param formatType       Type of RDF format for saving data (example:
-	 *                         TURTLE, RDF/XML,etc.)
-	 * @param canFileOverWrite boolean value, if existing file can be
-	 *                         overwritten.
-	 * @param isNameUnique     boolean value, if every pipeline execution has
-	 *                         his unique name.
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data fault.
-	 */
-	@Override
-	public void loadToFile(String filePath, RDFFormatType formatType,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException {
-
-		ParamController.testNullParameter(filePath,
-				"Mandatory file path in File_loader is null.");
-		ParamController.testEmptyParameter(filePath,
-				"Mandatory file path in File_loader is empty.");
-
-		File dataFile = new File(filePath);
-		File directory = new File(dataFile.getParent());
-
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
-
-		if (!dataFile.exists()) {
-			createNewFile(dataFile);
-
-		} else {
-			if (isNameUnique) {
-                //TODO resolve this, java has own unique name generator
-				String uniqueFileName = UniqueNameGenerator
-						.getNextName(dataFile.getName());
-
-                dataFile = new File(directory, uniqueFileName);
-				createNewFile(dataFile);
-
-			} else if (canFileOverWrite) {
-				createNewFile(dataFile);
-			} else {
-				logger.debug("File existed and cannot be overwritten");
-				throw new CannotOverwriteFileException();
-			}
-
-		}
-
-		writeDataIntoFile(dataFile, formatType);
-
 	}
 
 	/**
@@ -472,21 +417,11 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
     @Override
     public void addTriplesFromGraph(Graph graphInstance) {
         if (graphInstance != null) {
-        	RepositoryConnection connection = null;
-        	try {
-                connection = getConnection();
+            try {
+                RepositoryConnection connection = getConnection();
                 connection.add(graphInstance, dataGraph);
             } catch (RepositoryException e) {
                 logger.debug(e.getMessage());
-            } finally {
-            	if (connection != null) {
-    				try {
-    					connection.close();
-    				} catch (RepositoryException ex) {
-    					logger.warn("Error when closing connection", ex);
-    					// eat close exception, we cannot do anything clever here
-    				}
-    			}
             }
         }
     }

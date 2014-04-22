@@ -1,15 +1,12 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
 import java.util.List;
 
 import static org.junit.Assert.*;
-
 import org.junit.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -58,10 +55,9 @@ public class DPUReplacementTest {
 
 	/**
 	 * Test DPU replacement on SPARQL CONSTRUCT query.
-	 * @throws Exception 
 	 */
 	@Test
-	public void constructQueryTest() throws Exception {
+	public void constructQueryTest() {
 
 		String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "
 				+ "{ graph ?g_input {?s ?p ?o} graph ?g_optional1 {?x ?y ?z}}";
@@ -107,6 +103,8 @@ public class DPUReplacementTest {
 			env.release();
 
 
+		} catch (Exception e) {
+			fail(e.getMessage());
 		} finally {
 			env.release();
 		}
@@ -148,6 +146,7 @@ public class DPUReplacementTest {
             connection.add(factory.createURI("http://person"), factory.createURI(
 					"http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
+
             RepositoryConnection connection2 = null;
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
@@ -160,7 +159,7 @@ public class DPUReplacementTest {
             assertEquals(1L, connection.size(input.getDataGraph()));
             assertEquals(1L, connection2.size(optional.getDataGraph()));
 
-            RDFDataUnit output = env.createRdfOutput("output", false);
+			RDFDataUnit output = env.createRdfOutput("output", false);
 
 			env.run(transformer);
 

@@ -10,10 +10,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +52,10 @@ public class RepositoryDataValidator implements DataValidator {
 
 	private List<TripleProblem> findedProblems;
 
-	/**
+    final private String encode = "UTF-8";
+
+
+    /**
 	 * Create new instance of {@link RepositoryDataValidator} that check data
 	 * for given input.
 	 *
@@ -126,22 +127,13 @@ public class RepositoryDataValidator implements DataValidator {
 
 		boolean isValid = false;
         long tripleCount = -1;
-        RepositoryConnection connection = null; 
+        RepositoryConnection connection = null;
         try{
             connection = input.getConnection();
             tripleCount = connection.size(input.getDataGraph());
         }catch (Exception e) {
             message = e.getMessage();
             logger.error(message);
-        } finally {
-        	if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					logger.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}        	
         }
 
 		if (tripleCount == 0) {
@@ -152,9 +144,12 @@ public class RepositoryDataValidator implements DataValidator {
 			ManagableRdfDataUnit goalRepo = null;
 			try {
 				tempFile = File.createTempFile("temp", "file");
+                tempFile = File.createTempFile("temp", "file");
+                FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
+                OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
+                RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
+                connection.export(rdfWriter, input.getDataGraph());
 
-				input.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
-						true, false);
 
 				try (InputStreamReader fileStream = new InputStreamReader(
 						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
@@ -201,7 +196,7 @@ public class RepositoryDataValidator implements DataValidator {
 				}
 
 
-			} catch (IOException | CannotOverwriteFileException | RDFException | RepositoryException e) {
+			} catch (IOException | RepositoryException e) {
 				message = e.getMessage();
 				logger.error(message);
 

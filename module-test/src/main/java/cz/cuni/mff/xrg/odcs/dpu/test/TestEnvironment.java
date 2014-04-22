@@ -108,7 +108,7 @@ public class TestEnvironment {
 	 */
 	public static TestEnvironment create(File directory) {
 		final String testDirName = "odcs_test_"
-				+ Long.toString((new Date()).getTime()) + File.separator;
+				+ Long.toString((new Date()).getTime());
 
 		return new TestEnvironment(new File(directory, testDirName));
 	}
@@ -251,24 +251,14 @@ public class TestEnvironment {
 		}
 		File inputFile = new File(url.getPath());
         // return file
-		RepositoryConnection connection = null; 
-		try {
-			connection = rdf.getConnection();
+        try {
+            RepositoryConnection connection = rdf.getConnection();
             String baseURI = "";
             RDFFormat fileFormat = RDFFormat.forFileName(inputFile.getAbsolutePath(), RDFFormat.RDFXML);
             connection.add(inputFile, baseURI, fileFormat, rdf.getDataGraph());
         } catch (Exception e) {
             throw new RDFException("Problem with repository: "
                     + resourceName);
-        } finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}        	
         }
 
 		addInput(name, rdf);
