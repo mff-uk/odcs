@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.frontend.monitor;
 
 import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
 /**
@@ -12,6 +14,8 @@ import org.springframework.remoting.RemoteAccessException;
  */
 public class BackendHeartbeat {
 
+        private static final Logger log = LoggerFactory.getLogger(BackendHeartbeat.class);
+    
 	@Autowired
 	private HeartbeatService heartbeatService;
 
@@ -34,8 +38,11 @@ public class BackendHeartbeat {
 		try {
 			alive = heartbeatService.isAlive();
 		} catch (RemoteAccessException ex) {
-			// backend is offline
+			
 			alive = false;
+                        
+                        log.warn("Problem when checking whether backend is online: {}", ex.getLocalizedMessage());
+                        log.info("Possible reason: Backend is offline");
 		}
 	}
 
