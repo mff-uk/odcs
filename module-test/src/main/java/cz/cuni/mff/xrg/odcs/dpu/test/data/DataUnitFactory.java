@@ -66,8 +66,7 @@ public class DataUnitFactory {
 	 */
 	private ManagableRdfDataUnit createLocalRDFDataUnit(String name) {
 		final String number = Integer.toString(dataUnitIdCounter++);
-		final String repoPath = workingDirectory.toString()
-				+ File.separatorChar + "dataUnit" + File.separatorChar + number;
+		final String repoPath = workingDirectory.toString();
 		final String id = "dpu-test_" + number + "_" + name;
 		final String namedGraph = GraphUrl.translateDataUnitId(id);
 
