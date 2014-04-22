@@ -72,7 +72,6 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 		try {
-			repository.initialize();
 			int count;
 			String filteredQuery = setWhereCriteria(baseQuery);
 			LOG.debug("Size query started...");
@@ -90,7 +89,7 @@ public class RDFQuery implements Query {
 					Notification.Type.ERROR_MESSAGE);
 			LOG.debug("Size query exception", ex);
 		} finally {
-			repository.shutDown();
+			repository.release();
 		}
 		return 0;
 	}
@@ -120,7 +119,6 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 
-		repository.initialize();
 		String filteredQuery = setWhereCriteria(baseQuery);
 
 		QueryRestriction restriction = new QueryRestriction(filteredQuery);
@@ -195,7 +193,7 @@ public class RDFQuery implements Query {
 					Notification.Type.ERROR_MESSAGE);
 		} finally {
 			// close reporistory
-			repository.shutDown();
+			repository.release();
 		}
 		return null;
 	}

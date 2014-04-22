@@ -239,12 +239,4 @@ public interface RDFDataUnit extends DataUnit {
 	public void loadToFile(String filePath, RDFFormatType formatType,
 			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 
-
-	/**
-	 * Method called after restarting after DB. Calling method
-	 * {@link #getConnection()} provides to get new instance of connection.
-	 */
-    @Deprecated
-	public void restartConnection();
-
 }

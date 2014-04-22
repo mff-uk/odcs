@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

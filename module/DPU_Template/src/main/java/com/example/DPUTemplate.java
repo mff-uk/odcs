@@ -18,7 +18,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
 		ConfigDialogProvider<DPUTemplateConfig> 
 	{
 	
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfInput;
 	
 	@OutputDataUnit

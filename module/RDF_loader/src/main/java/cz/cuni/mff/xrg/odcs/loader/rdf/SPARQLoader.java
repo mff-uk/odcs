@@ -659,7 +659,6 @@ public class SPARQLoader {
 					logger.error("Moving data was canceled by user !!!");
 					break;
 				}
-				rdfDataUnit.restartConnection();
 				retryCount++;
 
 				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
@@ -805,7 +804,6 @@ public class SPARQLoader {
 							"Finding enpoint graph size was canceled by user !!!");
 					break;
 				}
-				rdfDataUnit.restartConnection();
 				retryCount++;
 
 				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
@@ -942,7 +940,6 @@ public class SPARQLoader {
 					break;
 				}
 
-				rdfDataUnit.restartConnection();
 				builder.delete(0, builder.length());
 				retryCount++;
 				String error = String.format("Problem by creating %s"
@@ -1089,7 +1086,6 @@ public class SPARQLoader {
 					logger.error(message, e);
 					break;
 				}
-				rdfDataUnit.restartConnection();
 				retryCount++;
 
 				if (retryCount > RETRY_CONNECTION_SIZE && !hasInfinityRetryConnection()) {
@@ -1461,7 +1457,6 @@ public class SPARQLoader {
 					break;
 				}
 
-				rdfDataUnit.restartConnection();
 				builder.delete(0, builder.length());
 				retryCount++;
 				String error = String.format("Problem preparing data to be loaded - ATTEMPT number %s: ", 

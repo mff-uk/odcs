@@ -116,17 +116,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	 */
 	protected boolean isReadOnly;
 
-	/**
-	 * Singletone connection for repository.
-	 */
-	protected RepositoryConnection repoConnection;
-
-	/**
-	 * If is thrown RDFException and need reconnect singleton connection
-	 * instance.
-	 */
-	private boolean hasBrokenConnection = false;
-
 	public BaseRDFRepo() {
 		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
 	}
@@ -219,15 +208,12 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					dataGraph);
 
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.debug(ex.getMessage(), ex);
 			repoResult = new RepositoryResult<>(
 					new EmptyIteration<Statement, RepositoryException>());
 
-		} finally {
-			return repoResult;
-
 		}
+		return repoResult;
 	}
 
 	/**
@@ -316,7 +302,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 
 
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			throw new RDFException(
 					"Connection to repository is not available. "
 					+ ex.getMessage(), ex);
@@ -469,7 +454,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}", ex
 					.getMessage(), ex);
 		} catch (RDFHandlerException ex) {
@@ -493,7 +477,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
                 connection = getConnection();
                 connection.add(graphInstance, dataGraph);
             } catch (RepositoryException e) {
-                hasBrokenConnection = true;
                 logger.debug(e.getMessage());
             } finally {
             	if (connection != null) {
@@ -553,7 +536,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
 		}
@@ -644,7 +626,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					ex);
 
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
 		} catch (IOException ex) {
@@ -787,7 +768,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					"This query is probably not valid as construct query. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
 		} finally {
@@ -847,7 +827,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
 		}
@@ -992,7 +971,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 					"This query is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
 		}
@@ -1096,7 +1074,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		} catch (RDFHandlerException ex) {
 			throw new RDFException(ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
 			throw new RDFException(
 					"Repository connection failed while trying to load into XML file."
 					+ ex.getMessage(), ex);
@@ -1148,44 +1125,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	}
 
 	/**
-	 * Allow re-using repository after destroying repository - calling method
-	 * {@link #shutDown()}. After creating new instance is repository
-	 * automatically initialized. Calling this method has no effect, if is
-	 * repository is still alive.
-	 */
-	@Override
-	public void initialize() {
-		if (repository != null && !repository.isInitialized()) {
-			try {
-				repository.initialize();
-			} catch (RepositoryException ex) {
-				logger.debug("Repository can not be initialized: {}", ex
-						.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * Definitely destroy repository - use after all working in repository.
-	 * Another repository using cause exception. For other using you have to
-	 * create new instance.
-	 */
-	@Override
-	public void shutDown() {
-		try {
-			closeConnection();
-			repository.shutDown();
-			logger.debug("Repository with data graph <" + getDataGraph()
-					.stringValue() + "> destroyed SUCCESSFUL.");
-		} catch (RepositoryException ex) {
-			hasBrokenConnection = true;
-			logger.debug(
-					"Repository was not destroyed - potencial problems with locks .");
-			logger.debug(ex.getMessage());
-		}
-	}
-
-	/**
 	 * Return openRDF repository needed for almost every operation using RDF.
 	 *
 	 * @return openRDF repository.
@@ -1231,62 +1170,4 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 
 		setDataGraph(newGraph);
 	}	
-
-	/**
-	 * Method called after restarting after DB. Calling method
-	 * {@link #getConnection()} provides to get new instance of connection.
-	 */
-	@Override
-	public void restartConnection() {
-		try {
-			closeConnection();
-		} catch (RepositoryException e) {
-			logger.debug("Connection can not be closed. " + e.getMessage());
-		}
-
-		hasBrokenConnection = true;
-	}
-
-	/**
-	 *
-	 * @return Shared connection to repository.
-	 * @throws RepositoryException If something went wrong during the creation
-	 *                             of the Connection.
-	 */
-	@Override
-	public RepositoryConnection getConnection() throws RepositoryException {
-
-		if (!repository.isInitialized()) {
-			repository.initialize();
-		}
-
-		if (!hasBrokenConnection) {
-			if (repoConnection != null && repoConnection.isOpen()) {
-				return repoConnection;
-			} else {
-
-				repoConnection = repository.getConnection();
-				return repoConnection;
-			}
-		} else {
-			repoConnection = repository.getConnection();
-			hasBrokenConnection = false;
-			return repoConnection;
-		}
-
-	}
-
-	/**
-	 * Close shared connection to repository.
-	 *
-	 * @throws RepositoryException If something went wrong during closing the
-	 *                             connection.
-	 */
-	protected void closeConnection() throws RepositoryException {
-		if (!hasBrokenConnection && repoConnection != null
-				&& repoConnection.isOpen()) {
-
-			repoConnection.close();
-		}
-	}
 }

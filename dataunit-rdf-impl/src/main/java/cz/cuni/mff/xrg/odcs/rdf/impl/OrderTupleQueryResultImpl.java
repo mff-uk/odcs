@@ -106,7 +106,6 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 				logger.error(
 						"Connection to RDF repositored failed during evaluation. " + e
 						.getMessage());
-				repository.restartConnection();
 			} catch (MalformedQueryException ex) {
 
 				throw new QueryEvaluationException(
@@ -115,7 +114,6 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 			} catch (RepositoryException ex) {
 				logger.error("Connection to RDF repository failed. {}",
 						ex.getMessage(), ex);
-				repository.restartConnection();
 			}
 
 			try {
@@ -182,7 +180,6 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 			}
 
 			bindings.clear();
-			repository.restartConnection();
 
 		}
 
@@ -215,7 +212,6 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 	 */
 	@Override
 	public void close() throws QueryEvaluationException {
-		repository.restartConnection();
 	}
 
 	/**
