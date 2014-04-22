@@ -220,21 +220,4 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
 
-	/**
-	 * Load all triples in repository to defined file in defined RDF format.
-	 *
-	 * @param filePath         Path to file, where RDF data will be saved.
-	 * @param formatType       Type of RDF format for saving data (example:
-	 *                         TURTLE, RDF/XML,etc.)
-	 * @param canFileOverWrite boolean value, if existing file can be
-	 *                         overwritten.
-	 * @param isNameUnique     boolean value, if every pipeline execution has
-	 *                         his unique name.
-	 * @throws CannotOverwriteFileException when file is protected for
-	 *                                      overwritting.
-	 * @throws RDFException                 when loading data to file fail.
-	 */
-    @Deprecated
-	public void loadToFile(String filePath, RDFFormatType formatType,
-			boolean canFileOverWrite, boolean isNameUnique) throws CannotOverwriteFileException, RDFException;
 }

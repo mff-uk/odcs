@@ -82,7 +82,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
  *
  * @author Jiri Tomes
  */
-public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
+public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 
 	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
