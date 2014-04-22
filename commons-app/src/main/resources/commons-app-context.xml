@@ -23,7 +23,8 @@
 		<property name="locations">
 			<list>
 				<value>file:${user.home}/.odcs/config.properties</value>
- 				<value>file:${configFileLocation}</value>				
+ 				<value>file:${configFileLocation}</value>	
+                                <value>/WEB-INF/config.properties</value>			
 			</list>
 		</property>
 	</bean>
