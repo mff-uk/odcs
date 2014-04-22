@@ -126,12 +126,22 @@ public class RepositoryDataValidator implements DataValidator {
 
 		boolean isValid = false;
         long tripleCount = -1;
+        RepositoryConnection connection = null; 
         try{
-            RepositoryConnection connection = input.getConnection();
+            connection = input.getConnection();
             tripleCount = connection.size(input.getDataGraph());
         }catch (Exception e) {
             message = e.getMessage();
             logger.error(message);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}        	
         }
 
 		if (tripleCount == 0) {

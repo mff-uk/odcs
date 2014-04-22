@@ -106,20 +106,32 @@ public class SPARQLLoaderRequestTest {
 	}
 
     private void addDataToRepository() throws RepositoryException {
+    	RepositoryConnection connection = null;
+		try {
+			connection = repository.getConnection();
+			ValueFactory factory = connection.getValueFactory();
+			for (int i = 0; i < LOADED_TRIPLES; i++) {
+				Resource subject = factory.createURI("http://A"
+						+ String.valueOf(i + 1));
 
-        RepositoryConnection connection = repository.getConnection();
-        ValueFactory factory = connection.getValueFactory();
-        for (int i = 0; i < LOADED_TRIPLES; i++) {
-            Resource subject = factory.createURI("http://A" + String.valueOf(
-                    i + 1));
+				URI predicate = factory.createURI("http://B"
+						+ String.valueOf(i + 1));
 
-            URI predicate = factory.createURI("http://B" + String.valueOf(
-                    i + 1));
+				Value object = factory.createLiteral("C"
+						+ String.valueOf(i + 1));
 
-            Value object = factory.createLiteral("C" + String.valueOf(i + 1));
-
-            connection.add(subject, predicate, object, repository.getDataGraph());
-        }
+				connection.add(subject, predicate, object,
+						repository.getDataGraph());
+			}
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
     }
 
 	@Test

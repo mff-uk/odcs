@@ -82,7 +82,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
  *
  * @author Jiri Tomes
  */
-public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
+public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 
 	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
@@ -488,12 +488,22 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
     @Override
     public void addTriplesFromGraph(Graph graphInstance) {
         if (graphInstance != null) {
-            try {
-                RepositoryConnection connection = getConnection();
+        	RepositoryConnection connection = null;
+        	try {
+                connection = getConnection();
                 connection.add(graphInstance, dataGraph);
             } catch (RepositoryException e) {
                 hasBrokenConnection = true;
                 logger.debug(e.getMessage());
+            } finally {
+            	if (connection != null) {
+    				try {
+    					connection.close();
+    				} catch (RepositoryException ex) {
+    					logger.warn("Error when closing connection", ex);
+    					// eat close exception, we cannot do anything clever here
+    				}
+    			}
             }
         }
     }
@@ -1175,11 +1185,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 		}
 	}
 
-	@Override
-	public void close() throws IOException {
-		shutDown();
-	}
-
 	/**
 	 * Return openRDF repository needed for almost every operation using RDF.
 	 *
@@ -1226,24 +1231,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit, Closeable {
 
 		setDataGraph(newGraph);
 	}	
-
-	/**
-	 * Delete all the data from the {@link RDFDataUnit} but does not close or
-	 * destroy it. After this call the state of {@link RDFDataUnit} should be
-	 * the same as if it was newly created.
-	 */
-	@Override
-	public void clean() {
-		// to clean documentaion in MergableDataUnit
-        try {
-            RepositoryConnection connection = getConnection();
-            connection.clear(dataGraph);
-        } catch (RepositoryException ex) {
-            hasBrokenConnection = true;
-            logger.debug(ex.getMessage());
-        }
-
-    }
 
 	/**
 	 * Method called after restarting after DB. Calling method

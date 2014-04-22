@@ -146,11 +146,7 @@ class RdfDatabase {
 		}
 		
 		// close the connection
-		try {
-			virtuosoRepository.close();
-		} catch (IOException ex) {
-			LOG.error("virtuosoRepository.close throws", ex);
-		}
+			virtuosoRepository.release();
 		
 		LOG.trace("executeQuery:ends");
 

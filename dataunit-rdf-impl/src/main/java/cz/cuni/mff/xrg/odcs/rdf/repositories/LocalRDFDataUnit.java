@@ -63,8 +63,8 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 
 		setDataGraph(dataGraph);
 		try {
-			LocalRepositoryManager localRepositoryManager = RepositoryProvider
-					.getRepositoryManager(new File(repositoryPath));
+			LocalRepositoryManager localRepositoryManager = (LocalRepositoryManager) RepositoryProvider
+					.getRepositoryManager("file:" + repositoryPath);
 			repository = localRepositoryManager
 					.getRepository(GLOBAL_REPOSITORY_ID);
 			if (repository == null) {
