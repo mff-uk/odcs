@@ -129,4 +129,10 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 		return this.rootDirHandler;
 	}
 
+	@Override
+	public void isReleaseReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
