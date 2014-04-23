@@ -59,7 +59,10 @@ public class DataUnitFactory {
 			case RDF_Local:
 				// create DataUnit
 				ManagableDataUnit localRepository = RDFDataUnitFactory
-						.createLocalRDFRepo(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR), 
+						.createLocalRDFRepo(
+								appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR)
+								
+								, 
 						name, GraphUrl.translateDataUnitId(id));
 
 				// create container with DataUnit and index

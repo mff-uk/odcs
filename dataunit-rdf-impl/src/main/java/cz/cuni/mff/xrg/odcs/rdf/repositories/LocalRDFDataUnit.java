@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +63,11 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 
 		setDataGraph(dataGraph);
 		try {
-			LocalRepositoryManager localRepositoryManager = (LocalRepositoryManager) RepositoryProvider
-					.getRepositoryManager("file:" + repositoryPath);
+			File managerDir = new File(repositoryPath);
+			if (!managerDir.mkdirs()) {
+				throw new RuntimeException("Could not create repository manager directory.");
+			}
+			LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
 			repository = localRepositoryManager
 					.getRepository(GLOBAL_REPOSITORY_ID);
 			if (repository == null) {
