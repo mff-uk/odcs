@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+
 import org.apache.commons.codec.binary.Base64;
 
 import static cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType.*;
@@ -14,13 +15,16 @@ import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
+
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.List;
+
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.*;
+import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,7 +357,7 @@ public class SPARQLExtractor {
 
 		handler.setGraphContext(dataUnit.getDataGraph());
 
-		RDFParser parser = dataUnit.getRDFParser(format, handler);
+		RDFParser parser = getRDFParser(format, handler);
 
 		try {
 
@@ -943,4 +947,49 @@ public class SPARQLExtractor {
 			return 0;
 		}
 	}
+	
+	/**
+	 * Create RDF parser for given RDF format and set RDF handler where are data
+	 * insert to.
+	 *
+	 * @param format  RDF format witch is set to RDF parser
+	 * @param handler Type of handler where RDF parser used for parsing. If
+	 *                handler is {@link StatisticalHandler} type, is set error
+	 *                listener for fix errors here.
+	 * @return RDFParser for given RDF format and handler.
+	 */
+	private RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler) {
+		RDFParser parser = Rio.createParser(format);
+		parser.setRDFHandler(handler);
+
+		ParserConfig config = parser.getParserConfig();
+
+		config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
+
+		parser.setParserConfig(config);
+
+		if (handler instanceof StatisticalHandler) {
+			final StatisticalHandler statisticalHandler = (StatisticalHandler) handler;
+
+
+				parser.setParseErrorListener(new ParseErrorListener() {
+					@Override
+					public void warning(String msg, int lineNo, int colNo) {
+						statisticalHandler.addWarning(msg, lineNo, colNo);
+					}
+
+					@Override
+					public void error(String msg, int lineNo, int colNo) {
+						statisticalHandler.addError(msg, lineNo, colNo);
+					}
+
+					@Override
+					public void fatalError(String msg, int lineNo, int colNo) {
+						statisticalHandler.addError(msg, lineNo, colNo);
+					}
+				});
+		}
+
+		return parser;
+	}	
 }

@@ -208,16 +208,4 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return URI representation of graph where RDF data are stored.
 	 */
 	public URI getDataGraph();
-
-	/**
-	 * Create RDF parser for given RDF format and set RDF handler where data are
-	 * insert to.
-	 *
-	 * @param format  RDF format witch is set to RDF parser
-	 * @param handler Type of handler where RDF parser used for parsing.
-	 * @return RDFParser for given RDF format and set RDF handler.
-	 */
-    @Deprecated
-	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler);
-
 }

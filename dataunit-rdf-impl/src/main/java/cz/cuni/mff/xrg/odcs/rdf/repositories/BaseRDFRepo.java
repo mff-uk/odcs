@@ -1,9 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.Iterations;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +18,6 @@ import java.util.regex.Pattern;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
@@ -44,10 +41,8 @@ import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
-import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFFormat;
@@ -63,17 +58,13 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.MyRDFHandler;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
-import cz.cuni.mff.xrg.odcs.rdf.help.UniqueNameGenerator;
 import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
@@ -97,11 +88,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	private static final Logger logger = LoggerFactory.getLogger(BaseRDFRepo.class); 
 
 	/**
-	 * RDF data storage component.
-	 */
-	protected Repository repository;
-
-	/**
 	 * Graph resource for saving RDF triples.
 	 */
 	protected URI dataGraph;
@@ -110,11 +96,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	 * Default used encoding.
 	 */
 	protected final String encode = "UTF-8";
-
-	/**
-	 * If the repository is used only for reading data or not.
-	 */
-	protected boolean isReadOnly;
 
 	public BaseRDFRepo() {
 		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
@@ -132,61 +113,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 			List<String> predicates) {
 		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
 				predicates);
-	}
-
-	/**
-	 * Return iterable collection of all statemens in repository. Needed for
-	 * adding/merge large collection when is not possible to return all
-	 * statements (RDF triples).
-	 *
-	 * @return Iterable collection of Statements need for lazy
-	 */
-	@Override
-	public RepositoryResult<Statement> getRepositoryResult() {
-
-		RepositoryResult<Statement> repoResult = null;
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			repoResult = connection.getStatements(null, null, null, true,
-					dataGraph);
-
-		} catch (RepositoryException ex) {
-			logger.debug(ex.getMessage(), ex);
-			repoResult = new RepositoryResult<>(
-					new EmptyIteration<Statement, RepositoryException>());
-
-		}
-		return repoResult;
-	}
-
-	/**
-	 * Create RDF parser for given RDF format and set RDF handler where are data
-	 * insert to.
-	 *
-	 * @param format  RDF format witch is set to RDF parser
-	 * @param handler Type of handler where RDF parser used for parsing. If
-	 *                handler is {@link StatisticalHandler} type, is set error
-	 *                listener for fix errors here.
-	 * @return RDFParser for given RDF format and handler.
-	 */
-	@Override
-	public RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler) {
-		RDFParser parser = Rio.createParser(format);
-		parser.setRDFHandler(handler);
-
-		ParserConfig config = parser.getParserConfig();
-
-		config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
-
-		parser.setParserConfig(config);
-
-		if (handler instanceof StatisticalHandler) {
-			setErrorsListenerToParser(parser, (StatisticalHandler) handler);
-		}
-
-		return parser;
 	}
 
 	/**
@@ -1015,32 +941,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		}
 	}
 
-	private void setErrorsListenerToParser(RDFParser parser,
-			final StatisticalHandler handler) {
-
-		if (parser == null || handler == null) {
-			return;
-
-		}
-
-		parser.setParseErrorListener(new ParseErrorListener() {
-			@Override
-			public void warning(String msg, int lineNo, int colNo) {
-				handler.addWarning(msg, lineNo, colNo);
-			}
-
-			@Override
-			public void error(String msg, int lineNo, int colNo) {
-				handler.addError(msg, lineNo, colNo);
-			}
-
-			@Override
-			public void fatalError(String msg, int lineNo, int colNo) {
-				handler.addError(msg, lineNo, colNo);
-			}
-		});
-	}
-
 	/**
 	 * Created file from given parameter. If file is null, nothing is created.
 	 *
@@ -1057,16 +957,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 			logger.debug(e.getMessage());
 		}
 
-	}
-
-	/**
-	 * Return openRDF repository needed for almost every operation using RDF.
-	 *
-	 * @return openRDF repository.
-	 */
-	@Override
-	public Repository getDataRepository() {
-		return repository;
 	}
 
 	/**

@@ -37,13 +37,6 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 			throws InvalidQueryException;
 
 	/**
-	 * Return openRDF repository needed for almost every operation using RDF.
-	 *
-	 * @return openRDF repository.
-	 */
-	public Repository getDataRepository();
-
-	/**
 	 * Set data graph storage for given data in RDF format.
 	 *
 	 * @param newDataGraph new graph representated as URI.
@@ -83,15 +76,6 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 * @throws InvalidQueryException if query is not valid.
 	 */
 	public long getResultSizeForQuery(String query) throws InvalidQueryException;
-
-	/**
-	 * Return iterable collection of all statemens in repository. Needed for
-	 * adding/merge large collection when is not possible to return all
-	 * statements (RDF triples).
-	 *
-	 * @return Iterable collection of Statements need for lazy
-	 */
-	public RepositoryResult<Statement> getRepositoryResult();
 
 	/**
 	 *
