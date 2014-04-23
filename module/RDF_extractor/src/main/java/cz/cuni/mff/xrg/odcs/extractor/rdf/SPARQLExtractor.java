@@ -268,11 +268,12 @@ public class SPARQLExtractor {
 
 		try {
 			connection = dataUnit.getConnection();
-
+			connection.begin();
+			
 			extractDataFromEnpointGraph(endpointURL, query,
 					format, connection, handlerExtractType, extractFail);
 
-
+			connection.commit();
 		} catch (RepositoryException e) {
 			final String message = "Repository connection failed: " + e
 					.getMessage();
@@ -356,11 +357,7 @@ public class SPARQLExtractor {
 
 		try {
 
-			connection.begin();
-
 			parser.parse(inputStreamReader, "");
-
-			connection.commit();
 
 			if (extractFail) {
 				caseNoTriples(handler);
@@ -394,10 +391,6 @@ public class SPARQLExtractor {
         } catch (RDFHandlerException | RDFParseException ex) {
 			logger.error(ex.getMessage(), ex);
 			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			logger.error(ex.getLocalizedMessage());
-			logger.debug(ex.getStackTrace().toString());
-			//TODO in case of exception, try again based on the settings in the config
 		} finally {
 			if (inputStreamReader != null) {
 				try {
