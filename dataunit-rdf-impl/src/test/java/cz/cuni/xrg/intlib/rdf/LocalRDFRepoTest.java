@@ -600,7 +600,7 @@ public class LocalRDFRepoTest {
 	public void cleanUp() {
 		deleteDirectory(pathRepo.toFile());
 		deleteDirectory(new File(outDir.toString()));
-		rdfRepo.clean();
+		rdfRepo.clear();
 		rdfRepo.release();
 
 	}
@@ -793,7 +793,7 @@ public class LocalRDFRepoTest {
 							loadToFile(localRepository);
 						}
 
-						localRepository.clean();
+						localRepository.clear();
 						localRepository.release();
 
 					} catch (IOException ex) {

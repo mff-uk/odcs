@@ -39,8 +39,10 @@ class ContextDeleter {
 	 */
 	public void delete(Context context, boolean preserveContextInfo) {
 		// delete data
-		context.getInputsManager().delete();
-		context.getOutputsManager().delete();
+		context.getInputsManager().clear();
+		context.getOutputsManager().clear();
+		context.getInputsManager().release();
+		context.getOutputsManager().release();
 
 		// should we delete directories ?
 		if (context.isDebugging()) {

@@ -190,11 +190,10 @@ final class DataUnitManager {
 	 * Call delete on all stored DataUnits and them delete them from 
 	 * this instance.
 	 */
-	public void delete() {
+	public void clear() {
 		for (ManagableDataUnit item : dataUnits) {
-			item.clean();
+			item.clear();
 		}
-		dataUnits.clear();
 	}
 	
 	/**

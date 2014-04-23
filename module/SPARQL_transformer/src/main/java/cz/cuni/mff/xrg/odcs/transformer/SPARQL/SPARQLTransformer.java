@@ -174,7 +174,7 @@ public class SPARQLTransformer
 						((ManagableRdfDataUnit) outputDataUnit)
 								.addTriplesFromGraph(graph);
 
-						tempDataUnit.clean();
+						tempDataUnit.clear();
 						tempDataUnit.release();
 
 					} else {

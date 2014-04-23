@@ -41,7 +41,7 @@ public class DPUReplacementTest {
 	 */
 	@AfterClass
 	public static void deleting() {
-		repository.clean();
+		repository.clear();
 		repository.release();
 	}
 
@@ -50,7 +50,7 @@ public class DPUReplacementTest {
 	 */
 	@Before
 	public void cleaning() {
-		repository.clean();
+		repository.clear();
 	}
 
 	/**

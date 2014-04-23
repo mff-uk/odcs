@@ -143,7 +143,7 @@ class ContextMerger {
 							leftDataUnitName);
 					// and clear it .. for sure that there is 
 					// not data from previous executions
-					leftDataUnit.clean();
+					leftDataUnit.clear();
 				} catch (DataUnitCreateException e) {
 					throw new ContextException(
 							"Failed to create input object.", e);

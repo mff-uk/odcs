@@ -43,7 +43,7 @@ public class TupleQueryTest {
 	 */
 	@AfterClass
 	public static void deleting() {
-		repository.clean();
+		repository.clear();
 		repository.release();
 	}
 
@@ -52,7 +52,7 @@ public class TupleQueryTest {
 	 */
 	@Before
 	public void cleaning() {
-		repository.clean();
+		repository.clear();
 	}
 
 	/**

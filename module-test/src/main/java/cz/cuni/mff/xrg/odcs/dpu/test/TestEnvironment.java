@@ -403,7 +403,7 @@ public class TestEnvironment {
 		// release all DataUnits ..
 		for (ManagableDataUnit item : dataUnits) {
 			if (item != null) {
-				item.clean();
+				item.clear();
 				item.release();
 			}
 		}

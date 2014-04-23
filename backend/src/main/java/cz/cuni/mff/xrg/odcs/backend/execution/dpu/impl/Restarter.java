@@ -59,7 +59,7 @@ public class Restarter extends DPUPreExecutorBase {
 		Context context = contexts.get(node);
 		// we delete data from output dataUnits
 		for (ManagableDataUnit dataUnit : context.getOutputs()) {
-			dataUnit.clean();
+			dataUnit.clear();
 		}
 		// we also have to delete DPU's temporary directory
 		File rootDir = new File(

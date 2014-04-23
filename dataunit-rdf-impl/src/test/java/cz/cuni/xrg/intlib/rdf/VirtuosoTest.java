@@ -77,7 +77,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	 */
 	@AfterClass
 	public static void cleaning() {
-		rdfRepo.clean();
+		rdfRepo.clear();
 		rdfRepo.release();
 	}
 
@@ -160,7 +160,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
                         transformOverRepository(virtuosoRepo);
 						loadToFile(virtuosoRepo);
 					}
-					virtuosoRepo.clean();
+					virtuosoRepo.clear();
 					virtuosoRepo.release();
 
 

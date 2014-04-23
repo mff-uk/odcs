@@ -121,7 +121,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	}
 	
 	@Override
-	public void clean() {
+	public void clear() {
 		/**
 		 * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
 		 * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.

@@ -33,8 +33,8 @@ public interface ManagableDataUnit extends DataUnit {
 
 	/**
 	 * Delete all the data from the DataUnit but does not close or destroy it.
-	 * After this call the state of DataUnit should be the same as if it was
+	 * After this call the state of data inside DataUnit should be the same as if it was
 	 * newly created. Reset the data in data unit to a clean state.
 	 */
-	public void clean();
+	public void clear();
 }

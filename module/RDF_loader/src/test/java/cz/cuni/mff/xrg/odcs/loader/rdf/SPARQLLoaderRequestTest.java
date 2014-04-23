@@ -51,7 +51,7 @@ public class SPARQLLoaderRequestTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).clean();
+		((ManagableRdfDataUnit)repository).clear();
 		((ManagableRdfDataUnit)repository).release();
 	}
 

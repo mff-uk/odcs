@@ -82,7 +82,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
-	public void clean() {
+	public void clear() {
 		final File dataDir = this.rootDirHandler.asFile();
 		// recreate the root directory handler
 		this.rootDirHandler = new DirectoryHandlerImpl(dataDir);

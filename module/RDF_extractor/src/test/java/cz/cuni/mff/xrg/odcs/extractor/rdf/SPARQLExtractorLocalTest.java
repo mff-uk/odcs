@@ -53,7 +53,7 @@ public class SPARQLExtractorLocalTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).clean();
+		((ManagableRdfDataUnit)repository).clear();
 		((ManagableRdfDataUnit)repository).release();
 	}
 

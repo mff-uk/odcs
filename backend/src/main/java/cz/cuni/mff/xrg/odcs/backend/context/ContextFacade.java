@@ -89,7 +89,7 @@ public class ContextFacade {
 	 * Add data from left context to the right one based on given script. The
 	 * newly created 
 	 * {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit} are cleaned by 
-	 * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clean()}. 
+	 * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clear()}. 
 	 * So any previous data are safely deleted and do not contaminate the execution.
 	 *
 	 * @param left

@@ -31,7 +31,7 @@ public class AddQueryGraphsTest {
 
 	@AfterClass
 	public static void clean() {
-		repository.clean();
+		repository.clear();
 		repository.release();
 	}
 
