@@ -16,7 +16,7 @@ import org.openrdf.repository.RepositoryException;
  *
  * @author Petyr
  */
-public class DataUnitFactory {
+public class TestDataUnitFactory {
 
 	/**
 	 * Counter for dataUnits id's and directories.
@@ -30,7 +30,7 @@ public class DataUnitFactory {
 	private final File workingDirectory;
 
 	/**
-	 * Create a {@link DataUnitFactory} that use given directory as working
+	 * Create a {@link TestDataUnitFactory} that use given directory as working
 	 * directory.
 	 *
 	 * @param workingDirectory Directory where to create working subdirectories
@@ -38,7 +38,7 @@ public class DataUnitFactory {
 	 *                         {@link cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit}
 	 *                         that use local storage as RDF repository.
 	 */
-	public DataUnitFactory(File workingDirectory) {
+	public TestDataUnitFactory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
 

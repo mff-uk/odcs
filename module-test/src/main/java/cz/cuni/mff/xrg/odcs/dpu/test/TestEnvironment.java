@@ -5,14 +5,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +28,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.ManageableFileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
-import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
+import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -75,7 +72,7 @@ public class TestEnvironment {
 	/**
 	 * Factory for {@link DataUnit}s classes.
 	 */
-	private final DataUnitFactory dataUnitFactory;
+	private final TestDataUnitFactory testDataUnitFactory;
 
 	/**
 	 * Create test environment. As working directory is used temp file.
@@ -92,7 +89,7 @@ public class TestEnvironment {
 
 			File dataUnitFactoryWorkingDirectory = new File(workingDirectory, "dataUnits");
 			dataUnitFactoryWorkingDirectory.mkdirs();
-			this.dataUnitFactory = new DataUnitFactory(dataUnitFactoryWorkingDirectory);
+			this.testDataUnitFactory = new TestDataUnitFactory(dataUnitFactoryWorkingDirectory);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -158,7 +155,7 @@ public class TestEnvironment {
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
 	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -174,7 +171,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
 		addOutput(name, rdf);
 		return rdf;
 	}
