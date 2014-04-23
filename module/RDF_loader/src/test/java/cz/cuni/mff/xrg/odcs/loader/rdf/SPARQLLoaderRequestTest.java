@@ -36,8 +36,7 @@ public class SPARQLLoaderRequestTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLLoaderRequestTest.class);
 
-	private static final RDFDataUnit repository = RDFDataUnitFactory
-			.createLocalRDFRepo("");
+	private static  RDFDataUnit repository = null;
 
 	private static final String ENDPOINT = "http://localhost:8890/sparql-auth";
 
@@ -49,6 +48,8 @@ public class SPARQLLoaderRequestTest {
 
 	private static final String PASSWORD = "dba";
 
+    private RepositoryConnection connection = null;
+
 	@AfterClass
 	public static void deleteRDFDataUnit() {
 		((ManagableRdfDataUnit)repository).clear();
@@ -57,9 +58,10 @@ public class SPARQLLoaderRequestTest {
 
 	@Before
 	public void cleanRepository() throws RepositoryException {
-        RepositoryConnection connection = repository.getConnection();
+        repository = RDFDataUnitFactory.createLocalRDFRepo("");
+        connection = repository.getConnection();
         connection.clear(repository.getDataGraph());
-	}
+    }
 
 	private DPUContext getTestContext() {
 		TestEnvironment environment = TestEnvironment.create();
@@ -90,7 +92,6 @@ public class SPARQLLoaderRequestTest {
 					PASSWORD,
 					WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
-            RepositoryConnection connection = repository.getConnection();
 			assertEquals(connection.size(repository.getDataGraph()), loader
                     .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
@@ -106,8 +107,6 @@ public class SPARQLLoaderRequestTest {
 	}
 
     private void addDataToRepository() throws RepositoryException {
-
-        RepositoryConnection connection = repository.getConnection();
         ValueFactory factory = connection.getValueFactory();
         for (int i = 0; i < LOADED_TRIPLES; i++) {
             Resource subject = factory.createURI("http://A" + String.valueOf(
