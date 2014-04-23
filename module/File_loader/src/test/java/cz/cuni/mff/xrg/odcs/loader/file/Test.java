@@ -33,7 +33,6 @@ public class Test {
         try {
             RDFDataUnit input = env.createRdfInput("input", false);
             RDFDataUnit output = env.createRdfOutput("input_redirection", false);
-
             RepositoryConnection connectionInput = input.getConnection();
             ValueFactory factory = connectionInput.getValueFactory();
             Resource subject = factory.createURI("http://my.subject");
@@ -60,6 +59,7 @@ public class Test {
         } finally {
             // release resources
             env.release();
+            tempFile.delete();
         }
     }
 
