@@ -99,8 +99,21 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 				context.sendMessage(MessageType.WARNING,
 						"Statistical and error handler has found during parsing problems triples (these triples were not added)",
 						problems);
-                RepositoryConnection connection = rdfDataUnit.getConnection();
-                triplesCount = connection.size(rdfDataUnit.getDataGraph());
+				RepositoryConnection connection = null; 
+				try {
+					connection = rdfDataUnit.getConnection();
+					triplesCount = connection.size(rdfDataUnit.getDataGraph());
+					LOG.info("Extracted {} triples", triplesCount);
+				} finally {
+					if (connection != null) {
+						try {
+							connection.close();
+						} catch (RepositoryException ex) {
+							LOG.warn("Error when closing connection", ex);
+							// eat close exception, we cannot do anything clever here
+						}
+					}					
+				}
             }
         } catch (RDFException e) {
             context.sendMessage(MessageType.ERROR, e.getMessage(), e
@@ -109,7 +122,6 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             context.sendMessage(MessageType.ERROR, e.getMessage(), e
                     .fillInStackTrace().toString());
         }
-        LOG.info("Extracted {} triples", triplesCount);
     }
     private void setErrorsListenerToParser(RDFParser parser,
                                            final StatisticalHandler handler) {
@@ -171,14 +183,8 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         RDFParser parser = getRDFParser(fileFormat, handler);
 
         try {
-            rdfDataUnit.getConnection().begin();
-
             parser.parse(is, baseURI);
-
-            rdfDataUnit.getConnection().commit();
         } catch (IOException | RDFParseException | RDFHandlerException ex) {
-            throw new RDFException(ex.getMessage(), ex);
-        } catch (RepositoryException ex) {
             throw new RDFException(ex.getMessage(), ex);
         }
     }
@@ -218,6 +224,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         }
 
         try {
+        	RepositoryConnection connection = null;
             try (InputStreamReader inputStreamReader = new InputStreamReader(
                     urlPath.openStream(), Charset.forName(encode))) {
 
@@ -225,8 +232,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 if (format == null) {
                     format = RDFFormat.forFileName(path, RDFFormat.RDFXML);
                 }
-                RepositoryConnection connection = repo.getConnection();
-
+                connection = repo.getConnection();
+                connection.begin();
+                
                 switch (handlerExtractType) {
                     case STANDARD_HANDLER:
                         parseFileUsingStandardHandler(format, inputStreamReader,
@@ -243,8 +251,18 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                                 baseURI, connection, true);
                         break;
                 }
+                connection.commit();
             } catch (RepositoryException e) {
                 throw new RDFException(e.getMessage(), e);
+            } finally {
+            	if (connection != null) {
+    				try {
+    					connection.close();
+    				} catch (RepositoryException ex) {
+    					LOG.warn("Error when closing connection", ex);
+    					// eat close exception, we cannot do anything clever here
+    				}
+    			}
             }
 
         } catch (IOException ex) {
@@ -356,13 +374,25 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             RepositoryConnection connection = null;
             try {
                 connection = repo.getConnection();
+                connection.begin();
+                addFilesInDirectoryToRepository(format, files, baseURI,
+                        handlerExtractType, skipFiles,connection,
+                        graph);
+                
+                connection.commit();
             } catch (RepositoryException e) {
                 //TODO
                 e.printStackTrace();
+            } finally {
+            	if (connection != null) {
+    				try {
+    					connection.close();
+    				} catch (RepositoryException ex) {
+    					LOG.warn("Error when closing connection", ex);
+    					// eat close exception, we cannot do anything clever here
+    				}
+    			}            	
             }
-            addFilesInDirectoryToRepository(format, files, baseURI,
-                    handlerExtractType, skipFiles,connection,
-                    graph);
         } else {
             throw new RDFException(
                     "Path to directory \"" + dirFile.getAbsolutePath()
@@ -374,20 +404,32 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                                            String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo) throws RDFException {
         Resource graph = repo.getDataGraph();
         RepositoryConnection connection = null;
-        try {
-            connection = repo.getConnection();
-        } catch (RepositoryException e) {
-            //TODO
-            e.printStackTrace();
-        }
         if (dirFile.isFile()) {
-            addFileToRepository(format, dirFile, baseURI,
-                    handlerExtractType,
-                    connection, graph);
+	        try {
+	            connection = repo.getConnection();
+	            connection.begin();
+	                addFileToRepository(format, dirFile, baseURI,
+	                        handlerExtractType,
+	                        connection, graph);
+	            connection.commit();
+	        } catch (RepositoryException e) {
+	            //TODO
+	            e.printStackTrace();
+	        } finally {
+	        	if (connection != null) {
+					try {
+						connection.close();
+					} catch (RepositoryException ex) {
+						LOG.warn("Error when closing connection", ex);
+						// eat close exception, we cannot do anything clever here
+					}
+				}
+	        }
         } else {
             throw new RDFException(
                     "Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
         }
+        
     }
     /**
      * Extract RDF triples from RDF file to repository.

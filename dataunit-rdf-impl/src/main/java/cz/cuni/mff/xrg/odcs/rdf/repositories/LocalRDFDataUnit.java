@@ -64,7 +64,7 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 		setDataGraph(dataGraph);
 		try {
 			File managerDir = new File(repositoryPath);
-			if (!managerDir.mkdirs()) {
+			if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
 				throw new RuntimeException("Could not create repository manager directory.");
 			}
 			LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
