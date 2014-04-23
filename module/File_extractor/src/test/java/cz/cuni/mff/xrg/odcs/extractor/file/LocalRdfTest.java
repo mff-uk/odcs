@@ -16,7 +16,7 @@ import org.openrdf.rio.helpers.StatementCollector;
 
 import static junit.framework.Assert.assertEquals;
 
-public class Test {
+public class LocalRdfTest {
 
     @org.junit.Test
     public void test() throws Exception {
