@@ -22,19 +22,21 @@ public interface ManagableDataUnit extends DataUnit {
 	 * @param unit {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to merge
 	 *             with
 	 */
-	public void merge(DataUnit unit) throws IllegalArgumentException;
+	void merge(DataUnit unit) throws IllegalArgumentException;
 
 	/**
 	 * Release all locks, prepare for destroy in memory representation of
 	 * DataUnit. 
 	 * DataUnit is not usable anymore after calling this.
 	 */
-	public void release();
+	void release();
 
 	/**
 	 * Delete all the data from the DataUnit but does not close or destroy it.
 	 * After this call the state of data inside DataUnit should be the same as if it was
 	 * newly created. Reset the data in data unit to a clean state.
 	 */
-	public void clear();
+	void clear();
+	
+	void isReleaseReady(); 
 }

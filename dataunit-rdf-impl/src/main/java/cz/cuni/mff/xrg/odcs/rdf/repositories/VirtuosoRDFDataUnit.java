@@ -42,7 +42,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
 	 *
-	 * @param host the Virtuoso JDBC URL connection string or hostlist
+	 * @param url the Virtuoso JDBC URL connection string or hostlist
 	 *                      for pooled connection.
 	 *
 	 * @param user          the database user on whose behalf the connection is
@@ -57,7 +57,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	 *                      empty String.
 	 * @throws RepositoryException 
 	 */
-	public VirtuosoRDFDataUnit(String host, String user, String password,
+	public VirtuosoRDFDataUnit(String url, String user, String password,
 			String dataUnitName, String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
@@ -65,7 +65,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		
 		setDataGraph(dataGraph);
 
-		this.repository = new VirtuosoRepository(host, user, password);
+		this.repository = new VirtuosoRepository(url, user, password);
 		try {
 			repository.initialize();
 		} catch (RepositoryException ex) {
@@ -241,6 +241,29 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 					// eat close exception, we cannot do anything clever here
 				}
 			}
+		}
+	}
+
+	@Override
+	public void isReleaseReady() {
+		int count = 0;
+		for (RepositoryConnection connection : requestedConnections) {
+			try {
+				if (connection.isOpen()) {
+					count++;
+				}
+			} catch (RepositoryException ex) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex1) {
+					LOG.warn("Error when closing connection", ex1);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
+		
+		if (count > 0) {
+			LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
 		}
 	}
 }

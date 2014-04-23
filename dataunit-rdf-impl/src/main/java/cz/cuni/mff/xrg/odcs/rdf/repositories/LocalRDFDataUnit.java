@@ -230,4 +230,27 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 			}
 		}
 	}
+
+	@Override
+	public void isReleaseReady() {
+		int count = 0;
+		for (RepositoryConnection connection : requestedConnections) {
+			try {
+				if (connection.isOpen()) {
+					count++;
+				}
+			} catch (RepositoryException ex) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex1) {
+					LOG.warn("Error when closing connection", ex1);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
+		}
+		
+		if (count > 0) {
+			LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
+		}
+	}	
 }
