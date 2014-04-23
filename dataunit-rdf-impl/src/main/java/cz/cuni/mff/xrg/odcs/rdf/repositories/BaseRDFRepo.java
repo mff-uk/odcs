@@ -902,45 +902,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 
 	}
 
-	private void writeDataIntoFile(File dataFile, RDFFormatType formatType)
-			throws RDFException {
-
-		try (OutputStreamWriter os = new OutputStreamWriter(
-				new FileOutputStream(
-				dataFile.getAbsoluteFile()), Charset
-				.forName(encode))) {
-
-			if (formatType == RDFFormatType.AUTO) {
-				String fileName = dataFile.getName();
-				RDFFormat newFormat = RDFFormat.forFileName(fileName,
-						RDFFormat.RDFXML);
-				formatType = RDFFormatType.getTypeByRDFFormat(newFormat);
-			}
-
-			MyRDFHandler handler = new MyRDFHandler(os, formatType);
-
-			RepositoryConnection connection = getConnection();
-
-			if (dataGraph != null) {
-				connection.export(handler, dataGraph);
-			} else {
-				connection.export(handler);
-			}
-
-			//connection.commit();
-
-		} catch (IOException ex) {
-			throw new RDFException("Problems with file stream:" + ex
-					.getMessage(), ex);
-		} catch (RDFHandlerException ex) {
-			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			throw new RDFException(
-					"Repository connection failed while trying to load into XML file."
-					+ ex.getMessage(), ex);
-		}
-	}
-
 	/**
 	 * Created file from given parameter. If file is null, nothing is created.
 	 *
