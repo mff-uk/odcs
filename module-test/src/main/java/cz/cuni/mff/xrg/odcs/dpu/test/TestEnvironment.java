@@ -157,53 +157,8 @@ public class TestEnvironment {
 	 * @return Created input {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
-	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
-			throws RDFException {
+	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
 		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
-		addInput(name, rdf);
-		return rdf;
-	}
-
-	/**
-	 * Create input {@link RDFDataUnit} and populate it with data from given
-	 * file. Created {@link RDFDataUnit} is used in test environment.
-	 *
-	 * The data are loaded from file in test\resources.
-	 *
-	 * @param name         Name of DataUnit.
-	 * @param useVirtuoso  If true then Virtuoso is used as a storage.
-	 * @param resourceName Name of resource file. The path to the resource file
-	 *                     should be relative with respect to src/test/resources
-	 *                     folder
-	 * @param format       Format of input file.
-	 * @return Created input {@link RDFDataUnit}.
-	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
-	 */
-	public RDFDataUnit createRdfInputFromResource(String name,
-			boolean useVirtuoso,
-			String resourceName,
-			RDFFormat format) throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
-		// construct path to the resource
-		URL url = Thread.currentThread().getContextClassLoader()
-				.getResource(resourceName);
-		// check ..
-		if (url == null) {
-			throw new RDFException("Missing input file in resource for: "
-					+ resourceName);
-		}
-		File inputFile = new File(url.getPath());
-        // return file
-        try {
-            RepositoryConnection connection = rdf.getConnection();
-            String baseURI = "";
-            RDFFormat fileFormat = RDFFormat.forFileName(inputFile.getAbsolutePath(), RDFFormat.RDFXML);
-            connection.add(inputFile, baseURI, fileFormat, rdf.getDataGraph());
-        } catch (Exception e) {
-            throw new RDFException("Problem with repository: "
-                    + resourceName);
-        }
-
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -350,11 +305,6 @@ public class TestEnvironment {
 			}
 		}
 		dataUnits.clear();
-		// wait for some time .. so DataUnits can release their contexts
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
 
 		// delete working directory ..
 		try {
