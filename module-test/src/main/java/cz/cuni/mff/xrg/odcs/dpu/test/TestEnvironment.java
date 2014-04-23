@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 
 import org.apache.commons.io.FileUtils;
@@ -47,12 +48,6 @@ public class TestEnvironment {
 			TestEnvironment.class);
 
 	/**
-	 * Configuration used to access virtuoso. If tests use Virtuoso then this
-	 * must be set before first test. This value is shared by multiple tests.
-	 */
-	public static VirtuosoConfig virtuosoConfig = new VirtuosoConfig();
-
-	/**
 	 * Context used for testing.
 	 */
 	private final TestContext context;
@@ -82,35 +77,25 @@ public class TestEnvironment {
 	 */
 	private final DataUnitFactory dataUnitFactory;
 
-	private TestEnvironment(File workingDirectory) {
-		this.context = new TestContext();
-		context.setWorkingDirectory(workingDirectory);
-
-		this.workingDirectory = workingDirectory;
-		this.dataUnitFactory = new DataUnitFactory(workingDirectory);
-	}
-
 	/**
 	 * Create test environment. As working directory is used temp file.
 	 *
 	 * @return Test environment.
 	 */
-	public static TestEnvironment create() {
-		// we use tmp path and time to create tmp directory
-		return create(FileUtils.getTempDirectory());
-	}
+	public TestEnvironment() {
+		try {
+			workingDirectory = Files.createTempDirectory(null).toFile();
+			LOG.info("Creating {} with workingDirectory {}", this.getClass().getName(), workingDirectory.toString());
+			File contextRootDirectory = new File(workingDirectory, "context");
+			contextRootDirectory.mkdirs();
+			this.context = new TestContext(contextRootDirectory);
 
-	/**
-	 * Create test environment.
-	 *
-	 * @param directory Working directory.
-	 * @return Test environment.
-	 */
-	public static TestEnvironment create(File directory) {
-		final String testDirName = "odcs_test_"
-				+ Long.toString((new Date()).getTime());
-
-		return new TestEnvironment(new File(directory, testDirName));
+			File dataUnitFactoryWorkingDirectory = new File(workingDirectory, "dataUnits");
+			dataUnitFactoryWorkingDirectory.mkdirs();
+			this.dataUnitFactory = new DataUnitFactory(dataUnitFactoryWorkingDirectory);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
@@ -132,46 +117,6 @@ public class TestEnvironment {
 	 */
 	public void setLastExecution(Date lastExecution) {
 		context.setLastExecution(lastExecution);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param workingDirectory the workingDirectory to set, use null to use
-	 *                         subdirectory in {@link #workingDirectory}
-	 */
-	public void setWorkingDirectory(File workingDirectory) {
-		context.setWorkingDirectory(workingDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param resultDirectory the resultDirectory to set, use null to use
-	 *                        subdirectory in {@link #workingDirectory}
-	 */
-	public void setResultDirectory(File resultDirectory) {
-		context.setResultDirectory(resultDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param globalDirectory the globalDirectory to set, use null to use
-	 *                        subdirectory in {@link #workingDirectory}
-	 */
-	public void setGlobalDirectory(File globalDirectory) {
-		context.setGlobalDirectory(globalDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param userDirectory the userDirectory to set, use null to use
-	 *                      subdirectory in {@link #workingDirectory}
-	 */
-	public void setUserDirectory(File userDirectory) {
-		context.setUserDirectory(userDirectory);
 	}
 
 	/**
@@ -214,8 +159,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
 			throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -239,8 +183,7 @@ public class TestEnvironment {
 			boolean useVirtuoso,
 			String resourceName,
 			RDFFormat format) throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
 		// construct path to the resource
 		URL url = Thread.currentThread().getContextClassLoader()
 				.getResource(resourceName);
@@ -276,8 +219,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
+		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name);
 		addOutput(name, rdf);
 		return rdf;
 	}

@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
-import static cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment.virtuosoConfig;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 
 import java.io.File;
 import java.util.Properties;
@@ -22,7 +22,8 @@ public class DataUnitFactory {
 	 * Counter for dataUnits id's and directories.
 	 */
 	private int dataUnitIdCounter = 0;
-
+	
+	private Object counterLock = new Object();
 	/**
 	 * Working directory.
 	 */
@@ -49,48 +50,13 @@ public class DataUnitFactory {
 	 * @return New {@link ManagableRdfDataUnit}.
 	 * @throws RepositoryException 
 	 */
-	public ManagableRdfDataUnit createRDFDataUnit(String name,
-			boolean useVirtuoso) {
-		if (useVirtuoso) {
-			return createVirtuosoRDFDataUnit(name);
-		} else {
-			return createLocalRDFDataUnit(name);
+	public ManagableRdfDataUnit createRDFDataUnit(String name) {
+		synchronized (counterLock) {
+			final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
+			final String namedGraph = GraphUrl.translateDataUnitId(id);
+
+			return new LocalRDFDataUnit(workingDirectory.toString(), name,
+					namedGraph);
 		}
 	}
-
-	/**
-	 * Create RDF data unit with given name that is stored in local file.
-	 *
-	 * @param name Name of DataUnit.
-	 * @return New {@link ManagableRdfDataUnit}.
-	 */
-	private ManagableRdfDataUnit createLocalRDFDataUnit(String name) {
-		final String number = Integer.toString(dataUnitIdCounter++);
-		final String repoPath = workingDirectory.toString();
-		final String id = "dpu-test_" + number + "_" + name;
-		final String namedGraph = GraphUrl.translateDataUnitId(id);
-
-		return RDFDataUnitFactory.createLocalRDFRepo(repoPath, name,
-				namedGraph);
-	}
-
-	/**
-	 * Create RDF data unit with given name that is stored in virtuoso.
-	 *
-	 * @param name Name of DataUnit.
-	 * @return New {@link ManagableRdfDataUnit}.
-	 * @throws RepositoryException 
-	 */
-	private ManagableRdfDataUnit createVirtuosoRDFDataUnit(String name) {
-		final String number = Integer.toString(dataUnitIdCounter++);
-		final String id = "dpu-test_" + number + "_" + name;
-		final String namedGraph = GraphUrl.translateDataUnitId(id);
-		final String dataUnitName = id;
-
-		return RDFDataUnitFactory.createVirtuosoRDFRepo(virtuosoConfig.host,
-				virtuosoConfig.port, virtuosoConfig.user,
-				virtuosoConfig.password, dataUnitName, namedGraph
-				);
-	}
-
 }

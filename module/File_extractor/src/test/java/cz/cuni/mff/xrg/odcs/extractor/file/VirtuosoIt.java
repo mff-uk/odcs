@@ -32,15 +32,6 @@ public class VirtuosoIt {
     private final Logger logger = LoggerFactory.getLogger(
             VirtuosoIt.class);
 
-    @BeforeClass
-    public static void virtuoso() {
-        // Adjust this to your virtuoso configuration.
-        TestEnvironment.virtuosoConfig.host = "localhost";
-        TestEnvironment.virtuosoConfig.port = "1111";
-        TestEnvironment.virtuosoConfig.user = "dba";
-        TestEnvironment.virtuosoConfig.password = "dba";
-    }
-
     @org.junit.Test
     public void test() throws Exception {
         // prepare dpu
@@ -65,9 +56,9 @@ public class VirtuosoIt {
         int expectedSize = results.size();
 
         // prepare test environment
-        TestEnvironment env = TestEnvironment.create();
+        TestEnvironment env =  new TestEnvironment();
         try {
-            RDFDataUnit output = env.createRdfOutput("output", true);
+            RDFDataUnit output = env.createRdfOutput("output", false);
             RepositoryConnection connection = output.getConnection();
             env.run(extractor);
             long actualSize = connection.size(output.getDataGraph());

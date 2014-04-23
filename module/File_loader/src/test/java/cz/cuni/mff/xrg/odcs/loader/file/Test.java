@@ -29,7 +29,7 @@ public class Test {
         String fileUrl = tempFile.toURI().getPath();
         config.setFilePath(fileUrl);
 
-        TestEnvironment env = TestEnvironment.create();
+        TestEnvironment env =  new TestEnvironment();
         try {
             RDFDataUnit input = env.createRdfInput("input", false);
             RDFDataUnit output = env.createRdfOutput("input_redirection", false);

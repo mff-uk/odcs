@@ -68,7 +68,24 @@ public class TestContext implements DPUContext {
 	 */
 	private File userDirectory = null;
 
-	public TestContext() {
+	public TestContext(File rootDirectory) {
+		this.rootDirectory = rootDirectory;
+		globalDirectory = new File(rootDirectory, "global");
+		if (!globalDirectory.exists()) {
+			globalDirectory.mkdirs();
+		}
+		userDirectory = new File(rootDirectory, "user");
+		if (!userDirectory.exists()) {
+			userDirectory.mkdirs();
+		}
+		resultDirectory = new File(rootDirectory, "result");
+		if (!resultDirectory.exists()) {
+			resultDirectory.mkdirs();
+		}
+		workingDirectory = new File(rootDirectory, "working");
+		if (!workingDirectory.exists()) {
+			workingDirectory.mkdirs();
+		}		
 	}
 
 	@Override
@@ -123,35 +140,6 @@ public class TestContext implements DPUContext {
 		return false;
 	}
 
-	@Override
-	public File getWorkingDir() {
-		File workingDir;
-		if (workingDirectory == null) {
-			workingDir = new File(rootDirectory, "working");
-		} else {
-			workingDir = workingDirectory;
-		}
-
-		if (!workingDir.exists()) {
-			workingDir.mkdirs();
-		}
-		return workingDir;
-	}
-
-	@Override
-	public File getResultDir() {
-		File resultDir;
-		if (resultDirectory == null) {
-			resultDir = new File(rootDirectory, "result");
-		} else {
-			resultDir = resultDirectory;
-		}
-
-		if (!resultDir.exists()) {
-			resultDir.mkdirs();
-		}
-		return resultDir;
-	}
 
 	@Override
 	public File getJarPath() {
@@ -168,35 +156,6 @@ public class TestContext implements DPUContext {
 		return lastExecution;
 	}
 
-	@Override
-	public File getGlobalDirectory() {
-		File globalDir;
-		if (globalDirectory == null) {
-			globalDir = new File(rootDirectory, "global");
-		} else {
-			globalDir = globalDirectory;
-		}
-
-		if (!globalDir.exists()) {
-			globalDir.mkdirs();
-		}
-		return globalDir;
-	}
-
-	@Override
-	public File getUserDirectory() {
-		File userDir;
-		if (userDirectory == null) {
-			userDir = new File(rootDirectory, "user");
-		} else {
-			userDir = userDirectory;
-		}
-
-		if (!userDir.exists()) {
-			userDir.mkdirs();
-		}
-		return userDir;
-	}
 
 	/**
 	 *
@@ -215,45 +174,6 @@ public class TestContext implements DPUContext {
 	}
 
 	/**
-	 * @param workingDirectory Working directory, use null to use
-	 *                         subdirectory in {@link #rootDirectory}.
-	 */
-	public void setWorkingDirectory(File workingDirectory) {
-		this.workingDirectory = workingDirectory;
-	}
-
-	/**
-	 * @param resultDirectory Result directory, use null to use
-	 *                        subdirectory in {@link #rootDirectory}.
-	 */
-	public void setResultDirectory(File resultDirectory) {
-		this.resultDirectory = resultDirectory;
-	}
-
-	/**
-	 * @param globalDirectory Global directory, use null to use
-	 *                        subdirectory in {@link #rootDirectory}.
-	 */
-	public void setGlobalDirectory(File globalDirectory) {
-		this.globalDirectory = globalDirectory;
-	}
-
-	/**
-	 * @param userDirectory User directory, use null to use
-	 *                      subdirectory in {@link #rootDirectory}.
-	 */
-	public void setUserDirectory(File userDirectory) {
-		this.userDirectory = userDirectory;
-	}
-
-	/**
-	 * @param rootDirectory Root directory.
-	 */
-	public void setRootDirectory(File rootDirectory) {
-		this.rootDirectory = rootDirectory;
-	}
-
-	/**
 	 * @param lastExecution Date of last execution.
 	 */
 	public void setLastExecution(Date lastExecution) {
@@ -267,4 +187,24 @@ public class TestContext implements DPUContext {
 		this.jarPath = jarPath;
 	}
 
+	@Override
+	public File getWorkingDir() {
+		return workingDirectory;
+	}
+
+	@Override
+	public File getResultDir() {
+		return resultDirectory;
+	}
+
+	@Override
+	public File getGlobalDirectory() {
+		return globalDirectory;
+	}
+	
+
+	@Override
+	public File getUserDirectory() {
+		return userDirectory;
+	}
 }

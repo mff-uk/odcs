@@ -160,7 +160,7 @@ public class SPARQLExtractorLocalTest {
 	}
 
 	private DPUContext getTestContext() {
-		TestEnvironment environment = TestEnvironment.create();
+		TestEnvironment environment =  new TestEnvironment();
 		return environment.getContext();
 	}
 }

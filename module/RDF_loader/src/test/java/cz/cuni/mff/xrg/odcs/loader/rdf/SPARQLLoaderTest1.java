@@ -153,7 +153,7 @@ public class SPARQLLoaderTest1 {
 	}
 
 	private DPUContext getTestContext() {
-		TestEnvironment environment = TestEnvironment.create();
+		TestEnvironment environment =  new TestEnvironment();
 		return environment.getContext();
 	}
 

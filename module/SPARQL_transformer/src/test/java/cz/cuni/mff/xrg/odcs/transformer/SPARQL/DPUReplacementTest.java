@@ -65,7 +65,7 @@ public class DPUReplacementTest {
 		boolean isConstruct = true;
 
 		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+		TestEnvironment env = new TestEnvironment();
 
 		try {
 
@@ -127,7 +127,7 @@ public class DPUReplacementTest {
 		String expectedObjectName = "William";
 
 		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+		TestEnvironment env =  new TestEnvironment();
 
 		try {
 

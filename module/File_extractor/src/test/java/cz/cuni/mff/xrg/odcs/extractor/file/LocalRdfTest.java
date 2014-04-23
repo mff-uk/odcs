@@ -42,7 +42,7 @@ public class LocalRdfTest {
         int expectedSize = results.size();
 
         // prepare test environment
-        TestEnvironment env = TestEnvironment.create();
+        TestEnvironment env =  new TestEnvironment();
         try {
             RDFDataUnit output = env.createRdfOutput("output", false);
             RepositoryConnection connection = output.getConnection();
