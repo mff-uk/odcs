@@ -74,11 +74,8 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		RepositoryConnection connection = null; 
 		try {
             connection = getConnection();
-			LOG.info(
-					"Virtuoso repository with data graph <{}> successfully initialized.",
-					dataGraph);
-			LOG.info("Virtuoso repository contains {} TRIPLES",
-                    connection.size(this.getDataGraph()));
+			LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
+					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
 		} catch (RepositoryException ex) {
 			throw new RuntimeException("Could not test initial connect to repository", ex);
 		} finally {
@@ -122,17 +119,17 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		requestedConnections.add(connection);
 		return connection;
 	}
-		
-
+	
 	@Override
 	public void clean() {
-		if (!ownerThread.equals(Thread.currentThread())) {
-			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-		}
-
+		/**
+		 * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
+		 * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
+		 * This connection has to be obtained directly from repository and we take care to close it properly. 
+		 */
 		RepositoryConnection connection = null; 
 		try {
-			connection = getConnection();
+			connection = repository.getConnection();
 			connection.clear(dataGraph);
 		} catch (RepositoryException ex) {
 			throw new RuntimeException("Could not delete repository", ex);
@@ -150,10 +147,6 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 
 	@Override
 	public void release() {
-		if (!ownerThread.equals(Thread.currentThread())) {
-			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-		}
-		
 		List<RepositoryConnection> openedConnections = new ArrayList<>();
 		for (RepositoryConnection connection : requestedConnections) {
 			try {
@@ -184,7 +177,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		
 		try {
 			repository.shutDown();
-			LOG.info("Virtuoso repository with data graph <"
+			LOG.info("Virtuoso RDF DataUnit with data graph <"
 					+ getDataGraph()
 					+ "> succesfully shut down");
 		} catch (RepositoryException ex) {
@@ -227,13 +220,11 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 			GraphQuery result = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL, mergeQuery);
 
-			LOG.info("START merging {} triples from <{}> to <{}>.",
-					connection.size(getDataGraph()), sourceGraphName,
-					targetGraphName);
-
 			result.evaluate();
 
-			LOG.info("Merge SUCCESSFUL");
+			LOG.info("Merged {} triples from <{}> to <{}>.",
+					connection.size(getDataGraph()), sourceGraphName,
+					targetGraphName);
 
 		} catch (MalformedQueryException ex) {
 			LOG.error("NOT VALID QUERY: {}", ex);
