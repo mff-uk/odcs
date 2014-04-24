@@ -8,8 +8,9 @@ import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.*;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import org.openrdf.rio.RDFFormat;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,7 +26,10 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
 	private GridLayout mainLayout;
 
-	/**
+    private final String rdfFormatAuto = "AUTO";
+
+
+    /**
 	 * TabSheet of Configuration dialog. Contains two tabs: Core and Details
 	 */
 	private TabSheet tabSheet;
@@ -82,15 +86,13 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 	 * Set format data to {@link #comboBoxFormat}
 	 */
 	private void mapData() {
-		List<RDFFormatType> formatTypes = RDFFormatType.getListOfRDFType();
-
-		for (RDFFormatType next : formatTypes) {
-			String formatValue = RDFFormatType.getStringValue(next);
-			comboBoxFormat.addItem(formatValue);
-		}
-
-		comboBoxFormat
-				.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
+        Collection<RDFFormat> formatTypes = RDFFormat.values();
+        for(RDFFormat formatType : formatTypes) {
+            String formatValue = formatType.getName();
+            comboBoxFormat.addItem(formatValue);
+        }
+        comboBoxFormat.addItem(rdfFormatAuto);
+        comboBoxFormat.setValue(rdfFormatAuto);
 	}
 
 	/**
@@ -260,14 +262,13 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 			boolean diffName = checkBoxDiffName.getValue();
 			String filePath = textFieldFilePath.getValue().trim();
 
-			String formatValue = (String) comboBoxFormat.getValue();
-			RDFFormatType RDFFileFormat = RDFFormatType.getTypeByString(
-					formatValue);
+            String formatValue = (String) comboBoxFormat.getValue();
+            RDFFormat format = RDFFormat.valueOf(formatValue);
 
 			boolean validDataBefore = validateDataBefore.getValue();
 
 			FileLoaderConfig config = new FileLoaderConfig(filePath,
-					RDFFileFormat, diffName, validDataBefore);
+                    format, diffName, validDataBefore);
 			
 			config.setPenetrable(checkBoxCopyInput.getValue());
 			
@@ -294,9 +295,17 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 			checkBoxDiffName.setValue(conf.isDiffName());
 			textFieldFilePath.setValue(conf.getFilePath().trim());
 
-			String formatValue = RDFFormatType
-					.getStringValue(conf.getRDFFileFormat());
-			comboBoxFormat.setValue(formatValue);
+            RDFFormat rdfFormatValue = conf.getRDFFileFormat();
+            String format = null;
+            // if rdfFormatValue is null then we use an option AUTO
+            if (rdfFormatValue != null) {
+                format = rdfFormatValue.getName();
+            } else {
+                format = rdfFormatAuto;
+            }
+
+            
+			comboBoxFormat.setValue(format);
 
 			validateDataBefore.setValue(conf.isValidDataBefore());
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.Collection;
 
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -23,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
@@ -71,7 +71,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	public void execute(DPUContext context) throws DPUException, DataUnitException {
 
 		final String filePath = config.getFilePath();
-		final RDFFormatType formatType = config.getRDFFileFormat();
+		final RDFFormat formatType = config.getRDFFileFormat();
 		final boolean isNameUnique = config.isDiffName();
 		final boolean canFileOverwritte = true;
 		final boolean validateDataBefore = config.isValidDataBefore();
@@ -103,8 +103,16 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             triplesCount = connection.size(rdfDataUnit.getDataGraph());
             FileOutputStream out = new FileOutputStream(filePath);
             OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
-            File file = new File(filePath);
-            RDFFormat format = Rio.getWriterFormatForFileName(file.getName());
+
+            RDFFormat format = null;
+            // if  rdfFormatValue is null then we use an option AUTO -> try to guess format according to a file extension
+            if (formatType == null) {
+                File file = new File(filePath);
+                format = Rio.getWriterFormatForFileName(file.getName());
+            } else {
+                format = formatType;
+            }
+
             RDFWriter rdfWriter = Rio.createWriter(format, os);
             connection.export(rdfWriter, rdfDataUnit.getDataGraph());
 

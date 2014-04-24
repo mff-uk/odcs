@@ -86,7 +86,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         }
 
 		LOG.debug("extractType: {}", extractType);
-		LOG.debug("format: {}", format);
+		LOG.debug("formatType: {}", formatType);
 		LOG.debug("path: {}", path);
 		LOG.debug("fileSuffix: {}", fileSuffix);
 		LOG.debug("baseURI: {}", baseURI);

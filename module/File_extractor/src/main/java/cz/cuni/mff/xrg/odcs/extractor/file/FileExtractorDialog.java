@@ -269,13 +269,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			}
 		}
 
-
         RDFFormat rdfFormatValue = conf.getRDFFormatValue();
         String format = null;
         // if  rdfFormatValue is null then we use an option AUTO
         if (rdfFormatValue != null) {
             format = rdfFormatValue.getName();
-        }else {
+        } else {
             format = rdfFormatAuto;
         }
 
