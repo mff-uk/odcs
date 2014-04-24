@@ -1,16 +1,18 @@
 package cz.cuni.xrg.intlib.rdf;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
-
 import org.junit.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
@@ -20,6 +22,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import static org.junit.Assert.*;
+
 import org.openrdf.query.TupleQueryResult;
 
 /**
@@ -32,10 +35,11 @@ public class TupleQueryTest {
 
 	/**
 	 * Basic repository inicializing before test execution.
+	 * @throws IOException 
 	 */
 	@BeforeClass
-	public static void inicialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("");
+	public static void inicialize() throws IOException {
+		repository = new LocalRDFDataUnit(Files.createTempDirectory(null).toFile().getAbsolutePath(),  "",  "http://default");
 	}
 
 	/**

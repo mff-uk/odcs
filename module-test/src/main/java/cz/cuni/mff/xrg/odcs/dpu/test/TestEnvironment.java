@@ -7,10 +7,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
+import net.fortytwo.sesametools.ldserver.LinkedDataServer;
+import net.fortytwo.sesametools.ldserver.query.SparqlResource;
+
 import org.apache.commons.io.FileUtils;
+import org.openrdf.sail.Sail;
+import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +59,6 @@ public class TestEnvironment {
 	private final File workingDirectory;
 
 	/**
-	 * Used {@link ManagableDataUnit}s
-	 */
-	private final LinkedList<ManagableDataUnit> dataUnits = new LinkedList<>();
-
-	/**
 	 * Directories for input {@link ManagableDataUnit}s.
 	 */
 	private final HashMap<String, ManagableDataUnit> inputDataUnits = new HashMap<>();
@@ -69,6 +68,8 @@ public class TestEnvironment {
 	 */
 	private final HashMap<String, ManagableDataUnit> outputDataUnits = new HashMap<>();
 
+	private final HashMap<String, ManagableDataUnit> customDataUnits = new HashMap<>();
+	
 	/**
 	 * Factory for {@link DataUnit}s classes.
 	 */
@@ -146,6 +147,39 @@ public class TestEnvironment {
 		outputDataUnits.put(name, dataUnit);
 	}
 
+	
+	/**
+	 * Create {@link RDFDataUnit} which is just returned to test developer for use.
+	 *
+	 * @param name        Name of DataUnit.
+	 * @return Created {@link RDFDataUnit}.
+	 */
+	public RDFDataUnit createRdfFDataUnit(String name) {
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
+		customDataUnits.put(name, rdf);
+		return rdf;
+	}
+	
+//	public String createSPARQLEndpoint(String baseURI) {
+//		LinkedDataServer server;
+//		Sail sail = new MemoryStore();
+//		try {
+//			sail.initialize();
+//			server = new LinkedDataServer(
+//			    sail,
+//			    baseURI,
+//			    baseURI,
+//			    8182);
+//
+//			server.getHost().attach("/sparql", new SparqlResource());
+//			server.start();
+//			
+//			return "http://localhost:8182/sparql";
+//		} catch (Exception ex) {
+//			throw new RuntimeException(ex);
+//		}
+//	}
+	
 	/**
 	 * Create input {@link RDFDataUnit} that is used in test environment.
 	 *
@@ -295,13 +329,24 @@ public class TestEnvironment {
 	 */
 	public void release() {
 		// release all DataUnits ..
-		for (ManagableDataUnit item : dataUnits) {
+		for (ManagableDataUnit item : inputDataUnits.values()) {
 			if (item != null) {
 				item.clear();
 				item.release();
 			}
 		}
-		dataUnits.clear();
+		for (ManagableDataUnit item : outputDataUnits.values()) {
+			if (item != null) {
+				item.clear();
+				item.release();
+			}
+		}
+		for (ManagableDataUnit item : customDataUnits.values()) {
+			if (item != null) {
+				item.clear();
+				item.release();
+			}
+		}
 
 		// delete working directory ..
 		try {
@@ -380,7 +425,6 @@ public class TestEnvironment {
 
 			item.getField().set(dpuInstance, dataUnit);
 			// ...
-			dataUnits.add(dataUnit);
 		}
 
 		// add outputs
@@ -395,7 +439,6 @@ public class TestEnvironment {
 						+ item.getAnnotation().name());
 			}
 			// ...
-			dataUnits.add(dataUnit);
 		}
 	}
 

@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import static org.junit.Assert.*;
-import org.junit.*;
 
 /**
  *
@@ -12,32 +14,6 @@ import org.junit.*;
  */
 public class SplitConstructQueryTest {
 
-	private static ManagableRdfDataUnit repository;
-
-	/**
-	 * Basic repository inicializing before test execution.
-	 */
-	@BeforeClass
-	public static void inicialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("");
-	}
-
-	/**
-	 * The repository is destroyed at the end of working.
-	 */
-	@AfterClass
-	public static void deleting() {
-		repository.clear();
-		repository.release();
-	}
-
-	/**
-	 * Cleaning repository before each test execution.
-	 */
-	@Before
-	public void cleaning() {
-		repository.clear();
-	}
 
 	/**
 	 * Split test for SPARQL CONSTRUCT query with LIMIT clause in subquery.

@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
@@ -86,8 +85,8 @@ public class LocalRDFRepoTest {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		rdfRepo = RDFDataUnitFactory.createLocalRDFRepo(pathRepo.toString(),
-				"", "http://default");
+		rdfRepo = new LocalRDFDataUnit(pathRepo.toString(),
+				"myTestName", "http://default");
 	}
 
 	/**
@@ -768,49 +767,6 @@ public class LocalRDFRepoTest {
 		BigTransformQuery3();
 	}
 
-	/**
-	 * Testing paralell pipeline running.
-	 */
-	@Test
-	public void paralellPipelineRunning() {
-
-		for (int i = 0; i < THREAD_SIZE; i++) {
-
-			Thread task = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Path path = Files.createTempDirectory("directory");
-
-						LocalRDFDataUnit localRepository = RDFDataUnitFactory
-								.createLocalRDFRepo(path
-								.toString(),  "", "http://default");
-
-						synchronized (localRepository) {
-							addParalelTripleToRepository(localRepository);
-							extractFromFileToRepository(localRepository);
-							transformOverRepository(localRepository);
-							loadToFile(localRepository);
-						}
-
-						localRepository.clear();
-						localRepository.release();
-
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					} catch (RepositoryException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-			});
-
-			task.start();
-		}
-
-
-
-
-	}
 
 	/**
 	 * Test adding RDF tripes to given repository instance.

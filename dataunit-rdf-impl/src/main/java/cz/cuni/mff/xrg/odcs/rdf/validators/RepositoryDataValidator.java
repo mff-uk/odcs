@@ -1,25 +1,34 @@
 package cz.cuni.mff.xrg.odcs.rdf.validators;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.*;
+import org.openrdf.rio.ParseErrorListener;
+import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
+
+import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 
 /**
  * Find out, if data in RDF repository are valid or not.
@@ -55,19 +64,6 @@ public class RepositoryDataValidator implements DataValidator {
     final private String encode = "UTF-8";
 
 
-    /**
-	 * Create new instance of {@link RepositoryDataValidator} that check data
-	 * for given input.
-	 *
-	 * @param input source from where are data checked if are valid.
-	 */
-	public RepositoryDataValidator(RDFDataUnit input) {
-		this.input = (ManagableRdfDataUnit)input;
-		this.output = null;
-		this.message = "";
-		this.findedProblems = new ArrayList<>();
-	}
-
 	/**
 	 * Create new instance of {@link RepositoryDataValidator} that check data
 	 * for given input and valid data store to output.
@@ -94,26 +90,7 @@ public class RepositoryDataValidator implements DataValidator {
 	 * @return instance of {@link RDFDataUnit} need for creating report.
 	 */
 	private ManagableRdfDataUnit getGoalRepository() {
-		if (hasOutput()) {
-			return output;
-		} else {
-			ManagableRdfDataUnit tempRepo = RDFDataUnitFactory.createLocalRDFRepo(
-					"tempRepo");
-
-			return tempRepo;
-		}
-	}
-
-	/**
-	 * If is set output as {@link RDFDataUnit} instance where to data add or
-	 * not.
-	 */
-	private boolean hasOutput() {
-		if (output != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return output;
 	}
 
 	/**
@@ -206,10 +183,6 @@ public class RepositoryDataValidator implements DataValidator {
 			} finally {
 				if (tempFile != null) {
 					tempFile.delete();
-				}
-				if (!hasOutput() && goalRepo != null) {
-					goalRepo.clear();
-					goalRepo.release();
 				}
 			}
 		}

@@ -164,26 +164,26 @@ public class SPARQLTransformer
 
 					//execute given construct query
 					Dataset dataSet = createGraphDataSet(inputs);
-
-					if (placeHolders.needExecutableRepository()) {
-						ManagableRdfDataUnit tempDataUnit = placeHolders
-								.getExecutableTempRepository();
-						Graph graph = tempDataUnit.executeConstructQuery(
-								constructQuery, dataSet);
-
-						((ManagableRdfDataUnit) outputDataUnit)
-								.addTriplesFromGraph(graph);
-
-						tempDataUnit.clear();
-						tempDataUnit.release();
-
-					} else {
+//	TODO michal.klempa this should not be needed anymore
+//					if (placeHolders.needExecutableRepository()) {
+//						ManagableRdfDataUnit tempDataUnit = placeHolders
+//								.getExecutableTempRepository();
+//						Graph graph = tempDataUnit.executeConstructQuery(
+//								constructQuery, dataSet);
+//
+//						((ManagableRdfDataUnit) outputDataUnit)
+//								.addTriplesFromGraph(graph);
+//
+//						tempDataUnit.clear();
+//						tempDataUnit.release();
+//
+//					} else {
 						Graph graph = intputDataUnit.executeConstructQuery(
 								constructQuery, dataSet);
 						((ManagableRdfDataUnit) outputDataUnit)
 								.addTriplesFromGraph(
 								graph);
-					}
+//					}
 
 				} else {
 
@@ -194,41 +194,47 @@ public class SPARQLTransformer
 							updateQuery,
 							inputs);
 
-					boolean needRepository = placeHolders
-							.needExecutableRepository();
+//					TODO michal.klempa this should not be needed anymore
+//					boolean needRepository = placeHolders
+//							.needExecutableRepository();
 
 					if (isFirstUpdateQuery) {
 
 						isFirstUpdateQuery = false;
 
-						if (needRepository) {
+//						TODO michal.klempa this should not be needed anymore
+//						if (needRepository) {
 							prepareRepository(inputs);
-						} else {
-							((ManagableRdfDataUnit) outputDataUnit)
-									.merge(intputDataUnit);
-						}
+//						} else {
+//							((ManagableRdfDataUnit) outputDataUnit)
+//									.merge(intputDataUnit);
+//							TODO michal.klempa this should not be needed anymore
+//						}
 
 					}
 
 
-					if (needRepository) {
+//					TODO michal.klempa this should not be needed anymore
+//					if (needRepository) {
 						Dataset dataset = createGraphDataSet(inputs);
 
 						outputDataUnit.executeSPARQLUpdateQuery(
 								replacedUpdateQuery, dataset);
-					} else {
+//					} else {
 
-						outputDataUnit.executeSPARQLUpdateQuery(
-								replacedUpdateQuery);
-					}
+//						outputDataUnit.executeSPARQLUpdateQuery(
+//								replacedUpdateQuery);
+//						TODO michal.klempa this should not be needed anymore
+//					}
 				}
 
 			} catch (RDFDataUnitException ex) {
 				context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 						.fillInStackTrace().toString());
-			} catch (RepositoryException e) {
-                context.sendMessage(MessageType.ERROR, e.getMessage(), e
-                        .fillInStackTrace().toString());
+//				TODO michal.klempa this should not be needed anymore
+//			} catch (RepositoryException e) {
+//                context.sendMessage(MessageType.ERROR, e.getMessage(), e
+//                        .fillInStackTrace().toString());
             }
         }
         try {
@@ -245,6 +251,7 @@ public class SPARQLTransformer
 
 	}
 
+	//	TODO michal.klempa this should not be needed anymore
 	private void prepareRepository(List<RDFDataUnit> inputs) {
 		for (RDFDataUnit input : inputs) {
 			((ManagableRdfDataUnit) outputDataUnit).merge(input);

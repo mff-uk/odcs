@@ -4,11 +4,11 @@ import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,9 +37,7 @@ public class SPARQLExtractorVirtuosoTest {
 
 	private static RDFDataUnit repository;
 
-	private static final String HOST_NAME = "localhost";
-
-	private static final String PORT = "1111";
+	private static final String URL = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 
 	private static final String USER = "dba";
 
@@ -51,7 +49,7 @@ public class SPARQLExtractorVirtuosoTest {
 
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
-		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
+		repository = new VirtuosoRDFDataUnit(URL, 
 				USER, PASSWORD, "input", DEFAULT_GRAPH);
 
 	}

@@ -49,7 +49,10 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 	 */
 	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfDataUnit;
-
+	
+	@OutputDataUnit(name = "validationDataUnit", description ="Never connect any data to this unit please!")
+	public RDFDataUnit validationDataUnit;
+	
 	@OutputDataUnit(name = "input_redirection", optional = true)
 	public RDFDataUnit inputShadow;
 	
@@ -75,7 +78,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
 		if (validateDataBefore) {
 			DataValidator dataValidator = new RepositoryDataValidator(
-					rdfDataUnit);
+					rdfDataUnit, validationDataUnit);
 
 			if (!dataValidator.areDataValid()) {
 				final String message = "RDF Data to load are not valid - LOADING to File FAIL";

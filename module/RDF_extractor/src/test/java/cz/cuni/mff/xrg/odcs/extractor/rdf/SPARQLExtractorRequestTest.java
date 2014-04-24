@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.extractor.rdf;
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -29,8 +28,7 @@ public class SPARQLExtractorRequestTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLExtractorRequestTest.class);
 
-	private static final RDFDataUnit repository = RDFDataUnitFactory
-			.createLocalRDFRepo("");
+	private static final TestEnvironment testEnvironment = new TestEnvironment();
 
 	private static final String ENDPOINT = "http://dbpedia.org/sparql";
 
@@ -57,6 +55,7 @@ public class SPARQLExtractorRequestTest {
 	}
 
 	private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 		URL endpoint = getEndpoint();
 		String query = String.format(
 				"CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
@@ -64,26 +63,25 @@ public class SPARQLExtractorRequestTest {
 
 		SPARQLExtractor extractor = new SPARQLExtractor(repository,
 				getTestContext(), params);
-
+		RepositoryConnection connection = null;
 		try {
 			extractor.extractFromSPARQLEndpoint(endpoint, query);
-            RepositoryConnection connection = repository.getConnection();
+            connection = repository.getConnection();
 			assertEquals(connection.size(repository.getDataGraph()), EXTRACTED_TRIPLES);
 		} catch (RDFException e) {
 			fail(e.getMessage());
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (Throwable e ){}
+			}
 		}
 	}
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).clear();
-		((ManagableRdfDataUnit)repository).release();
-	}
-
-	@Before
-	public void cleanRepository() throws RepositoryException {
-        RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getDataGraph());
+		testEnvironment.release();
 	}
 
 	@Test

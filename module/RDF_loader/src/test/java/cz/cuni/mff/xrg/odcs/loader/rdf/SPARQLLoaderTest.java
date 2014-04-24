@@ -1,18 +1,14 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
-import org.junit.*;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
@@ -22,7 +18,16 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Test funcionality loading to SPARQL endpoint.
@@ -39,9 +44,7 @@ public class SPARQLLoaderTest {
 
 	private static RDFDataUnit repository;
 
-	private static final String HOST_NAME = "localhost";
-
-	private static final String PORT = "1111";
+	private static final String URL = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 
 	private static final String USER = "dba";
 
@@ -54,7 +57,7 @@ public class SPARQLLoaderTest {
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
 
-		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
+		repository = new VirtuosoRDFDataUnit(URL,
 				USER, PASSWORD, "input", DEFAULT_GRAPH);
 
 	}

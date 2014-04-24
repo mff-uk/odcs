@@ -48,6 +48,9 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	@OutputDataUnit(name = "input_redirection", optional = true)
 	public RDFDataUnit inputShadow;	
 	
+	@OutputDataUnit(name = "validationDataUnit", description ="Never connect any data to this unit please!")
+	public RDFDataUnit validationDataUnit;
+
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
@@ -107,7 +110,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 					"Starting RDF data VALIDATION");
 
 			DataValidator dataValidator = new RepositoryDataValidator(
-					rdfDataUnit);
+					rdfDataUnit, validationDataUnit);
 
 			if (!dataValidator.areDataValid()) {
 				final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";

@@ -1,14 +1,10 @@
 package cz.cuni.mff.xrg.odcs.rdf.validators;
 
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
-
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.QueryParserUtil;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 
 /**
  * Class responsible to find out, if sparql update queries are valid or not. It

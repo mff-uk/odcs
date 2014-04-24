@@ -186,13 +186,9 @@ class ExecutionSanitizer {
 			final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
 			// create instance
 			
-			try {
-				ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
-				// delete data .. 
-				dataUnit.clear();
-			} catch (DataUnitCreateException e) {
-				LOG.warn("Failed to reinstantiate dataUnit", e);
-			}
+			ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
+			// delete data .. 
+			dataUnit.clear();
 		}
 	}	
 	

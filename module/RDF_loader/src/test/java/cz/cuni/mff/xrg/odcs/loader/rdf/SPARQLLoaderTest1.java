@@ -1,18 +1,13 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.io.File;
+import static org.junit.Assert.assertTrue;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
 import java.util.logging.Level;
-import org.junit.*;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -21,7 +16,14 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Test funcionality loading to SPARQL endpoint.
@@ -52,9 +54,7 @@ public class SPARQLLoaderTest1 {
 //        //private static final String UPDATE_ENDPOINT = "http://v7.xrg.cz:8901/sparql-graph-crud-auth";
         
         
-	private static final String HOST_NAME = "odcs.xrg.cz";
-
-	private static final String PORT = "1120";
+	private static final String URL = "jdbc:virtuoso://odcs.xrg.cz:1120/charset=UTF-8/log_enable=2";
 
 	private static final String USER = "dba";
 
@@ -84,7 +84,7 @@ public class SPARQLLoaderTest1 {
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
 
-		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
+		repository = new VirtuosoRDFDataUnit(URL, 
 				USER, PASSWORD, "input", INPUT_GRAPH);
 
 	}

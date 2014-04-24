@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.UI;
+
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -13,15 +14,16 @@ import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
+
 import java.io.File;
 import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,8 +84,7 @@ public class RDFDataUnitHelper {
 
 					String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
-					LocalRDFDataUnit repository = RDFDataUnitFactory
-							.createLocalRDFRepo(dpuStorage.getAbsolutePath(),
+					LocalRDFDataUnit repository = new LocalRDFDataUnit(dpuStorage.getAbsolutePath(),
 							
 							info.getName(), namedGraph);
 
@@ -125,15 +126,10 @@ public class RDFDataUnitHelper {
 				appConfig.getString(ConfigProperty.DATABASE_USER);
 		final String password =
 				appConfig.getString(ConfigProperty.DATABASE_PASSWORD);
-
-		VirtuosoRDFDataUnit virtuosoRepository = RDFDataUnitFactory
-				.createVirtuosoRDFRepo(
-				hostName,
-				port,
-				user,
-				password,
-				"",
-				namedGraph);
+		final String url = "jdbc:virtuoso://" + hostName + ":"
+				+ port + "/charset=UTF-8/log_enable=2";
+		
+		VirtuosoRDFDataUnit virtuosoRepository = new VirtuosoRDFDataUnit(url, user, password, "", namedGraph);
 
 		return virtuosoRepository;
 	}

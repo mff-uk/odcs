@@ -519,7 +519,7 @@ public class SPARQLExtractor {
 				httpConnection.setDoOutput(true);
                 if (this.username.length() > 0) {
                     String userPass = this.username + ":" + this.password;
-                    Base64 coder = new Base64();
+                    Base64 coder = new Base64(-1);
                     byte[] userPassEncoded = coder.encode(userPass.getBytes());
                     String basicAuth = "Basic " + new String(userPassEncoded);
                     httpConnection.setRequestProperty("Authorization", basicAuth);
@@ -583,7 +583,7 @@ public class SPARQLExtractor {
 		httpConnection.setRequestMethod("POST");
         if (this.username.length() > 0) {
             String userPass = this.username + ":" + this.password;
-            Base64 coder = new Base64();
+            Base64 coder = new Base64(-1);
             byte[] userPassEncoded = coder.encode(userPass.getBytes());
             String basicAuth = "Basic " + new String(userPassEncoded);
             httpConnection.setRequestProperty("Authorization", basicAuth);

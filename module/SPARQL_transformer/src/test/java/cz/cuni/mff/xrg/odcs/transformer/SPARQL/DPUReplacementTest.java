@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.List;
@@ -22,36 +21,6 @@ import org.slf4j.LoggerFactory;
  * @author Jiri Tomes
  */
 public class DPUReplacementTest {
-
-	private static ManagableRdfDataUnit repository;
-
-    protected final Logger LOG = LoggerFactory.getLogger(getClass());
-
-
-    /**
-	 * Basic repository inicializing before test execution.
-	 */
-	@BeforeClass
-	public static void inicialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("");
-	}
-
-	/**
-	 * The repository is destroyed at the end of working.
-	 */
-	@AfterClass
-	public static void deleting() {
-		repository.clear();
-		repository.release();
-	}
-
-	/**
-	 * Cleaning repository before each test execution.
-	 */
-	@Before
-	public void cleaning() {
-		repository.clear();
-	}
 
 	/**
 	 * Test DPU replacement on SPARQL CONSTRUCT query.

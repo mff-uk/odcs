@@ -1,11 +1,12 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
 import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Properties;
 
 import org.openrdf.repository.RepositoryException;
@@ -41,7 +42,7 @@ public class TestDataUnitFactory {
 	public TestDataUnitFactory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
-
+	
 	/**
 	 * Create RDF data unit.
 	 *

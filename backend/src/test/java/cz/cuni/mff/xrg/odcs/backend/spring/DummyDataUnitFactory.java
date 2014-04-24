@@ -20,7 +20,7 @@ public class DummyDataUnitFactory extends DataUnitFactory {
 	public ManagableDataUnit create(DataUnitType type,
 			String id,
 			String name,
-			File directory) throws DataUnitCreateException {
+			File directory) {
 		// just return mocked object
 		return mock(ManagableDataUnit.class);
 	}

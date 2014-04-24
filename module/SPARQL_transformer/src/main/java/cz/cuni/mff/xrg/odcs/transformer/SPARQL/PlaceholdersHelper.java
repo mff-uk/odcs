@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -90,16 +89,17 @@ public class PlaceholdersHelper {
 	 *         need for SPARQL construct/update query based on DPU name is type
 	 *         of {@link DataUnitType#RDF_Local}, false otherwise.
 	 */
-	public boolean needExecutableRepository() {
-		boolean hasLocal = false;
-		for (RDFDataUnit nextRepository : usedRepositories) {
-			if (nextRepository.getType() == DataUnitType.RDF_Local) {
-				hasLocal = true;
-				break;
-			}
-		}
-		return hasLocal;
-	}
+//	TODO michal.klempa this should not be needed anymore
+//	public boolean needExecutableRepository() {
+//		boolean hasLocal = false;
+//		for (RDFDataUnit nextRepository : usedRepositories) {
+//			if (nextRepository.getType() == DataUnitType.RDF_Local) {
+//				hasLocal = true;
+//				break;
+//			}
+//		}
+//		return hasLocal;
+//	}
 
 	/**
 	 * Create new instance of {@link ManagableRdfDataUnit} where SPARQL
@@ -110,18 +110,19 @@ public class PlaceholdersHelper {
 	 *         construct/update query based on DPU name can be executed. Need
 	 *         only if method {@link #needExecutableRepository()} returns TRUE;
 	 */
-	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
-		LocalRDFDataUnit tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
-				"executable");
-        RepositoryConnection tempRepositoryConnection = tempRepository.getConnection();
-        for (RDFDataUnit repository : usedRepositories) {
-            URI dataGraph = repository.getDataGraph();
-            RepositoryConnection usedRepositoryConnection = repository.getConnection();
-            RepositoryResult<Statement> triples = usedRepositoryConnection.getStatements(null, null, null, true, repository.getDataGraph());
-            tempRepositoryConnection.add(triples, dataGraph);
-		}
-		return tempRepository;
-	}
+//	TODO michal.klempa this should not be needed anymore
+//	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
+//		LocalRDFDataUnit tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
+//				"executable");
+//        RepositoryConnection tempRepositoryConnection = tempRepository.getConnection();
+//        for (RDFDataUnit repository : usedRepositories) {
+//            URI dataGraph = repository.getDataGraph();
+//            RepositoryConnection usedRepositoryConnection = repository.getConnection();
+//            RepositoryResult<Statement> triples = usedRepositoryConnection.getStatements(null, null, null, true, repository.getDataGraph());
+//            tempRepositoryConnection.add(triples, dataGraph);
+//		}
+//		return tempRepository;
+//	}
 
 	/**
 	 *

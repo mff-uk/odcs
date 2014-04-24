@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -15,7 +14,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
@@ -27,9 +25,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 @Category(IntegrationTest.class)
 public class VirtuosoTest extends LocalRDFRepoTest {
 
-	private static final String hostName = "localhost";
-
-	private static final String port = "1111";
+	private static final String url = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 
 	private static final String user = "dba";
 
@@ -43,8 +39,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     @BeforeClass
     public static void setUpLogger() throws RepositoryException {
 
-        rdfRepo = RDFDataUnitFactory.createVirtuosoRDFRepo(
-                hostName, port, user, password, "", defaultGraph);
+        rdfRepo = new VirtuosoRDFDataUnit(url, user, password, "", defaultGraph);
         RepositoryConnection connection = rdfRepo.getConnection();
         connection.clear(rdfRepo.getDataGraph());
     }
@@ -116,8 +111,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	 */
 	@Test
 	public void repositoryCopy() {
-		ManagableRdfDataUnit goal = RDFDataUnitFactory.createVirtuosoRDFRepo(
-				hostName, port, user, password, "", "http://goal");
+		ManagableRdfDataUnit goal = new VirtuosoRDFDataUnit(url, user, password, "", "http://goal");
 		try {
 			goal.merge(rdfRepo);
 		} catch (IllegalArgumentException e) {
@@ -127,47 +121,4 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 		}
 	}
 
-	/**
-	 * Testing paralell pipeline running.
-	 */
-	@Test
-	@Override
-	public void paralellPipelineRunning() {
-
-		for (int i = 0; i < THREAD_SIZE; i++) {
-
-			final String namedGraph = "http://myDefault" + i;
-			Thread task = new Thread(new Runnable() {
-				@Override
-				public void run() {
-
-					VirtuosoRDFDataUnit virtuosoRepo = RDFDataUnitFactory
-							.createVirtuosoRDFRepo(
-							hostName,
-							port,
-							user,
-							password,
-							"",
-							namedGraph);
-
-					synchronized (virtuosoRepo) {
-                        try {
-                            addParalelTripleToRepository(virtuosoRepo);
-                            extractFromFileToRepository(virtuosoRepo);
-                        } catch (RepositoryException e) {
-                            throw new RuntimeException(e);
-                        }
-                        transformOverRepository(virtuosoRepo);
-						loadToFile(virtuosoRepo);
-					}
-					virtuosoRepo.clear();
-					virtuosoRepo.release();
-
-
-				}
-			});
-
-			task.start();
-		}
-	}
 }

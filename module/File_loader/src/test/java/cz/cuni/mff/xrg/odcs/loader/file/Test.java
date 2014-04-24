@@ -1,21 +1,24 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.openrdf.model.*;
+import org.openrdf.model.Model;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
-
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class Test {
 
@@ -23,6 +26,7 @@ public class Test {
     public void test() throws Exception {
         FileLoader fileLoader = new FileLoader();
         FileLoaderConfig config = new FileLoaderConfig();
+        config.setValidDataBefore(true);
         fileLoader.configureDirectly(config);
         config.setPenetrable(false);
         File tempFile = File.createTempFile("temp", ".rdf");
@@ -33,6 +37,7 @@ public class Test {
         try {
             RDFDataUnit input = env.createRdfInput("input", false);
             RDFDataUnit output = env.createRdfOutput("input_redirection", false);
+            env.createRdfOutput("validationDataUnit", false);
             RepositoryConnection connectionInput = input.getConnection();
             ValueFactory factory = connectionInput.getValueFactory();
             Resource subject = factory.createURI("http://my.subject");
@@ -54,8 +59,6 @@ public class Test {
 
             // we compare amount of the triplets
             assertEquals(expectedSize, actualSize);
-        } catch (Exception e) {
-            fail(e.getMessage());
         } finally {
             // release resources
             env.release();

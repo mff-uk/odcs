@@ -1,12 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.monitor;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +9,23 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Component for monitoring rdf storage availability.
@@ -128,15 +132,7 @@ class RdfDatabase {
 			
 		}
 		
-		VirtuosoRDFDataUnit virtuosoRepository = RDFDataUnitFactory
-				.createVirtuosoRDFRepo(
-						hostName,
-						port,
-						user,
-						password,
-						"",
-						"http://linked.opendata.cz/resource/odcs/internal/"
-						);
+		VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF_Virtuoso, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
 		try {
 			// ok we have the repository
 			virtuosoRepository.executeSelectQuery("select * where {?s ?p ?o} limit 1");
