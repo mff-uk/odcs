@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * File extractor configuration.
@@ -17,9 +17,9 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 
     private String Path;
 
-	private String FileSuffix;
+    private String FileSuffix;
 
-	private RDFFormatType RDFFormatValue;
+	private RDFFormat RDFFormatValue;
 
 	private FileExtractType fileExtractType;
 
@@ -33,8 +33,9 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
         FileSuffix = fileSuffix;
     }
 
-    public void setRDFFormatValue(RDFFormatType RDFFormatValue) {
-        this.RDFFormatValue = RDFFormatValue;
+    public void setRDFFormatValue(RDFFormat RDFFileFormat) {
+        this.RDFFormatValue = RDFFileFormat;
+
     }
 
     public void setFileExtractType(FileExtractType fileExtractType) {
@@ -48,7 +49,7 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
     public FileExtractorConfig() {
 		this.Path = "";
 		this.FileSuffix = "";
-		this.RDFFormatValue = RDFFormatType.AUTO;
+		this.RDFFormatValue = null;
 		this.fileExtractType = FileExtractType.PATH_TO_FILE;
 		this.OnlyThisSuffix = false;
 		this.UseStatisticalHandler = true;
@@ -56,7 +57,7 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 	}
 
 	public FileExtractorConfig(String Path, String FileSuffix,
-			RDFFormatType RDFFormatValue, FileExtractType fileExtractType,
+                               RDFFormat RDFFormatValue, FileExtractType fileExtractType,
 			boolean OnlyThisSuffix, boolean UseStatisticalHandler,
 			boolean failWhenErrors) {
 
@@ -88,11 +89,11 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 	}
 
 	/**
-	 * Returns selected {@link RDFFormatType} for extracted RDF data.
+	 * Returns selected RDFFormatType for extracted RDF data.
 	 *
-	 * @return selected {@link RDFFormatType} for extracted RDF data.
+	 * @return selected link RDFFormatType for extracted RDF data.
 	 */
-	public RDFFormatType getRDFFormatValue() {
+	public RDFFormat getRDFFormatValue() {
 		return RDFFormatValue;
 	}
 
@@ -165,7 +166,6 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
 	public boolean isValid() {
 		return Path != null
 				&& FileSuffix != null
-				&& RDFFormatValue != null
 				&& fileExtractType != null;
 	}
 }

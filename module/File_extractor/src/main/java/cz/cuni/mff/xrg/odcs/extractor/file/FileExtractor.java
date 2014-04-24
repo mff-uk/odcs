@@ -23,7 +23,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
@@ -75,8 +74,15 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 		final HandlerExtractType handlerExtractType = HandlerExtractType
 				.getHandlerType(useStatisticHandler, failWhenErrors);
 
-		RDFFormatType formatType = config.getRDFFormatValue();
-		final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
+        RDFFormat formatType = config.getRDFFormatValue();
+
+        RDFFormat format = null;
+        if (formatType == null) {
+            File file = new File(path);
+            format = Rio.getWriterFormatForFileName(file.getName());
+        } else {
+            format = formatType;
+        }
 
 		LOG.debug("extractType: {}", extractType);
 		LOG.debug("format: {}", format);
