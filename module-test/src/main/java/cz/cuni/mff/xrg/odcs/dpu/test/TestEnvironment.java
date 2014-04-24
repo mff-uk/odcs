@@ -9,12 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import net.fortytwo.sesametools.ldserver.LinkedDataServer;
-import net.fortytwo.sesametools.ldserver.query.SparqlResource;
-
 import org.apache.commons.io.FileUtils;
-import org.openrdf.sail.Sail;
-import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
