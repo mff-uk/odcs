@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
-    private final Logger LOG = LoggerFactory.getLogger(FileExtractorDialog.class);
 
 	private GridLayout mainLayout;
     private final String rdfFormatAuto = "AUTO";
@@ -273,7 +272,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
         RDFFormat rdfFormatValue = conf.getRDFFormatValue();
         String format = null;
-        // the option AUTO is represented by value null
+        // if  rdfFormatValue is null then we use an option AUTO
         if (rdfFormatValue != null) {
             format = rdfFormatValue.getName();
         }else {
