@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;

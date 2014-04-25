@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.repositories;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
 import info.aduna.iteration.Iterations;
 
@@ -51,6 +51,11 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.MyGraphQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.

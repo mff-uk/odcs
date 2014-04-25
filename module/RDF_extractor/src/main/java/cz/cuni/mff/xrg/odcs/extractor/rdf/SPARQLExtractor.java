@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 
 import org.apache.commons.codec.binary.Base64;
@@ -14,7 +15,6 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
 
 import java.io.*;
 import java.net.*;

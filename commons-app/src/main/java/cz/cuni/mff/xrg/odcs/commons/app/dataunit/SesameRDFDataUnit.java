@@ -1,33 +1,37 @@
-package cz.cuni.mff.xrg.odcs.rdf.repositories;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.config.RepositoryConfig;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.manager.RepositoryManager;
+import org.openrdf.repository.manager.RepositoryProvider;
+import org.openrdf.repository.sail.config.SailRepositoryConfig;
+import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
- * Implementation of Virtuoso repository - RDF data and intermediate results are
- * saved in Virtuoso storage.
- *
- * @author Jiri Tomes
+ * Implementation of Sesame http repository - RDF data and intermediate results are
+ * saved in Sesame server
  */
-public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
+public final class SesameRDFDataUnit extends BaseRDFRepo {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFDataUnit.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SesameRDFDataUnit.class);
 
+	public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
 	/**
 	 * DataUnit's name.
 	 */
@@ -40,10 +44,9 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	private Thread ownerThread;
 
 	/**
-	 * Construct a VirtuosoRepository with a specified parameters.
+	 * Construct a Remote repository with a specified parameters.
 	 *
-	 * @param url the Virtuoso JDBC URL connection string or hostlist
-	 *                      for pooled connection.
+	 * @param url the URL connection string
 	 *
 	 * @param user          the database user on whose behalf the connection is
 	 *                      being made.
@@ -57,7 +60,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	 *                      empty String.
 	 * @throws RepositoryException 
 	 */
-	public VirtuosoRDFDataUnit(String url, String user, String password,
+	public SesameRDFDataUnit(String url, String user, String password,
 			String dataUnitName, String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
@@ -65,7 +68,23 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		
 		setDataGraph(dataGraph);
 
-		this.repository = new VirtuosoRepository(url, user, password);
+		try {
+			RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
+			repository = repositoryManager
+					.getRepository(GLOBAL_REPOSITORY_ID);
+			if (repository == null) {
+				repositoryManager.addRepositoryConfig(
+						new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
+						);
+				repository = repositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+			}
+			if (repository == null) {
+				throw new RuntimeException("Could not initialize repository");
+			}
+		} catch (RepositoryConfigException | RepositoryException ex) {
+			throw new RuntimeException("Could not initialize repository", ex);
+		}		
+		
 		try {
 			repository.initialize();
 		} catch (RepositoryException ex) {
@@ -74,7 +93,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		RepositoryConnection connection = null; 
 		try {
             connection = getConnection();
-			LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
+			LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
 					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
 		} catch (RepositoryException ex) {
 			throw new RuntimeException("Could not test initial connect to repository", ex);
@@ -177,14 +196,13 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 		
 		try {
 			repository.shutDown();
-			LOG.info("Virtuoso RDF DataUnit with data graph <"
+			LOG.info("Sesame RDF DataUnit with data graph <"
 					+ getDataGraph()
 					+ "> succesfully shut down");
 		} catch (RepositoryException ex) {
 			LOG.error("Error in repository shutdown", ex);
 		}
 	}
-
 	/**
 	 * Make RDF data merge over repository - data in repository merge with data
 	 * in second defined repository.
@@ -196,7 +214,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	 */
 	@Override
 	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-		if (!(otherDataUnit instanceof VirtuosoRDFDataUnit)) {
+		if (!(otherDataUnit instanceof SesameRDFDataUnit)) {
 			throw new IllegalArgumentException("Incompatible repository type");
 		}
 		
@@ -208,29 +226,22 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 			String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
 			String targetGraphName = getDataGraph().stringValue();
 
-
-			// mergeQuery = String.format("DEFINE sql:log-enable %d \n"
-			// + "ADD <%s> TO <%s>",
-			// LOG_LEVEL,
-			// sourceGraphName,
-			// targetGraphName);
 			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
 					targetGraphName);
 
-			GraphQuery result = connection.prepareGraphQuery(
+			Update update =connection.prepareUpdate(
 					QueryLanguage.SPARQL, mergeQuery);
-
-			result.evaluate();
-
+	
+			update.execute();
+			
 			LOG.info("Merged {} triples from <{}> to <{}>.",
 					connection.size(getDataGraph()), sourceGraphName,
 					targetGraphName);
-
 		} catch (MalformedQueryException ex) {
 			LOG.error("NOT VALID QUERY: {}", ex);
-		} catch (QueryEvaluationException ex) {
-			LOG.error("MERGING STOPPED: {}", ex);
 		} catch (RepositoryException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (UpdateExecutionException ex) {
 			LOG.error(ex.getMessage(), ex);
 		} finally {
 			if (connection != null) {
@@ -243,6 +254,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 			}
 		}
 	}
+
 
 	@Override
 	public void isReleaseReady() {

@@ -1,5 +1,6 @@
-package cz.cuni.mff.xrg.odcs.rdf.repositories;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.config.RepositoryConfigException;
-import org.openrdf.repository.manager.RepositoryManager;
+import org.openrdf.repository.manager.LocalRepositoryManager;
 import org.openrdf.repository.manager.RepositoryProvider;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
@@ -24,17 +25,16 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
- * Implementation of Sesame http repository - RDF data and intermediate results are
- * saved in Sesame server
+ * Implementation of local RDF repository - RDF data are saved in files on hard
+ * disk in computer, intermediate results are keeping in computer memory.
+ *
+ * @author Jiri Tomes
  */
-public final class SesameRDFDataUnit extends BaseRDFRepo {
+public class LocalRDFDataUnit extends BaseRDFRepo {
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRDFDataUnit.class);
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SesameRDFDataUnit.class);
-
-	public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
-	/**
-	 * DataUnit's name.
-	 */
+	public static final String GLOBAL_REPOSITORY_ID = "sdavhniw2uv3ni32u3fkhj";
+	
 	private String dataUnitName;
 	
 	private Repository repository;
@@ -42,58 +42,51 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 	private List<RepositoryConnection> requestedConnections;
 	
 	private Thread ownerThread;
-
+	
 	/**
-	 * Construct a Remote repository with a specified parameters.
-	 *
-	 * @param url the URL connection string
-	 *
-	 * @param user          the database user on whose behalf the connection is
-	 *                      being made.
-	 *
-	 * @param password      the user's password.
-	 *
-	 * @param dataGraph  a default Graph name, used for Sesame calls, when
-	 *                      contexts list is empty, exclude exportStatements,
-	 *                      hasStatement, getStatements methods.
-	 * @param dataUnitName	 DataUnit's name. If not used in Pipeline can be
-	 *                      empty String.
-	 * @throws RepositoryException 
+	 * Public constructor - create new instance of repository in defined
+	 * repository Path.
+	 * 
+	 * @param repositoryPath
+	 *            String value of path to directory where will be repository
+	 *            stored.
+	 * @param namedGraph
+	 *            String value of URI graph that will be set to repository.
+	 * @param dataUnitName
+	 *            DataUnit's name. If not used in Pipeline can be empty String.
 	 */
-	public SesameRDFDataUnit(String url, String user, String password,
-			String dataUnitName, String dataGraph) {
+	public LocalRDFDataUnit(String repositoryPath, String dataUnitName,
+			String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
 		this.ownerThread = Thread.currentThread();
-		
-		setDataGraph(dataGraph);
 
+		setDataGraph(dataGraph);
 		try {
-			RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
-			repository = repositoryManager
+			File managerDir = new File(repositoryPath);
+			if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+				throw new RuntimeException("Could not create repository manager directory.");
+			}
+			LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
+			repository = localRepositoryManager
 					.getRepository(GLOBAL_REPOSITORY_ID);
 			if (repository == null) {
-				repositoryManager.addRepositoryConfig(
+				localRepositoryManager.addRepositoryConfig(
 						new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
 						);
-				repository = repositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+				repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
 			}
 			if (repository == null) {
 				throw new RuntimeException("Could not initialize repository");
 			}
 		} catch (RepositoryConfigException | RepositoryException ex) {
 			throw new RuntimeException("Could not initialize repository", ex);
-		}		
-		
-		try {
-			repository.initialize();
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not initialize repository", ex);
 		}
+		
 		RepositoryConnection connection = null; 
 		try {
             connection = getConnection();
-			LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
+			LOG.info("Initialized Local RDF DataUnit named '{}'w with data graph <{}> containing {} triples.",
 					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
 		} catch (RepositoryException ex) {
 			throw new RuntimeException("Could not test initial connect to repository", ex);
@@ -106,23 +99,14 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 					// eat close exception, we cannot do anything clever here
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Return type of data unit interface implementation.
-	 *
-	 * @return DataUnit type.
-	 */
-	@Override
-	public DataUnitType getType() {
-		return DataUnitType.RDF_Virtuoso;
+		}		
 	}
 
-	/**
-	 *
-	 * @return String name of data unit.
-	 */
+	@Override
+	public DataUnitType getType() {
+		return DataUnitType.RDF_Local;
+	}
+	
 	@Override
 	public String getDataUnitName() {
 		return dataUnitName;
@@ -133,12 +117,12 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 		if (!ownerThread.equals(Thread.currentThread())) {
 			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
 		}
-		
+
 		RepositoryConnection connection = repository.getConnection();
 		requestedConnections.add(connection);
 		return connection;
 	}
-	
+
 	@Override
 	public void clear() {
 		/**
@@ -193,16 +177,8 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 				}
 			}
 		}
-		
-		try {
-			repository.shutDown();
-			LOG.info("Sesame RDF DataUnit with data graph <"
-					+ getDataGraph()
-					+ "> succesfully shut down");
-		} catch (RepositoryException ex) {
-			LOG.error("Error in repository shutdown", ex);
-		}
 	}
+
 	/**
 	 * Make RDF data merge over repository - data in repository merge with data
 	 * in second defined repository.
@@ -214,7 +190,7 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 	 */
 	@Override
 	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-		if (!(otherDataUnit instanceof SesameRDFDataUnit)) {
+		if (!(otherDataUnit instanceof LocalRDFDataUnit)) {
 			throw new IllegalArgumentException("Incompatible repository type");
 		}
 		
@@ -255,7 +231,6 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 		}
 	}
 
-
 	@Override
 	public void isReleaseReady() {
 		int count = 0;
@@ -277,5 +252,5 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 		if (count > 0) {
 			LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
 		}
-	}
+	}	
 }

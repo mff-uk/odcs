@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
-import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 
 /**
  * Component for deleting the graphs for virtuoso.

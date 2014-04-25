@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.repositories;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;

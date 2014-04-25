@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
@@ -23,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;

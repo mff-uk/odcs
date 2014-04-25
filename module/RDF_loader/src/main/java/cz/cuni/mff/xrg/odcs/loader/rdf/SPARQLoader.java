@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;
-
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-
 import static cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType.*;
-
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.GraphNotEmptyException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
@@ -15,8 +14,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
+
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
@@ -42,7 +40,6 @@ import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;

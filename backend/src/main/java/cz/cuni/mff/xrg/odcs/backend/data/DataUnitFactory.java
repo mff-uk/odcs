@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Create new DataUnits based on given id, name and type in given working
