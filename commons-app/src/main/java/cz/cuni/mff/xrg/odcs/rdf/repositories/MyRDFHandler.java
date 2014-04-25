@@ -1,7 +1,8 @@
-package cz.cuni.mff.xrg.odcs.rdf.enums;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import java.io.OutputStream;
 import java.io.Writer;
+
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
@@ -13,6 +14,8 @@ import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.trig.TriGWriter;
 import org.openrdf.rio.trix.TriXWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
+
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 /**
  * Class for better writing RDF data to file using RDFHandler.

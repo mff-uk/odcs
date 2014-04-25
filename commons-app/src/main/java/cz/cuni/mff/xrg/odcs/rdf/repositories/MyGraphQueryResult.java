@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import java.util.Map;
 import org.openrdf.model.Model;

@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,10 +1,27 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openrdf.model.Statement;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
+import org.openrdf.sail.memory.model.MemValueFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,9 +35,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 /**
  * Test suite for {@link Configurator} class.
  * 
@@ -33,6 +47,27 @@ public class ConfiguratorTest {
 
 	@Autowired
 	private BeanFactory beanFactory;
+
+//	@Test
+//	This is triple generating hidden here :)
+	public void bababa() throws FileNotFoundException, RDFHandlerException {
+		ValueFactory f = new MemValueFactory();
+		
+		
+		FileOutputStream out = new FileOutputStream("/home/michal/file.ttl");
+		RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+		writer.handleNamespace("", "http://example.org/ontology/");
+		  writer.startRDF();
+		for (int i = 1; i< 160000000;i++) {
+		  writer.handleStatement(f.createStatement(
+				  f.createURI("http://example.org/people/d" + String.valueOf(i++)),
+				  f.createURI("http://example.org/ontology/e" + String.valueOf(i++)),
+				  f.createLiteral("Alice"+ String.valueOf(i++))
+				  ));
+		}
+		  writer.endRDF();
+		
+	}
 	
 	/**
 	 * Try to pass non-configurable object. Nothing should happened.

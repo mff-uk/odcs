@@ -3,7 +3,9 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.event.ItemClickEvent;
+
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
@@ -20,9 +22,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
@@ -32,8 +33,8 @@ import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
-
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.openrdf.model.impl.URIImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

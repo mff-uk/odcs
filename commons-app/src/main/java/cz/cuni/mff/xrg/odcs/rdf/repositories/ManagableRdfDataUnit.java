@@ -1,12 +1,15 @@
-package cz.cuni.mff.xrg.odcs.rdf.interfaces;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -50,13 +53,6 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 *                           prefix http://).
 	 */
 	public void setDataGraph(String newStringDataGraph);
-
-	/**
-	 * Add all RDF triples in defined graph to reposiotory.
-	 *
-	 * @param graphInstance Concrete graph contains RDF triples.
-	 */
-	public void addTriplesFromGraph(Graph graphInstance);
 
 	/**
 	 * For Browsing all data in graph return its size {count of rows}.

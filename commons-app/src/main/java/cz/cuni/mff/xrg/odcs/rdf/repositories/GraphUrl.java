@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 /**
  * Help class for creating graph's url.

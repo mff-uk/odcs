@@ -1,11 +1,13 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
+
 import java.util.List;
 
 import static org.junit.Assert.*;
+
 import org.junit.*;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;

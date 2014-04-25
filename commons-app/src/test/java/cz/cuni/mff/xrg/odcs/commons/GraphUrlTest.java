@@ -1,10 +1,10 @@
-package cz.cuni.xrg.intlib.rdf;
+package cz.cuni.mff.xrg.odcs.commons;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
  * Test suite for {@link GraphUrl} class.

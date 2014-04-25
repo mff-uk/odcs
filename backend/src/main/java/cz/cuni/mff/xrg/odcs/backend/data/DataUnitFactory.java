@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 

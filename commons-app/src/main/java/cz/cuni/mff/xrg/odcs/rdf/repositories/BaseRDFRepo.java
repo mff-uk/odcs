@@ -5,8 +5,6 @@ import info.aduna.iteration.Iterations;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -43,29 +41,15 @@ import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.ParseErrorListener;
-import org.openrdf.rio.ParserConfig;
-import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.Rio;
-import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.enums.MyRDFHandler;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyGraphQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.impl.OrderTupleQueryResultImpl;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.metadata.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
 /**
@@ -334,23 +318,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		throw new InvalidQueryException(
 				"Creating File with RDF data fault.");
 	}
-
-	/**
-	 * Add all RDF triples in defined graph to reposiotory.
-	 *
-	 * @param graphInstance Concrete graph contains RDF triples.
-	 */
-    @Override
-    public void addTriplesFromGraph(Graph graphInstance) {
-        if (graphInstance != null) {
-            try {
-                RepositoryConnection connection = getConnection();
-                connection.add(graphInstance, dataGraph);
-            } catch (RepositoryException e) {
-                logger.debug(e.getMessage());
-            }
-        }
-    }
 
 	/**
 	 * Make construct query over graph URIs in dataSet and return interface

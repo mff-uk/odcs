@@ -52,7 +52,7 @@
     </bean>
 	
 	<!-- Injects dependencies into aspect for fixing corrupted database sequences. -->
-	<bean id="sequenceAspect"
+  	<bean id="sequenceAspect"
 		  class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect"
 		  factory-method="aspectOf" />
 

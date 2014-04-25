@@ -14,8 +14,8 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 import java.net.MalformedURLException;
@@ -185,7 +185,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		}
 		
 		if (config.isPenetrable()) {
-			((ManagableRdfDataUnit)inputShadow).merge(rdfDataUnit);
+			inputShadow.merge(rdfDataUnit);
 		}		
 	}
 

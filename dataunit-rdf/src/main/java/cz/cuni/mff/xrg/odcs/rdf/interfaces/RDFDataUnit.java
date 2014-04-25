@@ -208,4 +208,5 @@ public interface RDFDataUnit extends DataUnit {
 	 * @return URI representation of graph where RDF data are stored.
 	 */
 	public URI getDataGraph();
+
 }

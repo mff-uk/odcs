@@ -1,14 +1,15 @@
-package cz.cuni.mff.xrg.odcs.rdf.metadata;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;

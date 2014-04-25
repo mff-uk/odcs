@@ -29,8 +29,8 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 
 /**
  * Hold environment used to test DPU.

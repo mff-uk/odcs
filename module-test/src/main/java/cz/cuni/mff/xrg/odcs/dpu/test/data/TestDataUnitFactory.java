@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 
 import java.io.File;
 import java.io.IOException;

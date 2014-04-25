@@ -71,6 +71,18 @@
             <version>${project.version}</version>
         </dependency>
 
+		<dependency> <!-- commons project -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-rdf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency> <!-- commons project -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-rdf-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+						
         <dependency> <!-- file dataunit project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>dataunit-file-impl</artifactId>

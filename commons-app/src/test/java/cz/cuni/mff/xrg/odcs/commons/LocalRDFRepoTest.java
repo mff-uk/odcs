@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.rdf;
+package cz.cuni.mff.xrg.odcs.commons;
 
 import static org.junit.Assert.*;
 
@@ -28,8 +28,8 @@ import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 
 /**
  *

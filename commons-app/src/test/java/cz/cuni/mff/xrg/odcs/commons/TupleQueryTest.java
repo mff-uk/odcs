@@ -1,9 +1,9 @@
-package cz.cuni.xrg.intlib.rdf;
+package cz.cuni.mff.xrg.odcs.commons;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,7 @@ import org.openrdf.query.TupleQueryResult;
  */
 public class TupleQueryTest {
 
-	private static ManagableRdfDataUnit repository;
+	private static LocalRDFDataUnit repository;
 
 	/**
 	 * Basic repository inicializing before test execution.

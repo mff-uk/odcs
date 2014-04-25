@@ -26,9 +26,7 @@ import org.openrdf.rio.helpers.BasicParserSettings;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFDataUnit;
 
 /**
  * Find out, if data in RDF repository are valid or not.
@@ -53,9 +51,9 @@ public class RepositoryDataValidator implements DataValidator {
 	private static Logger logger = Logger.getLogger(
 			RepositoryDataValidator.class);
 
-	private ManagableRdfDataUnit input;
+	private RDFDataUnit input;
 
-	private ManagableRdfDataUnit output;
+	private RDFDataUnit goalRepo;
 
 	private String message;
 
@@ -72,25 +70,10 @@ public class RepositoryDataValidator implements DataValidator {
 	 * @param output target wher are valid data stored.
 	 */
 	public RepositoryDataValidator(RDFDataUnit input, RDFDataUnit output) {
-		this.input = (ManagableRdfDataUnit)input;
-		this.output = (ManagableRdfDataUnit)output;
+		this.input =input;
+		this.goalRepo =output;
 		this.message = "";
 		this.findedProblems = new ArrayList<>();
-	}
-
-	/**
-	 * If is defined output {@link RDFDataUnit} where to load RDF data than
-	 * return this {@link RDFDataUnit} instance, otherwise it´s created and
-	 * return new instance {@link RDFDataUnit } as implementation of
-	 * {@link LocalRDFDataUnit} which is used only for validation process and it´s
-	 * destroyed after data validation.
-	 *
-	 * See method {@link #areDataValid()} for more info.
-	 *
-	 * @return instance of {@link RDFDataUnit} need for creating report.
-	 */
-	private ManagableRdfDataUnit getGoalRepository() {
-		return output;
 	}
 
 	/**
@@ -118,7 +101,6 @@ public class RepositoryDataValidator implements DataValidator {
 		} else {
 
 			File tempFile = null;
-			ManagableRdfDataUnit goalRepo = null;
 			try {
 				tempFile = File.createTempFile("temp", "file");
                 tempFile = File.createTempFile("temp", "file");
@@ -130,8 +112,6 @@ public class RepositoryDataValidator implements DataValidator {
 
 				try (InputStreamReader fileStream = new InputStreamReader(
 						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
-
-					goalRepo = getGoalRepository();
 
 					final StatisticalHandler handler = new StatisticalHandler(
 							goalRepo.getConnection(), true);

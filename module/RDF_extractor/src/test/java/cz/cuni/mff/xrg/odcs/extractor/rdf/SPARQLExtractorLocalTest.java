@@ -4,8 +4,9 @@ import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.openrdf.rio.RDFFormat;
+
 import static org.junit.Assert.*;
 
 /**

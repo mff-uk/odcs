@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
@@ -25,9 +24,7 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**
  * Test funcionality loading to SPARQL endpoint.
@@ -42,8 +39,8 @@ public class SPARQLLoaderTest {
 
 	private LoaderEndpointParams virtuosoParams = new LoaderEndpointParams();
 
-	private static RDFDataUnit repository;
-
+	private static TestEnvironment testEnvironment = new TestEnvironment();
+	
 	private static final String URL = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 
 	private static final String USER = "dba";
@@ -54,22 +51,15 @@ public class SPARQLLoaderTest {
 
 	private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-auth";
 
-	@BeforeClass
-	public static void setRDFDataUnit() throws RDFException {
-
-		repository = new VirtuosoRDFDataUnit(URL,
-				USER, PASSWORD, "input", DEFAULT_GRAPH);
-
-	}
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit) repository).clear();
-		((ManagableRdfDataUnit) repository).release();
+		testEnvironment.release();
 	}
 
 	@Test
 	public void InsertingToEndpointTest1() throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         RepositoryConnection connection = repository.getConnection();
         connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
@@ -82,6 +72,8 @@ public class SPARQLLoaderTest {
 
 	@Test
 	public void InsertingToEndpointTest2() throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+		
         RepositoryConnection connection = repository.getConnection();
         connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
@@ -95,6 +87,8 @@ public class SPARQLLoaderTest {
 
 	@Test
 	public void InsertingToEndpointTest3() throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+		
         RepositoryConnection connection = repository.getConnection();
         connection.clear(repository.getDataGraph());
         ValueFactory factory = connection.getValueFactory();
@@ -109,6 +103,8 @@ public class SPARQLLoaderTest {
 	//@Test
 	public void loadDataToSPARQLEndpointTest() {
 		try {
+			RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+
 			URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
 			String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
 			String name = "SPARQL";
@@ -135,6 +131,7 @@ public class SPARQLLoaderTest {
 
 	private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
 			Value object) throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
         connection.add(subject, predicate, object);
@@ -187,9 +184,8 @@ public class SPARQLLoaderTest {
 			logger.debug("Malformed URL to SPARQL update endpoint " + e
 					.getMessage());
 
-		} finally {
-			return endpoint;
 		}
+		return endpoint;
 
 	}
 }

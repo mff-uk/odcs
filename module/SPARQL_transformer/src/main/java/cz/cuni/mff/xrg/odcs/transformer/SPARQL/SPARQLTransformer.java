@@ -11,10 +11,12 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openrdf.model.Graph;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
@@ -180,9 +182,18 @@ public class SPARQLTransformer
 //					} else {
 						Graph graph = intputDataUnit.executeConstructQuery(
 								constructQuery, dataSet);
-						((ManagableRdfDataUnit) outputDataUnit)
-								.addTriplesFromGraph(
-								graph);
+						if (graph != null) {
+							RepositoryConnection connection = null;
+				            try {
+				                connection = outputDataUnit.getConnection();
+				                connection.add(graph, outputDataUnit.getDataGraph());
+				            } catch (RepositoryException ex) {
+				                LOG.error("Could not add triples from graph", ex);
+				                
+				            } finally {
+				            	if (connection!=null) {try {connection.close();} catch (RepositoryException ex) {}}
+				            }
+				        }						
 //					}
 
 				} else {
@@ -254,7 +265,7 @@ public class SPARQLTransformer
 	//	TODO michal.klempa this should not be needed anymore
 	private void prepareRepository(List<RDFDataUnit> inputs) {
 		for (RDFDataUnit input : inputs) {
-			((ManagableRdfDataUnit) outputDataUnit).merge(input);
+			outputDataUnit.merge(input);
 		}
 	}
 

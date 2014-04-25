@@ -1,4 +1,4 @@
-package cz.cuni.xrg.intlib.rdf;
+package cz.cuni.mff.xrg.odcs.commons;
 
 import static org.junit.Assert.fail;
 
@@ -15,7 +15,7 @@ import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFDataUnit;
 
 /**

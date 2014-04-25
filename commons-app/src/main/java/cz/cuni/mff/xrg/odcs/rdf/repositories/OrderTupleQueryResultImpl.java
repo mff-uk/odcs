@@ -1,16 +1,22 @@
-package cz.cuni.mff.xrg.odcs.rdf.impl;
+package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.LinkedList;
 import java.util.List;
-import org.openrdf.query.*;
+
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Class based on lazy evaluation to get data there are used then in methods
@@ -62,7 +68,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
 	private String orderSelectQuery;
 
-	private ManagableRdfDataUnit repository;
+	private RDFDataUnit repository;
 
 	/**
 	 * Create new instance of {@link OrderTupleQueryResult} based on ordered
@@ -83,7 +89,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 	public OrderTupleQueryResultImpl(String orderSelectQuery,
 			RDFDataUnit repository) {
 		this.orderSelectQuery = orderSelectQuery;
-		this.repository = (ManagableRdfDataUnit) repository;
+		this.repository = repository;
 		this.bindings = new LinkedList<>();
 	}
 

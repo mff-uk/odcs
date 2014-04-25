@@ -27,5 +27,15 @@ public interface DataUnit {
 	 * @return String name of data unit.
 	 */
 	public String getDataUnitName();
-	
+
+	/**
+	 * Merge (add) data from given DataUnit into this DataUnit. If the unit has
+	 * wrong type then the {@link IllegalArgumentException} should be thrown.
+	 * The method must not modify the current parameter (unit). The given
+	 * DataUnit is not in read-only mode.
+	 *
+	 * @param unit {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to merge
+	 *             with
+	 */
+	void merge(DataUnit unit) throws IllegalArgumentException;	
 }

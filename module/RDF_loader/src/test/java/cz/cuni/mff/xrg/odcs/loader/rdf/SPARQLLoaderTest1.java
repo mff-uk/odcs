@@ -84,8 +84,8 @@ public class SPARQLLoaderTest1 {
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
 
-		repository = new VirtuosoRDFDataUnit(URL, 
-				USER, PASSWORD, "input", INPUT_GRAPH);
+//		repository = new VirtuosoRDFDataUnit(URL, 
+//				USER, PASSWORD, "input", INPUT_GRAPH);
 
 	}
 
