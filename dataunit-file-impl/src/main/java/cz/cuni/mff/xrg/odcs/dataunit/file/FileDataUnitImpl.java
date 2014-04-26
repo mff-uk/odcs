@@ -7,7 +7,6 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandlerImpl;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.*;
-import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
 	@Override
 	public void madeReadOnly() {
-		this.rootDirHandler.setReadOnly(true);
+		
 	}
 
 	@Override
@@ -135,7 +134,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
 	@Override
 	public boolean isReadOnly() {
-		return rootDirHandler.isReadOnly();
+		return false;
 	}
 
 	@Override

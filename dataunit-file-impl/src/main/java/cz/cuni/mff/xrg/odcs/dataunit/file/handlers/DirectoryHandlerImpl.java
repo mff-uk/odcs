@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Petyr
  */
-public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
+public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler {
 
 	/**
 	 * Read only iterator for iterating over the tree structure of directory.
@@ -154,11 +154,6 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	private String userData;
 
 	/**
-	 * True if in read only mode.
-	 */
-	private boolean isReadOnly;
-
-	/**
 	 * True if the represent file is in link mode. Ie. it is not located in
 	 * DataUnit directory.
 	 */
@@ -187,7 +182,6 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		this.directory = directory;
 		this.parent = null;
 		this.userData = null;
-		this.isReadOnly = false;
 		this.isLink = false;
 		this.handlers = new LinkedList<>();
 		// try to create a directory
@@ -210,7 +204,6 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		this.directory = directory;
 		this.parent = parent;
 		this.userData = null;
-		this.isReadOnly = false;
 		this.isLink = isLink;
 		this.handlers = new LinkedList<>();
 		// create a directory
@@ -275,19 +268,6 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public boolean isReadOnly() {
-		return this.isReadOnly;
-	}
-
-	@Override
-	public void setReadOnly(boolean isReadOnly) {
-		this.isReadOnly = isReadOnly;
-		for (ManageableHandler handler : handlers) {
-			handler.setReadOnly(isReadOnly);
-		}
 	}
 
 	@Override
@@ -420,7 +400,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 		ManageableHandler existing = getManageableByName(newName);
 		if (existing != null) {
 			if (existing instanceof DirectoryHandler) {
-				// ok we can work with this
+				// ok we can work with existing directory
 			} else {
 				// it's not a directory
 				return null;
@@ -434,7 +414,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 				remove(existing);
 			}
 		}
-		// if we are here the file does not exist, and we may add the new one
+		// if we are here the directory does not exist, and we may add the new one
 		if (options.isLink()) {
 			// will be added as link
 		} else {
@@ -447,10 +427,12 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 			}
 			directory = newDirectory;
 		}
-		// now in file is the link to file for which we want to create handler
-		DirectoryHandlerImpl newHandler
-				= new DirectoryHandlerImpl(directory, this, newName, options
-						.isLink());
+		// not 'directory' contains data (link, or copied)
+		// we create DirectoryHandlerImpl with 'directory', which force
+		// scan in constructor and add directory content
+		
+		DirectoryHandlerImpl newHandler	= new DirectoryHandlerImpl(directory, 
+				this, newName, options.isLink());
 		this.handlers.add(newHandler);
 		return newHandler;
 	}
@@ -464,34 +446,35 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	public boolean add(Handler e, OptionsAdd options) {
 		Handler newHandler;
 		try {
-			if (e instanceof ManageableFileHandler) {
-				// this is final no child will be added
-				final ManageableFileHandler fileHandler = (ManageableFileHandler) e;
+			if (e instanceof FileHandlerImpl) {
+				// fine -> no child will be added
+				final FileHandlerImpl fileHandler = (FileHandlerImpl) e;
 				newHandler = addExistingFile(fileHandler.asFile(), options);
-			} else if (e instanceof ManageableDirectoryHandler) {
+			} else if (e instanceof DirectoryHandlerImpl) {
 				// we have to add the whole sub directory here ..
-				final ManageableDirectoryHandler dirHandler
-						= (ManageableDirectoryHandler) e;
-				// try if sub-dir exists
+				final DirectoryHandlerImpl dirHandler = (DirectoryHandlerImpl) e;
+				// get our representation for the directory
 				newHandler = getByName(e.getName());
 				if (newHandler == null) {
-					// no such directory here .. we just add as existing
-					newHandler = addExistingDirectory(dirHandler.asFile(), options);
-				} else {
-					// there already is handler with such name, 
-					// so we just add the content
-					if (newHandler instanceof ManageableDirectoryHandler) {
-						// existing is directory, we do merge
-						ManageableDirectoryHandler newDir = (ManageableDirectoryHandler)newHandler;
-						// add content of the directory (merge)
-						newDir.addAll(dirHandler);
-					} else {
-						// existing is file .. so we add as a new directory
-						LOG.warn("Addition of directory ({}) ignored as there is file of a same name.", 
-								newHandler.getRootedPath());
-						return false;
-					}
+					// no such directory here .. so create one
+					newHandler = addNewDirectory(dirHandler.getName());
 				}
+				
+				// we have existing handler, check for type .. it could 
+				// be a file as well as directory
+				if (newHandler instanceof DirectoryHandlerImpl) {
+					// and it's directory .. so get the instance, 
+					// and add all the content from source directory
+					DirectoryHandlerImpl newDir = (DirectoryHandlerImpl)newHandler;
+					// add content of the directory (merge)
+					newDir.addAll(dirHandler, options);
+				} else {
+					// existing is file .. so we add as a new directory
+					LOG.warn("Addition of directory ({}) ignored as there is file of a same name.", 
+							newHandler.getRootedPath());
+					return false;
+				}
+				
 			} else {
 				// unknown ..
 				return false;
@@ -680,10 +663,7 @@ public class DirectoryHandlerImpl implements ManageableDirectoryHandler {
 	 * throw {@link DataUnitAccessException}.
 	 */
 	private void accessCheck() {
-		if (isReadOnly) {
-			throw new DataUnitAccessException(
-					"Can't modify read only FileDataUnit.");
-		} else if (isLink) {
+		if (isLink) {
 			throw new DataUnitAccessException("Can't modify linked directory.");
 		}
 	}
