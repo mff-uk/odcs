@@ -1056,7 +1056,9 @@ public class SPARQLoader {
 	public void clearEndpointGraph(URL endpointURL, String endpointGraph)
 			throws RDFException {
 
-		String deleteQuery = String.format("CLEAR GRAPH <%s>", endpointGraph);
+                //TODO Virtuoso specific part DEFINE sql:log-enable 3 - because of non-effective clearing of graphs which caused that removing graph was often unsuccessful
+                logger.warn("Virtuoso specific extension of the query is used: DEFINE sql:log-enable 3");
+		String deleteQuery = String.format("DEFINE sql:log-enable 3 CLEAR GRAPH <%s>", endpointGraph); 
 
 		int retryCount = 0;
 
