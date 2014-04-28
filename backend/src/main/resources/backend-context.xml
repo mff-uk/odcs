@@ -73,8 +73,32 @@
 
     <!-- data unit factory class -->
     <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
-	<bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
-		<property name="repositoryPath" value="${general.workingdir}"/>
+
+	<bean id ="rdfDataUnitFactory"  class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
+	<property name="key" value="${database.rdf.platform}"/>
+	  <property name="implementations">
+	    <map>
+	      <entry key="localRDF">
+			<bean id="localRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+				<property name="repositoryPath" value="${general.workingdir}"/>
+			</bean>
+	      </entry>
+	      <entry key="virtuoso">
+			<bean id="virtuosoRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnitFactory">
+				<property name="url" value="${database.rdf.url}"/>
+				<property name="user" value="${database.rdf.user}"/>
+				<property name="password" value="${database.rdf.password}"/>
+			</bean>
+	      </entry>
+	      <entry key="remoteRDF">
+			<bean id="remoteRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf.RemoteRDFDataUnitFactory">
+				<property name="url" value="${database.rdf.url}"/>
+				<property name="user" value="${database.rdf.user}"/>
+				<property name="password" value="${database.rdf.password}"/>
+			</bean>
+	      </entry>
+	    </map>
+	  </property>
 	</bean>
 
     <!-- store events into database -->

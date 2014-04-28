@@ -92,35 +92,6 @@ public class RDFDataUnitHelper {
 	}
 
 	/**
-	 *
-	 * @param namedGraph URI graph name for set default graph (have to start
-	 *                   with prefix http://).
-	 * @return New instance of virtuoso repository with set from configuration
-	 *         file placed on home directory path.
-	 */
-	public static VirtuosoRDFDataUnit getVirtuosoRepository(String namedGraph) {
-		AppConfig appConfig = ((AppEntry) UI.getCurrent()).getBean(
-				AppConfig.class).getSubConfiguration(
-				ConfigProperty.RDF);
-
-		// load configuration from appConfig
-		final String hostName =
-				appConfig.getString(ConfigProperty.DATABASE_HOSTNAME);
-		final String port =
-				appConfig.getString(ConfigProperty.DATABASE_PORT);
-		final String user =
-				appConfig.getString(ConfigProperty.DATABASE_USER);
-		final String password =
-				appConfig.getString(ConfigProperty.DATABASE_PASSWORD);
-		final String url = "jdbc:virtuoso://" + hostName + ":"
-				+ port + "/charset=UTF-8/log_enable=2";
-		
-		VirtuosoRDFDataUnit virtuosoRepository = new VirtuosoRDFDataUnit(url, user, password, "", namedGraph);
-
-		return virtuosoRepository;
-	}
-
-	/**
 	 * Filter RDF query.
 	 * 
 	 * @param query Query to filter.

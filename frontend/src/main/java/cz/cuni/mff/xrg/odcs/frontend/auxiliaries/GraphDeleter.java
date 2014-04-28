@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import com.vaadin.ui.UI;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 
 /**
  * Component for deleting the graphs for virtuoso.
@@ -26,10 +30,16 @@ public class GraphDeleter implements Runnable {
 
 	@Override
 	public void run() {
+		RDFDataUnitFactory rdfDataUnitFactory =((AppEntry) UI.getCurrent()).getBean(
+				RDFDataUnitFactory.class);
+		
 		try {
-			ManagableRdfDataUnit repo
-					= RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
+			ManagableRdfDataUnit repo =
+//					RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
+			rdfDataUnitFactory.create("", "");
 			message = repo.deleteApplicationGraphs();
+		} catch (Throwable ex) {
+			message = ex.toString();
 		} finally {
 			running = false;
 		}
