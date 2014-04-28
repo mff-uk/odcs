@@ -232,8 +232,7 @@ public class DirectoryHandlerTest {
 			assertTrue(sourceIter.hasNext());
 			Handler hSource = sourceIter.next();
 			assertEquals(h, hSource);
-		}
-		
+		}		
 	}
 	
 }

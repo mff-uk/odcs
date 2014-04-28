@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 @MappedSuperclass
 public abstract class DPURecord implements DataObject {
 
+	private final static String NULL_CONFIG = "<null configuration/>";
+	
 	/**
 	 * Primary key of graph stored in db
 	 */
@@ -51,7 +53,7 @@ public abstract class DPURecord implements DataObject {
 	 * DPU's configuration in serialized version.
 	 */
 	@Column(name = "configuration")
-	private byte[] serializedConfiguration;
+	private byte[] serializedConfiguration = NULL_CONFIG.getBytes();
 
 	/**
 	 * If true configuration is in valid state.
@@ -196,8 +198,14 @@ public abstract class DPURecord implements DataObject {
 	public String getRawConf() {
 		if (serializedConfiguration == null) {
 			return null;
+		}
+		// workaround for null configurations
+		// the null configuratino is not supported by virtuoso jdbc driver
+		final String configuration = new String(serializedConfiguration);		
+		if (NULL_CONFIG.equals(configuration)) {
+			return null;
 		} else {
-			return new String(serializedConfiguration);
+			return configuration;
 		}
 	}
 
@@ -207,7 +215,8 @@ public abstract class DPURecord implements DataObject {
 	 * @param conf
 	 */
 	public void setRawConf(String conf) {
-		serializedConfiguration = conf.getBytes();
+		// workaround for null configurations
+		serializedConfiguration = StringUtils.defaultString(conf, NULL_CONFIG).getBytes();
 	}
 
 	/**

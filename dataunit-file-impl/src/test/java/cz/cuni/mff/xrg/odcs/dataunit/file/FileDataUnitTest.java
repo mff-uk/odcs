@@ -55,16 +55,6 @@ public class FileDataUnitTest {
 		assertNotNull(target.getRootDir().getByName("myDir"));
 		assertEquals(userData, 
 				target.getRootDir().addNewDirectory("myDir").getUserData());
-		
-		// also we can not modify the original data
-		DirectoryHandler dir = target.getRootDir().addNewDirectory("myDir");
-		try {
-			dir.addNewFile("fail");
-			// this should thrown!
-			fail("The addNewFile on merged data should failed!");
-		} catch (DataUnitAccessException e) {
-			// ok
-		}		
 	}
 	
 	@Test
