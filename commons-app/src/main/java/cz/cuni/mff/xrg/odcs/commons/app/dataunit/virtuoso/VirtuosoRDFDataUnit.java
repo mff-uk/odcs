@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -97,7 +98,7 @@ public final class VirtuosoRDFDataUnit extends BaseRDFRepo {
 	 */
 	@Override
 	public DataUnitType getType() {
-		return DataUnitType.RDF_Virtuoso;
+		return DataUnitType.RDF;
 	}
 
 	/**

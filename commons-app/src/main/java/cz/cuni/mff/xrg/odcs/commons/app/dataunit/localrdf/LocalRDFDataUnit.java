@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -104,7 +105,7 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 
 	@Override
 	public DataUnitType getType() {
-		return DataUnitType.RDF_Local;
+		return DataUnitType.RDF;
 	}
 	
 	@Override

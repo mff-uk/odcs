@@ -62,6 +62,10 @@
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
     <!-- TODO: we can use special package and factory class -->
 
+	<bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+		<property name="repositoryPath" value="${general.workingdir}"/>
+	</bean>
+
 	<bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
 		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
 		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>

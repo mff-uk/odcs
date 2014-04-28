@@ -23,7 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.VirtuosoRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -133,7 +133,7 @@ class RdfDatabase {
 			
 		}
 		
-		VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF_Virtuoso, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+		VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
 		try {
 			// ok we have the repository
 			virtuosoRepository.executeSelectQuery("select * where {?s ?p ?o} limit 1");

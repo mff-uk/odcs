@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 

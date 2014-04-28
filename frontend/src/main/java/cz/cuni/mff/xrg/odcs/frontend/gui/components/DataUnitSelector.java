@@ -95,13 +95,9 @@ public class DataUnitSelector extends CustomComponent {
 			public void valueChange(Property.ValueChangeEvent event) {
 				DataUnitInfo info = (DataUnitInfo) event.getProperty().getValue();
 				if (info != null) {
-					if (info.getType() == DataUnitType.RDF_Local) {
-						dataUnitGraph.setValue("");
-					} else {
-						String id = executionInfo.dpu(getSelectedDPU()).createId(info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
-						String graphUrl = GraphUrl.translateDataUnitId(id);
-						dataUnitGraph.setValue(graphUrl);
-					}
+					String id = executionInfo.dpu(getSelectedDPU()).createId(info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
+					String graphUrl = GraphUrl.translateDataUnitId(id);
+					dataUnitGraph.setValue(graphUrl);
 				}
 				fireEvent(new SelectionChangedEvent(DataUnitSelector.this, info, debugDpu));
 			}

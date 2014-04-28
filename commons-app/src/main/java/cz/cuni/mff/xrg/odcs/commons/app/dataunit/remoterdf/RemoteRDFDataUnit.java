@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.manager.RemoteRepositoryManager;
 import org.openrdf.repository.manager.RepositoryManager;
 import org.openrdf.repository.manager.RepositoryProvider;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
@@ -19,6 +20,7 @@ import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -27,9 +29,9 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * Implementation of Sesame http repository - RDF data and intermediate results are
  * saved in Sesame server
  */
-public final class SesameRDFDataUnit extends BaseRDFRepo {
+public final class RemoteRDFDataUnit extends BaseRDFRepo {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SesameRDFDataUnit.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RemoteRDFDataUnit.class);
 
 	public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
 	/**
@@ -60,7 +62,7 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 	 *                      empty String.
 	 * @throws RepositoryException 
 	 */
-	public SesameRDFDataUnit(String url, String user, String password,
+	public RemoteRDFDataUnit(String url, String user, String password,
 			String dataUnitName, String dataGraph) {
 		this.dataUnitName = dataUnitName;
 		this.requestedConnections = new ArrayList<>();
@@ -70,6 +72,11 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 
 		try {
 			RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
+			if (repositoryManager instanceof RemoteRepositoryManager) {
+				if (user != null) {
+					((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
+				}
+			}
 			repository = repositoryManager
 					.getRepository(GLOBAL_REPOSITORY_ID);
 			if (repository == null) {
@@ -116,7 +123,7 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 	 */
 	@Override
 	public DataUnitType getType() {
-		return DataUnitType.RDF_Virtuoso;
+		return DataUnitType.RDF;
 	}
 
 	/**
@@ -214,7 +221,7 @@ public final class SesameRDFDataUnit extends BaseRDFRepo {
 	 */
 	@Override
 	public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-		if (!(otherDataUnit instanceof SesameRDFDataUnit)) {
+		if (!(otherDataUnit instanceof RemoteRDFDataUnit)) {
 			throw new IllegalArgumentException("Incompatible repository type");
 		}
 		

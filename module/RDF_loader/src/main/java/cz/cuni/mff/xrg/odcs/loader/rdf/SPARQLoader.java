@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.VirtuosoRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import static cz.cuni.mff.xrg.odcs.rdf.enums.InsertType.*;

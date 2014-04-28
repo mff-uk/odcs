@@ -1,31 +1,27 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.VirtuosoRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
-import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Local;
-import static cz.cuni.mff.xrg.odcs.commons.data.DataUnitType.RDF_Virtuoso;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
-
-import java.io.File;
-import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
  * Helper for RDF DataUnits.
@@ -71,33 +67,23 @@ public class RDFDataUnitHelper {
 		String dataUnitId = dpuInfo.createId(info.getIndex());
 
 		switch (info.getType()) {
-			case RDF_Local:
+			case RDF:
 				try {
-					// storage directory
-					AppConfig appConfig = ((AppEntry) UI.getCurrent()).getBean(
-							AppConfig.class);
-					File dpuStorage =
-							new File(appConfig.getString(
-							ConfigProperty.GENERAL_WORKINGDIR),
-							executionInfo.dpu(dpuInstance).getStoragePath(info
-							.getIndex()));
-
+					RDFDataUnitFactory rdfDataUnitFactory =((AppEntry) UI.getCurrent()).getBean(
+							RDFDataUnitFactory.class);
+					
 					String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
-					LocalRDFDataUnit repository = new LocalRDFDataUnit(dpuStorage.getAbsolutePath(),
+					ManagableRdfDataUnit repository =
+							rdfDataUnitFactory.create(info.getName(), namedGraph);
 							
-							info.getName(), namedGraph);
-
 					return repository;
 
 				} catch (RuntimeException e) {
+					LOG.error("Error", e);
 					return null;
 				}
 
-			case RDF_Virtuoso:
-				String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
-
-				return getVirtuosoRepository(namedGraph);
 
 			default:
 				return null;

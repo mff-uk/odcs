@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,13 +8,15 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
@@ -24,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
  * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
@@ -74,7 +76,7 @@ final class DataUnitManager {
 	 * True if used for inputs.
 	 */
 	private final boolean isInput;
-
+	
 	/**
 	 * Create manager for input {@link DataUnit}s.
 	 * 
@@ -127,43 +129,6 @@ final class DataUnitManager {
 		this.workingDir = workingDir;
 		this.appConfig = appConfig;
 		this.isInput = isInput;
-	}
-
-	/**
-	 * Check required type based on application configuration and return
-	 * {@link DataUnitType} that should be created. Can thrown
-	 * {@link DataUnitCreateException} in case of unknown {@link DataUnitType}.
-	 * 
-	 * @param type Required type.
-	 * @return Type to create.
-	 * @throws DataUnitCreateException
-	 */
-	private DataUnitType checkType(DataUnitType type)
-			throws DataUnitCreateException {
-		if (type == DataUnitType.RDF) {
-			// select other DataUnit based on configuration
-			String defRdfRepo = appConfig
-					.getString(ConfigProperty.BACKEND_DEFAULTRDF);
-			if (defRdfRepo == null) {
-				// use local
-				type = DataUnitType.RDF_Local;
-			} else {
-				// choose based on value in appConfig
-				if (defRdfRepo.compareToIgnoreCase("virtuoso") == 0) {
-					// use virtuoso
-					type = DataUnitType.RDF_Virtuoso;
-				} else if (defRdfRepo.compareToIgnoreCase("localRDF") == 0) {
-					// use local
-					type = DataUnitType.RDF_Local;
-				} else {
-					throw new DataUnitCreateException(
-							"The data unit type is unknown."
-									+ "Check the value of the parameter "
-									+ "backend.defaultRDF in config.properties");
-				}
-			}
-		}
-		return type;
 	}
 
 	/**
@@ -281,34 +246,29 @@ final class DataUnitManager {
 	 */	
 	public ManagableDataUnit addDataUnit(DataUnitType type, String name)
 			throws DataUnitCreateException {
-		// check for type changes only for outputs, the type that should be 
-		// for real use is stored in realType
-		DataUnitType realType = type;
-		if (!isInput) {
-			realType = checkType(type);
-		}
 		// check if we do not already have such DataUnit
 		for (ManagableDataUnit du : dataUnits) {
-			if ( (du.getType() == realType || du.getType() == type) && 
+			if ( (du.getType() == type || du.getType() == type) && 
 					du.getDataUnitName().compareTo(name) == 0) {
 				// the DPU already exist .. 
-				LOG.trace("dataUnit with name: {} type: {} already exist", name, realType.toString());
+				LOG.trace("dataUnit with name: {} type: {} already exist", name, type.toString());
 				return du;
 			}
 		}
-		LOG.trace("create new DPU name: {} type: {} already exist", name, realType.toString());
+		LOG.trace("create new DPU name: {} type: {} already exist", name, type.toString());
 		// gather information for new DataUnit
 		Integer index;
 		if (isInput) {
-			index = context.createInput(dpuInstance, name, realType);
+			index = context.createInput(dpuInstance, name, type);
 		} else {
-			index = context.createOutput(dpuInstance, name, realType);
+			index = context.createOutput(dpuInstance, name, type);
 		}
 		String id = context.generateDataUnitId(dpuInstance, index);
 		File directory = new File(workingDir, context.getDataUnitTmpPath(
 				dpuInstance, index));
 		// create instance
-		ManagableDataUnit dataUnit = dataUnitFactory.create(realType, id, name, directory);
+		ManagableDataUnit dataUnit; 
+		dataUnit = dataUnitFactory.create(type, id, name, directory);
 		// add to storage
 		dataUnits.add(dataUnit);
 		indexes.put(dataUnit, index);

@@ -12,14 +12,6 @@ public enum DataUnitType {
 	 */
 	RDF,
 	/**
-	 * RDF data unit type with local storage.
-	 */
-	RDF_Local,
-	/**
-	 * RDF data unit type with Virtuoso as RDF storage.
-	 */
-	RDF_Virtuoso,
-	/**
 	 * Represent file data unit.
 	 */
 	FILE

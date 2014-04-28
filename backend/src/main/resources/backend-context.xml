@@ -73,6 +73,9 @@
 
     <!-- data unit factory class -->
     <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
+	<bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+		<property name="repositoryPath" value="${general.workingdir}"/>
+	</bean>
 
     <!-- store events into database -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase" />
