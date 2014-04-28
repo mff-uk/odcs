@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
