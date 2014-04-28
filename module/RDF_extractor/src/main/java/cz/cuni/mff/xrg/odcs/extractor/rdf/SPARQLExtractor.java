@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 
 import org.apache.commons.codec.binary.Base64;

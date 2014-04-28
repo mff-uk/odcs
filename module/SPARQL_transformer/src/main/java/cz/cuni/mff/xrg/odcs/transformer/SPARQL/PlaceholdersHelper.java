@@ -1,25 +1,16 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * This class allows for SPARQL CONSTRUCT/UPDATE queries possible to replace
