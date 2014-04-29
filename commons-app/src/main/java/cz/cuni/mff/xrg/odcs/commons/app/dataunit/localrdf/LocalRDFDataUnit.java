@@ -87,7 +87,7 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 		RepositoryConnection connection = null; 
 		try {
             connection = getConnection();
-			LOG.info("Initialized Local RDF DataUnit named '{}'w with data graph <{}> containing {} triples.",
+			LOG.info("Initialized Local RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
 					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
 		} catch (RepositoryException ex) {
 			throw new RuntimeException("Could not test initial connect to repository", ex);
