@@ -189,6 +189,7 @@ class ExecutionSanitizer {
 			ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
 			// delete data .. 
 			dataUnit.clear();
+			dataUnit.release();
 		}
 	}	
 	
