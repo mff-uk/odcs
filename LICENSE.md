@@ -14,7 +14,7 @@ As an additional permission to the GNU GPL version 3, you may distribute non-sou
 Commercial Software License
 ====================
 
-The commercial version of http://www.gnu.org/licenses/gpl-3.0.html allows to use, modify, copy and distribute without any restrictions as stated in the commercial license agreement.
+The commercial version allows to use, modify, copy and distribute without any restrictions as stated in the commercial license agreement.
 
 GNU GENERAL PUBLIC LICENSE
 ====================
