@@ -63,7 +63,6 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param updateQuery String value of update SPARQL query.
 	 * @throws RDFException when transformation fail.
 	 */
-    //TODO move to rdf transformer
     @Deprecated
 	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
 
@@ -74,28 +73,9 @@ public interface RDFDataUnit extends DataUnit {
 	 * @param dataset     Set of graph URIs used for update query.
 	 * @throws RDFException when transformation fault.
 	 */
-    //TODO move to rdf transformer
     @Deprecated
 	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
 			throws RDFException;
-
-	/**
-	 * Make select query over repository data and return file as SPARQL XML
-	 * result.
-	 *
-	 * @param selectQuery String representation of SPARQL query
-	 * @param filePath    String path to file for saving result of query in
-	 *                    SPARQL XML syntax.
-	 * @param selectType  One of possible format for result of SPARQL select
-	 *                    query.
-	 * @return File contains result of given SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-    //TODO move to rdf transformer
-    @Deprecated
-	public File executeSelectQuery(String selectQuery,
-			String filePath, SelectFormatType selectType)
-			throws InvalidQueryException;
 
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult
@@ -131,66 +111,10 @@ public interface RDFDataUnit extends DataUnit {
 	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException;
 
-	/**
-	 * Make construct query over repository data and return file where RDF data
-	 * as result are saved.
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @param formatType     Choosed type of format RDF data in result.
-	 * @param filePath       String path to file where result with RDF data is
-	 *                       stored.
-	 * @return File with RDF data in defined format as result of construct
-	 *         query.
-	 * @throws InvalidQueryException when query is not valid or creating file
-	 *                               fail.
-	 */
-    //TODO move to rdf transformer ?
-    @Deprecated
-	public File executeConstructQuery(String constructQuery,
-			RDFFormatType formatType, String filePath) throws InvalidQueryException;
 
-	/**
-	 * Make construct query over repository data and return interface Graph as
-	 * result contains iterator for statements (triples).
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface Graph as result of construct SPARQL query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-    //TODO move to rdf transformer ?
-    @Deprecated
-	public Graph executeConstructQuery(
-			String constructQuery) throws InvalidQueryException;
-
-	/**
-	 * Make construct query over graph URIs in dataSet and return interface
-	 * Graph as result contains iterator for statements (triples).
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @param dataSet        Set of graph URIs used for construct query.
-	 * @return Interface Graph as result of construct SPARQL query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-    //TODO move to rdf transformer ?
     @Deprecated
 	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
 			throws InvalidQueryException;
-
-	/**
-	 * Returns graph contains all RDF triples as result of describe query for
-	 * given Resource URI. If graph is empty, there is are no triples for
-	 * describing.
-	 *
-	 * @param uriResource Subject or object URI as resource use to describe it.
-	 * @return Graph contains all RDF triples as result of describe query for
-	 *         given Resource URI. If graph is empty, there is are no triples
-	 *         for describing.
-	 * @throws InvalidQueryException if resource is not URI type (e.g.
-	 *                               BlankNode, some type of Literal (in object
-	 *                               case))
-	 */
-    @Deprecated
-	public Graph describeURI(Resource uriResource) throws InvalidQueryException;
 
 	/**
 	 * Returns shared connection to repository.

@@ -12,6 +12,10 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,24 +137,34 @@ class RdfDatabase {
 			
 		}
 		
-		VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
-		try {
-			// ok we have the repository
-			virtuosoRepository.executeSelectQuery("select * where {?s ?p ?o} limit 1");
-		} catch (InvalidQueryException ex) {
-			// this should not happen
-			LOG.error("Failed to execute check query.", ex);
-		}
-		
-		// close the connection
-		virtuosoRepository.release();
-		
-		LOG.trace("executeQuery:ends");
+        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        try {
+            // ok we have the repository
+            RepositoryConnection connection = virtuosoRepository.getConnection();
+            executeQuery(virtuosoRepository, connection);
+            connection.close();
+            // close the connection
+            virtuosoRepository.release();
 
-		queryEnd = new Date();
-	}
+            LOG.trace("executeQuery:ends");
+            queryEnd = new Date();
+        } catch (QueryEvaluationException | RepositoryException | MalformedQueryException e) {
+            // this should not happen
+            LOG.error("Failed to execute check query.", e);
+        }
+    }
 
-	@Scheduled(fixedDelay = 1 * 60 * 1000)
+    private void executeQuery(VirtuosoRDFDataUnit virtuosoRepository, RepositoryConnection connection) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        String query = "select * where {?s ?p ?o} limit 1";
+        TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
+        DatasetImpl dataSet = new DatasetImpl();
+        dataSet.addDefaultGraph(virtuosoRepository.getDataGraph());
+        dataSet.addNamedGraph(virtuosoRepository.getDataGraph());
+        tupleQuery.setDataset(dataSet);
+        tupleQuery.evaluate();
+    }
+
+    @Scheduled(fixedDelay = 1 * 60 * 1000)
 	public void check() {
 		if (!doCheck) {
 			return;

@@ -21,6 +21,9 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -134,30 +137,36 @@ public class RDFQuery implements Query {
 		}
 		String query = restriction.getRestrictedQuery();
 		SPARQLQueryType type;
-		Object data;
+		Object data = null;
 		try {
 			type = getQueryType(query);
-
-			switch (type) {
-				case SELECT:
-					data = repository.executeSelectQueryAsTuples(query);
+            Graph graph = null;
+            RepositoryConnection connection = repository.getConnection();
+            switch (type) {
+                case SELECT:
+                    RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
 					break;
-				case CONSTRUCT:
-					data = getRDFTriplesData(repository.executeConstructQuery(
-							query));
-					break;
-				case DESCRIBE:
-					String resource = query.substring(query.indexOf('<') + 1,
+                case CONSTRUCT:
+                    DatasetImpl dataSet = new DatasetImpl();
+                    dataSet.addDefaultGraph(repository.getDataGraph());
+                    dataSet.addNamedGraph(repository.getDataGraph());
+                    graph = RepositoryFrontendHelper.executeConstructQuery(connection, query, dataSet);
+                    data = getRDFTriplesData(graph);
+                    break;
+                case DESCRIBE:
+                    String resource = query.substring(query.indexOf('<') + 1,
 							query.indexOf('>'));
-					URIImpl uri = new URIImpl(resource);
-					data = getRDFTriplesData(repository.describeURI(uri));
-					break;
-				default:
-					return null;
-			}
+                    URIImpl uri = new URIImpl(resource);
+                    graph = RepositoryFrontendHelper.describeURI(connection, repository.getDataGraph(), uri);
+                    data = getRDFTriplesData(graph);
+                    break;
+                default:
+                    return null;
+            }
+            connection.close();
 
-			List<Item> items = new ArrayList<>();
-			switch (type) {
+            List<Item> items = new ArrayList<>();
+            switch (type) {
 				case SELECT:
 					TupleQueryResult result = (TupleQueryResult) data;
 					int id = 0;
@@ -194,7 +203,12 @@ public class RDFQuery implements Query {
 					"Error in query evaluation: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
-		} finally {
+		} catch (RepositoryException e) {
+            Notification.show("Connection problem",
+                    "Could connect to frontend repository: "
+                            + e.getCause().getMessage(),
+                    Notification.Type.ERROR_MESSAGE);
+        } finally {
 			// close reporistory
 			repository.release();
 		}

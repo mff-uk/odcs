@@ -258,73 +258,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	}
 
 	/**
-	 * Make construct query over repository data and return file where RDF data
-	 * as result are saved.
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @param formatType     Choosed type of format RDF data in result.
-	 * @param filePath       String path to file where result with RDF data is
-	 *                       stored.
-	 * @return File with RDF data in defined format as result of construct
-	 *         query.
-	 * @throws InvalidQueryException when query is not valid or creating file
-	 *                               fail.
-	 */
-	@Override
-	public File executeConstructQuery(String constructQuery,
-			RDFFormatType formatType, String filePath) throws InvalidQueryException {
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			GraphQuery graphQuery = connection.prepareGraphQuery(
-					QueryLanguage.SPARQL,
-					constructQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(this.getDataGraph());
-            dataSet.addNamedGraph(this.getDataGraph());
-			graphQuery.setDataset(dataSet);
-
-			logger.debug("Query {} is valid.", constructQuery);
-
-			try {
-
-				File file = new File(filePath);
-				MyRDFHandler goal = getHandlerForConstructQuery(file, formatType);
-
-				graphQuery.evaluate(goal);
-
-				logger.debug(
-						"Query {} has not null result.", constructQuery);
-
-				return file;
-
-			} catch (QueryEvaluationException ex) {
-				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex
-						.getMessage(),
-						ex);
-			} catch (IOException ex) {
-				logger.error("Problems with file stream : {}", ex.getMessage(),
-						ex);
-			}
-
-		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException(
-					"This query is probably not valid. "
-					+ ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed. {}", ex
-					.getMessage(), ex);
-		} catch (RDFHandlerException ex) {
-			logger.error("RDF handler failed. " + ex.getMessage(), ex);
-		}
-
-		throw new InvalidQueryException(
-				"Creating File with RDF data fault.");
-	}
-
-	/**
 	 * Make construct query over graph URIs in dataSet and return interface
 	 * Graph as result contains iterator for statements (triples).
 	 *
@@ -377,98 +310,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 				"Getting GraphQueryResult using SPARQL construct query failed.");
 	}
 
-	/**
-	 * Make construct query over repository data and return interface Graph as
-	 * result contains iterator for statements (triples).
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @return Interface Graph as result of construct SPARQL query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	@Override
-	public Graph executeConstructQuery(String constructQuery) throws InvalidQueryException {
-        DatasetImpl dataSet = new DatasetImpl();
-        dataSet.addDefaultGraph(this.getDataGraph());
-        dataSet.addNamedGraph(this.getDataGraph());
-		return executeConstructQuery(constructQuery, dataSet);
-	}
-
-	/**
-	 * Make select query over repository data and return file as SPARQL XML
-	 * result.
-	 *
-	 * @param selectQuery String representation of SPARQL query
-	 * @param filePath    String path to file for saving result of query in
-	 *                    SPARQL XML syntax.
-	 * @param selectType  One of possible format for result of SPARQL select
-	 *                    query.
-	 * @return File contains result of given SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	@Override
-	public File executeSelectQuery(String selectQuery,
-			String filePath, SelectFormatType selectType)
-			throws InvalidQueryException {
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			TupleQuery tupleQuery = connection.prepareTupleQuery(
-					QueryLanguage.SPARQL, selectQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(this.getDataGraph());
-            dataSet.addNamedGraph(this.getDataGraph());
-			tupleQuery.setDataset(dataSet);
-
-			logger.debug("Query {} is valid.", selectQuery);
-
-			File file = new File(filePath);
-			createNewFile(file);
-
-			FileOutputStream os = new FileOutputStream(file);
-
-			TupleQueryResultWriter tupleHandler;
-
-			switch (selectType) {
-				case XML:
-					tupleHandler = new SPARQLResultsXMLWriter(os);
-					break;
-				case CSV:
-					tupleHandler = new SPARQLResultsCSVWriter(os);
-					break;
-				case JSON:
-					tupleHandler = new SPARQLResultsJSONWriter(os);
-					break;
-				case TSV:
-					tupleHandler = new SPARQLResultsTSVWriter(os);
-					break;
-				default:
-					tupleHandler = new SPARQLResultsXMLWriter(os);
-
-			}
-
-			tupleQuery.evaluate(tupleHandler);
-			return file;
-
-		} catch (QueryEvaluationException | MalformedQueryException ex) {
-			throw new InvalidQueryException(
-					"This query is probably not valid. " + ex.getMessage(),
-					ex);
-		} catch (TupleQueryResultHandlerException ex) {
-			logger.error("Writing result to file fail. {}", ex.getMessage(),
-					ex);
-
-		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed. {}",
-					ex.getMessage(), ex);
-		} catch (IOException ex) {
-			logger.error("Stream were not closed. {}", ex.getMessage(), ex);
-		}
-
-		throw new InvalidQueryException(
-				"Creating File with RDF data fault.");
-
-	}
 
 	/**
 	 * Make select query over repository data and return tables as result.
@@ -537,33 +378,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		}
 
 		return map;
-	}
-
-	/**
-	 *
-	 * @param uriResource Subject or object URI as resource use to describe it.
-	 * @return Graph contains all RDF triples as result of descibe for given
-	 *         Resource URI. If graph is empty, there is are no triples for
-	 *         describe Resource URI.
-	 * @throws InvalidQueryException if resource is not URI type (e.g.
-	 *                               BlankNode, some type of Literal (in object
-	 *                               case))
-	 */
-	@Override
-	public Graph describeURI(Resource uriResource) throws InvalidQueryException {
-
-		if (uriResource instanceof URI) {
-			String describeQuery = String.format("DESCRIBE <%s>", uriResource
-					.toString());
-
-			Graph result = executeConstructQuery(describeQuery);
-
-			return result;
-		} else {
-			throw new InvalidQueryException(
-					"Resource " + uriResource.toString() + "is not URI type");
-		}
-
 	}
 
 	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {

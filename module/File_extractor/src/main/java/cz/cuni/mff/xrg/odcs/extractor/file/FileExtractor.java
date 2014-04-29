@@ -407,37 +407,6 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         }
     }
 
-    private void extractDataFromFileSource(File dirFile, RDFFormat format,
-                                           String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo) throws RDFException {
-        Resource graph = repo.getDataGraph();
-        RepositoryConnection connection = null;
-        if (dirFile.isFile()) {
-	        try {
-	            connection = repo.getConnection();
-	            connection.begin();
-	                addFileToRepository(format, dirFile, baseURI,
-	                        handlerExtractType,
-	                        connection, graph);
-	            connection.commit();
-	        } catch (RepositoryException e) {
-	            //TODO
-	            e.printStackTrace();
-	        } finally {
-	        	if (connection != null) {
-					try {
-						connection.close();
-					} catch (RepositoryException ex) {
-						LOG.warn("Error when closing connection", ex);
-						// eat close exception, we cannot do anything clever here
-					}
-				}
-	        }
-        } else {
-            throw new RDFException(
-                    "Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
-        }
-        
-    }
     /**
      * Extract RDF triples from RDF file to repository.
      *
@@ -490,6 +459,37 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 extractDataFromFileSource(dirFile, format, baseURI,
                         handlerExtractType, repo);
                 break;
+        }
+
+    }
+    private void extractDataFromFileSource(File dirFile, RDFFormat format,
+                                           String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo) throws RDFException {
+        Resource graph = repo.getDataGraph();
+        RepositoryConnection connection = null;
+        if (dirFile.isFile()) {
+	        try {
+	            connection = repo.getConnection();
+	            connection.begin();
+	                addFileToRepository(format, dirFile, baseURI,
+	                        handlerExtractType,
+	                        connection, graph);
+	            connection.commit();
+	        } catch (RepositoryException e) {
+	            //TODO
+	            e.printStackTrace();
+	        } finally {
+	        	if (connection != null) {
+					try {
+						connection.close();
+					} catch (RepositoryException ex) {
+						LOG.warn("Error when closing connection", ex);
+						// eat close exception, we cannot do anything clever here
+					}
+				}
+	        }
+        } else {
+            throw new RDFException(
+                    "Path to file \"" + dirFile.getAbsolutePath() + "\"doesnt exist");
         }
 
     }
