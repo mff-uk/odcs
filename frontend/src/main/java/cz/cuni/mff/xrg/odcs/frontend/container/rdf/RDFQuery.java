@@ -170,17 +170,17 @@ public class RDFQuery implements Query {
 				case SELECT:
 					TupleQueryResult result = (TupleQueryResult) data;
 					int id = 0;
-					while (result.hasNext()) {
-						items.add(
-								toItem(result.getBindingNames(), result.next(),
-								++id));
-					}
-					result.close();
+                    if (result != null) {
+                        while (result.hasNext()) {
+                            items.add(toItem(result.getBindingNames(), result.next(),++id));
+                        }
+                        result.close();
+                    }
 					break;
 				case CONSTRUCT:
-					for (RDFTriple triple : (List<RDFTriple>) data) {
-						items.add(toItem(triple));
-					}
+                     for (RDFTriple triple : (List<RDFTriple>) data) {
+                            items.add(toItem(triple));
+                    }
 					break;
 				case DESCRIBE:
 					cachedItems = new ArrayList<>();
