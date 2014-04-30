@@ -191,7 +191,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
 		labelUpQuer.setImmediate(false);
 		labelUpQuer.setWidth("68px");
 		labelUpQuer.setHeight("-1px");
-		labelUpQuer.setValue("SPARQL  Update Query");
+		labelUpQuer.setValue("SPARQL Query");
 		mainLayout.addComponent(labelUpQuer, 0, 0);
 
 		initializeSparqlQueryList();
