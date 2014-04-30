@@ -1,3 +1,4 @@
+
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf;
 
 import java.util.ArrayList;
@@ -199,15 +200,6 @@ public final class RemoteRDFDataUnit extends BaseRDFRepo {
 					// eat close exception, we cannot do anything clever here
 				}
 			}
-		}
-		
-		try {
-			repository.shutDown();
-			LOG.info("Sesame RDF DataUnit with data graph <"
-					+ getDataGraph()
-					+ "> succesfully shut down");
-		} catch (RepositoryException ex) {
-			LOG.error("Error in repository shutdown", ex);
 		}
 	}
 	/**

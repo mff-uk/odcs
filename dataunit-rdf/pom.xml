@@ -11,7 +11,7 @@
 	<description>Definition of RDFDataUnit.</description>	
 	
     <properties>
-        <sesame.version>2.7.7</sesame.version>
+        <sesame.version>2.7.11</sesame.version>
     </properties>
 	
     <dependencies>
