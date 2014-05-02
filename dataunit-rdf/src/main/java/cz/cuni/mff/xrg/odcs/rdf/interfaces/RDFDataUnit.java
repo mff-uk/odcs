@@ -51,18 +51,6 @@ public interface RDFDataUnit extends DataUnit {
 
 
 	/**
-	 * Make select query over repository data and return MyTupleQueryResult
-	 * class as result.
-	 *
-	 * @param selectQuery String representation of SPARQL select query.
-	 * @return MyTupleQueryResult representation of SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-    @Deprecated
-	public TupleQueryResult executeSelectQueryAsTuples(
-			String selectQuery) throws InvalidQueryException;
-
-	/**
 	 * Make ORDERED SELECT QUERY (select query contains ORDER BY keyword) over
 	 * repository data and return {@link OrderTupleQueryResult} class as result.
 	 *

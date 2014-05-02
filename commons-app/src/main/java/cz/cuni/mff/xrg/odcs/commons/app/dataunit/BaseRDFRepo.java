@@ -353,57 +353,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	}
 
 	/**
-	 * Make select query over repository data and return MyTupleQueryResult
-	 * class as result.
-	 *
-	 * @param selectQuery String representation of SPARQL select query.
-	 * @return MyTupleQueryResult representation of SPARQL select query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	@Override
-	public TupleQueryResult executeSelectQueryAsTuples(
-			String selectQuery)
-			throws InvalidQueryException {
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			TupleQuery tupleQuery = connection.prepareTupleQuery(
-					QueryLanguage.SPARQL, selectQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(this.getDataGraph());
-            dataSet.addNamedGraph(this.getDataGraph());
-			tupleQuery.setDataset(dataSet);
-
-			logger.debug("Query {} is valid.", selectQuery);
-
-			try {
-				TupleQueryResult tupleResult = tupleQuery.evaluate();
-				logger.debug(
-						"Query {} has not null result.", selectQuery);
-
-				return tupleResult;
-
-			} catch (QueryEvaluationException ex) {
-				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex
-						.getMessage(),
-						ex);
-			}
-
-		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException(
-					"This query is probably not valid. "
-					+ ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed. {}",
-					ex.getMessage(), ex);
-		}
-		throw new InvalidQueryException(
-				"Getting TupleQueryResult using SPARQL select query failed.");
-	}
-
-	/**
 	 *
 	 * @param updateQuery String value of SPARQL update query.
 	 * @return String extension of given update query works with set repository

@@ -266,28 +266,6 @@ public class TupleQueryTest {
         connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
 
 		assertEquals(5L, connection.size(repository.getDataGraph()));
-
-		try {
-			List<BindingSet> bindings = new ArrayList<>();
-			TupleQueryResult tupleQueryResult = repository
-					.executeSelectQueryAsTuples(selectQuery);
-
-			List<String> names = tupleQueryResult.getBindingNames();
-			boolean sameNames = sameNames(names, expectedNames);
-			assertTrue("Name of variables are not same", sameNames);
-
-			while (tupleQueryResult.hasNext()) {
-				bindings.add(tupleQueryResult.next());
-			}
-
-			boolean sameData = sameData(bindings, expectedVarName,
-					expectedDataForVar);
-			assertTrue("Expected data for object are not same", sameData);
-
-		} catch (InvalidQueryException | QueryEvaluationException e) {
-			fail(e.getMessage());
-		}
-
 	}
 
 	/**
@@ -319,27 +297,6 @@ public class TupleQueryTest {
         connection.add(subject, pred, objectBlank, repository.getDataGraph());
 		assertEquals(3L, connection.size(repository.getDataGraph()));
 
-		try {
-			List<BindingSet> bindings = new ArrayList<>();
-			TupleQueryResult tupleQueryResult = repository
-					.executeSelectQueryAsTuples(selectQuery);
-
-			List<String> names = tupleQueryResult.getBindingNames();
-			boolean sameNames = sameNames(names, expectedNames);
-			assertTrue("Name of variables are not same", sameNames);
-
-			while (tupleQueryResult.hasNext()) {
-				bindings.add(tupleQueryResult.next());
-			}
-
-			boolean sameData = sameData(bindings, expectedVarName,
-					expectedDataForVar);
-			assertTrue("Expected data for predicate are not same", sameData);
-
-		} catch (InvalidQueryException | QueryEvaluationException e) {
-			fail(e.getMessage());
-		}
-
 	}
 
 	/**
@@ -367,27 +324,6 @@ public class TupleQueryTest {
         connection.add(s, predicate, object, repository.getDataGraph());
 
         assertEquals(2L, connection.size(repository.getDataGraph()));
-
-		try {
-			List<BindingSet> bindings = new ArrayList<>();
-			TupleQueryResult tupleQueryResult = repository
-					.executeSelectQueryAsTuples(selectQuery);
-
-			List<String> names = tupleQueryResult.getBindingNames();
-			boolean sameNames = sameNames(names, expectedNames);
-			assertTrue("Name of variables are not same", sameNames);
-
-			while (tupleQueryResult.hasNext()) {
-				bindings.add(tupleQueryResult.next());
-			}
-
-			boolean sameData = sameData(bindings, expectedVarName,
-					expectedDataForVar);
-			assertTrue("Expected data for subject are not same", sameData);
-
-		} catch (InvalidQueryException | QueryEvaluationException e) {
-			fail(e.getMessage());
-		}
 
 	}
 
