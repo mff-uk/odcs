@@ -26,20 +26,6 @@ import org.openrdf.rio.RDFFormat;
 public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 
 	/**
-	 * Make select query over repository data and return tables as result.
-	 *
-	 * @param selectQuery String representation of SPARQL query.
-	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
-	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return *
-	 *         empty <code>Map</code>.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	public Map<String, List<String>> executeSelectQuery(
-			String selectQuery)
-			throws InvalidQueryException;
-
-	/**
 	 * Set data graph storage for given data in RDF format.
 	 *
 	 * @param newDataGraph new graph representated as URI.
