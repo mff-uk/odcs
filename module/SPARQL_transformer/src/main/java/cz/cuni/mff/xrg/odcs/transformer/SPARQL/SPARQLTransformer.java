@@ -11,14 +11,17 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.Graph;
 import org.openrdf.model.URI;
-import org.openrdf.query.Dataset;
+import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -226,10 +229,25 @@ public class SPARQLTransformer
 
 //					TODO michal.klempa this should not be needed anymore
 //					if (needRepository) {
-						Dataset dataset = createGraphDataSet(inputs);
+                    Dataset dataset = createGraphDataSet(inputs);
 
-						outputDataUnit.executeSPARQLUpdateQuery(
-								replacedUpdateQuery, dataset);
+                    RepositoryConnection connection = null;
+                    try {
+                        connection = outputDataUnit.getConnection();
+                        executeSPARQLUpdateQuery(connection, replacedUpdateQuery, dataset, outputDataUnit.getDataGraph());
+
+                    } catch (RepositoryException ex) {
+                        LOG.error("Could not add triples from graph", ex);
+
+                    } finally {
+                        if (connection != null) {
+                            try {
+                                connection.close();
+                            } catch (RepositoryException ex) {
+                            }
+                        }
+                    }
+
 //					} else {
 
 //						outputDataUnit.executeSPARQLUpdateQuery(
@@ -277,4 +295,118 @@ public class SPARQLTransformer
 	public AbstractConfigDialog<SPARQLTransformerConfig> getConfigurationDialog() {
 		return new SPARQLTransformerDialog();
 	}
+
+
+
+    /**
+     * Transform RDF in repository by SPARQL updateQuery.
+     *
+     * @param updateQuery String value of update SPARQL query.
+     * @param dataset     Set of graph URIs used for update query.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when transformation fault.
+     */
+    public void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, Dataset dataset, URI dataGraph)
+            throws RDFException {
+
+        try {
+
+            String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
+            Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
+                    newUpdateQuery);
+            myupdate.setDataset(dataset);
+
+            LOG.debug(
+                    "This SPARQL update query is valid and prepared for execution:");
+            LOG.debug(newUpdateQuery);
+
+            myupdate.execute();
+            //connection.commit();
+
+            LOG.debug("SPARQL update query for was executed successfully");
+
+        } catch (MalformedQueryException e) {
+
+            LOG.debug(e.getMessage());
+            throw new RDFException(e.getMessage(), e);
+
+        } catch (UpdateExecutionException ex) {
+
+            final String message = "SPARQL query was not executed !!!";
+            LOG.debug(message);
+            LOG.debug(ex.getMessage());
+
+            throw new RDFException(message + ex.getMessage(), ex);
+
+
+        } catch (RepositoryException ex) {
+            throw new RDFException(
+                    "Connection to repository is not available. "
+                            + ex.getMessage(), ex);
+        }
+
+    }
+
+
+    /**
+     *
+     * @param updateQuery String value of SPARQL update query.
+     * @return String extension of given update query works with set repository
+     *         GRAPH.
+     */
+    public String AddGraphToUpdateQuery(String updateQuery, URI dataGraph) {
+
+        String regex = "(insert|delete)\\s\\{";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
+
+        boolean hasResult = matcher.find();
+        boolean hasWith = updateQuery.toLowerCase().contains("with");
+
+        if (hasResult && !hasWith) {
+
+            int index = matcher.start();
+
+            String first = updateQuery.substring(0, index);
+            String second = updateQuery.substring(index, updateQuery.length());
+
+            String graphName = " WITH <" + dataGraph.stringValue() + "> ";
+
+            String newQuery = first + graphName + second;
+            return newQuery;
+
+
+        } else {
+
+            LOG.debug("WITH graph clause was not added, "
+                    + "because the query was: {}", updateQuery);
+
+            regex = "(insert|delete)\\sdata\\s\\{";
+            pattern = Pattern.compile(regex);
+            matcher = pattern.matcher(updateQuery.toLowerCase());
+
+            hasResult = matcher.find();
+
+            if (hasResult) {
+
+                int start = matcher.start();
+                int end = matcher.end();
+
+                String first = updateQuery.substring(0, start);
+                String second = updateQuery.substring(end, updateQuery.length());
+
+                String myString = updateQuery.substring(start, end);
+                String graphName = myString.replace("{",
+                        "{ GRAPH <" + dataGraph.stringValue() + "> {");
+
+                second = second.replaceFirst("}", "} }");
+                String newQuery = first + graphName + second;
+
+                return newQuery;
+
+            }
+        }
+        return updateQuery;
+
+
+    }
 }

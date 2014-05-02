@@ -59,20 +59,4 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 */
 	public long getResultSizeForQuery(String query) throws InvalidQueryException;
 
-	/**
-	 *
-	 * @return List of all application graphs keeps in Virtuoso storage in case
-	 *         of Virtuoso repository. When is used local repository as storage,
-	 *         this method return an empty list.
-	 */
-	public List<String> getApplicationGraphs();
-
-	/**
-	 * Delete all application graphs keeps in Virtuoso storage in case of
-	 * Virtuoso repository. When is used local repository as storage, this
-	 * method has no effect.
-	 *
-	 * @return Info string message about removing application graphs.
-	 */
-	public String deleteApplicationGraphs();
 }

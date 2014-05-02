@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
 import info.aduna.iteration.Iterations;
@@ -26,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.URI;
 
@@ -405,4 +409,192 @@ public class RepositoryFrontendHelper {
 
     }
 
+    /**
+     * Transform RDF in repository by SPARQL updateQuery.
+     *
+     * @param updateQuery String value of update SPARQL query.
+     * @param dataset     Set of graph URIs used for update query.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when transformation fault.
+     */
+    public static void executeSPARQLUpdateQuery( RepositoryConnection connection, String updateQuery, Dataset dataset, URI dataGraph)
+            throws RDFException {
+
+        try {
+
+            String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
+            Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
+                    newUpdateQuery);
+            myupdate.setDataset(dataset);
+
+            log.debug(
+                    "This SPARQL update query is valid and prepared for execution:");
+            log.debug(newUpdateQuery);
+
+            myupdate.execute();
+            //connection.commit();
+
+            log.debug("SPARQL update query for was executed successfully");
+
+        } catch (MalformedQueryException e) {
+
+            log.debug(e.getMessage());
+            throw new RDFException(e.getMessage(), e);
+
+        } catch (UpdateExecutionException ex) {
+
+            final String message = "SPARQL query was not executed !!!";
+            log.debug(message);
+            log.debug(ex.getMessage());
+
+            throw new RDFException(message + ex.getMessage(), ex);
+
+
+        } catch (RepositoryException ex) {
+            throw new RDFException(
+                    "Connection to repository is not available. "
+                            + ex.getMessage(), ex);
+        }
+
+    }
+
+    /**
+     *
+     * @param updateQuery String value of SPARQL update query.
+     * @return String extension of given update query works with set repository
+     *         GRAPH.
+     */
+    public static String AddGraphToUpdateQuery(String updateQuery, URI dataGraph) {
+
+        String regex = "(insert|delete)\\s\\{";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
+
+        boolean hasResult = matcher.find();
+        boolean hasWith = updateQuery.toLowerCase().contains("with");
+
+        if (hasResult && !hasWith) {
+
+            int index = matcher.start();
+
+            String first = updateQuery.substring(0, index);
+            String second = updateQuery.substring(index, updateQuery.length());
+
+            String graphName = " WITH <" + dataGraph.stringValue() + "> ";
+
+            String newQuery = first + graphName + second;
+            return newQuery;
+
+
+        } else {
+
+            log.debug("WITH graph clause was not added, "
+                    + "because the query was: {}", updateQuery);
+
+            regex = "(insert|delete)\\sdata\\s\\{";
+            pattern = Pattern.compile(regex);
+            matcher = pattern.matcher(updateQuery.toLowerCase());
+
+            hasResult = matcher.find();
+
+            if (hasResult) {
+
+                int start = matcher.start();
+                int end = matcher.end();
+
+                String first = updateQuery.substring(0, start);
+                String second = updateQuery.substring(end, updateQuery.length());
+
+                String myString = updateQuery.substring(start, end);
+                String graphName = myString.replace("{",
+                        "{ GRAPH <" + dataGraph.stringValue() + "> {");
+
+                second = second.replaceFirst("}", "} }");
+                String newQuery = first + graphName + second;
+
+                return newQuery;
+
+            }
+        }
+        return updateQuery;
+
+
+    }
+
+    /**
+     * Delete all application graphs keeps in Virtuoso storage in case of
+     * Virtuoso repository. When is used local repository as storage, this
+     * method has no effect.
+     *
+     * @return Info string message about removing application graphs.
+     */
+    public static  String deleteApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
+
+        List<String> graphs = getApplicationGraphs(connection, dataGraph);
+
+        String returnMessage;
+
+        if (graphs.isEmpty()) {
+            returnMessage = "NO APPLICATIONS GRAPHS to DELETE";
+            log.info(returnMessage);
+        } else {
+            for (String nextGraph : graphs) {
+                deleteNamedGraph(connection, nextGraph, dataGraph);
+            }
+            returnMessage = "TOTAL deleted: " + graphs.size() + " application graphs";
+            log.info(returnMessage);
+
+        }
+
+        return returnMessage;
+    }
+
+    private static void deleteNamedGraph(RepositoryConnection connection, String graphName,URI dataGraph) {
+
+        String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
+        try {
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(dataGraph);
+            dataSet.addNamedGraph(dataGraph);
+            executeSPARQLUpdateQuery(connection , deleteQuery,dataSet, dataGraph);
+
+
+            log.info("Graph {} was sucessfully deleted", graphName);
+        } catch (RDFException e) {
+            log.debug(e.getMessage());
+        }
+
+    }
+
+    /**
+     *
+     * @return List of all application graphs keeps in Virtuoso storage in case
+     *         of Virtuoso repository. When is used local repository as storage,
+     *         this method return an empty list.
+     */
+    public static List<String> getApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
+        List<String> result = new ArrayList<>();
+
+        try {
+            String select = "select distinct ?g where {graph ?g {?s ?p ?o}}";
+            TupleQueryResult tupleResult = executeSelectQueryAsTuples(connection, select, dataGraph);
+
+            String prefix = GraphUrl.getGraphPrefix();
+
+            for (BindingSet set : Iterations.asList(tupleResult)) {
+
+                for (String name : set.getBindingNames()) {
+                    String graphName = set.getValue(name).stringValue();
+
+                    if (graphName.startsWith(prefix)) {
+                        result.add(graphName);
+                    }
+                }
+            }
+            tupleResult.close();
+        } catch (InvalidQueryException | QueryEvaluationException e) {
+            log.debug(e.getMessage());
+        }
+
+        return result;
+    }
 }

@@ -170,94 +170,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	}
 
 	/**
-	 *
-	 * @return List of all application graphs keeps in Virtuoso storage in case
-	 *         of Virtuoso repository. When is used local repository as storage,
-	 *         this method return an empty list.
-	 */
-	@Override
-	public List<String> getApplicationGraphs() {
-		List<String> result = new ArrayList<>();
-
-		try {
-			String select = "select distinct ?g where {graph ?g {?s ?p ?o}}";
-			TupleQueryResult tupleResult = executeSelectQueryAsTuples(select);
-
-			String prefix = GraphUrl.getGraphPrefix();
-
-			for (BindingSet set : Iterations.asList(tupleResult)) {
-
-				for (String name : set.getBindingNames()) {
-					String graphName = set.getValue(name).stringValue();
-
-					if (graphName.startsWith(prefix)) {
-						result.add(graphName);
-					}
-				}
-			}
-			tupleResult.close();
-		} catch (InvalidQueryException | QueryEvaluationException e) {
-			logger.debug(e.getMessage());
-		}
-
-		return result;
-	}
-
-	/**
-	 * Delete all application graphs keeps in Virtuoso storage in case of
-	 * Virtuoso repository. When is used local repository as storage, this
-	 * method has no effect.
-	 *
-	 * @return Info string message about removing application graphs.
-	 */
-	@Override
-	public String deleteApplicationGraphs() {
-
-		List<String> graphs = getApplicationGraphs();
-
-		String returnMessage;
-
-		if (graphs.isEmpty()) {
-			returnMessage = "NO APPLICATIONS GRAPHS to DELETE";
-			logger.info(returnMessage);
-		} else {
-			for (String nextGraph : graphs) {
-				deleteNamedGraph(nextGraph);
-			}
-			returnMessage = "TOTAL deleted: " + graphs.size() + " application graphs";
-			logger.info(returnMessage);
-
-		}
-
-		return returnMessage;
-	}
-
-	private void deleteNamedGraph(String graphName) {
-
-		String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
-		try {
-			executeSPARQLUpdateQuery(deleteQuery);
-			logger.info("Graph {} was sucessfully deleted", graphName);
-		} catch (RDFException e) {
-			logger.debug(e.getMessage());
-		}
-
-	}
-
-	private MyRDFHandler getHandlerForConstructQuery(File file,
-			RDFFormatType formatType) throws IOException {
-
-		createNewFile(file);
-
-		FileOutputStream os = new FileOutputStream(file);
-
-		MyRDFHandler goal = new MyRDFHandler(os, formatType);
-
-		return goal;
-
-	}
-
-	/**
 	 * Make construct query over graph URIs in dataSet and return interface
 	 * Graph as result contains iterator for statements (triples).
 	 *
@@ -616,24 +528,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		}
 		return updateQuery;
 
-
-	}
-
-	/**
-	 * Created file from given parameter. If file is null, nothing is created.
-	 *
-	 * @param file file instance, you can create on file path.
-	 */
-	protected void createNewFile(File file) {
-
-		if (file == null) {
-			return;
-		}
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			logger.debug(e.getMessage());
-		}
 
 	}
 
