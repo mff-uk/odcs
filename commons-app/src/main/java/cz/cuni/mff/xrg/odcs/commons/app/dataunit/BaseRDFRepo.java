@@ -262,68 +262,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 //		}
 	}
 
-	/**
-	 *
-	 * @param updateQuery String value of SPARQL update query.
-	 * @return String extension of given update query works with set repository
-	 *         GRAPH.
-	 */
-	public String AddGraphToUpdateQuery(String updateQuery) {
-
-		String regex = "(insert|delete)\\s\\{";
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(updateQuery.toLowerCase());
-
-		boolean hasResult = matcher.find();
-		boolean hasWith = updateQuery.toLowerCase().contains("with");
-
-		if (hasResult && !hasWith) {
-
-			int index = matcher.start();
-
-			String first = updateQuery.substring(0, index);
-			String second = updateQuery.substring(index, updateQuery.length());
-
-			String graphName = " WITH <" + dataGraph.stringValue() + "> ";
-
-			String newQuery = first + graphName + second;
-			return newQuery;
-
-
-		} else {
-
-			logger.debug("WITH graph clause was not added, "
-					+ "because the query was: {}", updateQuery);
-
-			regex = "(insert|delete)\\sdata\\s\\{";
-			pattern = Pattern.compile(regex);
-			matcher = pattern.matcher(updateQuery.toLowerCase());
-
-			hasResult = matcher.find();
-
-			if (hasResult) {
-
-				int start = matcher.start();
-				int end = matcher.end();
-
-				String first = updateQuery.substring(0, start);
-				String second = updateQuery.substring(end, updateQuery.length());
-
-				String myString = updateQuery.substring(start, end);
-				String graphName = myString.replace("{",
-						"{ GRAPH <" + dataGraph.stringValue() + "> {");
-
-				second = second.replaceFirst("}", "} }");
-				String newQuery = first + graphName + second;
-
-				return newQuery;
-
-			}
-		}
-		return updateQuery;
-
-
-	}
 
 	/**
 	 * Return URI representation of graph where RDF data are stored.
