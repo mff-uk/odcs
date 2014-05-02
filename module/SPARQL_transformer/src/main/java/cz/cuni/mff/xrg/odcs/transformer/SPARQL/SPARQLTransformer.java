@@ -327,7 +327,6 @@ public class SPARQLTransformer
             throws RDFException {
 
         try {
-
             String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
                     newUpdateQuery);

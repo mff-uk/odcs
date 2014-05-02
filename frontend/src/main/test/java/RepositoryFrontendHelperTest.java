@@ -12,6 +12,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -101,7 +102,10 @@ public class RepositoryFrontendHelperTest {
         assertTrue(beforeUpdate);
 
         try {
-            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfRepo.getDataGraph());
+            dataSet.addNamedGraph(rdfRepo.getDataGraph());
+            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph(), dataSet);
         } catch (RDFException e) {
             fail(e.getMessage());
         }
@@ -142,7 +146,10 @@ public class RepositoryFrontendHelperTest {
         RepositoryConnection connection = null;
         try {
             connection = rdfRepo.getConnection();
-            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfRepo.getDataGraph());
+            dataSet.addNamedGraph(rdfRepo.getDataGraph());
+            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph(), dataSet);
         } catch (RDFException e) {
             fail(e.getMessage());
         } finally {
@@ -173,7 +180,10 @@ public class RepositoryFrontendHelperTest {
 
         try {
             connection = rdfRepo.getConnection();
-            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfRepo.getDataGraph());
+            dataSet.addNamedGraph(rdfRepo.getDataGraph());
+            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph(), dataSet);
         } catch (RDFException e) {
             fail(e.getMessage());
         } finally {
@@ -200,7 +210,10 @@ public class RepositoryFrontendHelperTest {
         RepositoryConnection connection = null;
         try {
             connection = rdfRepo.getConnection();
-            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfRepo.getDataGraph());
+            dataSet.addNamedGraph(rdfRepo.getDataGraph());
+            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph(), dataSet);
         } catch (RDFException e) {
             fail(e.getMessage());
         } finally {
@@ -226,7 +239,10 @@ public class RepositoryFrontendHelperTest {
 
         try {
             connection = rdfRepo.getConnection();
-            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph());
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfRepo.getDataGraph());
+            dataSet.addNamedGraph(rdfRepo.getDataGraph());
+            RepositoryFrontendHelper.executeSPARQLUpdateQuery(connection, updateQuery, rdfRepo.getDataGraph(), dataSet);
         } catch (RDFException e) {
             fail(e.getMessage());
         } finally {

@@ -413,22 +413,20 @@ public class RepositoryFrontendHelper {
      * Transform RDF in repository by SPARQL updateQuery.
      *
      *
+     *
      * @param updateQuery String value of update SPARQL query.
+     * @param dataset
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when transformation fault.
      */
-    public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph)
+    public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph, Dataset dataset)
             throws RDFException {
 
         try {
 
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(dataGraph);
-            dataSet.addNamedGraph(dataGraph);
-
             String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
                     newUpdateQuery);
-            myupdate.setDataset(dataSet);
+            myupdate.setDataset(dataset);
 
             log.debug(
                     "This SPARQL update query is valid and prepared for execution:");
@@ -552,15 +550,14 @@ public class RepositoryFrontendHelper {
         return returnMessage;
     }
 
-    private static void deleteNamedGraph(RepositoryConnection connection, String graphName,URI dataGraph) {
+    private static void deleteNamedGraph(RepositoryConnection connection, String graphName, URI dataGraph) {
 
         String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
         try {
             DatasetImpl dataSet = new DatasetImpl();
             dataSet.addDefaultGraph(dataGraph);
             dataSet.addNamedGraph(dataGraph);
-            executeSPARQLUpdateQuery(connection , deleteQuery, dataGraph);
-
+            executeSPARQLUpdateQuery(connection, deleteQuery, dataGraph, dataSet);
 
             log.info("Graph {} was sucessfully deleted", graphName);
         } catch (RDFException e) {
