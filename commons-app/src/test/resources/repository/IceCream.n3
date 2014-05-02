@@ -1,0 +1,134 @@
+# Saved by TopBraid on Sun Nov 23 21:54:02 PST 2008
+# baseURI: http://www.WorkingOntologist.org/Examples/Chapter7/IceCream.owl
+
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix daml:    <http://www.daml.org/2001/03/daml+oil#> .
+@prefix :        <http://www.WorkingOntologist.org/Examples/Chapter7/IceCream.owl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+
+<http://www.WorkingOntologist.org/Examples/Chapter7/IceCream.owl>
+      a       owl:Ontology ;
+      owl:versionInfo "Created with TopBraid Composer"^^xsd:string .
+
+:AddMilk
+      a       :Step ;
+      rdfs:label "Add milk"^^xsd:string ;
+      :enables :TurnInFreezer ;
+      owl:versionInfo ""^^xsd:string .
+
+:AddSugar
+      a       :Step ;
+      rdfs:label "Add sugar"^^xsd:string ;
+      :enables :BeatEggs ;
+      owl:versionInfo ""^^xsd:string .
+
+:BeatEggs
+      a       :Step ;
+      rdfs:label "Beat eggs"^^xsd:string ;
+      :enables :GraduallyMix ;
+      owl:versionInfo ""^^xsd:string .
+
+:Chill
+      a       :Step ;
+      rdfs:label "Chill"^^xsd:string ;
+      :enables :AddMilk ;
+      owl:versionInfo ""^^xsd:string .
+
+:CookCustard
+      a       :Step ;
+      rdfs:label "Cook custard"^^xsd:string ;
+      :enables :Chill ;
+      owl:versionInfo ""^^xsd:string .
+
+:GraduallyMix
+      a       :Step ;
+      rdfs:label "Gradually mix"^^xsd:string ;
+      :enables :CookCustard ;
+      owl:versionInfo ""^^xsd:string .
+
+:HeatCream
+      a       :Step ;
+      rdfs:label "Heat cream"^^xsd:string ;
+      :enables :GraduallyMix ;
+      owl:versionInfo ""^^xsd:string .
+
+:SeparateEggs
+      a       :Step ;
+      rdfs:label "Separate eggs"^^xsd:string ;
+      :enables :AddSugar ;
+      owl:versionInfo ""^^xsd:string .
+
+:SliceBean
+      a       :Step ;
+      rdfs:label "Slice bean"^^xsd:string ;
+      :enables :HeatCream ;
+      owl:versionInfo ""^^xsd:string .
+
+:Step
+      a       owl:Class ;
+      rdfs:label "Step"^^xsd:string ;
+      owl:versionInfo ""^^xsd:string .
+
+:TurnInFreezer
+      a       :Step ;
+      rdfs:label "Turn in freezer"^^xsd:string ;
+      owl:versionInfo ""^^xsd:string .
+
+:dependsOn
+      a       owl:ObjectProperty ;
+      rdfs:label "depends on"^^xsd:string ;
+      rdfs:subPropertyOf :hasPrerequisite , :neighborStep ;
+      owl:inverseOf :enables ;
+      owl:versionInfo ""^^xsd:string .
+
+:enables
+      a       owl:ObjectProperty ;
+      rdfs:domain :Step ;
+      rdfs:label "enables"^^xsd:string ;
+      rdfs:range :Step ;
+      rdfs:subPropertyOf :prerequisiteFor , :neighborStep ;
+      owl:versionInfo ""^^xsd:string .
+
+:hasPrerequisite
+      a       owl:TransitiveProperty ;
+      rdfs:domain :Step ;
+      rdfs:label "has prerequisite"^^xsd:string ;
+      rdfs:range :Step ;
+      rdfs:subPropertyOf :otherStep ;
+      owl:versionInfo ""^^xsd:string .
+
+:inSameRecipe
+      a       owl:TransitiveProperty ;
+      rdfs:domain :Step ;
+      rdfs:range :Step .
+
+:neighborStep
+      a       owl:ObjectProperty ;
+      rdfs:domain :Step ;
+      rdfs:label "neighbor step"^^xsd:string ;
+      rdfs:range :Step ;
+      rdfs:subPropertyOf :inSameRecipe ;
+      owl:versionInfo ""^^xsd:string .
+
+:otherStep
+      a       owl:ObjectProperty ;
+      rdfs:domain :Step ;
+      rdfs:label "other step"^^xsd:string ;
+      rdfs:range :Step ;
+      owl:versionInfo ""^^xsd:string .
+
+:prerequisiteFor
+      a       owl:TransitiveProperty ;
+      rdfs:domain :Step ;
+      rdfs:label "prerequisite for"^^xsd:string ;
+      rdfs:range :Step ;
+      rdfs:subPropertyOf :otherStep ;
+      owl:versionInfo ""^^xsd:string .
+
+rdfs:label
+      a       owl:AnnotationProperty .
+
+owl:versionInfo
+      a       owl:AnnotationProperty .
