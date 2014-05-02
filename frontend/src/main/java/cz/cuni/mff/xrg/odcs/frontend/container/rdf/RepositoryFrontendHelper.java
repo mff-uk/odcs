@@ -5,7 +5,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.MyGraphQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
 import info.aduna.iteration.Iterations;
 import org.openrdf.model.Graph;

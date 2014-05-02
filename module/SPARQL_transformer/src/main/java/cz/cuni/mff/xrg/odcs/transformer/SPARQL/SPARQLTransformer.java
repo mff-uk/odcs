@@ -10,8 +10,10 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * SPARQL Transformer.
@@ -182,8 +185,23 @@ public class SPARQLTransformer
 //						tempDataUnit.release();
 //
 //					} else {
-						Graph graph = intputDataUnit.executeConstructQuery(
-								constructQuery, dataSet);
+
+                    RepositoryConnection connectionInput = null;
+                    Graph graph = null;
+                    try {
+                        connectionInput = intputDataUnit.getConnection();
+                        graph = executeConstructQuery(connectionInput, constructQuery, dataSet);
+                    } catch (RepositoryException ex) {
+                        LOG.error("Could not add triples from graph", ex);
+                    } finally {
+                        if (connectionInput != null) {
+                            try {
+                                connectionInput.close();
+                            } catch (RepositoryException ex) {
+                            }
+                        }
+                    }
+
 						if (graph != null) {
 							RepositoryConnection connection = null;
 				            try {
@@ -406,7 +424,57 @@ public class SPARQLTransformer
             }
         }
         return updateQuery;
-
-
     }
+
+    /**
+     * Make construct query over graph URIs in dataSet and return interface
+     * Graph as result contains iterator for statements (triples).
+     *
+     * @param constructQuery String representation of SPARQL query.
+     * @param dataSet        Set of graph URIs used for construct query.
+     * @return Interface Graph as result of construct SPARQL query.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException when query is not valid.
+     */
+    public Graph executeConstructQuery( RepositoryConnection connection, String constructQuery, Dataset dataSet)
+            throws InvalidQueryException {
+
+        try {
+
+            GraphQuery graphQuery = connection.prepareGraphQuery(
+                    QueryLanguage.SPARQL,
+                    constructQuery);
+
+            graphQuery.setDataset(dataSet);
+
+            LOG.debug("Query {} is valid.", constructQuery);
+
+            try {
+
+                MyGraphQueryResult result = new MyGraphQueryResult(graphQuery
+                        .evaluate());
+
+                LOG.debug(
+                        "Query {} has not null result.", constructQuery);
+                return result.asGraph();
+
+            } catch (QueryEvaluationException ex) {
+                throw new InvalidQueryException(
+                        "This query is probably not valid. " + ex
+                                .getMessage(),
+                        ex);
+            }
+
+        } catch (MalformedQueryException ex) {
+            throw new InvalidQueryException(
+                    "This query is probably not valid. "
+                            + ex.getMessage(), ex);
+        } catch (RepositoryException ex) {
+            LOG.error("Connection to RDF repository failed. {}",
+                    ex.getMessage(), ex);
+        }
+
+        throw new InvalidQueryException(
+                "Getting GraphQueryResult using SPARQL construct query failed.");
+    }
+
 }

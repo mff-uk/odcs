@@ -1,60 +1,24 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
-import info.aduna.iteration.Iterations;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Graph;
 import org.openrdf.model.Model;
-import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
-import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.Dataset;
-import org.openrdf.query.GraphQuery;
-import org.openrdf.query.GraphQueryResult;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.QueryResults;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.query.resultio.TupleQueryResultWriter;
-import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
-import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
-import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
-import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.MyGraphQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
 
 /**
@@ -103,60 +67,6 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
 				predicates);
 	}
-
-	/**
-	 * Make construct query over graph URIs in dataSet and return interface
-	 * Graph as result contains iterator for statements (triples).
-	 *
-	 * @param constructQuery String representation of SPARQL query.
-	 * @param dataSet        Set of graph URIs used for construct query.
-	 * @return Interface Graph as result of construct SPARQL query.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	@Override
-	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
-			throws InvalidQueryException {
-
-		try {
-			RepositoryConnection connection = getConnection();
-
-			GraphQuery graphQuery = connection.prepareGraphQuery(
-					QueryLanguage.SPARQL,
-					constructQuery);
-
-			graphQuery.setDataset(dataSet);
-
-			logger.debug("Query {} is valid.", constructQuery);
-
-			try {
-
-				MyGraphQueryResult result = new MyGraphQueryResult(graphQuery
-						.evaluate());
-
-				logger.debug(
-						"Query {} has not null result.", constructQuery);
-				return result.asGraph();
-
-			} catch (QueryEvaluationException ex) {
-				throw new InvalidQueryException(
-						"This query is probably not valid. " + ex
-						.getMessage(),
-						ex);
-			}
-
-		} catch (MalformedQueryException ex) {
-			throw new InvalidQueryException(
-					"This query is probably not valid. "
-					+ ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			logger.error("Connection to RDF repository failed. {}",
-					ex.getMessage(), ex);
-		}
-
-		throw new InvalidQueryException(
-				"Getting GraphQueryResult using SPARQL construct query failed.");
-	}
-
 
 	private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
 		long size = 0;

@@ -3,16 +3,12 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 import java.util.List;
 import java.util.Map;
 
-import org.openrdf.model.Graph;
 import org.openrdf.model.URI;
-import org.openrdf.query.Dataset;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 /**
@@ -72,10 +68,6 @@ public interface RDFDataUnit extends DataUnit {
 	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException;
 
-
-    @Deprecated
-	public Graph executeConstructQuery(String constructQuery, Dataset dataSet)
-			throws InvalidQueryException;
 
 	/**
 	 * Returns shared connection to repository.
