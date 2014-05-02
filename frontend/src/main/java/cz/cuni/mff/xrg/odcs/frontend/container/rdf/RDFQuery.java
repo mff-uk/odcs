@@ -144,7 +144,7 @@ public class RDFQuery implements Query {
             RepositoryConnection connection = repository.getConnection();
             switch (type) {
                 case SELECT:
-                    RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
+                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
 					break;
                 case CONSTRUCT:
                     DatasetImpl dataSet = new DatasetImpl();
@@ -163,7 +163,6 @@ public class RDFQuery implements Query {
                 default:
                     return null;
             }
-            connection.close();
 
             List<Item> items = new ArrayList<>();
             switch (type) {
@@ -172,7 +171,13 @@ public class RDFQuery implements Query {
 					int id = 0;
                     if (result != null) {
                         while (result.hasNext()) {
-                            items.add(toItem(result.getBindingNames(), result.next(),++id));
+                            List<String> names = result.getBindingNames();
+                            if (names.size() > 0) {
+                                Item item = toItem(names, result.next(), ++id);
+                                if (item != null) {
+                                    items.add(item);
+                                }
+                            }
                         }
                         result.close();
                     }
@@ -191,7 +196,13 @@ public class RDFQuery implements Query {
 							"Loading of items finished, whole result preloaded and cached.");
 					return cachedItems.subList(startIndex, startIndex + count);
 			}
-			LOG.debug("Loading of items finished.");
+            try {
+                connection.close();
+            } catch (RepositoryException ex) {
+                throw ex;
+            }
+
+            LOG.debug("Loading of items finished.");
 			return items;
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
