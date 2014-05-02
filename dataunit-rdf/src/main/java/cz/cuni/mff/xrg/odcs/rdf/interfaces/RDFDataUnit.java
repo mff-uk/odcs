@@ -1,26 +1,18 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 import org.openrdf.model.Graph;
-import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParser;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 /**
