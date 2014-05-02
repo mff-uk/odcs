@@ -412,19 +412,23 @@ public class RepositoryFrontendHelper {
     /**
      * Transform RDF in repository by SPARQL updateQuery.
      *
+     *
      * @param updateQuery String value of update SPARQL query.
-     * @param dataset     Set of graph URIs used for update query.
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when transformation fault.
      */
-    public static void executeSPARQLUpdateQuery( RepositoryConnection connection, String updateQuery, Dataset dataset, URI dataGraph)
+    public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph)
             throws RDFException {
 
         try {
 
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(dataGraph);
+            dataSet.addNamedGraph(dataGraph);
+
             String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
             Update myupdate = connection.prepareUpdate(QueryLanguage.SPARQL,
                     newUpdateQuery);
-            myupdate.setDataset(dataset);
+            myupdate.setDataset(dataSet);
 
             log.debug(
                     "This SPARQL update query is valid and prepared for execution:");
@@ -555,7 +559,7 @@ public class RepositoryFrontendHelper {
             DatasetImpl dataSet = new DatasetImpl();
             dataSet.addDefaultGraph(dataGraph);
             dataSet.addNamedGraph(dataGraph);
-            executeSPARQLUpdateQuery(connection , deleteQuery,dataSet, dataGraph);
+            executeSPARQLUpdateQuery(connection , deleteQuery, dataGraph);
 
 
             log.info("Graph {} was sucessfully deleted", graphName);

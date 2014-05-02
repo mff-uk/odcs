@@ -49,25 +49,6 @@ public interface RDFDataUnit extends DataUnit {
 	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
 			List<String> predicates);
 
-	/**
-	 * Transform RDF in repository by SPARQL updateQuery.
-	 *
-	 * @param updateQuery String value of update SPARQL query.
-	 * @throws RDFException when transformation fail.
-	 */
-    @Deprecated
-	public void executeSPARQLUpdateQuery(String updateQuery) throws RDFException;
-
-	/**
-	 * Transform RDF in repository by SPARQL updateQuery.
-	 *
-	 * @param updateQuery String value of update SPARQL query.
-	 * @param dataset     Set of graph URIs used for update query.
-	 * @throws RDFException when transformation fault.
-	 */
-    @Deprecated
-	public void executeSPARQLUpdateQuery(String updateQuery, Dataset dataset)
-			throws RDFException;
 
 	/**
 	 * Make select query over repository data and return MyTupleQueryResult
