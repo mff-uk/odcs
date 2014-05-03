@@ -65,7 +65,7 @@
 		</dependency>
 
 		<dependency> <!-- file data unit -->
-			<groupId>${project.groupId}</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>dataunit-file</artifactId>
 			<!-- the version has to be specify -->
 			<version>${odcs.version}</version>
@@ -73,7 +73,7 @@
 		</dependency>  
 
 		<dependency> <!-- ontology -->
-			<groupId>${project.groupId}</groupId>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>ontology</artifactId>
 			<!-- the version has to be specify -->
 			<version>${odcs.version}</version>
