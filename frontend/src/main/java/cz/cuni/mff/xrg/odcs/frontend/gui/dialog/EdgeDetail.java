@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -45,8 +46,8 @@ public class EdgeDetail extends Window {
 
 	private DPUExplorer explorer;
 
-	private CheckBox runAfterEdge;
-	
+	private CheckBox chbRunAfterEdge;
+		
 	/**
 	 * Class for working with edge's script.
 	 */
@@ -70,10 +71,22 @@ public class EdgeDetail extends Window {
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setStyleName("dpuDetailMainLayout");
 		mainLayout.setMargin(true);
+		mainLayout.setSpacing(true);
 
-		GridLayout edgeSettingsLayout = new GridLayout(3, 10);
-		edgeSettingsLayout.setSpacing(true);
+		final GridLayout edgeSettingsLayout = new GridLayout(3, 10);
+		edgeSettingsLayout.setSpacing(true);		
+		
+		chbRunAfterEdge = new CheckBox();
+		chbRunAfterEdge.setCaption("Is \"run after\" edge");
+		mainLayout.addComponent(chbRunAfterEdge);
+		chbRunAfterEdge.addValueChangeListener(new Property.ValueChangeListener() {
 
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				edgeSettingsLayout.setEnabled(!(Boolean)event.getProperty().getValue());
+			}
+		});
+				
 		outputSelect = new Table("Output data units of the source DPU:");
 		outputSelect.setSelectable(true);
 		outputSelect.setMultiSelect(true);
@@ -113,7 +126,8 @@ public class EdgeDetail extends Window {
 		inputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
 		inputSelect.setPageLength(8);
 
-		inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());  //edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
+		//edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
+		inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());
 
 		inputSelect.setContainerDataSource(getTableData(inputUnits));
 		inputSelect.setVisibleColumns("name");
@@ -149,6 +163,8 @@ public class EdgeDetail extends Window {
 						Notification.show(
 									"Input and output data unit have incompatible type, mapping couldn't be created!",
 									Notification.Type.WARNING_MESSAGE);
+						// and skipp given mapping
+						continue;
 					}
 
 					if(addMappingToList(newMapping)) {
@@ -158,29 +174,6 @@ public class EdgeDetail extends Window {
 									Notification.Type.WARNING_MESSAGE);
 					}					
 				}
-								
-
-//				for (DataUnitDescription output : outputs) {
-//					List<Integer> left = new ArrayList<>(1);
-//					left.add(outputUnits.indexOf(output));
-//
-//					if (input.getTypeName().contains("FileDataUnit") != output
-//							.getTypeName().contains("FileDataUnit")) {
-//						Notification.show(
-//								"Input and output data unit have incompatible type, mapping couldn't be created!",
-//								Notification.Type.WARNING_MESSAGE);
-//						continue;
-//					}
-//
-//					MutablePair<List<Integer>, Integer> mapping = new MutablePair<>(
-//							left, inputUnits.indexOf(input));
-//					if (addMappingToList(mapping)) {
-//						mappings.add(mapping);
-//					} else {
-//						Notification.show("Selected mapping already exists!",
-//								Notification.Type.WARNING_MESSAGE);
-//					}
-//				}
 			}
 		});
 		mapButton.setWidth(130, Unit.PIXELS);
@@ -204,13 +197,6 @@ public class EdgeDetail extends Window {
 		mappingsSelect.setMultiSelect(true);
 		mappingsSelect.setNewItemsAllowed(false);
 		mappingsSelect.setImmediate(true);
-		// inputUnits and outputUnits are already set !
-		mappings = edgeCompiler.translate(edge.getScript(), outputUnits,
-				inputUnits, null);
-
-		for (MutablePair<Integer, Integer> mapping : mappings) {
-			addMappingToList(mapping);
-		}
 		edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
 
 		Button deleteButton = new Button("Delete mapping",
@@ -264,28 +250,24 @@ public class EdgeDetail extends Window {
 		buttonBar.addComponentAsFirst(placeFiller);
 		buttonBar.setExpandRatio(placeFiller, 1.0f);
 
-//		Button removeNamingButton = new Button("Remove Named Data Unit",
-//				new Button.ClickListener() {
-//			@Override
-//			public void buttonClick(Button.ClickEvent event) {
-//				ConfirmDialog.show(UI.getCurrent(),
-//						"Really remove named data unit?",
-//						new ConfirmDialog.Listener() {
-//					@Override
-//					public void onClose(ConfirmDialog cd) {
-//						if (cd.isConfirmed()) {
-//							edge.setDataUnitName(null);
-//							close();
-//						}
-//					}
-//				});
-//			}
-//		});
-//		buttonBar.addComponent(removeNamingButton);
 		mainLayout.addComponent(buttonBar);
 
-		this.setContent(mainLayout);
+		setContent(mainLayout);
 		setSizeUndefined();
+		
+		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+		// * * * * * * * * * load mapping  * * * * * * * * * * * * //
+		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+		
+		// inputUnits and outputUnits are already set !		
+		mappings = edgeCompiler.translate(edge.getScript(), outputUnits,
+				inputUnits, null);
+
+		for (MutablePair<Integer, Integer> mapping : mappings) {
+			addMappingToList(mapping);
+		}		
+		
+		chbRunAfterEdge.setValue(edgeCompiler.isRunAfter(edge.getScript()));
 	}
 
 	/**
@@ -297,44 +279,26 @@ public class EdgeDetail extends Window {
 		if (!validate()) {
 			return false;
 		}
-		String script = edgeCompiler
-				.translate(mappings, outputUnits, inputUnits, null);
-		edge.setScript(script);
+
+		if (chbRunAfterEdge.getValue()) {
+			edge.setScript(edgeCompiler.createRunAfterMapping());
+		} else {		
+			String script = edgeCompiler.translate(mappings, outputUnits, inputUnits, null);
+			edge.setScript(script);
+		}
 		return true;
 	}
 
 	private boolean validate() {
-//		try {
-//			edgeName.validate();
-//		} catch (Validator.InvalidValueException e) {
-//			Notification.show("Error saving Edge configuration. Reason:", e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//			return false;
-//		}
 		return true;
 	}
 
 	private Container getTableData(List<DataUnitDescription> data) {
-
 		BeanItemContainer container = new BeanItemContainer(
 				DataUnitDescription.class);
 		container.addAll(data);
-
 		return container;
 	}
-
-//	private boolean addMappingToList(MutablePair<List<Integer>, Integer> mapping)
-//			throws UnsupportedOperationException {
-//		Iterator<Integer> iter = mapping.left.iterator();
-//		String leftSide = outputUnits.get(iter.next()).getName();
-//		while (iter.hasNext()) {
-//			leftSide += ", " + outputUnits.get(iter.next()).getName();
-//		}
-//		String strMapping = String.format("%s -> %s", leftSide, inputUnits.get(
-//				mapping.right).getName());
-//		map.put(strMapping, mapping);
-//		Item result = mappingsSelect.addItem(strMapping);
-//		return result != null;
-//	}
 
 	private boolean addMappingToList(MutablePair<Integer, Integer> mapping)
 			throws UnsupportedOperationException {

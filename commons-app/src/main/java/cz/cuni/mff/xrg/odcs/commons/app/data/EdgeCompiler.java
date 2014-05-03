@@ -203,6 +203,25 @@ public final class EdgeCompiler {
 	}
 
 	/**
+	 * 
+	 * @return Script that represents run-after edge.
+	 */
+	public String createRunAfterMapping() {
+		final StringBuilder script = new StringBuilder();
+		script.append(EdgeInstructions.RunAfter.getValue());
+		return script.toString();
+	}
+
+	/**
+	 * 
+	 * @param script
+	 * @return True if given script represents run-after edge, false otherwise.
+	 */
+	public boolean isRunAfter(String script) {
+		return script.contains(EdgeInstructions.RunAfter.getValue());
+	}
+	
+	/**
 	 * Return index of first {@link DataUnitDescription} with given name or null
 	 * if there is no {@link DataUnitDescription} with required name.
 	 *
@@ -305,7 +324,7 @@ public final class EdgeCompiler {
 			// all is ok
 			return new LinkedList<>();
 		}
-		
+
 		String newScript = translate(mapping, sources, targets, null);
 		edge.setScript(newScript);
 		return handler.getInvalidMapping();
