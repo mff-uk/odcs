@@ -306,11 +306,6 @@ public class Executor implements Runnable {
 				break;
 			}
 
-			// put dpuInstance id to MDC, so we can identify logs related to the
-			// dpuInstance
-			MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
-					Long.toString(node.getDpuInstance().getId()));
-
 			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor = beanFactory
 					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor.class);
 
@@ -383,9 +378,6 @@ public class Executor implements Runnable {
 						node.getDpuInstance(), execution, this));
 			}
 			execResult.add(dpuResults);
-			// remove MDC from logs
-			MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
-
 		}
 
 		// apost executors are comming

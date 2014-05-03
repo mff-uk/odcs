@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -32,6 +33,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
@@ -132,9 +134,9 @@ public final class Executor implements Runnable {
 	 * Can throw {@link ContextException} it the creation of {@link Context}
 	 * failed. In such case does not publish any message.
 	 *
-	 * @param node Node to execute.
-	 * @param contexts Contexts of other DPU's.
-	 * @param execution Pipeline execution.
+	 * @param node              Node to execute.
+	 * @param contexts          Contexts of other DPU's.
+	 * @param execution         Pipeline execution.
 	 * @param lastExecutionTime Time of last successful execution. Can be null.
 	 * @throws cz.cuni.mff.xrg.odcs.backend.context.ContextException
 	 */
@@ -189,10 +191,11 @@ public final class Executor implements Runnable {
 
 		boolean result = true;
 		for (PreExecutor item : preExecutors) {
-			LOG.trace("Executing pre-executor: {}", item.getClass().getSimpleName());
-			
+			LOG.trace("Executing pre-executor: {}", item.getClass()
+					.getSimpleName());
+
 			try {
-				if (!item.preAction(node, contexts, dpuInstance, execution, 
+				if (!item.preAction(node, contexts, dpuInstance, execution,
 						unitInfo, result)) {
 					result = false;
 				}
@@ -201,7 +204,8 @@ public final class Executor implements Runnable {
 				LOG.error("The pre-executor throws", t);
 				// one event abour failure
 				eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
-					context, item, "The pre-executor throws an unexpected exception. See logs for more details."));
+						context, item,
+						"The pre-executor throws an unexpected exception. See logs for more details."));
 				// and second about .. the whole failure
 				eventPublisher.publishEvent(PipelineFailedEvent.create(
 						t, node.getDpuInstance(), execution, this));
@@ -221,6 +225,12 @@ public final class Executor implements Runnable {
 	private void executeInstance(Object dpuInstance) {
 		// execute
 		LOG.debug("Executing DPU ... ");
+
+		// put dpuInstance id to MDC, so we can identify logs related to the
+		// dpuInstance
+		MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
+				Long.toString(node.getDpuInstance().getId()));
+
 		try {
 			if (dpuInstance instanceof DPU) {
 				((DPU) dpuInstance).execute(context);
@@ -251,8 +261,12 @@ public final class Executor implements Runnable {
 			LOG.error("Execution failed for Throwable.");
 			eventPublisher.publishEvent(PipelineFailedEvent.create(e,
 					node.getDpuInstance(), execution, this));
-			executionResult.failure();			
+			executionResult.failure();
 		}
+
+		// remove MDC from logs
+		MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
+
 		LOG.debug("Executing DPU ... done");
 	}
 
@@ -274,9 +288,9 @@ public final class Executor implements Runnable {
 
 		boolean result = true;
 		for (PostExecutor item : postExecutors) {
-			LOG.trace("Executing post-executor: {}", item.getClass().getSimpleName());
-			try 
-			{
+			LOG.trace("Executing post-executor: {}", item.getClass()
+					.getSimpleName());
+			try {
 				if (!item.postAction(node, contexts, dpuInstance, execution,
 						unitInfo)) {
 					result = false;
@@ -286,12 +300,13 @@ public final class Executor implements Runnable {
 				LOG.error("The post-executor throws", t);
 				// one event abour failure
 				eventPublisher.publishEvent(DPUEvent.createPostExecutorFailed(
-					context, item, "The post-executor throws an unexpected exception. See logs for more details."));
+						context, item,
+						"The post-executor throws an unexpected exception. See logs for more details."));
 				// and second about .. the whole failure
 				eventPublisher.publishEvent(PipelineFailedEvent.create(
 						t, node.getDpuInstance(), execution, this));
 				return false;
-			}			
+			}
 		}
 		return result;
 	}
@@ -320,7 +335,7 @@ public final class Executor implements Runnable {
 			executionResult.failure();
 		}
 		LOG.debug("Executing pre-executors ... done");
-		
+
 		switch (unitInfo.getState()) {
 			case PREPROCESSING:
 				// this is ok .. we continue
@@ -328,12 +343,14 @@ public final class Executor implements Runnable {
 			case ABORTED:
 			case FAILED:
 				// we ignore this, they should return false when they fail
-				LOG.warn("Some pre-processor set ABORTED/FAILED state before start of the execution. Ignoring state change.");
+				LOG.warn(
+						"Some pre-processor set ABORTED/FAILED state before start of the execution. Ignoring state change.");
 				break;
 			case FINISHED:
 				// dpu finished .. yes this can be
 				// we also do not prevent DPU with such state to get here
-				LOG.info("DPU has already been executed, skipping the execution.");
+				LOG.info(
+						"DPU has already been executed, skipping the execution.");
 				// the context has already been loaded with given data
 				return;
 			case RUNNING:
@@ -355,22 +372,21 @@ public final class Executor implements Runnable {
 			executionResult.stop();
 			return;
 		}
-		
+
 		// execute the given instance - also catch all exception
 		if (executionResult.continueExecution()) {
 			eventPublisher.publishEvent(DPUEvent.createStart(context, this));
-			
+
 			executeInstance(dpuInstance);
 			// check context for messages
 			if (context.errorMessagePublished()) {
 				executionResult.failure();
 			}
-			
+
 			LOG.trace("DPU.executeInstance completed ..");
 		} else {
 			LOG.info("Skipping DPU execution.");
 		}
-		
 
 		// set state
 		if (executionResult.executionFailed()) {
@@ -444,7 +460,7 @@ public final class Executor implements Runnable {
 
 		// run dpu
 		execute(unitInfo);
-		
+
 		// publish message, this is standart end of execution
 		eventPublisher.publishEvent(DPUEvent.createComplete(context, this));
 
@@ -460,7 +476,7 @@ public final class Executor implements Runnable {
 
 		// we have done our job
 		executionResult.finished();
-		
+
 		LOG.trace("DPU execution thread is about to finish");
 	}
 
