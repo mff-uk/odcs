@@ -83,7 +83,11 @@ public class EdgeDetail extends Window {
 
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
-				edgeSettingsLayout.setEnabled(!(Boolean)event.getProperty().getValue());
+				boolean enabled = !(Boolean)event.getProperty().getValue();
+				edgeSettingsLayout.setEnabled(enabled);
+				outputSelect.setEnabled(enabled);
+				inputSelect.setEnabled(enabled);
+				mappingsSelect.setEnabled(enabled);
 			}
 		});
 				

@@ -83,8 +83,9 @@ public final class EdgeCompiler {
 
 		if (mappings.isEmpty()) {
 			// just run after mapping
-			script.append(EdgeInstructions.RunAfter.getValue());
-			return script.toString();
+			//script.append(EdgeInstructions.RunAfter.getValue());
+			//return script.toString();
+			return "";
 		}
 
 		// go through the sources
