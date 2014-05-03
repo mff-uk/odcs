@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Petyr
  */
-public class FileHandlerImpl implements ManageableHandler, FileHandler {
+public class FileHandlerImpl extends HandlerImpl implements ManageableHandler, FileHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileHandlerImpl.class);
 

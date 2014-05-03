@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Petyr
  */
-public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler {
+public class DirectoryHandlerImpl extends HandlerImpl implements ManageableHandler, DirectoryHandler {
 
 	/**
 	 * Read only iterator for iterating over the tree structure of directory.
@@ -164,12 +164,7 @@ public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler
 	 */
 	private LinkedList<ManageableHandler> handlers;
 
-	/**
-	 * True if this {@link DirectoryHandlerImpl} log warning about wrong
-	 * file format.
-	 */
-	@XStreamOmitField
-	private boolean hasReportNameChange = false;
+	
 	
 	/**
 	 * Create root handler for given directory. The given directory should be
@@ -295,7 +290,7 @@ public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler
 		accessCheck();
 
 		// remove special chars from the name
-		final String escapedName = escape(name);
+		final String escapedName = normalizeFileName(name);
 
 		// check existance
 		ManageableHandler existing = getManageableByName(escapedName);
@@ -367,7 +362,7 @@ public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler
 		accessCheck();
 
 		// remove special chars from the name
-		final String escapedName = escape(name);
+		final String escapedName = normalizeFileName(name);
                
 		// check existance
 		ManageableHandler existing = getManageableByName(escapedName);
@@ -701,25 +696,7 @@ public class DirectoryHandlerImpl implements ManageableHandler, DirectoryHandler
 		}
 	}
 
-	/**
-	 * Remove dangerous character from string so the string can be safely 
-	 * used as a file or directory name.
-	 * 
-	 * @param origString
-	 * @return 
-	 */
-    private String escape(String origString) {
-       String result = origString.replaceAll("[\\/:*?\"<>|]","");
-        if (!origString.equals(result)) {
-			if (!hasReportNameChange) {
-				LOG.warn("At least one file/dir name has been changed as it contained special chars [\\/:*?\"<>|]. More details can be found as 'info' level logs.");
-				hasReportNameChange = true;
-			}
-			LOG.info("Name '{}' contained special chars and so it has been changed to '{}'.", origString, result);
-        }
-        return result;
-    }
-
+	
 	@Override
 	public Iterator<Handler> getFlatIterator() {
 		return new FlatIterator(this);
