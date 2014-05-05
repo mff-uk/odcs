@@ -11,7 +11,9 @@
 	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener" />
 	
 	<!-- dummy DataUnit factory -->
-	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory" />
+ 	<bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory" />
+
+	<bean id ="rdfDataUnitFactory"  class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory"/>
 		
 	<!-- we use configuration that load from our resource -->	
 	<!-- application configuration -->
