@@ -293,7 +293,7 @@ public class LocalRDFRepoTest {
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
-                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
+                RDFFormat fileFormat = RDFFormat.forFileName(file.getName(), RDFFormat.RDFXML);
                 connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -435,41 +435,6 @@ public class LocalRDFRepoTest {
 	}
 
 
-	/**
-	 * Test SPARQL transform using SPARQL update query.
-	 */
-	@Test
-	public void transformUsingSPARQLUpdate() throws RepositoryException {
-
-		String namespace = "http://sport/hockey/";
-		String subjectName = "Jagr";
-		String predicateName = "playes_in";
-		String objectName = "Dalas_Stars";
-
-        RepositoryConnection connection = rdfRepo.getConnection();
-        ValueFactory factory = connection.getValueFactory();
-		Resource subject = factory.createURI(namespace + subjectName);
-		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = factory.createLiteral(objectName);
-
-		String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
-				+ "INSERT { ?who ?what 'Boston_Bruins' } "
-				+ "WHERE { ?who ?what 'Dalas_Stars' }";
-
-        connection.add(subject, predicate, object, rdfRepo.getDataGraph());
-
-		boolean beforeUpdate = connection.hasStatement(subject, predicate, object, true, rdfRepo.getDataGraph());
-		assertTrue(beforeUpdate);
-
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-        boolean afterUpdate = connection.hasStatement(subject, predicate, object, true, rdfRepo.getDataGraph());
-        assertFalse(afterUpdate);
-	}
 
 	private void TEDextractFile1ToRepository() throws RepositoryException {
 
@@ -529,22 +494,6 @@ public class LocalRDFRepoTest {
 		assertTrue(triplesAdded);
 	}
 
-	private void TEDTransformSPARQL() {
-
-		String updateQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
-				+ "INSERT DATA"
-				+ "{ "
-				+ "<http://example/book1> dc:title \"A new book\" ."
-				+ "}";
-
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			//*VIRTUOSO TODO !!! */ fail(e.getMessage());
-		}
-
-	}
-
 	/**
 	 * Test running pipeline 'TED' - 2 extraction, 1 transform, 1 load to TTL
 	 * file.
@@ -553,7 +502,6 @@ public class LocalRDFRepoTest {
 	public void TEDPipelineTest() throws RepositoryException {
 		TEDextractFile1ToRepository();
 		TEDextractFile2ToRepository();
-		TEDTransformSPARQL();
 
         RepositoryConnection connection = rdfRepo.getConnection();
 		long addedData = connection.size(rdfRepo.getDataGraph());
@@ -561,25 +509,6 @@ public class LocalRDFRepoTest {
 		assertTrue(addedData > 0);
 	}
 
-	/**
-	 * Test SPARQL transform using SPARQL update query.
-	 */
-	@Test
-	public void SecondUpdateQueryTest() {
-
-		String updateQuery = "prefix s: <http://schema.org/> "
-				+ "DELETE {?s s:streetAddress ?o} "
-				+ "INSERT {?s s:streetAddress ?x} "
-				+ "WHERE {"
-				+ "{ SELECT ?s ?o ?x "
-				+ "WHERE {?s s:streetAddress ?o}} FILTER (BOUND(?x))}";
-
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-	}
 
 	/**
 	 * Test if repository is empty.
@@ -673,98 +602,8 @@ public class LocalRDFRepoTest {
 
 	}
 
-	private void BigTransformQuery1() {
-
-		// Dotaz nahrazuje vsechny objekty jejich spravnymi URI
-
-		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
-				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
-				+ "PREFIX adms: <http://www.w3.org/ns/adms#> "
-				+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
-				+ "DELETE { "
-				+ "  ?s ?p ?s1 . } "
-				+ "INSERT { "
-				+ "  ?s ?p ?s2 . } "
-				+ "WHERE { "
-				+ "  ?s1 owl:sameAs ?s2 . "
-				+ "  ?s ?p ?s1 . }";
-
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		LOG.debug("Transform Query 1 - OK");
-	}
-
-	private void BigTransformQuery2() {
-
-		// Dotaz nahrazuje vsechny subjekty jejich spravnymi URI
-
-		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
-				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
-				+ "PREFIX adms: <http://www.w3.org/ns/adms#> "
-				+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
-				+ "DELETE { "
-				+ "  ?s1 ?p ?o . } "
-				+ "INSERT { "
-				+ "  ?s2 ?p ?o . } "
-				+ "WHERE { "
-				+ "  ?s1 owl:sameAs ?s2 . "
-				+ "  ?s ?p ?o . }";
-
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		LOG.debug("Transform Query 2 - OK");
-	}
-
-	private void BigTransformQuery3() {
-
-		//Maze same-as na spatne URI
-
-		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
-				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
-				+ "PREFIX adms: <http://www.w3.org/ns/adms#> "
-				+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
-				+ "DELETE { "
-				+ "  ?s1 owl:sameAs ?s2 . } "
-				+ "WHERE { "
-				+ "  ?s1 owl:sameAs ?s2 . }";
 
 
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-
-		LOG.debug("Transform Query 3 - OK");
-	}
-
-
-	/**
-	 * Run 'BIG' pipeline - 3 transformer, 1 loader to N3 file.
-	 */
-	@Test
-	@Category(IntegrationTest.class)
-	public void BIGDataTest() {
-
-		//extractBigDataFileToRepository();
-		BigTransformQuery1();
-		BigTransformQuery2();
-		BigTransformQuery3();
-	}
 
 
 	/**
@@ -818,33 +657,6 @@ public class LocalRDFRepoTest {
 
         assertTrue(newSize > size);
     }
-
-	/**
-	 * Test transforming SPARQL update query on give repository instance.
-	 *
-	 * @param repository repository used for transforming
-	 */
-	protected void transformOverRepository(ManagableRdfDataUnit repository) {
-		String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-				+ "PREFIX dcterms: <http://purl.org/dc/terms/> "
-				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "PREFIX ndf: <http://linked.opendata.cz/ontology/ndfrt/> "
-				+ "PREFIX adms: <http://www.w3.org/ns/adms#> "
-				+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
-				+ "DELETE { "
-				+ "  ?s1 ?p ?o . } "
-				+ "INSERT { "
-				+ "  ?s2 ?p ?o . } "
-				+ "WHERE { "
-				+ "  ?s1 owl:sameAs ?s2 . "
-				+ "  ?s ?p ?o . }";
-
-		try {
-			repository.executeSPARQLUpdateQuery(updateQuery);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		}
-	}
 
 	/**
 	 * Test loading to file based on give repository instance.

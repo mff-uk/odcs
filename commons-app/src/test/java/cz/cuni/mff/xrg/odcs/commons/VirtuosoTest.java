@@ -77,28 +77,6 @@ public class VirtuosoTest extends LocalRDFRepoTest {
 	}
 
 	/**
-	 * Test adding data using transformer.
-	 */
-	@Test
-	public void addDataUsingTransformer() {
-		String query = "insert data {<http://test>  <http://test>  <http://test> .}";
-		try {
-			rdfRepo.executeSPARQLUpdateQuery(query);
-		} catch (RDFException ex) {
-			fail(ex.getMessage());
-		}
-	}
-
-	/**
-	 * Run 'BIG' pipeline - 3 transformer, 1 loader to N3 file.
-	 */
-	@Test
-	@Override
-	public void BIGDataTest() {
-		super.BIGDataTest();
-	}
-
-	/**
 	 * Extract file with size 2GB.
 	 */
 	@Test

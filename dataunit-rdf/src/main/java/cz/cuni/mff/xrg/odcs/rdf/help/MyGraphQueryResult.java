@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf.repositories;
+package cz.cuni.mff.xrg.odcs.rdf.help;
 
 import java.util.Map;
 import org.openrdf.model.Model;
@@ -13,6 +13,8 @@ import org.openrdf.query.QueryResults;
  *
  * @author Jiri Tomes
  */
+//TODO jan.marcek i don't believe that we need this class. I suggest to remove after analysis
+// We don't have an access to cz.cuni.mff.xrg.odcs.rdf.repositories. so that's why MyGraphQueryResult is here.
 public class MyGraphQueryResult implements GraphQueryResult {
 
 	private GraphQueryResult result;

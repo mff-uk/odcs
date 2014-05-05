@@ -4,6 +4,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.event.ItemClickEvent;
 
+import cz.cuni.mff.xrg.odcs.frontend.container.rdf.*;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 
 import com.vaadin.ui.*;
@@ -15,24 +16,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFLazyQueryContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryDefinition;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 import java.io.File;
@@ -43,7 +31,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
@@ -453,19 +444,22 @@ public class RDFQueryView extends QueryView {
 				return null;
 			}
 
+            RepositoryConnection connection = repository.getConnection();
+            URI dataGraph = repository.getDataGraph();
 
+            if (isSelectQuery) {
+                query = RDFDataUnitHelper.filterRDFQuery(query, filters);
+                SelectFormatType selectType = (SelectFormatType) format;
 
-			if (isSelectQuery) {
-				query = RDFDataUnitHelper.filterRDFQuery(query, filters);
-				SelectFormatType selectType = (SelectFormatType) format;
-				constructData = repository.executeSelectQuery(query, fn,
-						selectType);
-			} else {
-				RDFFormatType rdfType = RDFFormatType.getTypeByString(format
-						.toString());
-				constructData = repository.executeConstructQuery(query,
-						rdfType, fn);
-			}
+                constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
+                        selectType, dataGraph);
+                connection.close();
+            } else {
+                RDFFormatType rdfType = RDFFormatType.getTypeByString(format
+                        .toString());
+
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getDataGraph(), query,rdfType, fn);
+            }
 
 			FileInputStream fis = new FileInputStream(constructData);
 			return fis;
@@ -482,8 +476,11 @@ public class RDFQueryView extends QueryView {
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
 			return null;
-		}
-	}
+		} catch (RepositoryException e) {
+            LOG.error("Problem with connection!", e);
+            return null;
+        }
+    }
 
 	private String getFileName(Object oFormat) {
 		if (oFormat == null) {

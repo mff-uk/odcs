@@ -26,20 +26,6 @@ import org.openrdf.rio.RDFFormat;
 public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 
 	/**
-	 * Make select query over repository data and return tables as result.
-	 *
-	 * @param selectQuery String representation of SPARQL query.
-	 * @return <code>Map&lt;String,List&lt;String&gt;&gt;</code> as table, where
-	 *         map key is column name and <code>List&lt;String&gt;</code> are
-	 *         string values in this column. When query is invalid, return *
-	 *         empty <code>Map</code>.
-	 * @throws InvalidQueryException when query is not valid.
-	 */
-	public Map<String, List<String>> executeSelectQuery(
-			String selectQuery)
-			throws InvalidQueryException;
-
-	/**
 	 * Set data graph storage for given data in RDF format.
 	 *
 	 * @param newDataGraph new graph representated as URI.
@@ -73,20 +59,4 @@ public interface ManagableRdfDataUnit extends RDFDataUnit, ManagableDataUnit {
 	 */
 	public long getResultSizeForQuery(String query) throws InvalidQueryException;
 
-	/**
-	 *
-	 * @return List of all application graphs keeps in Virtuoso storage in case
-	 *         of Virtuoso repository. When is used local repository as storage,
-	 *         this method return an empty list.
-	 */
-	public List<String> getApplicationGraphs();
-
-	/**
-	 * Delete all application graphs keeps in Virtuoso storage in case of
-	 * Virtuoso repository. When is used local repository as storage, this
-	 * method has no effect.
-	 *
-	 * @return Info string message about removing application graphs.
-	 */
-	public String deleteApplicationGraphs();
 }
