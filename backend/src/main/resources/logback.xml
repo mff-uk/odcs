@@ -10,6 +10,8 @@
     <logger name="org.eclipse.persistence" level="INFO" />
     <logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
     <logger name="org.apache.commons.httpclient" level="WARN" />
+    <logger name="httpclient.wire.header" level="WARN" />
+    <logger name="httpclient.wire.content" level="WARN" />
 
     <root level="ALL">	
         <appender-ref ref="STDOUT" />

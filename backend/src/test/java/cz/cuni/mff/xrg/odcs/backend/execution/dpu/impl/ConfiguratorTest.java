@@ -16,7 +16,10 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
@@ -34,6 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
  * Test suite for {@link Configurator} class.
@@ -66,7 +70,36 @@ public class ConfiguratorTest {
 				  ));
 		}
 		  writer.endRDF();
-		
+//			RepositoryConnection connection = null;
+//			try {
+//				connection = rdfDataUnit.getConnection();
+//				URI contextName = rdfDataUnit.getDataGraph();
+//				ValueFactory f = new MemValueFactory();
+//				connection.begin();
+//				for (int i = 1; i< 4000000;i++) {
+//					  connection.add(f.createStatement(
+//							  f.createURI("http://example.org/people/d" + String.valueOf(i++)),
+//							  f.createURI("http://example.org/ontology/e" + String.valueOf(i++)),
+//							  f.createLiteral("Alice"+ String.valueOf(i++))
+//							  ), contextName);
+//						if ((i % 100000) == 0) {
+//							connection.commit();
+//							LOG.debug("Number of triples {} ", i / 4);
+//							if (context.canceled()) {
+//								break;
+//							}
+//							connection.begin();
+//						}
+//				}
+//				connection.commit();
+//				LOG.debug("Number of triples {} ", connection.size(contextName));
+//			} catch (RepositoryException ex) {
+//				LOG.error("Error", ex);
+//				context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+//	                  .fillInStackTrace().toString());			
+//			} finally {
+//				if (connection !=null) try {connection.close();}catch (RepositoryException ex) {}
+//			}		
 	}
 	
 	/**

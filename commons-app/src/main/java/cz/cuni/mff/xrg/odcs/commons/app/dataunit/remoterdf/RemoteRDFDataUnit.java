@@ -74,7 +74,7 @@ public final class RemoteRDFDataUnit extends BaseRDFRepo {
 		try {
 			RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
 			if (repositoryManager instanceof RemoteRepositoryManager) {
-				if (user != null) {
+				if (user != null && !user.isEmpty()) {
 					((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
 				}
 			}
