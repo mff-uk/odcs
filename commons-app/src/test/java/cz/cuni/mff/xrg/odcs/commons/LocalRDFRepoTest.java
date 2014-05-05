@@ -21,6 +21,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.*;
+import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +177,7 @@ public class LocalRDFRepoTest {
 	@Test
 	public void loadRDFtoXMLFile() {
 
-		String fileName = "RDF_output.rdf";
+		String fileName = "RDF_output.ttl";
 
 		try {
             load(fileName);
