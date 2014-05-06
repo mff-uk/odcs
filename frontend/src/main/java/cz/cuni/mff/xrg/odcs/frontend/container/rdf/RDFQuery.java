@@ -5,7 +5,6 @@ import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
@@ -60,7 +59,7 @@ public class RDFQuery implements Query {
 		this.baseQuery = qd.getBaseQuery();
 		this.batchSize = qd.getBatchSize();
 		this.qd = qd;
-		this.repository = RDFDataUnitHelper
+		this.repository = RepositoryFrontendHelper
 				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 
 
@@ -228,7 +227,7 @@ public class RDFQuery implements Query {
 
 	private String setWhereCriteria(String query) {
 		List<Filter> filters = qd.getFilters();
-		return RDFDataUnitHelper.filterRDFQuery(query, filters);
+		return RepositoryFrontendHelper.filterRDFQuery(query, filters);
 	}
 
 	private Item toItem(RDFTriple triple) {

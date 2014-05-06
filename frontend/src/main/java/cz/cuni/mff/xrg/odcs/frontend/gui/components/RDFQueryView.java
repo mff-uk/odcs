@@ -15,7 +15,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -134,8 +133,8 @@ public class RDFQueryView extends QueryView {
 
 			@Override
 			public InputStream getStream() {
-				ManagableRdfDataUnit repository = getRepository(getSelectedDpu(),
-						getDataUnitInfo());
+                ManagableRdfDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(),
+                        getDataUnitInfo());
 				String query = getQuery();
 				if (repository == null || query == null) {
 					return null;
@@ -268,7 +267,8 @@ public class RDFQueryView extends QueryView {
 					}
 				}
 
-				ManagableRdfDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
+
+                ManagableRdfDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu,tableDataUnit);
 				return getDownloadData(tableRepo, tableQuery,
 						downloadFormatSelect.getValue(), filters);
 			}
@@ -281,17 +281,6 @@ public class RDFQueryView extends QueryView {
 
 		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
-	}
-
-	/**
-	 * Gets repository for selected DataUnit from context.
-	 *
-	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
-	 *
-	 */
-	ManagableRdfDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(getExecutionInfo(), dpu,
-				dataUnit);
 	}
 
 	/**
@@ -448,7 +437,7 @@ public class RDFQueryView extends QueryView {
             URI dataGraph = repository.getDataGraph();
 
             if (isSelectQuery) {
-                query = RDFDataUnitHelper.filterRDFQuery(query, filters);
+                query = RepositoryFrontendHelper.filterRDFQuery(query, filters);
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
