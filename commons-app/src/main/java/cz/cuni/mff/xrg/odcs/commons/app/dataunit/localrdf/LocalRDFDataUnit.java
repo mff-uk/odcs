@@ -202,7 +202,11 @@ public class LocalRDFDataUnit extends BaseRDFRepo {
 
 			String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
 			String targetGraphName = getDataGraph().stringValue();
-
+			
+			LOG.info("Trying to merge {} triples from <{}> to <{}>.",
+					connection.size(otherRDFDataUnit.getDataGraph()), sourceGraphName,
+					targetGraphName);
+			
 			String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
 					targetGraphName);
 
