@@ -1,9 +1,20 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
+import com.vaadin.data.Container;
+import com.vaadin.ui.UI;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
@@ -35,6 +46,88 @@ import org.openrdf.model.URI;
 
 public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
+
+    /**
+     * Return repository for specified RDF DataUnit.
+     * 
+     * @param executionInfo
+     *            The pipelineExecution context.
+     * @param dpuInstance
+     *            Owner of DataUnit.
+     * @param info
+     * @return Repository or null if there is no browser for given type.
+     */
+    public static ManagableRdfDataUnit getRepository(ExecutionInfo executionInfo,
+            DPUInstanceRecord dpuInstance, DataUnitInfo info) {
+
+        // get type and directory
+        if (info == null) {
+            // the context doesn't exist
+            return null;
+        }
+
+        //
+        if (executionInfo == null) {
+            log.error("executionInfo is null!");
+            return null;
+        }
+
+        DpuContextInfo dpuInfo = executionInfo.dpu(dpuInstance);
+        if (dpuInfo == null) {
+            log.error("DPU info is null!");
+            return null;
+        }
+        String dataUnitId = dpuInfo.createId(info.getIndex());
+
+        switch (info.getType()) {
+            case RDF:
+                try {
+                    RDFDataUnitFactory rdfDataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(
+                            RDFDataUnitFactory.class);
+
+                    String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
+
+                    ManagableRdfDataUnit repository =
+                            rdfDataUnitFactory.create(info.getName(), namedGraph);
+
+                    return repository;
+
+                } catch (RuntimeException e) {
+                    log.error("Error", e);
+                    return null;
+                }
+
+            default:
+                return null;
+        }
+
+    }
+
+    /**
+     * Filter RDF query.
+     * 
+     * @param query
+     *            Query to filter.
+     * @param filters
+     *            Filters to apply.
+     * @return Filtered query.
+     */
+    public static String filterRDFQuery(String query, Collection<Container.Filter> filters) {
+        if (filters == null) {
+            return query;
+        }
+
+        QueryFilterManager filterManager = new QueryFilterManager(query);
+        for (Container.Filter filter : filters) {
+            if (filter.getClass() == RDFRegexFilter.class) {
+                RDFRegexFilter rdfRegexFilter = (RDFRegexFilter) filter;
+                RegexFilter rf = new RegexFilter(rdfRegexFilter.getColumnName(),
+                        rdfRegexFilter.getRegex());
+                filterManager.addFilter(rf);
+            }
+        }
+        return filterManager.getFilteredQuery();
+    }
 
     public static File executeSelectQuery(RepositoryConnection connection, String selectQuery, String filePath,
             SelectFormatType selectType, URI dataGraph) throws InvalidQueryException {
@@ -411,12 +504,12 @@ public class RepositoryFrontendHelper {
 
     /**
      * Transform RDF in repository by SPARQL updateQuery.
-     *
-     *
-     *
-     * @param updateQuery String value of update SPARQL query.
+     * 
+     * @param updateQuery
+     *            String value of update SPARQL query.
      * @param dataset
-     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when transformation fault.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
+     *             when transformation fault.
      */
     public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph, Dataset dataset)
             throws RDFException {
@@ -450,7 +543,6 @@ public class RepositoryFrontendHelper {
 
             throw new RDFException(message + ex.getMessage(), ex);
 
-
         } catch (RepositoryException ex) {
             throw new RDFException(
                     "Connection to repository is not available. "
@@ -460,8 +552,8 @@ public class RepositoryFrontendHelper {
     }
 
     /**
-     *
-     * @param updateQuery String value of SPARQL update query.
+     * @param updateQuery
+     *            String value of SPARQL update query.
      * @return String extension of given update query works with set repository
      *         GRAPH.
      */
@@ -485,7 +577,6 @@ public class RepositoryFrontendHelper {
 
             String newQuery = first + graphName + second;
             return newQuery;
-
 
         } else {
 
@@ -519,17 +610,16 @@ public class RepositoryFrontendHelper {
         }
         return updateQuery;
 
-
     }
 
     /**
      * Delete all application graphs keeps in Virtuoso storage in case of
      * Virtuoso repository. When is used local repository as storage, this
      * method has no effect.
-     *
+     * 
      * @return Info string message about removing application graphs.
      */
-    public static  String deleteApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
+    public static String deleteApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
 
         List<String> graphs = getApplicationGraphs(connection, dataGraph);
 
@@ -567,7 +657,6 @@ public class RepositoryFrontendHelper {
     }
 
     /**
-     *
      * @return List of all application graphs keeps in Virtuoso storage in case
      *         of Virtuoso repository. When is used local repository as storage,
      *         this method return an empty list.
