@@ -101,9 +101,10 @@ public class ExportService {
 					// already saved				
 				} else {
 					savedTemplateId.add(template.getId());
+					// export jar file
+					saveDPUJar(template, zipStream);
 					// copy data
-					if (setting.isExportDPUUserData()) {
-						saveDPUJar(template, zipStream);
+					if (setting.isExportDPUUserData()) {						
 						saveDPUDataUser(template, user, zipStream);
 						saveDPUDataGlobal(template, zipStream);
 					}
