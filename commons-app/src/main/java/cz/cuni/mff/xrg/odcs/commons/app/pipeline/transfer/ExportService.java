@@ -47,13 +47,14 @@ public class ExportService {
 	 * Create a temp file and exportPipeline pipeline into it.
 	 *
 	 * @param pipeline
+	 * @param setting
 	 * @return File with exportPipelineed pipeline.
 	 * @throws ExportException
 	 */
-	public File exportPipeline(Pipeline pipeline) throws ExportException {
+	public File exportPipeline(Pipeline pipeline, ExportSetting setting) throws ExportException {
 		final File tempDir;
 		try {
-		tempDir = resourceManager.getNewExportTempDir();
+			tempDir = resourceManager.getNewExportTempDir();
 		} catch (MissingResourceException ex) {
 			throw new ExportException("Failed to get temp directory.", ex);
 		}
@@ -63,7 +64,7 @@ public class ExportService {
 		fileName.append(".zip");
 		
 		final File targetFile = new File(tempDir, fileName.toString());		
-		exportPipeline(pipeline, targetFile);
+		exportPipeline(pipeline, targetFile, setting);
 		return targetFile;
 	}
 
@@ -72,9 +73,10 @@ public class ExportService {
 	 *
 	 * @param pipeline
 	 * @param targetFile
+	 * @param setting
 	 * @throws ExportException
 	 */
-	public void exportPipeline(Pipeline pipeline, File targetFile)
+	public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting)
 			throws ExportException {
 
 		if (authCtx == null) {
@@ -100,9 +102,11 @@ public class ExportService {
 				} else {
 					savedTemplateId.add(template.getId());
 					// copy data
-					saveDPUJar(template, zipStream);
-					saveDPUDataUser(template, user, zipStream);
-					saveDPUDataGlobal(template, zipStream);
+					if (setting.isExportDPUUserData()) {
+						saveDPUJar(template, zipStream);
+						saveDPUDataUser(template, user, zipStream);
+						saveDPUDataGlobal(template, zipStream);
+					}
 				}
 			}
 		} catch (IOException ex) {

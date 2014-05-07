@@ -24,7 +24,6 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
@@ -63,7 +62,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
@@ -77,8 +75,6 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
@@ -89,13 +85,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineExport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.logging.Level;
+
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -737,38 +730,16 @@ public class PipelineEdit extends ViewComponent {
 		buttonExport = new Button("Export");
 		buttonExport.setHeight("25px");
 		buttonExport.setWidth("100px");
-
-		FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
-
+		buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
 			@Override
-			public String getFilename() {
-				return "pipeline.zip";
+			public void buttonClick(ClickEvent event) {
+				final PipelineExport dialog = new PipelineExport(exportService);
+				dialog.setData(pipeline);
+				UI.getCurrent().addWindow(dialog);
+				dialog.bringToFront();
 			}
-
-			@Override
-			public InputStream getStream() {
-				// TODO we should add some waiting dialog here, or 
-				//	we can split the action -> prepare download, download
-				LOG.debug("Constructing output stream.");
-				File pplFile;
-				try {
-					pplFile = exportService.exportPipeline(pipeline);
-				} catch (ExportException ex) {
-					LOG.error("Faield to export pipeline", ex);
-					Notification.show("Failed to export pipeline.", Notification.Type.ERROR_MESSAGE);
-					return null;
-				}
-				try {
-					return new FileInputStream(pplFile);
-				} catch (FileNotFoundException ex) {
-					LOG.error("Faield to load file with pipeline", ex);
-					Notification.show("Failed to export pipeline.", Notification.Type.ERROR_MESSAGE);
-					return null;
-				}
-			}
-			
 		});
-		fileDownloader.extend(buttonExport);
+		
 		
 		rightPartOfButtonBar.addComponent(buttonExport);
 		buttonBar.addComponent(rightPartOfButtonBar);
