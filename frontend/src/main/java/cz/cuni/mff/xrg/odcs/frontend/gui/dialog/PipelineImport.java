@@ -63,6 +63,13 @@ public class PipelineImport extends Window {
 		final GridLayout detailLayout = new GridLayout(2, 2);
 		detailLayout.setMargin(false);
 		detailLayout.setSpacing(true);
+		detailLayout.setSizeFull();
+		
+		detailLayout.setRowExpandRatio(0, 0);
+		detailLayout.setRowExpandRatio(1, 1);
+		
+		detailLayout.setColumnExpandRatio(0, 0);
+		detailLayout.setColumnExpandRatio(1, 1);
 		
 		{
 			Label lbl = new Label("Zip archive:");
@@ -75,6 +82,7 @@ public class PipelineImport extends Window {
 		txtUploadFile.setReadOnly(true);
 		txtUploadFile.setRequired(true);
 		detailLayout.addComponent(txtUploadFile, 1, 0);
+		detailLayout.setComponentAlignment(txtUploadFile, Alignment.MIDDLE_LEFT);
 					
 		fileUploadReceiver = new FileUploadReceiver();
 		final Upload upload = new Upload(null, fileUploadReceiver);
@@ -134,7 +142,8 @@ public class PipelineImport extends Window {
 		});
 		
 		detailLayout.addComponent(upload, 1, 1);
-		
+		detailLayout.setComponentAlignment(upload, Alignment.TOP_LEFT);
+				
 		// bottom buttons
 		
 		HorizontalLayout buttonLayout = new HorizontalLayout();		
