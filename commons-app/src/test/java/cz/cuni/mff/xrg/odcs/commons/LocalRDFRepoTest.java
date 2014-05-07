@@ -539,10 +539,10 @@ public class LocalRDFRepoTest {
 	 */
 	@After
 	public void cleanUp() {
+        rdfRepo.clear();
+        rdfRepo.release();
 		deleteDirectory(pathRepo.toFile());
 		deleteDirectory(new File(outDir.toString()));
-		rdfRepo.clear();
-		rdfRepo.release();
 
 	}
 

@@ -142,13 +142,7 @@ class ContextMerger {
 							"Failed to create input object.", e);
 				}
 			}
-			
-			// for debug purpose
-			if (targetDataUnit instanceof RDFDataUnit) {
-				RDFDataUnit rdf = (RDFDataUnit)targetDataUnit;
-				LOG.debug("Number of triples in {} is {}", rdf.getDataUnitName(), rdf.getTripleCount());
-			}
-						
+									
 			// and copy the data
 			try {
 				LOG.debug("Called {}.merge({})", targetDataUnit.getDataUnitName(), source.getDataUnitName());
@@ -158,12 +152,6 @@ class ContextMerger {
 						"Can't merge data units, type miss match.", e);
 			} catch (Throwable t) {
 				throw new ContextException("Can't merge data units.", t);
-			}
-			
-			// for debug purpose
-			if (targetDataUnit instanceof RDFDataUnit) {
-				RDFDataUnit rdf = (RDFDataUnit)targetDataUnit;
-				LOG.debug("Number of triples in {} is {}", rdf.getDataUnitName(), rdf.getTripleCount());
 			}
 		}
 	}
