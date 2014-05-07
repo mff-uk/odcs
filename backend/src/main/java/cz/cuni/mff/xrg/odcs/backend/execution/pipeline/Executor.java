@@ -383,9 +383,6 @@ public class Executor implements Runnable {
 						node.getDpuInstance(), execution, this));
 			}
 			execResult.add(dpuResults);
-			// remove MDC from logs
-			MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
-
 		}
 
 		// apost executors are comming
@@ -440,6 +437,8 @@ public class Executor implements Runnable {
 			// ok stop waiting and end 
 		}
 
+		LOG.trace("Saving pipeline chanegs into SQL ..");
+		
 		// save the execution
 		try {
 			pipelineFacade.save(execution);
@@ -451,7 +450,7 @@ public class Executor implements Runnable {
 		// those we flush into database
 		// and then we change the state, which cause the frontneds refresh
 		// to top .. but before that all the data will be ready in the database
-		LOG.debug("Execution thread is about to finish .. ");
+		LOG.debug("Execution thread is about to finish ..");
 
 		// unregister MDC execution filter
 		MdcExecutionLevelFilter.remove(executionId);

@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import java.net.ConnectException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +23,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -35,10 +30,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
+import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
-import java.util.Date;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -71,19 +66,13 @@ public class AppEntry extends com.vaadin.ui.UI {
 	private String actualView = null;
 
 	@Autowired
-	private AppConfig appConfiguration;
-
-	@Autowired
 	private AuthenticationContext authCtx;
 
 	@Autowired
 	private AuthenticationService authService;
 	
 	@Autowired
-	private CheckDatabaseService checkDatabaseService;
-	
-	@Autowired
-	private HeartbeatService heartbeatService;
+	private BackendHeartbeat heartbeatService;
 
 	@Override
 	protected void init(com.vaadin.server.VaadinRequest request) {
@@ -260,24 +249,18 @@ public class AppEntry extends com.vaadin.ui.UI {
 		refresher.setRefreshInterval(RefreshManager.REFRESH_INTERVAL);
 		addExtension(refresher);
 		refreshManager = new RefreshManager(refresher);
-		refreshManager.addListener(RefreshManager.BACKEND_STATUS, new Refresher.RefreshListener() {
-			private boolean lastBackendStatus = false;
-			private long lastUpdateFinished = 0;
-
-			@Override
-			public void refresh(Refresher source) {
-				boolean isRunning = false; 
-				try {
-					isRunning= heartbeatService.isAlive();
-				} catch (Exception ex) {
-				}
-					if (lastBackendStatus != isRunning) {
-						lastBackendStatus = isRunning;
-						main.refreshBackendStatus(lastBackendStatus);
+		refreshManager.addListener(RefreshManager.BACKEND_STATUS,
+				new Refresher.RefreshListener() {
+					private boolean lastBackendStatus = false;
+					@Override
+					public void refresh(Refresher source) {
+						boolean isRunning = heartbeatService.checkIsAlive();
+						if (lastBackendStatus != isRunning) {
+							lastBackendStatus = isRunning;
+							main.refreshBackendStatus(lastBackendStatus);
+						}
 					}
-					lastUpdateFinished = new Date().getTime();
-				}
-		});
+				});
 	}
 
 	/**

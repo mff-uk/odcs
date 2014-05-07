@@ -85,6 +85,8 @@ public interface DPUFacade extends Facade {
 	 */
 	List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent);
 
+	DPUTemplateRecord getByDirectory(String jarDirectory);
+	
 	/* **************** Methods for DPUInstanceRecord Instance management ***************** */
 
 	/**
@@ -156,5 +158,5 @@ public interface DPUFacade extends Facade {
 	 * @param record
 	 */
 	void delete(MessageRecord record);
-	
+
 }

@@ -131,6 +131,48 @@ public class TestContext implements DPUContext {
 	}
 
 	@Override
+	public void sendMessage(MessageType type, String shortMessage,
+			String fullMessage, Exception exception) {
+		switch (type) {
+			case DEBUG:
+				LOG.debug("DPU publish message short: '{}' long: '{}'",
+						shortMessage,
+						fullMessage, 
+						exception);
+				break;
+			case ERROR:
+				LOG.error("DPU publish message short: '{}' long: '{}'",
+						shortMessage,
+						fullMessage, 
+						exception);
+				publishedError = true;
+				break;
+			case INFO:
+				LOG.info("DPU publish message short: '{}' long: '{}'",
+						shortMessage,
+						fullMessage, 
+						exception);
+				break;
+			case WARNING:
+				LOG.warn("DPU publish message short: '{}' long: '{}'",
+						shortMessage,
+						fullMessage, 
+						exception);
+				publishedWarning = true;
+				break;
+			case TERMINATION_REQUEST:
+				LOG.info(
+						"DPU publish termination message short: '{}' long: '{}'",
+						shortMessage,
+						fullMessage, 
+						exception);
+				break;
+		}
+	}
+
+	
+	
+	@Override
 	public boolean isDebugging() {
 		return false;
 	}

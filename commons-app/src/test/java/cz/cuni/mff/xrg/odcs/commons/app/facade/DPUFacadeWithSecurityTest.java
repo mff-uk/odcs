@@ -1,17 +1,13 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Test suite for DPU facade interface. Each test is run in own transaction,
@@ -19,17 +15,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  *
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml","classpath:commons-app-test-context-security.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration(locations = {"classpath:commons-app-test-context-security.xml"})
 public class DPUFacadeWithSecurityTest extends DPUFacadeTest {
+	
 	@Autowired
 	@Qualifier("authenticationManager")
 	private AuthenticationManager authManager;
 	
 	@Autowired
 	private UserFacade userFacade;
-
 	
 	@Before
 	public void before() {
@@ -39,4 +33,5 @@ public class DPUFacadeWithSecurityTest extends DPUFacadeTest {
 			SecurityContextHolder.getContext().setAuthentication(authManager.authenticate(token));
 		}
 	}
+	
 }

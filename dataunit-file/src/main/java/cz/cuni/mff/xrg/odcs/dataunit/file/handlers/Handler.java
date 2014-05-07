@@ -78,4 +78,12 @@ public interface Handler {
 	 *         used as {@link Handler}'s id.
 	 */
 	String getRootedPath();
+        
+        /**
+         * Normalizes file name of the create file, so that DPU developer will not get 
+         * warning when creating file containing special characters that may not be supported on certain platforms
+         * @param origString Original file name suggested by DPU developer
+         * @return Normalized file name which will be created
+         */
+        public String normalizeFileName(String origString);
 }

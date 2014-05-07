@@ -228,13 +228,11 @@ public class VirtuosoSequenceSanitizerAspect {
 	}
 	
 	private void remember() {
-		LOG.debug("Enabling cache for changes in primary keys.");
 		REMEMBER_SEQ_ASSIGN.set(Boolean.TRUE);
 		SEQ_ASSIGNMENTS.set(new HashMap<DataObject, Long>());
 	}
 	
 	private void forget() {
-		LOG.debug("Disabling and purging cache for changes in primary keys.");
 		REMEMBER_SEQ_ASSIGN.set(Boolean.FALSE);
 		SEQ_ASSIGNMENTS.set(null);
 	}

@@ -11,6 +11,10 @@
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
 	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
 
+	<!-- Scan validators -->
+	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.dpu.validator"/>
+	
+	
     <!-- Application configuration is taken from war file, so we override it. -->
     <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
         <constructor-arg value="/WEB-INF/config.properties" />
@@ -30,9 +34,13 @@
         <constructor-arg name="refreshDatabase" value="true"/>
     </bean>
 	
+	<!-- service for pipeline import-export -->
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService" />
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService" />
+
     <!-- bean that provide functionality for manipulating with DPUs -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
-
+	
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
@@ -93,13 +101,18 @@
 		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
 		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
 		<property name="refreshStubOnConnectFailure"><value>true</value></property>
+		<!-- if the RMI servrs is offline on start up then don't die -->
 		<property name="lookupStubOnStartup" value="false"/>		
 	</bean>
-    
+		
 	<bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
 		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
 		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
 		<property name="refreshStubOnConnectFailure"><value>true</value></property>
-		<property name="lookupStubOnStartup" value="false"/>		
+		<!-- if the RMI servrs is offline on start up then don't die -->
+		<property name="lookupStubOnStartup" value="false" />
 	</bean>
+	
+	<bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat" />
+	
 </beans>

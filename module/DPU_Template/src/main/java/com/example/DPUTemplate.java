@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer
 public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
-		implements 
+		implements
 		// If you do not want the dialog, delete the following line
 		// 	and getConfigurationDialog function
 		ConfigDialogProvider<DPUTemplateConfig> 
@@ -20,10 +20,10 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
 	
 	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfInput;
-	
+
 	@OutputDataUnit
 	public RDFDataUnit rdfOutput;
-	
+
 	public DPUTemplate() {
 		super(DPUTemplateConfig.class);
 	}
@@ -33,15 +33,15 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
 		return new DPUTemplateDialog();
 	}
 
-        // TODO 2: Implement the method execute being called when the DPU is launched
+	// TODO 2: Implement the method execute being called when the DPU is launched
 	@Override
 	public void execute(DPUContext context)
 			throws DPUException,
-				DataUnitException {
-		
+			DataUnitException {
+
 		// DPU's configuration is accessible under 'this.config' 
-                // DPU's context is accessible under 'context'
-                // DPU's data units are accessible under 'rdfInput' and 'rdfOutput'
+		// DPU's context is accessible under 'context'
+		// DPU's data units are accessible under 'rdfInput' and 'rdfOutput'
 	}
-	
+
 }

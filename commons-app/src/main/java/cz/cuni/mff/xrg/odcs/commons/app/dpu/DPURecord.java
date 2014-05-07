@@ -7,8 +7,6 @@ import javax.persistence.*;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Represent imported DPU in database.
@@ -21,6 +19,8 @@ import org.slf4j.LoggerFactory;
 @MappedSuperclass
 public abstract class DPURecord implements DataObject {
 
+	private final static String NULL_CONFIG = "<null configuration/>";
+	
 	/**
 	 * Primary key of graph stored in db
 	 */
@@ -38,6 +38,7 @@ public abstract class DPURecord implements DataObject {
 	/**
 	 * If true then the value of {@link #description} has been created by DPU's
 	 * dialog.
+	 * TODO: Rename
 	 */
 	@Column(name = "use_dpu_description")
 	private boolean useDPUDescription;
@@ -52,11 +53,13 @@ public abstract class DPURecord implements DataObject {
 	 * DPU's configuration in serialized version.
 	 */
 	@Column(name = "configuration")
-	private byte[] serializedConfiguration;
+	private byte[] serializedConfiguration = NULL_CONFIG.getBytes();
 
 	/**
 	 * If true configuration is in valid state.
+	 * TODO: Remove as it's not used
 	 */
+	@Deprecated
 	@Column(name = "config_valid", nullable = false)
 	private boolean configValid;
 
@@ -95,7 +98,8 @@ public abstract class DPURecord implements DataObject {
 			this.serializedConfiguration = null;
 		} else {
 			// deep copy
-			this.serializedConfiguration = dpuRecord.serializedConfiguration.clone();
+			this.serializedConfiguration = dpuRecord.serializedConfiguration
+					.clone();
 		}
 		this.configValid = dpuRecord.configValid;
 	}
@@ -118,26 +122,24 @@ public abstract class DPURecord implements DataObject {
 
 	/**
 	 *
-	 * @return False if the DPU description should be generated from
-	 *         configuration in case that the user provided description is
-	 *         empty.
+	 * @return If true then the value of {@link #description} has been created
+	 *         by DPU's dialog.
 	 */
-	public boolean useDPUDescription() {
+	public boolean isUseDPUDescription() {
 		return useDPUDescription;
 	}
 
 	/**
-	 * 
-	 * @param useDPUDescription False if the DPU description should be generated from
-	 *         configuration in case that the user provided description is
-	 *         empty.
+	 *
+	 * @param useDPUDescription If true then the value of {@link #description}
+	 *                          has been created by DPU's dialog.
 	 */
 	public void setUseDPUDescription(boolean useDPUDescription) {
 		this.useDPUDescription = useDPUDescription;
 	}
-
+	
 	/**
-	 * 
+	 *
 	 * @return DPU's description.
 	 */
 	public String getDescription() {
@@ -145,13 +147,14 @@ public abstract class DPURecord implements DataObject {
 	}
 
 	/**
-	 * 
-	 * @param newDescription New DPU description. 
+	 *
+	 * @param newDescription New DPU description.
 	 */
 	public void setDescription(String newDescription) {
 		this.description = newDescription;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -195,8 +198,14 @@ public abstract class DPURecord implements DataObject {
 	public String getRawConf() {
 		if (serializedConfiguration == null) {
 			return null;
+		}
+		// workaround for null configurations
+		// the null configuratino is not supported by virtuoso jdbc driver
+		final String configuration = new String(serializedConfiguration);		
+		if (NULL_CONFIG.equals(configuration)) {
+			return null;
 		} else {
-			return new String(serializedConfiguration);
+			return configuration;
 		}
 	}
 
@@ -206,7 +215,8 @@ public abstract class DPURecord implements DataObject {
 	 * @param conf
 	 */
 	public void setRawConf(String conf) {
-		serializedConfiguration = conf.getBytes();
+		// workaround for null configurations
+		serializedConfiguration = StringUtils.defaultString(conf, NULL_CONFIG).getBytes();
 	}
 
 	/**

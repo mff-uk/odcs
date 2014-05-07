@@ -8,6 +8,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
@@ -44,7 +46,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 	private IntlibPagedTable tablePipelines;
 	
 	private Button btnCreatePipeline;
-	
+
+	private Button btnImportPipeline;
+		
 	@Autowired
 	private Utils utils;
 
@@ -75,6 +79,19 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 		});
 		topLine.addComponent(btnCreatePipeline);
 
+		btnImportPipeline = new Button();
+		btnImportPipeline.setCaption("Import pipeline");
+		btnImportPipeline.setHeight("25px");
+		btnImportPipeline.setWidth("120px");
+		btnImportPipeline.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				presenter.importPipeline();
+			}
+		});		
+		topLine.addComponent(btnImportPipeline);	
+		
 		Button buttonDeleteFilters = new Button();
 		buttonDeleteFilters.setCaption("Clear Filters");
 		buttonDeleteFilters.setHeight("25px");
@@ -87,7 +104,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 			}
 		});
 		topLine.addComponent(buttonDeleteFilters);
-
+	
 		mainLayout.addComponent(topLine);
 
 		tablePipelines = new IntlibPagedTable();

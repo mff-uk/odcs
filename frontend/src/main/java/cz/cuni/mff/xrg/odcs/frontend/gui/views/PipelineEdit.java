@@ -61,6 +61,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
@@ -84,8 +85,10 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.GraphChangedE
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineExport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+
 
 /**
  * Page for creating new pipeline or editing existing pipeline.
@@ -134,6 +137,7 @@ public class PipelineEdit extends ViewComponent {
 	Button buttonConflicts;
 	Button buttonCopy;
 	Button buttonCopyAndClose;
+	Button buttonExport;
 	private Button btnMinimize;
 	private Button btnExpand;
 	//Paralel editing components
@@ -168,6 +172,9 @@ public class PipelineEdit extends ViewComponent {
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private ExportService exportService;
+	
 	/**
 	 * Empty constructor.
 	 */
@@ -719,8 +726,24 @@ public class PipelineEdit extends ViewComponent {
 			}
 		});
 		rightPartOfButtonBar.addComponent(buttonCancel);
+		
+		buttonExport = new Button("Export");
+		buttonExport.setHeight("25px");
+		buttonExport.setWidth("100px");
+		buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				final PipelineExport dialog = new PipelineExport(exportService);
+				dialog.setData(pipeline);
+				UI.getCurrent().addWindow(dialog);
+				dialog.bringToFront();
+			}
+		});
+		
+		
+		rightPartOfButtonBar.addComponent(buttonExport);
 		buttonBar.addComponent(rightPartOfButtonBar);
-
+		
 		buttonBar.setSpacing(true);
 		layout.addComponent(buttonBar);
 
@@ -990,6 +1013,8 @@ public class PipelineEdit extends ViewComponent {
 		buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("save"));
 		buttonCopy.setEnabled(!isNew && hasPermission("copy"));
 		buttonCopyAndClose.setEnabled(!isNew && hasPermission("copy"));
+		// we reuse copy permision for exportPipeline
+		buttonExport.setEnabled(hasPermission("copy"));
 	}
 
 	/**
@@ -1109,7 +1134,7 @@ public class PipelineEdit extends ViewComponent {
 			this.pipeline = pipelineFacade.createPipeline();
 			pipeline.setName("");
 			pipeline.setDescription("");
-			pipeline.setVisibility(ShareType.PRIVATE);
+			pipeline.setShareType(ShareType.PRIVATE);
 			pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
 			setIdLabel(null);
 			author.setValue(authCtx.getUsername());
@@ -1175,7 +1200,7 @@ public class PipelineEdit extends ViewComponent {
 		this.pipeline.setDescription(pipelineDescription.getValue());
 		pipelineDescription.commit();
 
-		this.pipeline.setVisibility(visibility);
+		this.pipeline.setShareType(visibility);
 		pipelineVisibility.commit();
 
 		pipelineFacade.save(this.pipeline);

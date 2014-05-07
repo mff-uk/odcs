@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import org.springframework.test.annotation.DirtiesContext;
 
 // TODO Test create the instances directly what may cause problem with for example security context.
 //	The create methods on facades should be used instead.
@@ -55,6 +56,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PipelineFacadeTest {
 
 	@PersistenceContext
@@ -129,7 +131,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("pdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		pipelineFacade.save(pipeline);
 
@@ -206,7 +208,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 
 		Pipeline pipeline2 = pipelineFacade.createPipeline();
@@ -215,7 +217,7 @@ public class PipelineFacadeTest {
 		pipeline2.setLastChange(new Date());
 		pipeline2.setName("testName2");
 		pipeline2.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline2.setVisibility(ShareType.PUBLIC_RO);
+		pipeline2.setShareType(ShareType.PUBLIC_RO);
 		pipeline2.getConflicts().add(pipeline2);
 
 		pipelineFacade.save(pipeline);
@@ -241,7 +243,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 
 		Pipeline pipeline2 = pipelineFacade.createPipeline();
@@ -250,7 +252,7 @@ public class PipelineFacadeTest {
 		pipeline2.setLastChange(new Date());
 		pipeline2.setName("testName2");
 		pipeline2.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline2.setVisibility(ShareType.PUBLIC_RO);
+		pipeline2.setShareType(ShareType.PUBLIC_RO);
 		pipeline2.getConflicts().add(pipeline2);
 
 		pipelineFacade.save(pipeline);
@@ -283,7 +285,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 
 		pipelineFacade.save(pipeline);
@@ -312,7 +314,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 
 		pipelineFacade.save(pipeline);
@@ -362,7 +364,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -388,7 +390,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 
 		Pipeline pipeline2 = pipelineFacade.createPipeline();
@@ -397,7 +399,7 @@ public class PipelineFacadeTest {
 		pipeline2.setLastChange(new Date());
 		pipeline2.setName("testName2");
 		pipeline2.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline2.setVisibility(ShareType.PUBLIC_RO);
+		pipeline2.setShareType(ShareType.PUBLIC_RO);
 		pipeline2.getConflicts().add(pipeline2);
 		pipelineFacade.save(pipeline);
 		pipelineFacade.save(pipeline2);
@@ -433,7 +435,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -444,7 +446,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -461,7 +463,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 //		pipelineFacade.save(pipeline);
@@ -494,7 +496,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -505,7 +507,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -522,7 +524,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 
@@ -585,7 +587,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -596,7 +598,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -613,7 +615,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		
@@ -652,7 +654,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -663,7 +665,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -680,7 +682,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -727,7 +729,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -738,7 +740,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -755,7 +757,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -793,7 +795,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -804,7 +806,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -821,7 +823,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -861,7 +863,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -872,7 +874,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -889,7 +891,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -926,7 +928,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -937,7 +939,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -954,7 +956,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -996,7 +998,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1007,7 +1009,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1024,7 +1026,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1065,7 +1067,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1076,7 +1078,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1093,7 +1095,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1138,7 +1140,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1149,7 +1151,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1166,7 +1168,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1214,7 +1216,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1225,7 +1227,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1242,7 +1244,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1285,7 +1287,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1296,7 +1298,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1313,7 +1315,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1384,7 +1386,7 @@ public class PipelineFacadeTest {
 //		templateRecord.setJarDescription("testJarDescription");
 //		templateRecord.setJarDirectory("testJarDirectory");
 //		templateRecord.setJarName("testJarName");
-//		templateRecord.setVisibility(ShareType.PRIVATE);
+//		templateRecord.setShareType(ShareType.PRIVATE);
 //		templateRecord.setParent(parentTemplateRecord);
 //		dpuFacade.save(parentTemplateRecord);
 //		dpuFacade.save(templateRecord);
@@ -1395,7 +1397,7 @@ public class PipelineFacadeTest {
 //		templateRecord2.setJarDescription("testJarDescription2");
 //		templateRecord2.setJarDirectory("testJarDirectory2");
 //		templateRecord2.setJarName("testJarName2");
-//		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+//		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 //		templateRecord2.setParent(parentTemplateRecord);
 //		dpuFacade.save(templateRecord2);
 //		
@@ -1412,7 +1414,7 @@ public class PipelineFacadeTest {
 //		pipeline.setLastChange(new Date());
 //		pipeline.setName("testName");
 //		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-//		pipeline.setVisibility(ShareType.PUBLIC_RO);
+//		pipeline.setShareType(ShareType.PUBLIC_RO);
 //		pipeline.getConflicts().add(pipeline);
 //		dpuFacade.save(dpuInstanceRecord);
 //		pipelineFacade.save(pipeline);
@@ -1450,7 +1452,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1461,7 +1463,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1478,7 +1480,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1512,7 +1514,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1523,7 +1525,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1540,7 +1542,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);
@@ -1581,7 +1583,7 @@ public class PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -1592,7 +1594,7 @@ public class PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -1609,7 +1611,7 @@ public class PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 		pipelineFacade.save(pipeline);

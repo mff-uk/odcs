@@ -151,13 +151,13 @@ public class DPUTemplateRecord extends DPURecord
 	public ShareType getShareType() {
 		return shareType;
 	}
-
+	
 	/**
 	 * 
-	 * @param visibility New template visibility.
+	 * @param shareType New template ShareType.
 	 */
-	public void setVisibility(ShareType visibility) {
-		this.shareType = visibility;
+	public void setShareType(ShareType shareType) {
+		this.shareType = shareType;
 	}
 
 	/**

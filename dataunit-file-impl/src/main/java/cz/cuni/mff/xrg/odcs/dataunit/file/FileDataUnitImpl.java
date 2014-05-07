@@ -61,6 +61,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	}
 
 	@Override
+	public void madeReadOnly() {
+		
+	}
+
+	@Override
 	public void merge(DataUnit unit) throws IllegalArgumentException {
 		if (unit instanceof FileDataUnitImpl) {
 			// ok we can merge
@@ -130,6 +135,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	@Override
 	public DirectoryHandler getRootDir() {
 		return this.rootDirHandler;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return false;
 	}
 
 	@Override

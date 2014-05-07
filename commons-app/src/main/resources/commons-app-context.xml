@@ -23,7 +23,8 @@
 		<property name="locations">
 			<list>
 				<value>file:${user.home}/.odcs/config.properties</value>
- 				<value>file:${configFileLocation}</value>				
+ 				<value>file:${configFileLocation}</value>	
+                                <value>/WEB-INF/config.properties</value>			
 			</list>
 		</property>
 	</bean>
@@ -114,5 +115,6 @@
     
     <!-- translator for ODCS filters -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator" />
-   
+   	
+	<bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager" />			
 </beans>

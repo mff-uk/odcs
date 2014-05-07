@@ -46,6 +46,9 @@ public class DPUModuleManipulator {
 	@Autowired
 	private ModuleChangeNotifier notifier;
 
+	@Autowired
+	private List<DPUValidator> validators;	
+	
 	/**
 	 * Create {@link DPUTemplateRecord} for given DPU. If creation is successful
 	 * the DPU is loaded into application and is presented in DPU directory. The
@@ -65,13 +68,11 @@ public class DPUModuleManipulator {
 	 * </p>
 	 * @param sourceFile File from which load the dpu.
 	 * @param name DPU's name.
-	 * @param validators Validators for DPU checking, can be null.
 	 * @return new instance of {@link DPUTemplateRecord}
 	 * @throws DPUCreateException
 	 */
 	public DPUTemplateRecord create(File sourceFile,
-			String name,
-			List<DPUValidator> validators) throws DPUCreateException {
+			String name) throws DPUCreateException {
 		if (sourceFile == null) {
 			// failed to load file
 			throw new DPUCreateException(
@@ -175,7 +176,7 @@ public class DPUModuleManipulator {
 		newTemplate.setType(dpuType);
 		newTemplate.setDescription("");
 		newTemplate.setJarDescription(jarDescription);
-		newTemplate.setVisibility(ShareType.PRIVATE);
+		newTemplate.setShareType(ShareType.PRIVATE);
 
 		// validate
 		if (validators != null) {
@@ -243,12 +244,10 @@ public class DPUModuleManipulator {
 	 * 
 	 * @param dpu DPU to replace.
 	 * @param sourceDpuFile File that should replace given DPU's jar file.
-	 * @param validators Validators for DPU checking, can be null.
 	 * @throws DPUReplaceException
 	 */
 	public void replace(DPUTemplateRecord dpu,
-			File sourceDpuFile,
-			List<DPUValidator> validators) throws DPUReplaceException {
+			File sourceDpuFile) throws DPUReplaceException {
 		// get file to the source and to the originalDPU
 		final File originalDpuFile = new File(moduleFacade.getDPUDirectory(),
 				dpu.getJarPath());

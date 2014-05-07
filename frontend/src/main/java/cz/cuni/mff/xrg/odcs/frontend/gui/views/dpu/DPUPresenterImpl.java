@@ -21,7 +21,6 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
@@ -72,6 +71,7 @@ public class DPUPresenterImpl implements DPUPresenter {
 	@Autowired
 	private DPUFacade dpuFacade;
 	private Window.CloseListener createDPUCloseListener;
+	
 	private static final Logger LOG = LoggerFactory.getLogger(DPUPresenterImpl.class);
 	/**
 	 * Cache for pipelines using currently selected DPU template.
@@ -235,12 +235,8 @@ public class DPUPresenterImpl implements DPUPresenter {
 			return;
 		}
 
-		// prepare dpu validators
-		List<DPUValidator> validators = new LinkedList<>();
-		validators.add(new DPUDialogValidator());
-
 		try {
-			dpuManipulator.replace(dpu, newJar, validators);
+			dpuManipulator.replace(dpu, newJar);
 		} catch (DPUReplaceException e) {
 			Notification.show("Failed to replace DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			return;

@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * Test suite for schedule facade interface. Each test is run in own
@@ -40,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 @ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ScheduleFacadeTest {
 
     @PersistenceContext
@@ -507,5 +509,64 @@ public class ScheduleFacadeTest {
         assertTrue(executions2.get(0).getSchedule().isEnabled());
         assertEquals(pipeline2, executions2.get(0).getPipeline());
         assertEquals(schedule2, executions2.get(0).getSchedule());    
-    }    
+    }
+	
+	/**
+	 * Test of getAllSchedules method, of class ScheduleFacade.
+	 */
+	@Test
+	public void testGetAllSchedules() {
+		List<Schedule> result = scheduleFacade.getAllSchedules();
+		assertEquals(2, result.size());
+	}	
+
+	/**
+	 * Test of fetching email notification settings for schedule.
+	 */
+	@Test
+	public void testGetNotification() {
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		
+		assertNotNull(sch);
+		assertNotNull(sch.getNotification());
+		assertNotNull(sch.getNotification().getEmails());
+		assertEquals(1, sch.getNotification().getEmails().size());
+		
+		EmailAddress email = sch.getNotification().getEmails().iterator().next();
+		assertEquals("scheduler@example.com", email.getEmail());
+	}
+	
+	/**
+	 * Test deleting schedule notification.
+	 */
+	@Test @Transactional
+	public void testDeleteScheduleNotification() {
+		
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		assertNotNull(sch);
+		assertNotNull(sch.getNotification());
+		
+		scheduleFacade.deleteNotification(sch.getNotification());
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduleFacade.getSchedule(1L);
+		assertNotNull(ret);
+		assertNull(ret.getNotification());
+	}
+	
+	@Test @Transactional
+	public void testChangeLastExecution() {
+		Date now = new Date();
+		Schedule sch = scheduleFacade.getSchedule(1L);
+		sch.setLastExecution(now);
+		scheduleFacade.save(sch);
+		
+		em.flush();
+		em.clear();
+		
+		Schedule ret = scheduleFacade.getSchedule(1L);
+		assertEquals(now, ret.getLastExecution());
+	}	
+	
 }

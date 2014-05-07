@@ -50,6 +50,22 @@ public interface DPUContext {
 			String fullMessage);	
 	
 	/**
+	 * Send message about execution. If {@link MessageType#ERROR} message
+	 * is published then the execution is stopped after current DPU and the 
+	 * whole execution failed.
+	 * 
+	 * @param type Type of message.
+	 * @param shortMessage Short message, should not be more than 50 chars.
+	 * @param fullMessage The full text of the message can be longer then
+	 *            shortMessage.
+	 * @param exception Exception to add to the message.
+	 */	
+	public void sendMessage(MessageType type,
+			String shortMessage,
+			String fullMessage,
+			Exception exception);	
+	
+	/**
 	 * 
 	 * @return True if the DPU is running in debugging mode.
 	 */

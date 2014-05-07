@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.remoting.RemoteAccessException;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -52,12 +51,9 @@ public class PipelineHelper {
 		if (inDebugMode && debugNode != null) {
 			pipelineExec.setDebugNode(debugNode);
 		}
-//		Client client = ((AppEntry)UI.getCurrent()).getBackendClient();
+
 		try {
-//			if (client.connect()) {
 				pipelineFacade.save(pipelineExec);
-//			}
-//			client.checkDatabase();
 			checkDatabaseService.checkDatabase();
 		} catch (RemoteAccessException e) {
 			ConfirmDialog.show(UI.getCurrent(), "Pipeline execution", "Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?", "Schedule", "Cancel", new ConfirmDialog.Listener() {
@@ -70,8 +66,6 @@ public class PipelineHelper {
 					}
 				}
 			});
-			//            Notification.show("Error", "Can't connect to backend. Exception: " + e.getCause().getMessage(),
-			//                    Notification.Type.ERROR_MESSAGE);
 			return null;
 		}
 		Notification.show("Pipeline execution started ..", Notification.Type.HUMANIZED_MESSAGE);

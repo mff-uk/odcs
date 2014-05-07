@@ -89,7 +89,7 @@ class RdfDatabase {
 	 * Try to connect to rdf repository and as a simple query. The execution of
 	 * this method should least a few seconds.
 	 */
-	@Scheduled(fixedDelay = 4 * 1000 ) // * 60 * 1000)
+	@Scheduled(fixedDelay = 4 * 60 * 1000)
 	public void executeQuery() {
 		if (!doCheck) {
 			return;
@@ -132,11 +132,6 @@ class RdfDatabase {
 			queryEnd = new Date();
 			return;
 		}
-		try {
-			Thread.sleep(1000 * 120);
-		} catch (InterruptedException ex) {
-			
-		}
 		
         VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
         RepositoryConnection connection = null;
@@ -173,7 +168,7 @@ class RdfDatabase {
         tupleQuery.evaluate();
     }
 
-    @Scheduled(fixedDelay = 1 * 60 * 1000)
+    @Scheduled(fixedDelay = 3 * 60 * 1000)
 	public void check() {
 		if (!doCheck) {
 			return;

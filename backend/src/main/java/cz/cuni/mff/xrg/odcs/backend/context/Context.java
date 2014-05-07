@@ -23,6 +23,8 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class Context implements DPUContext {
 
@@ -263,6 +265,22 @@ public class Context implements DPUContext {
 	public void sendMessage(MessageType type,
 			String shortMessage,
 			String fullMessage) {
+		sendMessage(type, shortMessage, fullMessage, null);
+	}
+
+	@Override
+	public void sendMessage(MessageType type,
+			String shortMessage,
+			String fullMessage, 
+			Exception exception) {
+		if (exception != null) {
+			// add log to the fullMessage
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			exception.printStackTrace(pw);
+			fullMessage = fullMessage + "<br/><br/>Exception:<br/>" + sw.toString();
+		}
+		
 		eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
 				type, this, this));
 		// set warningMessage and errorMessage 
@@ -278,8 +296,8 @@ public class Context implements DPUContext {
 				break;
 			default:
 		}
-	}
-
+	}	
+	
 	@Override
 	public boolean isDebugging() {
 		return contextInfo.getExecution().isDebugging();

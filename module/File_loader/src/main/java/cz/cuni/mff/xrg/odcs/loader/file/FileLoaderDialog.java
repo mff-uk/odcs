@@ -233,7 +233,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 		// ......
 		
 		checkBoxCopyInput = new CheckBox();
-		checkBoxCopyInput.setCaption("Copy input to output");
+		checkBoxCopyInput.setCaption("Forward input also to (file data unit) output");
 		checkBoxCopyInput.setImmediate(false);
 		checkBoxCopyInput.setWidth("-1px");
 		checkBoxCopyInput.setHeight("-1px");

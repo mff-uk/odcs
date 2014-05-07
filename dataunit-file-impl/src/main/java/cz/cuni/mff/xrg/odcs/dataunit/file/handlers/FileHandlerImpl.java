@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Petyr
  */
-public class FileHandlerImpl implements ManageableFileHandler {
+public class FileHandlerImpl extends HandlerImpl implements ManageableHandler, FileHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileHandlerImpl.class);
 
@@ -39,11 +39,6 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	private String userData;
 
 	/**
-	 * True if in read only mode.
-	 */
-	private boolean isReadOnly;
-
-	/**
 	 * True if the represent file is in link mode. Ie. it is not located in
 	 * DataUnit directory.
 	 */
@@ -62,7 +57,6 @@ public class FileHandlerImpl implements ManageableFileHandler {
 		this.file = file;
 		this.parent = parent;
 		this.userData = null;
-		this.isReadOnly = false;
 		this.isLink = asLink;
 		// if not exist and is not link
 		if (!file.exists() && !asLink) {
@@ -90,10 +84,7 @@ public class FileHandlerImpl implements ManageableFileHandler {
 	public void setContent(String newContent) throws FileDataUnitException {
 		if (isLink) {
 			throw new DataUnitAccessException("Can't modify 'linked' file!");
-		} else if (isReadOnly) {
-			throw new DataUnitAccessException("Can't modify read only file.");
 		}
-
 		try {
 			// create file if it does not exits
 			FileUtils.writeStringToFile(file, newContent);
@@ -110,9 +101,6 @@ public class FileHandlerImpl implements ManageableFileHandler {
 
 	@Override
 	public void setUserData(String newUserData) {
-		if (isReadOnly()) {
-			throw new DataUnitAccessException();
-		}
 		this.userData = newUserData;
 	}
 
@@ -148,20 +136,10 @@ public class FileHandlerImpl implements ManageableFileHandler {
 		final String parentPath = parent.getRootedPath();
 		return parentPath + "/" + getName();
 	}	
-	
-	@Override
-	public boolean isReadOnly() {
-		return this.isReadOnly;
-	}
-
-	@Override
-	public void setReadOnly(boolean isReadOnly) {
-		this.isReadOnly = isReadOnly;
-	}
 
 	@Override
 	public boolean isLink() {
 		return this.isLink;
 	}
-
+	
 }

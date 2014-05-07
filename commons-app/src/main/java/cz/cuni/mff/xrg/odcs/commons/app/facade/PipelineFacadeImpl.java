@@ -74,7 +74,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 	@Override
     public Pipeline createPipeline() {
 		Pipeline newPipeline = new Pipeline();
-		newPipeline.setVisibility(ShareType.PRIVATE);
+		newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
         }
@@ -105,7 +105,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 		} while (hasPipelineWithName(nName, null));
 		
 		newPipeline.setName( StringUtils.abbreviate(nName, LenghtLimits.PIPELINE_NAME) );
-		newPipeline.setVisibility(ShareType.PRIVATE);
+		newPipeline.setShareType(ShareType.PRIVATE);
 		
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
@@ -159,7 +159,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 			for (DPUTemplateRecord dpu : getPrivateDPUs(pipeline)) {
 				if (ShareType.PRIVATE.equals(dpu.getShareType())) {
 					// we found a private DPU in public pipeline -> make public
-					dpu.setVisibility(ShareType.PUBLIC_RO);
+					dpu.setShareType(ShareType.PUBLIC_RO);
 					dpuFacade.save(dpu);
 				}
 			}

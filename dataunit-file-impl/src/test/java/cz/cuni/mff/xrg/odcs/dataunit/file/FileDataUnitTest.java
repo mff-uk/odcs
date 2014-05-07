@@ -40,7 +40,7 @@ public class FileDataUnitTest {
 	}	
 	
 	@Test
-	public void testMerge() throws DataUnitException {
+	public void testMerge_FirstLevel() throws DataUnitException {
 		ManageableFileDataUnit source = new FileDataUnitImpl("source", 
 				new File(dirToUse, "source"));
 		final String userData = "user data";
@@ -50,24 +50,29 @@ public class FileDataUnitTest {
 				new File(dirToUse, "source"));		
 		
 		// merge
-		target.merge(source);
-		
+		target.merge(source);		
 		// test content
 		assertNotNull(target.getRootDir().getByName("myDir"));
 		assertEquals(userData, 
 				target.getRootDir().addNewDirectory("myDir").getUserData());
-		
-		// also we can not modify the original data
-		DirectoryHandler dir = target.getRootDir().addNewDirectory("myDir");
-		try {
-			dir.addNewFile("fail");
-			// this should thrown!
-			fail("The addNewFile on merged data should failed!");
-		} catch (DataUnitAccessException e) {
-			// ok
-		}
-		
 	}
+	
+	@Test
+	public void testMerge_SecondLevel() throws DataUnitException {
+		ManageableFileDataUnit source = new FileDataUnitImpl("source", 
+				new File(dirToUse, "source"));
+		source.getRootDir().addNewDirectory("myDir").addNewFile("source");
+				
+		ManageableFileDataUnit target = new FileDataUnitImpl("source", 
+				new File(dirToUse, "source"));		
+		target.getRootDir().addNewDirectory("myDir").addNewFile("target");
+		
+		// merge
+		target.merge(source);
+		// test content
+		assertNotNull(target.getRootDir().getByRootedName("/myDir/source"));
+		assertNotNull(target.getRootDir().getByRootedName("/myDir/target"));
+	}	
 	
 	@Test
 	public void saveAndLoad() throws DataUnitException, FileNotFoundException {

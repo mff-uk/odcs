@@ -18,7 +18,8 @@ public class Edge implements DataObject {
 	/**
 	 * Primary key of graph stored in db
 	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
 	@SequenceGenerator(name = "seq_ppl_edge", allocationSize = 1)
 	private Long id;
 
@@ -40,20 +41,20 @@ public class Edge implements DataObject {
 	@Column(name = "data_unit_name", nullable = true)
 	private String script;
 
-        /**
-         * Set script defining outputs to inputs mappings.
-         * 
-         * @param script 
-         */
+	/**
+	 * Set script defining outputs to inputs mappings.
+	 *
+	 * @param script
+	 */
 	public void setScript(String script) {
 		this.script = script;
 	}
 
-        /**
-         * Get script defining outputs to inputs mappings.
-         * 
-         * @return script defining outputs to inputs mappings.
-         */
+	/**
+	 * Get script defining outputs to inputs mappings.
+	 *
+	 * @return script defining outputs to inputs mappings.
+	 */
 	public String getScript() {
 		return script;
 	}
@@ -95,6 +96,10 @@ public class Edge implements DataObject {
 		return from;
 	}
 
+	public void setFrom(Node from) {
+		this.from = from;
+	}
+	
 	/**
 	 * @return end node of edge
 	 */
@@ -102,20 +107,24 @@ public class Edge implements DataObject {
 		return to;
 	}
 
-        /**
-         * Get graph this edge is in.
-         * 
-         * @return graph
-         */
+	public void setTo(Node to) {
+		this.to = to;
+	}	
+	
+	/**
+	 * Get graph this edge is in.
+	 *
+	 * @return graph
+	 */
 	public PipelineGraph getGraph() {
 		return graph;
 	}
 
-        /**
-         * Set graph this edge is in.
-         * 
-         * @param graph 
-         */
+	/**
+	 * Set graph this edge is in.
+	 *
+	 * @param graph
+	 */
 	public void setGraph(PipelineGraph graph) {
 		this.graph = graph;
 	}
@@ -138,15 +147,15 @@ public class Edge implements DataObject {
 		if (getClass() != o.getClass()) {
 			return false;
 		}
-		
+
 		final Edge other = (Edge) o;
 		if (this.id == null) {
 			return super.equals(other);
 		}
-		
+
 		return Objects.equals(this.id, other.id);
 	}
-	
+
 	@Override
 	public Long getId() {
 		return id;

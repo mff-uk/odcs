@@ -19,9 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  *
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context-security.xml","classpath:commons-app-test-context.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration(locations = {"classpath:commons-app-test-context-security.xml"})
 public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {
 	@Autowired
 	@Qualifier("authenticationManager")
@@ -29,7 +27,6 @@ public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {
 	
 	@Autowired
 	private UserFacade userFacade;
-
 	
 	@Before
 	public void before() {
@@ -39,4 +36,5 @@ public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {
 			SecurityContextHolder.getContext().setAuthentication(authManager.authenticate(token));
 		}
 	}
+	
 }

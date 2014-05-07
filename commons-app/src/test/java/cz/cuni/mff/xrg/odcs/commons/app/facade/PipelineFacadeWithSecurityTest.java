@@ -44,9 +44,7 @@ import static org.junit.Assert.*;
  * 
  * @author Jan Vojt
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml","classpath:commons-app-test-context-security.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(defaultRollback=true)
+@ContextConfiguration(locations = {"classpath:commons-app-test-context-security.xml"})
 public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 	@Autowired
 	@Qualifier("authenticationManager")
@@ -124,7 +122,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		pipeline.setUser(authCtx.getUser());
 
@@ -257,7 +255,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		templateRecord.setJarDescription("testJarDescription");
 		templateRecord.setJarDirectory("testJarDirectory");
 		templateRecord.setJarName("testJarName");
-		templateRecord.setVisibility(ShareType.PRIVATE);
+		templateRecord.setShareType(ShareType.PRIVATE);
 		templateRecord.setParent(parentTemplateRecord);
 		dpuFacade.save(parentTemplateRecord);
 		dpuFacade.save(templateRecord);
@@ -268,7 +266,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		templateRecord2.setJarDescription("testJarDescription2");
 		templateRecord2.setJarDirectory("testJarDirectory2");
 		templateRecord2.setJarName("testJarName2");
-		templateRecord2.setVisibility(ShareType.PUBLIC_RW);
+		templateRecord2.setShareType(ShareType.PUBLIC_RW);
 		templateRecord2.setParent(parentTemplateRecord);
 		dpuFacade.save(templateRecord2);
 		
@@ -285,7 +283,7 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 		pipeline.setLastChange(new Date());
 		pipeline.setName("testName");
 		pipeline.setUser(userFacade.getUserByUsername("jdoe"));
-		pipeline.setVisibility(ShareType.PUBLIC_RO);
+		pipeline.setShareType(ShareType.PUBLIC_RO);
 		pipeline.getConflicts().add(pipeline);
 		dpuFacade.save(dpuInstanceRecord);
 
@@ -321,6 +319,5 @@ public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
 			pipelineFacade.createOpenEvent(pipeline);			
 		}
 	}
-	
-	
+		
 }

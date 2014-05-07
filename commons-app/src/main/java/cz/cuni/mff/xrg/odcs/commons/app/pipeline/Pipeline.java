@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Jan Vojt
  * @author Bogo
  */
+@XmlRootElement
 @Entity
 @Table(name = "ppl_model")
 public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataObject {
@@ -229,14 +231,14 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 	}
 
 	/**
-	 * Set the pipeline visibity as one of {@link ShareType} values.
+	 * Set the pipeline {@link ShareType} values.
 	 *
-	 * @param visibility set new value of pipeline visibility
+	 * @param shareType new value
 	 */
-	public void setVisibility(ShareType visibility) {
-		this.shareType = visibility;
+	public void setShareType(ShareType shareType) {
+		this.shareType = shareType;
 	}
-
+	
 	/**
 	 * Returns the {@link Date} instance where the pipeline was last changed.
 	 *

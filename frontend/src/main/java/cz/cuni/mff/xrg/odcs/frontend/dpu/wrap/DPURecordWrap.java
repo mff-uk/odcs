@@ -13,8 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -23,10 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author Petyr
  *
  */
-class DPURecordWrap {
-
-	private static final Logger LOG = LoggerFactory.getLogger(
-			DPURecordWrap.class);
+public class DPURecordWrap {
 	
 	/**
 	 * Wrapped DPU.
@@ -59,6 +54,7 @@ class DPURecordWrap {
 	 * This function does not save data into database.
 	 *
 	 * @throws ConfigException
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
 	 */
 	public void saveConfig() throws ConfigException, DPUWrapException {
 		if (configDialog == null) {
@@ -100,6 +96,7 @@ class DPURecordWrap {
 	 * configuration. Otherwise do nothing.
 	 *
 	 * @throws ConfigException
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
 	 */
 	public void configuredDialog()
 			throws ConfigException, DPUWrapException {
@@ -123,6 +120,7 @@ class DPURecordWrap {
 	 * <li>The dialog has been configurated by calling {@link #configuredDialog()}</li>
 	 * </ul>
 	 * @return True if the configuration changed.
+	 * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
 	 */
 	public boolean hasConfigChanged() throws DPUWrapException {
 		if (configDialog == null || !dialogConfigured) {

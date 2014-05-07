@@ -34,7 +34,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.validator.DPUDialogValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 
 import javax.annotation.PostConstruct;
@@ -96,7 +95,7 @@ public class DPUCreate extends Window {
 	private DPUFacade dpuFacade;
 	@Autowired
 	private DPUModuleManipulator dpuManipulator;
-
+	
 	/**
 	 * Basic constructor.
 	 */
@@ -220,16 +219,12 @@ public class DPUCreate extends Window {
 					return;
 				}
 
-				// prepare dpu validators
-				List<DPUValidator> validators = new LinkedList<>();
-				validators.add(new DPUDialogValidator());
-
 				final File sourceFile = fileUploadReceiver.getFile();
 				// create new representation
 				DPUTemplateWrap dpuWrap;
 				try {
 					dpuWrap = new DPUTemplateWrap(
-							dpuManipulator.create(sourceFile, dpuName.getValue(), validators));
+							dpuManipulator.create(sourceFile, dpuName.getValue()));
 				} catch (DPUCreateException e) {
 
 					dpuGeneralSettingsLayout.removeComponent(1, 3);
@@ -243,7 +238,7 @@ public class DPUCreate extends Window {
 				dpuTemplate = dpuWrap.getDPUTemplateRecord();
 				// now we know all, we can update the DPU template
 				dpuTemplate.setDescription(dpuDescription.getValue());
-				dpuTemplate.setVisibility((ShareType) groupVisibility.getValue());
+				dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
 				dpuFacade.save(dpuTemplate);
 				// and at the end we can close the dialog .. 
 				close();

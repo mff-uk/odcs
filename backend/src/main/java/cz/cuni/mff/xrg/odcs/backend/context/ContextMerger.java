@@ -10,12 +10,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Provide functionality to merge (add) one {@link Context} into another.
- * 
+ *
  * @author Petyr
- * 
+ *
  */
 class ContextMerger {
 
@@ -24,11 +25,10 @@ class ContextMerger {
 
 	/**
 	 * Add data from right {@link Context} into left {@link Context}.
-	 * 
+	 *
 	 * @param left
 	 * @param right
-	 * @param instruction
-	 *            Instructions that should be used for merging.
+	 * @param instruction Instructions that should be used for merging.
 	 */
 	public void merge(Context left, Context right, String instruction)
 			throws ContextException {
@@ -39,9 +39,8 @@ class ContextMerger {
 	/**
 	 * Search for first command that can be applied to the DataUnit with given
 	 * name.
-	 * 
-	 * @param dataUnitName
-	 *            DataUnit's name.
+	 *
+	 * @param dataUnitName DataUnit's name.
 	 * @param instruction
 	 * @return Command or empty string.
 	 */
@@ -69,49 +68,43 @@ class ContextMerger {
 	}
 
 	/**
-	 * Merge the data, the result is store in 'left'. If the two Lists of
-	 * DataUnits can't be merge throw ContextException.
-	 * 
-	 * @param left
-	 *            Target {@link DataUnitManager}.
-	 * @param right
-	 *            Source of DataUnits, do not change!
-	 * @param instruction
-	 *            Instruction for merger. See
-	 *            {@link cz.cuni.mff.xrg.odcs.commons.app.execution.DataUnitMergerInstructions}
+	 * Merge the data from targets into sources. If the two Lists of DataUnits
+	 * can't be merge throw ContextException.
+	 *
+	 * @param target Target {@link DataUnitManager}.
+	 * @param sources Source of DataUnits, do not change!
+	 * @param instruction Instruction for merger. See
+	 *                    {@link cz.cuni.mff.xrg.odcs.commons.app.execution.DataUnitMergerInstructions}
 	 * @throw ContextException
 	 */
-	private void merger(DataUnitManager left, List<ManagableDataUnit> right,
+	private void merger(DataUnitManager target, List<ManagableDataUnit> sources,
 			String instruction) throws ContextException {
-		Iterator<ManagableDataUnit> iterRight = right.iterator();
+		Iterator<ManagableDataUnit> iterSource = sources.iterator();
 
 		// add the rest from right
-		while (iterRight.hasNext()) {
-
-			DataUnit rightDataUnit = iterRight.next();
-			String rightDataUnitName = rightDataUnit.getDataUnitName();
-			// name for new DataUnit, use right's name as default
-			String leftDataUnitName = rightDataUnitName;
+		while (iterSource.hasNext()) {
+			DataUnit source = iterSource.next();
+			String sourceName = source.getDataUnitName();
+			String targetName;
 			// get command
-			String cmd = this.findRule(rightDataUnitName, instruction);
+			String cmd = this.findRule(sourceName, instruction);
 			if (cmd.isEmpty()) {
 				// there is no mapping
 				// IGNORE DATAUNIT
+				LOG.debug("{} ignored.", sourceName);
 				continue;
 			} else {
 				String[] cmdSplit = cmd.split(" ");
-				if (cmdSplit[0]
-						.compareToIgnoreCase(EdgeInstructions.Rename
-								.getValue()) == 0) {
+				if (cmdSplit[0].compareToIgnoreCase(EdgeInstructions.Rename
+						.getValue()) == 0) {
 					// renaming .. we need second arg
 					if (cmdSplit.length == 2) {
-						leftDataUnitName = cmdSplit[1];
-						LOG.debug("renaming: {} -> {}", rightDataUnitName,
-								leftDataUnitName);
+						targetName = cmdSplit[1];
+						LOG.debug("renaming: {} -> {}", sourceName, targetName);
 					} else {
-						// not enough parameters .. use right name
-						leftDataUnitName = rightDataUnitName;
-						LOG.debug("passing: {}", rightDataUnitName);
+						// not enough parameters .. use name of source
+						targetName = sourceName;
+						LOG.debug("passing: {}", sourceName);
 					}
 				} else {
 					// unknown command
@@ -122,41 +115,55 @@ class ContextMerger {
 			}
 
 			// we need dataUnit into which merge data
-			ManagableDataUnit leftDataUnit = null;
+			ManagableDataUnit targetDataUnit = null;
 			// first check for existing one
-			for (ManagableDataUnit item : left.getDataUnits()) {
-				if (item.getDataUnitName().compareTo(leftDataUnitName) == 0
-						&& item.getType() == rightDataUnit.getType()) {
+			for (ManagableDataUnit item : target.getDataUnits()) {
+				if (item.getDataUnitName().compareTo(targetName) == 0
+						&& item.getType() == source.getType()) {
 					LOG.debug("merge into existing dataUnit: {}",
-							rightDataUnitName);
+							targetName);
 					// DataUnit with same name and type already exist, use it
-					leftDataUnit = item;
+					targetDataUnit = item;
 					break;
 				}
 			}
 
 			// create new data unit (in context into which we merge)
-			if (leftDataUnit == null) {
+			if (targetDataUnit == null) {
 				try {
-					LOG.debug("creating new dataUnit: {}", rightDataUnitName);
-					leftDataUnit = left.addDataUnit(rightDataUnit.getType(),
-							leftDataUnitName);
+					LOG.debug("creating new dataUnit: {}", sourceName);
+					targetDataUnit = target.addDataUnit(source.getType(),
+							targetName);
 					// and clear it .. for sure that there is 
 					// not data from previous executions
-					leftDataUnit.clear();
+					targetDataUnit.clear();
 				} catch (DataUnitCreateException e) {
 					throw new ContextException(
 							"Failed to create input object.", e);
 				}
 			}
+			
+			// for debug purpose
+			if (targetDataUnit instanceof RDFDataUnit) {
+				RDFDataUnit rdf = (RDFDataUnit)targetDataUnit;
+				LOG.debug("Number of triples in {} is {}", rdf.getDataUnitName(), rdf.getTripleCount());
+			}
+						
 			// and copy the data
 			try {
-				leftDataUnit.merge(rightDataUnit);
+				LOG.debug("Called {}.merge({})", targetDataUnit.getDataUnitName(), source.getDataUnitName());
+				targetDataUnit.merge(source);
 			} catch (IllegalArgumentException e) {
 				throw new ContextException(
 						"Can't merge data units, type miss match.", e);
 			} catch (Throwable t) {
 				throw new ContextException("Can't merge data units.", t);
+			}
+			
+			// for debug purpose
+			if (targetDataUnit instanceof RDFDataUnit) {
+				RDFDataUnit rdf = (RDFDataUnit)targetDataUnit;
+				LOG.debug("Number of triples in {} is {}", rdf.getDataUnitName(), rdf.getTripleCount());
 			}
 		}
 	}

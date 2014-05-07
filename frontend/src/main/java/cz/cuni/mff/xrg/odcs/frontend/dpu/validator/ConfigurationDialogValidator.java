@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import org.springframework.stereotype.Component;
 
 /**
  * Validate DPU's dialog.
@@ -12,7 +13,8 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
  * @author Petyr
  *
  */
-public class DPUDialogValidator implements DPUValidator {
+@Component
+class ConfigurationDialogValidator implements DPUValidator {
 
 	@Override
 	public void validate(DPUTemplateRecord dpu, Object dpuInstance)
