@@ -61,7 +61,6 @@
     <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger" />
     <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer" />
     <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSealer" />
 		
     <!-- pipeline executor -->
     <bean id="pipelineExecutor"
@@ -69,11 +68,43 @@
               scope="prototype" lazy-init="true" />
 
     <!-- DPU executor -->
-    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor"
+    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor"
               scope="prototype" lazy-init="true" />
 
     <!-- data unit factory class -->
     <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
+
+	<bean id ="rdfDataUnitFactory"  class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
+	<property name="key" value="${database.rdf.platform}"/>
+	  <property name="implementations">
+	    <map>
+	      <entry key="inMemoryRDF">
+			<bean id="inMemoryRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory.InMemoryRDFDataUnitFactory">
+				<property name="repositoryPath" value="${general.workingdir}"/>
+			</bean>
+	      </entry>
+	      <entry key="localRDF">
+			<bean id="localRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+				<property name="repositoryPath" value="${general.workingdir}"/>
+			</bean>
+	      </entry>
+	      <entry key="virtuoso">
+			<bean id="virtuosoRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnitFactory">
+				<property name="url" value="${database.rdf.url}"/>
+				<property name="user" value="${database.rdf.user}"/>
+				<property name="password" value="${database.rdf.password}"/>
+			</bean>
+	      </entry>
+	      <entry key="remoteRDF">
+			<bean id="remoteRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf.RemoteRDFDataUnitFactory">
+				<property name="url" value="${database.rdf.url}"/>
+				<property name="user" value="${database.rdf.user}"/>
+				<property name="password" value="${database.rdf.password}"/>
+			</bean>
+	      </entry>
+	    </map>
+	  </property>
+	</bean>
 
     <!-- store events into database -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase" />

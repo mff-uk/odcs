@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -31,7 +32,10 @@ abstract class ContextCreator {
 
 	@Autowired
 	private AppConfig appConfig;
-
+	
+	@Autowired
+	private AutowireCapableBeanFactory autowireBeanFactory;
+	
 	/**
 	 * Create context for given {@link DPUInstanceRecord} and
 	 * {@link ExecutionContextInfo}. The context is ready for use. Data from
@@ -55,7 +59,7 @@ abstract class ContextCreator {
 		// prepare DataUnitManagers
 		final File workingDir = new File(
 				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-
+		
 		newContext.setInputsManager(DataUnitManager.createInputManager(
 				dpuInstance, dataUnitFactory, contextInfo, workingDir,
 				appConfig));

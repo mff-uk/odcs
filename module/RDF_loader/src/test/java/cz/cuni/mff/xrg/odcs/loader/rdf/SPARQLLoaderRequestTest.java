@@ -1,25 +1,32 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.*;
 
 /**
@@ -32,8 +39,7 @@ public class SPARQLLoaderRequestTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLLoaderRequestTest.class);
 
-	private static final RDFDataUnit repository = RDFDataUnitFactory
-			.createLocalRDFRepo("");
+	private static  TestEnvironment testEnvironment = null;
 
 	private static final String ENDPOINT = "http://localhost:8890/sparql-auth";
 
@@ -47,23 +53,20 @@ public class SPARQLLoaderRequestTest {
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).delete();
+		testEnvironment.release();
 	}
 
-	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
-	}
-
-	private DPUContext getTestContext() {
-		TestEnvironment environment = TestEnvironment.create();
-		return environment.getContext();
-	}
+	@BeforeClass
+	public  static void cleanRepository() {
+		testEnvironment = new TestEnvironment();
+    }
 
 	private URL getEndpoint() {
 		URL endpoint = null;
 		try {
-			endpoint = new URL(ENDPOINT);
+			endpoint = new URL(
+//					testEnvironment.createSPARQLEndpoint("http://kuku"));
+					ENDPOINT);
 		} catch (MalformedURLException ex) {
 			logger.debug(ex.getMessage());
 		}
@@ -72,20 +75,32 @@ public class SPARQLLoaderRequestTest {
 	}
 
 	private void loadToEndpoint(LoaderEndpointParams params,
-			String defaultGraphURI) {
+			String defaultGraphURI) throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfInput("testInnn",false);
+		RepositoryConnection connection = repository.getConnection();
+        ValueFactory factory = connection.getValueFactory();
+        for (int i = 0; i < LOADED_TRIPLES; i++) {
+            Resource subject = factory.createURI("http://A" + String.valueOf(
+                    i + 1));
 
-		addDataToRepository();
+            URI predicate = factory.createURI("http://B" + String.valueOf(
+                    i + 1));
+
+            Value object = factory.createLiteral("C" + String.valueOf(i + 1));
+
+            connection.add(subject, predicate, object, repository.getDataGraph());
+        }
 
 		URL endpoint = getEndpoint();
-		SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-				params, false);
+		SPARQLoader loader = new SPARQLoader(repository, testEnvironment.getContext(),
+				params, false, USER, PASSWORD);
 		try {
 			loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
 					PASSWORD,
 					WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
-			assertEquals(repository.getTripleCount(), loader
-					.getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
+			assertEquals(connection.size(repository.getDataGraph()), loader
+                    .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
 		} catch (RDFException e) {
 			fail(e.getMessage());
@@ -96,25 +111,11 @@ public class SPARQLLoaderRequestTest {
 				logger.debug(e.getMessage());
 			}
 		}
-	}
-
-	private void addDataToRepository() {
-
-		for (int i = 0; i < LOADED_TRIPLES; i++) {
-			Resource subject = repository.createURI("http://A" + String.valueOf(
-					i + 1));
-
-			URI predicate = repository.createURI("http://B" + String.valueOf(
-					i + 1));
-
-			Value object = repository.createLiteral("C" + String.valueOf(i + 1));
-
-			repository.addTriple(subject, predicate, object);
-		}
+		connection.close();
 	}
 
 	@Test
-	public void POSTEncodeTest() {
+	public void POSTEncodeTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "using-graph-uri";
 

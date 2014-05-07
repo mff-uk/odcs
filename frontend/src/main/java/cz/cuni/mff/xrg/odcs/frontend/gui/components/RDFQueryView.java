@@ -3,37 +3,25 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.event.ItemClickEvent;
+
+import cz.cuni.mff.xrg.odcs.frontend.container.rdf.*;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFLazyQueryContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryDefinition;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.AUTO;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.N3;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.RDFXML;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TRIG;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType.TTL;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.CSV;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.JSON;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.TSV;
-import static cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType.XML;
-
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,7 +29,11 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
@@ -141,8 +133,8 @@ public class RDFQueryView extends QueryView {
 
 			@Override
 			public InputStream getStream() {
-				ManagableRdfDataUnit repository = getRepository(getSelectedDpu(),
-						getDataUnitInfo());
+                ManagableRdfDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(),
+                        getDataUnitInfo());
 				String query = getQuery();
 				if (repository == null || query == null) {
 					return null;
@@ -275,7 +267,8 @@ public class RDFQueryView extends QueryView {
 					}
 				}
 
-				ManagableRdfDataUnit tableRepo = getRepository(tableDpu, tableDataUnit);
+
+                ManagableRdfDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu,tableDataUnit);
 				return getDownloadData(tableRepo, tableQuery,
 						downloadFormatSelect.getValue(), filters);
 			}
@@ -288,17 +281,6 @@ public class RDFQueryView extends QueryView {
 
 		mainLayout.setSizeFull();
 		setCompositionRoot(mainLayout);
-	}
-
-	/**
-	 * Gets repository for selected DataUnit from context.
-	 *
-	 * @return {@link RDFDataUnit} of selected DataUnitInfo.
-	 *
-	 */
-	ManagableRdfDataUnit getRepository(DPUInstanceRecord dpu, DataUnitInfo dataUnit) {
-		return RDFDataUnitHelper.getRepository(getExecutionInfo(), dpu,
-				dataUnit);
 	}
 
 	/**
@@ -422,12 +404,13 @@ public class RDFQueryView extends QueryView {
 	/**
 	 * Prepare data file for download after SELECT or CONSTRUCT query.
 	 *
-	 * @param repository {@link LocalRDFRepo} of selected graph.
+	 * @param repository {@link LocalRDFDataUnit} of selected graph.
 	 * @param query {@link String} containing query to execute on repository.
 	 * @throws InvalidQueryException If the query is badly formatted.
 	 */
 	private InputStream getDownloadData(ManagableRdfDataUnit repository, String query,
 			Object format, Collection<Filter> filters) {
+		RepositoryConnection connection = null;
 		try {
 			boolean isSelectQuery = isSelectQuery(query);
 
@@ -451,19 +434,21 @@ public class RDFQueryView extends QueryView {
 				return null;
 			}
 
+			connection = repository.getConnection();
+            URI dataGraph = repository.getDataGraph();
 
+            if (isSelectQuery) {
+                query = RepositoryFrontendHelper.filterRDFQuery(query, filters);
+                SelectFormatType selectType = (SelectFormatType) format;
 
-			if (isSelectQuery) {
-				query = RDFDataUnitHelper.filterRDFQuery(query, filters);
-				SelectFormatType selectType = (SelectFormatType) format;
-				constructData = repository.executeSelectQuery(query, fn,
-						selectType);
-			} else {
-				RDFFormatType rdfType = RDFFormatType.getTypeByString(format
-						.toString());
-				constructData = repository.executeConstructQuery(query,
-						rdfType, fn);
-			}
+                constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
+                        selectType, dataGraph);
+            } else {
+                RDFFormatType rdfType = RDFFormatType.getTypeByString(format
+                        .toString());
+
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getDataGraph(), query,rdfType, fn);
+            }
 
 			FileInputStream fis = new FileInputStream(constructData);
 			return fis;
@@ -472,16 +457,29 @@ public class RDFQueryView extends QueryView {
 			Notification.show(
 					"There was error in creating donwload file!",
 					Notification.Type.ERROR_MESSAGE);
-			return null;
 		} catch (InvalidQueryException ex) {
 			LOG.error("Invalid query!", ex);
 			Notification.show("Query Validator",
 					"Query is not valid: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
-			return null;
-		}
-	}
+		} catch (RepositoryException ex) {
+			Notification.show("Problem with connection",
+					ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					Notification.show("Problem closing connection",
+							ex.getCause().getMessage(),
+							Notification.Type.ERROR_MESSAGE);
+				}
+			}
+        }
+		return null;
+    }
 
 	private String getFileName(Object oFormat) {
 		if (oFormat == null) {

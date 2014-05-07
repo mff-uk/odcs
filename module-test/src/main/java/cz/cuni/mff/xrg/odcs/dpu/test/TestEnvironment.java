@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
@@ -28,10 +28,8 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.ManageableFileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
-import cz.cuni.mff.xrg.odcs.dpu.test.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.dpu.test.data.VirtuosoConfig;
+import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
@@ -46,12 +44,6 @@ public class TestEnvironment {
 			TestEnvironment.class);
 
 	/**
-	 * Configuration used to access virtuoso. If tests use Virtuoso then this
-	 * must be set before first test. This value is shared by multiple tests.
-	 */
-	public static VirtuosoConfig virtuosoConfig = new VirtuosoConfig();
-
-	/**
 	 * Context used for testing.
 	 */
 	private final TestContext context;
@@ -60,11 +52,6 @@ public class TestEnvironment {
 	 * Working directory.
 	 */
 	private final File workingDirectory;
-
-	/**
-	 * Used {@link ManagableDataUnit}s
-	 */
-	private final LinkedList<ManagableDataUnit> dataUnits = new LinkedList<>();
 
 	/**
 	 * Directories for input {@link ManagableDataUnit}s.
@@ -76,40 +63,32 @@ public class TestEnvironment {
 	 */
 	private final HashMap<String, ManagableDataUnit> outputDataUnits = new HashMap<>();
 
+	private final HashMap<String, ManagableDataUnit> customDataUnits = new HashMap<>();
+	
 	/**
 	 * Factory for {@link DataUnit}s classes.
 	 */
-	private final DataUnitFactory dataUnitFactory;
-
-	private TestEnvironment(File workingDirectory) {
-		this.context = new TestContext();
-		context.setWorkingDirectory(workingDirectory);
-
-		this.workingDirectory = workingDirectory;
-		this.dataUnitFactory = new DataUnitFactory(workingDirectory);
-	}
+	private final TestDataUnitFactory testDataUnitFactory;
 
 	/**
 	 * Create test environment. As working directory is used temp file.
 	 *
 	 * @return Test environment.
 	 */
-	public static TestEnvironment create() {
-		// we use tmp path and time to create tmp directory
-		return create(FileUtils.getTempDirectory());
-	}
+	public TestEnvironment() {
+		try {
+			workingDirectory = Files.createTempDirectory(null).toFile();
+			LOG.info("Creating {} with workingDirectory {}", this.getClass().getName(), workingDirectory.toString());
+			File contextRootDirectory = new File(workingDirectory, "context");
+			contextRootDirectory.mkdirs();
+			this.context = new TestContext(contextRootDirectory);
 
-	/**
-	 * Create test environment.
-	 *
-	 * @param directory Working directory.
-	 * @return Test environment.
-	 */
-	public static TestEnvironment create(File directory) {
-		final String testDirName = "odcs_test_"
-				+ Long.toString((new Date()).getTime());
-
-		return new TestEnvironment(new File(directory, testDirName));
+			File dataUnitFactoryWorkingDirectory = new File(workingDirectory, "dataUnits");
+			dataUnitFactoryWorkingDirectory.mkdirs();
+			this.testDataUnitFactory = new TestDataUnitFactory(dataUnitFactoryWorkingDirectory);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	// - - - - - - - - - methods for environment setup - - - - - - - - - //
@@ -131,46 +110,6 @@ public class TestEnvironment {
 	 */
 	public void setLastExecution(Date lastExecution) {
 		context.setLastExecution(lastExecution);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param workingDirectory the workingDirectory to set, use null to use
-	 *                         subdirectory in {@link #workingDirectory}
-	 */
-	public void setWorkingDirectory(File workingDirectory) {
-		context.setWorkingDirectory(workingDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param resultDirectory the resultDirectory to set, use null to use
-	 *                        subdirectory in {@link #workingDirectory}
-	 */
-	public void setResultDirectory(File resultDirectory) {
-		context.setResultDirectory(resultDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param globalDirectory the globalDirectory to set, use null to use
-	 *                        subdirectory in {@link #workingDirectory}
-	 */
-	public void setGlobalDirectory(File globalDirectory) {
-		context.setGlobalDirectory(globalDirectory);
-	}
-
-	/**
-	 * This value will be used during test execution if DPU asks for it.
-	 * 
-	 * @param userDirectory the userDirectory to set, use null to use
-	 *                      subdirectory in {@link #workingDirectory}
-	 */
-	public void setUserDirectory(File userDirectory) {
-		context.setUserDirectory(userDirectory);
 	}
 
 	/**
@@ -203,6 +142,39 @@ public class TestEnvironment {
 		outputDataUnits.put(name, dataUnit);
 	}
 
+	
+	/**
+	 * Create {@link RDFDataUnit} which is just returned to test developer for use.
+	 *
+	 * @param name        Name of DataUnit.
+	 * @return Created {@link RDFDataUnit}.
+	 */
+	public RDFDataUnit createRdfFDataUnit(String name) {
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
+		customDataUnits.put(name, rdf);
+		return rdf;
+	}
+	
+//	public String createSPARQLEndpoint(String baseURI) {
+//		LinkedDataServer server;
+//		Sail sail = new MemoryStore();
+//		try {
+//			sail.initialize();
+//			server = new LinkedDataServer(
+//			    sail,
+//			    baseURI,
+//			    baseURI,
+//			    8182);
+//
+//			server.getHost().attach("/sparql", new SparqlResource());
+//			server.start();
+//			
+//			return "http://localhost:8182/sparql";
+//		} catch (Exception ex) {
+//			throw new RuntimeException(ex);
+//		}
+//	}
+	
 	/**
 	 * Create input {@link RDFDataUnit} that is used in test environment.
 	 *
@@ -211,46 +183,8 @@ public class TestEnvironment {
 	 * @return Created input {@link RDFDataUnit}.
 	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
 	 */
-	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso)
-			throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
-		addInput(name, rdf);
-		return rdf;
-	}
-
-	/**
-	 * Create input {@link RDFDataUnit} and populate it with data from given
-	 * file. Created {@link RDFDataUnit} is used in test environment.
-	 *
-	 * The data are loaded from file in test\resources.
-	 *
-	 * @param name         Name of DataUnit.
-	 * @param useVirtuoso  If true then Virtuoso is used as a storage.
-	 * @param resourceName Name of resource file. The path to the resource file
-	 *                     should be relative with respect to src/test/resources
-	 *                     folder
-	 * @param format       Format of input file.
-	 * @return Created input {@link RDFDataUnit}.
-	 * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
-	 */
-	public RDFDataUnit createRdfInputFromResource(String name,
-			boolean useVirtuoso,
-			String resourceName,
-			RDFFormat format) throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
-		// construct path to the resource
-		URL url = Thread.currentThread().getContextClassLoader()
-				.getResource(resourceName);
-		// check ..
-		if (url == null) {
-			throw new RDFException("Missing input file in resource for: "
-					+ resourceName);
-		}
-		File inputFile = new File(url.getPath());
-		// return file
-		rdf.addFromFile(inputFile, format);
+	public RDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
 		addInput(name, rdf);
 		return rdf;
 	}
@@ -266,8 +200,7 @@ public class TestEnvironment {
 	 */
 	public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
 			throws RDFException {
-		ManagableRdfDataUnit rdf = dataUnitFactory.createRDFDataUnit(name,
-				useVirtuoso);
+		ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
 		addOutput(name, rdf);
 		return rdf;
 	}
@@ -391,16 +324,23 @@ public class TestEnvironment {
 	 */
 	public void release() {
 		// release all DataUnits ..
-		for (ManagableDataUnit item : dataUnits) {
+		for (ManagableDataUnit item : inputDataUnits.values()) {
 			if (item != null) {
-				item.delete();
+				item.clear();
+				item.release();
 			}
 		}
-		dataUnits.clear();
-		// wait for some time .. so DataUnits can release their contexts
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		for (ManagableDataUnit item : outputDataUnits.values()) {
+			if (item != null) {
+				item.clear();
+				item.release();
+			}
+		}
+		for (ManagableDataUnit item : customDataUnits.values()) {
+			if (item != null) {
+				item.clear();
+				item.release();
+			}
 		}
 
 		// delete working directory ..
@@ -480,7 +420,6 @@ public class TestEnvironment {
 
 			item.getField().set(dpuInstance, dataUnit);
 			// ...
-			dataUnits.add(dataUnit);
 		}
 
 		// add outputs
@@ -495,7 +434,6 @@ public class TestEnvironment {
 						+ item.getAnnotation().name());
 			}
 			// ...
-			dataUnits.add(dataUnit);
 		}
 	}
 

@@ -23,7 +23,7 @@ import org.openrdf.repository.RepositoryException;
  */
 public class ReportCreator {
 
-	private static Logger logger = Logger.getLogger(
+	private static final Logger LOG = Logger.getLogger(
 			ReportCreator.class);
 
 	private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";
@@ -85,29 +85,42 @@ public class ReportCreator {
 
 			count++;
 
-			repository.addTriple(getSubject(count), new URIImpl("rdf:type"),
-					new URIImpl(ODCS_VAL + conflictType.toString()));
-
-			repository.addTriple(getSubject(count), getPredicate("subject"),
-					getObject(sub));
-			repository.addTriple(getSubject(count), getPredicate("predicate"),
-					getObject(pred));
-			repository.addTriple(getSubject(count), getPredicate("object"),
-					getObject(obj));
-
-			repository.addTriple(getSubject(count), getPredicate("reason"),
-					getObject(message));
-			repository
-					.addTriple(getSubject(count), getPredicate("sourceLine"),
-					getObject(line));
+            RepositoryConnection connection = null;
+            try {
+                connection = repository.getConnection();
+                connection.add(getSubject(count), new URIImpl("rdf:type"),
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("subject"),
+                        getObject(sub), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("predicate"),
+                        getObject(pred), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("object"),
+                        getObject(obj), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("reason"),
+                        getObject(message), repository.getDataGraph());
+                connection.add(getSubject(count), getPredicate("sourceLine"),
+                        getObject(line), repository.getDataGraph());
+            } catch (RepositoryException e) {
+                LOG.error("Error", e);
+            } finally {
+            	if (connection != null) {
+    				try {
+    					connection.close();
+    				} catch (RepositoryException ex) {
+    					LOG.warn("Error when closing connection", ex);
+    					// eat close exception, we cannot do anything clever here
+    				}
+    			}
+            }
 
 		}
 	}
 
 	private void setNamespaces(RDFDataUnit repository) throws RDFException {
+		RepositoryConnection connection = null;
 		try {
 
-			RepositoryConnection connection = repository.getConnection();
+			connection = repository.getConnection();
 
 			connection.setNamespace("rdf",
 					"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -119,8 +132,17 @@ public class ReportCreator {
 		} catch (RepositoryException e) {
 			final String message = "Not possible to set namespace"
 					+ e.getMessage();
-			logger.debug(message);
+			LOG.debug(message);
 			throw new RDFException(message);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}
 		}
 	}
 

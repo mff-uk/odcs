@@ -32,9 +32,6 @@ public class ContextFacade {
 	private ContextRestorer restorer;
 
 	@Autowired
-	private ContextSealer sealer;
-
-	@Autowired
 	private ContextSaver saver;
 	
 	/**
@@ -60,15 +57,6 @@ public class ContextFacade {
 		}
 		// and return
 		return context;
-	}
-
-	/**
-	 * Seal given context against modification from inside of DPU.
-	 *
-	 * @param context
-	 */
-	public void seal(Context context) {
-		sealer.seal(context);
 	}
 
 	/**
@@ -101,7 +89,7 @@ public class ContextFacade {
 	 * Add data from left context to the right one based on given script. The
 	 * newly created 
 	 * {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit} are cleaned by 
-	 * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clean()}. 
+	 * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clear()}. 
 	 * So any previous data are safely deleted and do not contaminate the execution.
 	 *
 	 * @param left

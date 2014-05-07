@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  *
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml","classpath:commons-app-test-context-security.xml"})
+@ContextConfiguration(locations = {"classpath:commons-app-test-context-security.xml","classpath:commons-app-test-context.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 public class ScheduleFacadeWithSecurityTest extends ScheduleFacadeTest {

@@ -1,6 +1,16 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
@@ -15,12 +25,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.openrdf.rio.RDFFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Extracts RDF data from SPARQL endpoint.
@@ -55,6 +59,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public void execute(DPUContext context)
 			throws DPUException,
 			DataUnitCreateException {
+        RepositoryConnection connection = null;
 
 		try {
 			final URL endpointURL = new URL(config.getSPARQLEndpoint());
@@ -105,13 +110,16 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime, endpointParams);
 
-			if (usedSplitConstruct) {
-				if (splitConstructSize <= 0) {
-					context.sendMessage(MessageType.ERROR,
-							"Split construct size must be positive number");
-				}
+            long lastrepoSize = 0;
+            connection = rdfDataUnit.getConnection();
+            lastrepoSize = connection.size(rdfDataUnit.getDataGraph());
 
-				long lastrepoSize = rdfDataUnit.getTripleCount();
+            if (usedSplitConstruct) {
+                if (splitConstructSize <= 0) {
+                    context.sendMessage(MessageType.ERROR,
+							"Split construct size must be positive number");
+                }
+
 
 				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
 						constructQuery, splitConstructSize);
@@ -127,7 +135,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 							hostName, password, RDFFormat.NTRIPLES,
 							handlerExtractType, false);
 
-					long newrepoSize = rdfDataUnit.getTripleCount();
+                    long newrepoSize = connection.size(rdfDataUnit.getDataGraph());
 
 					checkParsingProblems(useStatisticHandler, context);
 					if (lastrepoSize < newrepoSize) {
@@ -151,8 +159,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 				checkParsingProblems(useStatisticHandler, context);
 			}
-
-			final long triplesCount = rdfDataUnit.getTripleCount();
+			final long triplesCount = connection.size(rdfDataUnit.getDataGraph());
 
 			String tripleInfoMessage = String.format(
 					"Extracted %s triples from SPARQL endpoint %s",
@@ -172,8 +179,19 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		} catch (RDFDataUnitException ex) {
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
 					.fillInStackTrace().toString());
-		}
-	}
+		} catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}        	
+        }
+    }
 
 	private void checkParsingProblems(boolean useStatisticHandler,
 			DPUContext context) {

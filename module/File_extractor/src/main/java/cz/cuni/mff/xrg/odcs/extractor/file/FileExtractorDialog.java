@@ -1,20 +1,13 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.*;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
@@ -23,7 +16,14 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import org.openrdf.query.algebra.Str;
+import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration dialog for DPU RDF File Extractor.
@@ -35,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 	private GridLayout mainLayout;
+    private final String rdfFormatAuto = "AUTO";
 
 	/**
 	 * ComboBox to set RDF format (Auto, RDF/XML, TTL, TriG, N3)
@@ -124,13 +125,14 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 	 */
 	private void mapData() {
 
-		for (RDFFormatType next : RDFFormatType.getListOfRDFType()) {
-			String value = RDFFormatType.getStringValue(next);
-			comboBoxFormat.addItem(value);
-		}
 
-		comboBoxFormat
-				.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
+        Collection<RDFFormat> formatTypes = RDFFormat.values();
+        for(RDFFormat formatType : formatTypes) {
+            String formatValue = formatType.getName();
+            comboBoxFormat.addItem(formatValue);
+        }
+        comboBoxFormat.addItem(rdfFormatAuto);
+        comboBoxFormat.setValue(rdfFormatAuto);
 
 		pathType.addItem(FileExtractType.getDescriptionByType(
 				FileExtractType.UPLOAD_FILE));
@@ -196,9 +198,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			}
 
 			String formatValue = (String) comboBoxFormat.getValue();
+            RDFFormat format = RDFFormat.valueOf(formatValue);
 
-			RDFFormatType RDFFormatValue = RDFFormatType.getTypeByString(
-					formatValue);
 			boolean useStatisticalHandler = useHandler.getValue();
 
 			String selectedValue = (String) failsWhenErrors.getValue();
@@ -215,7 +216,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
 			FileExtractorConfig config = new FileExtractorConfig(path,
 					fileSuffix,
-					RDFFormatValue, extractType, onlyThisSuffix,
+                    format, extractType, onlyThisSuffix,
 					useStatisticalHandler, failWhenErrors);
 
 			return config;
@@ -268,10 +269,16 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 			}
 		}
 
-		String formatValue = RDFFormatType.getStringValue(conf
-				.getRDFFormatValue());
+        RDFFormat rdfFormatValue = conf.getRDFFormatValue();
+        String format = null;
+        // if  rdfFormatValue is null then we use an option AUTO
+        if (rdfFormatValue != null) {
+            format = rdfFormatValue.getName();
+        } else {
+            format = rdfFormatAuto;
+        }
 
-		comboBoxFormat.setValue(formatValue);
+		comboBoxFormat.setValue(format);
 		useHandler.setValue(conf.isUsedStatisticalHandler());
 
 		if (conf.isFailWhenErrors()) {
@@ -720,7 +727,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 	/**
 	 * Basic constructor
 	 *
-	 * @param upload. Upload component
+	 * @param nextUpload Upload component
 	 */
 	public UploadInfoWindow(Upload nextUpload) {
 

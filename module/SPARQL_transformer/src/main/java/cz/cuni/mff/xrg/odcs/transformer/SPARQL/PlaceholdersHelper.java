@@ -1,22 +1,16 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.help.LazyTriples;
-import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * This class allows for SPARQL CONSTRUCT/UPDATE queries possible to replace
@@ -88,16 +82,17 @@ public class PlaceholdersHelper {
 	 *         need for SPARQL construct/update query based on DPU name is type
 	 *         of {@link DataUnitType#RDF_Local}, false otherwise.
 	 */
-	public boolean needExecutableRepository() {
-		boolean hasLocal = false;
-		for (RDFDataUnit nextRepository : usedRepositories) {
-			if (nextRepository.getType() == DataUnitType.RDF_Local) {
-				hasLocal = true;
-				break;
-			}
-		}
-		return hasLocal;
-	}
+//	TODO michal.klempa this should not be needed anymore
+//	public boolean needExecutableRepository() {
+//		boolean hasLocal = false;
+//		for (RDFDataUnit nextRepository : usedRepositories) {
+//			if (nextRepository.getType() == DataUnitType.RDF_Local) {
+//				hasLocal = true;
+//				break;
+//			}
+//		}
+//		return hasLocal;
+//	}
 
 	/**
 	 * Create new instance of {@link ManagableRdfDataUnit} where SPARQL
@@ -108,20 +103,19 @@ public class PlaceholdersHelper {
 	 *         construct/update query based on DPU name can be executed. Need
 	 *         only if method {@link #needExecutableRepository()} returns TRUE;
 	 */
-	public ManagableRdfDataUnit getExecutableTempRepository() {
-		LocalRDFRepo tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
-				"executable");
-		for (RDFDataUnit repository : usedRepositories) {
-			URI dataGraph = repository.getDataGraph();
-			LazyTriples iterator = repository.getTriplesIterator();
-
-			while (iterator.hasNextTriples()) {
-				List<Statement> triples = iterator.getTriples();
-				tempRepository.addStatementsToGraph(triples, dataGraph);
-			}
-		}
-		return tempRepository;
-	}
+//	TODO michal.klempa this should not be needed anymore
+//	public ManagableRdfDataUnit getExecutableTempRepository() throws RepositoryException {
+//		LocalRDFDataUnit tempRepository = RDFDataUnitFactory.createLocalRDFRepo(
+//				"executable");
+//        RepositoryConnection tempRepositoryConnection = tempRepository.getConnection();
+//        for (RDFDataUnit repository : usedRepositories) {
+//            URI dataGraph = repository.getDataGraph();
+//            RepositoryConnection usedRepositoryConnection = repository.getConnection();
+//            RepositoryResult<Statement> triples = usedRepositoryConnection.getStatements(null, null, null, true, repository.getDataGraph());
+//            tempRepositoryConnection.add(triples, dataGraph);
+//		}
+//		return tempRepository;
+//	}
 
 	/**
 	 *

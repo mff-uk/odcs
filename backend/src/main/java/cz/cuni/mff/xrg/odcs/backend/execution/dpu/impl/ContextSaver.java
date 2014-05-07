@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PostExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Petyr
  */
 @Component
-public class ContextSaver implements PostExecutor {
+public class ContextSaver implements DPUPostExecutor {
 
 	public static final int ORDER = 10000;
 

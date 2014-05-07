@@ -1,47 +1,26 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
-import org.junit.*;
+import org.junit.Test;
 import org.openrdf.model.Statement;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  *
  * @author Jiri Tomes
  */
 public class DPUReplacementTest {
-
-	private static ManagableRdfDataUnit repository;
-
-	/**
-	 * Basic repository inicializing before test execution.
-	 */
-	@BeforeClass
-	public static void inicialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("");
-	}
-
-	/**
-	 * The repository is destroyed at the end of working.
-	 */
-	@AfterClass
-	public static void deleting() {
-		repository.delete();
-	}
-
-	/**
-	 * Cleaning repository before each test execution.
-	 */
-	@Before
-	public void cleaning() {
-		repository.clean();
-	}
-
+	 private static final Logger LOG = LoggerFactory.getLogger(DPUReplacementTest.class);
 	/**
 	 * Test DPU replacement on SPARQL CONSTRUCT query.
 	 */
@@ -54,7 +33,10 @@ public class DPUReplacementTest {
 		boolean isConstruct = true;
 
 		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+		TestEnvironment env = new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
 		try {
 
@@ -66,30 +48,37 @@ public class DPUReplacementTest {
 
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            connection = input.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://s"), factory.createURI(
+                    "http://p"), factory.createURI("http://o"), input.getDataGraph());
+            connection.add(factory.createURI("http://subject"), factory.createURI(
+                    "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
-			input.addTriple(input.createURI("http://s"), input.createURI(
-					"http://p"), input.createURI("http://o"));
-			input.addTriple(input.createURI("http://subject"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
 
-			optional.addTriple(optional.createBlankNode("n25"), optional
-					.createURI("http://hasName"), optional.createLiteral("NAME"));
+            connection2 = optional.getConnection();
+            ValueFactory factory2 = connection2.getValueFactory();
+            connection2.add(factory2.createBNode("n25"), factory2
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getDataGraph());
 
-			assertEquals(2L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+			assertEquals(2L, connection.size(input.getDataGraph()));
+			assertEquals(1L, connection2.size(optional.getDataGraph()));
 
 			RDFDataUnit output = env.createRdfOutput("output", false);
 
 			env.run(transformer);
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
+            connection3 = output.getConnection();
+			assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 			env.release();
 
-
+			
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
 			env.release();
 		}
 	}
@@ -111,7 +100,10 @@ public class DPUReplacementTest {
 		String expectedObjectName = "William";
 
 		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+		TestEnvironment env =  new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
 		try {
 
@@ -124,39 +116,50 @@ public class DPUReplacementTest {
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
 
-			input.addTriple(input.createURI("http://person"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
+            connection = input.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://person"), factory.createURI(
+					"http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
-			optional.addTriple(optional.createURI("http://person"), optional
-					.createURI("http://xmlns.com/foaf/0.1/givenName"), optional
-					.createLiteral("Bill"));
 
-			assertEquals(1L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+            connection2 = optional.getConnection();
+            ValueFactory factory2 = connection2.getValueFactory();
+
+
+            connection2.add(factory2.createURI("http://person"), factory2
+					.createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
+					.createLiteral("Bill"),optional.getDataGraph());
+
+            assertEquals(1L, connection.size(input.getDataGraph()));
+            assertEquals(1L, connection2.size(optional.getDataGraph()));
 
 			RDFDataUnit output = env.createRdfOutput("output", false);
 
 			env.run(transformer);
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
+            connection3 = output.getConnection();
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 
-			List<Statement> outputTriples = output.getTriples();
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getDataGraph());
 
-			boolean newInsertedTripleFound = false;
-			for (Statement next : outputTriples) {
-				if (expectedObjectName.equals(next.getObject().stringValue())) {
-					newInsertedTripleFound = true;
-					break;
-				}
-			}
+            boolean newInsertedTripleFound = false;
+            while (outputTriples.hasNext()) {
+                Statement next = outputTriples.next();
+                if (expectedObjectName.equals(next.getObject().stringValue())) {
+                    newInsertedTripleFound = true;
+                    break;
+                }
+            }
 
 			assertTrue("New inserted triple not found", newInsertedTripleFound);
-
 
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			
 			env.release();
 		}
 	}

@@ -3,21 +3,26 @@ package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RDFDataUnitHelper;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.impl.MyTupleQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -54,7 +59,7 @@ public class RDFQuery implements Query {
 		this.baseQuery = qd.getBaseQuery();
 		this.batchSize = qd.getBatchSize();
 		this.qd = qd;
-		this.repository = RDFDataUnitHelper
+		this.repository = RepositoryFrontendHelper
 				.getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
 
 
@@ -72,7 +77,6 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 		try {
-			repository.initialize();
 			int count;
 			String filteredQuery = setWhereCriteria(baseQuery);
 			LOG.debug("Size query started...");
@@ -90,7 +94,7 @@ public class RDFQuery implements Query {
 					Notification.Type.ERROR_MESSAGE);
 			LOG.debug("Size query exception", ex);
 		} finally {
-			repository.shutDown();
+			repository.release();
 		}
 		return 0;
 	}
@@ -120,7 +124,6 @@ public class RDFQuery implements Query {
 			throw new RuntimeException("Unable to load RDFDataUnit.");
 		}
 
-		repository.initialize();
 		String filteredQuery = setWhereCriteria(baseQuery);
 
 		QueryRestriction restriction = new QueryRestriction(filteredQuery);
@@ -133,44 +136,56 @@ public class RDFQuery implements Query {
 		}
 		String query = restriction.getRestrictedQuery();
 		SPARQLQueryType type;
-		Object data;
+		Object data = null;
+		RepositoryConnection connection = null;
 		try {
 			type = getQueryType(query);
-
-			switch (type) {
-				case SELECT:
-					data = repository.executeSelectQueryAsTuples(query);
+            Graph graph = null;
+            connection = repository.getConnection();
+            switch (type) {
+                case SELECT:
+                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
 					break;
-				case CONSTRUCT:
-					data = getRDFTriplesData(repository.executeConstructQuery(
-							query));
-					break;
-				case DESCRIBE:
-					String resource = query.substring(query.indexOf('<') + 1,
+                case CONSTRUCT:
+                    DatasetImpl dataSet = new DatasetImpl();
+                    dataSet.addDefaultGraph(repository.getDataGraph());
+                    dataSet.addNamedGraph(repository.getDataGraph());
+                    graph = RepositoryFrontendHelper.executeConstructQuery(connection, query, dataSet);
+                    data = getRDFTriplesData(graph);
+                    break;
+                case DESCRIBE:
+                    String resource = query.substring(query.indexOf('<') + 1,
 							query.indexOf('>'));
-					URIImpl uri = new URIImpl(resource);
-					data = getRDFTriplesData(repository.describeURI(uri));
-					break;
-				default:
-					return null;
-			}
+                    URIImpl uri = new URIImpl(resource);
+                    graph = RepositoryFrontendHelper.describeURI(connection, repository.getDataGraph(), uri);
+                    data = getRDFTriplesData(graph);
+                    break;
+                default:
+                    return null;
+            }
 
-			List<Item> items = new ArrayList<>();
-			switch (type) {
+            List<Item> items = new ArrayList<>();
+            switch (type) {
 				case SELECT:
-					MyTupleQueryResult result = (MyTupleQueryResult) data;
+					TupleQueryResult result = (TupleQueryResult) data;
 					int id = 0;
-					while (result.hasNext()) {
-						items.add(
-								toItem(result.getBindingNames(), result.next(),
-								++id));
-					}
-					result.close();
+                    if (result != null) {
+                        while (result.hasNext()) {
+                            List<String> names = result.getBindingNames();
+                            if (names.size() > 0) {
+                                Item item = toItem(names, result.next(), ++id);
+                                if (item != null) {
+                                    items.add(item);
+                                }
+                            }
+                        }
+                        result.close();
+                    }
 					break;
 				case CONSTRUCT:
-					for (RDFTriple triple : (List<RDFTriple>) data) {
-						items.add(toItem(triple));
-					}
+                     for (RDFTriple triple : (List<RDFTriple>) data) {
+                            items.add(toItem(triple));
+                    }
 					break;
 				case DESCRIBE:
 					cachedItems = new ArrayList<>();
@@ -181,7 +196,9 @@ public class RDFQuery implements Query {
 							"Loading of items finished, whole result preloaded and cached.");
 					return cachedItems.subList(startIndex, startIndex + count);
 			}
-			LOG.debug("Loading of items finished.");
+            
+
+            LOG.debug("Loading of items finished.");
 			return items;
 		} catch (InvalidQueryException ex) {
 			Notification.show("Query Validator",
@@ -193,16 +210,31 @@ public class RDFQuery implements Query {
 					"Error in query evaluation: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
-		} finally {
+		} catch (RepositoryException e) {
+            Notification.show("Connection problem",
+                    "Could connect to frontend repository: "
+                            + e.getCause().getMessage(),
+                    Notification.Type.ERROR_MESSAGE);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					Notification.show("Connection problem",
+		                    "Could close connection to frontend repository: "
+		                            + ex.getCause().getMessage(),
+		                    Notification.Type.ERROR_MESSAGE);
+				}
+			}
 			// close reporistory
-			repository.shutDown();
+			repository.release();
 		}
 		return null;
 	}
 
 	private String setWhereCriteria(String query) {
 		List<Filter> filters = qd.getFilters();
-		return RDFDataUnitHelper.filterRDFQuery(query, filters);
+		return RepositoryFrontendHelper.filterRDFQuery(query, filters);
 	}
 
 	private Item toItem(RDFTriple triple) {

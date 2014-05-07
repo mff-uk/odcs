@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
@@ -37,7 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
  * 
  */
 @Component
-public class AnnotationsInput implements PreExecutor {
+public class AnnotationsInput implements DPUPreExecutor {
 
 	public static final int ORDER = AnnotationsOutput.ORDER + 1000;
 	

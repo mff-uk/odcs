@@ -311,8 +311,8 @@ public class Executor implements Runnable {
 			MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
 					Long.toString(node.getDpuInstance().getId()));
 
-			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor = beanFactory
-					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor.class);
+			cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor dpuExecutor = beanFactory
+					.getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor.class);
 
 			try {
 				dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
@@ -464,10 +464,10 @@ public class Executor implements Runnable {
 	 *
 	 * @param executorThread thread servicing execution which needs to be
 	 * stopped
-	 * @param dpuExecutor Executor for given DPUs.
+	 * @param dpuExecutor DPUExecutor for given DPUs.
 	 */
 	private void stopExecution(Thread executorThread,
-			cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor dpuExecutor) {
+			cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor dpuExecutor) {
 		LOG.debug("Cancelling the DPU execution ...");
 		// set cancel flag
 		dpuExecutor.cancel();

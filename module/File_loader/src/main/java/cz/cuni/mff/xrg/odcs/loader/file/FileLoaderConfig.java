@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import org.openrdf.rio.RDFFormat;
 
 /**
  * Enum for naming setting values.
@@ -14,11 +14,12 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 
 	private String FilePath;
 
-	private RDFFormatType RDFFileFormat;
+	private RDFFormat RDFFileFormat;
 
 	private boolean DiffName;
 
 	private boolean validDataBefore;
+
 
 	/**
 	 * True if the input should be copied to the output.
@@ -27,13 +28,13 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 	
 	public FileLoaderConfig() {
 		this.FilePath = "";
-		this.RDFFileFormat = RDFFormatType.AUTO;
+		this.RDFFileFormat = null;
 		this.DiffName = false;
 		this.validDataBefore = false;
 		this.penetrable = false;
 	}
 
-	public FileLoaderConfig(String FilePath, RDFFormatType RDFFileFormat,
+	public FileLoaderConfig(String FilePath, RDFFormat RDFFileFormat,
 			boolean DiffName, boolean validDataBefore) {
 		this.FilePath = FilePath;
 		this.RDFFileFormat = RDFFileFormat;
@@ -52,11 +53,11 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 	}
 
 	/**
-	 * Returns selected {@link RDFFormatType} for RDF data.
+	 * Returns selected RDFFormatType for RDF data.
 	 *
-	 * @return selected {@link RDFFormatType} for RDF data.
+	 * @return selected RDFFormatType for RDF data.
 	 */
-	public RDFFormatType getRDFFileFormat() {
+	public RDFFormat getRDFFileFormat() {
 		return RDFFileFormat;
 	}
 
@@ -86,9 +87,9 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 		this.FilePath = FilePath;
 	}
 
-	public void setRDFFileFormat(RDFFormatType RDFFileFormat) {
-		this.RDFFileFormat = RDFFileFormat;
-	}
+    public void setRDFFileFormat(RDFFormat RDFFileFormat) {
+        this.RDFFileFormat  = RDFFileFormat;
+    }
 
 	public void setDiffName(boolean DiffName) {
 		this.DiffName = DiffName;
@@ -113,8 +114,7 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 	 */
 	@Override
 	public boolean isValid() {
-		return FilePath != null
-				&& RDFFileFormat != null;
+		return FilePath != null;
 	}
 	
 }

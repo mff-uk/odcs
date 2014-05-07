@@ -15,6 +15,7 @@
 	<!-- list of core modules -->
 	<modules>
 		<module>File_extractor</module>
+		<module>triplet_generator</module>
 		<module>File_loader</module>
 		<module>RDF_extractor</module>
 		<module>RDF_loader</module>

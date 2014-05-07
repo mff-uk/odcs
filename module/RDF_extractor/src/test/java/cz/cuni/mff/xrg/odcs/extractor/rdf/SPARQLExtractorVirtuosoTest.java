@@ -1,22 +1,26 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.*;
-import org.junit.experimental.categories.Category;
-import org.openrdf.rio.RDFFormat;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Test funcionality extaction for Virtuoso from SPARQL endpoint.
@@ -29,25 +33,13 @@ public class SPARQLExtractorVirtuosoTest {
 	private final Logger logger = LoggerFactory.getLogger(
 			SPARQLExtractorVirtuosoTest.class);
 
-	private static RDFDataUnit repository;
-
-	private static final String HOST_NAME = "localhost";
-
-	private static final String PORT = "1111";
-
-	private static final String USER = "dba";
-
-	private static final String PASSWORD = "dba";
-
-	private static final String DEFAULT_GRAPH = "http://default";
+	private static TestEnvironment testEnvironment = new TestEnvironment();
 
 	private static final String QUERY_ENDPOINT = "http://localhost:8890/sparql";
 
 	@BeforeClass
 	public static void setRDFDataUnit() throws RDFException {
-
-		repository = RDFDataUnitFactory.createVirtuosoRDFRepo(HOST_NAME, PORT,
-				USER, PASSWORD, DEFAULT_GRAPH, "input", new Properties());
+		
 
 	}
 
@@ -55,34 +47,30 @@ public class SPARQLExtractorVirtuosoTest {
 		return new ExtractorEndpointParams();
 	}
 
-	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
-	}
-
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).delete();
+		testEnvironment.release();
 	}
 
 	@Test
-	public void extractNSoud() {
+	public void extractNSoud() throws RepositoryException {
 		try {
-
+			RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 			RDFFormat usedRDFFormat = RDFFormat.NTRIPLES;
 
 			URL endpointURL = new URL("http://internal.xrg.cz:8890/sparql");
 			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/legislation/nsoud.cz";
 			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o} limit 5000";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
 
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext(), virtuoso);
+						testEnvironment.getContext(), virtuoso);
 				extractor.extractFromSPARQLEndpoint(endpointURL,
 						query, "", "", usedRDFFormat,
 						HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
@@ -92,64 +80,69 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 
 	//@Test
-	public void extractBigDataFromEndpoint() {
+	public void extractBigDataFromEndpoint() throws RepositoryException {
 
 		try {
+			RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 			URL endpointURL = new URL("http://internal.opendata.cz:8890/sparql");
 			String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/seznam.gov.cz/ovm/list/notransform";
 			String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+			long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
 
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext(), virtuoso);
+						testEnvironment.getContext(), virtuoso);
 				extractor
 						.extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
 						query);
 
 			} catch (RDFException e) {
 				fail(e.getMessage());
-			}
+            }
 
-			long sizeAfter = repository.getTripleCount();
+            long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 
 	@Test
-	public void extractDataFromSPARQLEndpointTest() {
+	public void extractDataFromSPARQLEndpointTest() throws RepositoryException {
 
 		try {
+			RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+
 			URL endpointURL = new URL("http://dbpedia.org/sparql");
 			String defaultGraphUri = "http://dbpedia.org";
 			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 			virtuoso.addDefaultGraph(defaultGraphUri);
 
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext(), virtuoso);
+						testEnvironment.getContext(), virtuoso);
 
 				extractor
 						.extractFromSPARQLEndpoint(endpointURL, query);
@@ -157,10 +150,10 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
@@ -171,20 +164,23 @@ public class SPARQLExtractorVirtuosoTest {
 	 * for build, use only when debugging
 	 */
 	@Test
-	public void extractDataFromSPARQLEndpointNamePasswordTest() {
+	public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException {
 		try {
+			RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+
 			URL endpoint = new URL(QUERY_ENDPOINT.toString());
 			String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 10";
 
 			RDFFormat format = RDFFormat.N3;
 
-			long sizeBefore = repository.getTripleCount();
+            RepositoryConnection connection = repository.getConnection();
+            long sizeBefore = connection.size(repository.getDataGraph());
 
 			ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 
 			try {
 				SPARQLExtractor extractor = new SPARQLExtractor(repository,
-						getTestContext(), virtuoso);
+						testEnvironment.getContext(), virtuoso);
 				extractor.extractFromSPARQLEndpoint(
 						endpoint, query, "", "",
 						format);
@@ -192,17 +188,13 @@ public class SPARQLExtractorVirtuosoTest {
 				fail(e.getMessage());
 			}
 
-			long sizeAfter = repository.getTripleCount();
+			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 
-	private DPUContext getTestContext() {
-		TestEnvironment environment = TestEnvironment.create();
-		return environment.getContext();
-	}
 }

@@ -1,21 +1,24 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.junit.AfterClass;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -24,11 +27,10 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class SPARQLExtractorRequestTest {
 
-	private final Logger logger = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			SPARQLExtractorRequestTest.class);
 
-	private static final RDFDataUnit repository = RDFDataUnitFactory
-			.createLocalRDFRepo("");
+	private static final TestEnvironment testEnvironment = new TestEnvironment();
 
 	private static final String ENDPOINT = "http://dbpedia.org/sparql";
 
@@ -43,18 +45,19 @@ public class SPARQLExtractorRequestTest {
 		try {
 			endpoint = new URL(ENDPOINT);
 		} catch (MalformedURLException ex) {
-			logger.debug(ex.getMessage());
+			LOG.debug(ex.getMessage());
 		}
 
 		return endpoint;
 	}
 
 	private DPUContext getTestContext() {
-		TestEnvironment environment = TestEnvironment.create();
+		TestEnvironment environment = new TestEnvironment();
 		return environment.getContext();
 	}
 
-	private void extractFromEndpoint(ExtractorEndpointParams params) {
+	private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
+		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 		URL endpoint = getEndpoint();
 		String query = String.format(
 				"CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
@@ -62,27 +65,25 @@ public class SPARQLExtractorRequestTest {
 
 		SPARQLExtractor extractor = new SPARQLExtractor(repository,
 				getTestContext(), params);
-
+		RepositoryConnection connection = null;
 		try {
 			extractor.extractFromSPARQLEndpoint(endpoint, query);
-			assertEquals(repository.getTripleCount(), EXTRACTED_TRIPLES);
+            connection = repository.getConnection();
+			assertEquals(connection.size(repository.getDataGraph()), EXTRACTED_TRIPLES);
 		} catch (RDFException e) {
 			fail(e.getMessage());
+		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
 		}
 	}
 
 	@AfterClass
 	public static void deleteRDFDataUnit() {
-		((ManagableRdfDataUnit)repository).delete();
-	}
-
-	@Before
-	public void cleanRepository() {
-		repository.cleanAllData();
+		testEnvironment.release();
 	}
 
 	@Test
-	public void GetSimpleTest() {
+	public void GetSimpleTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "";
 		String namedGraphParam = "";
@@ -95,7 +96,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void GetDefaultGraphParamTest() {
+	public void GetDefaultGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "";
@@ -110,7 +111,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void GetAllGraphParamTest() {
+	public void GetAllGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "named-graph-uri";
@@ -126,7 +127,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeSimpleTest() {
+	public void POSTEncodeSimpleTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "";
 		String namedGraphParam = "";
@@ -139,7 +140,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeDefaultGraphParamTest() {
+	public void POSTEncodeDefaultGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "";
@@ -154,7 +155,7 @@ public class SPARQLExtractorRequestTest {
 	}
 	
 	@Test
-	public void POSTEncodeAllGraphParamTest() {
+	public void POSTEncodeAllGraphParamTest() throws RepositoryException {
 		String graphParam = "query";
 		String defaultGraphParam = "default-graph-uri";
 		String namedGraphParam = "named-graph-uri";

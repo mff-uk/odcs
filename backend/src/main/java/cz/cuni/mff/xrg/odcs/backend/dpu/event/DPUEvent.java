@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PostExecutor;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
@@ -178,7 +178,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPreExecutorFailed(Context context,
-			PreExecutor source,
+			DPUPreExecutor source,
 			String longMessage) {
 		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),
@@ -200,7 +200,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPreExecutorFailed(Context context,
-			PreExecutor source,
+			DPUPreExecutor source,
 			String longMessage,
 			Throwable throwable) {
 		LOG.error("Pre-executor '{}' failed for DPU '{}' with message: '{}'", 
@@ -223,7 +223,7 @@ public class DPUEvent extends ApplicationEvent {
 	 * @return Instance of dpu event.
 	 */
 	public static DPUEvent createPostExecutorFailed(Context context,
-			PostExecutor source,
+			DPUPostExecutor source,
 			String longMessage) {
 		LOG.error("Post-executor '{}' failed for DPU '{}' with message: '{}'", 
 				source.getClass().getName(),

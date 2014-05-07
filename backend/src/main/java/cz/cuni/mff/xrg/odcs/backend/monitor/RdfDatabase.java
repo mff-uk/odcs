@@ -1,12 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.monitor;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.VirtuosoRDFRepo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +9,29 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
+
+import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Component for monitoring rdf storage availability.
@@ -128,36 +138,42 @@ class RdfDatabase {
 			
 		}
 		
-		VirtuosoRDFRepo virtuosoRepository = RDFDataUnitFactory
-				.createVirtuosoRDFRepo(
-						hostName,
-						port,
-						user,
-						password,
-						"http://linked.opendata.cz/resource/odcs/internal/",
-						"",
-						rdfConfig.getProperties());
-		try {
-			// ok we have the repository
-			virtuosoRepository.executeSelectQuery("select * where {?s ?p ?o} limit 1");
-		} catch (InvalidQueryException ex) {
-			// this should not happen
-			LOG.error("Failed to execute check query.", ex);
-		}
-		
-		// close the connection
-		try {
-			virtuosoRepository.close();
-		} catch (IOException ex) {
-			LOG.error("virtuosoRepository.close throws", ex);
-		}
-		
-		LOG.trace("executeQuery:ends");
+        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        RepositoryConnection connection = null;
+        try {
+            // ok we have the repository
+            connection = virtuosoRepository.getConnection();
+            executeQuery(virtuosoRepository, connection);
+            // close the connection
+            virtuosoRepository.release();
 
-		queryEnd = new Date();
-	}
+            LOG.trace("executeQuery:ends");
+            queryEnd = new Date();
+        } catch (QueryEvaluationException | RepositoryException | MalformedQueryException e) {
+            // this should not happen
+            LOG.error("Failed to execute check query.", e);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+				}
+			}          	
+        }
+    }
 
-	@Scheduled(fixedDelay = 1 * 60 * 1000)
+    private void executeQuery(VirtuosoRDFDataUnit virtuosoRepository, RepositoryConnection connection) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+        String query = "select * where {?s ?p ?o} limit 1";
+        TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
+        DatasetImpl dataSet = new DatasetImpl();
+        dataSet.addDefaultGraph(virtuosoRepository.getDataGraph());
+        dataSet.addNamedGraph(virtuosoRepository.getDataGraph());
+        tupleQuery.setDataset(dataSet);
+        tupleQuery.evaluate();
+    }
+
+    @Scheduled(fixedDelay = 1 * 60 * 1000)
 	public void check() {
 		if (!doCheck) {
 			return;

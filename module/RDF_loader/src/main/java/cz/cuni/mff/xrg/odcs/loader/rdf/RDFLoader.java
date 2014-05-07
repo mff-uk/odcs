@@ -14,7 +14,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
@@ -22,6 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,15 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 	/**
 	 * The repository for SPARQL loader.
 	 */
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit rdfDataUnit;
 
 	@OutputDataUnit(name = "input_redirection", optional = true)
 	public RDFDataUnit inputShadow;	
 	
+	@OutputDataUnit(name = "validationDataUnit", description ="Never connect any data to this unit please!")
+	public RDFDataUnit validationDataUnit;
+
 	public RDFLoader() {
 		super(RDFLoaderConfig.class);
 	}
@@ -105,7 +109,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 					"Starting RDF data VALIDATION");
 
 			DataValidator dataValidator = new RepositoryDataValidator(
-					rdfDataUnit);
+					rdfDataUnit, validationDataUnit);
 
 			if (!dataValidator.areDataValid()) {
 				final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
@@ -123,7 +127,23 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 			}
 		}
 
-		final long triplesCount = rdfDataUnit.getTripleCount();
+        RepositoryConnection connection = null;
+        long triplesCount = 0;
+        try {
+            connection = rdfDataUnit.getConnection();
+            triplesCount = connection.size(rdfDataUnit.getDataGraph());
+        } catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR,
+                    "connection to repository broke down");
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}          	
+        }
 
 		String tripleInfoMessage = String.format(
 				"Prepare for loading %s triples to SPARQL endpoint %s",
@@ -134,7 +154,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
 		try {
 			SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-					retryTime, endpointParams, config.isUseSparqlGraphProtocol());
+					retryTime, endpointParams, config.isUseSparqlGraphProtocol(), hostName, password);
 
 			for (String graph : defaultGraphsURI) {
 				Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
@@ -172,7 +192,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		}
 		
 		if (config.isPenetrable()) {
-			((ManagableRdfDataUnit)inputShadow).merge(rdfDataUnit);
+			inputShadow.merge(rdfDataUnit);
 		}		
 	}
 

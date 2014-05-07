@@ -1,9 +1,35 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.httpconnection.utils.Authentificator;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.util.List;
 
-import static cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType.*;
+import org.apache.commons.codec.binary.Base64;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.ParseErrorListener;
+import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.Rio;
+import org.openrdf.rio.helpers.BasicParserSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
@@ -13,22 +39,11 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.BaseRDFRepo;
-import java.io.*;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.util.List;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * Responsible for the RDF data extraction from SPARQL endpoint. Class contains
- * special methods for SPARQL extractor DPU - separed implementation from
- * {@link BaseRDFRepo}.
+ * special methods for SPARQL extractor DPU.
  *
  * @author Jiri Tomes
  */
@@ -92,8 +107,10 @@ public class SPARQLExtractor {
 	 * Request HTTP parameters neeed for setting SPARQL endpoint.
 	 */
 	private ExtractorEndpointParams endpointParams;
+    private String username;
+    private String password;
 
-	/**
+    /**
 	 * Create new instance of SPARQLExtractor with given parameters.
 	 *
 	 * @param dataUnit       Instance of RDFDataUnit repository neeed for
@@ -259,16 +276,19 @@ public class SPARQLExtractor {
 				"Mandatory construct query is null");
 		ParamController.testEmptyParameter(query, "Construct query is empty");
 
+        this.username = hostName;
+        this.password = password;
+
 		RepositoryConnection connection = null;
 
 		try {
 			connection = dataUnit.getConnection();
-			Authentificator.authenticate(hostName, password);
-
+			connection.begin();
+			
 			extractDataFromEnpointGraph(endpointURL, query,
 					format, connection, handlerExtractType, extractFail);
 
-
+			connection.commit();
 		} catch (RepositoryException e) {
 			final String message = "Repository connection failed: " + e
 					.getMessage();
@@ -282,9 +302,7 @@ public class SPARQLExtractor {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while extracting from SPQRQL endpoint.",
-							ex);
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
 				}
 			}
 		}
@@ -348,15 +366,11 @@ public class SPARQLExtractor {
 
 		handler.setGraphContext(dataUnit.getDataGraph());
 
-		RDFParser parser = dataUnit.getRDFParser(format, handler);
+		RDFParser parser = getRDFParser(format, handler);
 
 		try {
 
-			connection.begin();
-
 			parser.parse(inputStreamReader, "");
-
-			connection.commit();
 
 			if (extractFail) {
 				caseNoTriples(handler);
@@ -380,15 +394,16 @@ public class SPARQLExtractor {
 
 		} catch (RDFCancelException e) {
 			logger.debug(e.getMessage());
-			dataUnit.cleanAllData();
+            try {
+                connection.clear(dataUnit.getDataGraph());
+            } catch (RepositoryException e1) {
+                logger.debug(e.getMessage());
+                throw new RDFException(e1.getMessage(), e1);
+            }
 
-		} catch (RDFHandlerException | RDFParseException ex) {
+        } catch (RDFHandlerException | RDFParseException ex) {
 			logger.error(ex.getMessage(), ex);
 			throw new RDFException(ex.getMessage(), ex);
-		} catch (RepositoryException ex) {
-			logger.error(ex.getLocalizedMessage());
-			logger.debug(ex.getStackTrace().toString());
-			//TODO in case of exception, try again based on the settings in the config
 		} finally {
 			if (inputStreamReader != null) {
 				try {
@@ -508,11 +523,16 @@ public class SPARQLExtractor {
 
 				httpConnection = (HttpURLConnection) call.openConnection();
 				httpConnection.setRequestMethod("GET");
-
 				httpConnection.setUseCaches(false);
 				httpConnection.setDoInput(true);
 				httpConnection.setDoOutput(true);
-
+                if (this.username.length() > 0) {
+                    String userPass = this.username + ":" + this.password;
+                    Base64 coder = new Base64(-1);
+                    byte[] userPassEncoded = coder.encode(userPass.getBytes());
+                    String basicAuth = "Basic " + new String(userPassEncoded);
+                    httpConnection.setRequestProperty("Authorization", basicAuth);
+                }
 				int httpResponseCode = httpConnection.getResponseCode();
 				String httpResponseMessage = httpConnection.getResponseMessage();
 
@@ -570,7 +590,14 @@ public class SPARQLExtractor {
 			String contentType) throws IOException {
 
 		httpConnection.setRequestMethod("POST");
-		httpConnection.setRequestProperty("Content-Type", contentType);
+        if (this.username.length() > 0) {
+            String userPass = this.username + ":" + this.password;
+            Base64 coder = new Base64(-1);
+            byte[] userPassEncoded = coder.encode(userPass.getBytes());
+            String basicAuth = "Basic " + new String(userPassEncoded);
+            httpConnection.setRequestProperty("Authorization", basicAuth);
+        }
+        httpConnection.setRequestProperty("Content-Type", contentType);
 		httpConnection.setRequestProperty("Content-Length", ""
 				+ Integer.toString(parameters.getBytes().length));
 
@@ -929,4 +956,49 @@ public class SPARQLExtractor {
 			return 0;
 		}
 	}
+	
+	/**
+	 * Create RDF parser for given RDF format and set RDF handler where are data
+	 * insert to.
+	 *
+	 * @param format  RDF format witch is set to RDF parser
+	 * @param handler Type of handler where RDF parser used for parsing. If
+	 *                handler is {@link StatisticalHandler} type, is set error
+	 *                listener for fix errors here.
+	 * @return RDFParser for given RDF format and handler.
+	 */
+	private RDFParser getRDFParser(RDFFormat format, TripleCountHandler handler) {
+		RDFParser parser = Rio.createParser(format);
+		parser.setRDFHandler(handler);
+
+		ParserConfig config = parser.getParserConfig();
+
+		config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
+
+		parser.setParserConfig(config);
+
+		if (handler instanceof StatisticalHandler) {
+			final StatisticalHandler statisticalHandler = (StatisticalHandler) handler;
+
+
+				parser.setParseErrorListener(new ParseErrorListener() {
+					@Override
+					public void warning(String msg, int lineNo, int colNo) {
+						statisticalHandler.addWarning(msg, lineNo, colNo);
+					}
+
+					@Override
+					public void error(String msg, int lineNo, int colNo) {
+						statisticalHandler.addError(msg, lineNo, colNo);
+					}
+
+					@Override
+					public void fatalError(String msg, int lineNo, int colNo) {
+						statisticalHandler.addError(msg, lineNo, colNo);
+					}
+				});
+		}
+
+		return parser;
+	}	
 }

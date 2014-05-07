@@ -1,10 +1,30 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
+import org.openrdf.sail.memory.model.MemValueFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,9 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
  * Test suite for {@link Configurator} class.
@@ -33,6 +51,56 @@ public class ConfiguratorTest {
 
 	@Autowired
 	private BeanFactory beanFactory;
+
+//	@Test
+//	This is triple generating hidden here :)
+	public void bababa() throws FileNotFoundException, RDFHandlerException {
+		ValueFactory f = new MemValueFactory();
+		
+		
+		FileOutputStream out = new FileOutputStream("/home/michal/file.ttl");
+		RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE, out);
+		writer.handleNamespace("", "http://example.org/ontology/");
+		  writer.startRDF();
+		for (int i = 1; i< 160000000;i++) {
+		  writer.handleStatement(f.createStatement(
+				  f.createURI("http://example.org/people/d" + String.valueOf(i++)),
+				  f.createURI("http://example.org/ontology/e" + String.valueOf(i++)),
+				  f.createLiteral("Alice"+ String.valueOf(i++))
+				  ));
+		}
+		  writer.endRDF();
+//			RepositoryConnection connection = null;
+//			try {
+//				connection = rdfDataUnit.getConnection();
+//				URI contextName = rdfDataUnit.getDataGraph();
+//				ValueFactory f = new MemValueFactory();
+//				connection.begin();
+//				for (int i = 1; i< 4000000;i++) {
+//					  connection.add(f.createStatement(
+//							  f.createURI("http://example.org/people/d" + String.valueOf(i++)),
+//							  f.createURI("http://example.org/ontology/e" + String.valueOf(i++)),
+//							  f.createLiteral("Alice"+ String.valueOf(i++))
+//							  ), contextName);
+//						if ((i % 100000) == 0) {
+//							connection.commit();
+//							LOG.debug("Number of triples {} ", i / 4);
+//							if (context.canceled()) {
+//								break;
+//							}
+//							connection.begin();
+//						}
+//				}
+//				connection.commit();
+//				LOG.debug("Number of triples {} ", connection.size(contextName));
+//			} catch (RepositoryException ex) {
+//				LOG.error("Error", ex);
+//				context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+//	                  .fillInStackTrace().toString());			
+//			} finally {
+//				if (connection !=null) try {connection.close();}catch (RepositoryException ex) {}
+//			}		
+	}
 	
 	/**
 	 * Try to pass non-configurable object. Nothing should happened.

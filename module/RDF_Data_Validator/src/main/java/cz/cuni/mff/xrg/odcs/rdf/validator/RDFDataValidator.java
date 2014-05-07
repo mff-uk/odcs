@@ -13,6 +13,8 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +28,13 @@ import org.slf4j.LoggerFactory;
 public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		implements ConfigDialogProvider<RDFDataValidatorConfig> {
 
-	private final Logger logger = LoggerFactory
+	private static final Logger LOG = LoggerFactory
 			.getLogger(RDFDataValidator.class);
 
 	/**
 	 * Input RDF data repository with data we want to validate.
 	 */
-	@InputDataUnit
+	@InputDataUnit(name = "input")
 	public RDFDataUnit dataInput;
 
 	/**
@@ -62,7 +64,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 	}
 
 	private void makeValidationReport(DataValidator validator,
-			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException {
+			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
 
 		context.sendMessage(MessageType.INFO,
 				"Start creating VALIDATION REPORT", String.format(
@@ -80,7 +82,22 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
 
 		if (stopExecution) {
-			dataOutput.cleanAllData();
+            RepositoryConnection connection = null;
+            try { 
+            	connection = dataOutput.getConnection();
+            	connection.clear(dataOutput.getDataGraph());
+            } catch (RepositoryException ex) {
+            	LOG.warn("Error", ex);
+            } finally {
+	            if (connection != null) {
+					try {
+						connection.close();
+					} catch (RepositoryException ex) {
+						LOG.warn("Error when closing connection", ex);
+						// eat close exception, we cannot do anything clever here
+					}
+				}
+            }
 			throw new RDFException(
 					"RDFDataValidator found some invalid data - pipeline execution is stopped");
 		}
@@ -112,7 +129,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 					context.sendMessage(MessageType.WARNING,
 							"Validator found some INVALID DATA",
 							validator.getErrorMessage() + "\nIt will be created validation report.");
-					logger.error(validator.getErrorMessage());
+					LOG.error(validator.getErrorMessage());
 
 					makeValidationReport(validator, graphName, context,
 							stopExecution);
@@ -142,8 +159,11 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		} catch (RDFException e) {
 			context.sendMessage(MessageType.ERROR, e.getMessage(), e
 					.fillInStackTrace().toString());
-		}
+		} catch (RepositoryException e) {
+            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                    .fillInStackTrace().toString());
+        }
 
 
-	}
+    }
 }

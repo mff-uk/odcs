@@ -1,6 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
+import com.vaadin.ui.UI;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 
 /**
  * Component for deleting the graphs for virtuoso.
@@ -26,14 +33,31 @@ public class GraphDeleter implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			ManagableRdfDataUnit repo
-					= RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
-			message = repo.deleteApplicationGraphs();
-		} finally {
-			running = false;
-		}
-	}
+		RDFDataUnitFactory rdfDataUnitFactory =((AppEntry) UI.getCurrent()).getBean(
+				RDFDataUnitFactory.class);
+        RepositoryConnection connection = null;
+
+        try {
+            ManagableRdfDataUnit repo =
+                    //					RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
+            rdfDataUnitFactory.create("", "");
+            connection = repo.getConnection();
+            message = RepositoryFrontendHelper.deleteApplicationGraphs(connection, repo.getDataGraph());
+
+        } catch (Throwable ex) {
+            message = ex.toString();
+        } finally {
+            running = false;
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    message = ex.toString();
+                }
+            }
+
+        }
+    }
 
 	/**
 	 * Return last message from last deletion.

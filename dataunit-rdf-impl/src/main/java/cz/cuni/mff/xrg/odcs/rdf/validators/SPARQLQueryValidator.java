@@ -1,15 +1,12 @@
 package cz.cuni.mff.xrg.odcs.rdf.validators;
 
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.QueryParserUtil;
 
-import org.openrdf.query.*;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 
 /**
  * Class responsible to find out, if sparql queries are valid or not.
@@ -107,38 +104,15 @@ public class SPARQLQueryValidator implements QueryValidator {
 
 		boolean isValid = true;
 
-		LocalRDFRepo emptyRepo = RDFDataUnitFactory.createLocalRDFRepo("");
-		Repository repository = emptyRepo.getDataRepository();
-
-		RepositoryConnection connection = null;
+		
 		try {
-			connection = repository.getConnection();
-
-			connection.prepareQuery(QueryLanguage.SPARQL, query);
+			QueryParserUtil.parseQuery(QueryLanguage.SPARQL, query, null);
 		} catch (MalformedQueryException e) {
 			message = e.getCause().getMessage();
 			isValid = false;
-
-		} catch (RepositoryException ex) {
-
-			throw new RuntimeException("Connection to RDF repository failed. "
-					+ ex.getMessage(), ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					throw new RuntimeException(
-							"Failed to close connection to RDF repository while querying."
-							+ ex.getMessage(), ex);
-				}
-			}
 		}
 
-		emptyRepo.delete();
-
 		return isValid;
-
 	}
 
 	/**

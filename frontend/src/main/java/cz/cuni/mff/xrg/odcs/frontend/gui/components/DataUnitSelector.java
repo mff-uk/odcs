@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 import java.util.Collection;
 import java.util.List;
@@ -95,13 +95,9 @@ public class DataUnitSelector extends CustomComponent {
 			public void valueChange(Property.ValueChangeEvent event) {
 				DataUnitInfo info = (DataUnitInfo) event.getProperty().getValue();
 				if (info != null) {
-					if (info.getType() == DataUnitType.RDF_Local) {
-						dataUnitGraph.setValue("");
-					} else {
-						String id = executionInfo.dpu(getSelectedDPU()).createId(info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
-						String graphUrl = GraphUrl.translateDataUnitId(id);
-						dataUnitGraph.setValue(graphUrl);
-					}
+					String id = executionInfo.dpu(getSelectedDPU()).createId(info.getIndex()); // where index if from DataUnitInfo and context is Execution context info
+					String graphUrl = GraphUrl.translateDataUnitId(id);
+					dataUnitGraph.setValue(graphUrl);
 				}
 				fireEvent(new SelectionChangedEvent(DataUnitSelector.this, info, debugDpu));
 			}
