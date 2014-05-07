@@ -97,6 +97,7 @@ public class RepositoryDataValidator implements DataValidator {
 			} else {
 	
 				File tempFile = null;
+				RepositoryConnection goalConnection = null;
 				try {
 					tempFile = File.createTempFile("temp", "file");
 	                tempFile = File.createTempFile("temp", "file");
@@ -108,9 +109,9 @@ public class RepositoryDataValidator implements DataValidator {
 	
 					try (InputStreamReader fileStream = new InputStreamReader(
 							new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
-	
+						goalConnection =goalRepo.getConnection();
 						final StatisticalHandler handler = new StatisticalHandler(
-								goalRepo.getConnection(), true);
+								goalConnection , true);
 	
 						handler.setGraphContext(goalRepo.getDataGraph());
 	
@@ -157,6 +158,14 @@ public class RepositoryDataValidator implements DataValidator {
 					message = "Problem with data parsing :" + e.getMessage();
 					logger.error(message);
 				} finally {
+					if (goalConnection != null) {
+						try {
+							goalConnection.close();
+						} catch (RepositoryException ex) {
+							logger.warn("Error when closing connection", ex);
+							// eat close exception, we cannot do anything clever here
+						}
+					}
 					if (tempFile != null) {
 						tempFile.delete();
 					}
