@@ -120,7 +120,7 @@ public class ResourceManager {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return New unique import directory as subdirectory of
 	 *         {@link #getImportTempDir()}
 	 * @throws MissingResourceException
@@ -141,7 +141,7 @@ public class ResourceManager {
 	}
 
 	/**
-	 *
+	 * TODO: Remove, export should use single deterministic file for a pipeline.
 	 * @return New unique import directory. It's subdirectory for
 	 *         {@link #getExportTempDir()}.
 	 * @throws MissingResourceException
@@ -189,7 +189,10 @@ public class ResourceManager {
 	}
 
 	/**
-	 *
+	 * TODO: Not a good way how to get a temporary file, should be removed 
+	 * as the import/export will be done. And pipelines will be saved 
+	 * using their ids.
+	 * 
 	 * @param root
 	 * @return Newly created subdirectory in given directory.
 	 * @throws MissingResourceException
