@@ -6,14 +6,15 @@ import java.io.InputStream;
 
 import org.junit.Test;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class SPARQLTest {
-
+	private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
 	@Test
 	public void constructAllTest() throws Exception  {
 		// prepare dpu
@@ -53,21 +54,8 @@ public class SPARQLTest {
 			// verify result
 			assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
 		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-			if (connection2 != null) {
-				try {
-					connection2.close();
-				} catch (RepositoryException ex) {
-					// eat close exception, we cannot do anything clever here
-				}
-			}			
-			// release resources
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}			// release resources
 			env.release();
 		}
 	}

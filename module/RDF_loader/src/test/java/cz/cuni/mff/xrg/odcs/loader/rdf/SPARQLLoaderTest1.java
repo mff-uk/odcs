@@ -109,7 +109,7 @@ public class SPARQLLoaderTest1 {
 
         connection.add(subject, predicate, object, repository.getDataGraph());
         connection.add(subject, predicate, object3, repository.getDataGraph());
-
+        connection.close();
         tryInsertToSPARQLEndpoint();
     }
         

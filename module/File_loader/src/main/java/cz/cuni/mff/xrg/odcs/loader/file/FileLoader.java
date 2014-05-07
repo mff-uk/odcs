@@ -120,6 +120,14 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
         } catch (Exception ex) {
             context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}          	
         }
 
 		logger.info("Loading {} triples", triplesCount);

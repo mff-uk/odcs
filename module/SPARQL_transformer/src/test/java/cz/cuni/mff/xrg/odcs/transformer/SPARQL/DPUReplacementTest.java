@@ -1,29 +1,26 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-
-import org.junit.*;
-import org.openrdf.model.Resource;
+import org.junit.Test;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  *
  * @author Jiri Tomes
  */
 public class DPUReplacementTest {
-
+	 private static final Logger LOG = LoggerFactory.getLogger(DPUReplacementTest.class);
 	/**
 	 * Test DPU replacement on SPARQL CONSTRUCT query.
 	 */
@@ -37,6 +34,9 @@ public class DPUReplacementTest {
 
 		// prepare test environment
 		TestEnvironment env = new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
 		try {
 
@@ -48,7 +48,6 @@ public class DPUReplacementTest {
 
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
-            RepositoryConnection connection = null;
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://s"), factory.createURI(
@@ -57,7 +56,7 @@ public class DPUReplacementTest {
                     "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
 
-            RepositoryConnection connection2 = optional.getConnection();
+            connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
             connection2.add(factory2.createBNode("n25"), factory2
                     .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getDataGraph());
@@ -69,14 +68,17 @@ public class DPUReplacementTest {
 
 			env.run(transformer);
 
-            RepositoryConnection connection3 = output.getConnection();
+            connection3 = output.getConnection();
 			assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 			env.release();
 
-
+			
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
 			env.release();
 		}
 	}
@@ -99,6 +101,9 @@ public class DPUReplacementTest {
 
 		// prepare test environment
 		TestEnvironment env =  new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
 		try {
 
@@ -111,14 +116,12 @@ public class DPUReplacementTest {
 			RDFDataUnit input = env.createRdfInput("input", false);
 			RDFDataUnit optional = env.createRdfInput("optional1", false);
 
-            RepositoryConnection connection = null;
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://person"), factory.createURI(
 					"http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
 
-            RepositoryConnection connection2 = null;
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
 
@@ -134,7 +137,7 @@ public class DPUReplacementTest {
 
 			env.run(transformer);
 
-            RepositoryConnection connection3 = output.getConnection();
+            connection3 = output.getConnection();
             assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
 
             RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getDataGraph());
@@ -153,6 +156,10 @@ public class DPUReplacementTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+			
 			env.release();
 		}
 	}

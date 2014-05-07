@@ -34,7 +34,7 @@ public class DPUTemplate extends NonConfigurableBase
 			ValueFactory f = new MemValueFactory();
 			connection.begin();
 			int j = 1;
-			for (int i = 0; i< 10000000; i++) {
+			for (int i = 0; i< 3875000; i++) {
 				  connection.add(f.createStatement(
 						  f.createURI("http://example.org/people/d" + String.valueOf(j++)),
 						  f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
@@ -55,7 +55,13 @@ public class DPUTemplate extends NonConfigurableBase
 			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
                   .fillInStackTrace().toString());			
 		} finally {
-			if (connection !=null) try {connection.close();}catch (RepositoryException ex) {}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}
 		}		
 	}
 	

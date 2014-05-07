@@ -27,7 +27,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 @Category(IntegrationTest.class)
 public class SPARQLExtractorLocalTest {
 
-	private final Logger logger = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			SPARQLExtractorLocalTest.class);
 
 	private static TestEnvironment testEnvironment = new TestEnvironment();
@@ -75,11 +75,11 @@ public class SPARQLExtractorLocalTest {
 	
 				assertTrue(sizeBefore < sizeAfter);
             } finally {
-            	if (connection !=null) { try { connection.close(); } catch (Throwable e) {}}
+            	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
             }
 
 		} catch (MalformedURLException ex) {
-			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 
@@ -114,11 +114,11 @@ public class SPARQLExtractorLocalTest {
 	
 				assertTrue(sizeBefore < sizeAfter);
             } finally {
-            	if (connection !=null) { try { connection.close(); } catch (Throwable e) {}}
+            	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
             }
 
 		} catch (MalformedURLException ex) {
-			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 
@@ -157,10 +157,10 @@ public class SPARQLExtractorLocalTest {
 				assertTrue(sizeBefore < sizeAfter);
 
             } finally {
-            	if (connection !=null) { try { connection.close(); } catch (Throwable e) {}}
+            	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
             }
 		} catch (MalformedURLException ex) {
-			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+			LOG.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
 	}
 }

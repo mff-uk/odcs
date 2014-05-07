@@ -21,7 +21,7 @@ public class AddQueryGraphsTest {
     private static TestEnvironment testEnvironment;
     private static SPARQLTransformer trans;
     private static String GRAPH_NAME;
-    private final Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
             AddQueryGraphsTest.class);
 
     @BeforeClass
@@ -106,8 +106,9 @@ public class AddQueryGraphsTest {
     }
 
     private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException {
-        try {
-            RepositoryConnection connection = repository.getConnection();
+    	RepositoryConnection connection = null;
+    	try {
+    		connection= repository.getConnection();
 
             DatasetImpl dataSet = new DatasetImpl();
             dataSet.addDefaultGraph(repository.getDataGraph());
@@ -115,10 +116,11 @@ public class AddQueryGraphsTest {
             trans.executeSPARQLUpdateQuery(connection, updateQuery,dataSet, repository.getDataGraph());
             return true;
         } catch (RDFException e) {
-            logger.debug("Exception duering exectution query " + updateQuery + e
+            LOG.debug("Exception duering exectution query " + updateQuery + e
                     .getMessage(), e);
-            return false;
+        } finally {
+        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
         }
-
+        return false;
     }
 }

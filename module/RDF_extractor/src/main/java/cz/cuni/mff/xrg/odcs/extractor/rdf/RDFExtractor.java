@@ -59,6 +59,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 	public void execute(DPUContext context)
 			throws DPUException,
 			DataUnitCreateException {
+        RepositoryConnection connection = null;
 
 		try {
 			final URL endpointURL = new URL(config.getSPARQLEndpoint());
@@ -108,16 +109,10 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
 			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
 					retrySize, retryTime, endpointParams);
-            RepositoryConnection connection = null;
 
             long lastrepoSize = 0;
-            try {
-                connection = rdfDataUnit.getConnection();
-                lastrepoSize = connection.size(rdfDataUnit.getDataGraph());
-            } catch (RepositoryException e) {
-                context.sendMessage(MessageType.ERROR,
-                        "connection to repository broke down");
-            }
+            connection = rdfDataUnit.getConnection();
+            lastrepoSize = connection.size(rdfDataUnit.getDataGraph());
 
             if (usedSplitConstruct) {
                 if (splitConstructSize <= 0) {
@@ -187,6 +182,14 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 		} catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,
                     "connection to repository broke down");
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}        	
         }
     }
 

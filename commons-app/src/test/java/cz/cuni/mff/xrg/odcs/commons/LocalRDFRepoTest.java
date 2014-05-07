@@ -118,14 +118,18 @@ public class LocalRDFRepoTest {
 		String predicateName = "isResposibleFor";
 		String objectName = "Lecture";
 
-        RepositoryConnection connection = rdfRepo.getConnection();
+        RepositoryConnection connection = null;
+		try {
+			connection = rdfRepo.getConnection();
+		} finally {
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+		}
         ValueFactory factory = connection.getValueFactory();
 		Resource subject = factory.createURI(namespace + subjectName);
 		URI predicate = factory.createURI(namespace + predicateName);
 		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
-
 	}
 
 	/**
@@ -145,6 +149,7 @@ public class LocalRDFRepoTest {
 		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
+		connection.close();
 	}
 
 	/**
@@ -164,6 +169,7 @@ public class LocalRDFRepoTest {
 		Value object = factory.createLiteral(objectName);
 
 		testNewTriple(subject, predicate, object, rdfRepo);
+		connection.close();
 	}
 
 	private String getFilePath(String fileName) {
@@ -216,6 +222,7 @@ public class LocalRDFRepoTest {
 
 		long newSize = connection.size(rdfRepo.getDataGraph());
 
+		connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -244,6 +251,7 @@ public class LocalRDFRepoTest {
                 fail(e.getMessage());
             }
         }
+        connection.close();
 
 	}
 
@@ -275,6 +283,7 @@ public class LocalRDFRepoTest {
 
 
         long newSize = connection.size(rdfRepo.getDataGraph());
+        connection.close();
 
 		assertTrue(newSize > size);
 	}
@@ -295,7 +304,8 @@ public class LocalRDFRepoTest {
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getName(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
+                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());
+            } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
                 fail(e.getMessage());
@@ -303,6 +313,7 @@ public class LocalRDFRepoTest {
         }
 
         long newSize = connection.size(rdfRepo.getDataGraph());
+        connection.close();
         assertTrue(newSize > size);
     }
 
@@ -334,7 +345,7 @@ public class LocalRDFRepoTest {
         }
 
 		long newSize =  connection.size(rdfRepo.getDataGraph());
-
+		connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -366,6 +377,7 @@ public class LocalRDFRepoTest {
         }
 
 		long newSize = connection.size(rdfRepo.getDataGraph());
+		connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -398,7 +410,7 @@ public class LocalRDFRepoTest {
 
 
         long newSize = connection.size(rdfRepo.getDataGraph());
-
+        connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -431,7 +443,7 @@ public class LocalRDFRepoTest {
 
 
         long newSize =  connection.size(rdfRepo.getDataGraph());
-
+        connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -461,7 +473,7 @@ public class LocalRDFRepoTest {
         }
 
 		long newSize =  connection.size(rdfRepo.getDataGraph());
-
+		connection.close();
 		assertTrue(newSize > size);
 	}
 
@@ -491,7 +503,7 @@ public class LocalRDFRepoTest {
 		long newSize = connection.size(rdfRepo.getDataGraph());
 
 		boolean triplesAdded = newSize > size;
-
+		connection.close();
 		assertTrue(triplesAdded);
 	}
 
@@ -506,7 +518,7 @@ public class LocalRDFRepoTest {
 
         RepositoryConnection connection = rdfRepo.getConnection();
 		long addedData = connection.size(rdfRepo.getDataGraph());
-
+		connection.close();
 		assertTrue(addedData > 0);
 	}
 
@@ -519,6 +531,7 @@ public class LocalRDFRepoTest {
         RepositoryConnection connection = rdfRepo.getConnection();
         connection.clear(rdfRepo.getDataGraph());
 		assertEquals(0, connection.size(rdfRepo.getDataGraph()));
+		connection.close();
 	}
 
 	/**
@@ -552,6 +565,7 @@ public class LocalRDFRepoTest {
 		} else {
 			assertEquals(expectedSize, size + 1L);
 		}
+		connection.close();
 	}
 
 	/**
@@ -573,61 +587,6 @@ public class LocalRDFRepoTest {
 		directory.delete();
 	}
 
-	private void extractBigDataFileToRepository() throws RepositoryException {
-
-		String suffix = "bigdata.ttl";
-		String baseURI = "";
-		boolean useSuffix = true;
-		HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
-
-        RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getDataGraph());
-
-        File dir = new File(testFileDir);
-        Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-        for (File file : files) {
-            try {
-                RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getDataGraph());            } catch (RDFParseException e) {
-                //in this case - just skip this file
-            } catch (IOException e) {
-                fail(e.getMessage());
-            }
-        }
-
-		long newSize = connection.size(rdfRepo.getDataGraph());
-
-		LOG.debug("EXTRACTING from FILE - OK");
-		LOG.debug(
-				"EXTRACT TOTAL: " + String.valueOf(newSize - size) + " triples.");
-
-	}
-
-
-
-
-
-	/**
-	 * Test adding RDF tripes to given repository instance.
-	 *
-	 * @param repository repository used for adding triples.
-	 */
-	protected void addParalelTripleToRepository(ManagableRdfDataUnit repository) throws RepositoryException {
-
-		String namespace = "http://school/catedra/";
-		String subjectName = "KSI";
-		String predicateName = "isResposibleFor";
-		String objectName = "Lecture";
-
-        RepositoryConnection connection = repository.getConnection();
-        ValueFactory factory = connection.getValueFactory();
-
-		Resource subject = factory.createURI(namespace + subjectName);
-		URI predicate = factory.createURI(namespace + predicateName);
-		Value object = factory.createLiteral(objectName);
-
-		testNewTriple(subject, predicate, object, repository);
-	}
 
 	/**
 	 * Test extracting RDF data from given repository instance.
@@ -655,7 +614,7 @@ public class LocalRDFRepoTest {
             }
         }
 
-
+        connection.close();
         assertTrue(newSize > size);
     }
 

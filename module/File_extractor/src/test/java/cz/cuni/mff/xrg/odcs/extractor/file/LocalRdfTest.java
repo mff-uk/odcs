@@ -1,24 +1,26 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
 import org.openrdf.model.Model;
 import org.openrdf.repository.RepositoryConnection;
-
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static junit.framework.Assert.assertEquals;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class LocalRdfTest {
-
-    @org.junit.Test
+	private static final Logger LOG = LoggerFactory.getLogger(LocalRdfTest.class);
+	@org.junit.Test
     public void test() throws Exception {
         // prepare dpu
         FileExtractor extractor = new FileExtractor();
@@ -44,14 +46,16 @@ public class LocalRdfTest {
 
         // prepare test environment
         TestEnvironment env =  new TestEnvironment();
+        RepositoryConnection connection = null;
         try {
             RDFDataUnit output = env.createRdfOutput("output", false);
-            RepositoryConnection connection = output.getConnection();
+            connection = output.getConnection();
             env.run(extractor);
             long actualSize = connection.size(output.getDataGraph());
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {
+        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
             // release resources
             env.release();
         }

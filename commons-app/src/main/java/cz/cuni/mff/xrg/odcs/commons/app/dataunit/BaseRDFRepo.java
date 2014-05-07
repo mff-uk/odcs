@@ -128,8 +128,9 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 				"%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
 				.getQueryPrefixes(), sizeVar,
 				queryPart.getQueryWithoutPrefixes());
+		RepositoryConnection connection = null;
 		try {
-			RepositoryConnection connection = getConnection();
+			connection = getConnection();
 
 			TupleQuery tupleQuery = connection.prepareTupleQuery(
 					QueryLanguage.SPARQL, sizeQuery);
@@ -164,6 +165,16 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 		} catch (RepositoryException ex) {
 			logger.error("Connection to RDF repository failed. {}",
 					ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn(
+							"Failed to close connection to RDF repository while querying. {}",
+							ex.getMessage(), ex);
+				}
+			}
 		}
 
 		return 0;

@@ -66,7 +66,7 @@ public class SPARQLLoaderTest {
         Resource subject = factory.createURI("http://my.subject");
 		URI predicate = factory.createURI("http://my.predicate");
 		Value object = factory.createLiteral("My company s.r.o. \"HOME\"");
-
+		connection.close();
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
@@ -81,7 +81,7 @@ public class SPARQLLoaderTest {
 		URI predicate = factory.createURI("http://my.predicate");
 		Value object = factory.createLiteral(
 				"This \"firma has 'firma' company\" Prague");
-
+		connection.close();
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
@@ -96,7 +96,7 @@ public class SPARQLLoaderTest {
 		URI predicate = factory.createURI("http://my.predicate");
 		Value object = factory.createLiteral(
 				"Test char <and > in <my text1> as example.");
-
+		connection.close();
 		tryInsertToSPARQLEndpoint(subject, predicate, object);
 	}
 
@@ -164,7 +164,7 @@ public class SPARQLLoaderTest {
 						"TEMP graph <" + goalGraphName + "> was not delete");
 			}
 		}
-
+		connection.close();
 		assertTrue(isLoaded);
 	}
 

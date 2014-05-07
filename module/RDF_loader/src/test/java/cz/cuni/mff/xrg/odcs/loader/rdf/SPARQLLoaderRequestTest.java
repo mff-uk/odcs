@@ -111,6 +111,7 @@ public class SPARQLLoaderRequestTest {
 				logger.debug(e.getMessage());
 			}
 		}
+		connection.close();
 	}
 
 	@Test

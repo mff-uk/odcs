@@ -259,6 +259,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
 
         log.info("Output 'confirmed links' is being prepared");
+        RepositoryConnection connection = null;
         try {
             //File f = new File("/Users/tomasknap/.silk/output/confirmed.ttl");
              File f = new File(confirmedLinks);
@@ -269,7 +270,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
                 log.error("File with confirmed links was NOT generated");
             }
 
-            RepositoryConnection connection = outputConfirmed.getConnection();
+            connection = outputConfirmed.getConnection();
             String baseURI = "";
             connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getDataGraph());
 
@@ -277,9 +278,18 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             log.error(ex.getLocalizedMessage());
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}        	
         }
 
         log.info("Output 'to verify links' is being prepared");
+        RepositoryConnection connection2 = null;
         try {
             
             //File f = new File("/Users/tomasknap/.silk/output/verify.ttl");
@@ -291,13 +301,22 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
                 log.error("File with links to be verfied was NOT generated");
             }
 
-            RepositoryConnection connection = outputToVerify.getConnection();
+            connection2 = outputToVerify.getConnection();
             String baseURI = "";
-            connection.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getDataGraph());
+            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getDataGraph());
         } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					log.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
+				}
+			}        	
         }
 
 

@@ -91,82 +91,91 @@ public class RepositoryDataValidator implements DataValidator {
         try{
             connection = input.getConnection();
             tripleCount = connection.size(input.getDataGraph());
+
+			if (tripleCount == 0) {
+				isValid = true;
+			} else {
+	
+				File tempFile = null;
+				try {
+					tempFile = File.createTempFile("temp", "file");
+	                tempFile = File.createTempFile("temp", "file");
+	                FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
+	                OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
+	                RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
+	                connection.export(rdfWriter, input.getDataGraph());
+	
+	
+					try (InputStreamReader fileStream = new InputStreamReader(
+							new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
+	
+						final StatisticalHandler handler = new StatisticalHandler(
+								goalRepo.getConnection(), true);
+	
+						handler.setGraphContext(goalRepo.getDataGraph());
+	
+						RDFParser parser = Rio.createParser(RDFFormat.N3);
+						parser.setRDFHandler(handler);
+	
+						ParserConfig config = parser.getParserConfig();
+	
+						config.addNonFatalError(
+								BasicParserSettings.VERIFY_DATATYPE_VALUES);
+	
+						parser.setParserConfig(config);
+	
+						parser.setParseErrorListener(new ParseErrorListener() {
+							@Override
+							public void warning(String msg, int lineNo, int colNo) {
+								handler.addWarning(msg, lineNo, colNo);
+							}
+	
+							@Override
+							public void error(String msg, int lineNo, int colNo) {
+								handler.addError(msg, lineNo, colNo);
+							}
+	
+							@Override
+							public void fatalError(String msg, int lineNo, int colNo) {
+								handler.addError(msg, lineNo, colNo);
+							}
+						});
+	
+						parser.parse(fileStream, "");
+	
+						isValid = !handler.hasFindedProblems();
+						message = handler.getFindedProblemsAsString();
+						findedProblems = handler.getFindedProblems();
+					}
+	
+	
+				} catch (IOException | RepositoryException e) {
+					message = e.getMessage();
+					logger.error(message);
+	
+				} catch (RDFParseException | RDFHandlerException e) {
+					message = "Problem with data parsing :" + e.getMessage();
+					logger.error(message);
+				} finally {
+					if (tempFile != null) {
+						tempFile.delete();
+					}
+				}
+			}
+			
         }catch (Exception e) {
             message = e.getMessage();
             logger.error(message);
-        }
-
-		if (tripleCount == 0) {
-			isValid = true;
-		} else {
-
-			File tempFile = null;
-			try {
-				tempFile = File.createTempFile("temp", "file");
-                tempFile = File.createTempFile("temp", "file");
-                FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
-                OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
-                RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
-                connection.export(rdfWriter, input.getDataGraph());
-
-
-				try (InputStreamReader fileStream = new InputStreamReader(
-						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
-
-					final StatisticalHandler handler = new StatisticalHandler(
-							goalRepo.getConnection(), true);
-
-					handler.setGraphContext(goalRepo.getDataGraph());
-
-					RDFParser parser = Rio.createParser(RDFFormat.N3);
-					parser.setRDFHandler(handler);
-
-					ParserConfig config = parser.getParserConfig();
-
-					config.addNonFatalError(
-							BasicParserSettings.VERIFY_DATATYPE_VALUES);
-
-					parser.setParserConfig(config);
-
-					parser.setParseErrorListener(new ParseErrorListener() {
-						@Override
-						public void warning(String msg, int lineNo, int colNo) {
-							handler.addWarning(msg, lineNo, colNo);
-						}
-
-						@Override
-						public void error(String msg, int lineNo, int colNo) {
-							handler.addError(msg, lineNo, colNo);
-						}
-
-						@Override
-						public void fatalError(String msg, int lineNo, int colNo) {
-							handler.addError(msg, lineNo, colNo);
-						}
-					});
-
-					parser.parse(fileStream, "");
-
-					isValid = !handler.hasFindedProblems();
-					message = handler.getFindedProblemsAsString();
-					findedProblems = handler.getFindedProblems();
-				}
-
-
-			} catch (IOException | RepositoryException e) {
-				message = e.getMessage();
-				logger.error(message);
-
-			} catch (RDFParseException | RDFHandlerException e) {
-				message = "Problem with data parsing :" + e.getMessage();
-				logger.error(message);
-			} finally {
-				if (tempFile != null) {
-					tempFile.delete();
+        } finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					logger.warn("Error when closing connection", ex);
+					// eat close exception, we cannot do anything clever here
 				}
 			}
-		}
-
+        }
 		return isValid;
 
 	}

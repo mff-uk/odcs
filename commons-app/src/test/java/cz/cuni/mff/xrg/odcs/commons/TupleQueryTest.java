@@ -122,6 +122,7 @@ public class TupleQueryTest {
 		} catch (InvalidQueryException | QueryEvaluationException e) {
 			fail(e.getMessage());
 		}
+		connection.close();
 	}
 
 	/**
@@ -175,6 +176,7 @@ public class TupleQueryTest {
 		} catch (InvalidQueryException | QueryEvaluationException e) {
 			fail(e.getMessage());
 		}
+		connection.close();
 	}
 
 	/**
@@ -224,6 +226,7 @@ public class TupleQueryTest {
 		} catch (InvalidQueryException | QueryEvaluationException e) {
 			fail(e.getMessage());
 		}
+		connection.close();
 	}
 
 	/**
@@ -266,6 +269,7 @@ public class TupleQueryTest {
         connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
 
 		assertEquals(5L, connection.size(repository.getDataGraph()));
+		connection.close();
 	}
 
 	/**
@@ -296,6 +300,7 @@ public class TupleQueryTest {
         connection.add(subjectBlank, p, object, repository.getDataGraph());
         connection.add(subject, pred, objectBlank, repository.getDataGraph());
 		assertEquals(3L, connection.size(repository.getDataGraph()));
+		connection.close();
 
 	}
 
@@ -324,6 +329,7 @@ public class TupleQueryTest {
         connection.add(s, predicate, object, repository.getDataGraph());
 
         assertEquals(2L, connection.size(repository.getDataGraph()));
+        connection.close();
 
 	}
 

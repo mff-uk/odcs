@@ -83,7 +83,7 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
@@ -118,7 +118,7 @@ public class SPARQLExtractorVirtuosoTest {
             long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
@@ -153,7 +153,7 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}
@@ -191,7 +191,7 @@ public class SPARQLExtractorVirtuosoTest {
 			long sizeAfter = connection.size(repository.getDataGraph());
 
 			assertTrue(sizeBefore < sizeAfter);
-
+			connection.close();
 		} catch (MalformedURLException ex) {
 			logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
 		}

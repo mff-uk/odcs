@@ -194,12 +194,13 @@ public class SPARQLTransformer
                     } catch (RepositoryException ex) {
                         LOG.error("Could not add triples from graph", ex);
                     } finally {
-                        if (connectionInput != null) {
-                            try {
-                                connectionInput.close();
-                            } catch (RepositoryException ex) {
-                            }
-                        }
+                    	if (connectionInput != null) {
+            				try {
+            					connectionInput.close();
+            				} catch (RepositoryException ex) {
+            					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+            				}
+            			}
                     }
 
 						if (graph != null) {
@@ -211,7 +212,13 @@ public class SPARQLTransformer
 				                LOG.error("Could not add triples from graph", ex);
 				                
 				            } finally {
-				            	if (connection!=null) {try {connection.close();} catch (RepositoryException ex) {}}
+				            	if (connection != null) {
+				    				try {
+				    					connection.close();
+				    				} catch (RepositoryException ex) {
+				    					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				    				}
+				    			}
 				            }
 				        }						
 //					}
@@ -258,12 +265,13 @@ public class SPARQLTransformer
                         LOG.error("Could not add triples from graph", ex);
 
                     } finally {
-                        if (connection != null) {
-                            try {
-                                connection.close();
-                            } catch (RepositoryException ex) {
-                            }
-                        }
+                    	if (connection != null) {
+            				try {
+            					connection.close();
+            				} catch (RepositoryException ex) {
+            					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+            				}
+            			}
                     }
 
 //					} else {
@@ -283,16 +291,24 @@ public class SPARQLTransformer
 //                        .fillInStackTrace().toString());
             }
         }
+		 RepositoryConnection connection  = null;
         try {
-            RepositoryConnection connection = intputDataUnit.getConnection();
-            RepositoryConnection connection2 = outputDataUnit.getConnection();
+        	connection= intputDataUnit.getConnection();
             final long beforeTriplesCount = connection.size(intputDataUnit.getDataGraph());
-            final long afterTriplesCount = connection2.size(outputDataUnit.getDataGraph());
+            final long afterTriplesCount = connection.size(outputDataUnit.getDataGraph());
             LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
                     queryCount, beforeTriplesCount, afterTriplesCount);
         } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,
                     "connection to repository broke down");
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}        	
         }
 
 	}

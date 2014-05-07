@@ -29,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
@@ -138,11 +139,11 @@ class RdfDatabase {
 		}
 		
         VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        RepositoryConnection connection = null;
         try {
             // ok we have the repository
-            RepositoryConnection connection = virtuosoRepository.getConnection();
+            connection = virtuosoRepository.getConnection();
             executeQuery(virtuosoRepository, connection);
-            connection.close();
             // close the connection
             virtuosoRepository.release();
 
@@ -151,6 +152,14 @@ class RdfDatabase {
         } catch (QueryEvaluationException | RepositoryException | MalformedQueryException e) {
             // this should not happen
             LOG.error("Failed to execute check query.", e);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					LOG.warn("Error when closing connection", ex);
+				}
+			}          	
         }
     }
 

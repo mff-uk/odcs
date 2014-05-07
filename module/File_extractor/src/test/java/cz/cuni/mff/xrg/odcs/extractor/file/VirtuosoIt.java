@@ -29,7 +29,7 @@ public class VirtuosoIt {
     private static final String DEFAULT_GRAPH = "http://default";
     private static final String QUERY_ENDPOINT = "http://localhost:8890/sparql";
     private static RDFDataUnit repository;
-    private final Logger logger = LoggerFactory.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
             VirtuosoIt.class);
 
     @org.junit.Test
@@ -57,14 +57,16 @@ public class VirtuosoIt {
 
         // prepare test environment
         TestEnvironment env =  new TestEnvironment();
+        RepositoryConnection connection = null;
         try {
             RDFDataUnit output = env.createRdfOutput("output", false);
-            RepositoryConnection connection = output.getConnection();
+            connection = output.getConnection();
             env.run(extractor);
             long actualSize = connection.size(output.getDataGraph());
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {
+        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
             // release resources
             env.release();
         }

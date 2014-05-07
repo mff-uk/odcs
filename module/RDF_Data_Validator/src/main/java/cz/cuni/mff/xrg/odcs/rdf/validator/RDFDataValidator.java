@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 		implements ConfigDialogProvider<RDFDataValidatorConfig> {
 
-	private final Logger logger = LoggerFactory
+	private static final Logger LOG = LoggerFactory
 			.getLogger(RDFDataValidator.class);
 
 	/**
@@ -82,8 +82,22 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
 
 		if (stopExecution) {
-            RepositoryConnection connection = dataOutput.getConnection();
-            connection.clear(dataOutput.getDataGraph());
+            RepositoryConnection connection = null;
+            try { 
+            	connection = dataOutput.getConnection();
+            	connection.clear(dataOutput.getDataGraph());
+            } catch (RepositoryException ex) {
+            	LOG.warn("Error", ex);
+            } finally {
+	            if (connection != null) {
+					try {
+						connection.close();
+					} catch (RepositoryException ex) {
+						LOG.warn("Error when closing connection", ex);
+						// eat close exception, we cannot do anything clever here
+					}
+				}
+            }
 			throw new RDFException(
 					"RDFDataValidator found some invalid data - pipeline execution is stopped");
 		}
@@ -115,7 +129,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 					context.sendMessage(MessageType.WARNING,
 							"Validator found some INVALID DATA",
 							validator.getErrorMessage() + "\nIt will be created validation report.");
-					logger.error(validator.getErrorMessage());
+					LOG.error(validator.getErrorMessage());
 
 					makeValidationReport(validator, graphName, context,
 							stopExecution);

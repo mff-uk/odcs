@@ -421,6 +421,7 @@ public class RDFQueryView extends QueryView {
 	 */
 	private InputStream getDownloadData(ManagableRdfDataUnit repository, String query,
 			Object format, Collection<Filter> filters) {
+		RepositoryConnection connection = null;
 		try {
 			boolean isSelectQuery = isSelectQuery(query);
 
@@ -444,7 +445,7 @@ public class RDFQueryView extends QueryView {
 				return null;
 			}
 
-            RepositoryConnection connection = repository.getConnection();
+			connection = repository.getConnection();
             URI dataGraph = repository.getDataGraph();
 
             if (isSelectQuery) {
@@ -453,7 +454,6 @@ public class RDFQueryView extends QueryView {
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
                         selectType, dataGraph);
-                connection.close();
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
@@ -468,18 +468,28 @@ public class RDFQueryView extends QueryView {
 			Notification.show(
 					"There was error in creating donwload file!",
 					Notification.Type.ERROR_MESSAGE);
-			return null;
 		} catch (InvalidQueryException ex) {
 			LOG.error("Invalid query!", ex);
 			Notification.show("Query Validator",
 					"Query is not valid: "
 					+ ex.getCause().getMessage(),
 					Notification.Type.ERROR_MESSAGE);
-			return null;
-		} catch (RepositoryException e) {
-            LOG.error("Problem with connection!", e);
-            return null;
+		} catch (RepositoryException ex) {
+			Notification.show("Problem with connection",
+					ex.getCause().getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					Notification.show("Problem closing connection",
+							ex.getCause().getMessage(),
+							Notification.Type.ERROR_MESSAGE);
+				}
+			}
         }
+		return null;
     }
 
 	private String getFileName(Object oFormat) {

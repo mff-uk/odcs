@@ -42,6 +42,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
         rdfRepo = new VirtuosoRDFDataUnit(url, user, password, "", defaultGraph);
         RepositoryConnection connection = rdfRepo.getConnection();
         connection.clear(rdfRepo.getDataGraph());
+        connection.close();
     }
 
 	/**

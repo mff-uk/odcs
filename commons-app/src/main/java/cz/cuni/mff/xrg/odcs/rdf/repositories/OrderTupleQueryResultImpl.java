@@ -64,7 +64,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
 	private int OFFSET = 0;
 
-	private List<BindingSet> bindings;
+	private List<BindingSet> bindings; 
 
 	private String orderSelectQuery;
 
@@ -95,8 +95,9 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
 	private TupleQueryResult executeSelectQuery(String selectQuery) throws QueryEvaluationException {
 		while (true) {
+			RepositoryConnection connection = null;
 			try {
-				RepositoryConnection connection = repository.getConnection();
+				connection = repository.getConnection();
 
 				TupleQuery tupleQuery = connection.prepareTupleQuery(
 						QueryLanguage.SPARQL, selectQuery);
@@ -120,6 +121,14 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 			} catch (RepositoryException ex) {
 				logger.error("Connection to RDF repository failed. {}",
 						ex.getMessage(), ex);
+			} finally {
+				if (connection != null) {
+					try {
+						connection.close();
+					} catch (RepositoryException ex) {
+						logger.warn("Error when closing connection", ex);
+					}
+				}  				
 			}
 
 			try {

@@ -27,7 +27,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 @Category(IntegrationTest.class)
 public class SPARQLExtractorRequestTest {
 
-	private final Logger logger = LoggerFactory.getLogger(
+	private static final Logger LOG = LoggerFactory.getLogger(
 			SPARQLExtractorRequestTest.class);
 
 	private static final TestEnvironment testEnvironment = new TestEnvironment();
@@ -45,7 +45,7 @@ public class SPARQLExtractorRequestTest {
 		try {
 			endpoint = new URL(ENDPOINT);
 		} catch (MalformedURLException ex) {
-			logger.debug(ex.getMessage());
+			LOG.debug(ex.getMessage());
 		}
 
 		return endpoint;
@@ -73,11 +73,7 @@ public class SPARQLExtractorRequestTest {
 		} catch (RDFException e) {
 			fail(e.getMessage());
 		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (Throwable e ){}
-			}
+			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
 		}
 	}
 

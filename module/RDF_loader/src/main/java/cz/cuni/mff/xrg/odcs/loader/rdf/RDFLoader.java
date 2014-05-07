@@ -135,6 +135,14 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,
                     "connection to repository broke down");
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}          	
         }
 
 		String tripleInfoMessage = String.format(

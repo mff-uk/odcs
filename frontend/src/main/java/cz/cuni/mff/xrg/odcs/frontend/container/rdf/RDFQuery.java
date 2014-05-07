@@ -138,10 +138,11 @@ public class RDFQuery implements Query {
 		String query = restriction.getRestrictedQuery();
 		SPARQLQueryType type;
 		Object data = null;
+		RepositoryConnection connection = null;
 		try {
 			type = getQueryType(query);
             Graph graph = null;
-            RepositoryConnection connection = repository.getConnection();
+            connection = repository.getConnection();
             switch (type) {
                 case SELECT:
                     data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
@@ -196,11 +197,7 @@ public class RDFQuery implements Query {
 							"Loading of items finished, whole result preloaded and cached.");
 					return cachedItems.subList(startIndex, startIndex + count);
 			}
-            try {
-                connection.close();
-            } catch (RepositoryException ex) {
-                throw ex;
-            }
+            
 
             LOG.debug("Loading of items finished.");
 			return items;
@@ -220,6 +217,16 @@ public class RDFQuery implements Query {
                             + e.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					Notification.show("Connection problem",
+		                    "Could close connection to frontend repository: "
+		                            + ex.getCause().getMessage(),
+		                    Notification.Type.ERROR_MESSAGE);
+				}
+			}
 			// close reporistory
 			repository.release();
 		}

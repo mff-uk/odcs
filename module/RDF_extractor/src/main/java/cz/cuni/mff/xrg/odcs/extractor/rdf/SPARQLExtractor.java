@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
@@ -301,9 +302,7 @@ public class SPARQLExtractor {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn(
-							"Failed to close connection to RDF repository while extracting from SPQRQL endpoint.",
-							ex);
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
 				}
 			}
 		}

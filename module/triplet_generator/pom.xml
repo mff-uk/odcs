@@ -4,9 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
-		<artifactId>module-base</artifactId>
+		<artifactId>module-core</artifactId>
 		<version>1.0.0</version>
-		<relativePath>../module-base/pom.xml</relativePath>
 	</parent>    
     
 	<!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
@@ -27,7 +26,6 @@
 		<dpu.mainClass>DPUTemplate</dpu.mainClass>
 		<!-- TODO 6: Put path to the ODCL DPUs directory here -->
 		<!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->    
-		<dpu.odcl.dir></dpu.odcl.dir>
 	</properties>
  	
 	<dependencies>
@@ -56,5 +54,25 @@
 		-->
  		 
 	</dependencies>
+          <licenses>
+            <license>
+              <name>GNU General Public License, Version 3</name>
+              <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+              <distribution>repo</distribution>
+              <!-- https://maven.apache.org/pom.html#Licenses -->
+            </license>
+        </licenses>
+
+<build>
+          <resources>
+             <resource>
+                 <directory>${basedir}</directory> <!-- this is default dir-->
+                 <includes>
+                   <include>LICENSE.md</include>
+                 </includes>
+             </resource>
+         </resources>
+          </build>
+
  	
 </project>

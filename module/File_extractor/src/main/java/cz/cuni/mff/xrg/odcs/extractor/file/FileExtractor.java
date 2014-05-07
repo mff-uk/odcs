@@ -95,7 +95,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         long triplesCount = 0;
 		try {
 			extractFromFile(extractType, format, path, fileSuffix,
-                    baseURI, onlyThisSuffix, handlerExtractType, rdfDataUnit);
+                    baseURI, onlyThisSuffix, handlerExtractType, rdfDataUnit, context);
 
 			if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
 
@@ -116,8 +116,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 						try {
 							connection.close();
 						} catch (RepositoryException ex) {
-							LOG.warn("Error when closing connection", ex);
-							// eat close exception, we cannot do anything clever here
+							context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
 						}
 					}					
 				}
@@ -222,7 +221,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void extractDataFileFromHTTPSource(String path, RDFFormat format,
                                                String baseURI,
-                                               HandlerExtractType handlerExtractType,RDFDataUnit repo) throws RDFException {
+                                               HandlerExtractType handlerExtractType,RDFDataUnit repo,DPUContext context) throws RDFException {
         URL urlPath;
         try {
             urlPath = new URL(path);
@@ -266,8 +265,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
     				try {
     					connection.close();
     				} catch (RepositoryException ex) {
-    					LOG.warn("Error when closing connection", ex);
-    					// eat close exception, we cannot do anything clever here
+    					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
     				}
     			}
             }
@@ -371,7 +369,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
     }
     private void extractDataFromDirectorySource(File dirFile, String suffix,
                                                 boolean useSuffix, RDFFormat format, String baseURI,
-                                                HandlerExtractType handlerExtractType, boolean skipFiles, RDFDataUnit repo)
+                                                HandlerExtractType handlerExtractType, boolean skipFiles, RDFDataUnit repo, DPUContext context)
             throws RDFException {
 
         if (dirFile.isDirectory()) {
@@ -388,15 +386,13 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 
                 connection.commit();
             } catch (RepositoryException e) {
-                //TODO
-                e.printStackTrace();
+            	  throw new RDFException(e.getMessage(), e);
             } finally {
             	if (connection != null) {
     				try {
     					connection.close();
     				} catch (RepositoryException ex) {
-    					LOG.warn("Error when closing connection", ex);
-    					// eat close exception, we cannot do anything clever here
+    					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
     				}
     			}            	
             }
@@ -430,7 +426,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                                 RDFFormat format,
                                 String path, String suffix,
                                 String baseURI, boolean useSuffix,
-                                HandlerExtractType handlerExtractType, RDFDataUnit repo)
+                                HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context)
             throws RDFException {
 
         ParamController.testNullParameter(path,
@@ -443,27 +439,27 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         switch (extractType) {
             case HTTP_URL:
                 extractDataFileFromHTTPSource(path, format, baseURI,
-                        handlerExtractType, repo);
+                        handlerExtractType, repo, context);
                 break;
             case PATH_TO_DIRECTORY:
                 extractDataFromDirectorySource(dirFile, suffix, useSuffix,
-                        format, baseURI, handlerExtractType, false, repo);
+                        format, baseURI, handlerExtractType, false, repo, context);
                 break;
 
             case PATH_TO_DIRECTORY_SKIP_PROBLEM_FILES:
                 extractDataFromDirectorySource(dirFile, suffix, useSuffix,
-                        format, baseURI, handlerExtractType, true, repo);
+                        format, baseURI, handlerExtractType, true, repo, context);
                 break;
             case PATH_TO_FILE:
             case UPLOAD_FILE:
                 extractDataFromFileSource(dirFile, format, baseURI,
-                        handlerExtractType, repo);
+                        handlerExtractType, repo, context);
                 break;
         }
 
     }
     private void extractDataFromFileSource(File dirFile, RDFFormat format,
-                                           String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo) throws RDFException {
+                                           String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context) throws RDFException {
         Resource graph = repo.getDataGraph();
         RepositoryConnection connection = null;
         if (dirFile.isFile()) {
@@ -475,15 +471,13 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 	                        connection, graph);
 	            connection.commit();
 	        } catch (RepositoryException e) {
-	            //TODO
-	            e.printStackTrace();
+	        	  throw new RDFException(e.getMessage(), e);
 	        } finally {
 	        	if (connection != null) {
 					try {
 						connection.close();
 					} catch (RepositoryException ex) {
-						LOG.warn("Error when closing connection", ex);
-						// eat close exception, we cannot do anything clever here
+						context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
 					}
 				}
 	        }

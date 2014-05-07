@@ -374,8 +374,7 @@ public class SPARQLoader {
 				try {
 					connection.close();
 				} catch (RepositoryException ex) {
-					logger.warn("Failed to close connection to RDF repository. "
-							+ ex.getMessage(), ex);
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
 				}
 			}
 
@@ -557,8 +556,9 @@ public class SPARQLoader {
 		String part = getInsertQueryPart(chunkSize, counter);
 
 		long partsCount = 0;
+		RepositoryConnection connection = null;
         try {
-            RepositoryConnection connection = rdfDataUnit.getConnection();
+        	connection = rdfDataUnit.getConnection();
             long size = connection.size(rdfDataUnit.getDataGraph());
             partsCount = size / chunkSize;
             if (size % chunkSize > 0) {
@@ -566,6 +566,14 @@ public class SPARQLoader {
             }
         } catch (RepositoryException e) {
             logger.error(e.getMessage(), e);
+        } finally {
+        	if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}
         }
 
 
@@ -865,8 +873,9 @@ public class SPARQLoader {
 	}
 
 	private GraphQueryResult getTriplesPart(String constructQuery) throws InvalidQueryException {
+		RepositoryConnection connection = null;
 		try {
-			RepositoryConnection connection = rdfDataUnit.getConnection();
+			connection = rdfDataUnit.getConnection();
 
 			GraphQuery graphQuery = connection.prepareGraphQuery(
 					QueryLanguage.SPARQL,
@@ -884,9 +893,17 @@ public class SPARQLoader {
 					"Given query for lazy triples is probably not valid. "
 					+ ex.getMessage(), ex);
 		} catch (RepositoryException ex) {
-
+			
 			logger.error("Connection to RDF repository failed. "
 					+ ex.getMessage(), ex);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (RepositoryException ex) {
+					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+				}
+			}
 		}
 		throw new InvalidQueryException(
 				"Getting GraphQueryResult for lazy triples failed.");
@@ -1412,9 +1429,9 @@ public class SPARQLoader {
 
                             logger.debug("PProcessing of triples started");
 				
-
+                             RepositoryConnection connection = null;
                              try {
-                                RepositoryConnection connection = rdfDataUnit.getConnection();
+                            	 connection = rdfDataUnit.getConnection();
                                 
                                 String queryResFile = "";
                                 FileOutputStream fos = new FileOutputStream(new File(queryResFile));
@@ -1422,16 +1439,16 @@ public class SPARQLoader {
                            
                                 
                                 connection.prepareGraphQuery(QueryLanguage.SPARQL,"CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ").evaluate(writer);
-                            } catch (MalformedQueryException ex) {
-                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (FileNotFoundException ex) {
-                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (QueryEvaluationException ex) {
-                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (RDFHandlerException ex) {
-                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (RepositoryException ex) {
-                                java.util.logging.Logger.getLogger(SPARQLoader.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (MalformedQueryException | RDFHandlerException | RepositoryException | FileNotFoundException ex) {
+                            	context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+                            } finally {
+                            	if (connection != null) {
+                    				try {
+                    					connection.close();
+                    				} catch (RepositoryException ex) {
+                    					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                    				}
+                    			}
                             }
                                 
                                  GraphQueryResult lazy = getTriplesPart("CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c}");
@@ -1511,9 +1528,10 @@ public class SPARQLoader {
             } catch (FileNotFoundException ex) {
                  logger.error(ex.getLocalizedMessage());
             }
+            RepositoryConnection connection = null;
              try {
                  logger.debug("Phase 1 Started: data is serialized to RDF/XML file");
-                RepositoryConnection connection = rdfDataUnit.getConnection();
+                 connection= rdfDataUnit.getConnection();
                 
                 GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
             DatasetImpl dataSet = new DatasetImpl();
@@ -1540,6 +1558,13 @@ public class SPARQLoader {
             } catch (RepositoryException ex) {
                 logger.error(ex.getLocalizedMessage());
             }finally {
+            	if (connection != null) {
+    				try {
+    					connection.close();
+    				} catch (RepositoryException ex) {
+    					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+    				}
+    			}
                  try {
                      fos.flush();
                      fos.close();
