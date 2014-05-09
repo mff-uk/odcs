@@ -225,8 +225,9 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     //ManagableDataUnit interface
     @Override
     public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-        if (!(otherDataUnit instanceof InMemoryRDFDataUnit)) {
-            throw new IllegalArgumentException("Incompatible repository type");
+        if (!this.getClass().equals(otherDataUnit.getClass())) {
+            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName()  + ".");
         }
 
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;

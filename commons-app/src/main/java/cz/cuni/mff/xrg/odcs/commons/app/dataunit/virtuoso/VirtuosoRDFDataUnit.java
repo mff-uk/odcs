@@ -93,10 +93,11 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
      */
     @Override
     public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-        if (!(otherDataUnit instanceof VirtuosoRDFDataUnit)) {
-            throw new IllegalArgumentException("Incompatible repository type");
+        if (!this.getClass().equals(otherDataUnit.getClass())) {
+            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName()  + ".");
         }
-
+        
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
         RepositoryConnection connection = null;
         try {
