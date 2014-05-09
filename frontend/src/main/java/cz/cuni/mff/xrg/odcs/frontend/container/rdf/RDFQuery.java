@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
@@ -25,6 +32,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 
@@ -81,9 +89,9 @@ public class RDFQuery implements Query {
             String filteredQuery = setWhereCriteria(baseQuery);
             LOG.debug("Size query started...");
             if (isAllStatementQuery(filteredQuery)) {
-                count = (int) repository.getResultSizeForDataCollection();
+                count = (int) this.getResultSizeForDataCollection(repository);
             } else {
-                count = (int) repository.getResultSizeForQuery(filteredQuery);
+                count = (int) this.getResultSizeForQuery(repository, filteredQuery);
             }
             LOG.debug("Size query finished!");
             return count;
@@ -312,5 +320,157 @@ public class RDFQuery implements Query {
         SPARQLQueryType type = queryPart.getSPARQLQueryType();
 
         return type;
+    }
+    
+
+    private long getSizeForConstruct(RDFDataUnit rdfDataUnit, String constructQuery) throws InvalidQueryException {
+        long size = 0;
+
+        RepositoryConnection connection = null;
+
+        try {
+            connection = rdfDataUnit.getConnection();
+
+            GraphQuery graphQuery = connection.prepareGraphQuery(
+                    QueryLanguage.SPARQL,
+                    constructQuery);
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
+            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            graphQuery.setDataset(dataSet);
+            try {
+                GraphQueryResult result = graphQuery.evaluate();
+
+                Model model = QueryResults.asModel(result);
+                size = model.size();
+                result.close();
+
+            } catch (QueryEvaluationException ex) {
+
+                throw new InvalidQueryException(
+                        "This query is probably not valid. " + ex
+                                .getMessage(),
+                        ex);
+            }
+
+        } catch (MalformedQueryException ex) {
+            throw new InvalidQueryException(
+                    "This query is probably not valid as construct query. "
+                            + ex.getMessage(), ex);
+        } catch (RepositoryException ex) {
+            LOG.error("Connection to RDF repository failed. {}",
+                    ex.getMessage(), ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn(
+                            "Failed to close connection to RDF repository while querying. {}",
+                            ex.getMessage(), ex);
+                }
+            }
+        }
+
+        return size;
+    }
+
+    private long getSizeForSelect(RDFDataUnit rdfDataUnit, QueryPart queryPart) throws InvalidQueryException {
+
+        final String sizeVar = "selectSize";
+
+        final String sizeQuery = String.format(
+                "%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
+                        .getQueryPrefixes(), sizeVar,
+                queryPart.getQueryWithoutPrefixes());
+        RepositoryConnection connection = null;
+        try {
+            connection = rdfDataUnit.getConnection();
+
+            TupleQuery tupleQuery = connection.prepareTupleQuery(
+                    QueryLanguage.SPARQL, sizeQuery);
+            DatasetImpl dataSet = new DatasetImpl();
+            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
+            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            tupleQuery.setDataset(dataSet);
+            try {
+                TupleQueryResult tupleResult = tupleQuery.evaluate();
+                if (tupleResult.hasNext()) {
+                    String selectSize = tupleResult.next()
+                            .getValue(sizeVar).stringValue();
+                    long resultSize = Long.parseLong(selectSize);
+
+                    tupleResult.close();
+                    return resultSize;
+                }
+                throw new InvalidQueryException(
+                        "Query: " + queryPart.getQuery() + " has no bindings for information about its size");
+            } catch (QueryEvaluationException ex) {
+                throw new InvalidQueryException(
+                        "This query is probably not valid. " + ex
+                                .getMessage(),
+                        ex);
+            }
+
+        } catch (MalformedQueryException ex) {
+            throw new InvalidQueryException(
+                    "This query is probably not valid. "
+                            + ex.getMessage(), ex);
+        } catch (RepositoryException ex) {
+            LOG.error("Connection to RDF repository failed. {}",
+                    ex.getMessage(), ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn(
+                            "Failed to close connection to RDF repository while querying. {}",
+                            ex.getMessage(), ex);
+                }
+            }
+        }
+
+        return 0;
+    }
+    /**
+     * For Browsing all data in graph return its size {count of rows}.
+     */
+    private long getResultSizeForDataCollection(RDFDataUnit rdfDataUnit) throws InvalidQueryException {
+        final String selectQuery = "SELECT ?x ?y ?z WHERE {?x ?y ?z}";
+        return getSizeForSelect(rdfDataUnit, new QueryPart(selectQuery));
+    }    
+    /**
+     * For given valid SELECT of CONSTRUCT query return its size {count of rows
+     * returns for given query).
+     * 
+     * @param query
+     *            Valid SELECT/CONTRUCT query for asking.
+     * @return size for given valid query as long.
+     * @throws InvalidQueryException
+     *             if query is not valid.
+     */
+    private long getResultSizeForQuery(RDFDataUnit rdfDataUnit, String query) throws InvalidQueryException {
+
+        long size = 0;
+
+        QueryPart queryPart = new QueryPart(query);
+        SPARQLQueryType type = queryPart.getSPARQLQueryType();
+
+        switch (type) {
+            case SELECT:
+                size = getSizeForSelect(rdfDataUnit, queryPart);
+                break;
+            case CONSTRUCT:
+            case DESCRIBE:
+                size = getSizeForConstruct(rdfDataUnit, query);
+                break;
+            case UNKNOWN:
+                throw new InvalidQueryException(
+                        "Given query: " + query + "have to be SELECT or CONSTRUCT type.");
+        }
+
+        return size;
+
     }
 }
