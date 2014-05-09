@@ -2,7 +2,11 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;

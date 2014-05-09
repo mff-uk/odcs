@@ -2,7 +2,11 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
 import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 

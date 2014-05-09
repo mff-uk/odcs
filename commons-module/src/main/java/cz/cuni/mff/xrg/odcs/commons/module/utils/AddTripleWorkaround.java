@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.module.utils;
 
-import org.openrdf.model.*;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 
 /**
  * Workaround to add triples with triple quoted literals.
