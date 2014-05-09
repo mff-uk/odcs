@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.filelist;
 
-public interface OutputFileListDataUnit extends FileListDataUnit {
+public interface WritableFileListDataUnit extends FileListDataUnit {
     /**
      * Get base path where all new files should be written (only when used as output data unit). On input data unit does not have any sense.
      * Input data unit is only list of files, you can not create any new files anywhere.

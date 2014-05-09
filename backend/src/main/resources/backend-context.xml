@@ -80,19 +80,19 @@
             <map>
                 <entry key="inMemoryRDF">
                     <bean id="inMemoryRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory.InMemoryRDFDataUnitFactory">
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
                         <property name="repositoryPath" value="${general.workingdir}"/>
                     </bean>
                 </entry>
                 <entry key="localRDF">
                     <bean id="localRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
                         <property name="repositoryPath" value="${general.workingdir}"/>
                     </bean>
                 </entry>
                 <entry key="virtuoso">
                     <bean id="virtuosoRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnitFactory">
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnitFactory">
                         <property name="url" value="${database.rdf.url}"/>
                         <property name="user" value="${database.rdf.user}"/>
                         <property name="password" value="${database.rdf.password}"/>
@@ -100,7 +100,7 @@
                 </entry>
                 <entry key="remoteRDF">
                     <bean id="remoteRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf.RemoteRDFDataUnitFactory">
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf.RemoteRDFDataUnitFactory">
                         <property name="url" value="${database.rdf.url}"/>
                         <property name="user" value="${database.rdf.user}"/>
                         <property name="password" value="${database.rdf.password}"/>
