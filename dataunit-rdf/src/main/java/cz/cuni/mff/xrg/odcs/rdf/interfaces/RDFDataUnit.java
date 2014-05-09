@@ -8,6 +8,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
@@ -17,24 +18,8 @@ import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
  * @author Jiri Tomes
  * @author Petyr
  */
-public interface RDFDataUnit extends DataUnit {
-    /**
-     * Returns shared connection to repository.
-     * 
-     * @return Shared connection to repository.
-     * @throws RepositoryException
-     *             If something went wrong during the creation
-     *             of the Connection.
-     */
-    public RepositoryConnection getConnection() throws RepositoryException;
-
-    /**
-     * Returns URI representation of graph where RDF data are stored.
-     * 
-     * @return URI representation of graph where RDF data are stored.
-     */
-    public URI getDataGraph();
-
+public interface RDFDataUnit extends RDFData, DataUnit {
+    
     /**
      * Extracts metadata (held within the list of predicates) about certain
      * subjects (subject URIs)
