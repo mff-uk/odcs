@@ -24,10 +24,10 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * @author Jiri Tomes
  */
 @Category(IntegrationTest.class)
-public class SPARQLExtractorRequestTest {
+public class SPARQLExtractorRequestSysTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(
-            SPARQLExtractorRequestTest.class);
+            SPARQLExtractorRequestSysTest.class);
 
     private static final TestEnvironment testEnvironment = new TestEnvironment();
 

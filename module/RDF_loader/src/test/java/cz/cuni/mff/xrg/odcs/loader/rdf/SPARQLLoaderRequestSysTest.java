@@ -9,7 +9,6 @@ import java.net.URL;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -19,7 +18,6 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
@@ -29,11 +27,10 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 /**
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
-public class SPARQLLoaderRequestTest {
+public class SPARQLLoaderRequestSysTest {
 
     private final Logger logger = LoggerFactory.getLogger(
-            SPARQLLoaderRequestTest.class);
+            SPARQLLoaderRequestSysTest.class);
 
     private static TestEnvironment testEnvironment = null;
 

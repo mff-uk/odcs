@@ -7,14 +7,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.AfterClass;
-import org.junit.experimental.categories.Category;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -24,11 +22,10 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * 
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
-public class SPARQLExtractorLocalTest {
+public class SPARQLExtractorLocalSysTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(
-            SPARQLExtractorLocalTest.class);
+            SPARQLExtractorLocalSysTest.class);
 
     private static TestEnvironment testEnvironment = new TestEnvironment();
 
