@@ -55,6 +55,7 @@ public class SPARQLLoaderSysTest {
 
     @Test
     public void InsertingToEndpointTest1() throws RepositoryException {
+        fail();
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         RepositoryConnection connection = repository.getConnection();
         connection.clear(repository.getDataGraph());
