@@ -28,17 +28,8 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFDataUnit.class);
-
-	/**
-	 * DataUnit's name.
-	 */
-	private String dataUnitName;
 	
 	private Repository repository;
-
-	private List<RepositoryConnection> requestedConnections;
-	
-	private Thread ownerThread;
 
 	/**
 	 * Construct a VirtuosoRepository with a specified parameters.
@@ -60,11 +51,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
 	 */
 	public VirtuosoRDFDataUnit(String url, String user, String password,
 			String dataUnitName, String dataGraph) {
-		this.dataUnitName = dataUnitName;
-		this.requestedConnections = new ArrayList<>();
-		this.ownerThread = Thread.currentThread();
-		
-		setDataGraph(dataGraph);
+	    super(dataUnitName, dataGraph);
 
 		this.repository = new VirtuosoRepository(url, user, password);
 		try {
@@ -90,100 +77,9 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
 			}
 		}
 	}
-	
-	/**
-	 * Return type of data unit interface implementation.
-	 *
-	 * @return DataUnit type.
-	 */
 	@Override
-	public DataUnitType getType() {
-		return DataUnitType.RDF;
-	}
-
-	/**
-	 *
-	 * @return String name of data unit.
-	 */
-	@Override
-	public String getDataUnitName() {
-		return dataUnitName;
-	}
-	
-	@Override
-	public RepositoryConnection getConnection() throws RepositoryException {
-		if (!ownerThread.equals(Thread.currentThread())) {
-			throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-		}
-		
-		RepositoryConnection connection = repository.getConnection();
-		requestedConnections.add(connection);
-		return connection;
-	}
-	
-	@Override
-	public void clear() {
-		/**
-		 * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
-		 * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
-		 * This connection has to be obtained directly from repository and we take care to close it properly. 
-		 */
-		RepositoryConnection connection = null; 
-		try {
-			connection = repository.getConnection();
-			connection.clear(dataGraph);
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not delete repository", ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-	}
-
-	@Override
-	public void release() {
-		List<RepositoryConnection> openedConnections = new ArrayList<>();
-		for (RepositoryConnection connection : requestedConnections) {
-			try {
-				if (connection.isOpen()) {
-					openedConnections.add(connection);
-				}
-			} catch (RepositoryException ex) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex1) {
-					LOG.warn("Error when closing connection", ex1);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-		
-		if (!openedConnections.isEmpty()) {
-			LOG.error(String.valueOf(openedConnections.size()) + " connections remained opened after DPU execution.");
-			for (RepositoryConnection connection : openedConnections) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-		
-		try {
-			repository.shutDown();
-			LOG.info("Virtuoso RDF DataUnit with data graph <"
-					+ getDataGraph()
-					+ "> succesfully shut down");
-		} catch (RepositoryException ex) {
-			LOG.error("Error in repository shutdown", ex);
-		}
+	public RepositoryConnection getConnectionInternal() throws RepositoryException {
+		return repository.getConnection();
 	}
 
 	/**
@@ -242,29 +138,6 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
 					// eat close exception, we cannot do anything clever here
 				}
 			}
-		}
-	}
-
-	@Override
-	public void isReleaseReady() {
-		int count = 0;
-		for (RepositoryConnection connection : requestedConnections) {
-			try {
-				if (connection.isOpen()) {
-					count++;
-				}
-			} catch (RepositoryException ex) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex1) {
-					LOG.warn("Error when closing connection", ex1);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-		
-		if (count > 0) {
-			LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
 		}
 	}
 }

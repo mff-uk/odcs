@@ -14,21 +14,23 @@ package cz.cuni.mff.xrg.odcs.commons.data;
 public interface ManagableDataUnit extends DataUnit {
 
 	/**
-	 * Release all locks, prepare for destroy in memory representation of
-	 * DataUnit. 
-	 * DataUnit is not usable anymore after calling this.
-	 */
-	void release();
-
-	/**
 	 * Delete all the data from the DataUnit but does not close or destroy it.
 	 * After this call the state of data inside DataUnit should be the same as if it was
 	 * newly created. Reset the data in data unit to a clean state.
 	 */
 	void clear();
 	
-	void isReleaseReady(); 
-	
+    /**
+     * Dry-run, check all locks.
+     */
+    void isReleaseReady(); 
+
+    /**
+     * Release all locks, prepare for destroy in memory representation of
+     * DataUnit. 
+     * DataUnit is not usable anymore after calling this.
+     */
+    void release();
 
     /**
      * Merge (add) data from given DataUnit into this DataUnit. If the unit has

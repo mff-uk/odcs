@@ -19,7 +19,23 @@ import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
  *
  */
 public interface RDFDataUnit extends DataUnit {
+    /**
+     * Returns shared connection to repository.
+     *
+     * @return Shared connection to repository.
+     * @throws RepositoryException If something went wrong during the creation
+     *                             of the Connection.
+     */
+    public RepositoryConnection getConnection() throws RepositoryException;
 
+
+    /**
+     * Returns URI representation of graph where RDF data are stored.
+     *
+     * @return URI representation of graph where RDF data are stored.
+     */
+    public URI getDataGraph();
+    
 	/**
 	 * Extracts metadata (held within the list of predicates) about certain
 	 * subjects (subject URIs)
@@ -67,23 +83,4 @@ public interface RDFDataUnit extends DataUnit {
     @Deprecated
 	public OrderTupleQueryResult executeOrderSelectQueryAsTuples(
 			String orderSelectQuery) throws InvalidQueryException;
-
-
-	/**
-	 * Returns shared connection to repository.
-	 *
-	 * @return Shared connection to repository.
-	 * @throws RepositoryException If something went wrong during the creation
-	 *                             of the Connection.
-	 */
-	public RepositoryConnection getConnection() throws RepositoryException;
-
-
-	/**
-	 * Returns URI representation of graph where RDF data are stored.
-	 *
-	 * @return URI representation of graph where RDF data are stored.
-	 */
-	public URI getDataGraph();
-
 }
