@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.InputStream;
@@ -44,6 +45,7 @@ public class LocalRdfTest {
         rdfParser.setRDFHandler(new StatementCollector(myGraph));
         Model results = Rio.parse(inputStream, fileUrl, format);
         int expectedSize = results.size();
+        fail();
 
         // prepare test environment
         TestEnvironment env = new TestEnvironment();
