@@ -15,6 +15,7 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -27,7 +28,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
  *
  * @author Jiri Tomes
  */
-public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
+public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
 	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
@@ -39,7 +40,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	/**
 	 * Logging information about execution of method using openRDF.
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(BaseRDFRepo.class); 
+	private static final Logger logger = LoggerFactory.getLogger(AbstractRDFDataUnit.class); 
 
 	/**
 	 * Graph resource for saving RDF triples.
@@ -51,7 +52,7 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	 */
 	protected final String encode = "UTF-8";
 
-	public BaseRDFRepo() {
+	public AbstractRDFDataUnit() {
 		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
 	}
 	
@@ -64,6 +65,11 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
    public boolean isType(DataUnitType dataUnitType) {
        return this.getType().equals(dataUnitType);
    }
+   
+   @Override
+    public void addAll(DataUnit unit) {
+       this.merge(unit);
+    }
    
 	@Override
 	public Map<String, List<String>> getRDFMetadataForSubjectURI(

@@ -316,7 +316,7 @@ public class SPARQLTransformer
 	//	TODO michal.klempa this should not be needed anymore
 	private void prepareRepository(List<RDFDataUnit> inputs) {
 		for (RDFDataUnit input : inputs) {
-			outputDataUnit.merge(input);
+			outputDataUnit.addAll(input);
 		}
 	}
 

@@ -21,7 +21,7 @@ import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -30,7 +30,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * Implementation of Sesame http repository - RDF data and intermediate results are
  * saved in Sesame server
  */
-public final class RemoteRDFDataUnit extends BaseRDFRepo {
+public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RemoteRDFDataUnit.class);
 

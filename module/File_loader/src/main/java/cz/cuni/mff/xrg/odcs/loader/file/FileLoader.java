@@ -134,7 +134,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
 		
 		if (config.isPenetrable()) {
-			inputShadow.merge(rdfDataUnit);
+			inputShadow.addAll(rdfDataUnit);
 		}
 
 	}

@@ -192,7 +192,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 		}
 		
 		if (config.isPenetrable()) {
-			inputShadow.merge(rdfDataUnit);
+			inputShadow.addAll(rdfDataUnit);
 		}		
 	}
 

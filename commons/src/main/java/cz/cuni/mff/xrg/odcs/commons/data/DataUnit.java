@@ -34,15 +34,16 @@ public interface DataUnit {
 	 * @return String name of data unit.
 	 */
 	public String getDataUnitName();
+	
+    /**
+     * Add all data from given DataUnit into this DataUnit.
+     * The method must not modify the current parameter (unit).
+     *
+     * @param unit {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to add from
+     * @throws IllegalArgumentException if some property of an element of the
+     *         specified dataunit prevents it from being added to this
+     *         dataunit
+     */
+	void addAll(DataUnit unit);  
 
-	/**
-	 * Merge (add) data from given DataUnit into this DataUnit. If the unit has
-	 * wrong type then the {@link IllegalArgumentException} should be thrown.
-	 * The method must not modify the current parameter (unit). The given
-	 * DataUnit is not in read-only mode.
-	 *
-	 * @param unit {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to merge
-	 *             with
-	 */
-	void merge(DataUnit unit) throws IllegalArgumentException;	
 }

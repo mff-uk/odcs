@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.repositories;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
@@ -31,7 +31,7 @@ public class FileRDFMetadataExtractor {
          * Constructor
          * @param rdfDataUnit 
          */
-        public FileRDFMetadataExtractor(BaseRDFRepo rdfDataUnit) {
+        public FileRDFMetadataExtractor(AbstractRDFDataUnit rdfDataUnit) {
 		this.rdfDataUnit = rdfDataUnit   ;
 	}
 

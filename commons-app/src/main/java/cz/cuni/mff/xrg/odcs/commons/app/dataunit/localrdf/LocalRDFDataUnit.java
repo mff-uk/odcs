@@ -20,7 +20,7 @@ import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.BaseRDFRepo;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
@@ -31,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  *
  * @author Jiri Tomes
  */
-public class LocalRDFDataUnit extends BaseRDFRepo {
+public class LocalRDFDataUnit extends AbstractRDFDataUnit {
 	private static final Logger LOG = LoggerFactory.getLogger(LocalRDFDataUnit.class);
 	
 	public static final String GLOBAL_REPOSITORY_ID = "sdavhniw2uv3ni32u3fkhj";
