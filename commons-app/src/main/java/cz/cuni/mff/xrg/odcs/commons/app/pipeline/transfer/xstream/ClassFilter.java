@@ -8,27 +8,27 @@ import java.util.LinkedList;
  * @author Škoda Petr
  */
 public class ClassFilter implements MemberFilter {
-	
-	private final LinkedList<String> banList = new LinkedList<>();
 
-	@Override
-	public boolean shouldSerializeMember(Class definedIn, String fieldName) {
-		final String className = definedIn.getCanonicalName();
-		for (String str : banList) {
-			if (className.contains(str)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private final LinkedList<String> banList = new LinkedList<>();
 
-	/**
-	 * Add given name into class black list.
-	 * 
-	 * @param value 
-	 */
-	public void add(String value) {
-		banList.add(value);
-	}
-	
+    @Override
+    public boolean shouldSerializeMember(Class definedIn, String fieldName) {
+        final String className = definedIn.getCanonicalName();
+        for (String str : banList) {
+            if (className.contains(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Add given name into class black list.
+     * 
+     * @param value
+     */
+    public void add(String value) {
+        banList.add(value);
+    }
+
 }

@@ -5,13 +5,12 @@ package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
  * which pipeline is repeatedly executed.
  * 
  * @author Petyr
- *
  */
 public enum PeriodUnit {
-	MINUTE 
-	,HOUR
-	,DAY
-	,WEEK
-	,MONTH
-	,YEAR
+    MINUTE
+    , HOUR
+    , DAY
+    , WEEK
+    , MONTH
+    , YEAR
 }

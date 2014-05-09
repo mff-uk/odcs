@@ -18,72 +18,74 @@ import org.openrdf.repository.RepositoryException;
 /**
  * Class responsible for creting RDF report message from given found out
  * problems and save it to report TTL file.
- *
+ * 
  * @author Jiri Tomes
  */
 public class ReportCreator {
 
-	private static final Logger LOG = Logger.getLogger(
-			ReportCreator.class);
+    private static final Logger LOG = Logger.getLogger(
+            ReportCreator.class);
 
-	private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";
+    private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";
 
-	private static final String EXEC_ERROR = "http://linked.opendata.cz/resource/odcs/internal/pipeline/validation/error/";
+    private static final String EXEC_ERROR = "http://linked.opendata.cz/resource/odcs/internal/pipeline/validation/error/";
 
-	private List<TripleProblem> problems;
+    private List<TripleProblem> problems;
 
-	private String reportPrefix;
+    private String reportPrefix;
 
-	public ReportCreator(List<TripleProblem> problems, String graphName) {
-		this.problems = problems;
-		this.reportPrefix = getReportPrefix(graphName);
+    public ReportCreator(List<TripleProblem> problems, String graphName) {
+        this.problems = problems;
+        this.reportPrefix = getReportPrefix(graphName);
 
-	}
+    }
 
-	/**
-	 * Make RDF report and add this report to the given repository.
-	 *
-	 * @param repository Repository where report will be added.
-	 * @throws RDFException if some problem during making report.
-	 */
-	public void makeOutputReport(RDFDataUnit repository) throws RDFException {
+    /**
+     * Make RDF report and add this report to the given repository.
+     * 
+     * @param repository
+     *            Repository where report will be added.
+     * @throws RDFException
+     *             if some problem during making report.
+     */
+    public void makeOutputReport(RDFDataUnit repository) throws RDFException {
 
-		setNamespaces(repository);
-		addReports(repository);
-	}
+        setNamespaces(repository);
+        addReports(repository);
+    }
 
-	private String getReportPrefix(String graphName) {
+    private String getReportPrefix(String graphName) {
 
-		String prefix;
+        String prefix;
 
-		int index = graphName.indexOf("/du/");
+        int index = graphName.indexOf("/du/");
 
-		if (index > -1) {
-			prefix = graphName.substring(0, index);
-		} else {
-			prefix = graphName;
-		}
+        if (index > -1) {
+            prefix = graphName.substring(0, index);
+        } else {
+            prefix = graphName;
+        }
 
-		return prefix + "/validation/error/";
-	}
+        return prefix + "/validation/error/";
+    }
 
-	private void addReports(RDFDataUnit repository) {
+    private void addReports(RDFDataUnit repository) {
 
-		int count = 0;
+        int count = 0;
 
-		for (TripleProblem next : problems) {
+        for (TripleProblem next : problems) {
 
-			Statement st = next.getStatement();
+            Statement st = next.getStatement();
 
-			String sub = st.getSubject().toString();
-			String pred = st.getPredicate().toString();
-			String obj = st.getObject().toString();
+            String sub = st.getSubject().toString();
+            String pred = st.getPredicate().toString();
+            String obj = st.getObject().toString();
 
-			ParsingConfictType conflictType = next.getConflictType();
-			String message = next.getMessage();
-			int line = next.getLine();
+            ParsingConfictType conflictType = next.getConflictType();
+            String message = next.getMessage();
+            int line = next.getLine();
 
-			count++;
+            count++;
 
             RepositoryConnection connection = null;
             try {
@@ -103,63 +105,63 @@ public class ReportCreator {
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
             } finally {
-            	if (connection != null) {
-    				try {
-    					connection.close();
-    				} catch (RepositoryException ex) {
-    					LOG.warn("Error when closing connection", ex);
-    					// eat close exception, we cannot do anything clever here
-    				}
-    			}
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (RepositoryException ex) {
+                        LOG.warn("Error when closing connection", ex);
+                        // eat close exception, we cannot do anything clever here
+                    }
+                }
             }
 
-		}
-	}
+        }
+    }
 
-	private void setNamespaces(RDFDataUnit repository) throws RDFException {
-		RepositoryConnection connection = null;
-		try {
+    private void setNamespaces(RDFDataUnit repository) throws RDFException {
+        RepositoryConnection connection = null;
+        try {
 
-			connection = repository.getConnection();
+            connection = repository.getConnection();
 
-			connection.setNamespace("rdf",
-					"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-			connection.setNamespace("xsd",
-					"http://www.w3.org/2001/XMLSchema#");
-			connection.setNamespace("odcs-val", ODCS_VAL);
-			connection.setNamespace("exec-error", EXEC_ERROR);
+            connection.setNamespace("rdf",
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+            connection.setNamespace("xsd",
+                    "http://www.w3.org/2001/XMLSchema#");
+            connection.setNamespace("odcs-val", ODCS_VAL);
+            connection.setNamespace("exec-error", EXEC_ERROR);
 
-		} catch (RepositoryException e) {
-			final String message = "Not possible to set namespace"
-					+ e.getMessage();
-			LOG.debug(message);
-			throw new RDFException(message);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-	}
+        } catch (RepositoryException e) {
+            final String message = "Not possible to set namespace"
+                    + e.getMessage();
+            LOG.debug(message);
+            throw new RDFException(message);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
 
-	private Resource getSubject(int count) {
-		return new URIImpl(reportPrefix + String.valueOf(count));
-	}
+    private Resource getSubject(int count) {
+        return new URIImpl(reportPrefix + String.valueOf(count));
+    }
 
-	private URI getPredicate(String text) {
-		return new URIImpl(ODCS_VAL + text);
-	}
+    private URI getPredicate(String text) {
+        return new URIImpl(ODCS_VAL + text);
+    }
 
-	private Value getObject(String text) {
-		return new LiteralImpl(text);
-	}
+    private Value getObject(String text) {
+        return new LiteralImpl(text);
+    }
 
-	private Value getObject(int number) {
-		URI datatype = new URIImpl("xsd:integer");
-		return new LiteralImpl(String.valueOf(number), datatype);
-	}
+    private Value getObject(int number) {
+        URI datatype = new URIImpl("xsd:integer");
+        return new LiteralImpl(String.valueOf(number), datatype);
+    }
 }

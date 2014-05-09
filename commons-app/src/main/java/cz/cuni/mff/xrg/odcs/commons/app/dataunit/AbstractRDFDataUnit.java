@@ -28,121 +28,120 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
- *
+ * 
  * @author Jiri Tomes
  */
 public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
-	private FileRDFMetadataExtractor fileRDFMetadataExtractor;
+    private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
-	/**
-	 * Default name for graph using for store RDF data.
-	 */
-	protected static final String DEFAULT_GRAPH_NAME = "http://default";
+    /**
+     * Default name for graph using for store RDF data.
+     */
+    protected static final String DEFAULT_GRAPH_NAME = "http://default";
 
-	/**
-	 * Logging information about execution of method using openRDF.
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractRDFDataUnit.class); 
+    /**
+     * Logging information about execution of method using openRDF.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractRDFDataUnit.class);
 
-	/**
-	 * Default used encoding.
-	 */
-	protected final String encode = "UTF-8";
-	
-	private String dataUnitName;
+    /**
+     * Default used encoding.
+     */
+    protected final String encode = "UTF-8";
+
+    private String dataUnitName;
 
     protected URI dataGraph;
-    
+
     private List<RepositoryConnection> requestedConnections;
-    
-    private Thread ownerThread;	
 
-   public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
+    private Thread ownerThread;
 
-	public AbstractRDFDataUnit(String dataUnitName, String dataGraph) {
-	    this.dataUnitName = dataUnitName;
-	    if (!dataGraph.toLowerCase().startsWith("http://")) {
-	        dataGraph = "http://" + dataGraph;
+    public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
+
+    public AbstractRDFDataUnit(String dataUnitName, String dataGraph) {
+        this.dataUnitName = dataUnitName;
+        if (!dataGraph.toLowerCase().startsWith("http://")) {
+            dataGraph = "http://" + dataGraph;
         }
-        this.dataGraph =  new URIImpl(dataGraph);
-        LOG.info("Set new data graph - " + this.dataGraph.stringValue());	    
-	    
+        this.dataGraph = new URIImpl(dataGraph);
+        LOG.info("Set new data graph - " + this.dataGraph.stringValue());
+
         this.requestedConnections = new ArrayList<>();
         this.ownerThread = Thread.currentThread();
-        
-		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
-	}
-	
-	//DataUnit interface
+
+        this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
+    }
+
+    //DataUnit interface
     @Override
     public DataUnitType getType() {
         return DataUnitType.RDF;
     }
 
     //DataUnit interface
-   @Override
-   public boolean isType(DataUnitType dataUnitType) {
-       return this.getType().equals(dataUnitType);
-   }
-   
-   //DataUnit interface
-   @Override
-   public String getDataUnitName() {
-       return dataUnitName;
-   }
-   
-   //DataUnit interface
-   @Override
-    public void addAll(DataUnit unit) {
-       this.merge(unit);
+    @Override
+    public boolean isType(DataUnitType dataUnitType) {
+        return this.getType().equals(dataUnitType);
     }
-      
-   //RDFDataUnit interface
-   @Override
-   public RepositoryConnection getConnection() throws RepositoryException {
-       if (!ownerThread.equals(Thread.currentThread())) {
-           throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-       }
 
-       RepositoryConnection connection = getConnectionInternal();
-       requestedConnections.add(connection);
-       return connection;
-   }
-  
-   //RDFDataUnit interface
-   @Override
-   public URI getDataGraph() {
-       return dataGraph;
-   }
-   
-   //RDFDataUnit interface
-	@Override
-	public Map<String, List<String>> getRDFMetadataForSubjectURI(
-			String subjectURI, List<String> predicates) {
-		return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI,
-				predicates);
-	}
+    //DataUnit interface
+    @Override
+    public String getDataUnitName() {
+        return dataUnitName;
+    }
 
-   //RDFDataUnit interface
-	@Override
-	public Map<String, List<String>> getRDFMetadataForFile(String filePath,
-			List<String> predicates) {
-		return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
-				predicates);
-	}
+    //DataUnit interface
+    @Override
+    public void addAll(DataUnit unit) {
+        this.merge(unit);
+    }
 
+    //RDFDataUnit interface
+    @Override
+    public RepositoryConnection getConnection() throws RepositoryException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
 
-      //RDFDataUnit interface
+        RepositoryConnection connection = getConnectionInternal();
+        requestedConnections.add(connection);
+        return connection;
+    }
+
+    //RDFDataUnit interface
+    @Override
+    public URI getDataGraph() {
+        return dataGraph;
+    }
+
+    //RDFDataUnit interface
+    @Override
+    public Map<String, List<String>> getRDFMetadataForSubjectURI(
+            String subjectURI, List<String> predicates) {
+        return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI,
+                predicates);
+    }
+
+    //RDFDataUnit interface
+    @Override
+    public Map<String, List<String>> getRDFMetadataForFile(String filePath,
+            List<String> predicates) {
+        return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
+                predicates);
+    }
+
+    //RDFDataUnit interface
     @Override
     public OrderTupleQueryResultImpl executeOrderSelectQueryAsTuples(
             String orderSelectQuery) throws InvalidQueryException {
 
-            OrderTupleQueryResultImpl result = new OrderTupleQueryResultImpl(
-                    orderSelectQuery, this);
-            return result;
+        OrderTupleQueryResultImpl result = new OrderTupleQueryResultImpl(
+                orderSelectQuery, this);
+        return result;
     }
-	
+
     //ManagableDataUnit interface
     @Override
     public void isReleaseReady() {
@@ -161,21 +160,21 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 }
             }
         }
-        
+
         if (count > 0) {
             LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
         }
-    }   
-    
+    }
+
     @Override
     //ManagableDataUnit interface
     public void clear() {
         /**
          * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
          * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
-         * This connection has to be obtained directly from repository and we take care to close it properly. 
+         * This connection has to be obtained directly from repository and we take care to close it properly.
          */
-        RepositoryConnection connection = null; 
+        RepositoryConnection connection = null;
         try {
             connection = getConnectionInternal();
             connection.clear(dataGraph);
@@ -191,8 +190,8 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 }
             }
         }
-    }    
-    
+    }
+
     //ManagableDataUnit interface
     @Override
     public void release() {
@@ -211,7 +210,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 }
             }
         }
-        
+
         if (!openedConnections.isEmpty()) {
             LOG.error(String.valueOf(openedConnections.size()) + " connections remained opened after DPU execution.");
             for (RepositoryConnection connection : openedConnections) {
@@ -225,13 +224,13 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         }
     }
 
-     //ManagableDataUnit interface
+    //ManagableDataUnit interface
     @Override
     public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
         if (!(otherDataUnit instanceof InMemoryRDFDataUnit)) {
             throw new IllegalArgumentException("Incompatible repository type");
         }
-        
+
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
         RepositoryConnection connection = null;
         try {
@@ -247,11 +246,11 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
                     targetGraphName);
 
-            Update update =connection.prepareUpdate(
+            Update update = connection.prepareUpdate(
                     QueryLanguage.SPARQL, mergeQuery);
-    
+
             update.execute();
-            
+
             LOG.info("Merged {} triples from <{}> to <{}>.",
                     connection.size(getDataGraph()), sourceGraphName,
                     targetGraphName);
@@ -273,52 +272,51 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         }
     }
 
-
-    
     /**
-	 * For Browsing all data in graph return its size {count of rows}.
-	 */
+     * For Browsing all data in graph return its size {count of rows}.
+     */
     //ManagableRDFDataUnit interface
-	@Override
-	public long getResultSizeForDataCollection() throws InvalidQueryException {
-		final String selectQuery = "SELECT ?x ?y ?z WHERE {?x ?y ?z}";
-		return getSizeForSelect(new QueryPart(selectQuery));
-	}
+    @Override
+    public long getResultSizeForDataCollection() throws InvalidQueryException {
+        final String selectQuery = "SELECT ?x ?y ?z WHERE {?x ?y ?z}";
+        return getSizeForSelect(new QueryPart(selectQuery));
+    }
 
-	/**
-	 * For given valid SELECT of CONSTRUCT query return its size {count of rows
-	 * returns for given query).
-	 *
-	 * @param query Valid SELECT/CONTRUCT query for asking.
-	 * @return size for given valid query as long.
-	 * @throws InvalidQueryException if query is not valid.
-	 */
-	@Override
+    /**
+     * For given valid SELECT of CONSTRUCT query return its size {count of rows
+     * returns for given query).
+     * 
+     * @param query
+     *            Valid SELECT/CONTRUCT query for asking.
+     * @return size for given valid query as long.
+     * @throws InvalidQueryException
+     *             if query is not valid.
+     */
+    @Override
     //ManagableRDFDataUnit interface
-	public long getResultSizeForQuery(String query) throws InvalidQueryException {
+    public long getResultSizeForQuery(String query) throws InvalidQueryException {
 
-		long size = 0;
+        long size = 0;
 
-		QueryPart queryPart = new QueryPart(query);
-		SPARQLQueryType type = queryPart.getSPARQLQueryType();
+        QueryPart queryPart = new QueryPart(query);
+        SPARQLQueryType type = queryPart.getSPARQLQueryType();
 
-		switch (type) {
-			case SELECT:
-				size = getSizeForSelect(queryPart);
-				break;
-			case CONSTRUCT:
-			case DESCRIBE:
-				size = getSizeForConstruct(query);
-				break;
-			case UNKNOWN:
-				throw new InvalidQueryException(
-						"Given query: " + query + "have to be SELECT or CONSTRUCT type.");
-		}
+        switch (type) {
+            case SELECT:
+                size = getSizeForSelect(queryPart);
+                break;
+            case CONSTRUCT:
+            case DESCRIBE:
+                size = getSizeForConstruct(query);
+                break;
+            case UNKNOWN:
+                throw new InvalidQueryException(
+                        "Given query: " + query + "have to be SELECT or CONSTRUCT type.");
+        }
 
-		return size;
+        return size;
 
-
-	}
+    }
 
     private long getSizeForConstruct(String constructQuery) throws InvalidQueryException {
         long size = 0;
@@ -346,14 +344,14 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
                 throw new InvalidQueryException(
                         "This query is probably not valid. " + ex
-                        .getMessage(),
+                                .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
                     "This query is probably not valid as construct query. "
-                    + ex.getMessage(), ex);
+                            + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);
@@ -378,7 +376,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
         final String sizeQuery = String.format(
                 "%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
-                .getQueryPrefixes(), sizeVar,
+                        .getQueryPrefixes(), sizeVar,
                 queryPart.getQueryWithoutPrefixes());
         RepositoryConnection connection = null;
         try {
@@ -405,15 +403,14 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
                         "This query is probably not valid. " + ex
-                        .getMessage(),
+                                .getMessage(),
                         ex);
             }
-
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
                     "This query is probably not valid. "
-                    + ex.getMessage(), ex);
+                            + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);
@@ -431,6 +428,5 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
         return 0;
     }
-	
-}
 
+}

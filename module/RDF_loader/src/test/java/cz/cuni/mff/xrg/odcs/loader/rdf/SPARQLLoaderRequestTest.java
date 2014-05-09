@@ -30,54 +30,53 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Jiri Tomes
  */
 @Category(IntegrationTest.class)
 public class SPARQLLoaderRequestTest {
 
-	private final Logger logger = LoggerFactory.getLogger(
-			SPARQLLoaderRequestTest.class);
+    private final Logger logger = LoggerFactory.getLogger(
+            SPARQLLoaderRequestTest.class);
 
-	private static  TestEnvironment testEnvironment = null;
+    private static TestEnvironment testEnvironment = null;
 
-	private static final String ENDPOINT = "http://localhost:8890/sparql-auth";
+    private static final String ENDPOINT = "http://localhost:8890/sparql-auth";
 
-	private static final String TARGET_GRAPH = "http://tempGraph";
+    private static final String TARGET_GRAPH = "http://tempGraph";
 
-	private static final int LOADED_TRIPLES = 20;
+    private static final int LOADED_TRIPLES = 20;
 
-	private static final String USER = "dba";
+    private static final String USER = "dba";
 
-	private static final String PASSWORD = "dba";
+    private static final String PASSWORD = "dba";
 
-	@AfterClass
-	public static void deleteRDFDataUnit() {
-		testEnvironment.release();
-	}
-
-	@BeforeClass
-	public  static void cleanRepository() {
-		testEnvironment = new TestEnvironment();
+    @AfterClass
+    public static void deleteRDFDataUnit() {
+        testEnvironment.release();
     }
 
-	private URL getEndpoint() {
-		URL endpoint = null;
-		try {
-			endpoint = new URL(
-//					testEnvironment.createSPARQLEndpoint("http://kuku"));
-					ENDPOINT);
-		} catch (MalformedURLException ex) {
-			logger.debug(ex.getMessage());
-		}
+    @BeforeClass
+    public static void cleanRepository() {
+        testEnvironment = new TestEnvironment();
+    }
 
-		return endpoint;
-	}
+    private URL getEndpoint() {
+        URL endpoint = null;
+        try {
+            endpoint = new URL(
+                    //					testEnvironment.createSPARQLEndpoint("http://kuku"));
+                    ENDPOINT);
+        } catch (MalformedURLException ex) {
+            logger.debug(ex.getMessage());
+        }
 
-	private void loadToEndpoint(LoaderEndpointParams params,
-			String defaultGraphURI) throws RepositoryException {
-		RDFDataUnit repository = testEnvironment.createRdfInput("testInnn",false);
-		RepositoryConnection connection = repository.getConnection();
+        return endpoint;
+    }
+
+    private void loadToEndpoint(LoaderEndpointParams params,
+            String defaultGraphURI) throws RepositoryException {
+        RDFDataUnit repository = testEnvironment.createRdfInput("testInnn", false);
+        RepositoryConnection connection = repository.getConnection();
         ValueFactory factory = connection.getValueFactory();
         for (int i = 0; i < LOADED_TRIPLES; i++) {
             Resource subject = factory.createURI("http://A" + String.valueOf(
@@ -91,39 +90,39 @@ public class SPARQLLoaderRequestTest {
             connection.add(subject, predicate, object, repository.getDataGraph());
         }
 
-		URL endpoint = getEndpoint();
-		SPARQLoader loader = new SPARQLoader(repository, testEnvironment.getContext(),
-				params, false, USER, PASSWORD);
-		try {
-			loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
-					PASSWORD,
-					WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
+        URL endpoint = getEndpoint();
+        SPARQLoader loader = new SPARQLoader(repository, testEnvironment.getContext(),
+                params, false, USER, PASSWORD);
+        try {
+            loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
+                    PASSWORD,
+                    WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
-			assertEquals(connection.size(repository.getDataGraph()), loader
+            assertEquals(connection.size(repository.getDataGraph()), loader
                     .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		} finally {
-			try {
-				loader.clearEndpointGraph(endpoint, defaultGraphURI);
-			} catch (RDFException e) {
-				logger.debug(e.getMessage());
-			}
-		}
-		connection.close();
-	}
+        } catch (RDFException e) {
+            fail(e.getMessage());
+        } finally {
+            try {
+                loader.clearEndpointGraph(endpoint, defaultGraphURI);
+            } catch (RDFException e) {
+                logger.debug(e.getMessage());
+            }
+        }
+        connection.close();
+    }
 
-	@Test
-	public void POSTEncodeTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "using-graph-uri";
+    @Test
+    public void POSTEncodeTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "using-graph-uri";
 
-		LoaderPostType requestType = LoaderPostType.POST_URL_ENCODER;
+        LoaderPostType requestType = LoaderPostType.POST_URL_ENCODER;
 
-		LoaderEndpointParams params = new LoaderEndpointParams(graphParam,
-				defaultGraphParam, requestType);
+        LoaderEndpointParams params = new LoaderEndpointParams(graphParam,
+                defaultGraphParam, requestType);
 
-		loadToEndpoint(params, TARGET_GRAPH);
-	}
+        loadToEndpoint(params, TARGET_GRAPH);
+    }
 }

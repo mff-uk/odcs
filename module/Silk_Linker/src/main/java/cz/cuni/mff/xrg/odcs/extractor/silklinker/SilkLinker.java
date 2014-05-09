@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Simple XSLT Extractor
- *
+ * 
  * @author tomasknap
  */
 @AsExtractor
@@ -51,9 +51,10 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
     private static final Logger log = LoggerFactory.getLogger(
             SilkLinker.class);
-    
+
     @OutputDataUnit(name = "links_confirmed")
     public RDFDataUnit outputConfirmed;
+
     @OutputDataUnit(name = "links_to_be_verified")
     public RDFDataUnit outputToVerify;
 
@@ -93,36 +94,28 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             java.util.logging.Logger.getLogger(SilkLinker.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
-
-
-
-
-
         try {
             DataUnitUtils.storeStringToTempFile(configString, configFile.getCanonicalPath());
         } catch (IOException ex) {
             log.error(ex.getLocalizedMessage());
         }
 
-
         //Adjust outputs 
         // 1) throw away the existing
         // 2) add our output section
         // 3) allow to modify the content (min/max)
-       String confirmedLinks = context.getWorkingDir().getAbsolutePath() + File.separator + "confirmed.ttl";
+        String confirmedLinks = context.getWorkingDir().getAbsolutePath() + File.separator + "confirmed.ttl";
         String toBeVerifiedLinks = context.getWorkingDir().getAbsolutePath() + File.separator + "verify.ttl";
-                
+
         try {
             //load the document:
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document dom = db.parse(configFile);
 
-
             NodeList elementsByTagName = dom.getElementsByTagName("Interlink");
 
-            for (int i = 0; i <  elementsByTagName.getLength(); i++) {
+            for (int i = 0; i < elementsByTagName.getLength(); i++) {
                 Node interlink = elementsByTagName.item(i);
 
                 //for each link, adjust outputs section
@@ -183,37 +176,27 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
                 output2.appendChild(param2b);
                 outputs.appendChild(output2);
 
-
-
-
                 //append
                 interlink.appendChild(outputs);
 
-
             }
-            
-            
-            	// write the content into xml file
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		DOMSource source = new DOMSource(dom);
-		StreamResult result = new StreamResult(configFile);
-		transformer.transform(source, result);
-                
-                
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(dom);
+            StreamResult result = new StreamResult(configFile);
+            transformer.transform(source, result);
 
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
         }
         try {
             String s = DataUnitUtils.readFile(configFile.getCanonicalPath());
-             log.info("Adjusted config file is: {}", s);
+            log.info("Adjusted config file is: {}", s);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(SilkLinker.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
-
-
 
 //        Charset charset = StandardCharsets.UTF_8;
 //
@@ -223,12 +206,9 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 //            log.error("IOException: %s%n", x);
 //        }
 
-
         //File conf = new File(config.getSilkConf());
 
         //((SilkLinkerDialog)getConfigurationDialog()).setContext(context);
-
-
 
         //Execution of the Silk linker (xml conf is an important input!)
         //TODO Petr: solve the problem when loading XML conf
@@ -236,16 +216,12 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         //Silk.executeFile(conf, null, Silk.DefaultThreads(), true);
         //LOG.info("Silk finished");
 
-
-
-
         log.info("Silk is about to be executed");
         try {
-           //Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/tmp/silk_2.5.2/silk.jar");
-            
-           Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /data/odcs/libs/silk_2.5.3/silk.jar");
+            //Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/intlib/tmp/silk_2.5.2/silk.jar");
 
-           
+            Process p = Runtime.getRuntime().exec("java -DconfigFile=" + configFile.getCanonicalPath() + " -jar /data/odcs/libs/silk_2.5.3/silk.jar");
+
             printProcessOutput(p);
         } catch (IOException ex) {
             log.error(ex.getLocalizedMessage());
@@ -254,15 +230,11 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         }
         log.info("Silk was executed");
 
-
-
-
-
         log.info("Output 'confirmed links' is being prepared");
         RepositoryConnection connection = null;
         try {
             //File f = new File("/Users/tomasknap/.silk/output/confirmed.ttl");
-             File f = new File(confirmedLinks);
+            File f = new File(confirmedLinks);
             if (f.exists()) {
                 log.info("File with confirmed links was generated {}", confirmedLinks);
             }
@@ -279,19 +251,19 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
         } finally {
-        	if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-				}
-			}        	
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                }
+            }
         }
 
         log.info("Output 'to verify links' is being prepared");
         RepositoryConnection connection2 = null;
         try {
-            
+
             //File f = new File("/Users/tomasknap/.silk/output/verify.ttl");
             File f = new File(toBeVerifiedLinks);
             if (f.exists()) {
@@ -309,17 +281,15 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             context.sendMessage(MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
         } finally {
-        	if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					log.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}        	
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    log.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
         }
-
-
 
     }
 
@@ -339,8 +309,8 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             in.close();
 
             in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-           StringBuilder notes = new StringBuilder();
-        
+            StringBuilder notes = new StringBuilder();
+
             while ((line = in.readLine()) != null) {
                 notes.append(line);
             }

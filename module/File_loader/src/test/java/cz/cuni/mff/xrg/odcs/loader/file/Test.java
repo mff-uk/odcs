@@ -23,7 +23,8 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class Test {
-	private static final Logger LOG = LoggerFactory.getLogger(Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Test.class);
+
     @org.junit.Test
     public void test() throws Exception {
         FileLoader fileLoader = new FileLoader();
@@ -35,7 +36,7 @@ public class Test {
         String fileUrl = tempFile.toURI().getPath();
         config.setFilePath(fileUrl);
 
-        TestEnvironment env =  new TestEnvironment();
+        TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         try {
             RDFDataUnit input = env.createRdfInput("input", false);
@@ -63,7 +64,13 @@ public class Test {
             // we compare amount of the triplets
             assertEquals(expectedSize, actualSize);
         } finally {
-        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
             // release resources
             env.release();
             tempFile.delete();

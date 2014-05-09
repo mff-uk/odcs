@@ -11,242 +11,232 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.
- *
+ * 
  * @author Petyr
- *
  */
 public class TestContext implements DPUContext {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestContext.class);
 
-	/**
-	 * Root directory for execution.
-	 */
-	private File rootDirectory;
+    /**
+     * Root directory for execution.
+     */
+    private File rootDirectory;
 
-	/**
-	 * Date of last execution.
-	 */
-	private Date lastExecution;
+    /**
+     * Date of last execution.
+     */
+    private Date lastExecution;
 
-	/**
-	 * Jar path.
-	 */
-	private String jarPath;
+    /**
+     * Jar path.
+     */
+    private String jarPath;
 
-	/**
-	 * True if DPU that use this context publish warning event.
-	 */
-	private boolean publishedWarning = false;
+    /**
+     * True if DPU that use this context publish warning event.
+     */
+    private boolean publishedWarning = false;
 
-	/**
-	 * True if DPU that use this context publish error event.
-	 */
-	private boolean publishedError = false;
+    /**
+     * True if DPU that use this context publish error event.
+     */
+    private boolean publishedError = false;
 
-	/**
-	 * Working directory, if null then the working subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File workingDirectory = null;
+    /**
+     * Working directory, if null then the working subdirectory in {@link #rootDirectory} is used.
+     */
+    private File workingDirectory = null;
 
-	/**
-	 * Result directory, if null then the result subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File resultDirectory = null;
+    /**
+     * Result directory, if null then the result subdirectory in {@link #rootDirectory} is used.
+     */
+    private File resultDirectory = null;
 
-	/**
-	 * Global DPU directory, if null then the global subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File globalDirectory = null;
+    /**
+     * Global DPU directory, if null then the global subdirectory in {@link #rootDirectory} is used.
+     */
+    private File globalDirectory = null;
 
-	/**
-	 * User DPU directory, if null then the user subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File userDirectory = null;
+    /**
+     * User DPU directory, if null then the user subdirectory in {@link #rootDirectory} is used.
+     */
+    private File userDirectory = null;
 
-	public TestContext(File rootDirectory) {
-		this.rootDirectory = rootDirectory;
-		globalDirectory = new File(rootDirectory, "global");
-		if (!globalDirectory.exists()) {
-			globalDirectory.mkdirs();
-		}
-		userDirectory = new File(rootDirectory, "user");
-		if (!userDirectory.exists()) {
-			userDirectory.mkdirs();
-		}
-		resultDirectory = new File(rootDirectory, "result");
-		if (!resultDirectory.exists()) {
-			resultDirectory.mkdirs();
-		}
-		workingDirectory = new File(rootDirectory, "working");
-		if (!workingDirectory.exists()) {
-			workingDirectory.mkdirs();
-		}		
-	}
+    public TestContext(File rootDirectory) {
+        this.rootDirectory = rootDirectory;
+        globalDirectory = new File(rootDirectory, "global");
+        if (!globalDirectory.exists()) {
+            globalDirectory.mkdirs();
+        }
+        userDirectory = new File(rootDirectory, "user");
+        if (!userDirectory.exists()) {
+            userDirectory.mkdirs();
+        }
+        resultDirectory = new File(rootDirectory, "result");
+        if (!resultDirectory.exists()) {
+            resultDirectory.mkdirs();
+        }
+        workingDirectory = new File(rootDirectory, "working");
+        if (!workingDirectory.exists()) {
+            workingDirectory.mkdirs();
+        }
+    }
 
-	@Override
-	public void sendMessage(MessageType type, String shortMessage) {
-		sendMessage(type, shortMessage, "");
-	}
+    @Override
+    public void sendMessage(MessageType type, String shortMessage) {
+        sendMessage(type, shortMessage, "");
+    }
 
-	@Override
-	public void sendMessage(MessageType type,
-			String shortMessage,
-			String fullMessage) {
-		switch (type) {
-			case DEBUG:
-				LOG.debug("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-			case ERROR:
-				LOG.error("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				publishedError = true;
-				break;
-			case INFO:
-				LOG.info("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-			case WARNING:
-				LOG.warn("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				publishedWarning = true;
-				break;
-			case TERMINATION_REQUEST:
-				LOG.info(
-						"DPU publish termination message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-		}
+    @Override
+    public void sendMessage(MessageType type,
+            String shortMessage,
+            String fullMessage) {
+        switch (type) {
+            case DEBUG:
+                LOG.debug("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                break;
+            case ERROR:
+                LOG.error("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                publishedError = true;
+                break;
+            case INFO:
+                LOG.info("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                break;
+            case WARNING:
+                LOG.warn("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                publishedWarning = true;
+                break;
+            case TERMINATION_REQUEST:
+                LOG.info(
+                        "DPU publish termination message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                break;
+        }
 
-	}
+    }
 
-	@Override
-	public void sendMessage(MessageType type, String shortMessage,
-			String fullMessage, Exception exception) {
-		switch (type) {
-			case DEBUG:
-				LOG.debug("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage, 
-						exception);
-				break;
-			case ERROR:
-				LOG.error("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage, 
-						exception);
-				publishedError = true;
-				break;
-			case INFO:
-				LOG.info("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage, 
-						exception);
-				break;
-			case WARNING:
-				LOG.warn("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage, 
-						exception);
-				publishedWarning = true;
-				break;
-			case TERMINATION_REQUEST:
-				LOG.info(
-						"DPU publish termination message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage, 
-						exception);
-				break;
-		}
-	}
+    @Override
+    public void sendMessage(MessageType type, String shortMessage,
+            String fullMessage, Exception exception) {
+        switch (type) {
+            case DEBUG:
+                LOG.debug("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                break;
+            case ERROR:
+                LOG.error("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                publishedError = true;
+                break;
+            case INFO:
+                LOG.info("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                break;
+            case WARNING:
+                LOG.warn("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                publishedWarning = true;
+                break;
+            case TERMINATION_REQUEST:
+                LOG.info(
+                        "DPU publish termination message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                break;
+        }
+    }
 
-	
-	
-	@Override
-	public boolean isDebugging() {
-		return false;
-	}
+    @Override
+    public boolean isDebugging() {
+        return false;
+    }
 
-	@Override
-	public boolean canceled() {
-		return false;
-	}
+    @Override
+    public boolean canceled() {
+        return false;
+    }
 
+    @Override
+    public File getJarPath() {
+        if (jarPath == null) {
+            throw new RuntimeException(
+                    "Jar-path has not been set! Use TestEnvironment.setJarPath");
+        } else {
+            return new File(jarPath);
+        }
+    }
 
-	@Override
-	public File getJarPath() {
-		if (jarPath == null) {
-			throw new RuntimeException(
-					"Jar-path has not been set! Use TestEnvironment.setJarPath");
-		} else {
-			return new File(jarPath);
-		}
-	}
+    @Override
+    public Date getLastExecutionTime() {
+        return lastExecution;
+    }
 
-	@Override
-	public Date getLastExecutionTime() {
-		return lastExecution;
-	}
+    /**
+     * @return True if the warning message has been sent via this context.
+     */
+    public boolean isPublishedWarning() {
+        return publishedWarning;
+    }
 
+    /**
+     * @return True if the error message has been sent via this context.
+     */
+    public boolean isPublishedError() {
+        return publishedError;
+    }
 
-	/**
-	 *
-	 * @return True if the warning message has been sent via this context.
-	 */
-	public boolean isPublishedWarning() {
-		return publishedWarning;
-	}
+    /**
+     * @param lastExecution
+     *            Date of last execution.
+     */
+    public void setLastExecution(Date lastExecution) {
+        this.lastExecution = lastExecution;
+    }
 
-	/**
-	 *
-	 * @return True if the error message has been sent via this context.
-	 */
-	public boolean isPublishedError() {
-		return publishedError;
-	}
+    /**
+     * @param jarPath
+     *            Path to the jar file.
+     */
+    public void setJarPath(String jarPath) {
+        this.jarPath = jarPath;
+    }
 
-	/**
-	 * @param lastExecution Date of last execution.
-	 */
-	public void setLastExecution(Date lastExecution) {
-		this.lastExecution = lastExecution;
-	}
+    @Override
+    public File getWorkingDir() {
+        return workingDirectory;
+    }
 
-	/**
-	 * @param jarPath Path to the jar file.
-	 */
-	public void setJarPath(String jarPath) {
-		this.jarPath = jarPath;
-	}
+    @Override
+    public File getResultDir() {
+        return resultDirectory;
+    }
 
-	@Override
-	public File getWorkingDir() {
-		return workingDirectory;
-	}
+    @Override
+    public File getGlobalDirectory() {
+        return globalDirectory;
+    }
 
-	@Override
-	public File getResultDir() {
-		return resultDirectory;
-	}
-
-	@Override
-	public File getGlobalDirectory() {
-		return globalDirectory;
-	}
-	
-
-	@Override
-	public File getUserDirectory() {
-		return userDirectory;
-	}
+    @Override
+    public File getUserDirectory() {
+        return userDirectory;
+    }
 }

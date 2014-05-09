@@ -35,10 +35,10 @@ import org.springframework.test.annotation.DirtiesContext;
 /**
  * Test suite for schedule facade interface. Each test is run in own
  * transaction, which is rolled back in the end.
- *
+ * 
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -82,7 +82,7 @@ public class ScheduleFacadeTest {
         Schedule schedule = scheduleFacade.createSchedule();
         schedule.setPipeline(pipeline);
         scheduleFacade.save(schedule);
-        
+
         List<Schedule> schedules1 = scheduleFacade.getSchedulesFor(pipeline);
         assertNotNull(schedules1);
         assertTrue(schedules1.size() == 1);
@@ -172,7 +172,7 @@ public class ScheduleFacadeTest {
         scheduleFacade.save(schedule);
         assertNotNull(schedule.getId());
         Long id = schedule.getId();
-		em.flush();
+        em.flush();
 
         scheduleFacade.delete(schedule);
         Schedule schedule1 = scheduleFacade.getSchedule(id);
@@ -194,24 +194,24 @@ public class ScheduleFacadeTest {
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
         schedule.setPipeline(pipeline);
-        
+
         ScheduleNotificationRecord scheduleNotificationRecord = new ScheduleNotificationRecord();
-        EmailAddress emailAddress = new  EmailAddress("user@example.com");
+        EmailAddress emailAddress = new EmailAddress("user@example.com");
         Set<EmailAddress> emailAddresses = new HashSet<>();
         emailAddresses.add(emailAddress);
-        
+
         scheduleNotificationRecord.setSchedule(schedule);
         scheduleNotificationRecord.setEmails(emailAddresses);
         schedule.setNotification(scheduleNotificationRecord);
         scheduleFacade.save(schedule);
-		
+
         scheduleFacade.deleteNotification(schedule.getNotification());
         em.flush();
-        
+
         Schedule schedule1 = scheduleFacade.getSchedule(schedule.getId());
         assertNotNull(schedule1);
         assertEquals(schedule, schedule1);
-        
+
         ScheduleNotificationRecord scheduleNotificationRecord1 = schedule1.getNotification();
         assertNull(scheduleNotificationRecord1);
     }
@@ -241,7 +241,7 @@ public class ScheduleFacadeTest {
         assertEquals(pipeline, executions.get(0).getPipeline());
         assertEquals(schedule, executions.get(0).getSchedule());
     }
-    
+
     /**
      * Test of execute method, of class ScheduleFacade.
      */
@@ -268,7 +268,6 @@ public class ScheduleFacadeTest {
         assertEquals(pipeline, executions.get(0).getPipeline());
         assertEquals(schedule, executions.get(0).getSchedule());
     }
-    
 
     /**
      * Test of executeFollowers method, of class ScheduleFacade.
@@ -276,12 +275,12 @@ public class ScheduleFacadeTest {
     @Test
     public void testExecuteFollowers_0args() {
         System.out.println("executeFollowers_0args");
-        
+
         Pipeline pipeline = pipelineFacade.createPipeline();
         assertNull(pipeline.getId());
         pipelineFacade.save(pipeline);
         assertNotNull(pipeline.getId());
-        
+
         Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -308,14 +307,14 @@ public class ScheduleFacadeTest {
         schedule2.setPipeline(pipeline2);
         schedule2.setEnabled(true);
         scheduleFacade.save(schedule2);
-        
+
         scheduleFacade.executeFollowers();
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
         assertFalse(executions2.isEmpty());
         assertTrue(executions2.get(0).getSchedule().isEnabled());
         assertEquals(pipeline2, executions2.get(0).getPipeline());
-        assertEquals(schedule2, executions2.get(0).getSchedule());        
+        assertEquals(schedule2, executions2.get(0).getSchedule());
     }
 
     /**
@@ -324,12 +323,12 @@ public class ScheduleFacadeTest {
     @Test
     public void testExecuteFollowers_Pipeline() {
         System.out.println("executeFollowers_Pipeline");
-        
+
         Pipeline pipeline = pipelineFacade.createPipeline();
         assertNull(pipeline.getId());
         pipelineFacade.save(pipeline);
         assertNotNull(pipeline.getId());
-        
+
         Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -356,28 +355,28 @@ public class ScheduleFacadeTest {
         schedule2.setPipeline(pipeline2);
         schedule2.setEnabled(true);
         scheduleFacade.save(schedule2);
-        
+
         scheduleFacade.executeFollowers(pipeline);
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
         assertFalse(executions2.isEmpty());
         assertTrue(executions2.get(0).getSchedule().isEnabled());
         assertEquals(pipeline2, executions2.get(0).getPipeline());
-        assertEquals(schedule2, executions2.get(0).getSchedule());        
+        assertEquals(schedule2, executions2.get(0).getSchedule());
     }
-    
+
     /**
      * Test of executeFollowers method, of class ScheduleFacade.
      */
     @Test
     public void testExecuteFollowers_Pipeline2() {
         System.out.println("executeFollowers_Pipeline2");
-        
+
         Pipeline pipeline = pipelineFacade.createPipeline();
         assertNull(pipeline.getId());
         pipelineFacade.save(pipeline);
         assertNotNull(pipeline.getId());
-        
+
         Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -404,26 +403,27 @@ public class ScheduleFacadeTest {
         schedule2.setPipeline(pipeline2);
         schedule2.setEnabled(true);
         scheduleFacade.save(schedule2);
-        
+
         scheduleFacade.executeFollowers(pipeline);
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
         assertTrue(executions2.isEmpty());
-    }   
-    
+    }
+
     /**
      * Test of executeFollowers method, of class ScheduleFacade.
-     * @throws InterruptedException 
+     * 
+     * @throws InterruptedException
      */
     @Test
     public void testExecuteFollowers_Pipeline3() throws InterruptedException {
         System.out.println("executeFollowers_Pipeline");
-        
+
         Pipeline pipeline = pipelineFacade.createPipeline();
         assertNull(pipeline.getId());
         pipelineFacade.save(pipeline);
         assertNotNull(pipeline.getId());
-        
+
         Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -453,7 +453,7 @@ public class ScheduleFacadeTest {
         schedule2.setEnabled(true);
         schedule2.setLastExecution(new Date());
         scheduleFacade.save(schedule2);
-        
+
         scheduleFacade.executeFollowers(pipeline);
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
@@ -462,17 +462,18 @@ public class ScheduleFacadeTest {
 
     /**
      * Test of executeFollowers method, of class ScheduleFacade.
-     * @throws InterruptedException 
+     * 
+     * @throws InterruptedException
      */
     @Test
     public void testExecuteFollowers_Pipeline4() throws InterruptedException {
         System.out.println("executeFollowers_Pipeline");
-        
+
         Pipeline pipeline = pipelineFacade.createPipeline();
         assertNull(pipeline.getId());
         pipelineFacade.save(pipeline);
         assertNotNull(pipeline.getId());
-        
+
         Schedule schedule = scheduleFacade.createSchedule();
         assertNull(schedule.getId());
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -501,72 +502,74 @@ public class ScheduleFacadeTest {
         schedule2.setEnabled(true);
         schedule2.setLastExecution(dd);
         scheduleFacade.save(schedule2);
-        
+
         scheduleFacade.executeFollowers(pipeline);
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
         assertFalse(executions2.isEmpty());
         assertTrue(executions2.get(0).getSchedule().isEnabled());
         assertEquals(pipeline2, executions2.get(0).getPipeline());
-        assertEquals(schedule2, executions2.get(0).getSchedule());    
+        assertEquals(schedule2, executions2.get(0).getSchedule());
     }
-	
-	/**
-	 * Test of getAllSchedules method, of class ScheduleFacade.
-	 */
-	@Test
-	public void testGetAllSchedules() {
-		List<Schedule> result = scheduleFacade.getAllSchedules();
-		assertEquals(2, result.size());
-	}	
 
-	/**
-	 * Test of fetching email notification settings for schedule.
-	 */
-	@Test
-	public void testGetNotification() {
-		Schedule sch = scheduleFacade.getSchedule(1L);
-		
-		assertNotNull(sch);
-		assertNotNull(sch.getNotification());
-		assertNotNull(sch.getNotification().getEmails());
-		assertEquals(1, sch.getNotification().getEmails().size());
-		
-		EmailAddress email = sch.getNotification().getEmails().iterator().next();
-		assertEquals("scheduler@example.com", email.getEmail());
-	}
-	
-	/**
-	 * Test deleting schedule notification.
-	 */
-	@Test @Transactional
-	public void testDeleteScheduleNotification() {
-		
-		Schedule sch = scheduleFacade.getSchedule(1L);
-		assertNotNull(sch);
-		assertNotNull(sch.getNotification());
-		
-		scheduleFacade.deleteNotification(sch.getNotification());
-		em.flush();
-		em.clear();
-		
-		Schedule ret = scheduleFacade.getSchedule(1L);
-		assertNotNull(ret);
-		assertNull(ret.getNotification());
-	}
-	
-	@Test @Transactional
-	public void testChangeLastExecution() {
-		Date now = new Date();
-		Schedule sch = scheduleFacade.getSchedule(1L);
-		sch.setLastExecution(now);
-		scheduleFacade.save(sch);
-		
-		em.flush();
-		em.clear();
-		
-		Schedule ret = scheduleFacade.getSchedule(1L);
-		assertEquals(now, ret.getLastExecution());
-	}	
-	
+    /**
+     * Test of getAllSchedules method, of class ScheduleFacade.
+     */
+    @Test
+    public void testGetAllSchedules() {
+        List<Schedule> result = scheduleFacade.getAllSchedules();
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * Test of fetching email notification settings for schedule.
+     */
+    @Test
+    public void testGetNotification() {
+        Schedule sch = scheduleFacade.getSchedule(1L);
+
+        assertNotNull(sch);
+        assertNotNull(sch.getNotification());
+        assertNotNull(sch.getNotification().getEmails());
+        assertEquals(1, sch.getNotification().getEmails().size());
+
+        EmailAddress email = sch.getNotification().getEmails().iterator().next();
+        assertEquals("scheduler@example.com", email.getEmail());
+    }
+
+    /**
+     * Test deleting schedule notification.
+     */
+    @Test
+    @Transactional
+    public void testDeleteScheduleNotification() {
+
+        Schedule sch = scheduleFacade.getSchedule(1L);
+        assertNotNull(sch);
+        assertNotNull(sch.getNotification());
+
+        scheduleFacade.deleteNotification(sch.getNotification());
+        em.flush();
+        em.clear();
+
+        Schedule ret = scheduleFacade.getSchedule(1L);
+        assertNotNull(ret);
+        assertNull(ret.getNotification());
+    }
+
+    @Test
+    @Transactional
+    public void testChangeLastExecution() {
+        Date now = new Date();
+        Schedule sch = scheduleFacade.getSchedule(1L);
+        sch.setLastExecution(now);
+        scheduleFacade.save(sch);
+
+        em.flush();
+        em.clear();
+
+        Schedule ret = scheduleFacade.getSchedule(1L);
+        assertEquals(now, ret.getLastExecution());
+    }
+
 }

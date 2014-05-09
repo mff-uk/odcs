@@ -30,249 +30,249 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 
 /**
  * Backend entry point.
- *
+ * 
  * @author Petyr
- *
  */
 public class AppEntry {
 
-	/**
-	 * Path to the spring configuration file.
-	 */
-	private final static String SPRING_CONFIG_FILE = "backend-context.xml";
+    /**
+     * Path to the spring configuration file.
+     */
+    private final static String SPRING_CONFIG_FILE = "backend-context.xml";
 
-	/**
-	 * Logger class.
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
+    /**
+     * Logger class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
 
-	/**
-	 * Path to the configuration file.
-	 */
-	private String configFileLocation = null;
+    /**
+     * Path to the configuration file.
+     */
+    private String configFileLocation = null;
 
-	/**
-	 * Spring context.
-	 */
-	private AbstractApplicationContext context = null;
+    /**
+     * Spring context.
+     */
+    private AbstractApplicationContext context = null;
 
-	/**
-	 * Parse program arguments.
-	 *
-	 * @param args
-	 */
-	private void parseArgs(String[] args) {
-		// define args
-		Options options = new Options();
-		options.addOption("c", "config", true, "path to the configuration file");
-		// parse args
-		CommandLineParser parser = new org.apache.commons.cli.BasicParser();
-		try {
-			CommandLine cmd = parser.parse(options, args);
-			// read args ..
-			configFileLocation = cmd.getOptionValue("config");
-		} catch (ParseException e) {
-			System.err.println("Failed to parse program's arguments.");
-			e.printStackTrace(System.err);
-			System.exit(1);
-		}
+    /**
+     * Parse program arguments.
+     * 
+     * @param args
+     */
+    private void parseArgs(String[] args) {
+        // define args
+        Options options = new Options();
+        options.addOption("c", "config", true, "path to the configuration file");
+        // parse args
+        CommandLineParser parser = new org.apache.commons.cli.BasicParser();
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            // read args ..
+            configFileLocation = cmd.getOptionValue("config");
+        } catch (ParseException e) {
+            System.err.println("Failed to parse program's arguments.");
+            e.printStackTrace(System.err);
+            System.exit(1);
+        }
 
-		// override default configuration path if it has been provided
-		if (configFileLocation != null) {
-			AppConfig.confPath = configFileLocation;
-		}
-	}
+        // override default configuration path if it has been provided
+        if (configFileLocation != null) {
+            AppConfig.confPath = configFileLocation;
+        }
+    }
 
-	/**
-	 * Initialise spring and load configuration.
-	 */
-	private void initSpring() {
-		// load spring
-		context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
-		context.registerShutdownHook();
-	}
+    /**
+     * Initialise spring and load configuration.
+     */
+    private void initSpring() {
+        // load spring
+        context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
+        context.registerShutdownHook();
+    }
 
-	private RollingFileAppender createAppender(LoggerContext loggerContext, 
-			String logDirectory, String logFile, int logHistory) {
-		final RollingFileAppender rfAppender = new RollingFileAppender();
-		rfAppender.setContext(loggerContext);
-		rfAppender.setFile(logDirectory + logFile + ".log");
-		{
-			TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
-			rollingPolicy.setContext(loggerContext);
-			// rolling policies need to know their parent
-			// it's one of the rare cases, where a sub-component knows about its parent
-			rollingPolicy.setParent(rfAppender);
-			rollingPolicy.setFileNamePattern(logDirectory + logFile + ".%d{yyyy-MM-dd}.%i.log");
-			//rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(timeBasedTriggeringPolicy);
-			rollingPolicy.setMaxHistory(logHistory);
-			
-			rfAppender.setRollingPolicy(rollingPolicy);
-			
-			SizeAndTimeBasedFNATP triggeringPolicy;
-			{
-				// triger for name changing	
-				triggeringPolicy = new SizeAndTimeBasedFNATP();
-				triggeringPolicy.setMaxFileSize("10MB");
-				triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
-				rfAppender.setTriggeringPolicy(triggeringPolicy);
-			}			
+    private RollingFileAppender createAppender(LoggerContext loggerContext,
+            String logDirectory, String logFile, int logHistory) {
+        final RollingFileAppender rfAppender = new RollingFileAppender();
+        rfAppender.setContext(loggerContext);
+        rfAppender.setFile(logDirectory + logFile + ".log");
+        {
+            TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+            rollingPolicy.setContext(loggerContext);
+            // rolling policies need to know their parent
+            // it's one of the rare cases, where a sub-component knows about its parent
+            rollingPolicy.setParent(rfAppender);
+            rollingPolicy.setFileNamePattern(logDirectory + logFile + ".%d{yyyy-MM-dd}.%i.log");
+            //rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(timeBasedTriggeringPolicy);
+            rollingPolicy.setMaxHistory(logHistory);
 
-			rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(triggeringPolicy);
-			rollingPolicy.start();
+            rfAppender.setRollingPolicy(rollingPolicy);
 
-			{
-				// we need TimeBasedRollingPolicy to have the 
-				// FileNamePattern pattern initialized which is done in rollingPolicy.start();
-				triggeringPolicy.start();	
-			}
-		}	
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setContext(loggerContext);
-		encoder.setPattern("%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n");
-		rfAppender.setEncoder(encoder);
-		encoder.start();
-		
-		return rfAppender;
-	}
-	
-	private void initLogbackAppender() {
-		// default values
-		String logDirectory = "";
-		int logHistory = 14;
-		// we try to load values from configuration
-		AppConfig appConfig = AppConfig.loadFromHome();
-		try {
-			logDirectory = appConfig.getString(ConfigProperty.BACKEND_LOG_DIR);
-			// user set path, ensure that it end's on file separator
-			if (logDirectory.endsWith(File.separator) || logDirectory.isEmpty()) {
-				// ok it ends or it's empty
-			} else {
-				// no .. just add
-				logDirectory = logDirectory + File.separator;
-			}
-		} catch(Exception e) { }
-		
-		try {
-			logHistory = appConfig.getInteger(ConfigProperty.BACKEND_LOG_KEEP);
-		} catch(Exception e) { }
+            SizeAndTimeBasedFNATP triggeringPolicy;
+            {
+                // triger for name changing	
+                triggeringPolicy = new SizeAndTimeBasedFNATP();
+                triggeringPolicy.setMaxFileSize("10MB");
+                triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
+                rfAppender.setTriggeringPolicy(triggeringPolicy);
+            }
 
-		// check existance of directory
-		if (logDirectory.isEmpty() || FileUtils.exists(logDirectory)) {
-			// ok directory exist or is default
-		} else {
-			// can not find log directory .. 
-			try {
-			FileUtils.createDirectory(logDirectory);
-			} catch (Exception e) {
-				System.err.println("Failed to create log directory '" + logDirectory + "'");
-				System.exit(1);
-			}
-		}
-		
-		// now prepare the logger 
-		
-		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(triggeringPolicy);
+            rollingPolicy.start();
 
-		RollingFileAppender allLog = createAppender(loggerContext, logDirectory,
-				"backend", logHistory);				
-		allLog.start();
+            {
+                // we need TimeBasedRollingPolicy to have the 
+                // FileNamePattern pattern initialized which is done in rollingPolicy.start();
+                triggeringPolicy.start();
+            }
+        }
+        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(loggerContext);
+        encoder.setPattern("%d [%thread] %-5level exec:%X{execution} dpu:%X{dpuInstance} %logger{50} - %msg%n");
+        rfAppender.setEncoder(encoder);
+        encoder.start();
 
-		RollingFileAppender errorLog = createAppender(loggerContext, logDirectory,
-				"backend_err", logHistory);
-		{
-			// add filter
-			ThresholdFilter levelFilter = new ThresholdFilter();
-			levelFilter.setLevel(Level.ERROR.toString());
-			levelFilter.start();
-			errorLog.addFilter(levelFilter);
-		}
-		errorLog.start();
-	
-		
-		// we have the appender, now we need to attach it
-		// under root logger
-		
-		ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
-		logbackLogger.addAppender(allLog);
-		logbackLogger.addAppender(errorLog);
-	}
+        return rfAppender;
+    }
 
-	private void initLogbackSqlAppender() {
-		
-		final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-		
-		SqlAppender sqlAppender = context.getBean(SqlAppender.class);
-		sqlAppender.setContext(loggerContext);
-		
-		MdcExecutionLevelFilter mdcLevelFilter = new MdcExecutionLevelFilter();
-		mdcLevelFilter.setContext(loggerContext);
-		sqlAppender.addFilter(mdcLevelFilter);
-		
-		MdcFilter mdcFilter = new MdcFilter();
-		mdcFilter.setRequiredKey(Log.MDC_EXECUTION_KEY_NAME);
-		mdcFilter.setContext(loggerContext);
-		sqlAppender.addFilter(mdcFilter);
-		
-		// start add under the root loger
-		sqlAppender.start();
-		ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
-		logbackLogger.addAppender(sqlAppender);
-	}
-	
-	/**
-	 * Main execution method.
-	 *
-	 * @param args
-	 */
-	private void run(String[] args) {
-		// parse args - do not use logging		
-		parseArgs(args);
+    private void initLogbackAppender() {
+        // default values
+        String logDirectory = "";
+        int logHistory = 14;
+        // we try to load values from configuration
+        AppConfig appConfig = AppConfig.loadFromHome();
+        try {
+            logDirectory = appConfig.getString(ConfigProperty.BACKEND_LOG_DIR);
+            // user set path, ensure that it end's on file separator
+            if (logDirectory.endsWith(File.separator) || logDirectory.isEmpty()) {
+                // ok it ends or it's empty
+            } else {
+                // no .. just add
+                logDirectory = logDirectory + File.separator;
+            }
+        } catch (Exception e) {
+        }
 
-		// the log back is not initialised here .. 
-		// we add file appender
-		initLogbackAppender();
+        try {
+            logHistory = appConfig.getInteger(ConfigProperty.BACKEND_LOG_KEEP);
+        } catch (Exception e) {
+        }
 
-		// initialise
-		initSpring();
-		
-		// the sql appender cooperate with spring, so we need spring first
-		initLogbackSqlAppender();
-		
-		// Initialize DPUs by preloading all thier JAR bundles
-		// TODO use lazyloading instead of preload?
-		ModuleFacade modules = context.getBean(ModuleFacade.class);
-		modules.preLoadAllDPUs();
+        // check existance of directory
+        if (logDirectory.isEmpty() || FileUtils.exists(logDirectory)) {
+            // ok directory exist or is default
+        } else {
+            // can not find log directory .. 
+            try {
+                FileUtils.createDirectory(logDirectory);
+            } catch (Exception e) {
+                System.err.println("Failed to create log directory '" + logDirectory + "'");
+                System.exit(1);
+            }
+        }
 
-		// try to get application-lock 
-		// we construct lock key based on port		
-		final StringBuilder lockKey = new StringBuilder();
-		lockKey.append("INTLIB_");
-		lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
-		if (!AppLock.setLock(lockKey.toString())) {
-			// another application is already running
-			LOG.info("Another instance of ODCleanStore is probably running.");
-			context.close();
-			return;
-		}
+        // now prepare the logger 
 
-		// print some information ..
-		LOG.info("Running ...");
+        final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-		// infinite loop
-		while (true) {
-			try {
-				Thread.sleep(1000 * 60);
-			} catch (InterruptedException ex) {
-			}
-		}
-	}
+        RollingFileAppender allLog = createAppender(loggerContext, logDirectory,
+                "backend", logHistory);
+        allLog.start();
 
-	public static void main(String[] args) {
-		AppEntry app = new AppEntry();
-		app.run(args);
+        RollingFileAppender errorLog = createAppender(loggerContext, logDirectory,
+                "backend_err", logHistory);
+        {
+            // add filter
+            ThresholdFilter levelFilter = new ThresholdFilter();
+            levelFilter.setLevel(Level.ERROR.toString());
+            levelFilter.start();
+            errorLog.addFilter(levelFilter);
+        }
+        errorLog.start();
 
-		LOG.info("Closing application ...");
-	}
+        // we have the appender, now we need to attach it
+        // under root logger
+
+        ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        logbackLogger.addAppender(allLog);
+        logbackLogger.addAppender(errorLog);
+    }
+
+    private void initLogbackSqlAppender() {
+
+        final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        SqlAppender sqlAppender = context.getBean(SqlAppender.class);
+        sqlAppender.setContext(loggerContext);
+
+        MdcExecutionLevelFilter mdcLevelFilter = new MdcExecutionLevelFilter();
+        mdcLevelFilter.setContext(loggerContext);
+        sqlAppender.addFilter(mdcLevelFilter);
+
+        MdcFilter mdcFilter = new MdcFilter();
+        mdcFilter.setRequiredKey(Log.MDC_EXECUTION_KEY_NAME);
+        mdcFilter.setContext(loggerContext);
+        sqlAppender.addFilter(mdcFilter);
+
+        // start add under the root loger
+        sqlAppender.start();
+        ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        logbackLogger.addAppender(sqlAppender);
+    }
+
+    /**
+     * Main execution method.
+     * 
+     * @param args
+     */
+    private void run(String[] args) {
+        // parse args - do not use logging		
+        parseArgs(args);
+
+        // the log back is not initialised here .. 
+        // we add file appender
+        initLogbackAppender();
+
+        // initialise
+        initSpring();
+
+        // the sql appender cooperate with spring, so we need spring first
+        initLogbackSqlAppender();
+
+        // Initialize DPUs by preloading all thier JAR bundles
+        // TODO use lazyloading instead of preload?
+        ModuleFacade modules = context.getBean(ModuleFacade.class);
+        modules.preLoadAllDPUs();
+
+        // try to get application-lock 
+        // we construct lock key based on port		
+        final StringBuilder lockKey = new StringBuilder();
+        lockKey.append("INTLIB_");
+        lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
+        if (!AppLock.setLock(lockKey.toString())) {
+            // another application is already running
+            LOG.info("Another instance of ODCleanStore is probably running.");
+            context.close();
+            return;
+        }
+
+        // print some information ..
+        LOG.info("Running ...");
+
+        // infinite loop
+        while (true) {
+            try {
+                Thread.sleep(1000 * 60);
+            } catch (InterruptedException ex) {
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        AppEntry app = new AppEntry();
+        app.run(args);
+
+        LOG.info("Closing application ...");
+    }
 
 }

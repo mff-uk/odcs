@@ -17,46 +17,49 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 /**
  * Create new DataUnits based on given id, name and type in given working
  * directory.
- *
  * The class is suppose to be use as spring bean and it's methods can be run
  * concurrently.
- *
+ * 
  * @author Petyr
- *
  */
 public class DataUnitFactory {
 
-	/**
-	 * Application configuration.
-	 */
-	@Autowired
-	private AppConfig appConfig;
-	//@Value( "${jdbc.url}" ) private String jdbcUrl;
+    /**
+     * Application configuration.
+     */
+    @Autowired
+    private AppConfig appConfig;
 
-	@Autowired
-	private RDFDataUnitFactory rdfDataUnitFactory;
+    //@Value( "${jdbc.url}" ) private String jdbcUrl;
 
-	public DataUnitFactory() {
-	}
+    @Autowired
+    private RDFDataUnitFactory rdfDataUnitFactory;
 
-	/**
-	 * Create {@link DataUnit} and store information about it into the context.
-	 *
-	 * @param type      Requested type of data unit.
-	 * @param id        DataUnit's id assigned by application, must be unique!
-	 * @param name      DataUnit's name, can't be changed in future.
-	 * @param directory DataUnit's working directory.
-	 * @return DataUnit
-	 * @throws DataUnitCreateException
-	 * @throws RepositoryException 
-	 */
-	public ManagableDataUnit create(DataUnitType type,
-			String id,
-			String name,
-			File directory) {
-		switch (type) {
-			case RDF:
-				return rdfDataUnitFactory.create(name, GraphUrl.translateDataUnitId(id));
+    public DataUnitFactory() {
+    }
+
+    /**
+     * Create {@link DataUnit} and store information about it into the context.
+     * 
+     * @param type
+     *            Requested type of data unit.
+     * @param id
+     *            DataUnit's id assigned by application, must be unique!
+     * @param name
+     *            DataUnit's name, can't be changed in future.
+     * @param directory
+     *            DataUnit's working directory.
+     * @return DataUnit
+     * @throws DataUnitCreateException
+     * @throws RepositoryException
+     */
+    public ManagableDataUnit create(DataUnitType type,
+            String id,
+            String name,
+            File directory) {
+        switch (type) {
+            case RDF:
+                return rdfDataUnitFactory.create(name, GraphUrl.translateDataUnitId(id));
 //				throw new RuntimeException("Pure RDF DataUnit can't "
 //						+ "be created.");
 //			case RDF_Local:
@@ -86,11 +89,11 @@ public class DataUnitFactory {
 //						GraphUrl.translateDataUnitId(id));
 //				
 //				return virtosoRepository;
-			case FILE:
-				// create the DataUnit and return it
-				return FileDataUnitFactory.create(name, directory);
-			default:
-				throw new RuntimeException("Unknown DataUnit type.");
-		}
-	}
+            case FILE:
+                // create the DataUnit and return it
+                return FileDataUnitFactory.create(name, directory);
+            default:
+                throw new RuntimeException("Unknown DataUnit type.");
+        }
+    }
 }

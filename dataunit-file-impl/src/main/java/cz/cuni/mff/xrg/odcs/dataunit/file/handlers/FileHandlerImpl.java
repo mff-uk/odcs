@@ -11,135 +11,137 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link FileHandler}.
- *
+ * 
  * @author Petyr
  */
 public class FileHandlerImpl extends HandlerImpl implements ManageableHandler, FileHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileHandlerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileHandlerImpl.class);
 
-	/**
-	 * Name of the file.
-	 */
-	private String name;
+    /**
+     * Name of the file.
+     */
+    private String name;
 
-	/**
-	 * Path to the represented file.
-	 */
-	private File file;
+    /**
+     * Path to the represented file.
+     */
+    private File file;
 
-	/**
-	 * Directory in which we are located in sense of file data unit.
-	 */
-	private DirectoryHandler parent;
-	
-	/**
-	 * User data.
-	 */
-	private String userData;
+    /**
+     * Directory in which we are located in sense of file data unit.
+     */
+    private DirectoryHandler parent;
 
-	/**
-	 * True if the represent file is in link mode. Ie. it is not located in
-	 * DataUnit directory.
-	 */
-	private boolean isLink;
+    /**
+     * User data.
+     */
+    private String userData;
 
-	/**
-	 * Create non-readonly handler for given file.
-	 *
-	 * @param file Path to the existing file.
-	 * @param parent
-	 * @param name File name must not be null!
-	 * @param asLink
-	 */
-	FileHandlerImpl(File file, DirectoryHandler parent, String name, boolean asLink) {
-		this.name = name;
-		this.file = file;
-		this.parent = parent;
-		this.userData = null;
-		this.isLink = asLink;
-		// if not exist and is not link
-		if (!file.exists() && !asLink) {
-			// create it
-			try {
-				FileUtils.touch(file);
-			} catch (IOException ex) {
-				LOG.error("Failed to touch new file.", ex);
-				// user fill soon find this out
-			}
-		}
-	}
+    /**
+     * True if the represent file is in link mode. Ie. it is not located in
+     * DataUnit directory.
+     */
+    private boolean isLink;
 
-	@Override
-	public String getContent() {
-		try {
-			return FileUtils.readFileToString(file);
-		} catch (IOException ex) {
-			LOG.error("Failed to read file content as string.", ex);
-			return null;
-		}
-	}
+    /**
+     * Create non-readonly handler for given file.
+     * 
+     * @param file
+     *            Path to the existing file.
+     * @param parent
+     * @param name
+     *            File name must not be null!
+     * @param asLink
+     */
+    FileHandlerImpl(File file, DirectoryHandler parent, String name, boolean asLink) {
+        this.name = name;
+        this.file = file;
+        this.parent = parent;
+        this.userData = null;
+        this.isLink = asLink;
+        // if not exist and is not link
+        if (!file.exists() && !asLink) {
+            // create it
+            try {
+                FileUtils.touch(file);
+            } catch (IOException ex) {
+                LOG.error("Failed to touch new file.", ex);
+                // user fill soon find this out
+            }
+        }
+    }
 
-	@Override
-	public void setContent(String newContent) throws FileDataUnitException {
-		if (isLink) {
-			throw new DataUnitAccessException("Can't modify 'linked' file!");
-		}
-		try {
-			// create file if it does not exits
-			FileUtils.writeStringToFile(file, newContent);
-		} catch (IOException ex) {
-			LOG.error("Failed to save content into file.", ex);
-			throw new ContentWriteFailed(ex);
-		}
-	}
+    @Override
+    public String getContent() {
+        try {
+            return FileUtils.readFileToString(file);
+        } catch (IOException ex) {
+            LOG.error("Failed to read file content as string.", ex);
+            return null;
+        }
+    }
 
-	@Override
-	public File asFile() {
-		return file;
-	}
+    @Override
+    public void setContent(String newContent) throws FileDataUnitException {
+        if (isLink) {
+            throw new DataUnitAccessException("Can't modify 'linked' file!");
+        }
+        try {
+            // create file if it does not exits
+            FileUtils.writeStringToFile(file, newContent);
+        } catch (IOException ex) {
+            LOG.error("Failed to save content into file.", ex);
+            throw new ContentWriteFailed(ex);
+        }
+    }
 
-	@Override
-	public void setUserData(String newUserData) {
-		this.userData = newUserData;
-	}
+    @Override
+    public File asFile() {
+        return file;
+    }
 
-	@Override
-	public String getUserData() {
-		return this.userData;
-	}
+    @Override
+    public void setUserData(String newUserData) {
+        this.userData = newUserData;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof FileHandlerImpl) {
-			FileHandlerImpl right = (FileHandlerImpl) obj;
-			return name.equals(right.name);
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public String getUserData() {
+        return this.userData;
+    }
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 13 * hash + Objects.hashCode(this.name);
-		return hash;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FileHandlerImpl) {
+            FileHandlerImpl right = (FileHandlerImpl) obj;
+            return name.equals(right.name);
+        } else {
+            return false;
+        }
+    }
 
-	@Override
-	public String getName() {
-		return this.name;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
 
-	@Override
-	public String getRootedPath() {
-		final String parentPath = parent.getRootedPath();
-		return parentPath + "/" + getName();
-	}	
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
-	@Override
-	public boolean isLink() {
-		return this.isLink;
-	}
-	
+    @Override
+    public String getRootedPath() {
+        final String parentPath = parent.getRootedPath();
+        return parentPath + "/" + getName();
+    }
+
+    @Override
+    public boolean isLink() {
+        return this.isLink;
+    }
+
 }

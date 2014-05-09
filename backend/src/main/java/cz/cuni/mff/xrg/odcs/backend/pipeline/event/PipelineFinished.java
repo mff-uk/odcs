@@ -8,39 +8,33 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
  * Report that pipelineExecution is finished.
- *
- * Is used also to inform
- * {@link cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler}
- *
+ * Is used also to inform {@link cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler}
+ * 
  * @author Petyr
- *
  */
 public final class PipelineFinished extends PipelineInfo {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(PipelineFinished.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(PipelineFinished.class);
 
-	public PipelineFinished(PipelineExecution execution, Object source) {
-		super(execution, source, String.format("Execution: %d finished", 
-				execution.getId()), "");
+    public PipelineFinished(PipelineExecution execution, Object source) {
+        super(execution, source, String.format("Execution: %d finished",
+                execution.getId()), "");
 
-		LOG.info("Execution {} finished with status: {}", execution.getId(),
-				execution.getStatus().toString());
-	}
+        LOG.info("Execution {} finished with status: {}", execution.getId(),
+                execution.getStatus().toString());
+    }
 
-	/**
-	 * 
-	 * @return True if respective execution finished with
-	 * {@link PipelineExecutionStatus#FINISHED_SUCCESS} or
-	 * {@link PipelineExecutionStatus#FINISHED_WARNING}.
-	 */
-	public boolean sucess() {
-		return execution.getStatus() == PipelineExecutionStatus.FINISHED_SUCCESS
-				|| execution.getStatus() == PipelineExecutionStatus.FINISHED_WARNING;
-	}
+    /**
+     * @return True if respective execution finished with {@link PipelineExecutionStatus#FINISHED_SUCCESS} or {@link PipelineExecutionStatus#FINISHED_WARNING}.
+     */
+    public boolean sucess() {
+        return execution.getStatus() == PipelineExecutionStatus.FINISHED_SUCCESS
+                || execution.getStatus() == PipelineExecutionStatus.FINISHED_WARNING;
+    }
 
-	public PipelineExecution getExecution() {
-		return execution;
-	}
+    public PipelineExecution getExecution() {
+        return execution;
+    }
 
 }

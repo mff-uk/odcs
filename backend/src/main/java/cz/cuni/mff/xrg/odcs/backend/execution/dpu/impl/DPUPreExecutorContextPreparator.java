@@ -23,90 +23,87 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * Examine the {@link DependencyGraph} for given {@link PipelineExecution}. Add
  * data from precedents' context to the context of the current DPU, that is
  * specified by {@link Node}.
- * 
- * We execute this only for {@link DPUExecutionState#PREPROCESSING}
- * state as for any other state the context has been already prepared.
+ * We execute this only for {@link DPUExecutionState#PREPROCESSING} state as for any other state the context has been already prepared.
  * 
  * @author Petyr
- * 
  */
 @Component
 class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
 
-	/**
-	 * Pre-executor order.
-	 */
-	public static final int ORDER = 0;	
-	
-	/**
-	 * Event publisher used to publish error event.
-	 */
-	@Autowired
-	private ApplicationEventPublisher eventPublisher;	
-	
-	@Autowired
-	private ContextFacade contextFacade;
-	
-	public DPUPreExecutorContextPreparator() {
-		super(Arrays.asList(DPUExecutionState.PREPROCESSING));	
-	}
-	
-	@Override
-	public int getOrder() {
-		return ORDER;
-	}
-	
-	/**
-	 * In case of error log the error, publish message and the return false.
-	 */
-	@Override
-	protected boolean execute(Node node,
-			Map<Node, Context> contexts,
-			Object dpuInstance,
-			PipelineExecution execution,
-			ProcessingUnitInfo unitInfo) {
-		// get current context
-		Context context = contexts.get(node);
+    /**
+     * Pre-executor order.
+     */
+    public static final int ORDER = 0;
 
-		// ! ! ! !
-		// the context can contains data from previous 
-		// PREPROCESSING phase that has been interrupted
-		// so some DataUnit can already been created and may contains some
-		// data .. we solve this in contextFacade.merge
-		// which take care about this
-		
-		// looks for edges that lead to our node
-		Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
-		for (Edge edge : edges) {
-			if (edge.getTo() == node) {
-				// we are the target .. add data
-				Node sourceNode = edge.getFrom();
-				Context sourceContext = contexts.get(sourceNode);
-				if (sourceContext == null) {
-					// prepare message
-					StringBuilder message = new StringBuilder(); 
-					message.append("Missing context for '");
-					message.append(sourceNode.getDpuInstance().getName());
-					message.append("' required by '");
-					message.append("node.getDpuInstance().getName()");
-					message.append("'");
-					// publish message
-					eventPublisher.publishEvent(
-							DPUEvent.createPreExecutorFailed(context, this, message.toString()));
-					return false;
-				}
-				// else add data
-				try {
-					contextFacade.merge(context, sourceContext, edge.getScript());
-				} catch (ContextException e) {
-					eventPublisher.publishEvent(
-							DPUEvent.createPreExecutorFailed(context, this,
-									"Failed to merge contexts.", e));
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    /**
+     * Event publisher used to publish error event.
+     */
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private ContextFacade contextFacade;
+
+    public DPUPreExecutorContextPreparator() {
+        super(Arrays.asList(DPUExecutionState.PREPROCESSING));
+    }
+
+    @Override
+    public int getOrder() {
+        return ORDER;
+    }
+
+    /**
+     * In case of error log the error, publish message and the return false.
+     */
+    @Override
+    protected boolean execute(Node node,
+            Map<Node, Context> contexts,
+            Object dpuInstance,
+            PipelineExecution execution,
+            ProcessingUnitInfo unitInfo) {
+        // get current context
+        Context context = contexts.get(node);
+
+        // ! ! ! !
+        // the context can contains data from previous 
+        // PREPROCESSING phase that has been interrupted
+        // so some DataUnit can already been created and may contains some
+        // data .. we solve this in contextFacade.merge
+        // which take care about this
+
+        // looks for edges that lead to our node
+        Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
+        for (Edge edge : edges) {
+            if (edge.getTo() == node) {
+                // we are the target .. add data
+                Node sourceNode = edge.getFrom();
+                Context sourceContext = contexts.get(sourceNode);
+                if (sourceContext == null) {
+                    // prepare message
+                    StringBuilder message = new StringBuilder();
+                    message.append("Missing context for '");
+                    message.append(sourceNode.getDpuInstance().getName());
+                    message.append("' required by '");
+                    message.append("node.getDpuInstance().getName()");
+                    message.append("'");
+                    // publish message
+                    eventPublisher.publishEvent(
+                            DPUEvent.createPreExecutorFailed(context, this, message.toString()));
+                    return false;
+                }
+                // else add data
+                try {
+                    contextFacade.merge(context, sourceContext, edge.getScript());
+                } catch (ContextException e) {
+                    eventPublisher.publishEvent(
+                            DPUEvent.createPreExecutorFailed(context, this,
+                                    "Failed to merge contexts.", e));
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }

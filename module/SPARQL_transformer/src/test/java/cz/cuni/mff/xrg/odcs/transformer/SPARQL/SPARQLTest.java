@@ -14,49 +14,61 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class SPARQLTest {
-	private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
-	@Test
-	public void constructAllTest() throws Exception  {
-		// prepare dpu
-		SPARQLTransformer trans = new SPARQLTransformer();
+    private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
 
-		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
-		boolean isConstructType = true;
+    @Test
+    public void constructAllTest() throws Exception {
+        // prepare dpu
+        SPARQLTransformer trans = new SPARQLTransformer();
 
-		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-				SPARQL_Update_Query, isConstructType);
+        String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+        boolean isConstructType = true;
 
+        SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                SPARQL_Update_Query, isConstructType);
 
-		trans.configureDirectly(config);
+        trans.configureDirectly(config);
 
-		// prepare test environment
-		TestEnvironment env =  new TestEnvironment();
-		
-		// prepare data units
-		RDFDataUnit input = env.createRdfInput("input", false);
-		RDFDataUnit output = env.createRdfOutput("output", false);
-		
-		InputStream inputStream= Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("metadata.ttl");
-		
-		RepositoryConnection connection = null;
-		RepositoryConnection connection2 = null;
-		try {
-	        connection = input.getConnection();
-	        String baseURI = "";
-	        connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getDataGraph());
-	        
-			// some triples has been loaded
-			assertTrue(connection.size(input.getDataGraph()) > 0);
-			// run
-			env.run(trans);
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
+
+        // prepare data units
+        RDFDataUnit input = env.createRdfInput("input", false);
+        RDFDataUnit output = env.createRdfOutput("output", false);
+
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
+
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        try {
+            connection = input.getConnection();
+            String baseURI = "";
+            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getDataGraph());
+
+            // some triples has been loaded
+            assertTrue(connection.size(input.getDataGraph()) > 0);
+            // run
+            env.run(trans);
             connection2 = output.getConnection();
-			// verify result
-			assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
-		} finally {
-			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}			// release resources
-			env.release();
-		}
-	}
+            // verify result
+            assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            } // release resources
+            env.release();
+        }
+    }
 }

@@ -21,149 +21,150 @@ import org.slf4j.LoggerFactory;
 /**
  * DPU for RDF data validation and save validation report in RDF TURTLE (TTL)
  * syntax to given file.
- *
+ * 
  * @author Jiri Tomes
  */
 @AsTransformer
 public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
-		implements ConfigDialogProvider<RDFDataValidatorConfig> {
+        implements ConfigDialogProvider<RDFDataValidatorConfig> {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(RDFDataValidator.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(RDFDataValidator.class);
 
-	/**
-	 * Input RDF data repository with data we want to validate.
-	 */
-	@InputDataUnit(name = "input")
-	public RDFDataUnit dataInput;
+    /**
+     * Input RDF data repository with data we want to validate.
+     */
+    @InputDataUnit(name = "input")
+    public RDFDataUnit dataInput;
 
-	/**
-	 * Output RDF data repository with only validate triples get from input.
-	 */
-	@OutputDataUnit(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
-	public RDFDataUnit dataOutput;
+    /**
+     * Output RDF data repository with only validate triples get from input.
+     */
+    @OutputDataUnit(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
+    public RDFDataUnit dataOutput;
 
-	/**
-	 * Output RDF repository report about invalid data describe as RDF triples.
-	 */
-	@OutputDataUnit(name = "Report", description = "Output RDF repository report about invalid data described as RDF triples.")
-	public RDFDataUnit reportOutput;
+    /**
+     * Output RDF repository report about invalid data describe as RDF triples.
+     */
+    @OutputDataUnit(name = "Report", description = "Output RDF repository report about invalid data described as RDF triples.")
+    public RDFDataUnit reportOutput;
 
-	public RDFDataValidator() {
-		super(RDFDataValidatorConfig.class);
-	}
+    public RDFDataValidator() {
+        super(RDFDataValidatorConfig.class);
+    }
 
-	/**
-	 * Returns the configuration dialogue for RDF Data validator.
-	 *
-	 * @return the configuration dialogue for RDF Data validator.
-	 */
-	@Override
-	public AbstractConfigDialog<RDFDataValidatorConfig> getConfigurationDialog() {
-		return new RDFDataValidatorDialog();
-	}
+    /**
+     * Returns the configuration dialogue for RDF Data validator.
+     * 
+     * @return the configuration dialogue for RDF Data validator.
+     */
+    @Override
+    public AbstractConfigDialog<RDFDataValidatorConfig> getConfigurationDialog() {
+        return new RDFDataValidatorDialog();
+    }
 
-	private void makeValidationReport(DataValidator validator,
-			String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
+    private void makeValidationReport(DataValidator validator,
+            String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
 
-		context.sendMessage(MessageType.INFO,
-				"Start creating VALIDATION REPORT", String.format(
-				"Start generating validation report output for graph <%s> .",
-				graphName));
+        context.sendMessage(MessageType.INFO,
+                "Start creating VALIDATION REPORT", String.format(
+                        "Start generating validation report output for graph <%s> .",
+                        graphName));
 
-		ReportCreator reporter = new ReportCreator(validator
-				.getFindedProblems(), graphName);
-		reporter.makeOutputReport(reportOutput);
+        ReportCreator reporter = new ReportCreator(validator
+                .getFindedProblems(), graphName);
+        reporter.makeOutputReport(reportOutput);
 
-		context.sendMessage(MessageType.INFO,
-				"VALIDATION REPORT created SUCCESSFULLY", String.format(
-				"Validation report output for graph <%s> created successfully",
-				graphName));
+        context.sendMessage(MessageType.INFO,
+                "VALIDATION REPORT created SUCCESSFULLY", String.format(
+                        "Validation report output for graph <%s> created successfully",
+                        graphName));
 
-
-		if (stopExecution) {
+        if (stopExecution) {
             RepositoryConnection connection = null;
-            try { 
-            	connection = dataOutput.getConnection();
-            	connection.clear(dataOutput.getDataGraph());
+            try {
+                connection = dataOutput.getConnection();
+                connection.clear(dataOutput.getDataGraph());
             } catch (RepositoryException ex) {
-            	LOG.warn("Error", ex);
+                LOG.warn("Error", ex);
             } finally {
-	            if (connection != null) {
-					try {
-						connection.close();
-					} catch (RepositoryException ex) {
-						LOG.warn("Error when closing connection", ex);
-						// eat close exception, we cannot do anything clever here
-					}
-				}
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (RepositoryException ex) {
+                        LOG.warn("Error when closing connection", ex);
+                        // eat close exception, we cannot do anything clever here
+                    }
+                }
             }
-			throw new RDFException(
-					"RDFDataValidator found some invalid data - pipeline execution is stopped");
-		}
-	}
+            throw new RDFException(
+                    "RDFDataValidator found some invalid data - pipeline execution is stopped");
+        }
+    }
 
-	/**
-	 * Execute the RDF Data validator.
-	 *
-	 * @param context RDF Data validator context.
-	 * @throws DataUnitException if this DPU fails.
-	 * @throws DPUException      if this DPU fails.
-	 */
-	@Override
-	public void execute(DPUContext context)
-			throws DPUException,
-			DataUnitException {
+    /**
+     * Execute the RDF Data validator.
+     * 
+     * @param context
+     *            RDF Data validator context.
+     * @throws DataUnitException
+     *             if this DPU fails.
+     * @throws DPUException
+     *             if this DPU fails.
+     */
+    @Override
+    public void execute(DPUContext context)
+            throws DPUException,
+            DataUnitException {
 
-		final boolean stopExecution = config.canStopExecution();
-		final boolean sometimesOutput = config.hasSometimesOutput();
+        final boolean stopExecution = config.canStopExecution();
+        final boolean sometimesOutput = config.hasSometimesOutput();
 
-		try {
+        try {
 
-			DataValidator validator = new RepositoryDataValidator(dataInput,
-					dataOutput);
-			String graphName = dataInput.getDataGraph().toString();
+            DataValidator validator = new RepositoryDataValidator(dataInput,
+                    dataOutput);
+            String graphName = dataInput.getDataGraph().toString();
 
-			if (sometimesOutput) {
-				if (!validator.areDataValid()) {
-					context.sendMessage(MessageType.WARNING,
-							"Validator found some INVALID DATA",
-							validator.getErrorMessage() + "\nIt will be created validation report.");
-					LOG.error(validator.getErrorMessage());
+            if (sometimesOutput) {
+                if (!validator.areDataValid()) {
+                    context.sendMessage(MessageType.WARNING,
+                            "Validator found some INVALID DATA",
+                            validator.getErrorMessage() + "\nIt will be created validation report.");
+                    LOG.error(validator.getErrorMessage());
 
-					makeValidationReport(validator, graphName, context,
-							stopExecution);
+                    makeValidationReport(validator, graphName, context,
+                            stopExecution);
 
-				} else {
-					context.sendMessage(MessageType.INFO,
-							"Validation Sucessful - NO errors",
-							"All RDF data are valid. Validation report will be not created.");
-				}
-			} else {
-				if (!validator.areDataValid()) {
-					context.sendMessage(MessageType.WARNING,
-							"Validator found some INVALID DATA",
-							"Some RDF data are invalid:\n"
-							+ validator.getErrorMessage()
-							+ " It will be created validation report");
-				} else {
-					context.sendMessage(MessageType.INFO,
-							"Validation Sucessful - NO errors",
-							"All RDF data are valid. Validation report output will be empty");
-				}
+                } else {
+                    context.sendMessage(MessageType.INFO,
+                            "Validation Sucessful - NO errors",
+                            "All RDF data are valid. Validation report will be not created.");
+                }
+            } else {
+                if (!validator.areDataValid()) {
+                    context.sendMessage(MessageType.WARNING,
+                            "Validator found some INVALID DATA",
+                            "Some RDF data are invalid:\n"
+                                    + validator.getErrorMessage()
+                                    + " It will be created validation report");
+                } else {
+                    context.sendMessage(MessageType.INFO,
+                            "Validation Sucessful - NO errors",
+                            "All RDF data are valid. Validation report output will be empty");
+                }
 
-				makeValidationReport(validator, graphName, context,
-						stopExecution);
+                makeValidationReport(validator, graphName, context,
+                        stopExecution);
 
-			}
-		} catch (RDFException e) {
-			context.sendMessage(MessageType.ERROR, e.getMessage(), e
-					.fillInStackTrace().toString());
-		} catch (RepositoryException e) {
+            }
+        } catch (RDFException e) {
+            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+                    .fillInStackTrace().toString());
+        } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR, e.getMessage(), e
                     .fillInStackTrace().toString());
         }
-
 
     }
 }

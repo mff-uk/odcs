@@ -10,12 +10,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Event;
 
 /**
- *
  * @author Bogo
  */
 public class ResizedEvent extends Event {
-    
+
     private final int width;
+
     private final int height;
 
     public ResizedEvent(Component source, int newWidth, int newHeight) {
@@ -31,5 +31,5 @@ public class ResizedEvent extends Event {
     public int getHeight() {
         return height;
     }
-    
+
 }

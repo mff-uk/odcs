@@ -9,34 +9,33 @@ import ch.qos.logback.core.spi.FilterReply;
  * return NEUTRAL.
  * 
  * @author Petyr
- *
  */
 public class MdcFilter extends ch.qos.logback.core.filter.Filter<ILoggingEvent> {
 
-	/**
-	 * Required MDC key.	
-	 */
-	private String requiredKey; 
+    /**
+     * Required MDC key.
+     */
+    private String requiredKey;
 
-	public MdcFilter() {
-		this.requiredKey = "";
-	}	
-	
-	public MdcFilter(String requiredKey) {
-		this.requiredKey = requiredKey;
-	}
-	
-	@Override
-	public FilterReply decide(ILoggingEvent event) {
-		if (event.getMDCPropertyMap().containsKey(requiredKey)) {
-			return FilterReply.NEUTRAL;
-		} else {
-			return FilterReply.DENY;
-		}
-	}
+    public MdcFilter() {
+        this.requiredKey = "";
+    }
 
-	public void setRequiredKey(String requiredKey) {
-		this.requiredKey = requiredKey;
-	}
+    public MdcFilter(String requiredKey) {
+        this.requiredKey = requiredKey;
+    }
+
+    @Override
+    public FilterReply decide(ILoggingEvent event) {
+        if (event.getMDCPropertyMap().containsKey(requiredKey)) {
+            return FilterReply.NEUTRAL;
+        } else {
+            return FilterReply.DENY;
+        }
+    }
+
+    public void setRequiredKey(String requiredKey) {
+        this.requiredKey = requiredKey;
+    }
 
 }

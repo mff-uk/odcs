@@ -26,7 +26,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 /**
  * Simple XSLT Extractor
- *
+ * 
  * @author tomasknap
  */
 public class SimpleXSLT extends ConfigurableBase<SimpleXSLTConfig> implements Extract, ConfigDialogProvider<SimpleXSLTConfig> {
@@ -61,7 +61,7 @@ public class SimpleXSLT extends ConfigurableBase<SimpleXSLTConfig> implements Ex
         File inputFile = new File(config.getXmlFile());
 
         File outputFile = new File(config.getXmlFile() + ".ttl");
-        
+
         //outputs
         RDFDataRepository outputRepository;
         try {
@@ -72,7 +72,6 @@ public class SimpleXSLT extends ConfigurableBase<SimpleXSLTConfig> implements Ex
         outputRepository.extractRDFfromFileToRepository(config.getXmlFile() + ".ttl", "", "", false, false);
         ////////////
 
-
         //xslt
         Processor proc = new Processor(false);
         XsltCompiler compiler = proc.newXsltCompiler();
@@ -80,10 +79,7 @@ public class SimpleXSLT extends ConfigurableBase<SimpleXSLTConfig> implements Ex
         try {
             exp = compiler.compile(new StreamSource(stylesheet));
 
-
             XdmNode source = proc.newDocumentBuilder().build(new StreamSource(inputFile));
-
-
 
             Serializer out = new Serializer();
             out.setOutputProperty(Serializer.Property.METHOD, "text");

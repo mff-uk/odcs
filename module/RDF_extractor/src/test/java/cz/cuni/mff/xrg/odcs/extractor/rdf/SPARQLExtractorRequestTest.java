@@ -21,153 +21,158 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
- *
  * @author Jiri Tomes
  */
 @Category(IntegrationTest.class)
 public class SPARQLExtractorRequestTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(
-			SPARQLExtractorRequestTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+            SPARQLExtractorRequestTest.class);
 
-	private static final TestEnvironment testEnvironment = new TestEnvironment();
+    private static final TestEnvironment testEnvironment = new TestEnvironment();
 
-	private static final String ENDPOINT = "http://dbpedia.org/sparql";
+    private static final String ENDPOINT = "http://dbpedia.org/sparql";
 
-	private static final String DEFAULT_GRAPH = "http://dbpedia.org";
-	
-	private static final String NAMED_GRAPH = "http://dbpedia.org/void";
+    private static final String DEFAULT_GRAPH = "http://dbpedia.org";
 
-	private int EXTRACTED_TRIPLES = 15;
+    private static final String NAMED_GRAPH = "http://dbpedia.org/void";
 
-	private URL getEndpoint() {
-		URL endpoint = null;
-		try {
-			endpoint = new URL(ENDPOINT);
-		} catch (MalformedURLException ex) {
-			LOG.debug(ex.getMessage());
-		}
+    private int EXTRACTED_TRIPLES = 15;
 
-		return endpoint;
-	}
+    private URL getEndpoint() {
+        URL endpoint = null;
+        try {
+            endpoint = new URL(ENDPOINT);
+        } catch (MalformedURLException ex) {
+            LOG.debug(ex.getMessage());
+        }
 
-	private DPUContext getTestContext() {
-		TestEnvironment environment = new TestEnvironment();
-		return environment.getContext();
-	}
+        return endpoint;
+    }
 
-	private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
-		RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
-		URL endpoint = getEndpoint();
-		String query = String.format(
-				"CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
-				EXTRACTED_TRIPLES);
+    private DPUContext getTestContext() {
+        TestEnvironment environment = new TestEnvironment();
+        return environment.getContext();
+    }
 
-		SPARQLExtractor extractor = new SPARQLExtractor(repository,
-				getTestContext(), params);
-		RepositoryConnection connection = null;
-		try {
-			extractor.extractFromSPARQLEndpoint(endpoint, query);
+    private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
+        RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+        URL endpoint = getEndpoint();
+        String query = String.format(
+                "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
+                EXTRACTED_TRIPLES);
+
+        SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                getTestContext(), params);
+        RepositoryConnection connection = null;
+        try {
+            extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
-			assertEquals(connection.size(repository.getDataGraph()), EXTRACTED_TRIPLES);
-		} catch (RDFException e) {
-			fail(e.getMessage());
-		} finally {
-			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-		}
-	}
+            assertEquals(connection.size(repository.getDataGraph()), EXTRACTED_TRIPLES);
+        } catch (RDFException e) {
+            fail(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+        }
+    }
 
-	@AfterClass
-	public static void deleteRDFDataUnit() {
-		testEnvironment.release();
-	}
+    @AfterClass
+    public static void deleteRDFDataUnit() {
+        testEnvironment.release();
+    }
 
-	@Test
-	public void GetSimpleTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "";
-		String namedGraphParam = "";
-		ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
+    @Test
+    public void GetSimpleTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "";
+        String namedGraphParam = "";
+        ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
 
-		extractFromEndpoint(params);
-	}
-	
-	@Test
-	public void GetDefaultGraphParamTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "default-graph-uri";
-		String namedGraphParam = "";
-		ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
+        extractFromEndpoint(params);
+    }
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
-		
-		params.addDefaultGraph(DEFAULT_GRAPH);
+    @Test
+    public void GetDefaultGraphParamTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "default-graph-uri";
+        String namedGraphParam = "";
+        ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
 
-		extractFromEndpoint(params);
-	}
-	
-	@Test
-	public void GetAllGraphParamTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "default-graph-uri";
-		String namedGraphParam = "named-graph-uri";
-		ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
-		
-		params.addDefaultGraph(DEFAULT_GRAPH);
-		params.addNamedGraph(NAMED_GRAPH);
+        params.addDefaultGraph(DEFAULT_GRAPH);
 
-		extractFromEndpoint(params);
-	}
-	
-	@Test
-	public void POSTEncodeSimpleTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "";
-		String namedGraphParam = "";
-		ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
+        extractFromEndpoint(params);
+    }
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
+    @Test
+    public void GetAllGraphParamTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "default-graph-uri";
+        String namedGraphParam = "named-graph-uri";
+        ExtractorRequestType requestType = ExtractorRequestType.GET_URL_ENCODER;
 
-		extractFromEndpoint(params);
-	}
-	
-	@Test
-	public void POSTEncodeDefaultGraphParamTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "default-graph-uri";
-		String namedGraphParam = "";
-		ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
-		
-		params.addDefaultGraph(DEFAULT_GRAPH);
+        params.addDefaultGraph(DEFAULT_GRAPH);
+        params.addNamedGraph(NAMED_GRAPH);
 
-		extractFromEndpoint(params);
-	}
-	
-	@Test
-	public void POSTEncodeAllGraphParamTest() throws RepositoryException {
-		String graphParam = "query";
-		String defaultGraphParam = "default-graph-uri";
-		String namedGraphParam = "named-graph-uri";
-		ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
+        extractFromEndpoint(params);
+    }
 
-		ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
-				defaultGraphParam, namedGraphParam, requestType);
-		
-		params.addDefaultGraph(DEFAULT_GRAPH);
-		params.addNamedGraph(NAMED_GRAPH);
+    @Test
+    public void POSTEncodeSimpleTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "";
+        String namedGraphParam = "";
+        ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
 
-		extractFromEndpoint(params);
-	}
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
+
+        extractFromEndpoint(params);
+    }
+
+    @Test
+    public void POSTEncodeDefaultGraphParamTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "default-graph-uri";
+        String namedGraphParam = "";
+        ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
+
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
+
+        params.addDefaultGraph(DEFAULT_GRAPH);
+
+        extractFromEndpoint(params);
+    }
+
+    @Test
+    public void POSTEncodeAllGraphParamTest() throws RepositoryException {
+        String graphParam = "query";
+        String defaultGraphParam = "default-graph-uri";
+        String namedGraphParam = "named-graph-uri";
+        ExtractorRequestType requestType = ExtractorRequestType.POST_URL_ENCODER;
+
+        ExtractorEndpointParams params = new ExtractorEndpointParams(graphParam,
+                defaultGraphParam, namedGraphParam, requestType);
+
+        params.addDefaultGraph(DEFAULT_GRAPH);
+        params.addNamedGraph(NAMED_GRAPH);
+
+        extractFromEndpoint(params);
+    }
 
 }

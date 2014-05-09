@@ -23,12 +23,19 @@ import static junit.framework.Assert.assertEquals;
 @Category(IntegrationTest.class)
 public class VirtuosoIt {
     private static final String HOST_NAME = "localhost";
+
     private static final String PORT = "1111";
+
     private static final String USER = "dba";
+
     private static final String PASSWORD = "dba";
+
     private static final String DEFAULT_GRAPH = "http://default";
+
     private static final String QUERY_ENDPOINT = "http://localhost:8890/sparql";
+
     private static RDFDataUnit repository;
+
     private static final Logger LOG = LoggerFactory.getLogger(
             VirtuosoIt.class);
 
@@ -56,7 +63,7 @@ public class VirtuosoIt {
         int expectedSize = results.size();
 
         // prepare test environment
-        TestEnvironment env =  new TestEnvironment();
+        TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         try {
             RDFDataUnit output = env.createRdfOutput("output", false);
@@ -66,7 +73,13 @@ public class VirtuosoIt {
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {
-        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
             // release resources
             env.release();
         }

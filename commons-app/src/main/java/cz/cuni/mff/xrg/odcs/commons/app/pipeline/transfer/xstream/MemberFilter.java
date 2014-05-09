@@ -6,7 +6,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream;
  * @author Škoda Petr
  */
 interface MemberFilter {
-	
-	public boolean shouldSerializeMember(Class definedIn, String fieldName);
-	
+
+    public boolean shouldSerializeMember(Class definedIn, String fieldName);
+
 }

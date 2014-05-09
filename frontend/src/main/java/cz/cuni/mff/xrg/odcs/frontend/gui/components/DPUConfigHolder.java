@@ -9,40 +9,41 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * Component for holding the DPU's configuration dialog. The component
  * show message if the configuration component is null.
- *
+ * 
  * @author Škoda Petr
  */
 public class DPUConfigHolder extends CustomComponent {
 
-	public DPUConfigHolder() {
-		setHeight("100%");
-		setWidth("100%");
-	}
+    public DPUConfigHolder() {
+        setHeight("100%");
+        setWidth("100%");
+    }
 
-	/**
-	 * Set the component representing the dialog.
-	 *
-	 * @param confDialog Can be null.
-	 */
-	public void setConfigComponent(Component confDialog) {
-		if (confDialog == null) {
-			// create label
-			Label infoLabel = new Label();
-			infoLabel.setSizeUndefined();
-			infoLabel.setValue("This DPU doesn't provide configuration component.");
-			
-			VerticalLayout layout = new VerticalLayout();
-			layout.setWidth("100%");
-			layout.setHeight("100%");			
-			layout.addComponent(infoLabel);
-			layout.setComponentAlignment(infoLabel, Alignment.MIDDLE_CENTER);
+    /**
+     * Set the component representing the dialog.
+     * 
+     * @param confDialog
+     *            Can be null.
+     */
+    public void setConfigComponent(Component confDialog) {
+        if (confDialog == null) {
+            // create label
+            Label infoLabel = new Label();
+            infoLabel.setSizeUndefined();
+            infoLabel.setValue("This DPU doesn't provide configuration component.");
 
-			setCompositionRoot(layout);
-		} else {
-			confDialog.setWidth("100%");
-			confDialog.setHeight("100%");
-			setCompositionRoot(confDialog);
-		}
-	}
+            VerticalLayout layout = new VerticalLayout();
+            layout.setWidth("100%");
+            layout.setHeight("100%");
+            layout.addComponent(infoLabel);
+            layout.setComponentAlignment(infoLabel, Alignment.MIDDLE_CENTER);
+
+            setCompositionRoot(layout);
+        } else {
+            confDialog.setWidth("100%");
+            confDialog.setHeight("100%");
+            setCompositionRoot(confDialog);
+        }
+    }
 
 }

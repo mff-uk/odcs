@@ -18,64 +18,66 @@ import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.validatePasswor
 /**
  * Provider for custom authentication logic. Uses custom password hashing
  * provided by {@link PasswordHash}.
- *
+ * 
  * @author Jan Vojt
  */
 public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
-	
-	private final UserFacade userFacade;
+    private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
 
-	/**
-	 * Constructor sets up dependencies.
-	 * 
-	 * @param userFacade 
-	 */
-	public PasswordAuthenticationProvider(UserFacade userFacade) {
-		this.userFacade = userFacade;
-	}
-	
-	/**
-	 * Authentication logic.
-	 * 
-	 * @param userDetails user to validate password against
-	 * @param authentication token with password to validate
-	 * @throws AuthenticationException 
-	 */
-	@Override
-	protected void additionalAuthenticationChecks(UserDetails userDetails,
-		UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-		
-		String password = (String) authentication.getCredentials();
-		
-		try {
-			if (!validatePassword(password, userDetails.getPassword())) {
-				throw new BadCredentialsException("Invalid username and/or password.");
-			}
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-			throw new RuntimeException("Could not generate password hash while authenticating user.", ex);
-		}
-	}
+    private final UserFacade userFacade;
 
-	/**
-	 * Fetches user by his username to be tried for authentication.
-	 * 
-	 * @param username
-	 * @param authentication
-	 * @return user
-	 * @throws AuthenticationException 
-	 */
-	@Override
-	protected UserDetails retrieveUser(String username,
-			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    /**
+     * Constructor sets up dependencies.
+     * 
+     * @param userFacade
+     */
+    public PasswordAuthenticationProvider(UserFacade userFacade) {
+        this.userFacade = userFacade;
+    }
 
-		User user = userFacade.getUserByUsername(authentication.getName());
-		if (user == null) {
-			throw new BadCredentialsException(username);
-		}
+    /**
+     * Authentication logic.
+     * 
+     * @param userDetails
+     *            user to validate password against
+     * @param authentication
+     *            token with password to validate
+     * @throws AuthenticationException
+     */
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+            UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 
-		return user;
-	}
+        String password = (String) authentication.getCredentials();
+
+        try {
+            if (!validatePassword(password, userDetails.getPassword())) {
+                throw new BadCredentialsException("Invalid username and/or password.");
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            throw new RuntimeException("Could not generate password hash while authenticating user.", ex);
+        }
+    }
+
+    /**
+     * Fetches user by his username to be tried for authentication.
+     * 
+     * @param username
+     * @param authentication
+     * @return user
+     * @throws AuthenticationException
+     */
+    @Override
+    protected UserDetails retrieveUser(String username,
+            UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+
+        User user = userFacade.getUserByUsername(authentication.getName());
+        if (user == null) {
+            throw new BadCredentialsException(username);
+        }
+
+        return user;
+    }
 
 }

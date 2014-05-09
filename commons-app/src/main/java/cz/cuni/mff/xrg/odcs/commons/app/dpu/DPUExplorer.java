@@ -23,9 +23,8 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 
 /**
  * Class which provides methods that can be used to explore DPU instance.
- *
+ * 
  * @author Petyr
- *
  */
 public class DPUExplorer {
 
@@ -33,6 +32,7 @@ public class DPUExplorer {
      * Name of property that stores jar-file's description.
      */
     private static final String DPU_JAR_DESCRIPTION_NAME = "Bundle-Description";
+
     /**
      * Module facade used to access the DPU instances.
      */
@@ -41,9 +41,11 @@ public class DPUExplorer {
 
     /**
      * Try to find out given DPU instance type.
-     *
-     * @param DPUInstance Dpu instance to get type of.
-     * @param relativePath Relative path to the DPU.
+     * 
+     * @param DPUInstance
+     *            Dpu instance to get type of.
+     * @param relativePath
+     *            Relative path to the DPU.
      * @return Null if nothing about type can be found.
      */
     public DPUType getType(Object DPUInstance, String relativePath) {
@@ -65,8 +67,9 @@ public class DPUExplorer {
      * Return content of manifest for given bundle that is stored in DPU's
      * directory. This method does not load DPU into system. The description is
      * length is limited based on {@link LenghtLimits}.
-     *
-     * @param dpu {@link DPUTemplateRecord} to explore.
+     * 
+     * @param dpu
+     *            {@link DPUTemplateRecord} to explore.
      * @return Description stored in manifest file or null in case of error.
      */
     public String getJarDescription(DPUTemplateRecord dpu) {
@@ -79,15 +82,16 @@ public class DPUExplorer {
         }
         String jarDescription = attributes.get(DPU_JAR_DESCRIPTION_NAME);
         // check for length
-        
+
         return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_JAR_DESCRIPTION);
     }
 
     /**
      * Return list of input {@link DataUnitInfo}'s descriptions for given DPU.
-	 * Need to load instance of given DPU.
-     *
-     * @param dpu DPU to get inputs for.
+     * Need to load instance of given DPU.
+     * 
+     * @param dpu
+     *            DPU to get inputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getInputs(DPURecord dpu) {
@@ -102,20 +106,21 @@ public class DPUExplorer {
             final InputDataUnit annotation = item.getAnnotation();
             // create description
             result.add(DataUnitDescription.createInput(
-				annotation.name(),
-				item.getField().getGenericType().toString(),
-				annotation.description(),
-				annotation.optional())
-			);
+                    annotation.name(),
+                    item.getField().getGenericType().toString(),
+                    annotation.description(),
+                    annotation.optional())
+                    );
         }
         return result;
     }
 
     /**
      * Return list of output {@link DataUnitInfo}'s descriptions for given DPU.
-	 * Need to load instance of given DPU.
-     *
-     * @param dpu DPU to get outputs for.
+     * Need to load instance of given DPU.
+     * 
+     * @param dpu
+     *            DPU to get outputs for.
      * @return Does not return null.
      */
     public List<DataUnitDescription> getOutputs(DPURecord dpu) {
@@ -129,18 +134,19 @@ public class DPUExplorer {
         for (AnnotationContainer<OutputDataUnit> item : outputs) {
             final OutputDataUnit annotation = item.getAnnotation();
             // create description			
-            result.add(DataUnitDescription.createOutput(annotation.name(), 
-					item.getField().getGenericType().toString(), 
-					annotation.description(),
-					annotation.optional()));
+            result.add(DataUnitDescription.createOutput(annotation.name(),
+                    item.getField().getGenericType().toString(),
+                    annotation.description(),
+                    annotation.optional()));
         }
         return result;
     }
 
     /**
      * Load and return instance of given DPU. Does use {@link #moduleFacade}.
-     *
-     * @param dpu DPU to get class of.
+     * 
+     * @param dpu
+     *            DPU to get class of.
      * @return Does not return null.
      */
     private Object getInstance(DPURecord dpu) {

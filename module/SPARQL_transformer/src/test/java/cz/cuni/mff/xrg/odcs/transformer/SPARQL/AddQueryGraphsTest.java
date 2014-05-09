@@ -18,9 +18,13 @@ import static junit.framework.TestCase.assertTrue;
 public class AddQueryGraphsTest {
 
     private static RDFDataUnit repository;
+
     private static TestEnvironment testEnvironment;
+
     private static SPARQLTransformer trans;
+
     private static String GRAPH_NAME;
+
     private static final Logger LOG = LoggerFactory.getLogger(
             AddQueryGraphsTest.class);
 
@@ -106,20 +110,26 @@ public class AddQueryGraphsTest {
     }
 
     private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException {
-    	RepositoryConnection connection = null;
-    	try {
-    		connection= repository.getConnection();
+        RepositoryConnection connection = null;
+        try {
+            connection = repository.getConnection();
 
             DatasetImpl dataSet = new DatasetImpl();
             dataSet.addDefaultGraph(repository.getDataGraph());
             dataSet.addNamedGraph(repository.getDataGraph());
-            trans.executeSPARQLUpdateQuery(connection, updateQuery,dataSet, repository.getDataGraph());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getDataGraph());
             return true;
         } catch (RDFException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e
                     .getMessage(), e);
         } finally {
-        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
         }
         return false;
     }

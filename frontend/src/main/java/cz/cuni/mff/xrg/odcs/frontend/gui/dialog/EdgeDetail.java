@@ -23,297 +23,297 @@ import org.apache.commons.lang3.tuple.MutablePair;
 /**
  * Window showing Edge detail. Used to create mappings between output and input
  * DataUnits of connected DPUs.
- *
+ * 
  * @author Bogo
  */
 public class EdgeDetail extends Window {
 
-	private final Edge edge;
+    private final Edge edge;
 
-	private List<DataUnitDescription> outputUnits;
+    private List<DataUnitDescription> outputUnits;
 
-	private List<DataUnitDescription> inputUnits;
+    private List<DataUnitDescription> inputUnits;
 
-	private List<MutablePair<Integer, Integer>> mappings;
+    private List<MutablePair<Integer, Integer>> mappings;
 
-	private Table outputSelect;
+    private Table outputSelect;
 
-	private Table inputSelect;
+    private Table inputSelect;
 
-	private ListSelect mappingsSelect;
+    private ListSelect mappingsSelect;
 
-	private HashMap<String, MutablePair<Integer, Integer>> map;
+    private HashMap<String, MutablePair<Integer, Integer>> map;
 
-	private DPUExplorer explorer;
+    private DPUExplorer explorer;
 
-	private CheckBox chbRunAfterEdge;
-		
-	/**
-	 * Class for working with edge's script.
-	 */
-	private EdgeCompiler edgeCompiler = new EdgeCompiler();
+    private CheckBox chbRunAfterEdge;
 
-	/**
-	 * Basic constructor, takes {@link Edge} which detail should be showed.
-	 *
-	 * @param e
-	 * @param readOnly
-	 * @param dpuExplorer
-	 */
-	public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
-		this.explorer = dpuExplorer;
-		this.map = new HashMap<>();
-		this.setResizable(false);
-		this.setModal(true);
-		this.edge = e;
-		this.setCaption("Edge detail");
+    /**
+     * Class for working with edge's script.
+     */
+    private EdgeCompiler edgeCompiler = new EdgeCompiler();
 
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setStyleName("dpuDetailMainLayout");
-		mainLayout.setMargin(true);
-		mainLayout.setSpacing(true);
+    /**
+     * Basic constructor, takes {@link Edge} which detail should be showed.
+     * 
+     * @param e
+     * @param readOnly
+     * @param dpuExplorer
+     */
+    public EdgeDetail(Edge e, DPUExplorer dpuExplorer, boolean readOnly) {
+        this.explorer = dpuExplorer;
+        this.map = new HashMap<>();
+        this.setResizable(false);
+        this.setModal(true);
+        this.edge = e;
+        this.setCaption("Edge detail");
 
-		final GridLayout edgeSettingsLayout = new GridLayout(3, 10);
-		edgeSettingsLayout.setSpacing(true);		
-		
-		chbRunAfterEdge = new CheckBox();
-		chbRunAfterEdge.setCaption("Is \"run after\" edge");
-		mainLayout.addComponent(chbRunAfterEdge);
-		chbRunAfterEdge.addValueChangeListener(new Property.ValueChangeListener() {
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setStyleName("dpuDetailMainLayout");
+        mainLayout.setMargin(true);
+        mainLayout.setSpacing(true);
 
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				boolean enabled = !(Boolean)event.getProperty().getValue();
-				edgeSettingsLayout.setEnabled(enabled);
-				outputSelect.setEnabled(enabled);
-				inputSelect.setEnabled(enabled);
-				mappingsSelect.setEnabled(enabled);
-			}
-		});
-				
-		outputSelect = new Table("Output data units of the source DPU:");
-		outputSelect.setSelectable(true);
-		outputSelect.setMultiSelect(true);
-		outputSelect.setNewItemsAllowed(false);
-		outputSelect.setWidth(250, Unit.PIXELS);
-		outputSelect.setImmediate(true);
-		outputSelect.setPageLength(8);
-		outputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
-		outputUnits = explorer.getOutputs(edge.getFrom().getDpuInstance());
-		outputSelect.setContainerDataSource(getTableData(outputUnits));
-		outputSelect.setVisibleColumns("name");
+        final GridLayout edgeSettingsLayout = new GridLayout(3, 10);
+        edgeSettingsLayout.setSpacing(true);
 
-		edgeSettingsLayout.addComponent(outputSelect, 0, 0, 0, 4);
+        chbRunAfterEdge = new CheckBox();
+        chbRunAfterEdge.setCaption("Is \"run after\" edge");
+        mainLayout.addComponent(chbRunAfterEdge);
+        chbRunAfterEdge.addValueChangeListener(new Property.ValueChangeListener() {
 
-		ItemDescriptionGenerator tooltipGenerator = new ItemDescriptionGenerator() {
-			@Override
-			public String generateDescription(Component source, Object itemId,
-					Object propertyId) {
-				if (propertyId == null) {
-					return null;
-				} else if (propertyId == "name" && itemId.getClass() == DataUnitDescription.class) {
-					DataUnitDescription dataUnit = (DataUnitDescription) itemId;
-					return dataUnit.getDescription();
-				}
-				return null;
-			}
-		};
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                boolean enabled = !(Boolean) event.getProperty().getValue();
+                edgeSettingsLayout.setEnabled(enabled);
+                outputSelect.setEnabled(enabled);
+                inputSelect.setEnabled(enabled);
+                mappingsSelect.setEnabled(enabled);
+            }
+        });
 
-		outputSelect.setItemDescriptionGenerator(tooltipGenerator);
+        outputSelect = new Table("Output data units of the source DPU:");
+        outputSelect.setSelectable(true);
+        outputSelect.setMultiSelect(true);
+        outputSelect.setNewItemsAllowed(false);
+        outputSelect.setWidth(250, Unit.PIXELS);
+        outputSelect.setImmediate(true);
+        outputSelect.setPageLength(8);
+        outputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+        outputUnits = explorer.getOutputs(edge.getFrom().getDpuInstance());
+        outputSelect.setContainerDataSource(getTableData(outputUnits));
+        outputSelect.setVisibleColumns("name");
 
-		inputSelect = new Table("Input data units of the target DPU:");
-		inputSelect.setSelectable(true);
-		inputSelect.setWidth(250, Unit.PIXELS);
-		inputSelect.setNewItemsAllowed(false);
-		inputSelect.setNullSelectionAllowed(false);
-		inputSelect.setImmediate(true);
-		inputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
-		inputSelect.setPageLength(8);
+        edgeSettingsLayout.addComponent(outputSelect, 0, 0, 0, 4);
 
-		//edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
-		inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());
+        ItemDescriptionGenerator tooltipGenerator = new ItemDescriptionGenerator() {
+            @Override
+            public String generateDescription(Component source, Object itemId,
+                    Object propertyId) {
+                if (propertyId == null) {
+                    return null;
+                } else if (propertyId == "name" && itemId.getClass() == DataUnitDescription.class) {
+                    DataUnitDescription dataUnit = (DataUnitDescription) itemId;
+                    return dataUnit.getDescription();
+                }
+                return null;
+            }
+        };
 
-		inputSelect.setContainerDataSource(getTableData(inputUnits));
-		inputSelect.setVisibleColumns("name");
-		inputSelect.setItemDescriptionGenerator(tooltipGenerator);
+        outputSelect.setItemDescriptionGenerator(tooltipGenerator);
 
-		edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
-		Button mapButton = new Button("Map", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				
-				Set<DataUnitDescription> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
-				Collection<DataUnitDescription> outputItems = (Collection<DataUnitDescription>) outputSelect
-						.getItemIds();
-				for (DataUnitDescription outputItem : outputItems) {
-					if (outputSelect.isSelected(outputItem)) {
-						outputs.add(outputItem);
-					}
-				}
-				DataUnitDescription input = (DataUnitDescription) inputSelect
-						.getValue();
-				if (outputs.isEmpty() || input == null) {
-					Notification.show(
-							"At least one output and exactly one input must be selected!",
-							Notification.Type.ERROR_MESSAGE);
-					return;
-				}
-				
-				for (DataUnitDescription output : outputs) {
-					MutablePair<Integer, Integer> newMapping = 
-							new MutablePair<>(outputUnits.indexOf(output), inputUnits.indexOf(input));
+        inputSelect = new Table("Input data units of the target DPU:");
+        inputSelect.setSelectable(true);
+        inputSelect.setWidth(250, Unit.PIXELS);
+        inputSelect.setNewItemsAllowed(false);
+        inputSelect.setNullSelectionAllowed(false);
+        inputSelect.setImmediate(true);
+        inputSelect.setColumnHeaderMode(Table.ColumnHeaderMode.HIDDEN);
+        inputSelect.setPageLength(8);
 
-					if (!input.getTypeName().equals(output.getTypeName())) {
-						Notification.show(
-									"Input and output data unit have incompatible type, mapping couldn't be created!",
-									Notification.Type.WARNING_MESSAGE);
-						// and skipp given mapping
-						continue;
-					}
+        //edgeCompiler.getInputNames(edge.getTo().getDpuInstance());
+        inputUnits = explorer.getInputs(edge.getTo().getDpuInstance());
 
-					if(addMappingToList(newMapping)) {
-						mappings.add(newMapping);
-					} else {
-						Notification.show("Selected mapping already exists!",
-									Notification.Type.WARNING_MESSAGE);
-					}					
-				}
-			}
-		});
-		mapButton.setWidth(130, Unit.PIXELS);
-		mapButton.setEnabled(!readOnly);
-		edgeSettingsLayout.addComponent(mapButton, 2, 1);
+        inputSelect.setContainerDataSource(getTableData(inputUnits));
+        inputSelect.setVisibleColumns("name");
+        inputSelect.setItemDescriptionGenerator(tooltipGenerator);
 
-		Button clearButton = new Button("Clear selection",
-				new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						outputSelect.setValue(null);
-						inputSelect.setValue(null);
-					}
-				});
-		clearButton.setWidth(130, Unit.PIXELS);
-		edgeSettingsLayout.addComponent(clearButton, 2, 2);
+        edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
+        Button mapButton = new Button("Map", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
 
-		mappingsSelect = new ListSelect("Available mappings:");
-		mappingsSelect.setStyleName("select-hide-tb");
-		mappingsSelect.setWidth(500, Unit.PIXELS);
-		mappingsSelect.setMultiSelect(true);
-		mappingsSelect.setNewItemsAllowed(false);
-		mappingsSelect.setImmediate(true);
-		edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
+                Set<DataUnitDescription> outputs = new HashSet<>(); //Set<String>)outputSelect.getValue();
+                Collection<DataUnitDescription> outputItems = (Collection<DataUnitDescription>) outputSelect
+                        .getItemIds();
+                for (DataUnitDescription outputItem : outputItems) {
+                    if (outputSelect.isSelected(outputItem)) {
+                        outputs.add(outputItem);
+                    }
+                }
+                DataUnitDescription input = (DataUnitDescription) inputSelect
+                        .getValue();
+                if (outputs.isEmpty() || input == null) {
+                    Notification.show(
+                            "At least one output and exactly one input must be selected!",
+                            Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
 
-		Button deleteButton = new Button("Delete mapping",
-				new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						Set<String> selectedMappings = (Set<String>) mappingsSelect
-						.getValue();
-						for (String strMapping : selectedMappings) {
-							MutablePair<Integer, Integer> mapping = map
-							.get(strMapping);
-							map.remove(strMapping);
-							mappingsSelect.removeItem(strMapping);
-							mappings.remove(mapping);
-						}
-					}
-				});
-		deleteButton.setWidth(130, Unit.PIXELS);
-		deleteButton.setEnabled(!readOnly);
-		edgeSettingsLayout.addComponent(deleteButton, 2, 6);
-		mainLayout.addComponent(edgeSettingsLayout);
+                for (DataUnitDescription output : outputs) {
+                    MutablePair<Integer, Integer> newMapping =
+                            new MutablePair<>(outputUnits.indexOf(output), inputUnits.indexOf(input));
 
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.setSpacing(true);
-		buttonBar.setWidth(100, Unit.PERCENTAGE);
-		buttonBar.setMargin(new MarginInfo(true, false, false, false));
+                    if (!input.getTypeName().equals(output.getTypeName())) {
+                        Notification.show(
+                                "Input and output data unit have incompatible type, mapping couldn't be created!",
+                                Notification.Type.WARNING_MESSAGE);
+                        // and skipp given mapping
+                        continue;
+                    }
 
-		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				close();
-			}
-		});
-		cancelButton.setWidth(100, Unit.PIXELS);
-		buttonBar.addComponent(cancelButton);
+                    if (addMappingToList(newMapping)) {
+                        mappings.add(newMapping);
+                    } else {
+                        Notification.show("Selected mapping already exists!",
+                                Notification.Type.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+        mapButton.setWidth(130, Unit.PIXELS);
+        mapButton.setEnabled(!readOnly);
+        edgeSettingsLayout.addComponent(mapButton, 2, 1);
 
-		Button saveAndCommitButton = new Button("Save",
-				new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						if (save()) {
-							close();
-						}
-					}
-				});
-		saveAndCommitButton.setEnabled(!readOnly);
-		saveAndCommitButton.setWidth(100, Unit.PIXELS);
-		buttonBar.addComponent(saveAndCommitButton);
+        Button clearButton = new Button("Clear selection",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        outputSelect.setValue(null);
+                        inputSelect.setValue(null);
+                    }
+                });
+        clearButton.setWidth(130, Unit.PIXELS);
+        edgeSettingsLayout.addComponent(clearButton, 2, 2);
 
-		Label placeFiller = new Label(" ");
-		buttonBar.addComponentAsFirst(placeFiller);
-		buttonBar.setExpandRatio(placeFiller, 1.0f);
+        mappingsSelect = new ListSelect("Available mappings:");
+        mappingsSelect.setStyleName("select-hide-tb");
+        mappingsSelect.setWidth(500, Unit.PIXELS);
+        mappingsSelect.setMultiSelect(true);
+        mappingsSelect.setNewItemsAllowed(false);
+        mappingsSelect.setImmediate(true);
+        edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
 
-		mainLayout.addComponent(buttonBar);
+        Button deleteButton = new Button("Delete mapping",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        Set<String> selectedMappings = (Set<String>) mappingsSelect
+                                .getValue();
+                        for (String strMapping : selectedMappings) {
+                            MutablePair<Integer, Integer> mapping = map
+                                    .get(strMapping);
+                            map.remove(strMapping);
+                            mappingsSelect.removeItem(strMapping);
+                            mappings.remove(mapping);
+                        }
+                    }
+                });
+        deleteButton.setWidth(130, Unit.PIXELS);
+        deleteButton.setEnabled(!readOnly);
+        edgeSettingsLayout.addComponent(deleteButton, 2, 6);
+        mainLayout.addComponent(edgeSettingsLayout);
 
-		setContent(mainLayout);
-		setSizeUndefined();
-		
-		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-		// * * * * * * * * * load mapping  * * * * * * * * * * * * //
-		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-		
-		// inputUnits and outputUnits are already set !		
-		mappings = edgeCompiler.translate(edge.getScript(), outputUnits,
-				inputUnits, null);
+        HorizontalLayout buttonBar = new HorizontalLayout();
+        buttonBar.setSpacing(true);
+        buttonBar.setWidth(100, Unit.PERCENTAGE);
+        buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
-		for (MutablePair<Integer, Integer> mapping : mappings) {
-			addMappingToList(mapping);
-		}		
-		
-		chbRunAfterEdge.setValue(edgeCompiler.isRunAfter(edge.getScript()));
-	}
+        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                close();
+            }
+        });
+        cancelButton.setWidth(100, Unit.PIXELS);
+        buttonBar.addComponent(cancelButton);
 
-	/**
-	 * Saves configuration of Edge which was set in detail dialog.
-	 *
-	 * @return True if save was successful, false otherwise.
-	 */
-	protected boolean save() {
-		if (!validate()) {
-			return false;
-		}
+        Button saveAndCommitButton = new Button("Save",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        if (save()) {
+                            close();
+                        }
+                    }
+                });
+        saveAndCommitButton.setEnabled(!readOnly);
+        saveAndCommitButton.setWidth(100, Unit.PIXELS);
+        buttonBar.addComponent(saveAndCommitButton);
 
-		if (chbRunAfterEdge.getValue()) {
-			edge.setScript(edgeCompiler.createRunAfterMapping());
-		} else {		
-			String script = edgeCompiler.translate(mappings, outputUnits, inputUnits, null);
-			edge.setScript(script);
-		}
-		return true;
-	}
+        Label placeFiller = new Label(" ");
+        buttonBar.addComponentAsFirst(placeFiller);
+        buttonBar.setExpandRatio(placeFiller, 1.0f);
 
-	private boolean validate() {
-		return true;
-	}
+        mainLayout.addComponent(buttonBar);
 
-	private Container getTableData(List<DataUnitDescription> data) {
-		BeanItemContainer container = new BeanItemContainer(
-				DataUnitDescription.class);
-		container.addAll(data);
-		return container;
-	}
+        setContent(mainLayout);
+        setSizeUndefined();
 
-	private boolean addMappingToList(MutablePair<Integer, Integer> mapping)
-			throws UnsupportedOperationException {
-		// create string representation of mapping
-		String strMapping = String.format("%s -> %s", outputUnits.get(
-				mapping.left).getName(), inputUnits.get(mapping.right).getName());
-		// add record to the mapping
-		map.put(strMapping, mapping);
-		// add to the component
-		Item result = mappingsSelect.addItem(strMapping);
-		return result != null;
-	}
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+        // * * * * * * * * * load mapping  * * * * * * * * * * * * //
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+        // inputUnits and outputUnits are already set !		
+        mappings = edgeCompiler.translate(edge.getScript(), outputUnits,
+                inputUnits, null);
+
+        for (MutablePair<Integer, Integer> mapping : mappings) {
+            addMappingToList(mapping);
+        }
+
+        chbRunAfterEdge.setValue(edgeCompiler.isRunAfter(edge.getScript()));
+    }
+
+    /**
+     * Saves configuration of Edge which was set in detail dialog.
+     * 
+     * @return True if save was successful, false otherwise.
+     */
+    protected boolean save() {
+        if (!validate()) {
+            return false;
+        }
+
+        if (chbRunAfterEdge.getValue()) {
+            edge.setScript(edgeCompiler.createRunAfterMapping());
+        } else {
+            String script = edgeCompiler.translate(mappings, outputUnits, inputUnits, null);
+            edge.setScript(script);
+        }
+        return true;
+    }
+
+    private boolean validate() {
+        return true;
+    }
+
+    private Container getTableData(List<DataUnitDescription> data) {
+        BeanItemContainer container = new BeanItemContainer(
+                DataUnitDescription.class);
+        container.addAll(data);
+        return container;
+    }
+
+    private boolean addMappingToList(MutablePair<Integer, Integer> mapping)
+            throws UnsupportedOperationException {
+        // create string representation of mapping
+        String strMapping = String.format("%s -> %s", outputUnits.get(
+                mapping.left).getName(), inputUnits.get(mapping.right).getName());
+        // add record to the mapping
+        map.put(strMapping, mapping);
+        // add to the component
+        Item result = mappingsSelect.addItem(strMapping);
+        return result != null;
+    }
 
 }

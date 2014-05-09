@@ -16,38 +16,38 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
- *
  * @author Jiri Tomes
  */
 public class DPUReplacementTest {
-	 private static final Logger LOG = LoggerFactory.getLogger(DPUReplacementTest.class);
-	/**
-	 * Test DPU replacement on SPARQL CONSTRUCT query.
-	 */
-	@Test
-	public void constructQueryTest() {
+    private static final Logger LOG = LoggerFactory.getLogger(DPUReplacementTest.class);
 
-		String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "
-				+ "{ graph ?g_input {?s ?p ?o} graph ?g_optional1 {?x ?y ?z}}";
+    /**
+     * Test DPU replacement on SPARQL CONSTRUCT query.
+     */
+    @Test
+    public void constructQueryTest() {
 
-		boolean isConstruct = true;
+        String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "
+                + "{ graph ?g_input {?s ?p ?o} graph ?g_optional1 {?x ?y ?z}}";
 
-		// prepare test environment
-		TestEnvironment env = new TestEnvironment();
+        boolean isConstruct = true;
+
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         RepositoryConnection connection2 = null;
         RepositoryConnection connection3 = null;
 
-		try {
+        try {
 
-			SPARQLTransformer transformer = new SPARQLTransformer();
-			SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-					query, isConstruct);
+            SPARQLTransformer transformer = new SPARQLTransformer();
+            SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                    query, isConstruct);
 
-			transformer.configureDirectly(config);
+            transformer.configureDirectly(config);
 
-			RDFDataUnit input = env.createRdfInput("input", false);
-			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            RDFDataUnit input = env.createRdfInput("input", false);
+            RDFDataUnit optional = env.createRdfInput("optional1", false);
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://s"), factory.createURI(
@@ -55,87 +55,101 @@ public class DPUReplacementTest {
             connection.add(factory.createURI("http://subject"), factory.createURI(
                     "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
-
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
             connection2.add(factory2.createBNode("n25"), factory2
                     .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getDataGraph());
 
-			assertEquals(2L, connection.size(input.getDataGraph()));
-			assertEquals(1L, connection2.size(optional.getDataGraph()));
+            assertEquals(2L, connection.size(input.getDataGraph()));
+            assertEquals(1L, connection2.size(optional.getDataGraph()));
 
-			RDFDataUnit output = env.createRdfOutput("output", false);
+            RDFDataUnit output = env.createRdfOutput("output", false);
 
-			env.run(transformer);
+            env.run(transformer);
 
             connection3 = output.getConnection();
-			assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
-			env.release();
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
+            env.release();
 
-			
-		} catch (Exception e) {
-			fail(e.getMessage());
-		} finally {
-			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			env.release();
-		}
-	}
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection3 != null) {
+                try {
+                    connection3.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            env.release();
+        }
+    }
 
-	/**
-	 * Test DPU replacement on SPARQL UPDATE query.
-	 */
-	@Test
-	public void updateQueryTest() {
-		String query = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/> \n"
-				+ "INSERT { ?person foaf:givenName \"William\" }\n"
-				+ "WHERE {"
-				+ " graph ?g_optional1 {?person foaf:givenName \"Bill\" }"
-				+ " graph ?g_input {?person ?x ?y }"
-				+ "} ";
+    /**
+     * Test DPU replacement on SPARQL UPDATE query.
+     */
+    @Test
+    public void updateQueryTest() {
+        String query = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/> \n"
+                + "INSERT { ?person foaf:givenName \"William\" }\n"
+                + "WHERE {"
+                + " graph ?g_optional1 {?person foaf:givenName \"Bill\" }"
+                + " graph ?g_input {?person ?x ?y }"
+                + "} ";
 
-		boolean isConstruct = false;
+        boolean isConstruct = false;
 
-		String expectedObjectName = "William";
+        String expectedObjectName = "William";
 
-		// prepare test environment
-		TestEnvironment env =  new TestEnvironment();
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         RepositoryConnection connection2 = null;
         RepositoryConnection connection3 = null;
 
-		try {
+        try {
 
-			SPARQLTransformer transformer = new SPARQLTransformer();
-			SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-					query, isConstruct);
+            SPARQLTransformer transformer = new SPARQLTransformer();
+            SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                    query, isConstruct);
 
-			transformer.configureDirectly(config);
+            transformer.configureDirectly(config);
 
-			RDFDataUnit input = env.createRdfInput("input", false);
-			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            RDFDataUnit input = env.createRdfInput("input", false);
+            RDFDataUnit optional = env.createRdfInput("optional1", false);
 
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://person"), factory.createURI(
-					"http://predicate"), factory.createURI("http://object"), input.getDataGraph());
-
+                    "http://predicate"), factory.createURI("http://object"), input.getDataGraph());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
 
-
             connection2.add(factory2.createURI("http://person"), factory2
-					.createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
-					.createLiteral("Bill"),optional.getDataGraph());
+                    .createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
+                    .createLiteral("Bill"), optional.getDataGraph());
 
             assertEquals(1L, connection.size(input.getDataGraph()));
             assertEquals(1L, connection2.size(optional.getDataGraph()));
 
-			RDFDataUnit output = env.createRdfOutput("output", false);
+            RDFDataUnit output = env.createRdfOutput("output", false);
 
-			env.run(transformer);
+            env.run(transformer);
 
             connection3 = output.getConnection();
             assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraph()));
@@ -151,16 +165,34 @@ public class DPUReplacementTest {
                 }
             }
 
-			assertTrue("New inserted triple not found", newInsertedTripleFound);
+            assertTrue("New inserted triple not found", newInsertedTripleFound);
 
-		} catch (Exception e) {
-			fail(e.getMessage());
-		} finally {
-			if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			if (connection2 != null) { try { connection2.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			if (connection3 != null) { try { connection3.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
-			
-			env.release();
-		}
-	}
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection3 != null) {
+                try {
+                    connection3.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+
+            env.release();
+        }
+    }
 }

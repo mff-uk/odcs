@@ -8,111 +8,112 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 /**
  * DPU's configuration dialog for setting directory path and others parameters
  * for saving validation report.
- *
+ * 
  * @author Petyr
  * @author Jiri Tomes
  */
 public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorConfig> {
 
-	private VerticalLayout verticalLayoutCore;
+    private VerticalLayout verticalLayoutCore;
 
-	/**
-	 * CheckBox to set if pipeline execution fail in case of invalid data or
-	 * not.
-	 */
-	private CheckBox failExecution;
+    /**
+     * CheckBox to set if pipeline execution fail in case of invalid data or
+     * not.
+     */
+    private CheckBox failExecution;
 
-	private CheckBox createOutput;
+    private CheckBox createOutput;
 
-	public RDFDataValidatorDialog() {
-		super(RDFDataValidatorConfig.class);
-		buildMainLayout();
-	}
+    public RDFDataValidatorDialog() {
+        super(RDFDataValidatorConfig.class);
+        buildMainLayout();
+    }
 
-	/**
-	 * Builds configuration dialog.
-	 */
-	private void buildMainLayout() {
-		// top-level component properties
-		setWidth("100%");
-		setHeight("100%");
+    /**
+     * Builds configuration dialog.
+     */
+    private void buildMainLayout() {
+        // top-level component properties
+        setWidth("100%");
+        setHeight("100%");
 
-		// Core tab
-		verticalLayoutCore = buildVerticalLayoutCore();
-		verticalLayoutCore.setImmediate(false);
-		verticalLayoutCore.setSizeUndefined();
+        // Core tab
+        verticalLayoutCore = buildVerticalLayoutCore();
+        verticalLayoutCore.setImmediate(false);
+        verticalLayoutCore.setSizeUndefined();
 
-		setCompositionRoot(verticalLayoutCore);
-	}
+        setCompositionRoot(verticalLayoutCore);
+    }
 
-	/**
-	 * Builds layout contains Core tab components of {@link #tabSheet}. Calls
-	 * from {@link #buildMainLayout}
-	 *
-	 * @return verticalLayoutCore. VerticalLayout with components located at the
-	 *         Core tab.
-	 */
-	private VerticalLayout buildVerticalLayoutCore() {
-		// common part: create layout
-		verticalLayoutCore = new VerticalLayout();
-		verticalLayoutCore.setImmediate(false);
-		verticalLayoutCore.setSizeUndefined();
-		verticalLayoutCore.setMargin(true);
-		verticalLayoutCore.setSpacing(true);
+    /**
+     * Builds layout contains Core tab components of {@link #tabSheet}. Calls
+     * from {@link #buildMainLayout}
+     * 
+     * @return verticalLayoutCore. VerticalLayout with components located at the
+     *         Core tab.
+     */
+    private VerticalLayout buildVerticalLayoutCore() {
+        // common part: create layout
+        verticalLayoutCore = new VerticalLayout();
+        verticalLayoutCore.setImmediate(false);
+        verticalLayoutCore.setSizeUndefined();
+        verticalLayoutCore.setMargin(true);
+        verticalLayoutCore.setSpacing(true);
 
-		// CheckBox selected for each pipeline execution generates a different name
-		failExecution = new CheckBox(
-				"if invalid data find out, pipeline execution fails immediately");
-		failExecution.setImmediate(false);
-		failExecution.setSizeUndefined();
-		verticalLayoutCore.addComponent(failExecution);
+        // CheckBox selected for each pipeline execution generates a different name
+        failExecution = new CheckBox(
+                "if invalid data find out, pipeline execution fails immediately");
+        failExecution.setImmediate(false);
+        failExecution.setSizeUndefined();
+        verticalLayoutCore.addComponent(failExecution);
 
-		createOutput = new CheckBox(
-				"Add triples to report output only if some data are invalid");
-		createOutput.setImmediate(false);
-		failExecution.setSizeUndefined();
-		verticalLayoutCore.addComponent(createOutput);
+        createOutput = new CheckBox(
+                "Add triples to report output only if some data are invalid");
+        createOutput.setImmediate(false);
+        failExecution.setSizeUndefined();
+        verticalLayoutCore.addComponent(createOutput);
 
-		return verticalLayoutCore;
-	}
+        return verticalLayoutCore;
+    }
 
-	/**
-	 * Load values from configuration object implementing
-	 * {@link DPUConfigObject} interface and configuring DPU into the dialog
-	 * where the configuration object may be edited.
-	 *
-	 * @throws ConfigException Exception which might be thrown when components
-	 *                         are in read-only mode or when values loading to
-	 *                         this fields could not be converted. Also when
-	 *                         requested operation is not supported.
-	 * @param conf Object holding configuration which is used to initialize
-	 *             fields in the configuration dialog.
-	 */
-	@Override
-	public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
-		failExecution.setValue(conf.canStopExecution());
-		createOutput.setValue(conf.hasSometimesOutput());
-	}
+    /**
+     * Load values from configuration object implementing {@link DPUConfigObject} interface and configuring DPU into the dialog
+     * where the configuration object may be edited.
+     * 
+     * @throws ConfigException
+     *             Exception which might be thrown when components
+     *             are in read-only mode or when values loading to
+     *             this fields could not be converted. Also when
+     *             requested operation is not supported.
+     * @param conf
+     *            Object holding configuration which is used to initialize
+     *            fields in the configuration dialog.
+     */
+    @Override
+    public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
+        failExecution.setValue(conf.canStopExecution());
+        createOutput.setValue(conf.hasSometimesOutput());
+    }
 
-	/**
-	 * Set values from from dialog where the configuration object may be edited
-	 * to configuration object implementing {@link DPUConfigObject} interface
-	 * and configuring DPU
-	 *
-	 * @throws ConfigException Exception which might be thrown when some of
-	 *                         fields contains null value.
-	 * @return config object holding configuration which is used in
-	 *         {@link #setConfiguration} to initialize fields in the
-	 *         configuration dialog.
-	 */
-	@Override
-	public RDFDataValidatorConfig getConfiguration() throws ConfigException {
-		boolean stopExecution = failExecution.getValue();
-		boolean sometimesOutput = createOutput.getValue();
+    /**
+     * Set values from from dialog where the configuration object may be edited
+     * to configuration object implementing {@link DPUConfigObject} interface
+     * and configuring DPU
+     * 
+     * @throws ConfigException
+     *             Exception which might be thrown when some of
+     *             fields contains null value.
+     * @return config object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
+     *         configuration dialog.
+     */
+    @Override
+    public RDFDataValidatorConfig getConfiguration() throws ConfigException {
+        boolean stopExecution = failExecution.getValue();
+        boolean sometimesOutput = createOutput.getValue();
 
-		RDFDataValidatorConfig conf = new RDFDataValidatorConfig(stopExecution,
-				sometimesOutput);
-		return conf;
+        RDFDataValidatorConfig conf = new RDFDataValidatorConfig(stopExecution,
+                sometimesOutput);
+        return conf;
 
-	}
+    }
 }

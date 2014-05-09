@@ -16,11 +16,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Address {
-    
+
     /**
      * Address under which the view can be accessed.
+     * 
      * @return address under which the view can be accessed
      */
     public String url() default "";
-    
+
 }

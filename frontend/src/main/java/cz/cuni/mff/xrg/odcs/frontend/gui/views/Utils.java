@@ -6,48 +6,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author tomasknap
  */
 @Component
 public class Utils {
-	
-	@Autowired
-	private AuthenticationContext authCtx;
-	
-	/**
-	 * Get page length.
-	 *
-	 * @return page length
-	 */
-	public int getPageLength() {
-		User user = authCtx.getUser();
-		Integer rows = user == null 
-				? null : user.getTableRows();
-		
-		if(rows == null) {
-			rows = 20;
-		}
-		return rows;
-	}
-	
-	/**
-	 * Get username.
-	 *
-	 * @return username
-	 */
-	public String getUserName() {
-		User user = authCtx.getUser();		
-		return user == null ? "" : user.getUsername();
-	}
-	
-	/**
-	 * Get default max length of column.
-	 *
-	 * @return default max length of column
-	 */
-	public static int getColumnMaxLenght() {
-		return 100;
-	}
-	
+
+    @Autowired
+    private AuthenticationContext authCtx;
+
+    /**
+     * Get page length.
+     * 
+     * @return page length
+     */
+    public int getPageLength() {
+        User user = authCtx.getUser();
+        Integer rows = user == null
+                ? null : user.getTableRows();
+
+        if (rows == null) {
+            rows = 20;
+        }
+        return rows;
+    }
+
+    /**
+     * Get username.
+     * 
+     * @return username
+     */
+    public String getUserName() {
+        User user = authCtx.getUser();
+        return user == null ? "" : user.getUsername();
+    }
+
+    /**
+     * Get default max length of column.
+     * 
+     * @return default max length of column
+     */
+    public static int getColumnMaxLenght() {
+        return 100;
+    }
+
 }

@@ -55,27 +55,28 @@
         </dependency>
 
     </dependencies>
-    
-     <!-- define license -->
-        <licenses>
-            <license>
-              <name>GNU Lesser General Public License, Version 3</name>
-              <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-              <distribution>repo</distribution>
-              <!-- https://maven.apache.org/pom.html#Licenses -->
-            </license>
-        </licenses>
-       
-        <!-- add license from LICENSE.md to the generated JAR file -->
-       <build> 
-         <resources>
+
+    <!-- define license -->
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo</distribution>
+            <!-- https://maven.apache.org/pom.html#Licenses -->
+        </license>
+    </licenses>
+
+    <!-- add license from LICENSE.md to the generated JAR file -->
+    <build>
+        <resources>
             <resource>
-                <directory>${basedir}</directory> <!-- this is default dir-->
+                <directory>${basedir}</directory>
+                <!-- this is default dir-->
                 <includes>
-                  <include>LICENSE.md</include>
+                    <include>LICENSE.md</include>
                 </includes>
             </resource>
         </resources>
-         </build> 
+    </build>
 
 </project>

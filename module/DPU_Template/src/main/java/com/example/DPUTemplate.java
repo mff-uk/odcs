@@ -12,36 +12,36 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer
 public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
-		implements
-		// If you do not want the dialog, delete the following line
-		// 	and getConfigurationDialog function
-		ConfigDialogProvider<DPUTemplateConfig> 
-	{
-	
-	@InputDataUnit(name = "input")
-	public RDFDataUnit rdfInput;
+        implements
+        // If you do not want the dialog, delete the following line
+        // 	and getConfigurationDialog function
+        ConfigDialogProvider<DPUTemplateConfig>
+{
 
-	@OutputDataUnit
-	public RDFDataUnit rdfOutput;
+    @InputDataUnit(name = "input")
+    public RDFDataUnit rdfInput;
 
-	public DPUTemplate() {
-		super(DPUTemplateConfig.class);
-	}
+    @OutputDataUnit
+    public RDFDataUnit rdfOutput;
 
-	@Override
-	public AbstractConfigDialog<DPUTemplateConfig> getConfigurationDialog() {
-		return new DPUTemplateDialog();
-	}
+    public DPUTemplate() {
+        super(DPUTemplateConfig.class);
+    }
 
-	// TODO 2: Implement the method execute being called when the DPU is launched
-	@Override
-	public void execute(DPUContext context)
-			throws DPUException,
-			DataUnitException {
+    @Override
+    public AbstractConfigDialog<DPUTemplateConfig> getConfigurationDialog() {
+        return new DPUTemplateDialog();
+    }
 
-		// DPU's configuration is accessible under 'this.config' 
-		// DPU's context is accessible under 'context'
-		// DPU's data units are accessible under 'rdfInput' and 'rdfOutput'
-	}
+    // TODO 2: Implement the method execute being called when the DPU is launched
+    @Override
+    public void execute(DPUContext context)
+            throws DPUException,
+            DataUnitException {
+
+        // DPU's configuration is accessible under 'this.config' 
+        // DPU's context is accessible under 'context'
+        // DPU's data units are accessible under 'rdfInput' and 'rdfOutput'
+    }
 
 }

@@ -7,113 +7,111 @@ import javax.persistence.*;
 import java.util.Set;
 
 /**
- * Represent settings for scheduler notification. 
- *
+ * Represent settings for scheduler notification.
+ * 
  * @author Maria Kukhar
- *
  */
 @MappedSuperclass
 public abstract class NotificationRecord implements DataObject {
 
-	/**
-	 * Unique ID for each scheduler notification.
-	 */
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
-	@SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
-	private Long id;
-	
-	/**
-	 * Type of notification in case of successful execution:
-	 */
-	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "type_success")
-	private NotificationRecordType typeSuccess;
-	
-	/**
-	 * Type of notification in case of error execution:
-	 */
-	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "type_error")
-	private NotificationRecordType typeError;
+    /**
+     * Unique ID for each scheduler notification.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
+    @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
+    private Long id;
 
-	
-	/**
-	 * Empty constructor. Used by JPA. Do not use otherwise.
-	 */
-	public NotificationRecord() {
-	}
+    /**
+     * Type of notification in case of successful execution:
+     */
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type_success")
+    private NotificationRecordType typeSuccess;
 
-	@Override
-	public Long getId() {
-		return id;
-	}
-	
-	/**
-	 * @return defensive copy of a set of emails to send notification to
-	 */
-	public abstract Set<EmailAddress> getEmails();
+    /**
+     * Type of notification in case of error execution:
+     */
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type_error")
+    private NotificationRecordType typeError;
 
-	public abstract void setEmails(Set<EmailAddress> emails);
-	
-	public abstract void addEmail(EmailAddress email);
-	
-	public abstract void removeEmail(EmailAddress email);
+    /**
+     * Empty constructor. Used by JPA. Do not use otherwise.
+     */
+    public NotificationRecord() {
+    }
 
-	public NotificationRecordType getTypeSuccess() {
-		return typeSuccess;
-	}
+    @Override
+    public Long getId() {
+        return id;
+    }
 
-	public void setTypeSuccess(NotificationRecordType typeSuccess) {
-		this.typeSuccess = typeSuccess;
-	}
-	
-	public NotificationRecordType getTypeError() {
-		return typeError;
-	}
+    /**
+     * @return defensive copy of a set of emails to send notification to
+     */
+    public abstract Set<EmailAddress> getEmails();
 
-	public void setTypeError(NotificationRecordType typeError) {
-		this.typeError= typeError;
-	}
+    public abstract void setEmails(Set<EmailAddress> emails);
 
-	/**
-	 * Returns true if two objects represent the same pipeline. This holds if
-	 * and only if
-	 * <code>this.id == null ? this == obj : this.id == o.id</code>.
-	 *
-	 * @param obj
-	 * @return true if both objects represent the same pipeline
-	 */	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+    public abstract void addEmail(EmailAddress email);
 
-		final DataObject other = (DataObject)obj;
-		if (this.getId() == null) {
-			return super.equals(other);
-		}
+    public abstract void removeEmail(EmailAddress email);
 
-		return Objects.equals(this.getId(), other.getId());
-	}
+    public NotificationRecordType getTypeSuccess() {
+        return typeSuccess;
+    }
 
-	/**
-	 * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-	 *
-	 * @return The value of hashcode.
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getId() == null) {
-			return super.hashCode();
-		}
-		int hash = 7;
-		hash = 97 * hash + Objects.hashCode(this.getId());
-		return hash;
-	}	
-	
+    public void setTypeSuccess(NotificationRecordType typeSuccess) {
+        this.typeSuccess = typeSuccess;
+    }
+
+    public NotificationRecordType getTypeError() {
+        return typeError;
+    }
+
+    public void setTypeError(NotificationRecordType typeError) {
+        this.typeError = typeError;
+    }
+
+    /**
+     * Returns true if two objects represent the same pipeline. This holds if
+     * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
+     * 
+     * @param obj
+     * @return true if both objects represent the same pipeline
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final DataObject other = (DataObject) obj;
+        if (this.getId() == null) {
+            return super.equals(other);
+        }
+
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    /**
+     * Hashcode is compatible with {@link #equals(java.lang.Object)}.
+     * 
+     * @return The value of hashcode.
+     */
+    @Override
+    public int hashCode() {
+        if (this.getId() == null) {
+            return super.hashCode();
+        }
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.getId());
+        return hash;
+    }
+
 }

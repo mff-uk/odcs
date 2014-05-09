@@ -6,9 +6,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter;
  * @author Petyr
  */
 enum CompareType {
-	EQUAL,
+    EQUAL,
     GREATER,
-	GREATER_OR_EQUAL,
-	LESS,
-	LESS_OR_EQUAL;
+    GREATER_OR_EQUAL,
+    LESS,
+    LESS_OR_EQUAL;
 }

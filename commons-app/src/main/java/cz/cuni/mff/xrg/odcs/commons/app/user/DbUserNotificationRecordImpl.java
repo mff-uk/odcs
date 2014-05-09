@@ -6,15 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation providing access to {@link UserNotificationRecord} data objects.
- *
+ * 
  * @author Jan Vojt
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbUserNotificationRecordImpl extends DbAccessBase<UserNotificationRecord>
-											implements DbUserNotification {
+        implements DbUserNotification {
 
-	public DbUserNotificationRecordImpl() {
-		super(UserNotificationRecord.class);
-	}
+    public DbUserNotificationRecordImpl() {
+        super(UserNotificationRecord.class);
+    }
 
 }

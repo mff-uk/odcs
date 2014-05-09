@@ -16,30 +16,29 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * Unlock pipelines that were lock in {@link ConflictLock}.
  * 
  * @author Petyr
- *
  */
 @Component
 public class ConflictUnLock implements PostExecutor {
 
-	/**
-	 * The main part of component.
-	 */
-	@Autowired
-	private ConflictLock conflictLock;
+    /**
+     * The main part of component.
+     */
+    @Autowired
+    private ConflictLock conflictLock;
 
-	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
-	}
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
 
-	@Override
-	public boolean postAction(PipelineExecution execution,
-			Map<Node, Context> contexts,
-			DependencyGraph graph) {
-		// just call unlock on ConflictLock
-		conflictLock.unlock(execution);
-		
-		return true;
-	}
-	
+    @Override
+    public boolean postAction(PipelineExecution execution,
+            Map<Node, Context> contexts,
+            DependencyGraph graph) {
+        // just call unlock on ConflictLock
+        conflictLock.unlock(execution);
+
+        return true;
+    }
+
 }

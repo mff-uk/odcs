@@ -9,26 +9,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation providing access to {@link MessageRecord} data objects.
- *
+ * 
  * @author Jan Vojt
  * @author Petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbMessageRecordImpl extends DbAccessBase<MessageRecord>
-		implements DbMessageRecord {
+        implements DbMessageRecord {
 
-	public DbMessageRecordImpl() {
-		super(MessageRecord.class);
-	}
+    public DbMessageRecordImpl() {
+        super(MessageRecord.class);
+    }
 
-	@Override
-	public List<MessageRecord> getAll(PipelineExecution pipelineExec) {
-		final String stringQuery = "SELECT r FROM MessageRecord r WHERE r.execution = :ins";
-		
-		TypedQuery<MessageRecord> query = createTypedQuery(stringQuery);
-		query.setParameter("ins", pipelineExec);
-		
-		return executeList(query);		
-	}
+    @Override
+    public List<MessageRecord> getAll(PipelineExecution pipelineExec) {
+        final String stringQuery = "SELECT r FROM MessageRecord r WHERE r.execution = :ins";
+
+        TypedQuery<MessageRecord> query = createTypedQuery(stringQuery);
+        query.setParameter("ins", pipelineExec);
+
+        return executeList(query);
+    }
 
 }

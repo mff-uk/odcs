@@ -19,8 +19,9 @@ import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 public class LocalRdfTest {
-	private static final Logger LOG = LoggerFactory.getLogger(LocalRdfTest.class);
-	@org.junit.Test
+    private static final Logger LOG = LoggerFactory.getLogger(LocalRdfTest.class);
+
+    @org.junit.Test
     public void test() throws Exception {
         // prepare dpu
         FileExtractor extractor = new FileExtractor();
@@ -45,7 +46,7 @@ public class LocalRdfTest {
         int expectedSize = results.size();
 
         // prepare test environment
-        TestEnvironment env =  new TestEnvironment();
+        TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         try {
             RDFDataUnit output = env.createRdfOutput("output", false);
@@ -55,7 +56,13 @@ public class LocalRdfTest {
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {
-        	if (connection != null) { try { connection.close(); } catch (Throwable ex) {LOG.warn("Error closing connection", ex);}}
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
             // release resources
             env.release();
         }

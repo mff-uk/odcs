@@ -14,42 +14,42 @@ import static org.junit.Assert.*;
  * Test suite for {@link ConfigurableBase} class.
  * 
  * @author Petyr
- *
  */
 public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> {
 
-	public ConfigurableBaseInstanceTest() {
-		super(ConfigDummy.class);
-	}
-	
-	/**
-	 * Test that initial configuration has been set properly.
-	 */
-	@Test 
-	public void initialConfigNotNull() {
-		assertNotNull(config);
-	}
-	
-	/**
-	 * Configuration is not changed on configure(null).
-	 * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
-	 */
-	@Test
-	public void nullSet() throws ConfigException {
-		DPUConfigObject oldConfig = config;
-		assertNotNull(oldConfig);
+    public ConfigurableBaseInstanceTest() {
+        super(ConfigDummy.class);
+    }
 
-		this.configure(null);
-		
-		assertEquals(oldConfig, config);
-	}
+    /**
+     * Test that initial configuration has been set properly.
+     */
+    @Test
+    public void initialConfigNotNull() {
+        assertNotNull(config);
+    }
 
-	@Override
-	public void execute(DPUContext context)
-			throws DPUException,
-				DataUnitException,
-				InterruptedException {
-	
-	}
-	
+    /**
+     * Configuration is not changed on configure(null).
+     * 
+     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     */
+    @Test
+    public void nullSet() throws ConfigException {
+        DPUConfigObject oldConfig = config;
+        assertNotNull(oldConfig);
+
+        this.configure(null);
+
+        assertEquals(oldConfig, config);
+    }
+
+    @Override
+    public void execute(DPUContext context)
+            throws DPUException,
+            DataUnitException,
+            InterruptedException {
+
+    }
+
 }

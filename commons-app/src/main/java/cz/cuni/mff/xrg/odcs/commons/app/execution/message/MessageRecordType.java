@@ -6,58 +6,58 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
  * Types for execution.record.
  * 
  * @author Petyr
- * 
  */
 public enum MessageRecordType {
-	/**
-	 * Debug information from DPURecord.
-	 */
-	 DPU_DEBUG,
-	/**
-	 * Closer unspecified information from DPURecord.
-	 */
-	DPU_INFO,
-	/**
-	 * Warning from DPURecord.
-	 */
-	DPU_WARNING,
-	/**
-	 * Error from DPURecord.
-	 */
-	DPU_ERROR,
-	/**
-	 * Termination request.
-	 */
-	DPU_TERMINATION_REQUEST,
-	/**
-	 * Represent error message from pipeline.
-	 */
-	PIPELINE_ERROR,
-	/**
-	 * Represent information about pipeline execution.
-	 */
-	PIPELINE_INFO;
-		
-	/**
-	 * Convert {@link MessageType} to {@link MessageRecordType}.
-	 * 
-	 * @param type message type
-	 * @return record type
-	 */
-	public static MessageRecordType fromMessageType(MessageType type) {
-		switch(type) {
-		case DEBUG:
-			return MessageRecordType.DPU_DEBUG;
-		case INFO:
-			return MessageRecordType.DPU_INFO;
-		case WARNING:
-			return MessageRecordType.DPU_WARNING;
-		case ERROR:
-			return MessageRecordType.DPU_ERROR;
-		case TERMINATION_REQUEST:
-			return MessageRecordType.DPU_TERMINATION_REQUEST;
-		default:
-			return MessageRecordType.DPU_INFO;
-		}		
-	}
+    /**
+     * Debug information from DPURecord.
+     */
+    DPU_DEBUG,
+    /**
+     * Closer unspecified information from DPURecord.
+     */
+    DPU_INFO,
+    /**
+     * Warning from DPURecord.
+     */
+    DPU_WARNING,
+    /**
+     * Error from DPURecord.
+     */
+    DPU_ERROR,
+    /**
+     * Termination request.
+     */
+    DPU_TERMINATION_REQUEST,
+    /**
+     * Represent error message from pipeline.
+     */
+    PIPELINE_ERROR,
+    /**
+     * Represent information about pipeline execution.
+     */
+    PIPELINE_INFO;
+
+    /**
+     * Convert {@link MessageType} to {@link MessageRecordType}.
+     * 
+     * @param type
+     *            message type
+     * @return record type
+     */
+    public static MessageRecordType fromMessageType(MessageType type) {
+        switch (type) {
+            case DEBUG:
+                return MessageRecordType.DPU_DEBUG;
+            case INFO:
+                return MessageRecordType.DPU_INFO;
+            case WARNING:
+                return MessageRecordType.DPU_WARNING;
+            case ERROR:
+                return MessageRecordType.DPU_ERROR;
+            case TERMINATION_REQUEST:
+                return MessageRecordType.DPU_TERMINATION_REQUEST;
+            default:
+                return MessageRecordType.DPU_INFO;
+        }
+    }
 }

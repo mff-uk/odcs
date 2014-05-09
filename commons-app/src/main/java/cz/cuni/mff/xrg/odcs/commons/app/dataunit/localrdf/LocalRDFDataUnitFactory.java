@@ -4,18 +4,18 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
 
 public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
-	private String repositoryPath;
-	
-	@Override
-	public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
-		return new LocalRDFDataUnit(repositoryPath, dataUnitName, dataGraph);
-	}
+    private String repositoryPath;
 
-	public String getRepositoryPath() {
-		return repositoryPath;
-	}
+    @Override
+    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
+        return new LocalRDFDataUnit(repositoryPath, dataUnitName, dataGraph);
+    }
 
-	public void setRepositoryPath(String repositoryPath) {
-		this.repositoryPath = repositoryPath;
-	}
+    public String getRepositoryPath() {
+        return repositoryPath;
+    }
+
+    public void setRepositoryPath(String repositoryPath) {
+        this.repositoryPath = repositoryPath;
+    }
 }

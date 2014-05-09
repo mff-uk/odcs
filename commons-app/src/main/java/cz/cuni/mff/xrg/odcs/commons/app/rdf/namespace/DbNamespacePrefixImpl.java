@@ -14,24 +14,24 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbNamespacePrefixImpl extends DbAccessBase<NamespacePrefix>
-									implements DbNamespacePrefix {
+        implements DbNamespacePrefix {
 
-	public DbNamespacePrefixImpl() {
-		super(NamespacePrefix.class);
-	}
-	
-	@Override
-	public List<NamespacePrefix> getAllPrefixes() {
-		final String stringQuery = "SELECT e FROM NamespacePrefix e";
-		return executeList(stringQuery);		
-	}
+    public DbNamespacePrefixImpl() {
+        super(NamespacePrefix.class);
+    }
 
-	@Override
-	public NamespacePrefix getByName(String name) {
-		final String stringQuery = "SELECT e FROM NamespacePrefix e WHERE e.name = :name";
-		TypedQuery<NamespacePrefix> query = createTypedQuery(stringQuery);	
-		query.setParameter("name", name);
-		return execute(query);		
-	}
+    @Override
+    public List<NamespacePrefix> getAllPrefixes() {
+        final String stringQuery = "SELECT e FROM NamespacePrefix e";
+        return executeList(stringQuery);
+    }
+
+    @Override
+    public NamespacePrefix getByName(String name) {
+        final String stringQuery = "SELECT e FROM NamespacePrefix e WHERE e.name = :name";
+        TypedQuery<NamespacePrefix> query = createTypedQuery(stringQuery);
+        query.setParameter("name", name);
+        return execute(query);
+    }
 
 }

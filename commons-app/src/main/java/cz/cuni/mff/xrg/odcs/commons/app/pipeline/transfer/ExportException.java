@@ -7,12 +7,12 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
  */
 public class ExportException extends Exception {
 
-	public ExportException(String message) {
-		super(message);
-	}
+    public ExportException(String message) {
+        super(message);
+    }
 
-	public ExportException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
+    public ExportException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

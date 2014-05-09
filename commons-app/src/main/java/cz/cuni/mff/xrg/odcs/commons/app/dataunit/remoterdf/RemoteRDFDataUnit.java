@@ -1,4 +1,3 @@
-
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf;
 
 import java.util.ArrayList;
@@ -31,82 +30,84 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
  * saved in Sesame server
  */
 public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(RemoteRDFDataUnit.class);
 
-	public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
-	
-	private Repository repository;
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteRDFDataUnit.class);
 
-	/**
-	 * Construct a Remote repository with a specified parameters.
-	 *
-	 * @param url the URL connection string
-	 *
-	 * @param user          the database user on whose behalf the connection is
-	 *                      being made.
-	 *
-	 * @param password      the user's password.
-	 *
-	 * @param dataGraph  a default Graph name, used for Sesame calls, when
-	 *                      contexts list is empty, exclude exportStatements,
-	 *                      hasStatement, getStatements methods.
-	 * @param dataUnitName	 DataUnit's name. If not used in Pipeline can be
-	 *                      empty String.
-	 * @throws RepositoryException 
-	 */
-	public RemoteRDFDataUnit(String url, String user, String password,
-			String dataUnitName, String dataGraph) {
-	    super(dataUnitName, dataGraph);
+    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
 
-		try {
-			RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
-			if (repositoryManager instanceof RemoteRepositoryManager) {
-				if (user != null && !user.isEmpty()) {
-					((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
-				}
-			}
-			repository = repositoryManager
-					.getRepository(GLOBAL_REPOSITORY_ID);
-			if (repository == null) {
-				repositoryManager.addRepositoryConfig(
-						new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
-						);
-				repository = repositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
-			}
-			if (repository == null) {
-				throw new RuntimeException("Could not initialize repository");
-			}
-		} catch (RepositoryConfigException | RepositoryException ex) {
-			throw new RuntimeException("Could not initialize repository", ex);
-		}		
-		
-		try {
-			repository.initialize();
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not initialize repository", ex);
-		}
-		RepositoryConnection connection = null; 
-		try {
+    private Repository repository;
+
+    /**
+     * Construct a Remote repository with a specified parameters.
+     * 
+     * @param url
+     *            the URL connection string
+     * @param user
+     *            the database user on whose behalf the connection is
+     *            being made.
+     * @param password
+     *            the user's password.
+     * @param dataGraph
+     *            a default Graph name, used for Sesame calls, when
+     *            contexts list is empty, exclude exportStatements,
+     *            hasStatement, getStatements methods.
+     * @param dataUnitName
+     *            DataUnit's name. If not used in Pipeline can be
+     *            empty String.
+     * @throws RepositoryException
+     */
+    public RemoteRDFDataUnit(String url, String user, String password,
+            String dataUnitName, String dataGraph) {
+        super(dataUnitName, dataGraph);
+
+        try {
+            RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
+            if (repositoryManager instanceof RemoteRepositoryManager) {
+                if (user != null && !user.isEmpty()) {
+                    ((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
+                }
+            }
+            repository = repositoryManager
+                    .getRepository(GLOBAL_REPOSITORY_ID);
+            if (repository == null) {
+                repositoryManager.addRepositoryConfig(
+                        new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
+                        );
+                repository = repositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+            }
+            if (repository == null) {
+                throw new RuntimeException("Could not initialize repository");
+            }
+        } catch (RepositoryConfigException | RepositoryException ex) {
+            throw new RuntimeException("Could not initialize repository", ex);
+        }
+
+        try {
+            repository.initialize();
+        } catch (RepositoryException ex) {
+            throw new RuntimeException("Could not initialize repository", ex);
+        }
+        RepositoryConnection connection = null;
+        try {
             connection = getConnection();
-			LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not test initial connect to repository", ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-	}
-	
-	@Override
-	public RepositoryConnection getConnectionInternal() throws RepositoryException {
-		return repository.getConnection();
-	}
+            LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
+                    dataUnitName, dataGraph, connection.size(this.getDataGraph()));
+        } catch (RepositoryException ex) {
+            throw new RuntimeException("Could not test initial connect to repository", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
+
+    @Override
+    public RepositoryConnection getConnectionInternal() throws RepositoryException {
+        return repository.getConnection();
+    }
 }

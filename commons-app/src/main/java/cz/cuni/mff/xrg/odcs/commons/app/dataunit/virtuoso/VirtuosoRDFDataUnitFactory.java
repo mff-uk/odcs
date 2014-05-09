@@ -4,36 +4,38 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
 
 public class VirtuosoRDFDataUnitFactory implements RDFDataUnitFactory {
-	private String url;
-	private String user;
-	private String password;
+    private String url;
 
-	@Override
-	public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
-		return new VirtuosoRDFDataUnit(url, user, password, dataUnitName, dataGraph);
-	}
+    private String user;
 
-	public String getUrl() {
-		return url;
-	}
+    private String password;
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    @Override
+    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
+        return new VirtuosoRDFDataUnit(url, user, password, dataUnitName, dataGraph);
+    }
 
-	public String getUser() {
-		return user;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getUser() {
+        return user;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

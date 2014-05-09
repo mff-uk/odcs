@@ -6,5 +6,5 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
  * @author Petyr
  */
 public interface Facade {
-	
+
 }

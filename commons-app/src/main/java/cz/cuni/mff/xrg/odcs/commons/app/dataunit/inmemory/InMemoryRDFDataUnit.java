@@ -19,98 +19,97 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
 /**
  * Implementation of MemoryStore RDF repository - RDF data are saved in files on hard
  * disk in computer, intermediate results are keeping in computer memory.
- *
  */
 public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
-	private static final Logger LOG = LoggerFactory.getLogger(InMemoryRDFDataUnit.class);
-	
-	public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository_memory";
-	
-	private Repository repository;
+    private static final Logger LOG = LoggerFactory.getLogger(InMemoryRDFDataUnit.class);
 
-	/**
-	 * Public constructor - create new instance of repository in defined
-	 * repository Path.
-	 * 
-	 * @param repositoryPath
-	 *            String value of path to directory where will be repository
-	 *            stored.
-	 * @param namedGraph
-	 *            String value of URI graph that will be set to repository.
-	 * @param dataUnitName
-	 *            DataUnit's name. If not used in Pipeline can be empty String.
-	 */
-	public InMemoryRDFDataUnit(String repositoryPath, String dataUnitName,
-	        String dataGraph) {
-	    super(dataUnitName, dataGraph);
+    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository_memory";
 
-		try {
-			File managerDir = new File(repositoryPath);
-			if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-				throw new RuntimeException("Could not create repository manager directory.");
-			}
-			LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
-			repository = localRepositoryManager
-					.getRepository(GLOBAL_REPOSITORY_ID);
-			if (repository == null) {
-				localRepositoryManager.addRepositoryConfig(
-						new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new MemoryStoreConfig()))
-						);
-				repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
-			}
-			if (repository == null) {
-				throw new RuntimeException("Could not initialize repository");
-			}
-		} catch (RepositoryConfigException | RepositoryException ex) {
-			throw new RuntimeException("Could not initialize repository", ex);
-		}
-		
-		RepositoryConnection connection = null; 
-		try {
+    private Repository repository;
+
+    /**
+     * Public constructor - create new instance of repository in defined
+     * repository Path.
+     * 
+     * @param repositoryPath
+     *            String value of path to directory where will be repository
+     *            stored.
+     * @param namedGraph
+     *            String value of URI graph that will be set to repository.
+     * @param dataUnitName
+     *            DataUnit's name. If not used in Pipeline can be empty String.
+     */
+    public InMemoryRDFDataUnit(String repositoryPath, String dataUnitName,
+            String dataGraph) {
+        super(dataUnitName, dataGraph);
+
+        try {
+            File managerDir = new File(repositoryPath);
+            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                throw new RuntimeException("Could not create repository manager directory.");
+            }
+            LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
+            repository = localRepositoryManager
+                    .getRepository(GLOBAL_REPOSITORY_ID);
+            if (repository == null) {
+                localRepositoryManager.addRepositoryConfig(
+                        new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new MemoryStoreConfig()))
+                        );
+                repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+            }
+            if (repository == null) {
+                throw new RuntimeException("Could not initialize repository");
+            }
+        } catch (RepositoryConfigException | RepositoryException ex) {
+            throw new RuntimeException("Could not initialize repository", ex);
+        }
+
+        RepositoryConnection connection = null;
+        try {
             connection = getConnection();
-			LOG.info("Initialized MemoryStore RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-					dataUnitName, dataGraph, connection.size(this.getDataGraph()));
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not test initial connect to repository", ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}		
-	}
-	
-	@Override
-	public RepositoryConnection getConnectionInternal() throws RepositoryException {
-		return repository.getConnection();
-	}
+            LOG.info("Initialized MemoryStore RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
+                    dataUnitName, dataGraph, connection.size(this.getDataGraph()));
+        } catch (RepositoryException ex) {
+            throw new RuntimeException("Could not test initial connect to repository", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
 
-	@Override
-	public void clear() {
-		/**
-		 * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
-		 * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
-		 * This connection has to be obtained directly from repository and we take care to close it properly. 
-		 */
-		RepositoryConnection connection = null; 
-		try {
-			connection = repository.getConnection();
-			connection.clear(dataGraph);
-		} catch (RepositoryException ex) {
-			throw new RuntimeException("Could not delete repository", ex);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					LOG.warn("Error when closing connection", ex);
-					// eat close exception, we cannot do anything clever here
-				}
-			}
-		}
-	}
+    @Override
+    public RepositoryConnection getConnectionInternal() throws RepositoryException {
+        return repository.getConnection();
+    }
+
+    @Override
+    public void clear() {
+        /**
+         * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
+         * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
+         * This connection has to be obtained directly from repository and we take care to close it properly.
+         */
+        RepositoryConnection connection = null;
+        try {
+            connection = repository.getConnection();
+            connection.clear(dataGraph);
+        } catch (RepositoryException ex) {
+            throw new RuntimeException("Could not delete repository", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
 }

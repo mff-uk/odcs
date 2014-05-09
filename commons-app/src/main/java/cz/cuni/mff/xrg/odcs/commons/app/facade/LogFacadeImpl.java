@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,
  * as these should be created immutable by backend only.
- *
+ * 
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return true if there exist logs with given level for given dpu instance
      * of given pipeline execution.
-     *
+     * 
      * @param exec
      * @param level
      * @return
@@ -47,7 +47,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return list of all usable log's levels without aggregations. Ordered
      * descending by priority.
-     *
+     * 
      * @return
      */
     @Override

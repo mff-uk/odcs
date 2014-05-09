@@ -7,10 +7,10 @@ import com.vaadin.server.StreamResource.StreamSource;
  */
 public interface OnDemandStreamResource extends StreamSource {
 
-	/**
-	 * Get file name.
-	 * 
-	 * @return File name.
-	 */
-	String getFilename();
+    /**
+     * Get file name.
+     * 
+     * @return File name.
+     */
+    String getFilename();
 }

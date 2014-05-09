@@ -27,89 +27,91 @@ import org.springframework.stereotype.Component;
 
 /**
  * Status window for pipeline.
- *
+ * 
  * @author Bogo
  */
 @Component
 @Scope("prototype")
 public class PipelineStatus extends Window {
 
-	private String lastRunTimeStr;
-	private Label lastRunTime;
-	private Label runsNumber;
-	@Autowired
-	private PipelineFacade pipelineFacade;
+    private String lastRunTimeStr;
 
-	/**
-	 * Basic constructor
-	 */
-	public PipelineStatus() {
+    private Label lastRunTime;
 
-		this.setResizable(false);
-		this.setDraggable(false);
-		this.setModal(true);
-		this.setCaption("Pipeline status");
+    private Label runsNumber;
 
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setMargin(true);
-		mainLayout.setWidth("200px");
-		mainLayout.setHeight("100px");
+    @Autowired
+    private PipelineFacade pipelineFacade;
 
-		HorizontalLayout lastRunLayout = new HorizontalLayout();
-		lastRunLayout.setSpacing(true);
-		lastRunLayout.addComponent(new Label("Last run:"));
+    /**
+     * Basic constructor
+     */
+    public PipelineStatus() {
 
-		lastRunTime = new Label();
+        this.setResizable(false);
+        this.setDraggable(false);
+        this.setModal(true);
+        this.setCaption("Pipeline status");
 
-		if (lastRunTimeStr == null) {
-			lastRunTimeStr = "";
-		}
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setMargin(true);
+        mainLayout.setWidth("200px");
+        mainLayout.setHeight("100px");
 
-		lastRunTime.setCaption(lastRunTimeStr);
-		lastRunLayout.addComponent(lastRunTime);
+        HorizontalLayout lastRunLayout = new HorizontalLayout();
+        lastRunLayout.setSpacing(true);
+        lastRunLayout.addComponent(new Label("Last run:"));
 
-		HorizontalLayout runsNumberLayout = new HorizontalLayout();
-		runsNumberLayout.setSpacing(true);
-		runsNumberLayout.addComponent(new Label("Number of runs:"));
+        lastRunTime = new Label();
 
-		runsNumber = new Label();
+        if (lastRunTimeStr == null) {
+            lastRunTimeStr = "";
+        }
 
-		runsNumberLayout.addComponent(runsNumber);
+        lastRunTime.setCaption(lastRunTimeStr);
+        lastRunLayout.addComponent(lastRunTime);
 
-		mainLayout.addComponent(lastRunLayout);
-		mainLayout.addComponent(runsNumberLayout);
+        HorizontalLayout runsNumberLayout = new HorizontalLayout();
+        runsNumberLayout.setSpacing(true);
+        runsNumberLayout.addComponent(new Label("Number of runs:"));
 
-		this.setContent(mainLayout);
-		setSizeUndefined();
+        runsNumber = new Label();
 
+        runsNumberLayout.addComponent(runsNumber);
 
-	}
+        mainLayout.addComponent(lastRunLayout);
+        mainLayout.addComponent(runsNumberLayout);
 
-	/**
-	 * Get date of the last execution and number of run for specific pipeline.
-	 *
-	 * @param selectedPipeline 
-	 */
-	public void setSelectedPipeline(Pipeline selectedPipeline) {
+        this.setContent(mainLayout);
+        setSizeUndefined();
 
-		Date maxDate = null;
+    }
 
-		List<PipelineExecution> executions = pipelineFacade.getExecutions(selectedPipeline);
+    /**
+     * Get date of the last execution and number of run for specific pipeline.
+     * 
+     * @param selectedPipeline
+     */
+    public void setSelectedPipeline(Pipeline selectedPipeline) {
 
-		//getting number of pipeline run and date of the last pipeline execution
-		for (PipelineExecution item : executions) {
-			if (maxDate == null || maxDate.getTime() < item.getStart().getTime()) {
-				maxDate = item.getStart();
-			}
-		}
-		if (maxDate != null) {
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
-			lastRunTimeStr = df.format(maxDate);
-		} else {
-			lastRunTimeStr = "";
-		}
+        Date maxDate = null;
 
-		runsNumber.setCaption(Integer.toString(executions.size()));
-		lastRunTime.setCaption(lastRunTimeStr);
-	}
+        List<PipelineExecution> executions = pipelineFacade.getExecutions(selectedPipeline);
+
+        //getting number of pipeline run and date of the last pipeline execution
+        for (PipelineExecution item : executions) {
+            if (maxDate == null || maxDate.getTime() < item.getStart().getTime()) {
+                maxDate = item.getStart();
+            }
+        }
+        if (maxDate != null) {
+            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+            lastRunTimeStr = df.format(maxDate);
+        } else {
+            lastRunTimeStr = "";
+        }
+
+        runsNumber.setCaption(Integer.toString(executions.size()));
+        lastRunTime.setCaption(lastRunTimeStr);
+    }
 }

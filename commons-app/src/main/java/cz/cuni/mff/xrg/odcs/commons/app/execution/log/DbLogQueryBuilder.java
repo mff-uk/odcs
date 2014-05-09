@@ -18,13 +18,13 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
      * Holds information about sorting.
      */
     private class SortInformation {
-        
+
         String propertyName = null;
-        
+
         boolean asc = true;
-        
+
     }
-    
+
     /**
      * Filters that should be used in query.
      */
@@ -34,25 +34,25 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
      * Store information about sorting for this query builder.
      */
     private final SortInformation sortInfo = new SortInformation();
-    
-	/**
-	 * List or properties to fetch.
-	 */
-	private final Set<String> fetchList = new HashSet<>();
-	
+
+    /**
+     * List or properties to fetch.
+     */
+    private final Set<String> fetchList = new HashSet<>();
+
     DbLogQueryBuilder() {
 
     }
 
     @Override
     public DbQuery<Log> getQuery() {
-		return new DbLogQuery(filters, fetchList, sortInfo.propertyName, 
-				sortInfo.asc);
+        return new DbLogQuery(filters, fetchList, sortInfo.propertyName,
+                sortInfo.asc);
     }
 
     @Override
     public DbQueryCount<Log> getCountQuery() {
-		return new DbLogQueryCount(filters, fetchList);
+        return new DbLogQueryCount(filters, fetchList);
     }
 
     @Override
@@ -74,19 +74,19 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
         return this;
     }
 
-	@Override
-	public void addFetch(String propertyName) {
-		fetchList.add(propertyName);
-	}
+    @Override
+    public void addFetch(String propertyName) {
+        fetchList.add(propertyName);
+    }
 
-	@Override
-	public void removeFetch(String propertyName) {
-		fetchList.remove(propertyName);
-	}
+    @Override
+    public void removeFetch(String propertyName) {
+        fetchList.remove(propertyName);
+    }
 
-	@Override
-	public void clearFetch() {
-		fetchList.clear();
-	}	
-	
+    @Override
+    public void clearFetch() {
+        fetchList.clear();
+    }
+
 }

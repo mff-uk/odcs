@@ -29,23 +29,29 @@ public class RepositoryFrontendHelperTest {
      * Count of thread used in tests.
      */
     protected static final int THREAD_SIZE = 10;
+
     /**
      * Local repository
      */
     protected static ManagableRdfDataUnit rdfRepo;
+
     /**
      * Logging info about behavior method.
      */
     protected final Logger LOG = LoggerFactory.getLogger(getClass());
+
     final private String encode = "UTF-8";
+
     /**
      * Path to directory with produced data
      */
     protected Path outDir;
+
     /**
      * Path to directory with test input data
      */
     protected String testFileDir;
+
     /**
      * Path to test repository
      */

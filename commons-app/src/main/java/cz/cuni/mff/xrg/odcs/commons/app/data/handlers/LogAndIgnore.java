@@ -11,26 +11,26 @@ import org.slf4j.LoggerFactory;
  */
 public class LogAndIgnore implements EdgeCompiler.ErrorHandler {
 
-	private final static Logger LOG = LoggerFactory.getLogger(LogAndIgnore.class);
-	
-	@Override
-	public void sourceIndexOutOfRange() {
-		LOG.warn("Source index out of range, mapping has been ignored");
-	}
+    private final static Logger LOG = LoggerFactory.getLogger(LogAndIgnore.class);
 
-	@Override
-	public void targetIndexOutOfRange() {
-		LOG.warn("Target index out of range, mapping has been ignored");
-	}
+    @Override
+    public void sourceIndexOutOfRange() {
+        LOG.warn("Source index out of range, mapping has been ignored");
+    }
 
-	@Override
-	public void unknownCommand(String item) {
-		LOG.warn("Unknown command: {}", item);
-	}
+    @Override
+    public void targetIndexOutOfRange() {
+        LOG.warn("Target index out of range, mapping has been ignored");
+    }
 
-	@Override
-	public void invalidMapping(String item) {
-		LOG.warn("Invalid mapping: {}", item);
-	}
-	
+    @Override
+    public void unknownCommand(String item) {
+        LOG.warn("Unknown command: {}", item);
+    }
+
+    @Override
+    public void invalidMapping(String item) {
+        LOG.warn("Invalid mapping: {}", item);
+    }
+
 }

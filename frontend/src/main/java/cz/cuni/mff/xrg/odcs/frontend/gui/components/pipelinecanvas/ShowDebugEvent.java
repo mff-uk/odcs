@@ -7,30 +7,31 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
  * Event for debug request on {@link PipelineCanvas}.
- *
+ * 
  * @author Bogo
  */
 public class ShowDebugEvent extends Event {
-	private Node debugNode;
+    private Node debugNode;
 
-	/**
-	 * Default constructor. Inform, that debug was requested for current
-	 * {@link Pipeline} and given {@link Node}.
-	 *
-	 * @param source Source component.
-	 * @param debugNode {@link Node} where debug should end.
-	 */
-	public ShowDebugEvent(Component source, Node debugNode) {
-		super(source);
-		this.debugNode = debugNode;
-	}
+    /**
+     * Default constructor. Inform, that debug was requested for current {@link Pipeline} and given {@link Node}.
+     * 
+     * @param source
+     *            Source component.
+     * @param debugNode
+     *            {@link Node} where debug should end.
+     */
+    public ShowDebugEvent(Component source, Node debugNode) {
+        super(source);
+        this.debugNode = debugNode;
+    }
 
-	/**
-	 * Get debug node.
-	 *
-	 * @return debug node
-	 */
-	public Node getDebugNode() {
-		return debugNode;
-	}
+    /**
+     * Get debug node.
+     * 
+     * @return debug node
+     */
+    public Node getDebugNode() {
+        return debugNode;
+    }
 }

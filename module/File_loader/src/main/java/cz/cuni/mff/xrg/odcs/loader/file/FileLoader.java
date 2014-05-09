@@ -30,69 +30,72 @@ import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
  * Loads RDF data into file.
- *
+ * 
  * @author Jiri Tomes
  * @author Petyr
  */
 @AsLoader
 public class FileLoader extends ConfigurableBase<FileLoaderConfig>
-		implements ConfigDialogProvider<FileLoaderConfig> {
+        implements ConfigDialogProvider<FileLoaderConfig> {
 
-	private final Logger logger = LoggerFactory.getLogger(FileLoader.class);
+    private final Logger logger = LoggerFactory.getLogger(FileLoader.class);
 
     final String encode = "UTF-8";
 
-	/**
-	 * The repository for file loader.
-	 */
-	@InputDataUnit(name = "input")
-	public RDFDataUnit rdfDataUnit;
-	
-	@OutputDataUnit(name = "validationDataUnit", description ="Never connect any data to this unit please!")
-	public RDFDataUnit validationDataUnit;
-	
-	@OutputDataUnit(name = "input_redirection", optional = true)
-	public RDFDataUnit inputShadow;
-	
-	public FileLoader() {
-		super(FileLoaderConfig.class);
-	}
+    /**
+     * The repository for file loader.
+     */
+    @InputDataUnit(name = "input")
+    public RDFDataUnit rdfDataUnit;
 
-	/**
-	 * Execute the file loader.
-	 *
-	 * @param context File loader context.
-	 * @throws DataUnitException if this DPU fails.
-	 * @throws DPUException      if this DPU fails.
-	 */
-	@Override
-	public void execute(DPUContext context) throws DPUException, DataUnitException {
+    @OutputDataUnit(name = "validationDataUnit", description = "Never connect any data to this unit please!")
+    public RDFDataUnit validationDataUnit;
 
-		final String filePath = config.getFilePath();
-		final RDFFormat formatType = config.getRDFFileFormat();
-		final boolean isNameUnique = config.isDiffName();
-		final boolean canFileOverwritte = true;
-		final boolean validateDataBefore = config.isValidDataBefore();
+    @OutputDataUnit(name = "input_redirection", optional = true)
+    public RDFDataUnit inputShadow;
 
-		if (validateDataBefore) {
-			DataValidator dataValidator = new RepositoryDataValidator(
-					rdfDataUnit, validationDataUnit);
+    public FileLoader() {
+        super(FileLoaderConfig.class);
+    }
 
-			if (!dataValidator.areDataValid()) {
-				final String message = "RDF Data to load are not valid - LOADING to File FAIL";
-				logger.error(dataValidator.getErrorMessage());
+    /**
+     * Execute the file loader.
+     * 
+     * @param context
+     *            File loader context.
+     * @throws DataUnitException
+     *             if this DPU fails.
+     * @throws DPUException
+     *             if this DPU fails.
+     */
+    @Override
+    public void execute(DPUContext context) throws DPUException, DataUnitException {
 
-				context.sendMessage(MessageType.WARNING, message, dataValidator
-						.getErrorMessage());
+        final String filePath = config.getFilePath();
+        final RDFFormat formatType = config.getRDFFileFormat();
+        final boolean isNameUnique = config.isDiffName();
+        final boolean canFileOverwritte = true;
+        final boolean validateDataBefore = config.isValidDataBefore();
 
-				throw new RDFException(message);
-			} else {
-				context.sendMessage(MessageType.INFO,
-						"RDF Data for loading to file are valid");
-				context.sendMessage(MessageType.INFO,
-						"Loading data to file STARTS JUST NOW");
-			}
-		}
+        if (validateDataBefore) {
+            DataValidator dataValidator = new RepositoryDataValidator(
+                    rdfDataUnit, validationDataUnit);
+
+            if (!dataValidator.areDataValid()) {
+                final String message = "RDF Data to load are not valid - LOADING to File FAIL";
+                logger.error(dataValidator.getErrorMessage());
+
+                context.sendMessage(MessageType.WARNING, message, dataValidator
+                        .getErrorMessage());
+
+                throw new RDFException(message);
+            } else {
+                context.sendMessage(MessageType.INFO,
+                        "RDF Data for loading to file are valid");
+                context.sendMessage(MessageType.INFO,
+                        "Loading data to file STARTS JUST NOW");
+            }
+        }
 
         RepositoryConnection connection = null;
         long triplesCount = 0;
@@ -121,31 +124,30 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());
         } finally {
-        	if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-				}
-			}          	
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                }
+            }
         }
 
-		logger.info("Loading {} triples", triplesCount);
+        logger.info("Loading {} triples", triplesCount);
 
-		
-		if (config.isPenetrable()) {
-			inputShadow.addAll(rdfDataUnit);
-		}
+        if (config.isPenetrable()) {
+            inputShadow.addAll(rdfDataUnit);
+        }
 
-	}
+    }
 
-	/**
-	 * Returns the configuration dialogue for file loader.
-	 *
-	 * @return the configuration dialogue for file loader.
-	 */
-	@Override
-	public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
-		return new FileLoaderDialog();
-	}
+    /**
+     * Returns the configuration dialogue for file loader.
+     * 
+     * @return the configuration dialogue for file loader.
+     */
+    @Override
+    public AbstractConfigDialog<FileLoaderConfig> getConfigurationDialog() {
+        return new FileLoaderDialog();
+    }
 }

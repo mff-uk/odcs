@@ -20,64 +20,64 @@ import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringVaadinServlet;
 
 /**
- * Customized servlet implementation to provide access to original
- * {@link HttpServletRequest} across application.
+ * Customized servlet implementation to provide access to original {@link HttpServletRequest} across application.
  * 
  * @see RequestHolder
  * @author Jan Vojt
  */
 public class ODCSApplicationServlet extends SpringVaadinServlet {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
-	/**
-	 * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
-	 * 
-	 * @param deploymentConfiguration Deployment configuration.
-	 * @return Vaadin servlet service.
-	 * @throws ServiceException 
-	 */
-	@Override
-	protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
-		VaadinServletService service = super.createServletService(deploymentConfiguration);
-		
-		// Preload all DPUs on servlet startup, so openning them is fast.
-		ApplicationContext context = SpringApplicationContext.getApplicationContext();
-		try {
-			context.getBean(ModuleFacade.class).preLoadAllDPUs();
-		} catch (TransactionException | DatabaseException ex) {
-			LOG.error("Could not preload DPUs.", ex);
-		}
-		
-		return service;
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    /**
+     * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
+     * 
+     * @param deploymentConfiguration
+     *            Deployment configuration.
+     * @return Vaadin servlet service.
+     * @throws ServiceException
+     */
+    @Override
+    protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
+        VaadinServletService service = super.createServletService(deploymentConfiguration);
 
-		// Store current HTTP request in thread-local, so Spring can access it
-		// later during user login.
-		RequestHolder.setRequest(request);
+        // Preload all DPUs on servlet startup, so openning them is fast.
+        ApplicationContext context = SpringApplicationContext.getApplicationContext();
+        try {
+            context.getBean(ModuleFacade.class).preLoadAllDPUs();
+        } catch (TransactionException | DatabaseException ex) {
+            LOG.error("Could not preload DPUs.", ex);
+        }
 
-		// First clear the security context, as we need to load it from session.
-		SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+        return service;
+    }
 
-		// Load authentication context from session (if there is any).
-		Authentication auth = (Authentication) request.getSession()
-				.getAttribute(AuthenticationService.SESSION_KEY);
-		if (auth != null) {
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		}
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		// Do the business.
-		super.service(request, response);
+        // Store current HTTP request in thread-local, so Spring can access it
+        // later during user login.
+        RequestHolder.setRequest(request);
 
-		// We remove the request from the thread local, there's no reason
-		// to keep it once the work is done. Next request might be serviced
-		// by different thread, which will need to load security context from
-		// the session anyway.
-		RequestHolder.clean();
-		SecurityContextHolder.clearContext();
-	}
+        // First clear the security context, as we need to load it from session.
+        SecurityContextHolder.setContext(SecurityContextHolder.createEmptyContext());
+
+        // Load authentication context from session (if there is any).
+        Authentication auth = (Authentication) request.getSession()
+                .getAttribute(AuthenticationService.SESSION_KEY);
+        if (auth != null) {
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+
+        // Do the business.
+        super.service(request, response);
+
+        // We remove the request from the thread local, there's no reason
+        // to keep it once the work is done. Next request might be serviced
+        // by different thread, which will need to load security context from
+        // the session anyway.
+        RequestHolder.clean();
+        SecurityContextHolder.clearContext();
+    }
 }

@@ -19,40 +19,40 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Test suite for fetching logs from database.
- *
+ * 
  * @author Jan Vojt
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class LogFacadeTest {
-	
-	@Autowired
-	private LogFacade facade;
-		
-	@Test
-	public void testExistLogs() {
-		long execId = 1L;
-		PipelineExecution exec = mock(PipelineExecution.class);
-		when(exec.getId()).thenReturn(execId);
 
-		boolean existInfo = facade.existLogsGreaterOrEqual(exec, Level.INFO); 						
-		assertEquals(true, existInfo);
-		
-		boolean existWarn = facade.existLogsGreaterOrEqual(exec, Level.WARN); 						
-		assertEquals(true, existWarn);
-		
-		boolean existErro = facade.existLogsGreaterOrEqual(exec, Level.ERROR); 						
-		assertEquals(false, existErro);		
-	}
+    @Autowired
+    private LogFacade facade;
 
-	@Test
-	public void testStream() {		
-		assertNotNull(facade.getLogsAsStream(null));
-		assertNotNull(facade.getLogsAsStream(Arrays.<Object>asList(Compare.greaterEqual("logLevel", Level.INFO.toInt()))));
-		assertNull(facade.getLogsAsStream(Arrays.<Object>asList(
-				Compare.greaterEqual("logLevel", Level.ERROR.toInt()),
-				Compare.less("logLevel", Level.ERROR.toInt())
-			)));
-	}
-	
+    @Test
+    public void testExistLogs() {
+        long execId = 1L;
+        PipelineExecution exec = mock(PipelineExecution.class);
+        when(exec.getId()).thenReturn(execId);
+
+        boolean existInfo = facade.existLogsGreaterOrEqual(exec, Level.INFO);
+        assertEquals(true, existInfo);
+
+        boolean existWarn = facade.existLogsGreaterOrEqual(exec, Level.WARN);
+        assertEquals(true, existWarn);
+
+        boolean existErro = facade.existLogsGreaterOrEqual(exec, Level.ERROR);
+        assertEquals(false, existErro);
+    }
+
+    @Test
+    public void testStream() {
+        assertNotNull(facade.getLogsAsStream(null));
+        assertNotNull(facade.getLogsAsStream(Arrays.<Object> asList(Compare.greaterEqual("logLevel", Level.INFO.toInt()))));
+        assertNull(facade.getLogsAsStream(Arrays.<Object> asList(
+                Compare.greaterEqual("logLevel", Level.ERROR.toInt()),
+                Compare.less("logLevel", Level.ERROR.toInt())
+                )));
+    }
+
 }

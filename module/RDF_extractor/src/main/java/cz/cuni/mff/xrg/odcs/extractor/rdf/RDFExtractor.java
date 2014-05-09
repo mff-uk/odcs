@@ -28,87 +28,89 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Extracts RDF data from SPARQL endpoint.
- *
+ * 
  * @author Jiri Tomes
  * @author Petyr
  */
 @AsExtractor
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
-		implements ConfigDialogProvider<RDFExtractorConfig> {
+        implements ConfigDialogProvider<RDFExtractorConfig> {
 
-	private final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
+    private final Logger LOG = LoggerFactory.getLogger(RDFExtractor.class);
 
-	/**
-	 * The repository for SPARQL extractor.
-	 */
-	@OutputDataUnit
-	public RDFDataUnit rdfDataUnit;
+    /**
+     * The repository for SPARQL extractor.
+     */
+    @OutputDataUnit
+    public RDFDataUnit rdfDataUnit;
 
-	public RDFExtractor() {
-		super(RDFExtractorConfig.class);
-	}
+    public RDFExtractor() {
+        super(RDFExtractorConfig.class);
+    }
 
-	/**
-	 * Execute the SPARQL extractor.
-	 *
-	 * @param context SPARQL extractor context.
-	 * @throws DataUnitException if this DPU fails.
-	 * @throws DPUException      if this DPU fails.
-	 */
-	@Override
-	public void execute(DPUContext context)
-			throws DPUException,
-			DataUnitCreateException {
+    /**
+     * Execute the SPARQL extractor.
+     * 
+     * @param context
+     *            SPARQL extractor context.
+     * @throws DataUnitException
+     *             if this DPU fails.
+     * @throws DPUException
+     *             if this DPU fails.
+     */
+    @Override
+    public void execute(DPUContext context)
+            throws DPUException,
+            DataUnitCreateException {
         RepositoryConnection connection = null;
 
-		try {
-			final URL endpointURL = new URL(config.getSPARQLEndpoint());
-			final String hostName = config.getHostName();
-			final String password = config.getPassword();
-			String constructQuery = config.getSPARQLQuery();
+        try {
+            final URL endpointURL = new URL(config.getSPARQLEndpoint());
+            final String hostName = config.getHostName();
+            final String password = config.getPassword();
+            String constructQuery = config.getSPARQLQuery();
 
-			final boolean usedSplitConstruct = config.isUsedSplitConstruct();
+            final boolean usedSplitConstruct = config.isUsedSplitConstruct();
 
-			if (constructQuery.isEmpty()) {
-				constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
-			}
+            if (constructQuery.isEmpty()) {
+                constructQuery = "construct {?x ?y ?z} where {?x ?y ?z}";
+            }
 
-			boolean useStatisticHandler = config.isUsedStatisticalHandler();
-			boolean failWhenErrors = config.isFailWhenErrors();
+            boolean useStatisticHandler = config.isUsedStatisticalHandler();
+            boolean failWhenErrors = config.isFailWhenErrors();
 
-			HandlerExtractType handlerExtractType = HandlerExtractType
-					.getHandlerType(useStatisticHandler, failWhenErrors);
+            HandlerExtractType handlerExtractType = HandlerExtractType
+                    .getHandlerType(useStatisticHandler, failWhenErrors);
 
-			final boolean extractFail = config.isExtractFail();
+            final boolean extractFail = config.isExtractFail();
 
-			Integer retrySize = config.getRetrySize();
-			if (retrySize == null) {
-				retrySize = -1;
-				LOG.info("retrySize is null, using -1 instead");
-			}
-			Long retryTime = config.getRetryTime();
-			if (retryTime == null) {
-				retryTime = 1000L;
-				LOG.info("retryTime is null, using 1000 instead");
-			}
+            Integer retrySize = config.getRetrySize();
+            if (retrySize == null) {
+                retrySize = -1;
+                LOG.info("retrySize is null, using -1 instead");
+            }
+            Long retryTime = config.getRetryTime();
+            if (retryTime == null) {
+                retryTime = 1000L;
+                LOG.info("retryTime is null, using 1000 instead");
+            }
 
-			ExtractorEndpointParams endpointParams = config.getEndpointParams();
+            ExtractorEndpointParams endpointParams = config.getEndpointParams();
 
-			if (endpointParams == null) {
-				endpointParams = new ExtractorEndpointParams();
-				LOG.info(
-						"Extractor endpoint params is null, used default values instead without setting ");
-			}
+            if (endpointParams == null) {
+                endpointParams = new ExtractorEndpointParams();
+                LOG.info(
+                        "Extractor endpoint params is null, used default values instead without setting ");
+            }
 
-			Integer splitConstructSize = config.getSplitConstructSize();
-			if (splitConstructSize == null) {
-				splitConstructSize = 50000;
-				LOG.info("Split construct size is null, using 50000");
-			}
+            Integer splitConstructSize = config.getSplitConstructSize();
+            if (splitConstructSize == null) {
+                splitConstructSize = 50000;
+                LOG.info("Split construct size is null, using 50000");
+            }
 
-
-			SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
-					retrySize, retryTime, endpointParams);
+            SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
+                    retrySize, retryTime, endpointParams);
 
             long lastrepoSize = 0;
             connection = rdfDataUnit.getConnection();
@@ -117,104 +119,103 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
             if (usedSplitConstruct) {
                 if (splitConstructSize <= 0) {
                     context.sendMessage(MessageType.ERROR,
-							"Split construct size must be positive number");
+                            "Split construct size must be positive number");
                 }
 
+                SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
+                        constructQuery, splitConstructSize);
 
-				SplitConstructQueryHelper helper = new SplitConstructQueryHelper(
-						constructQuery, splitConstructSize);
+                LOG.debug(
+                        "The max size of one data part extracted from SPARQL extractor is set to {} TRIPLES",
+                        splitConstructSize);
+                while (true) {
+                    String splitConstructQuery = helper.getSplitConstructQuery();
 
-				LOG.debug(
-						"The max size of one data part extracted from SPARQL extractor is set to {} TRIPLES",
-						splitConstructSize);
-				while (true) {
-					String splitConstructQuery = helper.getSplitConstructQuery();
-
-					extractor.extractFromSPARQLEndpoint(endpointURL,
-							splitConstructQuery,
-							hostName, password, RDFFormat.NTRIPLES,
-							handlerExtractType, false);
+                    extractor.extractFromSPARQLEndpoint(endpointURL,
+                            splitConstructQuery,
+                            hostName, password, RDFFormat.NTRIPLES,
+                            handlerExtractType, false);
 
                     long newrepoSize = connection.size(rdfDataUnit.getDataGraph());
 
-					checkParsingProblems(useStatisticHandler, context);
-					if (lastrepoSize < newrepoSize) {
-						lastrepoSize = newrepoSize;
-						helper.goToNextQuery();
-					} else {
-						break;
-					}
-				}
+                    checkParsingProblems(useStatisticHandler, context);
+                    if (lastrepoSize < newrepoSize) {
+                        lastrepoSize = newrepoSize;
+                        helper.goToNextQuery();
+                    } else {
+                        break;
+                    }
+                }
 
-				if (extractFail && lastrepoSize == 0) {
-					throw new RDFException(
-							"No extracted triples from SPARQL endpoint");
-				}
+                if (extractFail && lastrepoSize == 0) {
+                    throw new RDFException(
+                            "No extracted triples from SPARQL endpoint");
+                }
 
-			} else {
+            } else {
 
-				extractor.extractFromSPARQLEndpoint(endpointURL, constructQuery,
-						hostName, password, RDFFormat.NTRIPLES,
-						handlerExtractType, extractFail);
+                extractor.extractFromSPARQLEndpoint(endpointURL, constructQuery,
+                        hostName, password, RDFFormat.NTRIPLES,
+                        handlerExtractType, extractFail);
 
-				checkParsingProblems(useStatisticHandler, context);
-			}
-			final long triplesCount = connection.size(rdfDataUnit.getDataGraph());
+                checkParsingProblems(useStatisticHandler, context);
+            }
+            final long triplesCount = connection.size(rdfDataUnit.getDataGraph());
 
-			String tripleInfoMessage = String.format(
-					"Extracted %s triples from SPARQL endpoint %s",
-					triplesCount, endpointURL.toString());
+            String tripleInfoMessage = String.format(
+                    "Extracted %s triples from SPARQL endpoint %s",
+                    triplesCount, endpointURL.toString());
 
-			context.sendMessage(MessageType.INFO, tripleInfoMessage);
+            context.sendMessage(MessageType.INFO, tripleInfoMessage);
 
-		} catch (InvalidQueryException ex) {
-			LOG.debug("InvalidQueryException", ex);
-			context.sendMessage(MessageType.ERROR,
-					"InvalidQueryException: " + ex.getMessage());
-		} catch (MalformedURLException ex) {
-			LOG.debug("RDFDataUnitException", ex);
-			context.sendMessage(MessageType.ERROR, "MalformedURLException: "
-					+ ex.getMessage());
-			throw new DPUException(ex);
-		} catch (RDFDataUnitException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
-					.fillInStackTrace().toString());
-		} catch (RepositoryException e) {
+        } catch (InvalidQueryException ex) {
+            LOG.debug("InvalidQueryException", ex);
+            context.sendMessage(MessageType.ERROR,
+                    "InvalidQueryException: " + ex.getMessage());
+        } catch (MalformedURLException ex) {
+            LOG.debug("RDFDataUnitException", ex);
+            context.sendMessage(MessageType.ERROR, "MalformedURLException: "
+                    + ex.getMessage());
+            throw new DPUException(ex);
+        } catch (RDFDataUnitException ex) {
+            context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+                    .fillInStackTrace().toString());
+        } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,
                     "connection to repository broke down");
         } finally {
-        	if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
-				}
-			}        	
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+                }
+            }
         }
     }
 
-	private void checkParsingProblems(boolean useStatisticHandler,
-			DPUContext context) {
+    private void checkParsingProblems(boolean useStatisticHandler,
+            DPUContext context) {
 
-		if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
+        if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
 
-			String problems = StatisticalHandler
-					.getFoundGlobalProblemsAsString();
-			StatisticalHandler.clearParsingProblems();
+            String problems = StatisticalHandler
+                    .getFoundGlobalProblemsAsString();
+            StatisticalHandler.clearParsingProblems();
 
-			context.sendMessage(MessageType.WARNING,
-					"Statistical and error handler has found during parsing problems triples (these triples were not added)",
-					problems);
-		}
-	}
+            context.sendMessage(MessageType.WARNING,
+                    "Statistical and error handler has found during parsing problems triples (these triples were not added)",
+                    problems);
+        }
+    }
 
-	/**
-	 * Returns the configuration dialogue for SPARQL extractor.
-	 *
-	 * @return the configuration dialogue for SPARQL extractor.
-	 */
-	@Override
-	public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
-		return new RDFExtractorDialog();
-	}
+    /**
+     * Returns the configuration dialogue for SPARQL extractor.
+     * 
+     * @return the configuration dialogue for SPARQL extractor.
+     */
+    @Override
+    public AbstractConfigDialog<RDFExtractorConfig> getConfigurationDialog() {
+        return new RDFExtractorDialog();
+    }
 }

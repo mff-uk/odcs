@@ -18,36 +18,36 @@ import org.springframework.stereotype.Component;
 @Component
 class DataUnitNamesValidator implements DPUValidator {
 
-	@Autowired
-	private DPUExplorer explorer;
-	
-	@Override
-	public void validate(DPUTemplateRecord dpu, Object dpuInstance) throws DPUValidatorException {
-		check(explorer.getInputs(dpu));
-		check(explorer.getOutputs(dpu));
-	}
-	
-	/**
-	 * Check given list for duplicity names, if there are some then throws an
-	 * exception.
-	 * 
-	 * @param dataUnits
-	 * @throws DPUValidatorException 
-	 */
-	private void check(List<DataUnitDescription> dataUnits) throws DPUValidatorException {
-		HashSet<String> names = new HashSet<>();
-		for (DataUnitDescription desc : dataUnits) {
-			if (names.contains(desc.getName())) {
-				final StringBuilder msg = new StringBuilder();
-					msg.append("DPU contains two data units with same name ('");
-					msg.append(desc.getName());
-					msg.append("')!");
-				// name collision
-				throw new DPUValidatorException(msg.toString());
-			} else {
-				names.add(desc.getName());
-			}
-		}
-	}
-	
+    @Autowired
+    private DPUExplorer explorer;
+
+    @Override
+    public void validate(DPUTemplateRecord dpu, Object dpuInstance) throws DPUValidatorException {
+        check(explorer.getInputs(dpu));
+        check(explorer.getOutputs(dpu));
+    }
+
+    /**
+     * Check given list for duplicity names, if there are some then throws an
+     * exception.
+     * 
+     * @param dataUnits
+     * @throws DPUValidatorException
+     */
+    private void check(List<DataUnitDescription> dataUnits) throws DPUValidatorException {
+        HashSet<String> names = new HashSet<>();
+        for (DataUnitDescription desc : dataUnits) {
+            if (names.contains(desc.getName())) {
+                final StringBuilder msg = new StringBuilder();
+                msg.append("DPU contains two data units with same name ('");
+                msg.append(desc.getName());
+                msg.append("')!");
+                // name collision
+                throw new DPUValidatorException(msg.toString());
+            } else {
+                names.add(desc.getName());
+            }
+        }
+    }
+
 }

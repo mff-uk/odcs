@@ -7,15 +7,15 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
  */
 public class MissingConfigPropertyException extends ConfigPropertyException {
 
-	public MissingConfigPropertyException(ConfigProperty property) {
-		super(property);
-	}
+    public MissingConfigPropertyException(ConfigProperty property) {
+        super(property);
+    }
 
-	/**
-	 * @return error message.
-	 */
-	@Override
-	public String getMessage() {
-		return "Config is missing property: " + property + ".";
-	}
+    /**
+     * @return error message.
+     */
+    @Override
+    public String getMessage() {
+        return "Config is missing property: " + property + ".";
+    }
 }

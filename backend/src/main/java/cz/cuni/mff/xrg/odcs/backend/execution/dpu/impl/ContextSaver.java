@@ -12,29 +12,30 @@ import org.springframework.stereotype.Component;
 
 /**
  * Save the context after DPU execution.
+ * 
  * @author Petyr
  */
 @Component
 public class ContextSaver implements DPUPostExecutor {
 
-	public static final int ORDER = 10000;
+    public static final int ORDER = 10000;
 
-	@Autowired
-	private ContextFacade contextFacade;
-	
-	@Override
-	public int getOrder() {
-		return ORDER;
-	}	
-	
-	@Override
-	public boolean postAction(Node node, Map<Node, Context> contexts, Object dpuInstance, PipelineExecution execution, ProcessingUnitInfo unitInfo) {
-		// get the context
-		Context context = contexts.get(node);
-		// save it
-		contextFacade.save(context);
-		// and return true
-		return true;
-	}
-	
+    @Autowired
+    private ContextFacade contextFacade;
+
+    @Override
+    public int getOrder() {
+        return ORDER;
+    }
+
+    @Override
+    public boolean postAction(Node node, Map<Node, Context> contexts, Object dpuInstance, PipelineExecution execution, ProcessingUnitInfo unitInfo) {
+        // get the context
+        Context context = contexts.get(node);
+        // save it
+        contextFacade.save(context);
+        // and return true
+        return true;
+    }
+
 }

@@ -18,51 +18,51 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsExtractor
 public class DPUTemplate extends NonConfigurableBase
-	{
-	
-	@OutputDataUnit
-	public RDFDataUnit rdfOutput;
-	
-	@Override
-	public void execute(DPUContext context)
-			throws DPUException,
-				DataUnitException {
-		RepositoryConnection connection = null;
-		try {
-			connection = rdfOutput.getConnection();
-			URI contextName = rdfOutput.getDataGraph();
-			ValueFactory f = new MemValueFactory();
-			connection.begin();
-			int j = 1;
-			for (int i = 0; i< 3875000; i++) {
-				  connection.add(f.createStatement(
-						  f.createURI("http://example.org/people/d" + String.valueOf(j++)),
-						  f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
-						  f.createLiteral("Alice"+ String.valueOf(j++))
-						  ), contextName);
-					if ((i % 25000) == 0) {
-						connection.commit();
-						context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(i));
-						if (context.canceled()) {
-							break;
-						}
-						connection.begin();
-					}
-			}
-			connection.commit();
-			context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(contextName)));
-		} catch (RepositoryException ex) {
-			context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
-                  .fillInStackTrace().toString());			
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (RepositoryException ex) {
-					context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-				}
-			}
-		}		
-	}
-	
+{
+
+    @OutputDataUnit
+    public RDFDataUnit rdfOutput;
+
+    @Override
+    public void execute(DPUContext context)
+            throws DPUException,
+            DataUnitException {
+        RepositoryConnection connection = null;
+        try {
+            connection = rdfOutput.getConnection();
+            URI contextName = rdfOutput.getDataGraph();
+            ValueFactory f = new MemValueFactory();
+            connection.begin();
+            int j = 1;
+            for (int i = 0; i < 3875000; i++) {
+                connection.add(f.createStatement(
+                        f.createURI("http://example.org/people/d" + String.valueOf(j++)),
+                        f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
+                        f.createLiteral("Alice" + String.valueOf(j++))
+                        ), contextName);
+                if ((i % 25000) == 0) {
+                    connection.commit();
+                    context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(i));
+                    if (context.canceled()) {
+                        break;
+                    }
+                    connection.begin();
+                }
+            }
+            connection.commit();
+            context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(contextName)));
+        } catch (RepositoryException ex) {
+            context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+                    .fillInStackTrace().toString());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                }
+            }
+        }
+    }
+
 }

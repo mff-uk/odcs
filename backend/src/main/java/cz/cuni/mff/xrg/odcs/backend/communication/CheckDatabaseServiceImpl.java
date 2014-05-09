@@ -12,8 +12,8 @@ public class CheckDatabaseServiceImpl implements CheckDatabaseService {
      */
     @Autowired
     private ApplicationEventPublisher eventPublisher;
-	
-	public void checkDatabase() {
-		 eventPublisher.publishEvent(new CheckDatabaseEvent(this));
-	}
+
+    public void checkDatabase() {
+        eventPublisher.publishEvent(new CheckDatabaseEvent(this));
+    }
 }

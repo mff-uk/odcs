@@ -1,137 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-    <import resource="classpath:commons-app-context.xml" />
+    <import resource="classpath:commons-app-context.xml"/>
 
     <!-- we use annotations to run tasks -->
-    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
+    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
     <!-- Used for asynch calls even for scheduled functions. -->
-	<task:executor id="taskExecutor" pool-size="8" />
-	<!-- Used for Scheduled tasks.-->
-    <task:scheduler id="taskScheduler" pool-size="8" />
-	
-	<!-- Define aspects for managing DB reconnects. -->
-    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect" />
-	
+    <task:executor id="taskExecutor" pool-size="8"/>
+    <!-- Used for Scheduled tasks.-->
+    <task:scheduler id="taskScheduler" pool-size="8"/>
+
+    <!-- Define aspects for managing DB reconnects. -->
+    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect"/>
+
     <!-- module configuration needs to be defined here, because it differs from 
     frontend -->
     <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
-        <constructor-arg value="BACKEND" />
+        <constructor-arg value="BACKEND"/>
     </bean>
 
     <!-- Server services, used to receive request from frontend -->
-	<bean id="checkDatabaseService" class="cz.cuni.mff.xrg.odcs.backend.communication.CheckDatabaseServiceImpl"/>
-	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<!-- does not necessarily have to be the same name as the bean to be exported -->
-		<property name="serviceName" value="checkDatabase" />
-		<property name="service" ref="checkDatabaseService" />
-		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService" />
-		<property name="registryPort" value="${backend.port}" />
-	</bean>
-	
-	<bean id="heartbeatService" class="cz.cuni.mff.xrg.odcs.backend.communication.HeartbeatServiceImpl"/>
-	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<!-- does not necessarily have to be the same name as the bean to be exported -->
-		<property name="serviceName" value="heartbeat" />
-		<property name="service" ref="heartbeatService" />
-		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService" />
-		<property name="registryPort" value="${backend.port}" />
-	</bean>
-	
+    <bean id="checkDatabaseService" class="cz.cuni.mff.xrg.odcs.backend.communication.CheckDatabaseServiceImpl"/>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <!-- does not necessarily have to be the same name as the bean to be exported -->
+        <property name="serviceName" value="checkDatabase"/>
+        <property name="service" ref="checkDatabaseService"/>
+        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
+        <property name="registryPort" value="${backend.port}"/>
+    </bean>
+
+    <bean id="heartbeatService" class="cz.cuni.mff.xrg.odcs.backend.communication.HeartbeatServiceImpl"/>
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+        <!-- does not necessarily have to be the same name as the bean to be exported -->
+        <property name="serviceName" value="heartbeat"/>
+        <property name="service" ref="heartbeatService"/>
+        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
+        <property name="registryPort" value="${backend.port}"/>
+    </bean>
+
     <!-- engine itself, take care about executing of PipelineExecution -->
-    <bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer" />
+    <bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer"/>
 
     <!-- context, prototype, facade and related stuff -->
     <bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
-              scope="prototype" lazy-init="true" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade" />
+          scope="prototype" lazy-init="true"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade"/>
     <!-- we do not use component-scan as we need lookup method  -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator"> 
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator">
         <lookup-method name="createPureContext" bean="dpuContext"/>
     </bean>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver" />
-		
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver"/>
+
     <!-- pipeline executor -->
     <bean id="pipelineExecutor"
-              class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"
-              scope="prototype" lazy-init="true" />
+          class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"
+          scope="prototype" lazy-init="true"/>
 
     <!-- DPU executor -->
     <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor"
-              scope="prototype" lazy-init="true" />
+          scope="prototype" lazy-init="true"/>
 
     <!-- data unit factory class -->
-    <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
+    <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory"/>
 
-	<bean id ="rdfDataUnitFactory"  class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
-	<property name="key" value="${database.rdf.platform}"/>
-	  <property name="implementations">
-	    <map>
-	      <entry key="inMemoryRDF">
-			<bean id="inMemoryRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory.InMemoryRDFDataUnitFactory">
-				<property name="repositoryPath" value="${general.workingdir}"/>
-			</bean>
-	      </entry>
-	      <entry key="localRDF">
-			<bean id="localRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
-				<property name="repositoryPath" value="${general.workingdir}"/>
-			</bean>
-	      </entry>
-	      <entry key="virtuoso">
-			<bean id="virtuosoRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnitFactory">
-				<property name="url" value="${database.rdf.url}"/>
-				<property name="user" value="${database.rdf.user}"/>
-				<property name="password" value="${database.rdf.password}"/>
-			</bean>
-	      </entry>
-	      <entry key="remoteRDF">
-			<bean id="remoteRdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf.RemoteRDFDataUnitFactory">
-				<property name="url" value="${database.rdf.url}"/>
-				<property name="user" value="${database.rdf.user}"/>
-				<property name="password" value="${database.rdf.password}"/>
-			</bean>
-	      </entry>
-	    </map>
-	  </property>
-	</bean>
+    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
+        <property name="key" value="${database.rdf.platform}"/>
+        <property name="implementations">
+            <map>
+                <entry key="inMemoryRDF">
+                    <bean id="inMemoryRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory.InMemoryRDFDataUnitFactory">
+                        <property name="repositoryPath" value="${general.workingdir}"/>
+                    </bean>
+                </entry>
+                <entry key="localRDF">
+                    <bean id="localRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnitFactory">
+                        <property name="repositoryPath" value="${general.workingdir}"/>
+                    </bean>
+                </entry>
+                <entry key="virtuoso">
+                    <bean id="virtuosoRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnitFactory">
+                        <property name="url" value="${database.rdf.url}"/>
+                        <property name="user" value="${database.rdf.user}"/>
+                        <property name="password" value="${database.rdf.password}"/>
+                    </bean>
+                </entry>
+                <entry key="remoteRDF">
+                    <bean id="remoteRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf.RemoteRDFDataUnitFactory">
+                        <property name="url" value="${database.rdf.url}"/>
+                        <property name="user" value="${database.rdf.user}"/>
+                        <property name="password" value="${database.rdf.password}"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
     <!-- store events into database -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase" />
+    <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase"/>
 
     <!-- scheduler -->
-    <bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler" />
-	 
+    <bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler"/>
+
     <!-- log prunner -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl" />
-        
+    <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl"/>
+
     <!-- watcher for DPU changes -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">
-        <constructor-arg name="refreshDatabase" value="false" />
+        <constructor-arg name="refreshDatabase" value="false"/>
     </bean>
 
     <!-- autodiscovery for DPU's pre/post executors -->
     <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl" />
+            base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl"/>
     <!-- autodiscovery for pipeline's pre/post executors -->
     <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl" />
+            base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl"/>
     <!-- autodiscovery for monitors -->
     <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.monitor" />
+            base-package="cz.cuni.mff.xrg.odcs.backend.monitor"/>
     <!-- components for sending reports -->
-    <context:component-scan 
-        base-package="cz.cuni.mff.xrg.odcs.backend.report" />        
-        
+    <context:component-scan
+            base-package="cz.cuni.mff.xrg.odcs.backend.report"/>
+
 </beans>

@@ -13,12 +13,13 @@ import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
- *
  */
 public class SimpleXSLTDialog extends AbstractConfigDialog<SimpleXSLTConfig> {
 
     private GridLayout mainLayout;
+
     private TextField xsltPath; //Path
+
     private TextField xmlPath; //Path
 
     public SimpleXSLTDialog() {
@@ -57,7 +58,7 @@ public class SimpleXSLTDialog extends AbstractConfigDialog<SimpleXSLTConfig> {
             }
         });
         mainLayout.addComponent(xmlPath);
-        
+
         xsltPath = new TextField();
         xsltPath.setNullRepresentation("");
         xsltPath.setCaption("Path to XSLT:");
@@ -74,8 +75,7 @@ public class SimpleXSLTDialog extends AbstractConfigDialog<SimpleXSLTConfig> {
                 throw new Validator.InvalidValueException("Path must be filled!");
             }
         });
-        mainLayout.addComponent(xsltPath) ;
-
+        mainLayout.addComponent(xsltPath);
 
         return mainLayout;
     }

@@ -31,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Test suite for DPU facade interface. Each test is run in own transaction,
  * which is rolled back in the end.
- *
+ * 
  * @author michal.klempa@eea.sk
  */
-@ContextConfiguration(locations = {"classpath:commons-app-test-context.xml"})
+@ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -80,11 +80,11 @@ public class DPUFacadeTest {
         parentTemplateRecord.setId(-54L);
         parentTemplateRecord.setJarDescription("testJarDescription");
         parentTemplateRecord.setJarDirectory("testJarDirectory");
-        parentTemplateRecord.setJarName("testJarName");        
-		
-		DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName", DPUType.EXTRACTOR);
-		// set description as only jarproperties are inherit from parent
-		templateRecord.setDescription("secondTestDescription");
+        parentTemplateRecord.setJarName("testJarName");
+
+        DPUTemplateRecord templateRecord = dpuFacade.createTemplate("testName", DPUType.EXTRACTOR);
+        // set description as only jarproperties are inherit from parent
+        templateRecord.setDescription("secondTestDescription");
         templateRecord.setParent(parentTemplateRecord);
 
         DPUTemplateRecord copyTemplateRecord = dpuFacade.createCopy(templateRecord);
@@ -410,7 +410,6 @@ public class DPUFacadeTest {
         templateRecord.setJarName("testJarName");
 
         DPUInstanceRecord instanceRecord = new DPUInstanceRecord();
-
         String rawConfig = "<xml><a>value</a></xml";
 
         instanceRecord.setName("testname");

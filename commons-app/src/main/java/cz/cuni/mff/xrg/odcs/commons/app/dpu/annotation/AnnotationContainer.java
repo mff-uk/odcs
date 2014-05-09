@@ -8,44 +8,44 @@ import java.lang.reflect.Field;
  * 
  * @author Petyr
  * @param <T>
- *
  */
 public class AnnotationContainer<T> {
 
-	/**
-	 * Field.
-	 */
-	private final Field field;
-	
-	/**
-	 * Field's annotation.
-	 */
-	public T annotation;
-	
-	/**
-	 * Create AnnotationContainer.
-	 * @param field Field.
-	 * @param annotation Annotation of given filed.
-	 */
-	public AnnotationContainer(Field field, T annotation) {
-		this.field = field;
-		this.annotation = annotation;
-	}
-	
-	/**
-	 * 
-	 * @return Filed on which is the annotation. 
-	 */
-	public Field getField() {
-		return field;
-	}
+    /**
+     * Field.
+     */
+    private final Field field;
 
-	/**
-	 * 
-	 * @return Represented annotation.
-	 */
-	public T getAnnotation() {
-		return annotation;
-	}
-	
+    /**
+     * Field's annotation.
+     */
+    public T annotation;
+
+    /**
+     * Create AnnotationContainer.
+     * 
+     * @param field
+     *            Field.
+     * @param annotation
+     *            Annotation of given filed.
+     */
+    public AnnotationContainer(Field field, T annotation) {
+        this.field = field;
+        this.annotation = annotation;
+    }
+
+    /**
+     * @return Filed on which is the annotation.
+     */
+    public Field getField() {
+        return field;
+    }
+
+    /**
+     * @return Represented annotation.
+     */
+    public T getAnnotation() {
+        return annotation;
+    }
+
 }

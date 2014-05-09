@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Implementation of authorization logic for {@link CriteriaBuilder}.
- *
+ * 
  * @author Petyr
  * @author Jan Vojt
  */
@@ -23,7 +23,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
     @Autowired(required = false)
     private AuthenticationContext authCtx;
-    
+
     @Override
     public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
 
@@ -31,14 +31,14 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             // no athorization
             return null;
         }
-        
+
         if (authCtx.getAuthentication().getAuthorities().contains(Role.ROLE_ADMIN)) {
             // admin has no restrictions
             return null;
         }
 
         Predicate predicate = null;
-        
+
         if (SharedEntity.class.isAssignableFrom(entityClass)) {
             predicate = or(cb, predicate, root.get("shareType").in(ShareType.PUBLIC));
         }
@@ -46,11 +46,11 @@ class DbAuthorizatorImpl implements DbAuthorizator {
         if (OwnedEntity.class.isAssignableFrom(entityClass)) {
             predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
         }
-		
-		// PipelineExecution is also viewable whenever its Pipeline is viewable
+
+        // PipelineExecution is also viewable whenever its Pipeline is viewable
         if (PipelineExecution.class.isAssignableFrom(entityClass)) {
-			predicate = or(cb, predicate, getAuthorizationPredicate(cb, root.get("pipeline"), Pipeline.class));
-		}
+            predicate = or(cb, predicate, getAuthorizationPredicate(cb, root.get("pipeline"), Pipeline.class));
+        }
 
         return predicate;
     }
@@ -65,9 +65,11 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
     /**
      * Gets property path.
-     *
-     * @param root the root where path starts form
-     * @param propertyId the property ID
+     * 
+     * @param root
+     *            the root where path starts form
+     * @param propertyId
+     *            the property ID
      * @return the path to property
      */
     private Path<Object> getPropertyPath(final Root<?> root, final Object propertyId) {
@@ -83,5 +85,5 @@ class DbAuthorizatorImpl implements DbAuthorizator {
         }
         return path;
     }
-    
+
 }

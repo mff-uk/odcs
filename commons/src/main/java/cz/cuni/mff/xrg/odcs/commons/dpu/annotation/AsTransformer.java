@@ -6,11 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to mark DPU as a Transformer. Use on main DPU class ie. 
- * {@link cz.cuni.mff.xrg.odcs.commons.dpu.DPU}.
+ * Used to mark DPU as a Transformer. Use on main DPU class ie. {@link cz.cuni.mff.xrg.odcs.commons.dpu.DPU}.
  * 
  * @author Petyr
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

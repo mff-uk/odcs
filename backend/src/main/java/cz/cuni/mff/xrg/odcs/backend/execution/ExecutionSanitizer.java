@@ -34,163 +34,158 @@ import org.springframework.context.ApplicationEventPublisher;
  * unexpected shutdown.
  * 
  * @author Petyr
- * 
  */
 class ExecutionSanitizer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ExecutionSanitizer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionSanitizer.class);
 
-	/**
-	 * Application's configuration.
-	 */
-	@Autowired
-	protected AppConfig appConfig;
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
 
-	@Autowired
-	private DataUnitFactory dataUnitFactory;
-	
-	@Autowired
-	private ApplicationEventPublisher eventPublisher;
-	
-	/**
-	 * Executions root directory.
-	 */
-	private File rootDirectory;
+    @Autowired
+    private DataUnitFactory dataUnitFactory;
 
-	@PostConstruct
-	private void propertySetter() {
-		this.rootDirectory = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-	}
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
-	/**
-	 * Fix possible problems with given execution. Logs of this method are
-	 * logged with the execution id of given {@link PipelineExecution}
-	 * 
-	 * Method does not save the changes into database! So called must secure
-	 * persisting of changes into database.
-	 * 
-	 * @param execution
-	 */
-	public void sanitize(PipelineExecution execution) {
-		// check for flags
-		if (execution.getStop()) {
-			sanitizeCancelling(execution);
-			return;
-		}
-		
-		switch (execution.getStatus()) {
-		case CANCELLING:
-			sanitizeCancelling(execution);
-			return;
-		case RUNNING:
-			sanitizeRunning(execution);
-			return;
-		default:
-			// do nothing with such pipeline .. 
-			return;
-		}
-	}
+    /**
+     * Executions root directory.
+     */
+    private File rootDirectory;
 
-	/**
-	 * Restart given {@link PipelineExecution} back to
-	 * {@link PipelineExecutionStatus#QUEUED} state.
-	 * 
-	 * @param execution
-	 */
-	private void sanitizeRunning(PipelineExecution execution) {
-		eventPublisher.publishEvent(new PipelineRestart(execution, this));
-	
-		// set state back to scheduled
-		execution.setStatus(PipelineExecutionStatus.QUEUED);
-	}
+    @PostConstruct
+    private void propertySetter() {
+        this.rootDirectory = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+    }
 
-	/**
-	 * Complete the canceling process on given {@link PipelineExecution} and set
-	 * {@link PipelineExecutionStatus#CANCELLED} state.
-	 * 
-	 * @param execution
-	 */
-	private void sanitizeCancelling(PipelineExecution execution) {
-		// publish event about this .. 
-		eventPublisher.publishEvent(new PipelineSanitized(execution, this));
-		
-		if (execution.isDebugging()) {
-			// no deletion
-		} else {
-			// delete execution data
-			deleteContext(execution);
-			// and directory
-			File toDelete = new File(rootDirectory, execution.getContext()
-					.getRootPath());
-			try {
-				FileUtils.deleteDirectory(toDelete);
-			} catch (IOException e) {
-				LOG.warn("Can't delete directory after execution", e);
-			}
-		}
-		Date now = new Date();
-		// check if the run has the start set .. 
-		if (execution.getStart() == null) {
-			// set current as start time
-			execution.setStart(now);
-			// this means that the execution does not run at all
-		}		
-		// set canceled state
-		execution.setStatus(PipelineExecutionStatus.CANCELLED);
-		execution.setEnd(now);
-	}
+    /**
+     * Fix possible problems with given execution. Logs of this method are
+     * logged with the execution id of given {@link PipelineExecution} Method does not save the changes into database! So called must secure
+     * persisting of changes into database.
+     * 
+     * @param execution
+     */
+    public void sanitize(PipelineExecution execution) {
+        // check for flags
+        if (execution.getStop()) {
+            sanitizeCancelling(execution);
+            return;
+        }
 
-	/**
-	 * Delete all dataUnits of given execution.
-	 * 
-	 * @param execution
-	 */
-	private void deleteContext(PipelineExecution execution) {
-		LOG.info("Deleting context for: {}", execution.getPipeline().getName());
-		ExecutionContextInfo context = execution.getContext();
-		if (context == null) {
-			// nothing to delete
-			return;
-		}
+        switch (execution.getStatus()) {
+            case CANCELLING:
+                sanitizeCancelling(execution);
+                return;
+            case RUNNING:
+                sanitizeRunning(execution);
+                return;
+            default:
+                // do nothing with such pipeline .. 
+                return;
+        }
+    }
 
-		Set<DPUInstanceRecord> instances = context.getDPUIndexes();
-		for (DPUInstanceRecord dpu : instances) {
-			// for each DPU
-			ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpu);
-			deleteContext(context, dpu, dpuInfo);
-		}
-	}
-	
-	/**
-	 * Delete dataUnits related to single DPU.
-	 * 
-	 * @param context
-	 * @param dpuInstance
-	 * @param dpuInfo
-	 */
-	private void deleteContext(ExecutionContextInfo context,
-			DPUInstanceRecord dpuInstance,
-			ProcessingUnitInfo dpuInfo) {
-		LOG.info("Deleting context for dpu: {}", dpuInstance.getName());
-		
-		List<DataUnitInfo> dataUnits = dpuInfo.getDataUnits();
-		for (DataUnitInfo dataUnitInfo : dataUnits) {
-			// we need to construct the DataUnit, create it and then 
-			// delete it
-			int index = dataUnitInfo.getIndex();
-			final DataUnitType type = dataUnitInfo.getType();
-			final String id = context.generateDataUnitId(dpuInstance, index);
-			final String name = dataUnitInfo.getName();
-			
-			final File rootDir = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-			final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
-			// create instance
-			
-			ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
-			// delete data .. 
-			dataUnit.clear();
-			dataUnit.release();
-		}
-	}	
-	
+    /**
+     * Restart given {@link PipelineExecution} back to {@link PipelineExecutionStatus#QUEUED} state.
+     * 
+     * @param execution
+     */
+    private void sanitizeRunning(PipelineExecution execution) {
+        eventPublisher.publishEvent(new PipelineRestart(execution, this));
+
+        // set state back to scheduled
+        execution.setStatus(PipelineExecutionStatus.QUEUED);
+    }
+
+    /**
+     * Complete the canceling process on given {@link PipelineExecution} and set {@link PipelineExecutionStatus#CANCELLED} state.
+     * 
+     * @param execution
+     */
+    private void sanitizeCancelling(PipelineExecution execution) {
+        // publish event about this .. 
+        eventPublisher.publishEvent(new PipelineSanitized(execution, this));
+
+        if (execution.isDebugging()) {
+            // no deletion
+        } else {
+            // delete execution data
+            deleteContext(execution);
+            // and directory
+            File toDelete = new File(rootDirectory, execution.getContext()
+                    .getRootPath());
+            try {
+                FileUtils.deleteDirectory(toDelete);
+            } catch (IOException e) {
+                LOG.warn("Can't delete directory after execution", e);
+            }
+        }
+        Date now = new Date();
+        // check if the run has the start set .. 
+        if (execution.getStart() == null) {
+            // set current as start time
+            execution.setStart(now);
+            // this means that the execution does not run at all
+        }
+        // set canceled state
+        execution.setStatus(PipelineExecutionStatus.CANCELLED);
+        execution.setEnd(now);
+    }
+
+    /**
+     * Delete all dataUnits of given execution.
+     * 
+     * @param execution
+     */
+    private void deleteContext(PipelineExecution execution) {
+        LOG.info("Deleting context for: {}", execution.getPipeline().getName());
+        ExecutionContextInfo context = execution.getContext();
+        if (context == null) {
+            // nothing to delete
+            return;
+        }
+
+        Set<DPUInstanceRecord> instances = context.getDPUIndexes();
+        for (DPUInstanceRecord dpu : instances) {
+            // for each DPU
+            ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpu);
+            deleteContext(context, dpu, dpuInfo);
+        }
+    }
+
+    /**
+     * Delete dataUnits related to single DPU.
+     * 
+     * @param context
+     * @param dpuInstance
+     * @param dpuInfo
+     */
+    private void deleteContext(ExecutionContextInfo context,
+            DPUInstanceRecord dpuInstance,
+            ProcessingUnitInfo dpuInfo) {
+        LOG.info("Deleting context for dpu: {}", dpuInstance.getName());
+
+        List<DataUnitInfo> dataUnits = dpuInfo.getDataUnits();
+        for (DataUnitInfo dataUnitInfo : dataUnits) {
+            // we need to construct the DataUnit, create it and then 
+            // delete it
+            int index = dataUnitInfo.getIndex();
+            final DataUnitType type = dataUnitInfo.getType();
+            final String id = context.generateDataUnitId(dpuInstance, index);
+            final String name = dataUnitInfo.getName();
+
+            final File rootDir = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+            final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
+            // create instance
+
+            ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
+            // delete data .. 
+            dataUnit.clear();
+            dataUnit.release();
+        }
+    }
+
 }

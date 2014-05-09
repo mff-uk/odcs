@@ -5,297 +5,294 @@ import java.util.List;
 
 /**
  * SPARQL extractor configuration.
- *
+ * 
  * @author Petyr
  * @author Jiri Tomes
  */
 public class RDFExtractorConfig extends DPUConfigObjectBase {
 
-	private String SPARQL_endpoint;
+    private String SPARQL_endpoint;
 
-	private String Host_name;
+    private String Host_name;
 
-	private String Password;
+    private String Password;
 
-	private String SPARQL_query;
+    private String SPARQL_query;
 
-	private boolean ExtractFail;
+    private boolean ExtractFail;
 
-	private boolean UseStatisticalHandler;
+    private boolean UseStatisticalHandler;
 
-	private boolean failWhenErrors;
+    private boolean failWhenErrors;
 
-	private Long retryTime;
+    private Long retryTime;
 
-	private Integer retrySize;
+    private Integer retrySize;
 
-	private ExtractorEndpointParams endpointParams;
+    private ExtractorEndpointParams endpointParams;
 
-	private List<String> GraphsUri;
+    private List<String> GraphsUri;
 
-	private boolean useSplitConstruct;
+    private boolean useSplitConstruct;
 
-	private Integer splitConstructSize;
+    private Integer splitConstructSize;
 
-	public RDFExtractorConfig() {
-		this.SPARQL_endpoint = "";
-		this.Host_name = "";
-		this.Password = "";
-		this.SPARQL_query = "";
-		this.ExtractFail = true;
-		this.UseStatisticalHandler = true;
-		this.failWhenErrors = false;
-		this.retrySize = -1;
-		this.retryTime = 1000L;
-		this.endpointParams = new ExtractorEndpointParams();
-		this.useSplitConstruct = false;
-		this.splitConstructSize = 50000;
-	}
+    public RDFExtractorConfig() {
+        this.SPARQL_endpoint = "";
+        this.Host_name = "";
+        this.Password = "";
+        this.SPARQL_query = "";
+        this.ExtractFail = true;
+        this.UseStatisticalHandler = true;
+        this.failWhenErrors = false;
+        this.retrySize = -1;
+        this.retryTime = 1000L;
+        this.endpointParams = new ExtractorEndpointParams();
+        this.useSplitConstruct = false;
+        this.splitConstructSize = 50000;
+    }
 
-	public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
-			String Password, String SPARQL_query, boolean ExtractFail,
-			boolean UseStatisticalHandler, boolean failWhenErrors, int retrySize,
-			long retryTime, ExtractorEndpointParams endpointParams,
-			boolean useSplitConstruct, int splitConstructSize) {
+    public RDFExtractorConfig(String SPARQL_endpoint, String Host_name,
+            String Password, String SPARQL_query, boolean ExtractFail,
+            boolean UseStatisticalHandler, boolean failWhenErrors, int retrySize,
+            long retryTime, ExtractorEndpointParams endpointParams,
+            boolean useSplitConstruct, int splitConstructSize) {
 
-		this.SPARQL_endpoint = SPARQL_endpoint;
-		this.Host_name = Host_name;
-		this.Password = Password;
-		this.SPARQL_query = SPARQL_query;
-		this.ExtractFail = ExtractFail;
-		this.UseStatisticalHandler = UseStatisticalHandler;
-		this.failWhenErrors = failWhenErrors;
-		this.retrySize = retrySize;
-		this.retryTime = retryTime;
-		this.endpointParams = endpointParams;
-		this.useSplitConstruct = useSplitConstruct;
-		this.splitConstructSize = splitConstructSize;
-	}
+        this.SPARQL_endpoint = SPARQL_endpoint;
+        this.Host_name = Host_name;
+        this.Password = Password;
+        this.SPARQL_query = SPARQL_query;
+        this.ExtractFail = ExtractFail;
+        this.UseStatisticalHandler = UseStatisticalHandler;
+        this.failWhenErrors = failWhenErrors;
+        this.retrySize = retrySize;
+        this.retryTime = retryTime;
+        this.endpointParams = endpointParams;
+        this.useSplitConstruct = useSplitConstruct;
+        this.splitConstructSize = splitConstructSize;
+    }
 
-	/**
-	 * Returns parameters for target SPARQL endpoint as
-	 * {@link ExtractorEndpointParams} instance.
-	 *
-	 * @return parameters for target SPARQL endpoint as
-	 *         {@link ExtractorEndpointParams} instance.
-	 */
-	public ExtractorEndpointParams getEndpointParams() {
-		return endpointParams;
-	}
+    /**
+     * Returns parameters for target SPARQL endpoint as {@link ExtractorEndpointParams} instance.
+     * 
+     * @return parameters for target SPARQL endpoint as {@link ExtractorEndpointParams} instance.
+     */
+    public ExtractorEndpointParams getEndpointParams() {
+        return endpointParams;
+    }
 
-	/**
-	 * Returns URL address of SPARQL endpoint as string.
-	 *
-	 * @return URL address of SPARQL endpoint as string.
-	 */
-	public String getSPARQLEndpoint() {
-		return SPARQL_endpoint;
-	}
+    /**
+     * Returns URL address of SPARQL endpoint as string.
+     * 
+     * @return URL address of SPARQL endpoint as string.
+     */
+    public String getSPARQLEndpoint() {
+        return SPARQL_endpoint;
+    }
 
-	/**
-	 * Returns host name for target SPARQL endpoint.
-	 *
-	 * @return host name for target SPARQL endpoint.
-	 */
-	public String getHostName() {
-		return Host_name;
-	}
+    /**
+     * Returns host name for target SPARQL endpoint.
+     * 
+     * @return host name for target SPARQL endpoint.
+     */
+    public String getHostName() {
+        return Host_name;
+    }
 
-	/**
-	 * Returns password for access to the target SPARQL endpoint.
-	 *
-	 * @return password for access to the target SPARQL endpoint.
-	 */
-	public String getPassword() {
-		return Password;
-	}
+    /**
+     * Returns password for access to the target SPARQL endpoint.
+     * 
+     * @return password for access to the target SPARQL endpoint.
+     */
+    public String getPassword() {
+        return Password;
+    }
 
-	/**
-	 * Returns string value of SPARQL query.
-	 *
-	 * @return SPARQL query.
-	 */
-	public String getSPARQLQuery() {
-		return SPARQL_query;
-	}
+    /**
+     * Returns string value of SPARQL query.
+     * 
+     * @return SPARQL query.
+     */
+    public String getSPARQLQuery() {
+        return SPARQL_query;
+    }
 
-	/**
-	 * Returns true, if extraction wil be stopped when errors, false otherwise.
-	 *
-	 * @return true, if extraction wil be stopped when errors, false otherwise.
-	 */
-	public boolean isExtractFail() {
-		return ExtractFail;
-	}
+    /**
+     * Returns true, if extraction wil be stopped when errors, false otherwise.
+     * 
+     * @return true, if extraction wil be stopped when errors, false otherwise.
+     */
+    public boolean isExtractFail() {
+        return ExtractFail;
+    }
 
-	/**
-	 * Returns true, if is used statistical handler for data extraction, false
-	 * otherwise.
-	 *
-	 * @return true, if is used statistical handler for data extraction, false
-	 *         otherwise.
-	 */
-	public boolean isUsedStatisticalHandler() {
-		return UseStatisticalHandler;
-	}
+    /**
+     * Returns true, if is used statistical handler for data extraction, false
+     * otherwise.
+     * 
+     * @return true, if is used statistical handler for data extraction, false
+     *         otherwise.
+     */
+    public boolean isUsedStatisticalHandler() {
+        return UseStatisticalHandler;
+    }
 
-	/**
-	 * Returns true, if execution should fail when some errors are detected,
-	 * false otherwise.
-	 *
-	 * @return true, if execution should fail when some errors are detected,
-	 *         false otherwise.
-	 */
-	public boolean isFailWhenErrors() {
-		return failWhenErrors;
-	}
+    /**
+     * Returns true, if execution should fail when some errors are detected,
+     * false otherwise.
+     * 
+     * @return true, if execution should fail when some errors are detected,
+     *         false otherwise.
+     */
+    public boolean isFailWhenErrors() {
+        return failWhenErrors;
+    }
 
-	/**
-	 * Returns time in ms how long wait before re-connection attempt.
-	 *
-	 * @return Time in ms how long wait before re-connection attempt.
-	 */
-	public Long getRetryTime() {
-		return retryTime;
-	}
+    /**
+     * Returns time in ms how long wait before re-connection attempt.
+     * 
+     * @return Time in ms how long wait before re-connection attempt.
+     */
+    public Long getRetryTime() {
+        return retryTime;
+    }
 
-	/**
-	 * Returns count of re-connection if connection failed. For infinite loop
-	 * use zero or negative integer.
-	 *
-	 * @return Count of re-connection if connection failed. For infinite loop
-	 *         use zero or negative integer.
-	 *
-	 */
-	public Integer getRetrySize() {
-		return retrySize;
-	}
+    /**
+     * Returns count of re-connection if connection failed. For infinite loop
+     * use zero or negative integer.
+     * 
+     * @return Count of re-connection if connection failed. For infinite loop
+     *         use zero or negative integer.
+     */
+    public Integer getRetrySize() {
+        return retrySize;
+    }
 
-	/**
-	 * Returns true, if construct query should be split in more SPARQL queries,
-	 * false otherwise.
-	 *
-	 * @return true, if construct query should be split in more SPARQL queries,
-	 *         false otherwise.
-	 */
-	public boolean isUsedSplitConstruct() {
-		return useSplitConstruct;
-	}
+    /**
+     * Returns true, if construct query should be split in more SPARQL queries,
+     * false otherwise.
+     * 
+     * @return true, if construct query should be split in more SPARQL queries,
+     *         false otherwise.
+     */
+    public boolean isUsedSplitConstruct() {
+        return useSplitConstruct;
+    }
 
-	/**
-	 * Returns maximum size of one data part for contruct query when is used
-	 * split.
-	 *
-	 * @return maximum size of one data part for contruct query when is used
-	 *         split.
-	 */
-	public Integer getSplitConstructSize() {
-		return splitConstructSize;
-	}
+    /**
+     * Returns maximum size of one data part for contruct query when is used
+     * split.
+     * 
+     * @return maximum size of one data part for contruct query when is used
+     *         split.
+     */
+    public Integer getSplitConstructSize() {
+        return splitConstructSize;
+    }
 
-	public String getSPARQL_endpoint() {
-		return SPARQL_endpoint;
-	}
+    public String getSPARQL_endpoint() {
+        return SPARQL_endpoint;
+    }
 
-	public String getHost_name() {
-		return Host_name;
-	}
+    public String getHost_name() {
+        return Host_name;
+    }
 
-	public String getSPARQL_query() {
-		return SPARQL_query;
-	}
+    public String getSPARQL_query() {
+        return SPARQL_query;
+    }
 
-	public boolean isUseStatisticalHandler() {
-		return UseStatisticalHandler;
-	}
+    public boolean isUseStatisticalHandler() {
+        return UseStatisticalHandler;
+    }
 
-	public List<String> getGraphsUri() {
-		return GraphsUri;
-	}
+    public List<String> getGraphsUri() {
+        return GraphsUri;
+    }
 
-	public boolean isUseSplitConstruct() {
-		return useSplitConstruct;
-	}
-	
-	public void setSPARQL_endpoint(String SPARQL_endpoint) {
-		this.SPARQL_endpoint = SPARQL_endpoint;
-	}
+    public boolean isUseSplitConstruct() {
+        return useSplitConstruct;
+    }
 
-	public void setHost_name(String Host_name) {
-		this.Host_name = Host_name;
-	}
+    public void setSPARQL_endpoint(String SPARQL_endpoint) {
+        this.SPARQL_endpoint = SPARQL_endpoint;
+    }
 
-	public void setPassword(String Password) {
-		this.Password = Password;
-	}
+    public void setHost_name(String Host_name) {
+        this.Host_name = Host_name;
+    }
 
-	public void setSPARQL_query(String SPARQL_query) {
-		this.SPARQL_query = SPARQL_query;
-	}
+    public void setPassword(String Password) {
+        this.Password = Password;
+    }
 
-	public void setExtractFail(boolean ExtractFail) {
-		this.ExtractFail = ExtractFail;
-	}
+    public void setSPARQL_query(String SPARQL_query) {
+        this.SPARQL_query = SPARQL_query;
+    }
 
-	public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
-		this.UseStatisticalHandler = UseStatisticalHandler;
-	}
+    public void setExtractFail(boolean ExtractFail) {
+        this.ExtractFail = ExtractFail;
+    }
 
-	public void setFailWhenErrors(boolean failWhenErrors) {
-		this.failWhenErrors = failWhenErrors;
-	}
+    public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
+        this.UseStatisticalHandler = UseStatisticalHandler;
+    }
 
-	public void setRetryTime(Long retryTime) {
-		this.retryTime = retryTime;
-	}
+    public void setFailWhenErrors(boolean failWhenErrors) {
+        this.failWhenErrors = failWhenErrors;
+    }
 
-	public void setRetrySize(Integer retrySize) {
-		this.retrySize = retrySize;
-	}
+    public void setRetryTime(Long retryTime) {
+        this.retryTime = retryTime;
+    }
 
-	public void setEndpointParams(ExtractorEndpointParams endpointParams) {
-		this.endpointParams = endpointParams;
-	}
+    public void setRetrySize(Integer retrySize) {
+        this.retrySize = retrySize;
+    }
 
-	public void setGraphsUri(List<String> GraphsUri) {
-		this.GraphsUri = GraphsUri;
-	}
+    public void setEndpointParams(ExtractorEndpointParams endpointParams) {
+        this.endpointParams = endpointParams;
+    }
 
-	public void setUseSplitConstruct(boolean useSplitConstruct) {
-		this.useSplitConstruct = useSplitConstruct;
-	}
+    public void setGraphsUri(List<String> GraphsUri) {
+        this.GraphsUri = GraphsUri;
+    }
 
-	public void setSplitConstructSize(Integer splitConstructSize) {
-		this.splitConstructSize = splitConstructSize;
-	}
-	
-	/**
-	 * Returns true, if DPU configuration is valid, false otherwise.
-	 *
-	 * @return true, if DPU configuration is valid, false otherwise.
-	 */
-	@Override
-	public boolean isValid() {
-		return SPARQL_endpoint != null
-				&& Host_name != null
-				&& Password != null
-				&& SPARQL_query != null
-				&& retrySize != null
-				&& retryTime != null
-				&& retryTime > 0
-				&& endpointParams != null;
-	}
+    public void setUseSplitConstruct(boolean useSplitConstruct) {
+        this.useSplitConstruct = useSplitConstruct;
+    }
 
-	/**
-	 * Fill missing configuration with default values.
-	 */
-	@Override
-	public void onDeserialize() {
-		if (endpointParams.getDefaultGraphURI().isEmpty() && GraphsUri != null) {
-			for (String defaultGraph : GraphsUri) {
-				endpointParams.addDefaultGraph(defaultGraph);
-			}
-		}
-	}
+    public void setSplitConstructSize(Integer splitConstructSize) {
+        this.splitConstructSize = splitConstructSize;
+    }
+
+    /**
+     * Returns true, if DPU configuration is valid, false otherwise.
+     * 
+     * @return true, if DPU configuration is valid, false otherwise.
+     */
+    @Override
+    public boolean isValid() {
+        return SPARQL_endpoint != null
+                && Host_name != null
+                && Password != null
+                && SPARQL_query != null
+                && retrySize != null
+                && retryTime != null
+                && retryTime > 0
+                && endpointParams != null;
+    }
+
+    /**
+     * Fill missing configuration with default values.
+     */
+    @Override
+    public void onDeserialize() {
+        if (endpointParams.getDefaultGraphURI().isEmpty() && GraphsUri != null) {
+            for (String defaultGraph : GraphsUri) {
+                endpointParams.addDefaultGraph(defaultGraph);
+            }
+        }
+    }
 
 }

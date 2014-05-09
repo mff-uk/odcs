@@ -7,22 +7,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation for accessing {@link DPUInstanceRecord} data objects.
- *
+ * 
  * @author Jan Vojt
  * @author petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
 public class DbDPUInstanceRecordImpl extends DbAccessBase<DPUInstanceRecord>
-		implements DbDPUInstanceRecord {
+        implements DbDPUInstanceRecord {
 
-	public DbDPUInstanceRecordImpl() {
-		super(DPUInstanceRecord.class);
-	}
+    public DbDPUInstanceRecordImpl() {
+        super(DPUInstanceRecord.class);
+    }
 
-	@Override
-	public List<DPUInstanceRecord> getAll() {
-		final String queryStr = "SELECT e FROM DPUInstanceRecord e";
-		return executeList(queryStr);
-	}
+    @Override
+    public List<DPUInstanceRecord> getAll() {
+        final String queryStr = "SELECT e FROM DPUInstanceRecord e";
+        return executeList(queryStr);
+    }
 
 }
