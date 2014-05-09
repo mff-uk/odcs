@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf;
 
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -13,7 +13,7 @@ import org.openrdf.sail.nativerdf.config.NativeStoreConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 
 /**
  * Implementation of Sesame http repository - RDF data and intermediate results are

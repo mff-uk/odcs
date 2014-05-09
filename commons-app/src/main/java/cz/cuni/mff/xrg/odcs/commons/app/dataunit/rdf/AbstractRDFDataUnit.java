@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory.InMemoryRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;

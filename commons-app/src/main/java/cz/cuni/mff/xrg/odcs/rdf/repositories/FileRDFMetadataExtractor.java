@@ -10,7 +10,7 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;

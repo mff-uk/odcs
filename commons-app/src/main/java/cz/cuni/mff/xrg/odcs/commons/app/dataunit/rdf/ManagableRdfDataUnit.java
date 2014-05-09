@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;

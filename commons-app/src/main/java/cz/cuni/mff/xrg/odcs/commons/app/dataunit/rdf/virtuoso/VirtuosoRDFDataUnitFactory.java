@@ -1,7 +1,7 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class VirtuosoRDFDataUnitFactory implements RDFDataUnitFactory {
     private String url;

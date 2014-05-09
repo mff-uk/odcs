@@ -30,7 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso.VirtuosoRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 
 /**

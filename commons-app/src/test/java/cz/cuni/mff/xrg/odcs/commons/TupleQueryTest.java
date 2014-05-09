@@ -23,7 +23,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 

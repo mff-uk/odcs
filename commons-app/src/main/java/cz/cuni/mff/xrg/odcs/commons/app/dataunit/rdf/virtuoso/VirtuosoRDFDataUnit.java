@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.virtuoso;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso;
 
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.AbstractRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 

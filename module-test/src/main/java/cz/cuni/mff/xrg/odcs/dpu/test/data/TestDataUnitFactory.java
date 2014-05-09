@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.openrdf.repository.RepositoryException;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
