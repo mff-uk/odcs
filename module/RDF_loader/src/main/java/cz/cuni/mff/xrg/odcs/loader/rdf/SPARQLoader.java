@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -912,11 +911,8 @@ public class SPARQLoader {
         }
     }
 
-    private GraphQueryResult getTriplesPart(String constructQuery) throws InvalidQueryException {
-        RepositoryConnection connection = null;
+    private GraphQueryResult getTriplesPart(RepositoryConnection connection, String constructQuery) throws InvalidQueryException {
         try {
-            connection = rdfDataUnit.getConnection();
-
             GraphQuery graphQuery = connection.prepareGraphQuery(
                     QueryLanguage.SPARQL,
                     constructQuery);
@@ -934,19 +930,9 @@ public class SPARQLoader {
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
 
-            logger.error("Connection to RDF repository failed. "
-                    + ex.getMessage(), ex);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
-                }
-            }
+            throw new InvalidQueryException(
+                    "Getting GraphQueryResult for lazy triples failed.");
         }
-        throw new InvalidQueryException(
-                "Getting GraphQueryResult for lazy triples failed.");
     }
 
     private String getInsertQueryPart(long sizeSplit,
@@ -966,43 +952,56 @@ public class SPARQLoader {
 
         while (true) {
             try {
+                RepositoryConnection connection = null;
+                try {
+                    connection = rdfDataUnit.getConnection();
+                    GraphQueryResult lazy = getTriplesPart(connection, getConstructQuery(
+                            sizeSplit,
+                            offset));
 
-                GraphQueryResult lazy = getTriplesPart(getConstructQuery(
-                        sizeSplit,
-                        offset));
+                    while (lazy.hasNext()) {
 
-                while (lazy.hasNext()) {
+                        Statement next = lazy.next();
 
-                    Statement next = lazy.next();
+                        Resource subject = next.getSubject();
+                        URI predicate = next.getPredicate();
+                        Value object = next.getObject();
 
-                    Resource subject = next.getSubject();
-                    URI predicate = next.getPredicate();
-                    Value object = next.getObject();
+                        StringBuilder appendLine = new StringBuilder();
 
-                    StringBuilder appendLine = new StringBuilder();
+                        appendLine.append(getSubjectInsertText(subject));
+                        appendLine.append(" ");
+                        appendLine.append(getPredicateInsertText(predicate));
+                        appendLine.append(" ");
+                        appendLine.append(getObjectInsertText(object));
+                        appendLine.append(" .");
 
-                    appendLine.append(getSubjectInsertText(subject));
-                    appendLine.append(" ");
-                    appendLine.append(getPredicateInsertText(predicate));
-                    appendLine.append(" ");
-                    appendLine.append(getObjectInsertText(object));
-                    appendLine.append(" .");
+                        builder.append(appendLine);
 
-                    builder.append(appendLine);
+                        count++;
+                        if (count == sizeSplit) {
+                            builder.append(insertStop);
+                            lazy.close();
+                            return builder.toString();
 
-                    count++;
-                    if (count == sizeSplit) {
+                        }
+                    }
+
+                    if (count > 0) {
                         builder.append(insertStop);
                         lazy.close();
                         return builder.toString();
-
                     }
-                }
-
-                if (count > 0) {
-                    builder.append(insertStop);
-                    lazy.close();
-                    return builder.toString();
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+                } finally {
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (RepositoryException ex) {
+                            context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                        }
+                    }
                 }
 
                 return null;
@@ -1490,35 +1489,48 @@ public class SPARQLoader {
                     }
                 }
 
-                GraphQueryResult lazy = getTriplesPart("CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c}");
-                while (lazy.hasNext()) {
+                RepositoryConnection connection1 = null;
+                try {
+                    connection1 = rdfDataUnit.getConnection();
+                    GraphQueryResult lazy = getTriplesPart(connection1, "CONSTRUCT {?a ?b ?c} WHERE {?a ?b ?c}");
+                    while (lazy.hasNext()) {
 
-                    Statement next = lazy.next();
+                        Statement next = lazy.next();
 
-                    Resource subject = next.getSubject();
-                    URI predicate = next.getPredicate();
-                    Value object = next.getObject();
+                        Resource subject = next.getSubject();
+                        URI predicate = next.getPredicate();
+                        Value object = next.getObject();
 
-                    StringBuilder appendLine = new StringBuilder();
+                        StringBuilder appendLine = new StringBuilder();
 
-                    appendLine.append(getSubjectInsertText(subject));
-                    appendLine.append(" ");
-                    appendLine.append(getPredicateInsertText(predicate));
-                    appendLine.append(" ");
-                    appendLine.append(getObjectInsertText(object));
-                    appendLine.append(" .");
+                        appendLine.append(getSubjectInsertText(subject));
+                        appendLine.append(" ");
+                        appendLine.append(getPredicateInsertText(predicate));
+                        appendLine.append(" ");
+                        appendLine.append(getObjectInsertText(object));
+                        appendLine.append(" .");
 
-                    builder.append(appendLine);
+                        builder.append(appendLine);
 
-                    count++;
+                        count++;
 
-                }
+                    }
 
-                logger.debug("PProcessed {} triples", count);
-                if (count > 0) {
-
-                    lazy.close();
-                    return builder.toString();
+                    logger.debug("PProcessed {} triples", count);
+                    if (count > 0) {
+                        lazy.close();
+                        return builder.toString();
+                    }
+                } catch (RepositoryException ex) {
+                    context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+                } finally {
+                    if (connection1 != null) {
+                        try {
+                            connection1.close();
+                        } catch (RepositoryException ex) {
+                            context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                        }
+                    }
                 }
 
                 return null;
