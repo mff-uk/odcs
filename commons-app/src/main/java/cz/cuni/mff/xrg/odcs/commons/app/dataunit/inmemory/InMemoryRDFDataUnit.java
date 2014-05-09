@@ -102,11 +102,6 @@ public class InMemoryRDFDataUnit extends BaseRDFRepo {
 			}
 		}		
 	}
-
-	@Override
-	public DataUnitType getType() {
-		return DataUnitType.RDF;
-	}
 	
 	@Override
 	public String getDataUnitName() {

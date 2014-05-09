@@ -54,6 +54,11 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 	public DataUnitType getType() {
 		return DataUnitType.FILE;
 	}
+	
+	@Override
+	public boolean isType(DataUnitType dataUnitType) {
+	    return this.getType().equals(dataUnitType);
+	}
 
 	@Override
 	public String getDataUnitName() {

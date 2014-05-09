@@ -19,6 +19,13 @@ public interface DataUnit {
 	 * @return DataUnit type.
 	 */
 	public DataUnitType getType();
+	
+	/**
+	 * Check my type against provided.
+	 * 
+	 * @return True if equals
+	 */
+	boolean isType(DataUnitType dataUnitType);
 
 	/**
 	 * Return dataUnit's URI. The DataUnit URI should be set in constructor.

@@ -15,6 +15,7 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
@@ -53,7 +54,17 @@ public abstract class BaseRDFRepo implements ManagableRdfDataUnit {
 	public BaseRDFRepo() {
 		this.fileRDFMetadataExtractor = new FileRDFMetadataExtractor(this);
 	}
+	
+   @Override
+    public DataUnitType getType() {
+        return DataUnitType.RDF;
+    }
 
+   @Override
+   public boolean isType(DataUnitType dataUnitType) {
+       return this.getType().equals(dataUnitType);
+   }
+   
 	@Override
 	public Map<String, List<String>> getRDFMetadataForSubjectURI(
 			String subjectURI, List<String> predicates) {
