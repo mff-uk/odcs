@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
-import java.util.List;
 
 /**
  * Facade for managing persisted User entities.

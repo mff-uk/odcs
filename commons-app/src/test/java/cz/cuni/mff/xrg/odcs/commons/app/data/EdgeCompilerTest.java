@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 import java.util.List;

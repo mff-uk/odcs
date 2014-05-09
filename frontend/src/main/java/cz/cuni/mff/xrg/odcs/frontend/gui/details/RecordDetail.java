@@ -3,17 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 import java.text.DateFormat;
 import java.util.Locale;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.Window;
-import static com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.RichTextArea;
-
+import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  * Shows detail of selected event record.

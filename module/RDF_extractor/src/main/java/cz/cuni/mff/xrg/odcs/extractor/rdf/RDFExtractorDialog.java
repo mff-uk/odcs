@@ -1,22 +1,23 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import com.vaadin.ui.*;
-
-import cz.cuni.mff.xrg.odcs.commons.configuration.*;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.vaadin.data.*;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.*;
+
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 /**
  * Configuration dialog for DPU SPARQL Extractor.

@@ -1,15 +1,12 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
+import java.io.File;
+
+import org.openrdf.repository.RepositoryException;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Properties;
-
-import org.openrdf.repository.RepositoryException;
 
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used

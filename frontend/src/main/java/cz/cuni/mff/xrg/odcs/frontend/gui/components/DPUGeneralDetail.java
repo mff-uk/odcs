@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -11,8 +14,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPURecordWrap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Component for setting general information about DPU like name and

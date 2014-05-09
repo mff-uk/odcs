@@ -1,16 +1,17 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import org.slf4j.LoggerFactory;
+
 import com.github.wolfie.refresher.Refresher;
 import com.github.wolfie.refresher.Refresher.RefreshListener;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
-import java.util.Date;
-
-import java.util.HashMap;
-import org.slf4j.LoggerFactory;
 
 /**
  * Manager for refresh events in frontend.

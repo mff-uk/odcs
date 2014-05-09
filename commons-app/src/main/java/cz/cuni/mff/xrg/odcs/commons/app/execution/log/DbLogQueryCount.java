@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.TypedQuery;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 
 /**
  * Special query for logs.

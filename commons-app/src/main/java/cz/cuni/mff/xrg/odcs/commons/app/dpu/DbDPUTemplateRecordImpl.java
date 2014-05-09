@@ -1,10 +1,13 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import java.util.List;
+
 import javax.persistence.TypedQuery;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 
 /**
  * Implementation for accessing {@link DPUTemplateRecord} data objects.

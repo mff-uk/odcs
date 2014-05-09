@@ -4,7 +4,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
-
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 
 /**

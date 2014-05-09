@@ -1,9 +1,11 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import org.junit.BeforeClass;
+import static junit.framework.Assert.assertEquals;
+
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.junit.experimental.categories.Category;
 import org.openrdf.model.Model;
 import org.openrdf.repository.RepositoryConnection;
@@ -14,11 +16,9 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-
-import static junit.framework.Assert.assertEquals;
+import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 @Category(IntegrationTest.class)
 public class VirtuosoIt {

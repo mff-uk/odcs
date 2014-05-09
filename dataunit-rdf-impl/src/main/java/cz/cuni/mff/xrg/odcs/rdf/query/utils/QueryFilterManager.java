@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.rdf.query.utils;
 
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryFilter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryFilter;
 
 /**
  * Class responsible for manage filters to given set query.

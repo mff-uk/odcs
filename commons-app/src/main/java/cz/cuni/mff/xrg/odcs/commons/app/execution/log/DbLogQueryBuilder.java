@@ -1,11 +1,14 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 
 /**
  * Special query builder for logs.

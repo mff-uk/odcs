@@ -1,18 +1,19 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 
 /**
  * Implementation of {@link ManageableDirectoryHandler}.

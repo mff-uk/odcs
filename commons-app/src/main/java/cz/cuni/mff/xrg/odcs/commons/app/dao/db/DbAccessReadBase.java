@@ -1,14 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Collections;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Partial implementation of {@link DbAccessRead} interface.

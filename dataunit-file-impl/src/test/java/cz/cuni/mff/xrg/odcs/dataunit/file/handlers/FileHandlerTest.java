@@ -1,14 +1,17 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Test;
+
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 
 /**
  * Test suite for {@link FileHandler}.

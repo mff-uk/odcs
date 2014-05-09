@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Keeps authentication context for current user session.

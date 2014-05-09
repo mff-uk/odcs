@@ -1,12 +1,14 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Objects;
+
 import javax.persistence.*;
 
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import org.apache.commons.lang3.StringUtils;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Represent imported DPU in database.

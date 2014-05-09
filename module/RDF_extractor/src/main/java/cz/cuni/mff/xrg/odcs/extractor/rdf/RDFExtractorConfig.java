@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * SPARQL extractor configuration.

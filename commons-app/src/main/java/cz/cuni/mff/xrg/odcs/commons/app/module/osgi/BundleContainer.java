@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import java.util.Map;
 
 /**
  * Represent a single bundle. Enable loading class from bundle. Also

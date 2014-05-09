@@ -1,7 +1,12 @@
 package virtuoso.eclipselink;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -11,14 +16,14 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
-
-import static org.eclipse.persistence.platform.database.DatabasePlatform.DEFAULT_VARCHAR_SIZE;
 
 /**
  * <p>

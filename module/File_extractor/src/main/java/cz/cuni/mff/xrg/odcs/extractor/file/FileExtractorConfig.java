@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import org.openrdf.rio.RDFFormat;
+
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * File extractor configuration.

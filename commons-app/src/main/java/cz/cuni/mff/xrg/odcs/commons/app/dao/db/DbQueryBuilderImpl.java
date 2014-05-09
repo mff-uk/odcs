@@ -1,19 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 
 class DbQueryBuilderImpl<T extends DataObject> implements DbQueryBuilder<T> {
 

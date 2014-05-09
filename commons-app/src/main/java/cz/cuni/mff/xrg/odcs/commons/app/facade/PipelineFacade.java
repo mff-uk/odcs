@@ -1,5 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -7,12 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import java.sql.SQLException;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.EntityManager;
 
 /**
  * Facade providing actions with pipelines.

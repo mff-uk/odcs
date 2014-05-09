@@ -1,13 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 
 /**
  * Test suite for {@link Node} class.

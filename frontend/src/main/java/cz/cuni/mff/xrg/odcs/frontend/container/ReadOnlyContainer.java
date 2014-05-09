@@ -1,11 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +12,8 @@ import com.vaadin.data.util.filter.UnsupportedFilterException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 /**
  * Implementation of read only container that use {@link DataAccessRead} as data

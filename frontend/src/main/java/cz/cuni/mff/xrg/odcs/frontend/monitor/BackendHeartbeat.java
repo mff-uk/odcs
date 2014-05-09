@@ -1,11 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.monitor;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
+
+import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 
 /**
  * Periodically checks Backend status. As singleton component should prevent

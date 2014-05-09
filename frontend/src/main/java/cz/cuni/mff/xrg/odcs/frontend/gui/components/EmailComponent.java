@@ -1,11 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.validator.routines.EmailValidator;
 

@@ -1,9 +1,11 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import java.net.URL;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
  * Responsible for test/controll parameters needed for method RDF.

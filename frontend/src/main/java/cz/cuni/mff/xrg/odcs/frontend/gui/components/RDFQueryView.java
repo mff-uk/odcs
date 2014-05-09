@@ -1,27 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.event.ItemClickEvent;
-
-import cz.cuni.mff.xrg.odcs.frontend.container.rdf.*;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,6 +15,26 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
+import cz.cuni.mff.xrg.odcs.frontend.container.rdf.*;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 /**
  * Simple query view for browsing and querying debug data. User selects DPU and

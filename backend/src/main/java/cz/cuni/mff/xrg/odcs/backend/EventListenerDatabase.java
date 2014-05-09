@@ -6,8 +6,8 @@ import org.springframework.context.ApplicationListener;
 
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 /**
  * Store all DPURecord and Pipeline related events into database.

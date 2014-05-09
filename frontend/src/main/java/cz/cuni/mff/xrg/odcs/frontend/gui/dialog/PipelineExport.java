@@ -1,19 +1,22 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Škoda Petr

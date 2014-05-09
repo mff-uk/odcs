@@ -1,21 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.silklinker;
 
-import com.vaadin.data.Validator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Window;
-
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +10,12 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.vaadin.data.Validator;
+import com.vaadin.ui.*;
+
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU

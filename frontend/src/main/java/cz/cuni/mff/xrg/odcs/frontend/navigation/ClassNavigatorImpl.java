@@ -1,14 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.navigation;
 
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
-import java.util.Collection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Extends Vaadin's {@link ClassNavigator} for possibility to navigate over {@link Presenter}s.

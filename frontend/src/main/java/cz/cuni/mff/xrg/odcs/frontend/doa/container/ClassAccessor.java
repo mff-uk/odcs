@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import java.util.List;
-import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 
 /**
  * Describe class so it can be used in {@link ReadOnlyContainer}.

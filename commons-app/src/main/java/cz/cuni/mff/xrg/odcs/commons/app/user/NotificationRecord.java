@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Objects;
+import java.util.Set;
+
 import javax.persistence.*;
 
-import java.util.Set;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Represent settings for scheduler notification.

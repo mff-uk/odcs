@@ -1,17 +1,19 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.persistence.*;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 
 /**
  * Holds user data (his account).

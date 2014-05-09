@@ -1,16 +1,29 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Stack;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -21,15 +34,6 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * Component for visualization of the pipeline.

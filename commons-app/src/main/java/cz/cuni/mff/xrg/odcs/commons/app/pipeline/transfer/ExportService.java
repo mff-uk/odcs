@@ -1,28 +1,34 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import com.thoughtworks.xstream.XStream;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.thoughtworks.xstream.XStream;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Export given pipeline into file.

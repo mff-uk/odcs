@@ -2,10 +2,13 @@ package cz.cuni.mff.xrg.odcs.commons.app.dao;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.annotation.Transactional;
+
 import virtuoso.jdbc4.VirtuosoException;
 
 /**

@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import javax.persistence.*;
 
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Represent the DPU instance pipeline placement in DB.

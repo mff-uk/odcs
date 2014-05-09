@@ -3,7 +3,9 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
 import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.*;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler;
 
 /**
  * Implementation of {@link DataUnit} that enable storing files.

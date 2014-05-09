@@ -1,10 +1,11 @@
 package cz.cuni.xrg.intlib.rdf;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 /**
  * @author Jiri Tomes

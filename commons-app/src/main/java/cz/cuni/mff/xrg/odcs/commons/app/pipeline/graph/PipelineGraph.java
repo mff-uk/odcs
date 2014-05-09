@@ -1,16 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import javax.persistence.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-
-import java.util.*;
-import javax.persistence.*;
 
 /**
  * Oriented acyclic graph representation of pipeline. Each Node represents a

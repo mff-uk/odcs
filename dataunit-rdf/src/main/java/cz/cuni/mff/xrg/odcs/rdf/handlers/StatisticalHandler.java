@@ -1,13 +1,15 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFHandlerException;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 
 /**
  * Class allows monitoring about the extraction data process - information about

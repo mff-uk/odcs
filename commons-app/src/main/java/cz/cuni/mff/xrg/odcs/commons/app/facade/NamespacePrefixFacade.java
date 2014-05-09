@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 
 /**
  * Facade for managing persisted entities of {@link NamespacePrefix}.

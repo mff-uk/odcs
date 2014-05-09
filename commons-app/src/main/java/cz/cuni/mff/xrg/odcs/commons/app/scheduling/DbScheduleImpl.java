@@ -1,16 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import java.util.*;
+
+import javax.persistence.TypedQuery;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.TypedQuery;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation providing access to {@link Schedule} data objects.

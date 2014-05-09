@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class is responsible for the construct query extension using ORDER BY,

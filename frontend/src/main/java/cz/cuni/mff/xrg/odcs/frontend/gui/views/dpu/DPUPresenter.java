@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
+import java.io.File;
+
 import com.vaadin.data.util.IndexedContainer;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
-import java.io.File;
 
 /**
  * Interface for presenter that takes care of presenting information about DPUs.

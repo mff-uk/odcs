@@ -1,11 +1,12 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 
 /**
  * Represent a directory from {@link FileDataUnit}. The sample how to iterate

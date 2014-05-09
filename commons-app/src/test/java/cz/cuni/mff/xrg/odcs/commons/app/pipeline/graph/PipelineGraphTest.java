@@ -1,15 +1,13 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import static org.junit.Assert.*;
 
 /**
  * Test suite for {@link PipelineGraph}.

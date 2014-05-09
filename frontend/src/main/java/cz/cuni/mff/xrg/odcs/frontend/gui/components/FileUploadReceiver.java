@@ -1,17 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import org.apache.log4j.Logger;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload.Receiver;
-import org.apache.log4j.Logger;
 
 /**
  * Upload selected file to template directory

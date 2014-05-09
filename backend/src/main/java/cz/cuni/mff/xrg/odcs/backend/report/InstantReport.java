@@ -9,15 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import org.springframework.stereotype.Component;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
 
 /**
  * Listen to the application event and if need send email about the event to the

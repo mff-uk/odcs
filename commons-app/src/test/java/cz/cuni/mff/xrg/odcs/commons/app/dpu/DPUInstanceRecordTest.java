@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Test suite for {@link DPUInstanceRecord} class.

@@ -1,18 +1,18 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data;
 
-import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.LogAndIgnore;
-import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.StoreInvalidMappings;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.LogAndIgnore;
+import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.StoreInvalidMappings;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import java.util.ArrayList;
 
 /**
  * Class provides functionality that enables to create script for the single

@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-
 import java.util.Objects;
 
 import javax.persistence.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 
 /**
  * Node represents DPURecord on the pipeline and holds information about its

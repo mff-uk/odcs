@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
 
@@ -9,13 +12,9 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.

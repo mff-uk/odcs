@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
-import com.vaadin.data.Container;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Collection;
 import java.util.List;
+
+import com.vaadin.data.Container;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Interface for data source that is meant to be used by containers.

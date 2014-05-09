@@ -2,28 +2,24 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import java.util.LinkedList;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.launch.Framework;
-import org.springframework.transaction.annotation.Transactional;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * OSGI based implementation of {@link ModuleFacade}.

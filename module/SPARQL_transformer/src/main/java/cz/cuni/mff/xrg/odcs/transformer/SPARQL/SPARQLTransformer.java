@@ -1,5 +1,19 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.openrdf.model.Graph;
+import org.openrdf.model.URI;
+import org.openrdf.query.*;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
@@ -15,20 +29,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.openrdf.model.Graph;
-import org.openrdf.model.URI;
-import org.openrdf.query.*;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * SPARQL Transformer.

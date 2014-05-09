@@ -1,23 +1,20 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container.db;
 
+import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
-import static cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource.Filterable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link ContainerSource}. Has data caching abilities.

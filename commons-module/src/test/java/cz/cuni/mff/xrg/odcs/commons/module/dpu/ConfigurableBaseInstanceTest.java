@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dpu;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
@@ -7,8 +10,6 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-
-import static org.junit.Assert.*;
 
 /**
  * Test suite for {@link ConfigurableBase} class.

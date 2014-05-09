@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.util.Date;
 import java.util.Objects;
+
 import javax.persistence.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Represents a single event of opening pipeline detail in canvas by given owner

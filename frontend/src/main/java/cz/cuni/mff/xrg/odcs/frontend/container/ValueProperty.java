@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
 import com.vaadin.data.Property;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**

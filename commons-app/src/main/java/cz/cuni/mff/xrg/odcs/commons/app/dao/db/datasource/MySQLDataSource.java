@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource;
 
+import org.apache.commons.dbcp.BasicDataSource;
+
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import org.apache.commons.dbcp.BasicDataSource;
 
 /**
  * MySQL data source.

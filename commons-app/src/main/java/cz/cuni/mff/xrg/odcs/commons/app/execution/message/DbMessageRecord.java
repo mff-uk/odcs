@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import java.util.List;
 
 /**
  * Interface providing access to {@link MessageRecord} data objects.

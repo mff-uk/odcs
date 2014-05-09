@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -10,7 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 
 /**
  * Test suite for RDF namespace prefixes facade.

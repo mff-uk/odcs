@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter;
 
+import javax.persistence.criteria.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
-import javax.persistence.criteria.*;
 
 /**
  * Translator for filters from this package.

@@ -10,7 +10,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Provide functionality to merge (add) one {@link Context} into another.

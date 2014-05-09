@@ -4,10 +4,12 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Objects;
+
 import javax.persistence.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Represent coordinates of object in system (on canvas).

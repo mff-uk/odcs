@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.ui.CustomComponent;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;

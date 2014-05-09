@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

@@ -1,15 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,6 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.*;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Facade for working with DPUs.

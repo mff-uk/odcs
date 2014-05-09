@@ -1,11 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Generate column with action buttons. This class can be used just with one

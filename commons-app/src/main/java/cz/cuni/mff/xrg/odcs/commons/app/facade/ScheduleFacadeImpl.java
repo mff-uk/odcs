@@ -1,23 +1,20 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbSchedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotification;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
-import java.util.*;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.*;
 
 /**
  * Facade providing actions with plan.

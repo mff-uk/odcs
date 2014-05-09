@@ -1,24 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.auth;
 
-import com.vaadin.server.VaadinService;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +22,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+
+import com.vaadin.server.VaadinService;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 
 /**
  * Handles login and logout actions in frontend application.

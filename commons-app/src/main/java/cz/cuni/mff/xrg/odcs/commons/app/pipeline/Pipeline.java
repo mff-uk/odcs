@@ -1,22 +1,23 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import javax.persistence.*;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.lang3.StringUtils;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer

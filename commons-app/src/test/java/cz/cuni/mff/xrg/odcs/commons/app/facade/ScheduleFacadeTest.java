@@ -1,11 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -18,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -30,7 +26,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * Test suite for schedule facade interface. Each test is run in own

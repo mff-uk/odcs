@@ -1,25 +1,9 @@
 package cz.cuni.mff.xrg.odcs.extractor.silklinker;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import de.fuberlin.wiwiss.silk.Silk;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -32,13 +16,23 @@ import javax.xml.transform.stream.StreamResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
+import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
+import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
+import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Simple XSLT Extractor

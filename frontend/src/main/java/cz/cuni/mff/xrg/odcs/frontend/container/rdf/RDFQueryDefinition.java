@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
+import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
 /**
  * Modification of {@link LazyQueryDefinition} to work with RDF queries.

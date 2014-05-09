@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.rdf.query.utils;
 
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryFilter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryFilter;
 
 /**
  * Class responsible adding FILTER regex for given varName and SPARQL query.

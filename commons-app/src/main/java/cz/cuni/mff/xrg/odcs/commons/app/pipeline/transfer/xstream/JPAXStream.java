@@ -1,12 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.thoughtworks.xstream.XStream.PRIORITY_VERY_LOW;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * Customised version of {@link XStream} for working with objects that are

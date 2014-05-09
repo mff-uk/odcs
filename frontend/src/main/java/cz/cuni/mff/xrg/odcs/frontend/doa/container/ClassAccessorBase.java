@@ -1,13 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Provide base implementation for {@link ClassAccessor}.

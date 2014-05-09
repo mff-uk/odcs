@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import java.util.Date;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 /**
  * Interface providing access to {@link Schedule} data objects.

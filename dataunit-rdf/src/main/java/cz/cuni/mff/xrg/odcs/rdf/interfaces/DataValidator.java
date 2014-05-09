@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.interfaces;
 
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 
 /**
  * Validator is responsible for right data validation.

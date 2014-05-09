@@ -1,13 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.List;
@@ -16,17 +9,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Test suite for DPU facade interface. Each test is run in own transaction,

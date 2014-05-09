@@ -1,17 +1,17 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
+import java.util.Collection;
+
+import org.openrdf.rio.RDFFormat;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
-
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.*;
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
-import org.openrdf.rio.RDFFormat;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Configuration dialog for DPU RDF File Loader.

@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import org.openrdf.model.Statement;
+
+import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 
 /**
  * Responsible for describing invalid RDF triples during data parsing- type of

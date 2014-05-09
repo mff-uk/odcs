@@ -7,11 +7,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
 /**
  * Builds layout with GUI components for settings notifications about scheduled

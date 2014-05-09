@@ -1,36 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
-import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +13,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 
 /**
  * @author Bogo

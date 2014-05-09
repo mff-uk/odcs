@@ -1,23 +1,25 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Embedded;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Embedded;
+
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
+import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 /**
  * Accessor for {@link Pipeline}s.

@@ -1,21 +1,22 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleDeleteEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleNewEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.module.event.ModuleUpdateEvent;
-import java.util.Arrays;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * As component receive {@link ModuleEvent} and react on them by calling methods

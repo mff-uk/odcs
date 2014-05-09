@@ -1,26 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
-import com.vaadin.data.Container;
-import com.vaadin.ui.UI;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
-import info.aduna.iteration.Iterations;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.*;
 import org.openrdf.query.impl.DatasetImpl;
@@ -35,14 +24,26 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.vaadin.data.Container;
+import com.vaadin.ui.UI;
 
-import org.openrdf.model.URI;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import info.aduna.iteration.Iterations;
 
 public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);

@@ -1,18 +1,18 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Date;
-
-import javax.persistence.*;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.persistence.*;
+
 import org.apache.commons.lang3.StringUtils;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.

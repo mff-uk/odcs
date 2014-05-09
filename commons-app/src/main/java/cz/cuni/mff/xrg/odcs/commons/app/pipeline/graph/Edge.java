@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import java.util.Objects;
+
+import javax.persistence.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-
-import java.util.Objects;
-import javax.persistence.*;
 
 /**
  * Edge represents oriented connection between nodes of the graph.
