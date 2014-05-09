@@ -37,7 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
  */
 @ContextConfiguration(locations = { "file:src/test/resource/backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ConfiguratorTest {
+public class ConfiguratorDoesntPassTest {
 
     @Autowired
     private BeanFactory beanFactory;
