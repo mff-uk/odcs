@@ -13,5 +13,6 @@ public enum DataUnitType {
     /**
      * Represent file data unit.
      */
-    FILE
+    FILE, 
+    FILE_LIST
 }

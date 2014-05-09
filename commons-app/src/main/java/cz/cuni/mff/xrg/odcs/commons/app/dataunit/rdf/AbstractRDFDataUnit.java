@@ -34,19 +34,9 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
     /**
-     * Default name for graph using for store RDF data.
-     */
-    protected static final String DEFAULT_GRAPH_NAME = "http://default";
-
-    /**
      * Logging information about execution of method using openRDF.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractRDFDataUnit.class);
-
-    /**
-     * Default used encoding.
-     */
-    protected final String encode = "UTF-8";
 
     private String dataUnitName;
 
