@@ -14,7 +14,6 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
@@ -23,7 +22,6 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 /**
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
 public class SPARQLExtractorRequestSysTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(

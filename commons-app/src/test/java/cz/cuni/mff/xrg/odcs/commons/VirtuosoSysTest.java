@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUni
 /**
  * @author Jiri Tomes
  */
-public class VirtuosoSysTest extends LocalRDFRepoTest {
+public class VirtuosoSysTest extends LocalRDFRepoSysTest {
 
     private static final String url = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 

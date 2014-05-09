@@ -6,7 +6,7 @@ package cz.cuni.mff.xrg.odcs.commons;
  * system. Integration tests are excluded from build target, unlike unit tests
  * for example.
  * (c) 2013 Jan Vojt
- * 
+ *
  * @author Jan Vojt
  */
 public interface IntegrationTest {
