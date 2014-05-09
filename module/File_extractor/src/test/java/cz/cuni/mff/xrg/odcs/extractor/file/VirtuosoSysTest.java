@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 public class VirtuosoSysTest {
     private static final String HOST_NAME = "localhost";

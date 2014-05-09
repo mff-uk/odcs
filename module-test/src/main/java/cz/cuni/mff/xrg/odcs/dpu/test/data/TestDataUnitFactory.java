@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.openrdf.repository.RepositoryException;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.localrdf.LocalRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
@@ -34,7 +34,7 @@ public class TestDataUnitFactory {
      * 
      * @param workingDirectory
      *            Directory where to create working subdirectories
-     *            for {@link cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit} that use local storage as RDF repository.
+     *            for {@link cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit} that use local storage as RDF repository.
      */
     public TestDataUnitFactory(File workingDirectory) {
         this.workingDirectory = workingDirectory;

@@ -1,7 +1,7 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.remoterdf;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
     private String url;

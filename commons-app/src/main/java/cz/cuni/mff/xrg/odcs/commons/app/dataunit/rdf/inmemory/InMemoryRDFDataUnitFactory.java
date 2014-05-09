@@ -1,7 +1,7 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.inmemory;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
     private String repositoryPath;
