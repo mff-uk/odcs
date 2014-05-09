@@ -8,7 +8,12 @@ import javax.persistence.criteria.Predicate;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.*;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessReadBase;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 
 /**

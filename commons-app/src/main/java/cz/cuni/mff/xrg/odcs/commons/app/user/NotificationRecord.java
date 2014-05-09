@@ -3,7 +3,14 @@ package cz.cuni.mff.xrg.odcs.commons.app.user;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.SequenceGenerator;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 

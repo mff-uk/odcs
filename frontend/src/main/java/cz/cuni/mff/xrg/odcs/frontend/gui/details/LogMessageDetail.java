@@ -7,7 +7,12 @@ import java.util.Locale;
 import org.apache.log4j.Level;
 
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 /**

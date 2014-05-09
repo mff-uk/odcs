@@ -1,8 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.*;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryCount;
 
 /**
  * Implementation of {@link ContainerSource}. The data are all loaded and hold

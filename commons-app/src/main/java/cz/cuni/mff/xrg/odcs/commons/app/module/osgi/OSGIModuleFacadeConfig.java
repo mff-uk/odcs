@@ -11,7 +11,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.*;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.dataunit_file;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.ontology;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
 
 /**
  * Contains settings for OSGIModuleFacade;

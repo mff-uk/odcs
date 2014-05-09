@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.TypedQuery;
 

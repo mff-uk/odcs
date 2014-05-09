@@ -2,7 +2,10 @@ package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.createHash;
 import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.validatePassword;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;

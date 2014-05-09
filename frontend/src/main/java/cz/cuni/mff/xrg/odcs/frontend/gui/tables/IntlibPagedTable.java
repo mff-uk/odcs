@@ -1,7 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 import org.tepi.filtertable.paged.PagedFilterTable;
 import org.tepi.filtertable.paged.PagedFilterTableContainer;
@@ -10,7 +14,13 @@ import org.tepi.filtertable.paged.PagedTableChangeEvent;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 

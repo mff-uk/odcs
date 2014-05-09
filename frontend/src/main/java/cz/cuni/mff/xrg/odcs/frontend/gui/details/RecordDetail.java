@@ -3,7 +3,12 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 import java.text.DateFormat;
 import java.util.Locale;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.RichTextArea;
+import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 
 /**

@@ -14,7 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.*;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbSchedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotification;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 /**
  * Facade providing actions with plan.

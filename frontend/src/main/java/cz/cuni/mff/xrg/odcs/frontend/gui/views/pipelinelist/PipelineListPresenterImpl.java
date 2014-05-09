@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;

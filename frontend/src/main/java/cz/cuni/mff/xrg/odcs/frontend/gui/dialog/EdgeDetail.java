@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
