@@ -1,11 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 
 /**
  * @author Bogo

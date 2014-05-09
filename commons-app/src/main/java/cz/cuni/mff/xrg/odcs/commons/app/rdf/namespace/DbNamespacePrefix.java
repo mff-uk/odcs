@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 
 /**
  * Interface providing access to {@link NamespacePrefix} data objects.

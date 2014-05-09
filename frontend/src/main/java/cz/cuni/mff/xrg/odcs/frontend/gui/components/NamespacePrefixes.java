@@ -1,26 +1,24 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 
 /**
  * GUI for Namespace Prefixes which opens from the Administrator menu. Contains

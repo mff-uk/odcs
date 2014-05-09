@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
-import com.vaadin.server.Resource;
-import com.vaadin.shared.ui.datefield.Resolution;
 import java.util.Locale;
+
 import org.tepi.filtertable.FilterDecorator;
 import org.tepi.filtertable.numberfilter.NumberFilterPopupConfig;
+
+import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.datefield.Resolution;
 
 /**
  * Default {@link FilterDecorator} to be used in tables. Extend this class and

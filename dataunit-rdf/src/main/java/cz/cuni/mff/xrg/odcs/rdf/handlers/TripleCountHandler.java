@@ -1,19 +1,20 @@
 package cz.cuni.mff.xrg.odcs.rdf.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
-import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
-
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
+
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 
 /**
  * Class for counting of extracted triples from SPARQL endpoint or given file.

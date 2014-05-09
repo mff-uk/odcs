@@ -1,5 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tepi.filtertable.paged.PagedFilterTable;
+import org.tepi.filtertable.paged.PagedTableChangeEvent;
+
 import com.vaadin.data.Container;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ThemeResource;
@@ -8,19 +16,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
-import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
-import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
+import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.tepi.filtertable.paged.PagedFilterTable;
-import org.tepi.filtertable.paged.PagedTableChangeEvent;
 
 /**
  * Vaadin implementation for PipelineListView.

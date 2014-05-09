@@ -1,32 +1,24 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
-import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
-import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
-import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.transaction.TransactionException;
+
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
+import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
  * LOGIN screen of application.

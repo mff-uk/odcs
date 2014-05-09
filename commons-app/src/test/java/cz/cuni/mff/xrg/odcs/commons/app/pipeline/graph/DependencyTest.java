@@ -2,15 +2,10 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.Test;
 
 /**
  * Test suite for testing pipeline graph dependency resolving algorithms.

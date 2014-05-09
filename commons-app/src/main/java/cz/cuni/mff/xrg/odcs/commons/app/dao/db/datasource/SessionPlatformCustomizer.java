@@ -1,8 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.InvalidConfigPropertyException;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.platform.database.H2Platform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
@@ -11,7 +8,11 @@ import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
 import virtuoso.eclipselink.VirtuosoPlatform;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.InvalidConfigPropertyException;
 
 /**
  * EclipseLink session customizer is used to slip in custom database platform.

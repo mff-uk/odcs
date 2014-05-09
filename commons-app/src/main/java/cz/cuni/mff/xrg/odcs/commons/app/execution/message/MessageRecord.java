@@ -1,17 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
-import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import java.util.Date;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.*;
+
 import org.apache.commons.lang3.StringUtils;
+
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Represent a single message created during DPURecord execution.

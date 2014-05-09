@@ -1,10 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 /**
  * Component for holding the DPU's configuration dialog. The component

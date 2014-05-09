@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
 
 /**
  * Special query for logs.

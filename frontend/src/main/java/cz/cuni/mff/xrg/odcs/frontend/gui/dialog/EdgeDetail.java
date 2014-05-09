@@ -1,5 +1,9 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
+import java.util.*;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -7,18 +11,11 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 
+import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 /**
  * Window showing Edge detail. Used to create mappings between output and input

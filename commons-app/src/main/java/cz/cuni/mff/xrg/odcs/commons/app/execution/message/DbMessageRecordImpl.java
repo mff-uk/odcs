@@ -1,11 +1,14 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.util.List;
+
 import javax.persistence.TypedQuery;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Implementation providing access to {@link MessageRecord} data objects.

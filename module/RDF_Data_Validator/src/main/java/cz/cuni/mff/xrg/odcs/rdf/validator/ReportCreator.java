@@ -1,10 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.validator;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -14,6 +11,11 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+
+import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
 
 /**
  * Class responsible for creting RDF report message from given found out

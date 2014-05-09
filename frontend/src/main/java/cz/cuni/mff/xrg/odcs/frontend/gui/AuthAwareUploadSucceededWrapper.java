@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.SucceededListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.SucceededListener;
 
 /**
  * Wrapper for {@link SucceededListener} keeping reference to

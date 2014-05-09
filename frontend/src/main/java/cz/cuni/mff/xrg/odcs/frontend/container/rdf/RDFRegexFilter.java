@@ -4,10 +4,11 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
 
 /**
  * Filter for regex matching of RDF data.

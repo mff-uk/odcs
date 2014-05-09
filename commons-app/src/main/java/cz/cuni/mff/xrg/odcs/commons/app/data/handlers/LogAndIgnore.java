@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.data.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 
 /**
  * Default error handler for {@link EdgeCompiler}.

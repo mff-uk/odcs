@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
+import javax.persistence.TypedQuery;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryCount;
-import javax.persistence.TypedQuery;
 
 /**
  * Query for number of records.

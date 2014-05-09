@@ -4,9 +4,10 @@
  */
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * @author tomasknap

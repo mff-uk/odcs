@@ -1,12 +1,9 @@
 package cz.cuni.mff.xrg.intlib.extractor.simplexslt;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+
 import cz.cuni.xrg.intlib.commons.configuration.ConfigException;
 import cz.cuni.xrg.intlib.commons.web.AbstractConfigDialog;
 

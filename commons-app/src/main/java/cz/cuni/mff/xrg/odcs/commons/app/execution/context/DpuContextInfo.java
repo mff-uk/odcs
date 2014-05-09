@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import java.io.File;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 
 /**
  * Class used to work with context for single DPU, or global context if no DPU

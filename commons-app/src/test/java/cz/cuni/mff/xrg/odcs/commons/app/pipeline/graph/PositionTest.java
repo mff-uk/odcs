@@ -1,10 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
-import static org.junit.Assert.*;
 
 /**
  * Test suite for {@link Position} class.

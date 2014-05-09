@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download;
 
+import java.io.IOException;
+
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
-import java.io.IOException;
 
 /**
  * This specializes {@link FileDownloader} in a way, such that both the file

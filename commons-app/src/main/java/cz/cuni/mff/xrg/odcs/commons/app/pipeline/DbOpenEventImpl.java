@@ -1,10 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.TypedQuery;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Implementation for accessing {@link OpenEvent} data objects.

@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openrdf.model.Model;
 import org.openrdf.model.URI;

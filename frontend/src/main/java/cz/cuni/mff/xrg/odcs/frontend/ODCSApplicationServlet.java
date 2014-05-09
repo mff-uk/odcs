@@ -1,14 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.VaadinServletService;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +13,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionException;
+
 import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringVaadinServlet;
+
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.VaadinServletService;
+
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 
 /**
  * Customized servlet implementation to provide access to original {@link HttpServletRequest} across application.

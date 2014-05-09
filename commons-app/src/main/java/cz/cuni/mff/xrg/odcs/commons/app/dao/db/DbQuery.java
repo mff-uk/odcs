@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao.db;
 
+import javax.persistence.TypedQuery;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
-import javax.persistence.TypedQuery;
 
 /**
  * Query can be created by {@link cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder} and used in {@link DataAccess}.

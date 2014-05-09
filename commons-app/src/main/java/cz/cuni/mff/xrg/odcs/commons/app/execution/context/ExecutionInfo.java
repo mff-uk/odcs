@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import java.io.File;
 import java.util.Set;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 
 /**
  * Manage context for a single execution.

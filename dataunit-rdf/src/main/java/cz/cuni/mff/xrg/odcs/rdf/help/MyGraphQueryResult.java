@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
 import java.util.Map;
+
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.query.GraphQueryResult;

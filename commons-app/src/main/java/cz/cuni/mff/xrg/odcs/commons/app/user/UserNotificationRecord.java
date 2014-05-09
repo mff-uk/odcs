@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 import javax.persistence.*;
 
 /**

@@ -1,16 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.ui.Notification;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
-import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.addons.lazyquerycontainer.Query;
+
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
+import com.vaadin.ui.Notification;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
+import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 
 /**
  * Implementation of {@link Query} interface for RDF queries. Just read-only

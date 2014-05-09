@@ -1,18 +1,20 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
-import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
+import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 
 /**
  * Test suite for {@link FileDataUnit}.

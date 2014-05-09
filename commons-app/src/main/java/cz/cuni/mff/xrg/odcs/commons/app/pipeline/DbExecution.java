@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
 /**
  * Interface for access to {@link PipelineExecution}s.

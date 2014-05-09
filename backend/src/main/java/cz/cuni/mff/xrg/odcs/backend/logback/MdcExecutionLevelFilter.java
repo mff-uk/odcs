@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.backend.logback;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ch.qos.logback.classic.Level;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.FilterReply;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;

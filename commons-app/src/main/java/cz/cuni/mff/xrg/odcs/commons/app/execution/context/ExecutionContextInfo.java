@@ -1,17 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import java.util.Objects;
 
 /**
  * Hold and manage context for pipeline execution.

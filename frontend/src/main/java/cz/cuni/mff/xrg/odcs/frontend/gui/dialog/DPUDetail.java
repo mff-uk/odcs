@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -20,8 +21,6 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
-import java.util.logging.Level;
-import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * Detail of selected DPU. Consists of common properties, name and description

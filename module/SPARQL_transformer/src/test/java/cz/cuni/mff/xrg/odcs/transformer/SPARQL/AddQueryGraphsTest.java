@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
+import static junit.framework.TestCase.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-
-import static junit.framework.TestCase.assertTrue;
 
 public class AddQueryGraphsTest {
 

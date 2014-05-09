@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-
-import org.junit.Test;
 import static org.junit.Assert.*;
+
 import org.junit.Before;
+import org.junit.Test;
+
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 
 /**
  * Test suite for {@link Pipeline} entity.

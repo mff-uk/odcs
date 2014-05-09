@@ -2,14 +2,14 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
 import java.io.File;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
+import javax.persistence.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-
-import javax.persistence.*;
 
 /**
  * Representation of template for creating {@link DPUInstanceRecord}s. The

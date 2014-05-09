@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import java.io.InputStream;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.qos.logback.classic.Level;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,

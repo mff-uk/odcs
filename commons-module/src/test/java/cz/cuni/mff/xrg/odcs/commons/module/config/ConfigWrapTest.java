@@ -1,14 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.module.config;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
+
+import java.util.LinkedList;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import java.util.LinkedList;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Test suite for {@link ConfigWrap} class.

@@ -1,10 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.validatePassword;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,7 +13,8 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import static cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash.validatePassword;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Provider for custom authentication logic. Uses custom password hashing

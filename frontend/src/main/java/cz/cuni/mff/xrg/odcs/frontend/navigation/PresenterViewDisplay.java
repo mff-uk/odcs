@@ -1,13 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.navigation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.SingleComponentContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Can display {@lnk View} as well as {@link PresenterWrap} in {@link ComponentContainer}.

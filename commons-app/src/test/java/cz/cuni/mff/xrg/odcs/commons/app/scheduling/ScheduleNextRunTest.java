@@ -1,15 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import static org.junit.Assert.*;
+
 import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
-
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNextRun;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
-import static org.junit.Assert.*;
 
 /**
  * Test suite for{@link ScheduleNextRun}

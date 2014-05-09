@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +25,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class Context implements DPUContext {
 

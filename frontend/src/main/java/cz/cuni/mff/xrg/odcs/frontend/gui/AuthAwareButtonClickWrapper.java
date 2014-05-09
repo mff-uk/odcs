@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 
 /**
  * Wrapper for {@link ClickListener} keeping reference to authentication

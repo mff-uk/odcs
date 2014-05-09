@@ -1,11 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.openrdf.query.BindingSet;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
-import java.util.Collection;
-import java.util.List;
-import org.openrdf.query.BindingSet;
 
 /**
  * Implementation of {@link Item} interface for underlying {@link BindingSet} object.

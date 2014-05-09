@@ -1,11 +1,14 @@
 package cz.cuni.mff.xrg.odcs.backend.logback;
 
-import ch.qos.logback.core.db.DriverManagerConnectionSource;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
+
+import ch.qos.logback.core.db.DriverManagerConnectionSource;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 
 /**
  * Connection source for logback. Uses {@link BasicDataSource} as connection

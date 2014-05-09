@@ -1,7 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import java.util.Date;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 
 /**
  * Logs are using special row as workaround for LIMIT, that can cause

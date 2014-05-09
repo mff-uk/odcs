@@ -1,8 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import java.util.Objects;
+
 import javax.persistence.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Entity representing RDF namespace prefix.

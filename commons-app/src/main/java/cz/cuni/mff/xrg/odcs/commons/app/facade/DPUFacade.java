@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-
-import java.util.List;
 
 /**
  * Facade for working with DPUs.

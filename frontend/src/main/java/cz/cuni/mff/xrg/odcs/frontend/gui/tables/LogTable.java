@@ -1,18 +1,21 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.util.HtmlUtils;
+import org.tepi.filtertable.FilterGenerator;
+import org.tepi.filtertable.datefilter.DateInterval;
+
+import ch.qos.logback.classic.Level;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.*;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -26,15 +29,6 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
-import java.util.HashMap;
-import java.util.Map;
-import ch.qos.logback.classic.Level;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Embedded;
-import org.springframework.web.util.HtmlUtils;
-import org.tepi.filtertable.FilterGenerator;
-import org.tepi.filtertable.datefilter.DateInterval;
 
 /**
  * Table for displaying {@link Log}s.

@@ -1,9 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +15,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 /**
  * Test suite for {@link DbSheduleImpl}

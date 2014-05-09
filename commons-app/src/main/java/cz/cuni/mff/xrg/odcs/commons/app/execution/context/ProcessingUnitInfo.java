@@ -1,15 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.*;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Contains and manage information about execution for single {@link DPUInstanceRecord}. The information class (this) is created at the

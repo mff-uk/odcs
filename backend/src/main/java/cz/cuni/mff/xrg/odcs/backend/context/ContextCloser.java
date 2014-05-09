@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-
 /**
  * Close and save the {@link Context} does not delete the data so {@link Context} can be reconstructed later.
  * 

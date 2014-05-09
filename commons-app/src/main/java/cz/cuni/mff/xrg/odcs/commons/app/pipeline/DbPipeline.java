@@ -1,8 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import java.util.List;
 
 /**
  * Interface for access to {@link Pipeline}s.

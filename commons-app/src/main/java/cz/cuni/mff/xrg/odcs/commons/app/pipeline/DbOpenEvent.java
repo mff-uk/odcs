@@ -1,9 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import java.util.Date;
 import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Interface for access to {@link OpenEvent}s.

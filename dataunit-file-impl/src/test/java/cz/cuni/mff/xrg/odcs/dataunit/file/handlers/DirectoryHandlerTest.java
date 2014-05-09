@@ -1,18 +1,21 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
-import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 
 /**
  * Test suite for {@link DirectoryHandler}.

@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.rdf.enums;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.openrdf.rio.RDFFormat;
 
 /**

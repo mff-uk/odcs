@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
-import java.io.File;
 
 /**
  * Interface for presenter that take care about presenting information about

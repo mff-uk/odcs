@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.*;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Query;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
+
 import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.*;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 
 /**
  * Implementation of {@link DbLogRead}. Provide support for usage of {@link Log#relativeId} for paging.
