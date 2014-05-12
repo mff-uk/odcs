@@ -20,7 +20,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -42,8 +41,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 /**
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
-public class LocalRDFRepoTest {
+public class LocalRDFRepoSysTest {
 
     /**
      * Path to test repository
@@ -85,7 +83,7 @@ public class LocalRDFRepoTest {
         try {
             pathRepo = Files.createTempDirectory("intlib-repo");
             outDir = Files.createTempDirectory("intlib-out");
-            testFileDir = LocalRDFRepoTest.class.getResource("/repository")
+            testFileDir = LocalRDFRepoSysTest.class.getResource("/repository")
                     .getPath();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

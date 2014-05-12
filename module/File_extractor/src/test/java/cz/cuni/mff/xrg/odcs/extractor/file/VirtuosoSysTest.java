@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 import java.io.File;
 import java.io.InputStream;
@@ -16,12 +17,10 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.IntegrationTest;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
-@Category(IntegrationTest.class)
-public class VirtuosoIt {
+public class VirtuosoSysTest {
     private static final String HOST_NAME = "localhost";
 
     private static final String PORT = "1111";
@@ -37,7 +36,7 @@ public class VirtuosoIt {
     private static RDFDataUnit repository;
 
     private static final Logger LOG = LoggerFactory.getLogger(
-            VirtuosoIt.class);
+            VirtuosoSysTest.class);
 
     @org.junit.Test
     public void test() throws Exception {
@@ -61,7 +60,7 @@ public class VirtuosoIt {
         rdfParser.setRDFHandler(new StatementCollector(myGraph));
         Model results = Rio.parse(inputStream, fileUrl, format);
         int expectedSize = results.size();
-
+        fail();
         // prepare test environment
         TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;

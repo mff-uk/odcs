@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
@@ -19,8 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUni
 /**
  * @author Jiri Tomes
  */
-@Category(IntegrationTest.class)
-public class VirtuosoTest extends LocalRDFRepoTest {
+public class VirtuosoSysTest extends LocalRDFRepoSysTest {
 
     private static final String url = "jdbc:virtuoso://localhost:1111/charset=UTF-8/log_enable=2";
 
@@ -49,7 +47,7 @@ public class VirtuosoTest extends LocalRDFRepoTest {
     public void setUp() {
         try {
             outDir = Files.createTempDirectory("intlib-out");
-            testFileDir = VirtuosoTest.class.getResource("/repository")
+            testFileDir = VirtuosoSysTest.class.getResource("/repository")
                     .getPath();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
