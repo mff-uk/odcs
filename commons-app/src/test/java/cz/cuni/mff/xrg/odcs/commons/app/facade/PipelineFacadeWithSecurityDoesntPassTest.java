@@ -40,7 +40,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  * @author Jan Vojt
  */
 @ContextConfiguration(locations = { "classpath:commons-app-test-context-security.xml" })
-public class PipelineFacadeWithSecurityTest extends PipelineFacadeTest {
+public class PipelineFacadeWithSecurityDoesntPassTest extends PipelineFacadeDoesntPassTest {
     @Autowired
     @Qualifier("authenticationManager")
     private AuthenticationManager authManager;

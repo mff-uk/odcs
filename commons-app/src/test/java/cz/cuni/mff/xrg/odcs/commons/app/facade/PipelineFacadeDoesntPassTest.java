@@ -52,7 +52,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class PipelineFacadeTest {
+public class PipelineFacadeDoesntPassTest {
 
     @PersistenceContext
     private EntityManager em;
@@ -78,7 +78,7 @@ public class PipelineFacadeTest {
     @Autowired
     private DbOpenEvent openEventDao;
 
-    public PipelineFacadeTest() {
+    public PipelineFacadeDoesntPassTest() {
     }
 
     @BeforeClass

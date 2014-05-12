@@ -26,7 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
-public class DbSheduleTest {
+public class DbSheduleDoesntPassTest {
 
     @Autowired
     private DbSchedule scheduleDao;

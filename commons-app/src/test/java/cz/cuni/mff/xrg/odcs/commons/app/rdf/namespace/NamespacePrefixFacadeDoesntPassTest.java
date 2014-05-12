@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
-public class NamespacePrefixFacadeTest {
+public class NamespacePrefixFacadeDoesntPassTest {
 
     private static final String TEST_NAME = "ex";
 

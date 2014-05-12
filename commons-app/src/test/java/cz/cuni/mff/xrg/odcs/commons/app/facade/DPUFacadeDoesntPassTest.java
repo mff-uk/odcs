@@ -36,7 +36,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class DPUFacadeTest {
+public class DPUFacadeDoesntPassTest {
 
     @PersistenceContext
     private EntityManager em;
@@ -50,7 +50,7 @@ public class DPUFacadeTest {
     @Autowired
     private DPUFacade dpuFacade;
 
-    public DPUFacadeTest() {
+    public DPUFacadeDoesntPassTest() {
     }
 
     /**
