@@ -41,7 +41,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 /**
  * @author Jiri Tomes
  */
-public class LocalRDFRepoDoesntPassTest {
+public class LocalRDFRepoSysTest {
 
     /**
      * Path to test repository
@@ -83,7 +83,7 @@ public class LocalRDFRepoDoesntPassTest {
         try {
             pathRepo = Files.createTempDirectory("intlib-repo");
             outDir = Files.createTempDirectory("intlib-out");
-            testFileDir = LocalRDFRepoDoesntPassTest.class.getResource("/repository")
+            testFileDir = LocalRDFRepoSysTest.class.getResource("/repository")
                     .getPath();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
