@@ -26,7 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
  */
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class LogFacadeTest {
+public class LogFacadeDoesntPassTest {
 
     @Autowired
     private LogFacade facade;

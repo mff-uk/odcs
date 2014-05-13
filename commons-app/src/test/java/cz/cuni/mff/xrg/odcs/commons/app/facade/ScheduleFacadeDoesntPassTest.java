@@ -37,7 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class ScheduleFacadeTest {
+public class ScheduleFacadeDoesntPassTest {
 
     @PersistenceContext
     private EntityManager em;

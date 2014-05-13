@@ -23,7 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
  */
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class DbLogReadTest {
+public class DbLogReadDoesntPassTest {
 
     @Autowired
     private DbLogRead reader;

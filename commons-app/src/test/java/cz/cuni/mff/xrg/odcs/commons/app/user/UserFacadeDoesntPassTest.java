@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 @ContextConfiguration(locations = { "classpath:commons-app-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
-public class UserFacadeTest {
+public class UserFacadeDoesntPassTest {
 
     @Autowired
     private UserFacade facade;
