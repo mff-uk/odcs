@@ -52,7 +52,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getDataGraph());
+                long sizeBefore = connection.size(repository.getContexts());
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
 
@@ -66,7 +66,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getDataGraph());
+                long sizeAfter = connection.size(repository.getContexts());
 
                 assertTrue(sizeBefore < sizeAfter);
             } finally {
@@ -96,7 +96,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getDataGraph());
+                long sizeBefore = connection.size(repository.getContexts());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
@@ -111,7 +111,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getDataGraph());
+                long sizeAfter = connection.size(repository.getContexts());
 
                 assertTrue(sizeBefore < sizeAfter);
             } finally {
@@ -145,7 +145,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getDataGraph());
+                long sizeBefore = connection.size(repository.getContexts());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph("http://BigGraph");
@@ -159,7 +159,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getDataGraph());
+                long sizeAfter = connection.size(repository.getContexts());
 
                 assertTrue(sizeBefore < sizeAfter);
 

@@ -33,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
@@ -57,7 +58,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
      * The repository for file extractor.
      */
     @OutputDataUnit
-    public RDFDataUnit rdfDataUnit;
+    public WritableRDFDataUnit rdfDataUnit;
 
     public FileExtractor() {
         super(FileExtractorConfig.class);
@@ -123,7 +124,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 RepositoryConnection connection = null;
                 try {
                     connection = rdfDataUnit.getConnection();
-                    triplesCount = connection.size(rdfDataUnit.getDataGraph());
+                    triplesCount = connection.size(rdfDataUnit.getWriteContext());
                     LOG.info("Extracted {} triples", triplesCount);
                 } finally {
                     if (connection != null) {
@@ -201,7 +202,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             RDFFormat fileFormat,
             InputStreamReader is, String baseURI) throws RDFException {
 
-        handler.setGraphContext(rdfDataUnit.getDataGraph());
+        handler.setGraphContext(rdfDataUnit.getWriteContext());
         RDFParser parser = getRDFParser(fileFormat, handler);
 
         try {
@@ -388,20 +389,19 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void extractDataFromDirectorySource(File dirFile, String suffix,
             boolean useSuffix, RDFFormat format, String baseURI,
-            HandlerExtractType handlerExtractType, boolean skipFiles, RDFDataUnit repo, DPUContext context)
+            HandlerExtractType handlerExtractType, boolean skipFiles, WritableRDFDataUnit repo, DPUContext context)
             throws RDFException {
 
         if (dirFile.isDirectory()) {
             File[] files = getFilesBySuffix(dirFile, suffix, useSuffix);
 
-            Resource graph = repo.getDataGraph();
             RepositoryConnection connection = null;
             try {
                 connection = repo.getConnection();
                 connection.begin();
                 addFilesInDirectoryToRepository(format, files, baseURI,
                         handlerExtractType, skipFiles, connection,
-                        graph);
+                        repo.getWriteContext());
 
                 connection.commit();
             } catch (RepositoryException e) {
@@ -453,7 +453,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             RDFFormat format,
             String path, String suffix,
             String baseURI, boolean useSuffix,
-            HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context)
+            HandlerExtractType handlerExtractType, WritableRDFDataUnit repo, DPUContext context)
             throws RDFException {
 
         ParamController.testNullParameter(path,
@@ -487,8 +487,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
     }
 
     private void extractDataFromFileSource(File dirFile, RDFFormat format,
-            String baseURI, HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context) throws RDFException {
-        Resource graph = repo.getDataGraph();
+            String baseURI, HandlerExtractType handlerExtractType, WritableRDFDataUnit repo, DPUContext context) throws RDFException {
         RepositoryConnection connection = null;
         if (dirFile.isFile()) {
             try {
@@ -496,7 +495,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 connection.begin();
                 addFileToRepository(format, dirFile, baseURI,
                         handlerExtractType,
-                        connection, graph);
+                        connection, repo.getWriteContext());
                 connection.commit();
             } catch (RepositoryException e) {
                 throw new RDFException(e.getMessage(), e);

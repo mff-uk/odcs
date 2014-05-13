@@ -1,26 +1,27 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.openrdf.model.Model;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
-import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
 
@@ -40,7 +41,9 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     private String dataUnitName;
 
-    protected URI dataGraph;
+    protected URI writeContext;
+
+    protected Set<URI> readContexts;
 
     private List<RepositoryConnection> requestedConnections;
 
@@ -48,13 +51,15 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
 
-    public AbstractRDFDataUnit(String dataUnitName, String dataGraph) {
+    public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
         this.dataUnitName = dataUnitName;
-        if (!dataGraph.toLowerCase().startsWith("http://")) {
-            dataGraph = "http://" + dataGraph;
+        if (!writeContextString.toLowerCase().startsWith("http://")) {
+            writeContextString = "http://" + writeContextString;
         }
-        this.dataGraph = new URIImpl(dataGraph);
-        LOG.info("Set new data graph - " + this.dataGraph.stringValue());
+        this.writeContext = new URIImpl(writeContextString);
+        this.readContexts = new HashSet<>();
+        this.readContexts.add(this.writeContext);
+        LOG.info("Set new data graph - " + this.writeContext.stringValue());
 
         this.requestedConnections = new ArrayList<>();
         this.ownerThread = Thread.currentThread();
@@ -80,12 +85,6 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         return dataUnitName;
     }
 
-    //DataUnit interface
-    @Override
-    public void addAll(DataUnit unit) {
-        this.merge(unit);
-    }
-
     //RDFDataUnit interface
     @Override
     public RepositoryConnection getConnection() throws RepositoryException {
@@ -100,8 +99,8 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //RDFDataUnit interface
     @Override
-    public URI getDataGraph() {
-        return dataGraph;
+    public Set<URI> getContexts() {
+        return readContexts;
     }
 
     //RDFDataUnit interface
@@ -130,6 +129,62 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         return result;
     }
 
+    //WritableRDFDataUnit interface
+    @Override
+    public URI getWriteContext() {
+        return writeContext;
+    }
+
+    //WritableDataUnit interface
+    @Override
+    public void addAll(RDFData otherRDFDataUnit) {
+        if (!this.getClass().equals(otherRDFDataUnit.getClass())) {
+            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherRDFDataUnit.getClass().getCanonicalName() + ".");
+        }
+        
+        RepositoryConnection connection = null;
+        try {
+            connection = getConnection();
+
+            String targetGraphName = getWriteContext().stringValue();
+            for (URI sourceGraph : otherRDFDataUnit.getContexts()) {
+                String sourceGraphName = sourceGraph.stringValue();
+
+                LOG.info("Trying to merge {} triples from <{}> to <{}>.",
+                        connection.size(sourceGraph), sourceGraphName,
+                        targetGraphName);
+
+                String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
+                        targetGraphName);
+
+                Update update = connection.prepareUpdate(
+                        QueryLanguage.SPARQL, mergeQuery);
+
+                update.execute();
+
+                LOG.info("Merged {} triples from <{}> to <{}>.",
+                        connection.size(sourceGraph), sourceGraphName,
+                        targetGraphName);
+            }
+        } catch (MalformedQueryException ex) {
+            LOG.error("NOT VALID QUERY: {}", ex);
+        } catch (RepositoryException ex) {
+            LOG.error(ex.getMessage(), ex);
+        } catch (UpdateExecutionException ex) {
+            LOG.error(ex.getMessage(), ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
+
     //ManagableDataUnit interface
     @Override
     public void isReleaseReady() {
@@ -150,7 +205,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         }
 
         if (count > 0) {
-            LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getDataGraph(), this.getDataUnitName());
+            LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getContexts(), this.getDataUnitName());
         }
     }
 
@@ -165,7 +220,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         RepositoryConnection connection = null;
         try {
             connection = getConnectionInternal();
-            connection.clear(dataGraph);
+            connection.clear(writeContext);
         } catch (RepositoryException ex) {
             throw new RuntimeException("Could not delete repository", ex);
         } finally {
@@ -217,47 +272,11 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
         if (!this.getClass().equals(otherDataUnit.getClass())) {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
-                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName()  + ".");
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
 
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
-        RepositoryConnection connection = null;
-        try {
-            connection = getConnection();
-
-            String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
-            String targetGraphName = getDataGraph().stringValue();
-
-            LOG.info("Trying to merge {} triples from <{}> to <{}>.",
-                    connection.size(otherRDFDataUnit.getDataGraph()), sourceGraphName,
-                    targetGraphName);
-
-            String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
-                    targetGraphName);
-
-            Update update = connection.prepareUpdate(
-                    QueryLanguage.SPARQL, mergeQuery);
-
-            update.execute();
-
-            LOG.info("Merged {} triples from <{}> to <{}>.",
-                    connection.size(getDataGraph()), sourceGraphName,
-                    targetGraphName);
-        } catch (MalformedQueryException ex) {
-            LOG.error("NOT VALID QUERY: {}", ex);
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-        } catch (UpdateExecutionException ex) {
-            LOG.error(ex.getMessage(), ex);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
-                }
-            }
-        }
+        this.readContexts.addAll(otherRDFDataUnit.getContexts());
     }
+
 }

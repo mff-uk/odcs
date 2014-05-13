@@ -16,7 +16,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.QueryResults;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -28,6 +27,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
@@ -154,12 +154,12 @@ public class RDFQuery implements Query {
             connection = repository.getConnection();
             switch (type) {
                 case SELECT:
-                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getDataGraph());
+                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, repository.getContexts());
                     break;
                 case CONSTRUCT:
-                    DatasetImpl dataSet = new DatasetImpl();
-                    dataSet.addDefaultGraph(repository.getDataGraph());
-                    dataSet.addNamedGraph(repository.getDataGraph());
+                    CleverDataset dataSet = new CleverDataset();
+                    dataSet.addDefaultGraphs(repository.getContexts());
+                    dataSet.addNamedGraphs(repository.getContexts());
                     graph = RepositoryFrontendHelper.executeConstructQuery(connection, query, dataSet);
                     data = getRDFTriplesData(graph);
                     break;
@@ -167,7 +167,7 @@ public class RDFQuery implements Query {
                     String resource = query.substring(query.indexOf('<') + 1,
                             query.indexOf('>'));
                     URIImpl uri = new URIImpl(resource);
-                    graph = RepositoryFrontendHelper.describeURI(connection, repository.getDataGraph(), uri);
+                    graph = RepositoryFrontendHelper.describeURI(connection, repository.getContexts(), uri);
                     data = getRDFTriplesData(graph);
                     break;
                 default:
@@ -334,9 +334,9 @@ public class RDFQuery implements Query {
             GraphQuery graphQuery = connection.prepareGraphQuery(
                     QueryLanguage.SPARQL,
                     constructQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
-            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
+            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
             graphQuery.setDataset(dataSet);
             try {
                 GraphQueryResult result = graphQuery.evaluate();
@@ -389,9 +389,9 @@ public class RDFQuery implements Query {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
                     QueryLanguage.SPARQL, sizeQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
-            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
+            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
             tupleQuery.setDataset(dataSet);
             try {
                 TupleQueryResult tupleResult = tupleQuery.evaluate();

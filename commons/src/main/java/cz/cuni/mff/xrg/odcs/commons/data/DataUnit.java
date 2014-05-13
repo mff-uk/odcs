@@ -31,18 +31,4 @@ public interface DataUnit {
      * @return String name of data unit.
      */
     public String getDataUnitName();
-
-    /**
-     * Add all data from given DataUnit into this DataUnit.
-     * The method must not modify the current parameter (unit).
-     * 
-     * @param unit
-     *            {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to add from
-     * @throws IllegalArgumentException
-     *             if some property of an element of the
-     *             specified dataunit prevents it from being added to this
-     *             dataunit
-     */
-    void addAll(DataUnit unit);
-
 }

@@ -60,7 +60,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o} limit 5000";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getDataGraph());
+            long sizeBefore = connection.size(repository.getContexts());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -77,7 +77,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                 fail(e.getMessage());
             }
 
-            long sizeAfter = connection.size(repository.getDataGraph());
+            long sizeAfter = connection.size(repository.getContexts());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -96,7 +96,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getDataGraph());
+            long sizeBefore = connection.size(repository.getContexts());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -112,7 +112,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                 fail(e.getMessage());
             }
 
-            long sizeAfter = connection.size(repository.getDataGraph());
+            long sizeAfter = connection.size(repository.getContexts());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -132,7 +132,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getDataGraph());
+            long sizeBefore = connection.size(repository.getContexts());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -147,7 +147,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                 fail(e.getMessage());
             }
 
-            long sizeAfter = connection.size(repository.getDataGraph());
+            long sizeAfter = connection.size(repository.getContexts());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -171,7 +171,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             RDFFormat format = RDFFormat.N3;
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getDataGraph());
+            long sizeBefore = connection.size(repository.getContexts());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 
@@ -185,7 +185,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                 fail(e.getMessage());
             }
 
-            long sizeAfter = connection.size(repository.getDataGraph());
+            long sizeAfter = connection.size(repository.getContexts());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();

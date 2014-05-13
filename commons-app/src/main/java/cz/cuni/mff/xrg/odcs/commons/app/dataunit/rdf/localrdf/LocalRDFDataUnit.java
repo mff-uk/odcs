@@ -70,7 +70,7 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Local RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getDataGraph()));
+                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
         } catch (RepositoryException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {

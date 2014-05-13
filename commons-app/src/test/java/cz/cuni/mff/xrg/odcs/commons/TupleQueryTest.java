@@ -90,13 +90,13 @@ public class TupleQueryTest {
         Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-        connection.add(subject, predicate, object, repository.getDataGraph());
-        connection.add(subjectBlank, predicate, object, repository.getDataGraph());
-        connection.add(subjectBlank, predicate, objectBlank, repository.getDataGraph());
-        connection.add(subject, predicate, objectLanguageLiteral, repository.getDataGraph());
-        connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
+        connection.add(subject, predicate, object, repository.getContexts());
+        connection.add(subjectBlank, predicate, object, repository.getContexts());
+        connection.add(subjectBlank, predicate, objectBlank, repository.getContexts());
+        connection.add(subject, predicate, objectLanguageLiteral, repository.getContexts());
+        connection.add(subject, predicate, objectTypedLiteral, repository.getContexts());
 
-        assertEquals(5L, connection.size(repository.getDataGraph()));
+        assertEquals(5L, connection.size(repository.getContexts()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -145,11 +145,11 @@ public class TupleQueryTest {
         Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
-        connection.add(subject, predicate, object, repository.getDataGraph());
-        connection.add(subjectBlank, p, object, repository.getDataGraph());
-        connection.add(subject, pred, objectBlank, repository.getDataGraph());
+        connection.add(subject, predicate, object, repository.getContexts());
+        connection.add(subjectBlank, p, object, repository.getContexts());
+        connection.add(subject, pred, objectBlank, repository.getContexts());
 
-        assertEquals(3L, connection.size(repository.getDataGraph()));
+        assertEquals(3L, connection.size(repository.getContexts()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -195,9 +195,9 @@ public class TupleQueryTest {
         URI predicate = factory.createURI("http://predicate");
         Value object = factory.createLiteral("object");
 
-        connection.add(subject, predicate, object, repository.getDataGraph());
-        connection.add(s, predicate, object, repository.getDataGraph());
-        assertEquals(2L, connection.size(repository.getDataGraph()));
+        connection.add(subject, predicate, object, repository.getContexts());
+        connection.add(s, predicate, object, repository.getContexts());
+        assertEquals(2L, connection.size(repository.getContexts()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -254,13 +254,13 @@ public class TupleQueryTest {
         Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-        connection.add(subject, predicate, objectLiteral, repository.getDataGraph());
-        connection.add(subjectBlank, predicate, object, repository.getDataGraph());
-        connection.add(subjectBlank, predicate, objectBlank, repository.getDataGraph());
-        connection.add(subject, predicate, objectLanguageLiteral, repository.getDataGraph());
-        connection.add(subject, predicate, objectTypedLiteral, repository.getDataGraph());
+        connection.add(subject, predicate, objectLiteral, repository.getContexts());
+        connection.add(subjectBlank, predicate, object, repository.getContexts());
+        connection.add(subjectBlank, predicate, objectBlank, repository.getContexts());
+        connection.add(subject, predicate, objectLanguageLiteral, repository.getContexts());
+        connection.add(subject, predicate, objectTypedLiteral, repository.getContexts());
 
-        assertEquals(5L, connection.size(repository.getDataGraph()));
+        assertEquals(5L, connection.size(repository.getContexts()));
         connection.close();
     }
 
@@ -288,10 +288,10 @@ public class TupleQueryTest {
         Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
-        connection.add(subject, predicate, object, repository.getDataGraph());
-        connection.add(subjectBlank, p, object, repository.getDataGraph());
-        connection.add(subject, pred, objectBlank, repository.getDataGraph());
-        assertEquals(3L, connection.size(repository.getDataGraph()));
+        connection.add(subject, predicate, object, repository.getContexts());
+        connection.add(subjectBlank, p, object, repository.getContexts());
+        connection.add(subject, pred, objectBlank, repository.getContexts());
+        assertEquals(3L, connection.size(repository.getContexts()));
         connection.close();
 
     }
@@ -316,10 +316,10 @@ public class TupleQueryTest {
         URI predicate = factory.createURI("http://predicate");
         Value object = factory.createLiteral("object");
 
-        connection.add(subject, predicate, object, repository.getDataGraph());
-        connection.add(s, predicate, object, repository.getDataGraph());
+        connection.add(subject, predicate, object, repository.getContexts());
+        connection.add(s, predicate, object, repository.getContexts());
 
-        assertEquals(2L, connection.size(repository.getDataGraph()));
+        assertEquals(2L, connection.size(repository.getContexts()));
         connection.close();
 
     }

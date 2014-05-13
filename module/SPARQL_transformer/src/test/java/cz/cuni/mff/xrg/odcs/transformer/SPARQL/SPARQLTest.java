@@ -44,15 +44,15 @@ public class SPARQLTest {
         try {
             connection = input.getConnection();
             String baseURI = "";
-            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getDataGraph());
+            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getContexts());
 
             // some triples has been loaded
-            assertTrue(connection.size(input.getDataGraph()) > 0);
+            assertTrue(connection.size(input.getContexts()) > 0);
             // run
             env.run(trans);
             connection2 = output.getConnection();
             // verify result
-            assertTrue(connection.size(input.getDataGraph()) == connection2.size(output.getDataGraph()));
+            assertTrue(connection.size(input.getContexts()) == connection2.size(output.getContexts()));
         } finally {
             if (connection != null) {
                 try {

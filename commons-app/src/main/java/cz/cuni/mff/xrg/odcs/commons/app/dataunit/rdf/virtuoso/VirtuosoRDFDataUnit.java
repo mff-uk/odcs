@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso;
 
+import org.openrdf.model.URI;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 /**
@@ -61,7 +62,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getDataGraph()));
+                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
         } catch (RepositoryException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -81,48 +82,44 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         return repository.getConnection();
     }
 
-    /**
-     * Make RDF data merge over repository - data in repository merge with data
-     * in second defined repository.
-     * 
-     * @param otherDataUnit
-     *            Type of repository contains RDF data as implementation of
-     *            RDFDataUnit interface.
-     * @throws IllegalArgumentException
-     *             if otherDataUnit repository is not of compatible type (#RDFDataUnit).
-     */
+    //WritableDataUnit interface
     @Override
-    public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
+    public void addAll(RDFData otherDataUnit) {
         if (!this.getClass().equals(otherDataUnit.getClass())) {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
-                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName()  + ".");
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
-        
+
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
         RepositoryConnection connection = null;
         try {
             connection = getConnection();
 
-            String sourceGraphName = otherRDFDataUnit.getDataGraph().stringValue();
-            String targetGraphName = getDataGraph().stringValue();
+            String targetGraphName = getWriteContext().stringValue();
+            for (URI sourceGraph : otherRDFDataUnit.getContexts()) {
+                String sourceGraphName = sourceGraph.stringValue();
 
-            // mergeQuery = String.format("DEFINE sql:log-enable %d \n"
-            // + "ADD <%s> TO <%s>",
-            // LOG_LEVEL,
-            // sourceGraphName,
-            // targetGraphName);
-            String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
-                    targetGraphName);
+                LOG.info("Trying to merge {} triples from <{}> to <{}>.",
+                        connection.size(sourceGraph), sourceGraphName,
+                        targetGraphName);
 
-            GraphQuery result = connection.prepareGraphQuery(
-                    QueryLanguage.SPARQL, mergeQuery);
+                // mergeQuery = String.format("DEFINE sql:log-enable %d \n"
+                // + "ADD <%s> TO <%s>",
+                // LOG_LEVEL,
+                // sourceGraphName,
+                // targetGraphName);
+                String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
+                        targetGraphName);
 
-            result.evaluate();
+                GraphQuery result = connection.prepareGraphQuery(
+                        QueryLanguage.SPARQL, mergeQuery);
 
-            LOG.info("Merged {} triples from <{}> to <{}>.",
-                    connection.size(getDataGraph()), sourceGraphName,
-                    targetGraphName);
+                result.evaluate();
 
+                LOG.info("Merged {} triples from <{}> to <{}>.",
+                        connection.size(sourceGraph), sourceGraphName,
+                        targetGraphName);
+            }
         } catch (MalformedQueryException ex) {
             LOG.error("NOT VALID QUERY: {}", ex);
         } catch (QueryEvaluationException ex) {
@@ -140,4 +137,5 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
             }
         }
     }
+
 }

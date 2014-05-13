@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
+import info.aduna.iteration.Iterations;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +19,8 @@ import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
@@ -32,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -48,7 +52,6 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
-import info.aduna.iteration.Iterations;
 
 public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
@@ -136,14 +139,14 @@ public class RepositoryFrontendHelper {
     }
 
     public static File executeSelectQuery(RepositoryConnection connection, String selectQuery, String filePath,
-            SelectFormatType selectType, URI dataGraph) throws InvalidQueryException {
+            SelectFormatType selectType, Set<URI> dataGraph) throws InvalidQueryException {
         try {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
                     QueryLanguage.SPARQL, selectQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(dataGraph);
-            dataSet.addNamedGraph(dataGraph);
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(dataGraph);
+            dataSet.addNamedGraphs(dataGraph);
             tupleQuery.setDataset(dataSet);
 
             log.debug("Query {} is valid.", selectQuery);
@@ -212,7 +215,7 @@ public class RepositoryFrontendHelper {
      *             when query is not valid.
      */
     public static Map<String, List<String>> executeSelectQuery(RepositoryConnection connection,
-            String selectQuery, URI dataGraph)
+            String selectQuery, Set<URI> dataGraph)
             throws InvalidQueryException {
 
         Map<String, List<String>> map = new LinkedHashMap<>();
@@ -280,16 +283,16 @@ public class RepositoryFrontendHelper {
      *             when query is not valid.
      */
     public static TupleQueryResult executeSelectQueryAsTuples(RepositoryConnection connection,
-            String selectQuery, URI dataGraph)
+            String selectQuery, Set<URI> dataGraph)
             throws InvalidQueryException {
 
         try {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
                     QueryLanguage.SPARQL, selectQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(dataGraph);
-            dataSet.addNamedGraph(dataGraph);
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(dataGraph);
+            dataSet.addNamedGraphs(dataGraph);
             tupleQuery.setDataset(dataSet);
 
             log.debug("Query {} is valid.", selectQuery);
@@ -335,37 +338,21 @@ public class RepositoryFrontendHelper {
      *             BlankNode, some type of Literal (in object
      *             case))
      */
-    public static Graph describeURI(RepositoryConnection connection, URI dataGraph, Resource uriResource) throws InvalidQueryException {
+    public static Graph describeURI(RepositoryConnection connection, Set<URI> dataGraph, Resource uriResource) throws InvalidQueryException {
 
         if (uriResource instanceof URI) {
             String describeQuery = String.format("DESCRIBE <%s>", uriResource
                     .toString());
 
-            Graph result = executeConstructQuery(connection, dataGraph, describeQuery);
-
-            return result;
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(dataGraph);
+            dataSet.addNamedGraphs(dataGraph);
+            return executeConstructQuery(connection, describeQuery, dataSet);
         } else {
             throw new InvalidQueryException(
                     "Resource " + uriResource.toString() + "is not URI type");
         }
 
-    }
-
-    /**
-     * Make construct query over repository data and return interface Graph as
-     * result contains iterator for statements (triples).
-     * 
-     * @param constructQuery
-     *            String representation of SPARQL query.
-     * @return Interface Graph as result of construct SPARQL query.
-     * @throws InvalidQueryException
-     *             when query is not valid.
-     */
-    public static Graph executeConstructQuery(RepositoryConnection connection, URI dataGraph, String constructQuery) throws InvalidQueryException {
-        DatasetImpl dataSet = new DatasetImpl();
-        dataSet.addDefaultGraph(dataGraph);
-        dataSet.addNamedGraph(dataGraph);
-        return executeConstructQuery(connection, constructQuery, dataSet);
     }
 
     /**
@@ -439,7 +426,7 @@ public class RepositoryFrontendHelper {
      *             when query is not valid or creating file
      *             fail.
      */
-    public static File executeConstructQuery(RepositoryConnection connection, URI dataGraph, String constructQuery,
+    public static File executeConstructQuery(RepositoryConnection connection, Set<URI> dataGraph, String constructQuery,
             RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
         try {
@@ -447,9 +434,9 @@ public class RepositoryFrontendHelper {
             GraphQuery graphQuery = connection.prepareGraphQuery(
                     QueryLanguage.SPARQL,
                     constructQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(dataGraph);
-            dataSet.addNamedGraph(dataGraph);
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(dataGraph);
+            dataSet.addNamedGraphs(dataGraph);
             graphQuery.setDataset(dataSet);
 
             log.debug("Query {} is valid.", constructQuery);
@@ -625,7 +612,7 @@ public class RepositoryFrontendHelper {
      * 
      * @return Info string message about removing application graphs.
      */
-    public static String deleteApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
+    public static String deleteApplicationGraphs(RepositoryConnection connection, Set<URI> dataGraph) {
 
         List<String> graphs = getApplicationGraphs(connection, dataGraph);
 
@@ -636,7 +623,7 @@ public class RepositoryFrontendHelper {
             log.info(returnMessage);
         } else {
             for (String nextGraph : graphs) {
-                deleteNamedGraph(connection, nextGraph, dataGraph);
+                deleteNamedGraph(connection, nextGraph);
             }
             returnMessage = "TOTAL deleted: " + graphs.size() + " application graphs";
             log.info(returnMessage);
@@ -646,18 +633,15 @@ public class RepositoryFrontendHelper {
         return returnMessage;
     }
 
-    private static void deleteNamedGraph(RepositoryConnection connection, String graphName, URI dataGraph) {
+    private static void deleteNamedGraph(RepositoryConnection connection, String graphName) {
 
-        String deleteQuery = String.format("CLEAR GRAPH <%s>", graphName);
         try {
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(dataGraph);
-            dataSet.addNamedGraph(dataGraph);
-            executeSPARQLUpdateQuery(connection, deleteQuery, dataGraph, dataSet);
+            connection.clear(new URIImpl(graphName)); 
 
             log.info("Graph {} was sucessfully deleted", graphName);
-        } catch (RDFException e) {
-            log.debug(e.getMessage());
+        } catch (RepositoryException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
         }
 
     }
@@ -667,7 +651,7 @@ public class RepositoryFrontendHelper {
      *         of Virtuoso repository. When is used local repository as storage,
      *         this method return an empty list.
      */
-    public static List<String> getApplicationGraphs(RepositoryConnection connection, URI dataGraph) {
+    public static List<String> getApplicationGraphs(RepositoryConnection connection, Set<URI> dataGraph) {
         List<String> result = new ArrayList<>();
 
         try {

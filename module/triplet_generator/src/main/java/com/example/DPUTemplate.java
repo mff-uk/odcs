@@ -30,7 +30,7 @@ public class DPUTemplate extends NonConfigurableBase
         RepositoryConnection connection = null;
         try {
             connection = rdfOutput.getConnection();
-            URI contextName = rdfOutput.getDataGraph();
+            URI contextName = rdfOutput.getContexts();
             ValueFactory f = new MemValueFactory();
             connection.begin();
             int j = 1;

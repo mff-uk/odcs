@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
@@ -46,10 +48,10 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
     public RDFDataUnit rdfDataUnit;
 
     @OutputDataUnit(name = "input_redirection", optional = true)
-    public RDFDataUnit inputShadow;
+    public WritableRDFDataUnit inputShadow;
 
     @OutputDataUnit(name = "validationDataUnit", description = "Never connect any data to this unit please!")
-    public RDFDataUnit validationDataUnit;
+    public WritableRDFDataUnit validationDataUnit;
 
     public RDFLoader() {
         super(RDFLoaderConfig.class);
@@ -134,7 +136,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         long triplesCount = 0;
         try {
             connection = rdfDataUnit.getConnection();
-            triplesCount = connection.size(rdfDataUnit.getDataGraph());
+            triplesCount = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
         } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,
                     "connection to repository broke down");

@@ -81,7 +81,7 @@ public class SPARQLLoaderRequestSysTest {
 
             Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
-            connection.add(subject, predicate, object, repository.getDataGraph());
+            connection.add(subject, predicate, object, repository.getContexts());
         }
 
         URL endpoint = getEndpoint();
@@ -92,7 +92,7 @@ public class SPARQLLoaderRequestSysTest {
                     PASSWORD,
                     WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
-            assertEquals(connection.size(repository.getDataGraph()), loader
+            assertEquals(connection.size(repository.getContexts()), loader
                     .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
         } catch (RDFException e) {

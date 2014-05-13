@@ -68,7 +68,7 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized MemoryStore RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getDataGraph()));
+                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
         } catch (RepositoryException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -98,7 +98,7 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
         RepositoryConnection connection = null;
         try {
             connection = repository.getConnection();
-            connection.clear(dataGraph);
+            connection.clear(writeContext);
         } catch (RepositoryException ex) {
             throw new RuntimeException("Could not delete repository", ex);
         } finally {

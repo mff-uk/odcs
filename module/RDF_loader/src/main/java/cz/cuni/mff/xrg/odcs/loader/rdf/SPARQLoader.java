@@ -46,7 +46,6 @@ import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
@@ -56,6 +55,7 @@ import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
@@ -429,7 +429,7 @@ public class SPARQLoader {
         for (String nextGraph : graphs) {
             graphNumber++;
             String tempGraph = String.format("%s/%s/temp", rdfDataUnit
-                    .getDataGraph(), graphNumber);
+                    .getContexts(), graphNumber);
             collection.add(nextGraph, tempGraph);
         }
 
@@ -589,7 +589,7 @@ public class SPARQLoader {
         RepositoryConnection connection = null;
         try {
             connection = rdfDataUnit.getConnection();
-            long size = connection.size(rdfDataUnit.getDataGraph());
+            long size = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
             partsCount = size / chunkSize;
             if (size % chunkSize > 0) {
                 partsCount++;
@@ -916,9 +916,9 @@ public class SPARQLoader {
             GraphQuery graphQuery = connection.prepareGraphQuery(
                     QueryLanguage.SPARQL,
                     constructQuery);
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
-            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
+            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
             graphQuery.setDataset(dataSet);
 
             GraphQueryResult result = graphQuery.evaluate();
@@ -1585,9 +1585,9 @@ public class SPARQLoader {
             connection = rdfDataUnit.getConnection();
 
             GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(rdfDataUnit.getDataGraph());
-            dataSet.addNamedGraph(rdfDataUnit.getDataGraph());
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
+            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
             graphQuery.setDataset(dataSet);
             logger.debug("Dataset: {}", dataSet);
 

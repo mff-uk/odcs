@@ -68,7 +68,7 @@ public class VirtuosoSysTest {
             RDFDataUnit output = env.createRdfOutput("output", false);
             connection = output.getConnection();
             env.run(extractor);
-            long actualSize = connection.size(output.getDataGraph());
+            long actualSize = connection.size(output.getContexts());
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {

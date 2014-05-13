@@ -77,12 +77,6 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         return dataUnitName;
     }
 
-    //DataUnit interface
-    @Override
-    public void addAll(DataUnit unit) {
-        // TODO Auto-generated method stub
-    }
-
     //FileListDataUnit interface
     @Override
     public RDFData getRDFData() {
@@ -128,7 +122,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
                     valueFactory.createURI(URI_PREFIX, SYMBOLIC_NAME_LOCAL_NAME),
                     valueFactory.createLiteral(proposedSymbolicName)
                     );
-            connection.add(statement, backingStore.getDataGraph());
+            connection.add(statement, backingStore.getWriteContext());
             connection.commit();
         } catch (RepositoryException ex) {
             // TODO michal.klempa

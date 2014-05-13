@@ -58,7 +58,7 @@ public class SPARQLLoaderSysTest {
         fail();
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getDataGraph());
+        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");
@@ -72,7 +72,7 @@ public class SPARQLLoaderSysTest {
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getDataGraph());
+        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");
@@ -87,7 +87,7 @@ public class SPARQLLoaderSysTest {
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getDataGraph());
+        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");

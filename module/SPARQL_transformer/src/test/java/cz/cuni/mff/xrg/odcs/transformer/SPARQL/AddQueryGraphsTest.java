@@ -32,7 +32,7 @@ public class AddQueryGraphsTest {
     public static void initialize() {
         testEnvironment = new TestEnvironment();
         repository = testEnvironment.createRdfInput("LocalRepository", false);
-        GRAPH_NAME = repository.getDataGraph().toString();
+        GRAPH_NAME = repository.getContexts().toString();
         trans = new SPARQLTransformer();
 
     }
@@ -100,7 +100,7 @@ public class AddQueryGraphsTest {
     }
 
     private void compareQueries(String originalQuery, String expectedQuery) throws RepositoryException {
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getDataGraph());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getContexts());
         boolean areSame = expectedQuery.equals(returnedQuery);
         assertTrue("Queries are not SAME", areSame);
 
@@ -115,9 +115,9 @@ public class AddQueryGraphsTest {
             connection = repository.getConnection();
 
             DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(repository.getDataGraph());
-            dataSet.addNamedGraph(repository.getDataGraph());
-            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getDataGraph());
+            dataSet.addDefaultGraph(repository.getContexts());
+            dataSet.addNamedGraph(repository.getContexts());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getContexts());
             return true;
         } catch (RDFException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e

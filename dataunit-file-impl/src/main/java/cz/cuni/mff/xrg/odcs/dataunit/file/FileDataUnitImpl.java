@@ -142,11 +142,4 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
         // TODO Auto-generated method stub
 
     }
-
-    @Override
-    public void addAll(DataUnit unit) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
