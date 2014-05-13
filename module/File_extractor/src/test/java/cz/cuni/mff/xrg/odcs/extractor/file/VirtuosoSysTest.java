@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.junit.experimental.categories.Category;
 import org.openrdf.model.Model;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class VirtuosoSysTest {
     private static final String HOST_NAME = "localhost";
@@ -65,10 +65,10 @@ public class VirtuosoSysTest {
         TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         try {
-            RDFDataUnit output = env.createRdfOutput("output", false);
+            WritableRDFDataUnit output = env.createRdfOutput("output", false);
             connection = output.getConnection();
             env.run(extractor);
-            long actualSize = connection.size(output.getContexts());
+            long actualSize = connection.size(output.getWriteContext());
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {

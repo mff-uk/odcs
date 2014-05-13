@@ -9,7 +9,8 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsTransformer
@@ -24,7 +25,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
     public RDFDataUnit rdfInput;
 
     @OutputDataUnit
-    public RDFDataUnit rdfOutput;
+    public WritableRDFDataUnit rdfOutput;
 
     public DPUTemplate() {
         super(DPUTemplateConfig.class);

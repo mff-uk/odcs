@@ -1,6 +1,5 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
+package cz.cuni.mff.xrg.odcs.rdf;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;

@@ -132,17 +132,12 @@ class ContextMerger {
 
             // create new data unit (in context into which we merge)
             if (targetDataUnit == null) {
-                try {
-                    LOG.debug("creating new dataUnit: {}", sourceName);
-                    targetDataUnit = target.addDataUnit(source.getType(),
-                            targetName);
-                    // and clear it .. for sure that there is 
-                    // not data from previous executions
-                    targetDataUnit.clear();
-                } catch (DataUnitCreateException e) {
-                    throw new ContextException(
-                            "Failed to create input object.", e);
-                }
+                LOG.debug("creating new dataUnit: {}", sourceName);
+                targetDataUnit = target.addDataUnit(source.getType(),
+                        targetName);
+                // and clear it .. for sure that there is 
+                // not data from previous executions
+                targetDataUnit.clear();
             }
 
             // and copy the data

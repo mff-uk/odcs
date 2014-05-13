@@ -55,9 +55,9 @@ import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
@@ -429,7 +429,7 @@ public class SPARQLoader {
         for (String nextGraph : graphs) {
             graphNumber++;
             String tempGraph = String.format("%s/%s/temp", rdfDataUnit
-                    .getContexts(), graphNumber);
+                    .getContexts().iterator().next(), graphNumber);
             collection.add(nextGraph, tempGraph);
         }
 

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -69,7 +69,7 @@ public class SPARQLLoaderRequestSysTest {
 
     private void loadToEndpoint(LoaderEndpointParams params,
             String defaultGraphURI) throws RepositoryException {
-        RDFDataUnit repository = testEnvironment.createRdfInput("testInnn", false);
+        WritableRDFDataUnit repository = testEnvironment.createRdfInput("testInnn", false);
         RepositoryConnection connection = repository.getConnection();
         ValueFactory factory = connection.getValueFactory();
         for (int i = 0; i < LOADED_TRIPLES; i++) {
@@ -81,7 +81,7 @@ public class SPARQLLoaderRequestSysTest {
 
             Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
-            connection.add(subject, predicate, object, repository.getContexts());
+            connection.add(subject, predicate, object, repository.getWriteContext());
         }
 
         URL endpoint = getEndpoint();
@@ -92,7 +92,7 @@ public class SPARQLLoaderRequestSysTest {
                     PASSWORD,
                     WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
 
-            assertEquals(connection.size(repository.getContexts()), loader
+            assertEquals(connection.size(repository.getWriteContext()), loader
                     .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
 
         } catch (RDFException e) {

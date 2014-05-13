@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -56,9 +57,8 @@ public class SPARQLLoaderSysTest {
     @Test
     public void InsertingToEndpointTest1() throws RepositoryException {
         fail();
-        RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+        WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");
@@ -69,10 +69,9 @@ public class SPARQLLoaderSysTest {
 
     @Test
     public void InsertingToEndpointTest2() throws RepositoryException {
-        RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+        WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");
@@ -87,7 +86,6 @@ public class SPARQLLoaderSysTest {
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
-        connection.clear(repository.getContexts());
         ValueFactory factory = connection.getValueFactory();
         Resource subject = factory.createURI("http://my.subject");
         URI predicate = factory.createURI("http://my.predicate");

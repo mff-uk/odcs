@@ -1,6 +1,5 @@
 package com.example;
 
-import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -13,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsExtractor
@@ -21,7 +20,7 @@ public class DPUTemplate extends NonConfigurableBase
 {
 
     @OutputDataUnit
-    public RDFDataUnit rdfOutput;
+    public WritableRDFDataUnit rdfOutput;
 
     @Override
     public void execute(DPUContext context)
@@ -30,7 +29,6 @@ public class DPUTemplate extends NonConfigurableBase
         RepositoryConnection connection = null;
         try {
             connection = rdfOutput.getConnection();
-            URI contextName = rdfOutput.getContexts();
             ValueFactory f = new MemValueFactory();
             connection.begin();
             int j = 1;
@@ -39,7 +37,7 @@ public class DPUTemplate extends NonConfigurableBase
                         f.createURI("http://example.org/people/d" + String.valueOf(j++)),
                         f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
                         f.createLiteral("Alice" + String.valueOf(j++))
-                        ), contextName);
+                        ), rdfOutput.getWriteContext());
                 if ((i % 25000) == 0) {
                     connection.commit();
                     context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(i));
@@ -50,7 +48,7 @@ public class DPUTemplate extends NonConfigurableBase
                 }
             }
             connection.commit();
-            context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(contextName)));
+            context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteContext())));
         } catch (RepositoryException ex) {
             context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());

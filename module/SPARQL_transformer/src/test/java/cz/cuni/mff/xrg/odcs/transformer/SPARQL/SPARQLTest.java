@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class SPARQLTest {
     private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
@@ -33,8 +33,8 @@ public class SPARQLTest {
         TestEnvironment env = new TestEnvironment();
 
         // prepare data units
-        RDFDataUnit input = env.createRdfInput("input", false);
-        RDFDataUnit output = env.createRdfOutput("output", false);
+        WritableRDFDataUnit input = env.createRdfInput("input", false);
+        WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
         InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("metadata.ttl");
@@ -44,15 +44,15 @@ public class SPARQLTest {
         try {
             connection = input.getConnection();
             String baseURI = "";
-            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getContexts());
+            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getWriteContext());
 
             // some triples has been loaded
-            assertTrue(connection.size(input.getContexts()) > 0);
+            assertTrue(connection.size(input.getWriteContext()) > 0);
             // run
             env.run(trans);
             connection2 = output.getConnection();
             // verify result
-            assertTrue(connection.size(input.getContexts()) == connection2.size(output.getContexts()));
+            assertTrue(connection.size(input.getWriteContext()) == connection2.size(output.getWriteContext()));
         } finally {
             if (connection != null) {
                 try {

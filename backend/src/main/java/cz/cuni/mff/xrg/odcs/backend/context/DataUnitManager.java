@@ -240,7 +240,7 @@ final class DataUnitManager {
      * @throw DataUnitCreateException
      */
     public ManagableDataUnit addDataUnit(DataUnitType type, String name)
-            throws DataUnitCreateException {
+            {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&

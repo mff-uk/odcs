@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
@@ -36,7 +36,7 @@ public class SPARQLLoaderTest1 {
 
     private LoaderEndpointParams virtuosoParams = new LoaderEndpointParams();
 
-    private static RDFDataUnit repository;
+    private static WritableRDFDataUnit repository;
 
 //        private static final String HOST_NAME = "v7.xrg.cz";
 //
@@ -103,8 +103,8 @@ public class SPARQLLoaderTest1 {
         Value object2 = factory.createLiteral("Y");
         Value object3 = factory.createLiteral("ščřžýěéž");
 
-        connection.add(subject, predicate, object, repository.getContexts());
-        connection.add(subject, predicate, object3, repository.getContexts());
+        connection.add(subject, predicate, object, repository.getWriteContext());
+        connection.add(subject, predicate, object3, repository.getWriteContext());
         connection.close();
         tryInsertToSPARQLEndpoint();
     }

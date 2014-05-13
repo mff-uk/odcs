@@ -59,7 +59,6 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         this.writeContext = new URIImpl(writeContextString);
         this.readContexts = new HashSet<>();
         this.readContexts.add(this.writeContext);
-        LOG.info("Set new data graph - " + this.writeContext.stringValue());
 
         this.requestedConnections = new ArrayList<>();
         this.ownerThread = Thread.currentThread();
@@ -142,7 +141,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
                     + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherRDFDataUnit.getClass().getCanonicalName() + ".");
         }
-        
+
         RepositoryConnection connection = null;
         try {
             connection = getConnection();

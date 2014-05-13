@@ -54,6 +54,7 @@ class OSGIModuleFacadeConfig {
                     + "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
                     // RDF package
                     + "org.openrdf.rio,"
+                    + "cz.cuni.mff.xrg.odcs.rdf;version=\"1.0.0\","
                     + "cz.cuni.mff.xrg.odcs.rdf.data;version=\"1.0.0\","
                     + "cz.cuni.mff.xrg.odcs.rdf.enums;version=\"1.0.0\","
                     + "cz.cuni.mff.xrg.odcs.rdf.exceptions;version=\"1.0.0\","

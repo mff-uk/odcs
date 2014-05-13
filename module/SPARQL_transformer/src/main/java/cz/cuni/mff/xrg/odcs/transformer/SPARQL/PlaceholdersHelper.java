@@ -182,7 +182,7 @@ public class PlaceholdersHelper {
                 if (input.getDataUnitName().equals(next.getDPUName())) {
                     usedRepositories.add(input);
                     //set RIGHT data graph for DPU
-                    next.setGraphName(input.getContexts().toString());
+                    next.setGraphName(input.getContexts().iterator().next().stringValue());
                     isReplased = true;
 
                     break;

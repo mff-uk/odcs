@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -89,13 +90,12 @@ public class SPARQLTransformer
     }
 
     private Dataset createGraphDataSet(List<RDFDataUnit> inputs) {
-        DatasetImpl dataSet = new DatasetImpl();
+        CleverDataset dataSet = new CleverDataset();
 
         for (RDFDataUnit repository : inputs) {
             if (repository != null) {
-                URI dataGraphURI = repository.getContexts();
-                dataSet.addDefaultGraph(dataGraphURI);
-                dataSet.addNamedGraph(dataGraphURI);
+                dataSet.addDefaultGraphs(repository.getContexts());
+                dataSet.addNamedGraphs(repository.getContexts());
             }
         }
         return dataSet;
@@ -302,7 +302,7 @@ public class SPARQLTransformer
         RepositoryConnection connection = null;
         try {
             connection = intputDataUnit.getConnection();
-            final long beforeTriplesCount = connection.size(intputDataUnit.getContexts());
+            final long beforeTriplesCount = connection.size(intputDataUnit.getContexts().toArray(new URI[0]));
             final long afterTriplesCount = connection.size(outputDataUnit.getWriteContext());
             LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
                     queryCount, beforeTriplesCount, afterTriplesCount);

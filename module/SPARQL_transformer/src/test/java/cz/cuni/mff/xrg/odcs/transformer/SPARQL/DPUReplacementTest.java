@@ -1,11 +1,10 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryResult;
@@ -13,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 /**
  * @author Jiri Tomes
@@ -46,29 +45,29 @@ public class DPUReplacementTest {
 
             transformer.configureDirectly(config);
 
-            RDFDataUnit input = env.createRdfInput("input", false);
-            RDFDataUnit optional = env.createRdfInput("optional1", false);
+            WritableRDFDataUnit input = env.createRdfInput("input", false);
+            WritableRDFDataUnit optional = env.createRdfInput("optional1", false);
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://s"), factory.createURI(
-                    "http://p"), factory.createURI("http://o"), input.getContexts());
+                    "http://p"), factory.createURI("http://o"), input.getWriteContext());
             connection.add(factory.createURI("http://subject"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getContexts());
+                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
             connection2.add(factory2.createBNode("n25"), factory2
-                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getContexts());
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getWriteContext());
 
-            assertEquals(2L, connection.size(input.getContexts()));
-            assertEquals(1L, connection2.size(optional.getContexts()));
+            assertEquals(2L, connection.size(input.getWriteContext()));
+            assertEquals(1L, connection2.size(optional.getWriteContext()));
 
-            RDFDataUnit output = env.createRdfOutput("output", false);
+            WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
             env.run(transformer);
 
             connection3 = output.getConnection();
-            assertEquals("Count of triples are not same", 3L, connection3.size(output.getContexts()));
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getContexts().toArray(new URI[0])));
             env.release();
 
         } catch (Exception e) {
@@ -129,32 +128,32 @@ public class DPUReplacementTest {
 
             transformer.configureDirectly(config);
 
-            RDFDataUnit input = env.createRdfInput("input", false);
-            RDFDataUnit optional = env.createRdfInput("optional1", false);
+            WritableRDFDataUnit input = env.createRdfInput("input", false);
+            WritableRDFDataUnit optional = env.createRdfInput("optional1", false);
 
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://person"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getContexts());
+                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
 
             connection2.add(factory2.createURI("http://person"), factory2
                     .createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
-                    .createLiteral("Bill"), optional.getContexts());
+                    .createLiteral("Bill"), optional.getWriteContext());
 
-            assertEquals(1L, connection.size(input.getContexts()));
-            assertEquals(1L, connection2.size(optional.getContexts()));
+            assertEquals(1L, connection.size(input.getWriteContext()));
+            assertEquals(1L, connection2.size(optional.getWriteContext()));
 
-            RDFDataUnit output = env.createRdfOutput("output", false);
+            WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
             env.run(transformer);
 
             connection3 = output.getConnection();
-            assertEquals("Count of triples are not same", 3L, connection3.size(output.getContexts()));
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getWriteContext()));
 
-            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getContexts());
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getWriteContext());
 
             boolean newInsertedTripleFound = false;
             while (outputTriples.hasNext()) {

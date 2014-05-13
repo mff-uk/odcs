@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
@@ -44,7 +44,7 @@ public class SPARQLExtractorLocalSysTest {
     public void extractBigDataFromEndpoint() throws RepositoryException {
 
         try {
-            RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+            WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
             URL endpointURL = new URL("http://internal.opendata.cz:8890/sparql");
             String defaultGraphUri = "http://linked.opendata.cz/resource/dataset/seznam.gov.cz/ovm/list/notransform";
             String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
@@ -52,7 +52,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getContexts());
+                long sizeBefore = connection.size(repository.getWriteContext());
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
 
@@ -66,7 +66,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getContexts());
+                long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
             } finally {
@@ -88,7 +88,7 @@ public class SPARQLExtractorLocalSysTest {
     public void extractDataFromSPARQLEndpointTest() throws RepositoryException {
 
         try {
-            RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+            WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
             URL endpointURL = new URL("http://dbpedia.org/sparql");
             String defaultGraphUri = "http://dbpedia.org";
             String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
@@ -96,7 +96,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getContexts());
+                long sizeBefore = connection.size(repository.getWriteContext());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
@@ -111,7 +111,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getContexts());
+                long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
             } finally {
@@ -136,7 +136,7 @@ public class SPARQLExtractorLocalSysTest {
     //@Test
     public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException {
         try {
-            RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+            WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
             URL endpoint = new URL(QUERY_ENDPOINT.toString());
             String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 10";
 
@@ -145,7 +145,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getContexts());
+                long sizeBefore = connection.size(repository.getWriteContext());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph("http://BigGraph");
@@ -159,7 +159,7 @@ public class SPARQLExtractorLocalSysTest {
                     fail(e.getMessage());
                 }
 
-                long sizeAfter = connection.size(repository.getContexts());
+                long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
 

@@ -15,7 +15,7 @@ public interface DataUnit {
      * 
      * @return DataUnit type.
      */
-    public DataUnitType getType();
+    DataUnitType getType();
 
     /**
      * Check my type against provided.

@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
@@ -54,7 +53,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
-        RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+        WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         URL endpoint = getEndpoint();
         String query = String.format(
                 "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
@@ -66,7 +65,7 @@ public class SPARQLExtractorRequestSysTest {
         try {
             extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
-            assertEquals(connection.size(repository.getContexts()), EXTRACTED_TRIPLES);
+            assertEquals(connection.size(repository.getWriteContext()), EXTRACTED_TRIPLES);
         } catch (RDFException e) {
             fail(e.getMessage());
         } finally {

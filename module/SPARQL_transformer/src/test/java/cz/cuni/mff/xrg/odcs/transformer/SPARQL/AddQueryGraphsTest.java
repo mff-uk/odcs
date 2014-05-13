@@ -1,23 +1,23 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 public class AddQueryGraphsTest {
 
-    private static RDFDataUnit repository;
+    private static WritableRDFDataUnit repository;
 
     private static TestEnvironment testEnvironment;
 
@@ -32,7 +32,7 @@ public class AddQueryGraphsTest {
     public static void initialize() {
         testEnvironment = new TestEnvironment();
         repository = testEnvironment.createRdfInput("LocalRepository", false);
-        GRAPH_NAME = repository.getContexts().toString();
+        GRAPH_NAME = repository.getWriteContext().stringValue();
         trans = new SPARQLTransformer();
 
     }
@@ -56,7 +56,11 @@ public class AddQueryGraphsTest {
                         + "{ GRAPH <%s> { <http://example/book1>  ns:price  42 } } ",
                 GRAPH_NAME);
 
-        compareQueries(originalQuery, expectedQuery);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
+        assertTrue("This update query can not be executed by transformer",
+                tryExecuteUpdateQuery(originalQuery));
 
     }
 
@@ -74,7 +78,11 @@ public class AddQueryGraphsTest {
                         + "dc:creator \"Edmund Wells\" . } }",
                 GRAPH_NAME);
 
-        compareQueries(originalQuery, expectedQuery);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
+        assertTrue("This update query can not be executed by transformer",
+                tryExecuteUpdateQuery(originalQuery));
 
     }
 
@@ -94,19 +102,11 @@ public class AddQueryGraphsTest {
                         + "WHERE\n"
                         + "{ ?person foaf:givenName 'Bill' }",
                 GRAPH_NAME);
-
-        compareQueries(originalQuery, expectedQuery);
-
-    }
-
-    private void compareQueries(String originalQuery, String expectedQuery) throws RepositoryException {
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getContexts());
-        boolean areSame = expectedQuery.equals(returnedQuery);
-        assertTrue("Queries are not SAME", areSame);
-
-        boolean canBeExecuted = tryExecuteUpdateQuery(originalQuery);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
         assertTrue("This update query can not be executed by transformer",
-                canBeExecuted);
+                tryExecuteUpdateQuery(originalQuery));
     }
 
     private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException {
@@ -114,10 +114,10 @@ public class AddQueryGraphsTest {
         try {
             connection = repository.getConnection();
 
-            DatasetImpl dataSet = new DatasetImpl();
-            dataSet.addDefaultGraph(repository.getContexts());
-            dataSet.addNamedGraph(repository.getContexts());
-            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getContexts());
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(repository.getContexts());
+            dataSet.addNamedGraphs(repository.getContexts());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getWriteContext());
             return true;
         } catch (RDFException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e

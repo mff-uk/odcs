@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class Test {
     private static final Logger LOG = LoggerFactory.getLogger(Test.class);
@@ -39,17 +39,17 @@ public class Test {
         TestEnvironment env = new TestEnvironment();
         RepositoryConnection connection = null;
         try {
-            RDFDataUnit input = env.createRdfInput("input", false);
-            RDFDataUnit output = env.createRdfOutput("input_redirection", false);
+            WritableRDFDataUnit input = env.createRdfInput("input", false);
+            WritableRDFDataUnit output = env.createRdfOutput("input_redirection", false);
             env.createRdfOutput("validationDataUnit", false);
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             Resource subject = factory.createURI("http://my.subject");
             URI predicate = factory.createURI("http://my.predicate");
             Value object = factory.createLiteral("My company s.r.o. \"HOME\"");
-            connection.add(subject, predicate, object, input.getContexts());
+            connection.add(subject, predicate, object, input.getWriteContext());
             connection.commit();
-            long expectedSize = connection.size(input.getContexts());
+            long expectedSize = connection.size(input.getWriteContext());
             env.run(fileLoader);
             RDFFormat format = Rio.getParserFormatForFileName(tempFile.getName());
 
