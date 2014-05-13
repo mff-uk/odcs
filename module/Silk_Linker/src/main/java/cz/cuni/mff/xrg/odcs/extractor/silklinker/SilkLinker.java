@@ -33,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 /**
  * Simple XSLT Extractor
@@ -47,10 +48,10 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             SilkLinker.class);
 
     @OutputDataUnit(name = "links_confirmed")
-    public RDFDataUnit outputConfirmed;
+    public WritableRDFDataUnit outputConfirmed;
 
     @OutputDataUnit(name = "links_to_be_verified")
-    public RDFDataUnit outputToVerify;
+    public WritableRDFDataUnit outputToVerify;
 
     /**
      * Constructor
@@ -238,7 +239,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection = outputConfirmed.getConnection();
             String baseURI = "";
-            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getDataGraph());
+            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getWriteContext());
 
         } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
@@ -269,7 +270,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection2 = outputToVerify.getConnection();
             String baseURI = "";
-            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getDataGraph());
+            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getWriteContext());
         } catch (Exception ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(MessageType.ERROR, "RDFException: "

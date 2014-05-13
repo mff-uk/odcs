@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
@@ -151,7 +152,7 @@ public class TestEnvironment {
      *            Name of DataUnit.
      * @return Created {@link RDFDataUnit}.
      */
-    public RDFDataUnit createRdfFDataUnit(String name) {
+    public WritableRDFDataUnit createRdfFDataUnit(String name) {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         customDataUnits.put(name, rdf);
         return rdf;
@@ -187,7 +188,7 @@ public class TestEnvironment {
      * @return Created input {@link RDFDataUnit}.
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
      */
-    public RDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
+    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addInput(name, rdf);
         return rdf;
@@ -204,7 +205,7 @@ public class TestEnvironment {
      * @return Created output {@link RDFDataUnit}.
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
      */
-    public RDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
+    public WritableRDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
             throws RDFException {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addOutput(name, rdf);

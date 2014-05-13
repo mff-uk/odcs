@@ -19,11 +19,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 /**
@@ -114,10 +114,12 @@ public class AnnotationsOutput implements DPUPreExecutor {
      * @return Null if the class can not be translated.
      */
     protected DataUnitType classToDataUnitType(Class<?> classType) {
-        if (classType == RDFDataUnit.class) {
+        if (RDFDataUnit.class.isAssignableFrom(classType)) {
             return DataUnitType.RDF;
-        } else if (classType == FileDataUnit.class) {
+        } else if (FileDataUnit.class.isAssignableFrom(classType)) {
             return DataUnitType.FILE;
+        } else if (FileListDataUnit.class.isAssignableFrom(classType)) {
+            return DataUnitType.FILE_LIST;
         }
         return null;
     }
@@ -145,7 +147,10 @@ public class AnnotationsOutput implements DPUPreExecutor {
         LOG.debug("Data unit name is: {}", annotation.name());
 
         // get type
-        final DataUnitType type = classToDataUnitType(field.getType());
+        DataUnitType type;
+        type = classToDataUnitType(field.getType());
+
+        //classToDataUnitType(field.getType());
         if (type == null) {
             final String message = "Unknown type of field: " + field.getName();
             // type cannot be resolved -> publish event
@@ -157,18 +162,10 @@ public class AnnotationsOutput implements DPUPreExecutor {
 
         // let's create dataUnit
         ManagableDataUnit dataUnit;
-        try {
-            // if the data unit with such name and type already
-            // exist then is returned and reused
-            dataUnit = context.addOutputDataUnit(type, annotation.name());
-        } catch (DataUnitCreateException e) {
-            // create message
-            final String message = "Failed to create DataUnit for '"
-                    + field.getName() + "' exception: " + e.getMessage();
-            eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
-                    this, message));
-            return false;
-        }
+        // if the data unit with such name and type already
+        // exist then is returned and reused
+        dataUnit = context.addOutputDataUnit(type, annotation.name());
+
         LOG.debug("out: {}.{} = {}", context.getDPU().getName(), field.getName(),
                 dataUnit.getDataUnitName());
         // and set it

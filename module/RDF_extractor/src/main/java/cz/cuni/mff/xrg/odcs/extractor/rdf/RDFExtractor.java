@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
@@ -42,7 +42,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
      * The repository for SPARQL extractor.
      */
     @OutputDataUnit
-    public RDFDataUnit rdfDataUnit;
+    public WritableRDFDataUnit rdfDataUnit;
 
     public RDFExtractor() {
         super(RDFExtractorConfig.class);
@@ -114,7 +114,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
             long lastrepoSize = 0;
             connection = rdfDataUnit.getConnection();
-            lastrepoSize = connection.size(rdfDataUnit.getDataGraph());
+            lastrepoSize = connection.size(rdfDataUnit.getWriteContext());
 
             if (usedSplitConstruct) {
                 if (splitConstructSize <= 0) {
@@ -136,7 +136,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                             hostName, password, RDFFormat.NTRIPLES,
                             handlerExtractType, false);
 
-                    long newrepoSize = connection.size(rdfDataUnit.getDataGraph());
+                    long newrepoSize = connection.size(rdfDataUnit.getWriteContext());
 
                     checkParsingProblems(useStatisticHandler, context);
                     if (lastrepoSize < newrepoSize) {
@@ -160,7 +160,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
                 checkParsingProblems(useStatisticHandler, context);
             }
-            final long triplesCount = connection.size(rdfDataUnit.getDataGraph());
+            final long triplesCount = connection.size(rdfDataUnit.getWriteContext());
 
             String tripleInfoMessage = String.format(
                     "Extracted %s triples from SPARQL endpoint %s",

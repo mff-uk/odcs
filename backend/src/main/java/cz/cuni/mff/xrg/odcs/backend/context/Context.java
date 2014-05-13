@@ -183,7 +183,7 @@ public class Context implements DPUContext {
      * @throws DataUnitCreateException
      */
     public ManagableDataUnit addOutputDataUnit(DataUnitType type, String name)
-            throws DataUnitCreateException {
+             {
         return outputsManager.addDataUnit(type, name);
     }
 

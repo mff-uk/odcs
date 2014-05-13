@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf;
 
+import java.util.Set;
+
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -20,5 +22,5 @@ public interface RDFData {
      * 
      * @return URI representation of graph where RDF data are stored.
      */
-    public URI getDataGraph();
+    public Set<URI> getContexts();
 }

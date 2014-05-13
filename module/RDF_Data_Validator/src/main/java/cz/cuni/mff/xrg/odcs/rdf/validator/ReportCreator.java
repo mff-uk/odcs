@@ -13,6 +13,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
@@ -50,7 +51,7 @@ public class ReportCreator {
      * @throws RDFException
      *             if some problem during making report.
      */
-    public void makeOutputReport(RDFDataUnit repository) throws RDFException {
+    public void makeOutputReport(WritableRDFDataUnit repository) throws RDFException {
 
         setNamespaces(repository);
         addReports(repository);
@@ -71,7 +72,7 @@ public class ReportCreator {
         return prefix + "/validation/error/";
     }
 
-    private void addReports(RDFDataUnit repository) {
+    private void addReports(WritableRDFDataUnit repository) {
 
         int count = 0;
 
@@ -93,17 +94,17 @@ public class ReportCreator {
             try {
                 connection = repository.getConnection();
                 connection.add(getSubject(count), new URIImpl("rdf:type"),
-                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getDataGraph());
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getWriteContext());
                 connection.add(getSubject(count), getPredicate("subject"),
-                        getObject(sub), repository.getDataGraph());
+                        getObject(sub), repository.getWriteContext());
                 connection.add(getSubject(count), getPredicate("predicate"),
-                        getObject(pred), repository.getDataGraph());
+                        getObject(pred), repository.getWriteContext());
                 connection.add(getSubject(count), getPredicate("object"),
-                        getObject(obj), repository.getDataGraph());
+                        getObject(obj), repository.getWriteContext());
                 connection.add(getSubject(count), getPredicate("reason"),
-                        getObject(message), repository.getDataGraph());
+                        getObject(message), repository.getWriteContext());
                 connection.add(getSubject(count), getPredicate("sourceLine"),
-                        getObject(line), repository.getDataGraph());
+                        getObject(line), repository.getWriteContext());
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
             } finally {

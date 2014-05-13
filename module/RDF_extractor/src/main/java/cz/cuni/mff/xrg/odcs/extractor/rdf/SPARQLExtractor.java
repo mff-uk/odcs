@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
@@ -87,7 +88,7 @@ public class SPARQLExtractor {
      */
     private static final String encode = "UTF-8";
 
-    private RDFDataUnit dataUnit;
+    private WritableRDFDataUnit dataUnit;
 
     private DPUContext context;
 
@@ -128,7 +129,7 @@ public class SPARQLExtractor {
      *            Request HTTP parameters neeed for setting SPARQL
      *            endpoint.
      */
-    public SPARQLExtractor(RDFDataUnit dataUnit, DPUContext context,
+    public SPARQLExtractor(WritableRDFDataUnit dataUnit, DPUContext context,
             int retrySize, long retryTime,
             ExtractorEndpointParams endpointParams) {
 
@@ -153,7 +154,7 @@ public class SPARQLExtractor {
      *            Request HTTP parameters neeed for setting SPARQL
      *            endpoint.
      */
-    public SPARQLExtractor(RDFDataUnit dataUnit, DPUContext context,
+    public SPARQLExtractor(WritableRDFDataUnit dataUnit, DPUContext context,
             ExtractorEndpointParams endpointParams) {
         this.dataUnit = dataUnit;
         this.context = context;
@@ -400,7 +401,7 @@ public class SPARQLExtractor {
                 break;
         }
 
-        handler.setGraphContext(dataUnit.getDataGraph());
+        handler.setGraphContext(dataUnit.getWriteContext());
 
         RDFParser parser = getRDFParser(format, handler);
 
@@ -431,7 +432,7 @@ public class SPARQLExtractor {
         } catch (RDFCancelException e) {
             logger.debug(e.getMessage());
             try {
-                connection.clear(dataUnit.getDataGraph());
+                connection.clear(dataUnit.getWriteContext());
             } catch (RepositoryException e1) {
                 logger.debug(e.getMessage());
                 throw new RDFException(e1.getMessage(), e1);

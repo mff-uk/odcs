@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
@@ -44,13 +45,13 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
      * Output RDF data repository with only validate triples get from input.
      */
     @OutputDataUnit(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
-    public RDFDataUnit dataOutput;
+    public WritableRDFDataUnit dataOutput;
 
     /**
      * Output RDF repository report about invalid data describe as RDF triples.
      */
     @OutputDataUnit(name = "Report", description = "Output RDF repository report about invalid data described as RDF triples.")
-    public RDFDataUnit reportOutput;
+    public WritableRDFDataUnit reportOutput;
 
     public RDFDataValidator() {
         super(RDFDataValidatorConfig.class);
@@ -87,7 +88,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
             RepositoryConnection connection = null;
             try {
                 connection = dataOutput.getConnection();
-                connection.clear(dataOutput.getDataGraph());
+                connection.clear(dataOutput.getWriteContext());
             } catch (RepositoryException ex) {
                 LOG.warn("Error", ex);
             } finally {
@@ -127,7 +128,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
             DataValidator validator = new RepositoryDataValidator(dataInput,
                     dataOutput);
-            String graphName = dataInput.getDataGraph().toString();
+            String graphName = dataInput.getContexts().toString();
 
             if (sometimesOutput) {
                 if (!validator.areDataValid()) {

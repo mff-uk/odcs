@@ -15,6 +15,7 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
@@ -91,9 +92,9 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
                 TupleQuery tupleQuery = connection.prepareTupleQuery(
                         QueryLanguage.SPARQL, selectQuery);
-                DatasetImpl dataSet = new DatasetImpl();
-                dataSet.addDefaultGraph(repository.getDataGraph());
-                dataSet.addNamedGraph(repository.getDataGraph());
+                CleverDataset dataSet = new CleverDataset();
+                dataSet.addDefaultGraphs(repository.getContexts());
+                dataSet.addNamedGraphs(repository.getContexts());
                 tupleQuery.setDataset(dataSet);
 
                 TupleQueryResult result = tupleQuery.evaluate();

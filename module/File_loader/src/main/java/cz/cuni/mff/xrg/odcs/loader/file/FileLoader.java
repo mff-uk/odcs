@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
+import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
@@ -24,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
@@ -49,10 +51,10 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
     public RDFDataUnit rdfDataUnit;
 
     @OutputDataUnit(name = "validationDataUnit", description = "Never connect any data to this unit please!")
-    public RDFDataUnit validationDataUnit;
+    public WritableRDFDataUnit validationDataUnit;
 
     @OutputDataUnit(name = "input_redirection", optional = true)
-    public RDFDataUnit inputShadow;
+    public WritableRDFDataUnit inputShadow;
 
     public FileLoader() {
         super(FileLoaderConfig.class);
@@ -101,7 +103,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
         long triplesCount = 0;
         try {
             connection = rdfDataUnit.getConnection();
-            triplesCount = connection.size(rdfDataUnit.getDataGraph());
+            triplesCount = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
             FileOutputStream out = new FileOutputStream(filePath);
             OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
 
@@ -115,7 +117,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             }
 
             RDFWriter rdfWriter = Rio.createWriter(format, os);
-            connection.export(rdfWriter, rdfDataUnit.getDataGraph());
+            connection.export(rdfWriter, rdfDataUnit.getContexts().toArray(new URI[0]));
 
         } catch (RepositoryException e) {
             context.sendMessage(MessageType.ERROR,

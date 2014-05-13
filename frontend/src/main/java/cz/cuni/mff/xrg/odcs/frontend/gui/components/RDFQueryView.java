@@ -448,19 +448,18 @@ public class RDFQueryView extends QueryView {
             }
 
             connection = repository.getConnection();
-            URI dataGraph = repository.getDataGraph();
 
             if (isSelectQuery) {
                 query = RepositoryFrontendHelper.filterRDFQuery(query, filters);
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
-                        selectType, dataGraph);
+                        selectType, repository.getContexts());
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getDataGraph(), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getContexts(), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);

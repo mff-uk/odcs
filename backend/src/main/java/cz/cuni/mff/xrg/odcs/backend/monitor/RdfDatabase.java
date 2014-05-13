@@ -16,7 +16,6 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 
 /**
  * Component for monitoring rdf storage availability.
@@ -161,9 +161,9 @@ class RdfDatabase {
     private void executeQuery(VirtuosoRDFDataUnit virtuosoRepository, RepositoryConnection connection) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String query = "select * where {?s ?p ?o} limit 1";
         TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-        DatasetImpl dataSet = new DatasetImpl();
-        dataSet.addDefaultGraph(virtuosoRepository.getDataGraph());
-        dataSet.addNamedGraph(virtuosoRepository.getDataGraph());
+        CleverDataset dataSet = new CleverDataset();
+        dataSet.addDefaultGraphs(virtuosoRepository.getContexts());
+        dataSet.addNamedGraphs(virtuosoRepository.getContexts());
         tupleQuery.setDataset(dataSet);
         tupleQuery.evaluate();
     }
