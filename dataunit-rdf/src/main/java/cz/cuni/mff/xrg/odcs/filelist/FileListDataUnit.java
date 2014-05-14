@@ -1,13 +1,21 @@
 package cz.cuni.mff.xrg.odcs.filelist;
 
+import java.net.URI;
+
+import info.aduna.iteration.CloseableIteration;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
-public interface FileListDataUnit extends DataUnit, Iterable<FileListDataUnit.FileListDataUnitEntry> {
+public interface FileListDataUnit extends DataUnit {
     interface FileListDataUnitEntry {
         String getSymbolicName();
 
-        String getCanonicalPath();
+        URI getFilesystemURI();
+    }
+    
+    interface FileListIteration extends CloseableIteration<FileListDataUnit.FileListDataUnitEntry, DataUnitException> {
+        
     }
     
     /**
@@ -15,4 +23,6 @@ public interface FileListDataUnit extends DataUnit, Iterable<FileListDataUnit.Fi
      * @return
      */
     RDFData getRDFData();
+    
+    FileListDataUnit.FileListIteration getFileList() throws DataUnitException;
 }

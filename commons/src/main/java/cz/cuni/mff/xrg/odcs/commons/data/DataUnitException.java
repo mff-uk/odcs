@@ -5,7 +5,12 @@ package cz.cuni.mff.xrg.odcs.commons.data;
  * 
  * @author Petyr
  */
-public abstract class DataUnitException extends Exception {
+public class DataUnitException extends Exception {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8479349779218724204L;
 
     /**
      * @param cause

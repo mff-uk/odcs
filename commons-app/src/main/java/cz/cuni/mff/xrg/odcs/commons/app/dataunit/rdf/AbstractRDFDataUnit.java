@@ -204,7 +204,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         }
 
         if (count > 0) {
-            LOG.error("{} connections remained opened after DPU execution on graph <{}>, dataUnitName '{}'.", count, this.getContexts(), this.getDataUnitName());
+            LOG.error("{} connections remained opened after DPU execution, dataUnitName '{}'.", count, this.getDataUnitName());
         }
     }
 

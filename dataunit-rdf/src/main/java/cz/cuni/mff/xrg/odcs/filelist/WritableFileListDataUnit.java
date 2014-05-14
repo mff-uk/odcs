@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.filelist;
 
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 public interface WritableFileListDataUnit extends FileListDataUnit {
     /**
@@ -14,7 +14,7 @@ public interface WritableFileListDataUnit extends FileListDataUnit {
      * The symbolic name must be unique in scope of this data unit.
      * The file must be located under the getBasePath(). It is not allowed to create new files in different locations.
      */
-    void addExistingFile(String proposedSymbolicName, String existingFileFullPath);
+    void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException;
 
     /**
      * Generates unique new filename under the getBasePath().
@@ -30,12 +30,12 @@ public interface WritableFileListDataUnit extends FileListDataUnit {
      * // inform user, log message
      * }
      */
-    String createFilename();
+    String createFilename() throws DataUnitException;
 
     /**
      * Same as above, but dataunit should try to create the name of newly created file to be
      * similar to proposedSymbolicName (but still unique and filesystem-safe). For better debugging
      * when browsing files on disk.
      */
-    String createFilename(String proposedSymbolicName);
+    String createFilename(String proposedSymbolicName) throws DataUnitException;
 }
