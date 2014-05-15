@@ -48,7 +48,9 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     private String workingDirectoryURI;
 
     private Set<String> generatedFilenames = java.util.Collections.<String> synchronizedSet(new HashSet<String>());
-    
+
+    private Thread ownerThread;
+
     private static String URI_PREFIX = "http://linked.opendata.cz/resource/odcs/internal/filelist/";
 
     private static String SYMBOLIC_NAME_LOCAL_NAME = "symbolicName";
@@ -66,6 +68,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             this.workingDirectoryCannonicalPath = workingDirectory.getCanonicalPath();
             this.workingDirectoryURI = workingDirectory.toURI().toASCIIString();
             this.backingStore = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
+            this.ownerThread = Thread.currentThread();
         } catch (IOException ex) {
             throw new DataUnitCreateException("Error creating data unit.", ex);
         }
@@ -92,24 +95,40 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     //FileListDataUnit interface
     @Override
     public RDFData getRDFData() {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         return backingStore;
     }
 
     //FileListDataUnit interface
     @Override
     public FileListIteration getFileList() throws DataUnitException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         return new FileListIterationImpl(backingStore, SYMBOLIC_NAME_PREDICATE);
     }
 
     //WritableFileListDataUnit interface
     @Override
     public String getBasePath() {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         return workingDirectoryCannonicalPath;
     }
 
     //WritableFileListDataUnit interface
     @Override
     public void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         File existingFile = new File(existingFileFullPath);
         if (!existingFile.exists()) {
             throw new IllegalArgumentException("File does not exist: " + existingFileFullPath + ". File must exists prior being added.");
@@ -153,12 +172,20 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     //WritableFileListDataUnit interface
     @Override
     public String createFilename() throws DataUnitException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         return this.createFilename("");
     }
 
     //WritableFileListDataUnit interface
     @Override
     public String createFilename(String proposedSymbolicName) throws DataUnitException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+        }
+
         Path newFile = null;
         String filteredProposedSymbolicName = filterProposedSymbolicName(proposedSymbolicName);
         try {
@@ -216,8 +243,15 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
 
     //ManageableDataUnit interface
     @Override
-    public void merge(DataUnit unit) throws IllegalArgumentException {
-        
+    public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
+        if (!this.getClass().equals(otherDataUnit.getClass())) {
+            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
+                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
+        }
+
+        final LocalFSFileListDataUnit otherFileListDataUnit = (LocalFSFileListDataUnit) otherDataUnit;
+        otherFileListDataUnit.getRDFData(); // Just a marker line to drawn attention here when someone search for usages of getter method
+        backingStore.merge(otherFileListDataUnit.backingStore);
     }
 
     private String filterProposedSymbolicName(String proposedSymbolicName) {

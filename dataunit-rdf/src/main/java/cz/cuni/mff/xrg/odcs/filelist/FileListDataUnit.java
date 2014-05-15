@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.filelist;
 
 import java.net.URI;
 
-import info.aduna.iteration.CloseableIteration;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
