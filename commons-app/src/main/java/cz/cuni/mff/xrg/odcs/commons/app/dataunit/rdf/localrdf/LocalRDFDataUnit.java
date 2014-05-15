@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 public class LocalRDFDataUnit extends AbstractRDFDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(LocalRDFDataUnit.class);
 
-    public static final String GLOBAL_REPOSITORY_ID = "sdavhniw2uv3ni32u3fkhj";
+    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
 
     private Repository repository;
 

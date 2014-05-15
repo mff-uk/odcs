@@ -24,7 +24,7 @@ public class DPUTemplate extends ConfigurableBase<DPUTemplateConfig>
     @InputDataUnit(name = "input")
     public RDFDataUnit rdfInput;
 
-    @OutputDataUnit
+    @OutputDataUnit(name = "output")
     public WritableRDFDataUnit rdfOutput;
 
     public DPUTemplate() {
