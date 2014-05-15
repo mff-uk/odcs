@@ -17,6 +17,7 @@
     <modules>
         <module>File_extractor</module>
         <module>triplet_generator</module>
+        <module>HTTPDownloader</module>
         <module>File_loader</module>
         <module>RDF_extractor</module>
         <module>RDF_loader</module>

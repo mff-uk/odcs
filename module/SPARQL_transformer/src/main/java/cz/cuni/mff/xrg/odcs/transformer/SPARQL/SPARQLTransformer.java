@@ -82,7 +82,7 @@ public class SPARQLTransformer
     /**
      * The repository output for SPARQL transformer.
      */
-    @OutputDataUnit
+    @OutputDataUnit(name = "output")
     public WritableRDFDataUnit outputDataUnit;
 
     public SPARQLTransformer() {

@@ -22,7 +22,7 @@ public @interface OutputDataUnit {
     /**
      * @return Name of output {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
      */
-    public String name() default "output";
+    public String name();
 
     /**
      * @return {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}'s description

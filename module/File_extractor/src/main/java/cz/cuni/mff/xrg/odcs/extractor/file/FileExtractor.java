@@ -57,7 +57,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
     /**
      * The repository for file extractor.
      */
-    @OutputDataUnit
+    @OutputDataUnit(name = "output")
     public WritableRDFDataUnit rdfDataUnit;
 
     public FileExtractor() {

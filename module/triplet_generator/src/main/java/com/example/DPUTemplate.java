@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 public class DPUTemplate extends NonConfigurableBase
 {
 
-    @OutputDataUnit
+    @OutputDataUnit(name = "output")
     public WritableRDFDataUnit rdfOutput;
 
     @Override

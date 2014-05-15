@@ -41,7 +41,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
     /**
      * The repository for SPARQL extractor.
      */
-    @OutputDataUnit
+    @OutputDataUnit(name = "output")
     public WritableRDFDataUnit rdfDataUnit;
 
     public RDFExtractor() {
