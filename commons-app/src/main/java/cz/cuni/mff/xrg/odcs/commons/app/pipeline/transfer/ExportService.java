@@ -100,15 +100,23 @@ public class ExportService {
             saveSchedule(pipeline, zipStream);
             // save jar and dpu files
             HashSet<Long> savedTemplateId = new HashSet<>();
+			HashSet<String> savedTemplateDir = new HashSet<>();
+			
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
                 if (savedTemplateId.contains(template.getId())) {
-                    // already saved				
+                    // template already saved
                 } else {
                     savedTemplateId.add(template.getId());
                     // export jar file
-                    saveDPUJar(template, zipStream);
+					final String jarDirectory = template.getJarDirectory();
+					if (savedTemplateDir.contains(jarDirectory)) {
+						// jar already exported
+					} else {
+						savedTemplateDir.add(jarDirectory);
+						saveDPUJar(template, zipStream);
+					}                    
                     // copy data
                     if (setting.isExportDPUUserData()) {
                         saveDPUDataUser(template, user, zipStream);
