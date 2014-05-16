@@ -458,7 +458,7 @@ public class DPUModuleManipulator {
      */
     protected static String getDirectoryName(String sourceFileName)
             throws DPUCreateException {
-        // the name must be in format: NAME-?.?.?.jar
+        // the name must be in format: NAME-.*.jar
         final Pattern pattern = Pattern
                 .compile("(.+?)-(.*)\\.jar");
         final Matcher matcher = pattern.matcher(sourceFileName);
