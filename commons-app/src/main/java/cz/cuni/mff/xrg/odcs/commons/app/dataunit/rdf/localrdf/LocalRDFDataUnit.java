@@ -84,9 +84,10 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
             }
         }
     }
-
+    
     @Override
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
         return repository.getConnection();
     }
+    
 }

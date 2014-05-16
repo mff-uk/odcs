@@ -40,4 +40,7 @@ public interface ManagableDataUnit extends DataUnit {
      *            with
      */
     void merge(DataUnit unit) throws IllegalArgumentException;
+    
+    void store();
+    void load();
 }
