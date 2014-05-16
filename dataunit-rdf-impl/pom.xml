@@ -5,11 +5,11 @@
     <parent>
         <artifactId>odcs</artifactId>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
-        <version>1.0.0</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <groupId>cz.cuni.mff.xrg.odcs</groupId>
     <artifactId>dataunit-rdf-impl</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>dataunit-rdf-impl</name>
 
     <dependencies>
