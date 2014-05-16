@@ -143,7 +143,11 @@ final class DataUnitManager {
                 } catch (Exception e) {
                     LOG.error("Can't save DataUnit.", e);
                 }
+            } else {
+                item.store();
             }
+            
+           
         }
     }
 

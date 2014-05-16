@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf;
 
 import java.io.File;
 
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 
 /**
  * Implementation of local RDF repository - RDF data are saved in files on hard
@@ -84,9 +87,10 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
             }
         }
     }
-
+    
     @Override
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
         return repository.getConnection();
     }
+    
 }

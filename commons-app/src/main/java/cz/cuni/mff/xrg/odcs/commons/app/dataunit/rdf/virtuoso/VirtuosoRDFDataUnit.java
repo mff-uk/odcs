@@ -138,4 +138,14 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         }
     }
 
+    @Override
+    public void release() {
+        super.release();
+        try {
+            repository.shutDown();
+        } catch (RepositoryException ex) {
+            LOG.warn("Error in shutdown", ex);
+            // eat close exception, we cannot do anything clever here;
+        }
+    }
 }

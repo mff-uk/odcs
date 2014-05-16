@@ -70,6 +70,7 @@ public class RDFQuery implements Query {
         this.qd = qd;
         this.repository = RepositoryFrontendHelper
                 .getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+        this.repository.load();
 
     }
 
