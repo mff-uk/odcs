@@ -467,7 +467,7 @@ public class DPUModuleManipulator {
             return matcher.group(1);
         } else {
             throw new DPUCreateException(
-                    "DPU's name must be in format NAME-NUMBER.NUMBER.NUMBER.jar");
+                    "DPU's name must be in format NAME-.*.jar");
         }
     }
 
