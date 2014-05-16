@@ -77,7 +77,7 @@ public class DPUModuleManipulator {
         }
         // get directory name and also validate the DPU's file name
         final String newDpuFileName = sourceFile.getName();
-        final String newDpuDirName = getDirectoryName(newDpuFileName);
+        final String newDpuDirName =  getDirectoryName(newDpuFileName);
         // prepare directory secure that this method
         // will not continue for same jar-file twice .. use synchronisation
         // over file system.
@@ -460,7 +460,7 @@ public class DPUModuleManipulator {
             throws DPUCreateException {
         // the name must be in format: NAME-?.?.?.jar
         final Pattern pattern = Pattern
-                .compile("(.+)-(\\d+\\.\\d+\\.\\d+)\\.jar");
+                .compile("(.+?)-(.*)\\.jar");
         final Matcher matcher = pattern.matcher(sourceFileName);
         if (matcher.matches()) {
             // 0 - original, 1 - name, 2 - version
