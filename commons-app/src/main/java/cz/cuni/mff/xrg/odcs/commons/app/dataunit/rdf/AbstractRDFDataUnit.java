@@ -52,7 +52,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     private List<RepositoryConnection> requestedConnections;
 
     private Thread ownerThread;
-
+    
     public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
 
     public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
@@ -92,7 +92,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     @Override
     public RepositoryConnection getConnection() throws RepositoryException {
         if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+            LOG.warn("Constraint violation, only one thread can access this data unit");
         }
 
         RepositoryConnection connection = getConnectionInternal();
