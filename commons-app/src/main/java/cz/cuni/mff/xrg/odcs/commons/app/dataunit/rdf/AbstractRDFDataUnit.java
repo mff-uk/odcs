@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
@@ -14,11 +16,13 @@ import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -48,7 +52,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     private List<RepositoryConnection> requestedConnections;
 
     private Thread ownerThread;
-
+    
     public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
 
     public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
@@ -88,7 +92,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     @Override
     public RepositoryConnection getConnection() throws RepositoryException {
         if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+            LOG.warn("Constraint violation, only one thread can access this data unit");
         }
 
         RepositoryConnection connection = getConnectionInternal();
@@ -278,4 +282,80 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         this.readContexts.addAll(otherRDFDataUnit.getContexts());
     }
 
+    @Override
+    public void store() {
+        RepositoryConnection connection = null;
+        try {
+            connection = getConnectionInternal();
+            ValueFactory valueFactory = connection.getValueFactory();
+            for (URI context : this.getContexts()) {
+                connection.add(valueFactory.createStatement(
+                        this.getWriteContext(),
+                        valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
+                        context),
+                        valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+            }
+            connection.add(valueFactory.createStatement(
+                    this.getWriteContext(),
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
+                    this.writeContext),
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+        } catch (RepositoryException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void load() {
+        RepositoryConnection connection = null;
+        try {
+            connection = getConnectionInternal();
+            
+            ValueFactory valueFactory = connection.getValueFactory();
+            RepositoryResult<Statement> result = connection.getStatements(this.getWriteContext(), 
+                            valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE), 
+                            null, 
+                            false, 
+                            valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+            while (result.hasNext()) {
+                Statement contextStatement = result.next();
+                this.readContexts.add( valueFactory.createURI(contextStatement.getObject().stringValue()));
+            }
+            RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getWriteContext(), 
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE), 
+                    null, 
+                    false, 
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+            
+            int i = 0;
+            while (writeContextResult.hasNext()) {
+                Statement writeContextStatement = writeContextResult.next();
+                this.writeContext = valueFactory.createURI(writeContextStatement.getObject().stringValue());
+                i++;
+            }
+            if ((i != 1)||(!readContexts.contains(writeContext))) {
+                throw new RuntimeException("impossible");
+            }
+        } catch (RepositoryException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+    }
 }

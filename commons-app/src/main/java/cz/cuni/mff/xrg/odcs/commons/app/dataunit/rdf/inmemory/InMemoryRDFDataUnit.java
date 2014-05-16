@@ -87,29 +87,4 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
         return repository.getConnection();
     }
-
-    @Override
-    public void clear() {
-        /**
-         * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
-         * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
-         * This connection has to be obtained directly from repository and we take care to close it properly.
-         */
-        RepositoryConnection connection = null;
-        try {
-            connection = repository.getConnection();
-            connection.clear(writeContext);
-        } catch (RepositoryException ex) {
-            throw new RuntimeException("Could not delete repository", ex);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
-                }
-            }
-        }
-    }
 }

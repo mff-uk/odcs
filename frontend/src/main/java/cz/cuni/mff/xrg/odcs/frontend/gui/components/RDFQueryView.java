@@ -33,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -421,7 +422,7 @@ public class RDFQueryView extends QueryView {
      * @throws InvalidQueryException
      *             If the query is badly formatted.
      */
-    private InputStream getDownloadData(ManagableRdfDataUnit repository, String query,
+    private InputStream getDownloadData(RDFData repository, String query,
             Object format, Collection<Filter> filters) {
         RepositoryConnection connection = null;
         try {

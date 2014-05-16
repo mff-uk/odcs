@@ -29,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUnit {
@@ -51,13 +52,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
 
     private Thread ownerThread;
 
-    private static String URI_PREFIX = "http://linked.opendata.cz/resource/odcs/internal/filelist/";
-
-    private static String SYMBOLIC_NAME_LOCAL_NAME = "symbolicName";
-    
-    private static String SYMBOLIC_NAME_PREDICATE = URI_PREFIX + SYMBOLIC_NAME_LOCAL_NAME;
-
-    private static String FILE_EXISTS_ASK_QUERY = "PREFIX filelist: <" + URI_PREFIX + "> ASK { ?pathUri filelist:symbolicName \"%s\" }";
+    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
@@ -109,7 +104,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
-        return new FileListIterationImpl(backingStore, SYMBOLIC_NAME_PREDICATE);
+        return new FileListIterationImpl(backingStore, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
     }
 
     //WritableFileListDataUnit interface
@@ -149,7 +144,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             ValueFactory valueFactory = connection.getValueFactory();
             Statement statement = valueFactory.createStatement(
                     valueFactory.createURI(existingFile.toURI().toASCIIString()),
-                    valueFactory.createURI(URI_PREFIX, SYMBOLIC_NAME_LOCAL_NAME),
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE),
                     valueFactory.createLiteral(proposedSymbolicName)
                     );
             connection.add(statement, backingStore.getWriteContext());
@@ -205,7 +200,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     @Override
     public void clear() {
         ManagableRdfDataUnit tempDataUnit = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
-        FileListIteration iteration = new FileListIterationImpl(tempDataUnit, SYMBOLIC_NAME_PREDICATE);
+        FileListIteration iteration = new FileListIterationImpl(tempDataUnit, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
         try {
             while (iteration.hasNext()) {
                 FileListDataUnitEntry entry = iteration.next();
@@ -254,6 +249,18 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         backingStore.merge(otherFileListDataUnit.backingStore);
     }
 
+    @Override
+    public void load() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void store() {
+        // TODO Auto-generated method stub
+        
+    }
+    
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;
