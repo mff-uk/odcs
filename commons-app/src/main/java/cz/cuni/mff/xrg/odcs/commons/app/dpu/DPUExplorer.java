@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitTypeResolver;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -106,7 +107,7 @@ public class DPUExplorer {
             // create description
             result.add(DataUnitDescription.createInput(
                     annotation.name(),
-                    item.getField().getGenericType().toString(),
+                    DataUnitTypeResolver.resolveClassToType(item.getField().getType()).toString(),
                     annotation.description(),
                     annotation.optional())
                     );
@@ -134,7 +135,7 @@ public class DPUExplorer {
             final OutputDataUnit annotation = item.getAnnotation();
             // create description			
             result.add(DataUnitDescription.createOutput(annotation.name(),
-                    item.getField().getGenericType().toString(),
+                    DataUnitTypeResolver.resolveClassToType(item.getField().getType()).toString(),
                     annotation.description(),
                     annotation.optional()));
         }

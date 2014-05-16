@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitTypeResolver;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
@@ -22,9 +23,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 /**
  * Examine the given DPU instance for annotations. If there is {@link OutputDataUnit} annotation on field then create or assign suitable
@@ -108,23 +106,6 @@ public class AnnotationsOutput implements DPUPreExecutor {
     }
 
     /**
-     * Translate {@link Class} into {@link DataUnitType}.
-     * 
-     * @param classType
-     * @return Null if the class can not be translated.
-     */
-    protected DataUnitType classToDataUnitType(Class<?> classType) {
-        if (RDFDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.RDF;
-        } else if (FileDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILE;
-        } else if (FileListDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILE_LIST;
-        }
-        return null;
-    }
-
-    /**
      * Execute the output annotation ie. create output {@link DataUnit} and
      * assign it to the annotated field. If annotation is null then instantly
      * return true. If error appear then publish event and return false.
@@ -148,7 +129,7 @@ public class AnnotationsOutput implements DPUPreExecutor {
 
         // get type
         DataUnitType type;
-        type = classToDataUnitType(field.getType());
+        type = DataUnitTypeResolver.resolveClassToType(field.getType());
 
         //classToDataUnitType(field.getType());
         if (type == null) {
