@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 // TODO 1: You can choose AsLoader or AsExtractor instead of AsTransformer
 @AsExtractor
-public class DPUTemplate extends NonConfigurableBase
+public class TripletGenerator extends NonConfigurableBase
 {
 
     @OutputDataUnit(name = "output")

@@ -17,11 +17,11 @@ public interface WritableFileListDataUnit extends FileListDataUnit {
     void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException;
 
     /**
-     * Generates unique new filename under the getBasePath().
+     * Generates unique file under the getBasePath().
      * Returns the newly generated full file path to work with.
-     * It does not create the file on the disk nor it adds the file into dataunit.
+     * It does create the file on the disk, but it does not add the file into the dataunit.
      * Typical usage:
-     * String htmlFileOutFilename = outputFileDataUnit.createFilename();
+     * String htmlFileOutFilename = outputFileDataUnit.createFile();
      * try {
      * new HTMLWriter(new File(htmlFileOutFilename)).dumpMyData(data);
      * outputFileDataUnit.addExistingFile("htmlOutput.html", htmlFileOutFilename);
@@ -30,12 +30,12 @@ public interface WritableFileListDataUnit extends FileListDataUnit {
      * // inform user, log message
      * }
      */
-    String createFilename() throws DataUnitException;
+    String createFile() throws DataUnitException;
 
     /**
      * Same as above, but dataunit should try to create the name of newly created file to be
      * similar to proposedSymbolicName (but still unique and filesystem-safe). For better debugging
      * when browsing files on disk.
      */
-    String createFilename(String proposedSymbolicName) throws DataUnitException;
+    String createFile(String proposedSymbolicName) throws DataUnitException;
 }

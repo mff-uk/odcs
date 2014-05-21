@@ -46,11 +46,6 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
 
     private void initialize() {
         FormLayout mainLayout = new FormLayout();
-//        mainLayout.setImmediate(false);
-//        mainLayout.setWidth("100%");
-//        mainLayout.setHeight("100%");
-//        mainLayout.setMargin(false);
-//        mainLayout.setSpacing(true);
 
         // top-level component properties
         setWidth("100%");
@@ -59,7 +54,10 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
         mainLayout.addComponent(new TextField(CONNECTION_TIMEOUT_LABEL, connectionTimeout));
         mainLayout.addComponent(new TextField(READ_TIMEOUT_LABEL, readTimeout));
 
-        mainLayout.addComponent(new TextArea(MAP_TEXT, mapText));
+        TextArea ta = new TextArea(MAP_TEXT, mapText);
+        ta.setRows(50);
+        ta.setColumns(50);
+        mainLayout.addComponent(ta);
         connectionTimeout.setValue(325);
         setCompositionRoot(mainLayout);
     }

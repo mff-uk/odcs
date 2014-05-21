@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BooleanQuery;
@@ -166,17 +165,17 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
 
     //WritableFileListDataUnit interface
     @Override
-    public String createFilename() throws DataUnitException {
+    public String createFile() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
-        return this.createFilename("");
+        return this.createFile("");
     }
 
     //WritableFileListDataUnit interface
     @Override
-    public String createFilename(String proposedSymbolicName) throws DataUnitException {
+    public String createFile(String proposedSymbolicName) throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
@@ -188,10 +187,6 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             generatedFilenames.add(newFile.toString());
         } catch (IOException ex) {
             throw new DataUnitException("Error when generating filename.", ex);
-        } finally {
-            if (newFile != null) {
-                FileUtils.deleteQuietly(newFile.toFile());
-            }
         }
         return newFile.toString();
     }
@@ -251,14 +246,12 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
 
     @Override
     public void load() {
-        // TODO Auto-generated method stub
-        
+        backingStore.load();
     }
     
     @Override
     public void store() {
-        // TODO Auto-generated method stub
-        
+        backingStore.store();
     }
     
     private String filterProposedSymbolicName(String proposedSymbolicName) {

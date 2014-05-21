@@ -33,15 +33,15 @@ public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> imple
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
         Map<String, String> symbolicNameToURIMap = config.getSymbolicNameToURIMap();
-        int connectionTimeout = 1000;//config.getConnectionTimeout();
-        int readTimeout = 1000; //config.getReadTimeout();
+        int connectionTimeout = config.getConnectionTimeout();
+        int readTimeout = config.getReadTimeout();
         String shortMessage = this.getClass().getName() + " starting.";
         String longMessage = String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
         
         for (String symbolicName : symbolicNameToURIMap.keySet()) {
-            String downloadedFilename = fileOutput.createFilename(symbolicName);
+            String downloadedFilename = fileOutput.createFile(symbolicName);
             File downloadedFile = new File(downloadedFilename);
             String downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
             try {
