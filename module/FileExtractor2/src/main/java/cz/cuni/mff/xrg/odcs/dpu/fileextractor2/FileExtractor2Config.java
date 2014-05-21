@@ -7,10 +7,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class FileExtractor2Config extends DPUConfigObjectBase {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1976290368429585223L;
 
     private Map<String, String> symbolicNameToBaseURIMap;
     private Map<String, String> symbolicNameToFormatMap;

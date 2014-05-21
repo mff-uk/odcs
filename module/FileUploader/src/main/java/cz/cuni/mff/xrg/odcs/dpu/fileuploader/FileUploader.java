@@ -14,14 +14,14 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.filelist.WritableFileListDataUnit;
 
 @AsExtractor
-public class FileUploader extends ConfigurableBase<FileUploader2Config> implements ConfigDialogProvider<FileUploader2Config> {
+public class FileUploader extends ConfigurableBase<FileUploaderConfig> implements ConfigDialogProvider<FileUploaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FileUploader.class);
 
     @OutputDataUnit(name = "fileOutput")
     public WritableFileListDataUnit fileOutput;
 
     public FileUploader() {
-        super(FileUploader2Config.class);
+        super(FileUploaderConfig.class);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class FileUploader extends ConfigurableBase<FileUploader2Config> implemen
     }
 
     @Override
-    public AbstractConfigDialog<FileUploader2Config> getConfigurationDialog() {
-        return new FileUploader2ConfigDialog();
+    public AbstractConfigDialog<FileUploaderConfig> getConfigurationDialog() {
+        return new FileUploaderConfigDialog();
     }
 }

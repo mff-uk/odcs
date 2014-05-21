@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FileUploader2ConfigDialog extends BaseConfigDialog<FileUploader2Config> {
+public class FileUploaderConfigDialog extends BaseConfigDialog<FileUploaderConfig> {
     /**
      * 
      */
@@ -31,8 +31,8 @@ public class FileUploader2ConfigDialog extends BaseConfigDialog<FileUploader2Con
 
     private ObjectProperty<String> mapText = new ObjectProperty<String>("");
 
-    public FileUploader2ConfigDialog() {
-        super(FileUploader2Config.class);
+    public FileUploaderConfigDialog() {
+        super(FileUploaderConfig.class);
         initialize();
     }
 
@@ -50,7 +50,7 @@ public class FileUploader2ConfigDialog extends BaseConfigDialog<FileUploader2Con
     }
 
     @Override
-    public void setConfiguration(FileUploader2Config conf) throws ConfigException {
+    public void setConfiguration(FileUploaderConfig conf) throws ConfigException {
         StringBuilder sb = new StringBuilder();
         for (String key : conf.getSymbolicNameToBaseURIMap().keySet()) {
             sb.append(key);
@@ -66,7 +66,7 @@ public class FileUploader2ConfigDialog extends BaseConfigDialog<FileUploader2Con
     }
 
     @Override
-    public FileUploader2Config getConfiguration() throws ConfigException {
+    public FileUploaderConfig getConfiguration() throws ConfigException {
         Map<String, String> symbolicNameToBaseURIMap = new LinkedHashMap<>();
         Map<String, String> symbolicNameToFormatMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
@@ -108,10 +108,10 @@ public class FileUploader2ConfigDialog extends BaseConfigDialog<FileUploader2Con
             throw new ConfigException(ex);
         }
 
-        FileUploader2Config fileUploader2Config = new FileUploader2Config();
-        fileUploader2Config.setSymbolicNameToBaseURIMap(symbolicNameToBaseURIMap);
-        fileUploader2Config.setSymbolicNameToFormatMap(symbolicNameToFormatMap);
-        return fileUploader2Config;
+        FileUploaderConfig fileUploaderConfig = new FileUploaderConfig();
+        fileUploaderConfig.setSymbolicNameToBaseURIMap(symbolicNameToBaseURIMap);
+        fileUploaderConfig.setSymbolicNameToFormatMap(symbolicNameToFormatMap);
+        return fileUploaderConfig;
     }
 
 }

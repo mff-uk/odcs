@@ -7,11 +7,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class HTTPDownloaderConfig extends DPUConfigObjectBase {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1976290368429585223L;
-
     private int connectionTimeout;
 
     private int readTimeout;

@@ -5,12 +5,7 @@ import java.util.Map;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class FileUploader2Config extends DPUConfigObjectBase {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1976290368429585223L;
+public class FileUploaderConfig extends DPUConfigObjectBase {
 
     private Map<String, String> symbolicNameToBaseURIMap;
     private Map<String, String> symbolicNameToFormatMap;
@@ -19,7 +14,7 @@ public class FileUploader2Config extends DPUConfigObjectBase {
     
 
     // DPUTemplateConfig must provide public non-parametric constructor
-    public FileUploader2Config() {
+    public FileUploaderConfig() {
         this.symbolicNameToBaseURIMap = new LinkedHashMap<>();
         this.symbolicNameToFormatMap = new LinkedHashMap<>();
         this.symbolicNameToPathURI = new LinkedHashMap<>();
