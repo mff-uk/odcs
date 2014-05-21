@@ -27,7 +27,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource
 /**
  * @author Škoda Petr
  */
-public class  PipelineExport extends Window {
+public class PipelineExport extends Window {
 
     private static final Logger LOG = LoggerFactory.getLogger(
             PipelineExport.class);
