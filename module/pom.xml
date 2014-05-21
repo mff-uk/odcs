@@ -19,9 +19,9 @@
         <module>HTTPDownloader</module>
         <module>FileExtractor2</module>
         <module>XSLT2</module>
+        <module>TripleGenerator</module>
 	<!-- Old DPUs -->
         <module>File_extractor</module>
-        <module>triplet_generator</module>
         <module>File_loader</module>
         <module>RDF_extractor</module>
         <module>RDF_loader</module>

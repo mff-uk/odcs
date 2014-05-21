@@ -9,7 +9,9 @@ public class TripleGeneratorConfig extends DPUConfigObjectBase {
      */
     private static final long serialVersionUID = -1976290368429585223L;
 
-    private int tripleCount;
+    private int tripleCount = 1000000;
+
+    private int commitSize = 50000;
 
     public int getTripleCount() {
         return tripleCount;
@@ -17,6 +19,14 @@ public class TripleGeneratorConfig extends DPUConfigObjectBase {
 
     public void setTripleCount(int tripletCount) {
         this.tripleCount = tripletCount;
+    }
+
+    public int getCommitSize() {
+        return commitSize;
+    }
+
+    public void setCommitSize(int commitSize) {
+        this.commitSize = commitSize;
     }
 
 }

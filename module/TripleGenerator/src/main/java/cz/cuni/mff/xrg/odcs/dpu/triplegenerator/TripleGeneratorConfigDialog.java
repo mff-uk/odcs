@@ -19,7 +19,11 @@ public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGenerato
 
     private static final String TRIPLE_COUNT_LABEL = "Generate this count of triples";
 
+    private static final String COMMIT_SIZE_LABEL  = "Commit transaction every this triples";
+
     private ObjectProperty<Integer> tripleCount = new ObjectProperty<Integer>(0);
+
+    private ObjectProperty<Integer> commitSize = new ObjectProperty<Integer>(0);
 
     public TripleGeneratorConfigDialog() {
         super(TripleGeneratorConfig.class);
@@ -34,6 +38,7 @@ public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGenerato
         setHeight("100%");
 
         mainLayout.addComponent(new TextField(TRIPLE_COUNT_LABEL, tripleCount));
+        mainLayout.addComponent(new TextField(COMMIT_SIZE_LABEL, commitSize));
 
         setCompositionRoot(mainLayout);
     }
@@ -41,12 +46,14 @@ public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGenerato
     @Override
     public void setConfiguration(TripleGeneratorConfig conf) throws ConfigException {
         tripleCount.setValue(conf.getTripleCount());
+        commitSize.setValue(conf.getCommitSize());
     }
 
     @Override
     public TripleGeneratorConfig getConfiguration() throws ConfigException {
         TripleGeneratorConfig config = new TripleGeneratorConfig();
         config.setTripleCount(tripleCount.getValue());
+        config.setCommitSize(commitSize.getValue());
         return config;
     }
 
