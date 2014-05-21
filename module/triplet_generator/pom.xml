@@ -10,7 +10,7 @@
     </parent>
 
     <!-- TODO 1: fill the DPU name, without special characters, use '_' instead of whitespaces -->
-    <artifactId>triplet_generator</artifactId>
+    <artifactId>TripleGenerator</artifactId>
 
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.0.0</version>
@@ -18,13 +18,13 @@
     <packaging>bundle</packaging>
 
     <!-- TODO 3: fill module description, the description will be visible to the user -->
-    <description>My first DPU implementation.</description>
+    <description>Generates specified number of unique triples.</description>
 
     <properties>
         <!-- TODO 4: fill the name of root package -->
-        <dpu.package>com.example</dpu.package>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.triplegenerator</dpu.package>
         <!-- TODO 5: fill DPU main class name here -->
-        <dpu.mainClass>DPUTemplate</dpu.mainClass>
+        <dpu.mainClass>TripleGenerator</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
     </properties>
