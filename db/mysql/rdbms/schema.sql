@@ -55,7 +55,7 @@ CREATE TABLE `dpu_template`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,  
-  `configuration` BLOB,
+  `configuration` LONGBLOB,
   `parent_id` INTEGER,
   `config_valid` SMALLINT NOT NULL,
 -- DPUTemplateRecord
