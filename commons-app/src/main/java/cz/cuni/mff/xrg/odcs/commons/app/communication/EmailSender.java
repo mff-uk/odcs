@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -25,7 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
  */
 public class EmailSender {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
     /**
      * If false outcoming email are silently dropped.

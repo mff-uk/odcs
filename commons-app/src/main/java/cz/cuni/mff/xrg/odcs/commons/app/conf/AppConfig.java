@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -9,6 +7,9 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
 /**
@@ -17,13 +18,7 @@ import org.springframework.core.io.Resource;
  * @author Petyr
  * @author Jan Vojt
  */
-public class AppConfig {
-
-    /**
-     * Path to configuration file.
-     * Not final, so that it can be overridden by run arguments (in backend).
-     */
-    public static String confPath = System.getProperty("user.home") + "/.odcs/config.properties";
+public class AppConfig extends PropertyPlaceholderConfigurer {
 
     /**
      * Modifiable configuration itself.
@@ -41,21 +36,17 @@ public class AppConfig {
     private AppConfig() {
     }
 
-    /**
-     * Constructor reads configuration file.
-     * 
-     * @return application configuration
-     */
-    public static AppConfig loadFromHome() {
-        // we do not use slf4j as it is not initilized yet
-        LOG.log(Level.INFO, "Loading configuration from: {0}", confPath);
-        try {
-            return loadFrom(new FileInputStream(confPath));
-        } catch (FileNotFoundException ex) {
-            throw new ConfigFileNotFoundException(ex);
-        }
-    }
-
+    @Override
+    protected void processProperties(ConfigurableListableBeanFactory beanFactory,
+              Properties props) throws BeansException {
+         super.processProperties(beanFactory, props);
+  
+         for (Object key : props.keySet()) {
+             String keyStr = key.toString();
+             prop.put(keyStr, props.getProperty(keyStr));
+         }
+     }
+  
     /**
      * Constructor building from Spring resource.
      * 

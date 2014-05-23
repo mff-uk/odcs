@@ -46,41 +46,9 @@ public class AppEntry {
     private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
 
     /**
-     * Path to the configuration file.
-     */
-    private String configFileLocation = null;
-
-    /**
      * Spring context.
      */
     private AbstractApplicationContext context = null;
-
-    /**
-     * Parse program arguments.
-     * 
-     * @param args
-     */
-    private void parseArgs(String[] args) {
-        // define args
-        Options options = new Options();
-        options.addOption("c", "config", true, "path to the configuration file");
-        // parse args
-        CommandLineParser parser = new org.apache.commons.cli.BasicParser();
-        try {
-            CommandLine cmd = parser.parse(options, args);
-            // read args ..
-            configFileLocation = cmd.getOptionValue("config");
-        } catch (ParseException e) {
-            System.err.println("Failed to parse program's arguments.");
-            e.printStackTrace(System.err);
-            System.exit(1);
-        }
-
-        // override default configuration path if it has been provided
-        if (configFileLocation != null) {
-            AppConfig.confPath = configFileLocation;
-        }
-    }
 
     /**
      * Initialise spring and load configuration.
@@ -135,12 +103,11 @@ public class AppEntry {
         return rfAppender;
     }
 
-    private void initLogbackAppender() {
+    private void initLogbackAppender(AppConfig appConfig) {
         // default values
         String logDirectory = "";
         int logHistory = 14;
         // we try to load values from configuration
-        AppConfig appConfig = AppConfig.loadFromHome();
         try {
             logDirectory = appConfig.getString(ConfigProperty.BACKEND_LOG_DIR);
             // user set path, ensure that it end's on file separator
@@ -226,15 +193,13 @@ public class AppEntry {
      * @param args
      */
     private void run(String[] args) {
-        // parse args - do not use logging		
-        parseArgs(args);
+        // initialise
+        initSpring();
 
         // the log back is not initialised here .. 
         // we add file appender
-        initLogbackAppender();
+        initLogbackAppender(context.getBean(AppConfig.class));
 
-        // initialise
-        initSpring();
 
         // the sql appender cooperate with spring, so we need spring first
         initLogbackSqlAppender();
