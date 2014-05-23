@@ -17,21 +17,6 @@
     <!-- enable aspects -->
     <aop:aspectj-autoproxy/>
 
-    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="locations">
-            <list>
-                <value>file:${user.home}/.odcs/config.properties</value>
-                <value>file:${configFileLocation}</value>
-                <value>/WEB-INF/config.properties</value>
-            </list>
-        </property>
-    </bean>
-
-    <!-- application configuration -->
-    <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFromHome"/>
-
     <!-- factory for data source is needed to choose correct database platform -->
     <bean id="dataSourceFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.DataSourceFactory"/>
 
@@ -82,17 +67,6 @@
 
     <!-- Facade for managing RDF namespace prefixes -->
     <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacadeImpl"/>
-
-    <!-- Service responsible for delivering emails -->
-    <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
-        <constructor-arg ref="configuration"/>
-    </bean>
-
-    <!-- special configuration for moduleFacede, but it's loaded in configuration, so these two have to share one instance -->
-    <bean id="abstractModuleFacadeConfig" abstract="true"
-          class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
-        <constructor-arg ref="configuration"/>
-    </bean>
 
     <!-- Service or exploring DPUs -->
     <bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer"/>

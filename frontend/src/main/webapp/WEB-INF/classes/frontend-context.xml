@@ -4,7 +4,18 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-
+    
+    <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/config.properties</value>
+                <value>file:${configFileLocation}</value>
+            </list>
+        </property>
+    </bean>
+    
     <import resource="classpath:commons-app-context.xml"/>
 
     <!-- Scan Views for bean definitions. -->
@@ -14,16 +25,16 @@
     <!-- Scan validators -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.dpu.validator"/>
 
-
-    <!-- Application configuration is taken from war file, so we override it. -->
-    <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
-        <constructor-arg value="/WEB-INF/config.properties"/>
-    </bean>
-
     <!-- Module configuration needs to be defined here,
     because it differs from backend -->
-    <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
+    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
+        <constructor-arg ref="configuration"/>
         <constructor-arg value="FRONTEND"/>
+    </bean>
+
+    <!-- Service responsible for delivering emails -->
+    <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
+        <constructor-arg ref="configuration"/>
     </bean>
 
     <!-- bean for notification -->

@@ -2,6 +2,7 @@
 
     <!-- contains configuration for FILE appender -->
     <property resource="../config.properties"/>
+    <property file="${configFileLocation}"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
