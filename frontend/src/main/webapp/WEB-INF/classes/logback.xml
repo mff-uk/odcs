@@ -1,7 +1,6 @@
 <configuration>
 
     <!-- contains configuration for FILE appender -->
-    <property file="${user.home}/.odcs/config.properties"/>
     <property resource="../config.properties"/>
     <property file="${configFileLocation}"/>
 

@@ -10,7 +10,6 @@
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>
-                <value>file:${user.home}/.odcs/config.properties</value>
                 <value>/WEB-INF/config.properties</value>
                 <value>file:${configFileLocation}</value>
             </list>
