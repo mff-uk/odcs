@@ -1,11 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -19,6 +23,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.ontology;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -26,7 +33,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
  * @author Petyr
  */
 class OSGIModuleFacadeConfig {
-
+	
     private static final Logger LOG = LoggerFactory.getLogger(
             OSGIModuleFacadeConfig.class);
 
@@ -179,12 +186,34 @@ class OSGIModuleFacadeConfig {
     }
 
     public String getPackagesToExpose() {
+        Resource resource = new ClassPathResource("/osgiModuleFacadeConfig.properties");
+        String list = "";
+        String delimiter = ",";
+        try {
+            Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+            Enumeration enumeration = properties.propertyNames();
+            while (enumeration.hasMoreElements()) {
+                String key = (String) enumeration.nextElement();
+                String value = properties.getProperty(key);
+                if(enumeration.hasMoreElements())
+                    list += key + "=" + value + delimiter;
+                else{
+                    list += key + "=" + value;
+                }
+            }
+
+            LOG.debug("list of package to expose");
+        } catch (IOException e) {
+            LOG.error("Error", e);
+        }
+
+
         if (additionalPackages.isEmpty()) {
             // no additional packages
-            return PACKAGE_BASE;
+            return list;
         } else {
             // add separator
-            return PACKAGE_BASE + "," + additionalPackages;
+            return list + "," + additionalPackages;
         }
     }
 
