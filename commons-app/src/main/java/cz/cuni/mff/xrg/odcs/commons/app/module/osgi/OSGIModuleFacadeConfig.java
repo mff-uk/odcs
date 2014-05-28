@@ -6,6 +6,8 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * 
  * @author Petyr
  */
-class OSGIModuleFacadeConfig {
+public class OSGIModuleFacadeConfig {
 	
     private static final Logger LOG = LoggerFactory.getLogger(
             OSGIModuleFacadeConfig.class);
@@ -161,6 +163,9 @@ class OSGIModuleFacadeConfig {
             while (enumeration.hasMoreElements()) {
                 String key = (String) enumeration.nextElement();
                 String value = properties.getProperty(key);
+                // hack: this mapping is needed because osgi versioning is a bit different then maven.
+                value = value.replaceAll("-SNAPSHOT", "\\.SNAPSHOT");
+
                 if(enumeration.hasMoreElements())
                     list += key + "=" + value + delimiter;
                 else{
