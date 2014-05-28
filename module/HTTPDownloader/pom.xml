@@ -6,16 +6,14 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-core</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0.Snapshot</version>
     </parent>
 
+
     <artifactId>HTTPDownloader</artifactId>
-
     <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>0.0.1</version>
-
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-
     <description>HTTPDownloader downloads file list given in configuration and saves each file under symbolicName as specified by configuration.</description>
 
     <properties>
@@ -24,6 +22,7 @@
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>
+        <odcs.version>1.1.0-SNAPSHOT</odcs.version>
     </properties>
 
     <dependencies>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-base</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0.Snapshot</version>
         <relativePath>../module-base/pom.xml</relativePath>
     </parent>
     <groupId>cz.cuni.mff.xrg.odcs</groupId>

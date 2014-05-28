@@ -1,8 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.ontology;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -41,39 +47,6 @@ class OSGIModuleFacadeConfig {
      */
     private static final String LIB_DIRECTORY = "lib";
 
-    /**
-     * Contains list of common packages to export. Must not end with comma.
-     */
-    private static final String PACKAGE_BASE =
-            "cz.cuni.mff.xrg.odcs.commons;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.configuration;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.context;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.data;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.dpu;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.dpu.annotation;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.message;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.commons.httpconnection.utils;version=\"1.0.0\","
-                    // RDF package
-                    + "org.openrdf.rio,"
-                    + "cz.cuni.mff.xrg.odcs.filelist;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.data;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.enums;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.exceptions;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.interfaces;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.impl;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.repositories;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.validators;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.handlers;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.impl;version=\"1.0.0\","
-                    + "cz.cuni.mff.xrg.odcs.rdf.help;version=\"1.0.0\"";
-
-    /**
-     * Contains list of packages exported from frontend. Does not start nor end
-     * on separator.
-     */
-    private static final String FRONTEND_BASE =
-            "cz.cuni.mff.xrg.odcs.commons.web;version=\"1.0.0\"";
 
     /**
      * Path to the root directory, does not end on file separator.
@@ -148,7 +121,6 @@ class OSGIModuleFacadeConfig {
         {
             // frontend is running -> we need to export Vaadin packages as well
             appendPackages(packageList, vaadin.PACKAGES);
-            appendPackages(packageList, FRONTEND_BASE);
             // print message
             LOG.info("com.vaadin version: {}", vaadin.VERSION);
         }
@@ -180,12 +152,34 @@ class OSGIModuleFacadeConfig {
     }
 
     public String getPackagesToExpose() {
+        Resource resource = new ClassPathResource("/osgiModuleFacadeConfig.properties");
+        String list = "";
+        String delimiter = ",";
+        try {
+            Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+            Enumeration enumeration = properties.propertyNames();
+            while (enumeration.hasMoreElements()) {
+                String key = (String) enumeration.nextElement();
+                String value = properties.getProperty(key);
+                if(enumeration.hasMoreElements())
+                    list += key + "=" + value + delimiter;
+                else{
+                    list += key + "=" + value;
+                }
+            }
+
+            LOG.debug("list of package to expose");
+        } catch (IOException e) {
+            LOG.error("Error", e);
+        }
+
+
         if (additionalPackages.isEmpty()) {
             // no additional packages
-            return PACKAGE_BASE;
+            return list;
         } else {
             // add separator
-            return PACKAGE_BASE + "," + additionalPackages;
+            return list + "," + additionalPackages;
         }
     }
 
