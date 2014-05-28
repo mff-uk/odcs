@@ -22,7 +22,6 @@
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>
-        <odcs.version>1.1.0-SNAPSHOT</odcs.version>
     </properties>
 
     <dependencies>
