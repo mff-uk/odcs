@@ -262,8 +262,10 @@ public class SPARQLTransformer
 
 //					TODO michal.klempa this should not be needed anymore
 //					if (needRepository) {
-                    Dataset dataset = createGraphDataSet(inputs);
-
+                    CleverDataset dataset = new CleverDataset();
+                    dataset.addDefaultGraph(outputDataUnit.getWriteContext());
+                    dataset.addNamedGraph(outputDataUnit.getWriteContext());
+                    
                     RepositoryConnection connection = null;
                     try {
                         connection = outputDataUnit.getConnection();
