@@ -11,7 +11,7 @@
     <artifactId>Silk_Linker_Extractor</artifactId>
     <name>Silk_Linker_Extractor</name>
     <packaging>bundle</packaging>
-    <version>1.1.0.Snapshot</version>
+    <version>1.0.0</version>
     <description>Creates links between RDF resources based on the Silk Link Specification Language (LSL),
         https://www.assembla.com/spaces/silk/wiki/Link_Specification_Language.
         The script may be uploaded/adjusted in the DPU configuration. Output section of such script is always ignored,

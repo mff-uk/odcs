@@ -11,6 +11,8 @@
     <artifactId>SPARQL_Extractor</artifactId>
     <packaging>bundle</packaging>
     <description>Extracts RDF data.</description>
+    <version>1.0.0</version>
+
 
     <properties>
         <dpu.package>cz.cuni.mff.xrg.odcs.extractor.rdf</dpu.package>

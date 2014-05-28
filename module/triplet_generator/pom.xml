@@ -19,6 +19,8 @@
 
     <!-- TODO 3: fill module description, the description will be visible to the user -->
     <description>My first DPU implementation.</description>
+    <version>1.0.0</version>
+
 
     <properties>
         <!-- TODO 4: fill the name of root package -->

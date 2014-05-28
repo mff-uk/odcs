@@ -11,6 +11,8 @@
     <artifactId>RDF_File_Loader</artifactId>
     <packaging>bundle</packaging>
     <description>Loads RDF data into file.</description>
+    <version>1.0.0</version>
+
 
     <properties>
         <dpu.package>cz.cuni.mff.xrg.odcs.loader.file</dpu.package>

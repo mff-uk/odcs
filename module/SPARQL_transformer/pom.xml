@@ -11,6 +11,8 @@
     <artifactId>SPARQL_Transformer</artifactId>
     <packaging>bundle</packaging>
     <description>SPARQL Transformer.</description>
+    <version>1.0.0</version>
+
 
     <properties>
         <dpu.package>cz.cuni.mff.xrg.odcs.transformer.SPARQL</dpu.package>
