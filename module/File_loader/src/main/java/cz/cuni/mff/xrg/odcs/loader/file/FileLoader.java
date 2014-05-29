@@ -108,7 +108,13 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             FileOutputStream out = new FileOutputStream(filePath);
             OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
             File file = new File(filePath);
-            RDFFormat format = Rio.getWriterFormatForFileName(file.getName());
+            RDFFormat format;
+
+            if (formatType == RDFFormatType.AUTO) {
+                format = Rio.getWriterFormatForFileName(file.getName());
+            } else {
+                format = RDFFormatType.getRDFFormatByType(formatType);
+            }
 
             RDFWriter rdfWriter = Rio.createWriter(format, os);
             connection.export(rdfWriter, rdfDataUnit.getContexts().toArray(new URI[0]));
