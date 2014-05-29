@@ -1,0 +1,58 @@
+#!/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+TOPDIR="/usr/lib/virtuoso"
+DAEMON=$TOPDIR/bin/virtuoso-t
+CONFIG_DIR="/usr/lib/virtuoso/bin/"
+ISQL_BIN=$TOPDIR/bin/isql
+# [path to virtuoso-t, starting from virtuoso.ini directory]
+EXEC_STRING="/usr/lib/virtuoso/bin/virtuoso-t"
+PARAMETERS=""
+
+NAME=virtuoso
+DESC="OpenLink Virtuoso Opensource"
+
+test -x $DAEMON || exit 0
+
+set -e
+LOCK="/var/lock/subsys/virtuoso"
+
+start() {
+	echo -n "Starting $DESC: $NAME "
+	touch $LOCK
+	# I cd to that directory so the logfiles are written there
+	cd $CONFIG_DIR
+	# PARAMETERS could be omitted
+	su odcs -c $EXEC_STRING $PARAMETERS
+	echo "."
+	return 0
+}	
+
+stop() {
+	echo -n "Stopping $DESC: $NAME "
+	rm -f $LOCK
+	su odcs -c "$ISQL_BIN localhost:1111 dba dba -K"
+	echo "."
+	return 0
+}
+
+
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+	stop
+	;;
+	status)
+	status
+	;;
+	*)
+	N=/etc/init.d/$NAME
+	# echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
