@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -89,16 +90,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         final HandlerExtractType handlerExtractType = HandlerExtractType
                 .getHandlerType(useStatisticHandler, failWhenErrors);
 
-        RDFFormat formatType = config.getRDFFormatValue();
+        RDFFormatType formatType = config.getRDFFormatValue();
+        final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
 
-        RDFFormat format = null;
-        // if  rdfFormatValue is null then we use an option AUTO -> try to guess format according to a file extension
-        if (formatType == null) {
-            File file = new File(path);
-            format = Rio.getWriterFormatForFileName(file.getName());
-        } else {
-            format = formatType;
-        }
 
         LOG.debug("extractType: {}", extractType);
         LOG.debug("formatType: {}", formatType);
