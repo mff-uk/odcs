@@ -34,7 +34,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * 
  * @author Petyr
  */
-public class OSGIModuleFacadeConfig {
+class OSGIModuleFacadeConfig {
 	
     private static final Logger LOG = LoggerFactory.getLogger(
             OSGIModuleFacadeConfig.class);
