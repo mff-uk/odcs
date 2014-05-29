@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
  */
 public class StatisticalHandler extends TripleCountHandler {
 
-    private static final int TRIPLE_LOGGED_SIZE = 100;
+    private static final int TRIPLE_LOGGED_SIZE = 100000;
 
     private static List<TripleProblem> parsingProblems = new LinkedList<>();
 
