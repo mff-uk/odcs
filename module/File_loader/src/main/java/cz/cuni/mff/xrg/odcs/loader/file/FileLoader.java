@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -74,7 +75,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
     public void execute(DPUContext context) throws DPUException, DataUnitException {
 
         final String filePath = config.getFilePath();
-        final RDFFormat formatType = config.getRDFFileFormat();
+        final RDFFormatType formatType = config.getRDFFileFormat();
         final boolean isNameUnique = config.isDiffName();
         final boolean canFileOverwritte = true;
         final boolean validateDataBefore = config.isValidDataBefore();
@@ -106,15 +107,8 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             triplesCount = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
             FileOutputStream out = new FileOutputStream(filePath);
             OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
-
-            RDFFormat format = null;
-            // if  rdfFormatValue is null then we use an option AUTO -> try to guess format according to a file extension
-            if (formatType == null) {
-                File file = new File(filePath);
-                format = Rio.getWriterFormatForFileName(file.getName());
-            } else {
-                format = formatType;
-            }
+            File file = new File(filePath);
+            RDFFormat format = Rio.getWriterFormatForFileName(file.getName());
 
             RDFWriter rdfWriter = Rio.createWriter(format, os);
             connection.export(rdfWriter, rdfDataUnit.getContexts().toArray(new URI[0]));

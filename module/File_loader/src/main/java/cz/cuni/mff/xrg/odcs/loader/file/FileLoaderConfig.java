@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.rio.RDFFormat;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
@@ -14,7 +15,7 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 
     private String FilePath;
 
-    private RDFFormat RDFFileFormat;
+    private RDFFormatType RDFFileFormat;
 
     private boolean DiffName;
 
@@ -27,13 +28,13 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
 
     public FileLoaderConfig() {
         this.FilePath = "";
-        this.RDFFileFormat = null;
+        this.RDFFileFormat = RDFFormatType.AUTO;
         this.DiffName = false;
         this.validDataBefore = false;
         this.penetrable = false;
     }
 
-    public FileLoaderConfig(String FilePath, RDFFormat RDFFileFormat,
+    public FileLoaderConfig(String FilePath, RDFFormatType RDFFileFormat,
             boolean DiffName, boolean validDataBefore) {
         this.FilePath = FilePath;
         this.RDFFileFormat = RDFFileFormat;
@@ -56,7 +57,7 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
      * 
      * @return selected RDFFormatType for RDF data.
      */
-    public RDFFormat getRDFFileFormat() {
+    public RDFFormatType getRDFFileFormat() {
         return RDFFileFormat;
     }
 
@@ -86,7 +87,7 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
         this.FilePath = FilePath;
     }
 
-    public void setRDFFileFormat(RDFFormat RDFFileFormat) {
+    public void setRDFFileFormat(RDFFormatType RDFFileFormat) {
         this.RDFFileFormat = RDFFileFormat;
     }
 
@@ -113,7 +114,9 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
      */
     @Override
     public boolean isValid() {
-        return FilePath != null;
+        return FilePath != null
+        && RDFFileFormat != null;
+
     }
 
 }
