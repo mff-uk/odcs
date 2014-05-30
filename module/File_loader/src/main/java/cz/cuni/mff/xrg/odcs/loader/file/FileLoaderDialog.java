@@ -1,7 +1,9 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
 import java.util.Collection;
+import java.util.List;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.rio.RDFFormat;
 
 import com.vaadin.data.Property;
@@ -92,13 +94,16 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
      * Set format data to {@link #comboBoxFormat}
      */
     private void mapData() {
-        Collection<RDFFormat> formatTypes = RDFFormat.values();
-        for (RDFFormat formatType : formatTypes) {
-            String formatValue = formatType.getName();
+        List<RDFFormatType> formatTypes = RDFFormatType.getListOfRDFType();
+
+        for (RDFFormatType next : formatTypes) {
+            String formatValue = RDFFormatType.getStringValue(next);
             comboBoxFormat.addItem(formatValue);
         }
-        comboBoxFormat.addItem(rdfFormatAuto);
-        comboBoxFormat.setValue(rdfFormatAuto);
+
+        comboBoxFormat
+                .setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
+
     }
 
     /**
@@ -267,12 +272,13 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
             String filePath = textFieldFilePath.getValue().trim();
 
             String formatValue = (String) comboBoxFormat.getValue();
-            RDFFormat format = RDFFormat.valueOf(formatValue);
+            RDFFormatType RDFFileFormat = RDFFormatType.getTypeByString(
+                    formatValue);
 
             boolean validDataBefore = validateDataBefore.getValue();
 
             FileLoaderConfig config = new FileLoaderConfig(filePath,
-                    format, diffName, validDataBefore);
+                    RDFFileFormat, diffName, validDataBefore);
 
             config.setPenetrable(checkBoxCopyInput.getValue());
 
@@ -299,17 +305,9 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
             checkBoxDiffName.setValue(conf.isDiffName());
             textFieldFilePath.setValue(conf.getFilePath().trim());
 
-            RDFFormat rdfFormatValue = conf.getRDFFileFormat();
-            String format = null;
-            // if rdfFormatValue is null then we use an option AUTO
-            if (rdfFormatValue != null) {
-                format = rdfFormatValue.getName();
-            } else {
-                format = rdfFormatAuto;
-            }
-
-            comboBoxFormat.setValue(format);
-
+            String formatValue = RDFFormatType
+                    .getStringValue(conf.getRDFFileFormat());
+            comboBoxFormat.setValue(formatValue);
             validateDataBefore.setValue(conf.isValidDataBefore());
 
             checkBoxCopyInput.setValue(conf.isPenetrable());

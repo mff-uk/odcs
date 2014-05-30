@@ -101,7 +101,8 @@ public class DPUReplacementTest {
     /**
      * Test DPU replacement on SPARQL UPDATE query.
      */
-    @Test
+//    @Test
+//    We do not support g_input variables this time.
     public void updateQueryTest() {
         String query = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/> \n"
                 + "INSERT { ?person foaf:givenName \"William\" }\n"

@@ -33,7 +33,6 @@ public class LocalRdfTest {
         String fileUrl = url.toURI().getPath();
         config.setPath(fileUrl);
         config.setFileExtractType(FileExtractType.PATH_TO_FILE);
-        config.setRDFFormatValue(RDFFormat.TURTLE);
 
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         URL documentUrl = new URL(url.toExternalForm());

@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.rio.RDFFormat;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -36,8 +37,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
     private GridLayout mainLayout;
-
-    private final String rdfFormatAuto = "AUTO";
 
     /**
      * ComboBox to set RDF format (Auto, RDF/XML, TTL, TriG, N3)
@@ -125,13 +124,12 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
      */
     private void mapData() {
 
-        Collection<RDFFormat> formatTypes = RDFFormat.values();
-        for (RDFFormat formatType : formatTypes) {
-            String formatValue = formatType.getName();
-            comboBoxFormat.addItem(formatValue);
+        for (RDFFormatType next : RDFFormatType.getListOfRDFType()) {
+            String value = RDFFormatType.getStringValue(next);
+            comboBoxFormat.addItem(value);
         }
-        comboBoxFormat.addItem(rdfFormatAuto);
-        comboBoxFormat.setValue(rdfFormatAuto);
+
+        comboBoxFormat.setValue(RDFFormatType.getStringValue(RDFFormatType.AUTO));
 
         pathType.addItem(FileExtractType.getDescriptionByType(
                 FileExtractType.UPLOAD_FILE));
@@ -195,7 +193,8 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
             }
 
             String formatValue = (String) comboBoxFormat.getValue();
-            RDFFormat format = RDFFormat.valueOf(formatValue);
+            RDFFormatType RDFFormatValue = RDFFormatType.getTypeByString(
+                    formatValue);
 
             boolean useStatisticalHandler = useHandler.getValue();
 
@@ -213,7 +212,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
 
             FileExtractorConfig config = new FileExtractorConfig(path,
                     fileSuffix,
-                    format, extractType, onlyThisSuffix,
+                    RDFFormatValue, extractType, onlyThisSuffix,
                     useStatisticalHandler, failWhenErrors);
 
             return config;
@@ -265,16 +264,11 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
             }
         }
 
-        RDFFormat rdfFormatValue = conf.getRDFFormatValue();
-        String format = null;
-        // if  rdfFormatValue is null then we use an option AUTO
-        if (rdfFormatValue != null) {
-            format = rdfFormatValue.getName();
-        } else {
-            format = rdfFormatAuto;
-        }
+        String formatValue = RDFFormatType.getStringValue(conf
+                .getRDFFormatValue());
 
-        comboBoxFormat.setValue(format);
+        comboBoxFormat.setValue(formatValue);
+
         useHandler.setValue(conf.isUsedStatisticalHandler());
 
         if (conf.isFailWhenErrors()) {
