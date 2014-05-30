@@ -5,17 +5,17 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.event;
  * is possibility that new DPU has been loaded into system.
  * 
  * @author Petyr
- * 
  */
 public class ModuleNewEvent extends ModuleEvent {
 
-	/**
-	 * 
-	 * @param source Event source.
-	 * @param directoryName DPU's directory name.
-	 */	
-	public ModuleNewEvent(Object source, String directoryName) {
-		super(source, directoryName);
-	}
-	
+    /**
+     * @param source
+     *            Event source.
+     * @param directoryName
+     *            DPU's directory name.
+     */
+    public ModuleNewEvent(Object source, String directoryName) {
+        super(source, directoryName);
+    }
+
 }

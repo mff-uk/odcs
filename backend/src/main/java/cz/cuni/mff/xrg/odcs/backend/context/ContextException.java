@@ -4,7 +4,6 @@ package cz.cuni.mff.xrg.odcs.backend.context;
  * Exception class used by Context.
  * 
  * @author Petyr
- *
  */
 public class ContextException extends Exception {
 
@@ -18,6 +17,6 @@ public class ContextException extends Exception {
 
     public ContextException(String message) {
         super(message);
-    }		
-	
+    }
+
 }

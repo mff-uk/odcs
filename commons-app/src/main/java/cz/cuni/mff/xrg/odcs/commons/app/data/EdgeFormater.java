@@ -6,16 +6,17 @@ package cz.cuni.mff.xrg.odcs.commons.app.data;
  * @author Petyr
  */
 public class EdgeFormater {
-	
-	/**
-	 * Format the script string so it can be shown to user.
-	 * 
-	 * @param script Script to format.
-	 * @return Formatted script.
-	 */
-	public String format(final String script) {
-		//final String removeRunAfter = script.replace(EdgeInstructions.RunAfter.getValue(), "");		
-		return script.replace(EdgeInstructions.Separator.getValue(), "\n");
-	}
-	
+
+    /**
+     * Format the script string so it can be shown to user.
+     * 
+     * @param script
+     *            Script to format.
+     * @return Formatted script.
+     */
+    public String format(final String script) {
+        //final String removeRunAfter = script.replace(EdgeInstructions.RunAfter.getValue(), "");		
+        return script.replace(EdgeInstructions.Separator.getValue(), "\n");
+    }
+
 }

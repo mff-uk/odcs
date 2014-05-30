@@ -1,5 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -12,310 +21,317 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
-import java.util.Collection;
-import java.util.LinkedList;
-
-import java.util.List;
-import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 
 /**
  * Tree showing available DPUs. Contains filters by accessibility and name. It
  * is possible to make nodes draggable and to add custom click listeners.
- *
+ * 
  * @author Bogo
  */
 @org.springframework.stereotype.Component
 @Scope("prototype")
 public class DPUTree extends CustomComponent {
 
-	VerticalLayout layoutTree;
-	VerticalLayout mainLayout;
-	Tree dpuTree;
-	Button btnMinimize;
-	Button btnExpand;
-	Button buttonCreateDPU;
-	GridLayout filterBar;
-	boolean isExpandable = false;
-	private Filter visibilityFilter;
-	@Autowired
-	private DPUFacade dpuFacade;
-	@Autowired
-	private DPUCreate createDPU;
-	private HorizontalLayout topLine;
-	private Window.CloseListener createDPUCloseListener;
+    VerticalLayout layoutTree;
 
-	/**
-	 * Creates new DPUTree.
-	 */
-	public DPUTree() {
-	}
+    VerticalLayout mainLayout;
 
-	@PostConstruct
-	private void initialize() {
-		buildMainLayout();
+    Tree dpuTree;
 
-		visibilityFilter = new Filter() {
-			@Override
-			public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-				if(itemId.getClass() != DPUTemplateRecord.class) {
-					return true;
-				}
-				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				if(dpu == null || dpu.getShareType() == null) {
-					return false;
-				}
-				return ShareType.PRIVATE.equals(dpu.getShareType());
-			}
+    Button btnMinimize;
 
-			@Override
-			public boolean appliesToProperty(Object propertyId) {
-				return true;
-			}
-		};
+    Button btnExpand;
 
-		createDPUCloseListener = new Window.CloseListener() {
-			private static final long serialVersionUID = 1L;
+    Button buttonCreateDPU;
 
-			@Override
-			public void windowClose(Window.CloseEvent e) {
-				//refresh DPU tree after closing DPU Template creation dialog 
-				refresh();
-			}
-		};
+    GridLayout filterBar;
 
-		setCompositionRoot(mainLayout);
-	}
+    boolean isExpandable = false;
 
-	/**
-	 * Builds layout.
-	 */
-	private void buildMainLayout() {
+    private Filter visibilityFilter;
 
-		mainLayout = new VerticalLayout();
+    @Autowired
+    private DPUFacade dpuFacade;
 
-		layoutTree = new VerticalLayout();
-		layoutTree.setSpacing(true);
-		layoutTree.setImmediate(true);
-		layoutTree.setHeight("100%");
-		layoutTree.setMargin(true);
-		mainLayout.setStyleName("dpuTreeLayout");
+    @Autowired
+    private DPUCreate createDPU;
 
-		//Expandable part of the component
-		topLine = new HorizontalLayout();
-		topLine.setWidth(100, Unit.PERCENTAGE);
-		Label lblTree = new Label("DPU Templates Tree");
-		lblTree.setWidth(160, Unit.PIXELS);
-		topLine.addComponent(lblTree);
-		btnMinimize = new Button();
-		btnMinimize.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				setTreeState(false);
-			}
-		});
-		btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
-		btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
-		btnMinimize.setDescription("Minimize DPU tree");
-		topLine.addComponent(btnMinimize);
-		topLine.setExpandRatio(btnMinimize, 1.0f);
-		btnExpand = new Button();
-		btnExpand.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				setTreeState(true);
-			}
-		});
-		btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
-		btnExpand.setIcon(new ThemeResource("icons/expand.png"));
-		btnExpand.setDescription("Expand DPU tree");
-		btnExpand.setVisible(false);
-		topLine.addComponent(btnExpand);
-		topLine.setExpandRatio(btnExpand, 1.0f);
-		topLine.setComponentAlignment(btnExpand, Alignment.TOP_RIGHT);
-		topLine.setVisible(isExpandable);
-		mainLayout.addComponent(topLine);
+    private HorizontalLayout topLine;
 
-		buttonCreateDPU = new Button();
-		buttonCreateDPU.setCaption("Create DPU template");
-		buttonCreateDPU.setHeight("25px");
-		buttonCreateDPU.setWidth("150px");
-		buttonCreateDPU
-				.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			private static final long serialVersionUID = 1L;
+    private Window.CloseListener createDPUCloseListener;
 
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				//Open the dialog for DPU Template creation
-				if (!UI.getCurrent().getWindows().contains(createDPU)) {
-					createDPU.initClean();
-					UI.getCurrent().addWindow(createDPU);
-					createDPU.removeCloseListener(createDPUCloseListener);
-					createDPU.addCloseListener(createDPUCloseListener);
-				} else {
-					createDPU.bringToFront();
-				}
+    /**
+     * Creates new DPUTree.
+     */
+    public DPUTree() {
+    }
 
-			}
-		});
-		mainLayout.addComponent(buttonCreateDPU);
-		buttonCreateDPU.setVisible(isExpandable);
+    @PostConstruct
+    private void initialize() {
+        buildMainLayout();
 
-		// DPURecord tree filters
-		filterBar = new GridLayout(2, 2);
-		filterBar.setSpacing(false);
+        visibilityFilter = new Filter() {
+            @Override
+            public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+                if (itemId.getClass() != DPUTemplateRecord.class) {
+                    return true;
+                }
+                DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
+                if (dpu == null || dpu.getShareType() == null) {
+                    return false;
+                }
+                return ShareType.PRIVATE.equals(dpu.getShareType());
+            }
 
-		CheckBox onlyMyDPU = new CheckBox();
-		onlyMyDPU.setCaption("Only private DPU templates");
-		onlyMyDPU.setStyleName("private");
-		onlyMyDPU.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				boolean onlyMy = (boolean) event.getProperty().getValue();
-				Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
-				if (onlyMy) {
-					f.addContainerFilter(visibilityFilter);
-				} else {
-					f.removeContainerFilter(visibilityFilter);
-				}
-			}
-		});
-		filterBar.addComponent(onlyMyDPU, 0, 0, 1, 0);
+            @Override
+            public boolean appliesToProperty(Object propertyId) {
+                return true;
+            }
+        };
 
-		TextField treeFilter = new TextField();
-		treeFilter.setImmediate(false);
-		treeFilter.setInputPrompt("Type to filter tree");
-		treeFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
-			SimpleTreeFilter filter = null;
+        createDPUCloseListener = new Window.CloseListener() {
+            private static final long serialVersionUID = 1L;
 
-			@Override
-			public void textChange(FieldEvents.TextChangeEvent event) {
-				Container.Filterable f = (Container.Filterable) dpuTree
-						.getContainerDataSource();
+            @Override
+            public void windowClose(Window.CloseEvent e) {
+                //refresh DPU tree after closing DPU Template creation dialog 
+                refresh();
+            }
+        };
 
-				// Remove old filter
-				if (filter != null) {
-					f.removeContainerFilter(filter);
-				}
+        setCompositionRoot(mainLayout);
+    }
 
-				// Set new filter
-				filter = new SimpleTreeFilter(event.getText(), true, false);
-				f.addContainerFilter(filter);
+    /**
+     * Builds layout.
+     */
+    private void buildMainLayout() {
 
-			}
-		});
+        mainLayout = new VerticalLayout();
 
-		filterBar.addComponent(treeFilter, 1, 1);
-		filterBar.setSizeUndefined();
-		layoutTree.addComponent(filterBar);
-		layoutTree.setExpandRatio(filterBar, 0.05f);
+        layoutTree = new VerticalLayout();
+        layoutTree.setSpacing(true);
+        layoutTree.setImmediate(true);
+        layoutTree.setHeight("100%");
+        layoutTree.setMargin(true);
+        mainLayout.setStyleName("dpuTreeLayout");
 
-		// DPURecord tree 
-		dpuTree = new Tree();
-		dpuTree.setImmediate(true);
-		dpuTree.setHeight("100%");
-		//	dpuTree.setHeight(600, Unit.PIXELS);
-		dpuTree.setStyleName("dpuTree");
-		dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
-			@Override
-			public String getStyle(Tree source, Object itemId) {
-				DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
-				if (dpu.getShareType() == ShareType.PRIVATE) {
-					return "private";
-				} else {
-					return "public";
-				}
-			}
-		});
-		((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
-		((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
-			@Override
-			public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
-				//Ignore
-			}
+        //Expandable part of the component
+        topLine = new HorizontalLayout();
+        topLine.setWidth(100, Unit.PERCENTAGE);
+        Label lblTree = new Label("DPU Templates Tree");
+        lblTree.setWidth(160, Unit.PIXELS);
+        topLine.addComponent(lblTree);
+        btnMinimize = new Button();
+        btnMinimize.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                setTreeState(false);
+            }
+        });
+        btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
+        btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
+        btnMinimize.setDescription("Minimize DPU tree");
+        topLine.addComponent(btnMinimize);
+        topLine.setExpandRatio(btnMinimize, 1.0f);
+        btnExpand = new Button();
+        btnExpand.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                setTreeState(true);
+            }
+        });
+        btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
+        btnExpand.setIcon(new ThemeResource("icons/expand.png"));
+        btnExpand.setDescription("Expand DPU tree");
+        btnExpand.setVisible(false);
+        topLine.addComponent(btnExpand);
+        topLine.setExpandRatio(btnExpand, 1.0f);
+        topLine.setComponentAlignment(btnExpand, Alignment.TOP_RIGHT);
+        topLine.setVisible(isExpandable);
+        mainLayout.addComponent(topLine);
 
-			@Override
-			public int compare(Object itemId1, Object itemId2) {
-				DPUTemplateRecord first = (DPUTemplateRecord)itemId1;
-				DPUTemplateRecord second = (DPUTemplateRecord)itemId2;
-				if(first.getId() == null && second.getId() == null) {
-					return 0;
-				} else {
-					return first.getName().compareTo(second.getName());
-				}
-			}
-		});
+        buttonCreateDPU = new Button();
+        buttonCreateDPU.setCaption("Create DPU template");
+        buttonCreateDPU.setHeight("25px");
+        buttonCreateDPU.setWidth("150px");
+        buttonCreateDPU
+                .addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 1L;
 
-		layoutTree.addComponent(dpuTree);
-		layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
-		layoutTree.setExpandRatio(dpuTree, 0.95f);
-		mainLayout.addComponent(layoutTree);
-	}
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        //Open the dialog for DPU Template creation
+                        if (!UI.getCurrent().getWindows().contains(createDPU)) {
+                            createDPU.initClean();
+                            UI.getCurrent().addWindow(createDPU);
+                            createDPU.removeCloseListener(createDPUCloseListener);
+                            createDPU.addCloseListener(createDPUCloseListener);
+                        } else {
+                            createDPU.bringToFront();
+                        }
 
-	/**
-	 * Fill DPU tree with data.
-	 */
-	public void fillTree() {
-		Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
-		Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
-		f.removeAllContainerFilters();
-		fillTree(dpuTree);
-		for (Object itemId : dpuTree.rootItemIds()) {
-			dpuTree.expandItemsRecursively(itemId);
-		}
-		for (Filter filter : filters) {
-			f.addContainerFilter(filter);
-		}
-	}
+                    }
+                });
+        mainLayout.addComponent(buttonCreateDPU);
+        buttonCreateDPU.setVisible(isExpandable);
 
-	/**
-	 * Adds custom ItemClickListener to the DPUTRee.
-	 *
-	 * @param itemClickListener {@link ItemClickListener} to add
-	 * to DPU tree.
-	 */
-	public void addItemClickListener(
-			ItemClickEvent.ItemClickListener itemClickListener) {
-		dpuTree.addItemClickListener(itemClickListener);
-	}
+        // DPURecord tree filters
+        filterBar = new GridLayout(2, 2);
+        filterBar.setSpacing(false);
 
-	/**
-	 * Reloads the contents of the DPUTree.
-	 */
-	public void refresh() {
-		fillTree();
-		markAsDirty();
-	}
+        CheckBox onlyMyDPU = new CheckBox();
+        onlyMyDPU.setCaption("Only private DPU templates");
+        onlyMyDPU.setStyleName("private");
+        onlyMyDPU.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                boolean onlyMy = (boolean) event.getProperty().getValue();
+                Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
+                if (onlyMy) {
+                    f.addContainerFilter(visibilityFilter);
+                } else {
+                    f.removeContainerFilter(visibilityFilter);
+                }
+            }
+        });
+        filterBar.addComponent(onlyMyDPU, 0, 0, 1, 0);
 
-	/**
-	 * Fills tree with available DPUs.
-	 *
-	 * @param tree {@link Tree} to fill.
-	 */
-	private void fillTree(Tree tree) {
+        TextField treeFilter = new TextField();
+        treeFilter.setImmediate(false);
+        treeFilter.setInputPrompt("Type to filter tree");
+        treeFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            SimpleTreeFilter filter = null;
 
-		tree.removeAllItems();
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                Container.Filterable f = (Container.Filterable) dpuTree
+                        .getContainerDataSource();
 
-		DPURecord rootExtractor = new DPUTemplateRecord("Extractors", null);
-		tree.addItem(rootExtractor);
-		DPURecord rootTransformer = new DPUTemplateRecord("Transformers", null);
-		tree.addItem(rootTransformer);
-		DPURecord rootLoader = new DPUTemplateRecord("Loaders", null);
-		tree.addItem(rootLoader);
+                // Remove old filter
+                if (filter != null) {
+                    f.removeContainerFilter(filter);
+                }
 
-		List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
-		for (DPUTemplateRecord dpu : dpus) {
-			if (dpu.getType() != null) {
-				tree.addItem(dpu);
-				DPUTemplateRecord parent = dpu.getParent();
-				if (parent != null) {
+                // Set new filter
+                filter = new SimpleTreeFilter(event.getText(), true, false);
+                f.addContainerFilter(filter);
+
+            }
+        });
+
+        filterBar.addComponent(treeFilter, 1, 1);
+        filterBar.setSizeUndefined();
+        layoutTree.addComponent(filterBar);
+        layoutTree.setExpandRatio(filterBar, 0.05f);
+
+        // DPURecord tree 
+        dpuTree = new Tree();
+        dpuTree.setImmediate(true);
+        dpuTree.setHeight("100%");
+        //	dpuTree.setHeight(600, Unit.PIXELS);
+        dpuTree.setStyleName("dpuTree");
+        dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
+            @Override
+            public String getStyle(Tree source, Object itemId) {
+                DPUTemplateRecord dpu = (DPUTemplateRecord) itemId;
+                if (dpu.getShareType() == ShareType.PRIVATE) {
+                    return "private";
+                } else {
+                    return "public";
+                }
+            }
+        });
+        ((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
+        ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
+            @Override
+            public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
+                //Ignore
+            }
+
+            @Override
+            public int compare(Object itemId1, Object itemId2) {
+                DPUTemplateRecord first = (DPUTemplateRecord) itemId1;
+                DPUTemplateRecord second = (DPUTemplateRecord) itemId2;
+                if (first.getId() == null && second.getId() == null) {
+                    return 0;
+                } else {
+                    return first.getName().compareTo(second.getName());
+                }
+            }
+        });
+
+        layoutTree.addComponent(dpuTree);
+        layoutTree.setComponentAlignment(dpuTree, Alignment.TOP_LEFT);
+        layoutTree.setExpandRatio(dpuTree, 0.95f);
+        mainLayout.addComponent(layoutTree);
+    }
+
+    /**
+     * Fill DPU tree with data.
+     */
+    public void fillTree() {
+        Container.Filterable f = (Container.Filterable) dpuTree.getContainerDataSource();
+        Collection<Filter> filters = new LinkedList<>(f.getContainerFilters());
+        f.removeAllContainerFilters();
+        fillTree(dpuTree);
+        for (Object itemId : dpuTree.rootItemIds()) {
+            dpuTree.expandItemsRecursively(itemId);
+        }
+        for (Filter filter : filters) {
+            f.addContainerFilter(filter);
+        }
+    }
+
+    /**
+     * Adds custom ItemClickListener to the DPUTRee.
+     * 
+     * @param itemClickListener
+     *            {@link ItemClickListener} to add
+     *            to DPU tree.
+     */
+    public void addItemClickListener(
+            ItemClickEvent.ItemClickListener itemClickListener) {
+        dpuTree.addItemClickListener(itemClickListener);
+    }
+
+    /**
+     * Reloads the contents of the DPUTree.
+     */
+    public void refresh() {
+        fillTree();
+        markAsDirty();
+    }
+
+    /**
+     * Fills tree with available DPUs.
+     * 
+     * @param tree
+     *            {@link Tree} to fill.
+     */
+    private void fillTree(Tree tree) {
+
+        tree.removeAllItems();
+
+        DPURecord rootExtractor = new DPUTemplateRecord("Extractors", null);
+        tree.addItem(rootExtractor);
+        DPURecord rootTransformer = new DPUTemplateRecord("Transformers", null);
+        tree.addItem(rootTransformer);
+        DPURecord rootLoader = new DPUTemplateRecord("Loaders", null);
+        tree.addItem(rootLoader);
+
+        List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
+        for (DPUTemplateRecord dpu : dpus) {
+            if (dpu.getType() != null) {
+                tree.addItem(dpu);
+                DPUTemplateRecord parent = dpu.getParent();
+                if (parent != null) {
 //					DPUTemplateRecord parent = null;
 //					for(DPUTemplateRecord candidate : dpus) {
 //						if(candidate.getId() == parentId) {
@@ -323,69 +339,70 @@ public class DPUTree extends CustomComponent {
 //							break;
 //						}
 //					}
-					tree.setParent(dpu, parent);
-				} else {
-					switch (dpu.getType()) {
-						case EXTRACTOR:
-							tree.setParent(dpu, rootExtractor);
-							break;
-						case TRANSFORMER:
-							tree.setParent(dpu, rootTransformer);
-							break;
-						case LOADER:
-							tree.setParent(dpu, rootLoader);
-							break;
-						default:
-							throw new IllegalArgumentException();
-					}
-				}
-			}
+                    tree.setParent(dpu, parent);
+                } else {
+                    switch (dpu.getType()) {
+                        case EXTRACTOR:
+                            tree.setParent(dpu, rootExtractor);
+                            break;
+                        case TRANSFORMER:
+                            tree.setParent(dpu, rootTransformer);
+                            break;
+                        case LOADER:
+                            tree.setParent(dpu, rootLoader);
+                            break;
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+                }
+            }
 
-			for (Object itemId : tree.rootItemIds()) {
-				tree.expandItemsRecursively(itemId);
-			}
-		}
-		
-		((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
-	}
+            for (Object itemId : tree.rootItemIds()) {
+                tree.expandItemsRecursively(itemId);
+            }
+        }
 
-	private void setTreeState(boolean isStateExpanded) {
-		btnMinimize.setVisible(isExpandable && isStateExpanded);
-		btnExpand.setVisible(isExpandable && !isStateExpanded);
-		buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
-		layoutTree.setVisible(isStateExpanded);
-		mainLayout.setSizeUndefined();
-	}
+        ((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
+    }
 
-	/**
-	 * Sets nodes of the tree drag-able.
-	 *
-	 * @param dragable True if the nodes should be drag-able, false otherwise.
-	 */
-	public void setDragable(boolean dragable) {
-		if (dragable) {
-			dpuTree.setDragMode(Tree.TreeDragMode.NODE);
-		} else {
-			dpuTree.setDragMode(Tree.TreeDragMode.NONE);
-		}
-	}
+    private void setTreeState(boolean isStateExpanded) {
+        btnMinimize.setVisible(isExpandable && isStateExpanded);
+        btnExpand.setVisible(isExpandable && !isStateExpanded);
+        buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
+        layoutTree.setVisible(isStateExpanded);
+        mainLayout.setSizeUndefined();
+    }
 
-	/**
-	 * Set DPU tree expandable.
-	 *
-	 * @param expandable
-	 */
-	public void setExpandable(boolean expandable) {
-		this.isExpandable = expandable;
-		topLine.setVisible(isExpandable);
-		buttonCreateDPU.setVisible(isExpandable);
-	}
+    /**
+     * Sets nodes of the tree drag-able.
+     * 
+     * @param dragable
+     *            True if the nodes should be drag-able, false otherwise.
+     */
+    public void setDragable(boolean dragable) {
+        if (dragable) {
+            dpuTree.setDragMode(Tree.TreeDragMode.NODE);
+        } else {
+            dpuTree.setDragMode(Tree.TreeDragMode.NONE);
+        }
+    }
 
-	@Override
-	public Collection<?> getListeners(Class<?> eventType) {
-		if (eventType == ItemClickEvent.class) {
-			return dpuTree.getListeners(eventType);
-		}
-		return super.getListeners(eventType);
-	}
+    /**
+     * Set DPU tree expandable.
+     * 
+     * @param expandable
+     */
+    public void setExpandable(boolean expandable) {
+        this.isExpandable = expandable;
+        topLine.setVisible(isExpandable);
+        buttonCreateDPU.setVisible(isExpandable);
+    }
+
+    @Override
+    public Collection<?> getListeners(Class<?> eventType) {
+        if (eventType == ItemClickEvent.class) {
+            return dpuTree.getListeners(eventType);
+        }
+        return super.getListeners(eventType);
+    }
 }

@@ -11,23 +11,22 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
  * Report pipeline restart. Use if backend crash or has been shutdown.
  * 
  * @author Petyr
- *
  */
 public final class PipelineRestart extends PipelineEvent {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(PipelineRestart.class);
-	
+    private static final Logger LOG = LoggerFactory
+            .getLogger(PipelineRestart.class);
+
     public PipelineRestart(PipelineExecution pipelineExec, Object source) {
         super(null, pipelineExec, source);
-        
+
         LOG.info("Pipeline execution has been restarted.");
     }
 
-	@Override
-	public MessageRecord getRecord() {
-		return new MessageRecord(time, MessageRecordType.PIPELINE_INFO, null, 
-				execution, 	"Pipeline execution has been restarted.", "");
-	}	
-	
+    @Override
+    public MessageRecord getRecord() {
+        return new MessageRecord(time, MessageRecordType.PIPELINE_INFO, null,
+                execution, "Pipeline execution has been restarted.", "");
+    }
+
 }

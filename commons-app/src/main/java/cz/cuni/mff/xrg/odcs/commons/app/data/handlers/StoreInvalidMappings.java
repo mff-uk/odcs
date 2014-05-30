@@ -11,21 +11,20 @@ import java.util.List;
  */
 public class StoreInvalidMappings extends LogAndIgnore {
 
-	private final List<String> invalidMapping = new LinkedList<>();
-	
-	@Override
-	public void invalidMapping(String item) {
-		super.invalidMapping(item);
-		// add to the list
-		invalidMapping.add(item);
-	}
+    private final List<String> invalidMapping = new LinkedList<>();
 
-	/**
-	 *  
-	 * @return List of examined invalid mappings.
-	 */
-	public List<String> getInvalidMapping() {
-		return invalidMapping;
-	}
-	
+    @Override
+    public void invalidMapping(String item) {
+        super.invalidMapping(item);
+        // add to the list
+        invalidMapping.add(item);
+    }
+
+    /**
+     * @return List of examined invalid mappings.
+     */
+    public List<String> getInvalidMapping() {
+        return invalidMapping;
+    }
+
 }

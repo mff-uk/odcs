@@ -23,21 +23,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -53,300 +41,313 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
 /**
  * Implementation of view for {@link ExecutionListPresenter}.
- *
+ * 
  * @author Petyr
  */
 @Component
 @Scope("prototype")
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
-	
-	/**
-	 * Column widths for execution table.
-	 */
-	private static final int COLUMN_SCHEDULE_WIDTH = 32;
-	private static final int COLUMN_STATUS_WIDTH = 39;
-	private static final int COLUMN_DEBUG_WIDTH = 36;
-	private static final int COLUMN_DURATION_WIDTH = 53;
-	private static final int COLUMN_START_WIDTH = 115;
-	private static final int COLUMN_ACTIONS_WIDTH = 160;
-	private static final int FALLBACK_WIDTH = 720;
-	
-	private IntlibPagedTable monitorTable;
-	/**
-	 * Used to separate table from execution detail view.
-	 */
-	private HorizontalSplitPanel hsplit;
-	private VerticalLayout logLayout;
-	private Panel mainLayout;
-	@Autowired
-	private DebuggingView debugView;
-	private HashMap<Date, Label> runTimeLabels = new HashMap<>();
-	private ExecutionListPresenter presenter;
-	@Autowired
-	private Utils utils;
-	private Button showMaster ;
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
 
-	@Override
-	public Object enter(final ExecutionListPresenter presenter) {
-		// build page
-		buildPage(presenter);
-		this.presenter = presenter;
-		return this;
-	}
+    /**
+     * Column widths for execution table.
+     */
+    private static final int COLUMN_SCHEDULE_WIDTH = 32;
 
-	@Override
-	public void setDisplay(ExecutionListPresenter.ExecutionListData dataObject) {
-		monitorTable.setContainerDataSource(dataObject.getContainer());
-		//monitorTable.setVisibleColumns(dataObject.getContainer().getContainerPropertyIds());
-	}
+    private static final int COLUMN_STATUS_WIDTH = 39;
 
-	@Override
-	public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
-		LOG.trace("showExecutionDetail()");
-		presenter.stopRefreshEventHandler();
-		// secure existance of detail layout
+    private static final int COLUMN_DEBUG_WIDTH = 36;
+
+    private static final int COLUMN_DURATION_WIDTH = 53;
+
+    private static final int COLUMN_START_WIDTH = 115;
+
+    private static final int COLUMN_ACTIONS_WIDTH = 160;
+
+    private static final int FALLBACK_WIDTH = 720;
+
+    private IntlibPagedTable monitorTable;
+
+    /**
+     * Used to separate table from execution detail view.
+     */
+    private HorizontalSplitPanel hsplit;
+
+    private VerticalLayout logLayout;
+
+    private Panel mainLayout;
+
+    @Autowired
+    private DebuggingView debugView;
+
+    private HashMap<Date, Label> runTimeLabels = new HashMap<>();
+
+    private ExecutionListPresenter presenter;
+
+    @Autowired
+    private Utils utils;
+
+    private Button showMaster;
+
+    @Override
+    public Object enter(final ExecutionListPresenter presenter) {
+        // build page
+        buildPage(presenter);
+        this.presenter = presenter;
+        return this;
+    }
+
+    @Override
+    public void setDisplay(ExecutionListPresenter.ExecutionListData dataObject) {
+        monitorTable.setContainerDataSource(dataObject.getContainer());
+        //monitorTable.setVisibleColumns(dataObject.getContainer().getContainerPropertyIds());
+    }
+
+    @Override
+    public void showExecutionDetail(PipelineExecution execution, ExecutionListPresenter.ExecutionDetailData detailDataObject) {
+        LOG.trace("showExecutionDetail()");
+        presenter.stopRefreshEventHandler();
+        // secure existance of detail layout
 //		if (logLayout == null) {
 //			buildExecutionDetail(execution);
 //		} 
-		// will just set the debug view content
-		LOG.trace("showExecutionDetail() : buildDebugView");
-		buildDebugView(execution);
-		// no DPU specified
-		LOG.trace("showExecutionDetail() : setExecution");
-		debugView.setExecution(execution, null);
-		//debugView.setDisplay(detailDataObject);
-		LOG.trace("showExecutionDetail() : hsplit.setSecondComponent");
-		hsplit.setSecondComponent(logLayout);
-		// adjust hsplit
-		LOG.trace("showExecutionDetail() : adjust hsplit");
-		if (hsplit.isLocked()) {
-			debugView.setActiveTab("Events");
-			if (UI.getCurrent().getPage().getBrowserWindowWidth() < FALLBACK_WIDTH) {
-				hsplit.setSplitPosition(0, Unit.PERCENTAGE);
-				showMaster.setEnabled(true);
-			} else {
-				hsplit.setSplitPosition(55, Unit.PERCENTAGE);
-				showMaster.setEnabled(false);
-			}
-			//hsplit.setHeight("-1px");
-			hsplit.setLocked(false);
-		}
-		
-		LOG.trace("showExecutionDetail() -> done");
-	}
+        // will just set the debug view content
+        LOG.trace("showExecutionDetail() : buildDebugView");
+        buildDebugView(execution);
+        // no DPU specified
+        LOG.trace("showExecutionDetail() : setExecution");
+        debugView.setExecution(execution, null);
+        //debugView.setDisplay(detailDataObject);
+        LOG.trace("showExecutionDetail() : hsplit.setSecondComponent");
+        hsplit.setSecondComponent(logLayout);
+        // adjust hsplit
+        LOG.trace("showExecutionDetail() : adjust hsplit");
+        if (hsplit.isLocked()) {
+            debugView.setActiveTab("Events");
+            if (UI.getCurrent().getPage().getBrowserWindowWidth() < FALLBACK_WIDTH) {
+                hsplit.setSplitPosition(0, Unit.PERCENTAGE);
+                showMaster.setEnabled(true);
+            } else {
+                hsplit.setSplitPosition(55, Unit.PERCENTAGE);
+                showMaster.setEnabled(false);
+            }
+            //hsplit.setHeight("-1px");
+            hsplit.setLocked(false);
+        }
 
-	@Override
-	public void refresh(boolean modified) {
-		if (modified) {
-			runTimeLabels.clear();
-		}
-		for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
-			long duration = (new Date()).getTime() - entry.getKey().getTime();
-			entry.getValue().setValue(DecorationHelper.formatDuration(duration));
-			entry.getValue().setSizeUndefined();
-		}
-	}
+        LOG.trace("showExecutionDetail() -> done");
+    }
 
-	/**
-	 * Build page layout.
-	 *
-	 * @param presenter
-	 */
-	private void buildPage(final ExecutionListPresenter presenter) {
-		mainLayout = new Panel("");
-		// split page into two parts
-		hsplit = new HorizontalSplitPanel();
-		mainLayout.setContent(hsplit);
-		// set top level element properties
-		setWidth("100%");
-		//setHeight("100%");
+    @Override
+    public void refresh(boolean modified) {
+        if (modified) {
+            runTimeLabels.clear();
+        }
+        for (Map.Entry<Date, Label> entry : runTimeLabels.entrySet()) {
+            long duration = (new Date()).getTime() - entry.getKey().getTime();
+            entry.getValue().setValue(DecorationHelper.formatDuration(duration));
+            entry.getValue().setSizeUndefined();
+        }
+    }
 
-		VerticalLayout monitorTableLayout = new VerticalLayout();
-		monitorTableLayout.setImmediate(true);
-		monitorTableLayout.setMargin(true);
-		monitorTableLayout.setSpacing(true);
-		monitorTableLayout.setWidth("100%");
-		//monitorTableLayout.setHeight("100%");
+    /**
+     * Build page layout.
+     * 
+     * @param presenter
+     */
+    private void buildPage(final ExecutionListPresenter presenter) {
+        mainLayout = new Panel("");
+        // split page into two parts
+        hsplit = new HorizontalSplitPanel();
+        mainLayout.setContent(hsplit);
+        // set top level element properties
+        setWidth("100%");
+        //setHeight("100%");
 
-		// Layout for buttons Refresh and Clear Filters on the top.
-		HorizontalLayout topLine = new HorizontalLayout();
-		topLine.setSpacing(true);
-		monitorTableLayout.addComponent(topLine);
+        VerticalLayout monitorTableLayout = new VerticalLayout();
+        monitorTableLayout.setImmediate(true);
+        monitorTableLayout.setMargin(true);
+        monitorTableLayout.setSpacing(true);
+        monitorTableLayout.setWidth("100%");
+        //monitorTableLayout.setHeight("100%");
 
-		// Refresh button. Refreshing the table
-		Button btnRefresh = new Button("Refresh", new Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				presenter.refreshEventHandler();
-			}
-		});
-		btnRefresh.setWidth("120px");
-		topLine.addComponent(btnRefresh);
+        // Layout for buttons Refresh and Clear Filters on the top.
+        HorizontalLayout topLine = new HorizontalLayout();
+        topLine.setSpacing(true);
+        monitorTableLayout.addComponent(topLine);
 
-		//Clear Filters button. Clearing filters on the table with executions.
-		Button btnClearFilters = new Button();
-		btnClearFilters.setCaption("Clear Filters");
-		btnClearFilters.setHeight("25px");
-		btnClearFilters.setWidth("120px");
-		btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				// TODO move this to the monitorTable
-				monitorTable.resetFilters();
-			}
-		});
-		topLine.addComponent(btnClearFilters);
-		// Table with pipeline execution records
-		monitorTable = initializeExecutionTable(presenter);
-		monitorTableLayout.addComponent(monitorTable);
-		monitorTableLayout.addComponent(monitorTable.createControls());
+        // Refresh button. Refreshing the table
+        Button btnRefresh = new Button("Refresh", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                presenter.refreshEventHandler();
+            }
+        });
+        btnRefresh.setWidth("120px");
+        topLine.addComponent(btnRefresh);
 
-		hsplit.setFirstComponent(monitorTableLayout);
-		hsplit.setSecondComponent(null);
-		if (146 + (utils.getPageLength() * 32) <= 850) {
-			hsplit.setHeight(850, Unit.PIXELS);
-		} else {
-			hsplit.setHeight(-1, Unit.PIXELS);
-		}
+        //Clear Filters button. Clearing filters on the table with executions.
+        Button btnClearFilters = new Button();
+        btnClearFilters.setCaption("Clear Filters");
+        btnClearFilters.setHeight("25px");
+        btnClearFilters.setWidth("120px");
+        btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                // TODO move this to the monitorTable
+                monitorTable.resetFilters();
+            }
+        });
+        topLine.addComponent(btnClearFilters);
+        // Table with pipeline execution records
+        monitorTable = initializeExecutionTable(presenter);
+        monitorTableLayout.addComponent(monitorTable);
+        monitorTableLayout.addComponent(monitorTable.createControls());
 
+        hsplit.setFirstComponent(monitorTableLayout);
+        hsplit.setSecondComponent(null);
+        if (146 + (utils.getPageLength() * 32) <= 850) {
+            hsplit.setHeight(850, Unit.PIXELS);
+        } else {
+            hsplit.setHeight(-1, Unit.PIXELS);
+        }
 
-		hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-		hsplit.setLocked(true);
+        hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+        hsplit.setLocked(true);
 
-		// at the end set page root
-		setCompositionRoot(mainLayout);
-	}
+        // at the end set page root
+        setCompositionRoot(mainLayout);
+    }
 
-	/**
-	 * Create and return {@link ActionColumnGenerator}.
-	 *
-	 * @param presenter
-	 * @return {@link ActionColumnGenerator}
-	 */
-	private ActionColumnGenerator createColumnGenerator(final ExecutionListPresenter presenter) {
-		ActionColumnGenerator generator = new ActionColumnGenerator();
-		// add action buttons
+    /**
+     * Create and return {@link ActionColumnGenerator}.
+     * 
+     * @param presenter
+     * @return {@link ActionColumnGenerator}
+     */
+    private ActionColumnGenerator createColumnGenerator(final ExecutionListPresenter presenter) {
+        ActionColumnGenerator generator = new ActionColumnGenerator();
+        // add action buttons
 
-		generator.addButton("Show log", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.showDebugEventHandler(id);
-				monitorTable.select(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
-				// ...
-				return !isDebug && status != PipelineExecutionStatus.QUEUED;
-			}
-		}, new ThemeResource("icons/show_log.png"));
+        generator.addButton("Show log", null, new Action() {
+            @Override
+            protected void action(long id) {
+                presenter.showDebugEventHandler(id);
+                monitorTable.select(id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                Property propStatus = source.getItem(id).getItemProperty("status");
+                PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+                boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
+                // ...
+                return !isDebug && status != PipelineExecutionStatus.QUEUED;
+            }
+        }, new ThemeResource("icons/show_log.png"));
 
-		generator.addButton("Debug data", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.showDebugEventHandler(id);
-				monitorTable.select(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
-				// ...
-				return isDebug && status != PipelineExecutionStatus.QUEUED;
-			}
-		}, new ThemeResource("icons/debug_data.png"));
-		
-		generator.addButton("Cancel", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.stopEventHandler(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+        generator.addButton("Debug data", null, new Action() {
+            @Override
+            protected void action(long id) {
+                presenter.showDebugEventHandler(id);
+                monitorTable.select(id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                Property propStatus = source.getItem(id).getItemProperty("status");
+                PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+                boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
+                // ...
+                return isDebug && status != PipelineExecutionStatus.QUEUED;
+            }
+        }, new ThemeResource("icons/debug_data.png"));
 
-				boolean stoppableStatus = status == PipelineExecutionStatus.QUEUED
-						|| status == PipelineExecutionStatus.RUNNING;
-				
-				boolean userCanStop = presenter.canStopExecution(id);
-				
-				return stoppableStatus && userCanStop;
-			}
-		}, new ThemeResource("icons/cancelled.png"));
+        generator.addButton("Cancel", null, new Action() {
+            @Override
+            protected void action(long id) {
+                presenter.stopEventHandler(id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                Property propStatus = source.getItem(id).getItemProperty("status");
+                PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
 
-		generator.addButton("Run pipeline", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.runEventHandler(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				// ...
-				return status != PipelineExecutionStatus.RUNNING
-						&& status != PipelineExecutionStatus.CANCELLING;
-			}
-		}, new ThemeResource("icons/running.png"));
+                boolean stoppableStatus = status == PipelineExecutionStatus.QUEUED
+                        || status == PipelineExecutionStatus.RUNNING;
 
-		generator.addButton("Debug pipeline", null, new Action() {
-			@Override
-			protected void action(long id) {
-				presenter.debugEventHandler(id);
-			}
-		}, new ActionColumnGenerator.ButtonShowCondition() {
-			@Override
-			public boolean show(CustomTable source, long id) {
-				Property propStatus = source.getItem(id).getItemProperty("status");
-				PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-				// ...
-				return status != PipelineExecutionStatus.RUNNING
-						&& status != PipelineExecutionStatus.CANCELLING;
-			}
-		}, new ThemeResource("icons/debug.png"));
+                boolean userCanStop = presenter.canStopExecution(id);
 
-		return generator;
-	}
+                return stoppableStatus && userCanStop;
+            }
+        }, new ThemeResource("icons/cancelled.png"));
 
-	private void buildExecutionDetail(PipelineExecution execution) {
-		logLayout = new VerticalLayout();
-		logLayout.setImmediate(true);
-		logLayout.setMargin(true);
-		logLayout.setSpacing(true);
-		logLayout.setWidth("100%");
-		//logLayout.setHeight("100%");
-		//debugView = new DebuggingView();
-		
-		// build the debug view
-		//Recursive call
-		//buildDebugView(execution);
+        generator.addButton("Run pipeline", null, new Action() {
+            @Override
+            protected void action(long id) {
+                presenter.runEventHandler(id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                Property propStatus = source.getItem(id).getItemProperty("status");
+                PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+                // ...
+                return status != PipelineExecutionStatus.RUNNING
+                        && status != PipelineExecutionStatus.CANCELLING;
+            }
+        }, new ThemeResource("icons/running.png"));
 
-		showMaster = new Button("Back to Execution Monitor", new ClickListener() {
+        generator.addButton("Debug pipeline", null, new Action() {
+            @Override
+            protected void action(long id) {
+                presenter.debugEventHandler(id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                Property propStatus = source.getItem(id).getItemProperty("status");
+                PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
+                // ...
+                return status != PipelineExecutionStatus.RUNNING
+                        && status != PipelineExecutionStatus.CANCELLING;
+            }
+        }, new ThemeResource("icons/debug.png"));
 
-			private static final long serialVersionUID = 4723715087122769012L;
+        return generator;
+    }
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-				hsplit.setLocked(true);
-			}
-		});
-		showMaster.setEnabled(false);
-		logLayout.addComponent(showMaster);
-		logLayout.addComponent(debugView);
-		logLayout.setExpandRatio(debugView, 1.0f);
+    private void buildExecutionDetail(PipelineExecution execution) {
+        logLayout = new VerticalLayout();
+        logLayout.setImmediate(true);
+        logLayout.setMargin(true);
+        logLayout.setSpacing(true);
+        logLayout.setWidth("100%");
+        //logLayout.setHeight("100%");
+        //debugView = new DebuggingView();
 
-		// Layout for buttons  Close and  Export on the bottom
+        // build the debug view
+        //Recursive call
+        //buildDebugView(execution);
+
+        showMaster = new Button("Back to Execution Monitor", new ClickListener() {
+
+            private static final long serialVersionUID = 4723715087122769012L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+                hsplit.setLocked(true);
+            }
+        });
+        showMaster.setEnabled(false);
+        logLayout.addComponent(showMaster);
+        logLayout.addComponent(debugView);
+        logLayout.setExpandRatio(debugView, 1.0f);
+
+        // Layout for buttons  Close and  Export on the bottom
 //		HorizontalLayout buttonBar = new HorizontalLayout();
 //		buttonBar.setWidth("100%");
 //
@@ -369,330 +370,330 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 //		logLayout.addComponent(buttonBar);
 //		logLayout.setExpandRatio(buttonBar, 0);
 
-		if (execution.getStatus() == PipelineExecutionStatus.RUNNING
-				|| execution.getStatus() == PipelineExecutionStatus.QUEUED) {
-			presenter.startDebugRefreshEventHandler(debugView, execution);
-		}
-	}
+        if (execution.getStatus() == PipelineExecutionStatus.RUNNING
+                || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
+            presenter.startDebugRefreshEventHandler(debugView, execution);
+        }
+    }
 
-	/**
-	 * Builds debugging view upon first call, sets the pipeline execution to
-	 * show inside it.
-	 *
-	 * @param exec pipeline execution to show in debugging view
-	 */
-	private void buildDebugView(PipelineExecution execution) {
-		if (logLayout == null) {
-			// secure that the debug view exist
-			buildExecutionDetail(execution);
-		}
+    /**
+     * Builds debugging view upon first call, sets the pipeline execution to
+     * show inside it.
+     * 
+     * @param exec
+     *            pipeline execution to show in debugging view
+     */
+    private void buildDebugView(PipelineExecution execution) {
+        if (logLayout == null) {
+            // secure that the debug view exist
+            buildExecutionDetail(execution);
+        }
 
-		if (!debugView.isInitialized()) {
-			debugView.initialize(execution, null, execution.isDebugging(), false);
-		} else {
-			//It is done later...
-			//debugView.setExecution(execution, null);
-		}
-	}
+        if (!debugView.isInitialized()) {
+            debugView.initialize(execution, null, execution.isDebugging(), false);
+        } else {
+            //It is done later...
+            //debugView.setExecution(execution, null);
+        }
+    }
 
-	private FilterGenerator createFilterGenerator() {
-		return new FilterGenerator() {
-			@Override
-			public Container.Filter generateFilter(Object propertyId, Object value) {
-				if ("schedule".equals(propertyId)) {
-					boolean val = (boolean) value;
+    private FilterGenerator createFilterGenerator() {
+        return new FilterGenerator() {
+            @Override
+            public Container.Filter generateFilter(Object propertyId, Object value) {
+                if ("schedule".equals(propertyId)) {
+                    boolean val = (boolean) value;
 
-					if (!val) {
-						return new IsNull(propertyId);
-					} else {
-						return new Not(new IsNull(propertyId));
-					}
-				}
-				return null;
-			}
+                    if (!val) {
+                        return new IsNull(propertyId);
+                    } else {
+                        return new Not(new IsNull(propertyId));
+                    }
+                }
+                return null;
+            }
 
-			@Override
-			public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
-				return null;
-			}
+            @Override
+            public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+                return null;
+            }
 
-			@Override
-			public AbstractField<?> getCustomFilterComponent(Object propertyId) {
-				if ("schedule".equals(propertyId)) {
-					ComboBox comboScheduled = new ComboBox();
-					comboScheduled.addItem(true);
-					ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
-					comboScheduled.setItemIcon(true, iconScheduled);
-					comboScheduled.setItemCaption(true, "Scheduled");
-					comboScheduled.addItem(false);
-					ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.png");
-					comboScheduled.setItemIcon(false, iconNotScheduled);
-					comboScheduled.setItemCaption(false, "Manual");
-					return comboScheduled;
-				}
-				return null;
-			}
+            @Override
+            public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+                if ("schedule".equals(propertyId)) {
+                    ComboBox comboScheduled = new ComboBox();
+                    comboScheduled.addItem(true);
+                    ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
+                    comboScheduled.setItemIcon(true, iconScheduled);
+                    comboScheduled.setItemCaption(true, "Scheduled");
+                    comboScheduled.addItem(false);
+                    ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.png");
+                    comboScheduled.setItemIcon(false, iconNotScheduled);
+                    comboScheduled.setItemCaption(false, "Manual");
+                    return comboScheduled;
+                }
+                return null;
+            }
 
-			@Override
-			public void filterRemoved(Object propertyId) {
-			}
+            @Override
+            public void filterRemoved(Object propertyId) {
+            }
 
-			@Override
-			public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
-			}
+            @Override
+            public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+            }
 
-			@Override
-			public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
-				return null;
-			}
-		};
-	}
+            @Override
+            public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+                return null;
+            }
+        };
+    }
 
-	private IntlibPagedTable initializeExecutionTable(final ExecutionListPresenter presenter) {
+    private IntlibPagedTable initializeExecutionTable(final ExecutionListPresenter presenter) {
 
-		final IntlibPagedTable executionTable = new IntlibPagedTable();
-		executionTable.setSelectable(true);
-		executionTable.setWidth("100%");
-		executionTable.setHeight("100%");
-		executionTable.setImmediate(true);
-		executionTable.setColumnCollapsingAllowed(true);
+        final IntlibPagedTable executionTable = new IntlibPagedTable();
+        executionTable.setSelectable(true);
+        executionTable.setWidth("100%");
+        executionTable.setHeight("100%");
+        executionTable.setImmediate(true);
+        executionTable.setColumnCollapsingAllowed(true);
 
-		executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
-		executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
-		executionTable.setColumnWidth("isDebugging", COLUMN_DEBUG_WIDTH);
-		executionTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
-		executionTable.setColumnWidth("start", COLUMN_START_WIDTH);
+        executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
+        executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
+        executionTable.setColumnWidth("isDebugging", COLUMN_DEBUG_WIDTH);
+        executionTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+        executionTable.setColumnWidth("start", COLUMN_START_WIDTH);
 
-		//Suitable if no more than 3 buttons are available at the same time, which is true in current version.
-		executionTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
-		executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
-		executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
-		executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
-		executionTable.setColumnAlignment("duration", CustomTable.Align.RIGHT);
-		executionTable.setSortEnabled(true);
-		executionTable.setPageLength(utils.getPageLength());
+        //Suitable if no more than 3 buttons are available at the same time, which is true in current version.
+        executionTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
+        executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment("duration", CustomTable.Align.RIGHT);
+        executionTable.setSortEnabled(true);
+        executionTable.setPageLength(utils.getPageLength());
 
-		executionTable.setFilterGenerator(createFilterGenerator());
-		executionTable.setFilterDecorator(new filterDecorator());
-		executionTable.setFilterBarVisible(true);
+        executionTable.setFilterGenerator(createFilterGenerator());
+        executionTable.setFilterDecorator(new filterDecorator());
+        executionTable.setFilterBarVisible(true);
 
-		executionTable.addItemClickListener(
-				new ItemClickEvent.ItemClickListener() {
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				ValueItem item = (ValueItem) event.getItem();
-				final long executionId = item.getId();
-				presenter.showDebugEventHandler(executionId);
-			}
-		});
+        executionTable.addItemClickListener(
+                new ItemClickEvent.ItemClickListener() {
+                    @Override
+                    public void itemClick(ItemClickEvent event) {
+                        ValueItem item = (ValueItem) event.getItem();
+                        final long executionId = item.getId();
+                        presenter.showDebugEventHandler(executionId);
+                    }
+                });
 
-		executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
-				final Button btnEdit = new Button();
-				btnEdit.setDescription("Detail");
-				btnEdit.addClickListener(new Button.ClickListener() {
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
-					}
-				});
-				btnEdit.setIcon(new ThemeResource("icons/gear.png"));
-				Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
-				lblPipelineName.setStyleName("clickable-table-cell");
-				HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
-				colLayout.setSpacing(true);
-				colLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-					@Override
-					public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-						if (event.getClickedComponent() == btnEdit) {
-							return;
-						}
-						presenter.showDebugEventHandler((Long) itemId);
-						monitorTable.select(itemId);
-					}
-				});
-				return colLayout;
-			}
-		});
+        executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
+            @Override
+            public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
+                final Button btnEdit = new Button();
+                btnEdit.setDescription("Detail");
+                btnEdit.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
+                    }
+                });
+                btnEdit.setIcon(new ThemeResource("icons/gear.png"));
+                Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
+                lblPipelineName.setStyleName("clickable-table-cell");
+                HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
+                colLayout.setSpacing(true);
+                colLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+                    @Override
+                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                        if (event.getClickedComponent() == btnEdit) {
+                            return;
+                        }
+                        presenter.showDebugEventHandler((Long) itemId);
+                        monitorTable.select(itemId);
+                    }
+                });
+                return colLayout;
+            }
+        });
 
-		//Status column. Contains status icons.
-		executionTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId,
-					Object columnId) {
-				PipelineExecutionStatus type = (PipelineExecutionStatus) source.getItem(itemId)
-						.getItemProperty(columnId).getValue();
-				if (type != null) {
-					ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
-					Embedded emb = new Embedded(type.name(), img);
-					emb.setDescription(type.name());
-					return emb;
-				} else {
-					return null;
-				}
-			}
-		});
+        //Status column. Contains status icons.
+        executionTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
+            @Override
+            public Object generateCell(CustomTable source, Object itemId,
+                    Object columnId) {
+                PipelineExecutionStatus type = (PipelineExecutionStatus) source.getItem(itemId)
+                        .getItemProperty(columnId).getValue();
+                if (type != null) {
+                    ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
+                    Embedded emb = new Embedded(type.name(), img);
+                    emb.setDescription(type.name());
+                    return emb;
+                } else {
+                    return null;
+                }
+            }
+        });
 
-		//Debug column. Contains debug icons.
-		executionTable.addGeneratedColumn("isDebugging", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId,
-					Object columnId) {
-				boolean inDebug = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-				Embedded emb;
-				if (inDebug) {
-					emb = new Embedded("True", new ThemeResource("icons/debug.png"));
-					emb.setDescription("TRUE");
-				} else {
-					emb = new Embedded("False", new ThemeResource("icons/no_debug.png"));
-					emb.setDescription("FALSE");
-				}
-				return emb;
-			}
-		});
+        //Debug column. Contains debug icons.
+        executionTable.addGeneratedColumn("isDebugging", new CustomTable.ColumnGenerator() {
+            @Override
+            public Object generateCell(CustomTable source, Object itemId,
+                    Object columnId) {
+                boolean inDebug = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
+                Embedded emb;
+                if (inDebug) {
+                    emb = new Embedded("True", new ThemeResource("icons/debug.png"));
+                    emb.setDescription("TRUE");
+                } else {
+                    emb = new Embedded("False", new ThemeResource("icons/no_debug.png"));
+                    emb.setDescription("FALSE");
+                }
+                return emb;
+            }
+        });
 
-		executionTable.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
-				//It is refreshed only upon change in db, so for running pipeline it is not refreshed
-				PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue();
-				if (duration == -1 && (status == RUNNING || status == PipelineExecutionStatus.CANCELLING)) {
-					Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
-					if (start != null) {
-						duration = (new Date()).getTime() - start.getTime();
-						Label durationLabel = new Label(DecorationHelper.formatDuration(duration));
-						durationLabel.setSizeUndefined();
-						durationLabel.setImmediate(true);
-						runTimeLabels.put(start, durationLabel);
-						return durationLabel;
-					}
-				}
-				return DecorationHelper.formatDuration(duration);
-			}
-		});
-		executionTable.addGeneratedColumn("schedule", new CustomTable.ColumnGenerator() {
-			@Override
-			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				boolean isScheduled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-				Embedded emb = DecorationHelper.getIconForScheduled(isScheduled);
-				return emb;
-			}
-		});
+        executionTable.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+            @Override
+            public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+                long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
+                //It is refreshed only upon change in db, so for running pipeline it is not refreshed
+                PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue();
+                if (duration == -1 && (status == RUNNING || status == PipelineExecutionStatus.CANCELLING)) {
+                    Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
+                    if (start != null) {
+                        duration = (new Date()).getTime() - start.getTime();
+                        Label durationLabel = new Label(DecorationHelper.formatDuration(duration));
+                        durationLabel.setSizeUndefined();
+                        durationLabel.setImmediate(true);
+                        runTimeLabels.put(start, durationLabel);
+                        return durationLabel;
+                    }
+                }
+                return DecorationHelper.formatDuration(duration);
+            }
+        });
+        executionTable.addGeneratedColumn("schedule", new CustomTable.ColumnGenerator() {
+            @Override
+            public Object generateCell(CustomTable source, Object itemId, Object columnId) {
+                boolean isScheduled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
+                Embedded emb = DecorationHelper.getIconForScheduled(isScheduled);
+                return emb;
+            }
+        });
 
-		// add generated columns to the executionTable
-		executionTable.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
-		executionTable.setVisibleColumns();
-		executionTable.addListener(new PagedFilterTable.PageChangeListener() {
-			@Override
-			public void pageChanged(PagedTableChangeEvent event) {
-				int newPageNumber = event.getCurrentPage();
-				presenter.pageChangedHandler(newPageNumber);
-			}
-		});
-		executionTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
-			@Override
-			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-				for (Object id : event.getContainer().getContainerPropertyIds()) {
-					Object filterValue = executionTable.getFilterFieldValue(id);
-					presenter.filterParameterEventHander((String) id, filterValue);
-				}
-			}
-		});
+        // add generated columns to the executionTable
+        executionTable.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
+        executionTable.setVisibleColumns();
+        executionTable.addListener(new PagedFilterTable.PageChangeListener() {
+            @Override
+            public void pageChanged(PagedTableChangeEvent event) {
+                int newPageNumber = event.getCurrentPage();
+                presenter.pageChangedHandler(newPageNumber);
+            }
+        });
+        executionTable.addItemSetChangeListener(new Container.ItemSetChangeListener() {
+            @Override
+            public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+                for (Object id : event.getContainer().getContainerPropertyIds()) {
+                    Object filterValue = executionTable.getFilterFieldValue(id);
+                    presenter.filterParameterEventHander((String) id, filterValue);
+                }
+            }
+        });
 
-		return executionTable;
-	}
+        return executionTable;
+    }
 
-	@Override
-	public void setSelectedRow(Long execId) {
-		monitorTable.select(execId);
-	}
+    @Override
+    public void setSelectedRow(Long execId) {
+        monitorTable.select(execId);
+    }
 
-	@Override
-	public void setFilter(String name, Object value) {
-		monitorTable.setFilterFieldValue(name, value);
-	}
+    @Override
+    public void setFilter(String name, Object value) {
+        monitorTable.setFilterFieldValue(name, value);
+    }
 
-	@Override
-	public void setPage(int pageNumber) {
-		monitorTable.setCurrentPage(pageNumber);
-	}
+    @Override
+    public void setPage(int pageNumber) {
+        monitorTable.setCurrentPage(pageNumber);
+    }
 
-	/**
-	 * Settings icons to the table filters "status" and "debug"
-	 *
-	 * @author Bogo
-	 *
-	 */
-	class filterDecorator extends IntlibFilterDecorator {
+    /**
+     * Settings icons to the table filters "status" and "debug"
+     * 
+     * @author Bogo
+     */
+    class filterDecorator extends IntlibFilterDecorator {
 
-		@Override
-		public String getEnumFilterDisplayName(Object propertyId, Object value) {
-			if (propertyId.equals("status")) {
-				return ((PipelineExecutionStatus) value).name();
-			}
-			return super.getEnumFilterDisplayName(propertyId, value);
-		}
+        @Override
+        public String getEnumFilterDisplayName(Object propertyId, Object value) {
+            if (propertyId.equals("status")) {
+                return ((PipelineExecutionStatus) value).name();
+            }
+            return super.getEnumFilterDisplayName(propertyId, value);
+        }
 
-		@Override
-		public Resource getEnumFilterIcon(Object propertyId, Object value) {
-			if (propertyId.equals("status")) {
-				PipelineExecutionStatus type = (PipelineExecutionStatus) value;
-				ThemeResource img = null;
-				switch (type) {
-					case FINISHED_SUCCESS:
-						img = new ThemeResource("icons/ok.png");
-						break;
-					case FINISHED_WARNING:
-						img = new ThemeResource("icons/warning.png");
-						break;
-					case FAILED:
-						img = new ThemeResource("icons/error.png");
-						break;
-					case RUNNING:
-						img = new ThemeResource("icons/running.png");
-						break;
-					case QUEUED:
-						img = new ThemeResource("icons/queued.png");
-						break;
-					case CANCELLED:
-						img = new ThemeResource("icons/cancelled.png");
-						break;
-					case CANCELLING:
-						img = new ThemeResource("icons/cancelling.png");
-						break;
-					default:
-						//no icon
-						break;
-				}
-				return img;
-			}
-			return super.getEnumFilterIcon(propertyId, value);
-		}
+        @Override
+        public Resource getEnumFilterIcon(Object propertyId, Object value) {
+            if (propertyId.equals("status")) {
+                PipelineExecutionStatus type = (PipelineExecutionStatus) value;
+                ThemeResource img = null;
+                switch (type) {
+                    case FINISHED_SUCCESS:
+                        img = new ThemeResource("icons/ok.png");
+                        break;
+                    case FINISHED_WARNING:
+                        img = new ThemeResource("icons/warning.png");
+                        break;
+                    case FAILED:
+                        img = new ThemeResource("icons/error.png");
+                        break;
+                    case RUNNING:
+                        img = new ThemeResource("icons/running.png");
+                        break;
+                    case QUEUED:
+                        img = new ThemeResource("icons/queued.png");
+                        break;
+                    case CANCELLED:
+                        img = new ThemeResource("icons/cancelled.png");
+                        break;
+                    case CANCELLING:
+                        img = new ThemeResource("icons/cancelling.png");
+                        break;
+                    default:
+                        //no icon
+                        break;
+                }
+                return img;
+            }
+            return super.getEnumFilterIcon(propertyId, value);
+        }
 
-		@Override
-		public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
-			if (propertyId.equals("isDebugging")) {
-				if (value) {
-					return "Debug";
-				} else {
-					return "Run";
-				}
-			}
-			return super.getBooleanFilterDisplayName(propertyId, value);
-		}
+        @Override
+        public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
+            if (propertyId.equals("isDebugging")) {
+                if (value) {
+                    return "Debug";
+                } else {
+                    return "Run";
+                }
+            }
+            return super.getBooleanFilterDisplayName(propertyId, value);
+        }
 
-		@Override
-		public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
-			if (propertyId.equals("isDebugging")) {
-				if (value) {
-					return new ThemeResource("icons/debug.png");
-				} else {
-					return new ThemeResource("icons/no_debug.png");
-				}
-			}
-			return super.getBooleanFilterIcon(propertyId, value);
-		}
-	};
+        @Override
+        public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
+            if (propertyId.equals("isDebugging")) {
+                if (value) {
+                    return new ThemeResource("icons/debug.png");
+                } else {
+                    return new ThemeResource("icons/no_debug.png");
+                }
+            }
+            return super.getBooleanFilterIcon(propertyId, value);
+        }
+    };
 }

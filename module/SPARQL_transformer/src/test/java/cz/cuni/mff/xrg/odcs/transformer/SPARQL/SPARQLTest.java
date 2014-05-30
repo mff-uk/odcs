@@ -1,90 +1,74 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.BeforeClass;
+import java.io.InputStream;
+
 import org.junit.Test;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class SPARQLTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
 
-	@BeforeClass
-	public static void virtuoso() {
-		// Adjust this to your virtuoso configuration.
-		TestEnvironment.virtuosoConfig.host = "localhost";
-		TestEnvironment.virtuosoConfig.port = "1111";
-		TestEnvironment.virtuosoConfig.user = "dba";
-		TestEnvironment.virtuosoConfig.password = "dba";
-	}
+    @Test
+    public void constructAllTest() throws Exception {
+        // prepare dpu
+        SPARQLTransformer trans = new SPARQLTransformer();
 
-	@Test
-	public void constructAllTest() throws Exception {
-		// prepare dpu
-		SPARQLTransformer trans = new SPARQLTransformer();
+        String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
+        boolean isConstructType = true;
 
-		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
-		boolean isConstructType = true;
+        SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                SPARQL_Update_Query, isConstructType);
 
-		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-				SPARQL_Update_Query, isConstructType);
+        trans.configureDirectly(config);
 
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
 
-		trans.configureDirectly(config);
+        // prepare data units
+        WritableRDFDataUnit input = env.createRdfInput("input", false);
+        WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
-		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
-		// prepare data units
-		RDFDataUnit input = env.createRdfInputFromResource("input", false,
-				"metadata.ttl", RDFFormat.TURTLE);
-		RDFDataUnit output = env.createRdfOutput("output", false);
+        InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("metadata.ttl");
 
-		// some triples has been loaded 
-		assertTrue(input.getTripleCount() > 0);
-		// run
-		try {
-			env.run(trans);
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        try {
+            connection = input.getConnection();
+            String baseURI = "";
+            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getWriteContext());
 
-			// verify result
-			assertTrue(input.getTripleCount() == output.getTripleCount());
-		} finally {
-			// release resources
-			env.release();
-		}
-	}
-
-	// @Test
-	public void constructAllTestVirtuoso() throws Exception {
-		// prepare dpu
-		SPARQLTransformer trans = new SPARQLTransformer();
-		boolean isConstructType = true;
-		String SPARQL_Update_Query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o }";
-
-		SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-				SPARQL_Update_Query, isConstructType);
-
-		trans.configureDirectly(config);
-
-		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
-		// prepare data units
-		RDFDataUnit input = env.createRdfInputFromResource("input", true,
-				"metadata.ttl", RDFFormat.TURTLE);
-		RDFDataUnit output = env.createRdfOutput("output", true);
-
-		// some triples has been loaded 
-		assertTrue(input.getTripleCount() > 0);
-		// run
-		try {
-			env.run(trans);
-
-			// verify result
-			assertTrue(input.getTripleCount() == output.getTripleCount());
-		} finally {
-			// release resources
-			env.release();
-		}
-	}
+            // some triples has been loaded
+            assertTrue(connection.size(input.getWriteContext()) > 0);
+            // run
+            env.run(trans);
+            connection2 = output.getConnection();
+            // verify result
+            assertTrue(connection.size(input.getWriteContext()) == connection2.size(output.getWriteContext()));
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            } // release resources
+            env.release();
+        }
+    }
 }

@@ -1,163 +1,198 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import java.util.List;
-
 import static org.junit.Assert.*;
-import org.junit.*;
+
+import org.junit.Test;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 /**
- *
  * @author Jiri Tomes
  */
 public class DPUReplacementTest {
+    private static final Logger LOG = LoggerFactory.getLogger(DPUReplacementTest.class);
 
-	private static ManagableRdfDataUnit repository;
+    /**
+     * Test DPU replacement on SPARQL CONSTRUCT query.
+     */
+    @Test
+    public void constructQueryTest() {
 
-	/**
-	 * Basic repository inicializing before test execution.
-	 */
-	@BeforeClass
-	public static void inicialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("");
-	}
+        String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "
+                + "{ graph ?g_input {?s ?p ?o} graph ?g_optional1 {?x ?y ?z}}";
 
-	/**
-	 * The repository is destroyed at the end of working.
-	 */
-	@AfterClass
-	public static void deleting() {
-		repository.delete();
-	}
+        boolean isConstruct = true;
 
-	/**
-	 * Cleaning repository before each test execution.
-	 */
-	@Before
-	public void cleaning() {
-		repository.clean();
-	}
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
-	/**
-	 * Test DPU replacement on SPARQL CONSTRUCT query.
-	 */
-	@Test
-	public void constructQueryTest() {
+        try {
 
-		String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "
-				+ "{ graph ?g_input {?s ?p ?o} graph ?g_optional1 {?x ?y ?z}}";
+            SPARQLTransformer transformer = new SPARQLTransformer();
+            SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                    query, isConstruct);
 
-		boolean isConstruct = true;
+            transformer.configureDirectly(config);
 
-		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+            WritableRDFDataUnit input = env.createRdfInput("input", false);
+            WritableRDFDataUnit optional = env.createRdfInput("optional1", false);
+            connection = input.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://s"), factory.createURI(
+                    "http://p"), factory.createURI("http://o"), input.getWriteContext());
+            connection.add(factory.createURI("http://subject"), factory.createURI(
+                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
 
-		try {
+            connection2 = optional.getConnection();
+            ValueFactory factory2 = connection2.getValueFactory();
+            connection2.add(factory2.createBNode("n25"), factory2
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getWriteContext());
 
-			SPARQLTransformer transformer = new SPARQLTransformer();
-			SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-					query, isConstruct);
+            assertEquals(2L, connection.size(input.getWriteContext()));
+            assertEquals(1L, connection2.size(optional.getWriteContext()));
 
-			transformer.configureDirectly(config);
+            WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
-			RDFDataUnit input = env.createRdfInput("input", false);
-			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            env.run(transformer);
 
-			input.addTriple(input.createURI("http://s"), input.createURI(
-					"http://p"), input.createURI("http://o"));
-			input.addTriple(input.createURI("http://subject"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
+            connection3 = output.getConnection();
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getContexts().toArray(new URI[0])));
+            env.release();
 
-			optional.addTriple(optional.createBlankNode("n25"), optional
-					.createURI("http://hasName"), optional.createLiteral("NAME"));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection3 != null) {
+                try {
+                    connection3.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            env.release();
+        }
+    }
 
-			assertEquals(2L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+    /**
+     * Test DPU replacement on SPARQL UPDATE query.
+     */
+//    @Test
+//    We do not support g_input variables this time.
+    public void updateQueryTest() {
+        String query = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/> \n"
+                + "INSERT { ?person foaf:givenName \"William\" }\n"
+                + "WHERE {"
+                + " graph ?g_optional1 {?person foaf:givenName \"Bill\" }"
+                + " graph ?g_input {?person ?x ?y }"
+                + "} ";
 
-			RDFDataUnit output = env.createRdfOutput("output", false);
+        boolean isConstruct = false;
 
-			env.run(transformer);
+        String expectedObjectName = "William";
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
-			env.release();
+        // prepare test environment
+        TestEnvironment env = new TestEnvironment();
+        RepositoryConnection connection = null;
+        RepositoryConnection connection2 = null;
+        RepositoryConnection connection3 = null;
 
+        try {
 
-		} catch (Exception e) {
-			fail(e.getMessage());
-		} finally {
-			env.release();
-		}
-	}
+            SPARQLTransformer transformer = new SPARQLTransformer();
+            SPARQLTransformerConfig config = new SPARQLTransformerConfig(
+                    query, isConstruct);
 
-	/**
-	 * Test DPU replacement on SPARQL UPDATE query.
-	 */
-	@Test
-	public void updateQueryTest() {
-		String query = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/> \n"
-				+ "INSERT { ?person foaf:givenName \"William\" }\n"
-				+ "WHERE {"
-				+ " graph ?g_optional1 {?person foaf:givenName \"Bill\" }"
-				+ " graph ?g_input {?person ?x ?y }"
-				+ "} ";
+            transformer.configureDirectly(config);
 
-		boolean isConstruct = false;
+            WritableRDFDataUnit input = env.createRdfInput("input", false);
+            WritableRDFDataUnit optional = env.createRdfInput("optional1", false);
 
-		String expectedObjectName = "William";
+            connection = input.getConnection();
+            ValueFactory factory = connection.getValueFactory();
+            connection.add(factory.createURI("http://person"), factory.createURI(
+                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
 
-		// prepare test environment
-		TestEnvironment env = TestEnvironment.create();
+            connection2 = optional.getConnection();
+            ValueFactory factory2 = connection2.getValueFactory();
 
-		try {
+            connection2.add(factory2.createURI("http://person"), factory2
+                    .createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
+                    .createLiteral("Bill"), optional.getWriteContext());
 
-			SPARQLTransformer transformer = new SPARQLTransformer();
-			SPARQLTransformerConfig config = new SPARQLTransformerConfig(
-					query, isConstruct);
+            assertEquals(1L, connection.size(input.getWriteContext()));
+            assertEquals(1L, connection2.size(optional.getWriteContext()));
 
-			transformer.configureDirectly(config);
+            WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
-			RDFDataUnit input = env.createRdfInput("input", false);
-			RDFDataUnit optional = env.createRdfInput("optional1", false);
+            env.run(transformer);
 
-			input.addTriple(input.createURI("http://person"), input.createURI(
-					"http://predicate"), input.createURI("http://object"));
+            connection3 = output.getConnection();
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getWriteContext()));
 
-			optional.addTriple(optional.createURI("http://person"), optional
-					.createURI("http://xmlns.com/foaf/0.1/givenName"), optional
-					.createLiteral("Bill"));
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getWriteContext());
 
-			assertEquals(1L, input.getTripleCount());
-			assertEquals(1L, optional.getTripleCount());
+            boolean newInsertedTripleFound = false;
+            while (outputTriples.hasNext()) {
+                Statement next = outputTriples.next();
+                if (expectedObjectName.equals(next.getObject().stringValue())) {
+                    newInsertedTripleFound = true;
+                    break;
+                }
+            }
 
-			RDFDataUnit output = env.createRdfOutput("output", false);
+            assertTrue("New inserted triple not found", newInsertedTripleFound);
 
-			env.run(transformer);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection2 != null) {
+                try {
+                    connection2.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+            if (connection3 != null) {
+                try {
+                    connection3.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
 
-			assertEquals("Count of triples are not same", 3L, output
-					.getTripleCount());
-
-			List<Statement> outputTriples = output.getTriples();
-
-			boolean newInsertedTripleFound = false;
-			for (Statement next : outputTriples) {
-				if (expectedObjectName.equals(next.getObject().stringValue())) {
-					newInsertedTripleFound = true;
-					break;
-				}
-			}
-
-			assertTrue("New inserted triple not found", newInsertedTripleFound);
-
-
-		} catch (Exception e) {
-			fail(e.getMessage());
-		} finally {
-			env.release();
-		}
-	}
+            env.release();
+        }
+    }
 }

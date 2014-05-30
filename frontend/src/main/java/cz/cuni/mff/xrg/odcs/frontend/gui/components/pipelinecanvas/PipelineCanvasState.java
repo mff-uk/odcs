@@ -4,14 +4,14 @@ import com.vaadin.shared.ui.JavaScriptComponentState;
 
 /**
  * PipelineState of the component. Currently not used.
- *
+ * 
  * @author Bogo
  */
 @SuppressWarnings("serial")
 public class PipelineCanvasState extends JavaScriptComponentState {
 
-	/**
-	 * XHTML representing state.
-	 */
-	public String xhtml;
+    /**
+     * XHTML representing state.
+     */
+    public String xhtml;
 }

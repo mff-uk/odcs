@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Represents node in the dependency graph. Contains links to its dependencies.
- *
+ * 
  * @author Jan Vojt
  */
 public class DependencyNode {
@@ -14,14 +14,17 @@ public class DependencyNode {
      * The node in pipeline graph represented by this dependency.
      */
     private Node node;
+
     /**
      * List of dependencies of this node.
      */
     private List<DependencyNode> dependencies = new ArrayList<>();
+
     /**
      * List of nodes that depend on this node
      */
     private List<DependencyNode> dependants = new ArrayList<>();
+
     /**
      * Tells whether this dependency is already satisfied.
      */
@@ -29,7 +32,7 @@ public class DependencyNode {
 
     /**
      * Constructs dependency from node in pipeline graph.
-     *
+     * 
      * @param node
      */
     public DependencyNode(Node node) {
@@ -64,8 +67,9 @@ public class DependencyNode {
 
     /**
      * Checks whether this node already has given dependency
-     *
-     * @param node dependency to check
+     * 
+     * @param node
+     *            dependency to check
      * @return whether this node already has given dependency
      */
     public boolean hasDependency(DependencyNode node) {
@@ -74,8 +78,9 @@ public class DependencyNode {
 
     /**
      * Add a new dependency
-     *
-     * @param node dependency to add
+     * 
+     * @param node
+     *            dependency to add
      */
     public void addDependency(DependencyNode node) {
         if (!hasDependency(node)) {
@@ -91,7 +96,8 @@ public class DependencyNode {
     }
 
     /**
-     * @param dependants the dependants to set
+     * @param dependants
+     *            the dependants to set
      */
     public void setDependants(List<DependencyNode> dependants) {
         this.dependants = dependants;
@@ -99,7 +105,7 @@ public class DependencyNode {
 
     /**
      * Adds dependent node
-     *
+     * 
      * @param node
      */
     public void addDependant(DependencyNode node) {
@@ -110,7 +116,7 @@ public class DependencyNode {
 
     /**
      * Tells whether this node is directly dependent on given node
-     *
+     * 
      * @param node
      * @return whether this node is directly dependent on given node
      */
@@ -126,7 +132,8 @@ public class DependencyNode {
     }
 
     /**
-     * @param executed the executed to set
+     * @param executed
+     *            the executed to set
      */
     public void setExecuted(boolean executed) {
         this.executed = executed;

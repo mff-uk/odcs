@@ -16,146 +16,149 @@ import org.slf4j.LoggerFactory;
  */
 public class AppLock {
 
-	/** The lock_file. */
-	private File lock_file = null;
+    /** The lock_file. */
+    private File lock_file = null;
 
-	/** The lock. */
-	private FileLock lock = null;
+    /** The lock. */
+    private FileLock lock = null;
 
-	/** The lock_channel. */
-	private FileChannel lock_channel = null;
+    /** The lock_channel. */
+    private FileChannel lock_channel = null;
 
-	/** The lock_stream. */
-	private FileOutputStream lock_stream = null;
+    /** The lock_stream. */
+    private FileOutputStream lock_stream = null;
 
-	private static Logger LOG = LoggerFactory.getLogger(AppLock.class);
-	
-	/**
-	 * Instantiates a new app lock.
-	 */
-	private AppLock() {
-	}
+    private static Logger LOG = LoggerFactory.getLogger(AppLock.class);
 
-	/**
-	 * Instantiates a new app lock.
-	 * 
-	 * @param key Unique application key
-	 * @throws Exception The exception
-	 */
-	private AppLock(String key) throws Exception {
-		String tmp_dir = System.getProperty("java.io.tmpdir");
-		if (!tmp_dir.endsWith(System.getProperty("file.separator"))) {
-			tmp_dir += System.getProperty("file.separator");
-		}
+    /**
+     * Instantiates a new app lock.
+     */
+    private AppLock() {
+    }
 
-		// Acquire MD5
-		try {
-			java.security.MessageDigest md = java.security.MessageDigest
-					.getInstance("MD5");
-			md.reset();
-			String hash_text = new java.math.BigInteger(1, md.digest(key
-					.getBytes())).toString(16);
-			// Hash string has no leading zeros
-			// Adding zeros to the beginnig of has string
-			while (hash_text.length() < 32) {
-				hash_text = "0" + hash_text;
-			}
-			lock_file = new File(tmp_dir + hash_text + ".app_lock");
-		} catch (Exception ex) {
-			System.out.println("AppLock.AppLock() file fail");
-		}
+    /**
+     * Instantiates a new app lock.
+     * 
+     * @param key
+     *            Unique application key
+     * @throws Exception
+     *             The exception
+     */
+    private AppLock(String key) throws Exception {
+        String tmp_dir = System.getProperty("java.io.tmpdir");
+        if (!tmp_dir.endsWith(System.getProperty("file.separator"))) {
+            tmp_dir += System.getProperty("file.separator");
+        }
 
-		// MD5 acquire fail
-		if (lock_file == null) {
-			lock_file = new File(tmp_dir + key + ".app_lock");
-		}
+        // Acquire MD5
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest
+                    .getInstance("MD5");
+            md.reset();
+            String hash_text = new java.math.BigInteger(1, md.digest(key
+                    .getBytes())).toString(16);
+            // Hash string has no leading zeros
+            // Adding zeros to the beginnig of has string
+            while (hash_text.length() < 32) {
+                hash_text = "0" + hash_text;
+            }
+            lock_file = new File(tmp_dir + hash_text + ".app_lock");
+        } catch (Exception ex) {
+            System.out.println("AppLock.AppLock() file fail");
+        }
 
-		lock_stream = new FileOutputStream(lock_file);
+        // MD5 acquire fail
+        if (lock_file == null) {
+            lock_file = new File(tmp_dir + key + ".app_lock");
+        }
 
-		String f_content = "Java AppLock Object\r\nLocked by key: " + key
-				+ "\r\n";
-		lock_stream.write(f_content.getBytes());
+        lock_stream = new FileOutputStream(lock_file);
 
-		lock_channel = lock_stream.getChannel();
+        String f_content = "Java AppLock Object\r\nLocked by key: " + key
+                + "\r\n";
+        lock_stream.write(f_content.getBytes());
 
-		lock = lock_channel.tryLock();
+        lock_channel = lock_stream.getChannel();
 
-		if (lock == null) {
-			throw new Exception("Can't create Lock");
-		}
-	}
+        lock = lock_channel.tryLock();
 
-	/**
-	 * Release Lock. Now another application instance can gain lock.
-	 * 
-	 * @throws Throwable
-	 */
-	private void release() throws Throwable {
-		if (lock.isValid()) {
-			lock.release();
-		}
-		if (lock_stream != null) {
-			lock_stream.close();
-		}
-		if (lock_channel.isOpen()) {
-			lock_channel.close();
-		}
-		if (lock_file.exists()) {
-			lock_file.delete();
-		}
-	}
+        if (lock == null) {
+            throw new Exception("Can't create Lock");
+        }
+    }
 
-	@Override
-	protected void finalize() throws Throwable {
-		this.release();
-		super.finalize();
-	}
+    /**
+     * Release Lock. Now another application instance can gain lock.
+     * 
+     * @throws Throwable
+     */
+    private void release() throws Throwable {
+        if (lock.isValid()) {
+            lock.release();
+        }
+        if (lock_stream != null) {
+            lock_stream.close();
+        }
+        if (lock_channel.isOpen()) {
+            lock_channel.close();
+        }
+        if (lock_file.exists()) {
+            lock_file.delete();
+        }
+    }
 
-	/** The instance. */
-	private static AppLock instance;
+    @Override
+    protected void finalize() throws Throwable {
+        this.release();
+        super.finalize();
+    }
 
-	/**
-	 * Set application lock. Method can be run only one time per application.
-	 * All next calls will be ignored.
-	 * 
-	 * @param key Unique application lock key
-	 * @return true, if successful
-	 */
-	public static boolean setLock(String key) {
-		if (instance != null) {
-			return true;
-		}
+    /** The instance. */
+    private static AppLock instance;
 
-		try {
-			instance = new AppLock(key);
-		} catch (Exception e) {
-			instance = null;
-			LOG.debug("Fail to set application lock", e);
-			return false;
-		}
+    /**
+     * Set application lock. Method can be run only one time per application.
+     * All next calls will be ignored.
+     * 
+     * @param key
+     *            Unique application lock key
+     * @return true, if successful
+     */
+    public static boolean setLock(String key) {
+        if (instance != null) {
+            return true;
+        }
 
-		Runtime.getRuntime().addShutdownHook(new Thread("AppLock-ShutdownHook") {
-			@Override
-			public void run() {
-				AppLock.releaseLock();
-			}
-		});
-		return true;
-	}
+        try {
+            instance = new AppLock(key);
+        } catch (Exception e) {
+            instance = null;
+            LOG.debug("Fail to set application lock", e);
+            return false;
+        }
 
-	/**
-	 * Trying to release Lock. After release you can not user AppLock again in
-	 * this application.
-	 */
-	public static void releaseLock() {
-		try {
-			if (instance == null) {
-				throw new NoSuchFieldException("INSTATCE IS NULL");
-			}
-			instance.release();
-		} catch (Throwable e) {
-			LOG.error("Fail to release application lock", e);
-		}
-	}
+        Runtime.getRuntime().addShutdownHook(new Thread("AppLock-ShutdownHook") {
+            @Override
+            public void run() {
+                AppLock.releaseLock();
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Trying to release Lock. After release you can not user AppLock again in
+     * this application.
+     */
+    public static void releaseLock() {
+        try {
+            if (instance == null) {
+                throw new NoSuchFieldException("INSTATCE IS NULL");
+            }
+            instance.release();
+        } catch (Throwable e) {
+            LOG.error("Fail to release application lock", e);
+        }
+    }
 
 }

@@ -1,10 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download;
 
+import java.io.IOException;
+
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
-import java.io.IOException;
 
 /**
  * This specializes {@link FileDownloader} in a way, such that both the file
@@ -13,29 +14,31 @@ import java.io.IOException;
  */
 public class OnDemandFileDownloader extends FileDownloader {
 
-	private static final long serialVersionUID = 1L;
-	private final OnDemandStreamResource onDemandStreamResource;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param onDemandStreamResource Resource to use for download.
-	 */
-	public OnDemandFileDownloader(
-			OnDemandStreamResource onDemandStreamResource) {
-		super(new StreamResource(onDemandStreamResource, ""));
-		this.onDemandStreamResource = onDemandStreamResource;
-	}
+    private final OnDemandStreamResource onDemandStreamResource;
 
-	@Override
-	public boolean handleConnectorRequest(VaadinRequest request,
-			VaadinResponse response, String path)
-			throws IOException {
-		getResource().setFilename(onDemandStreamResource.getFilename());
-		return super.handleConnectorRequest(request, response, path);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param onDemandStreamResource
+     *            Resource to use for download.
+     */
+    public OnDemandFileDownloader(
+            OnDemandStreamResource onDemandStreamResource) {
+        super(new StreamResource(onDemandStreamResource, ""));
+        this.onDemandStreamResource = onDemandStreamResource;
+    }
 
-	private StreamResource getResource() {
-		return (StreamResource) this.getResource("dl");
-	}
+    @Override
+    public boolean handleConnectorRequest(VaadinRequest request,
+            VaadinResponse response, String path)
+            throws IOException {
+        getResource().setFilename(onDemandStreamResource.getFilename());
+        return super.handleConnectorRequest(request, response, path);
+    }
+
+    private StreamResource getResource() {
+        return (StreamResource) this.getResource("dl");
+    }
 }

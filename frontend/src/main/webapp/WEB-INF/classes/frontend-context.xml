@@ -4,77 +4,135 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    
+    <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/config.properties</value>
+                <value>file:${configFileLocation}</value>
+            </list>
+        </property>
+    </bean>
+    
+    <import resource="classpath:commons-app-context.xml"/>
 
-    <import resource="classpath:commons-app-context.xml" />
-	
     <!-- Scan Views for bean definitions. -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
-	<context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
 
-    <!-- Application configuration is taken from war file, so we override it. -->
-    <bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig" factory-method="loadFrom">
-        <constructor-arg value="/WEB-INF/config.properties" />
-    </bean>
-	
+    <!-- Scan validators -->
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.dpu.validator"/>
+
     <!-- Module configuration needs to be defined here,
     because it differs from backend -->
-    <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
-        <constructor-arg value="FRONTEND" />
+    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
+        <constructor-arg ref="configuration"/>
+        <constructor-arg value="FRONTEND"/>
     </bean>
-	
+
+    <!-- Service responsible for delivering emails -->
+    <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
+        <constructor-arg ref="configuration"/>
+    </bean>
+
     <!-- bean for notification -->
-    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient" />
-	
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient"/>
+
     <!-- watcher for DPU changes -->
-    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager" >
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">
         <constructor-arg name="refreshDatabase" value="true"/>
     </bean>
-	
+
+    <!-- service for pipeline import-export -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService"/>
+
     <!-- bean that provide functionality for manipulating with DPUs -->
-    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator" />
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator"/>
 
     <!-- accessors -->
-    <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor" />
-    <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor" />
-    <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor" />
-       
+    <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor"/>
+    <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor"/>
+    <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor"/>
+
     <!-- tranlator for vaadin's filters -->
-    <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator" />
-    
-    <bean id="menuLayout" class="cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout" scope="prototype" />
-    
-    <!-- sessions scope -->   
-    
-    <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype" />
-	
-	<bean id="pipelineHelper" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper" />
-	<bean id="pipelineValidator" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator" />
+    <bean id="vaadinFilterTranslator" class="cz.cuni.mff.xrg.odcs.frontend.container.VaadinFilterTranslator"/>
+
+    <bean id="menuLayout" class="cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout" scope="prototype"/>
+
+    <!-- sessions scope -->
+
+    <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype"/>
+
+    <bean id="pipelineHelper" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper"/>
+    <bean id="pipelineValidator" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator"/>
 
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
     <bean id="navigatorHolder" class="cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder" scope="prototype"/>
-	
-	<bean id="pipelineCanvas" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas" scope="prototype" />
-    <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype" />
-    <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline" scope="prototype" />
-    
+
+    <bean id="pipelineCanvas" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.PipelineCanvas"
+          scope="prototype"/>
+    <bean id="dpuTree" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree" scope="prototype"/>
+    <bean id="schedulePipeline" class="cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline"
+          scope="prototype"/>
+
     <!-- dialogs -->
-    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype" />
-    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype" />
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype"/>
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype"/>
     <!-- TODO: we can use special package and factory class -->
 
-	<bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
-		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
-		<property name="refreshStubOnConnectFailure"><value>true</value></property>
-		<!-- if the RMI servrs is offline on start up then don't die -->
-		<property name="lookupStubOnStartup" value="false" />
-	</bean>
-		
-	<bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-		<property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
-		<property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
-		<property name="refreshStubOnConnectFailure"><value>true</value></property>
-		<!-- if the RMI servrs is offline on start up then don't die -->
-		<property name="lookupStubOnStartup" value="false" />
-	</bean>
+    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
+        <property name="key" value="${database.rdf.platform}"/>
+        <property name="implementations">
+            <map>
+                <entry key="localRDF">
+                    <bean id="localRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
+                        <property name="repositoryPath" value="${general.workingdir}"/>
+                    </bean>
+                </entry>
+                <entry key="virtuoso">
+                    <bean id="virtuosoRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnitFactory">
+                        <property name="url" value="${database.rdf.url}"/>
+                        <property name="user" value="${database.rdf.user}"/>
+                        <property name="password" value="${database.rdf.password}"/>
+                    </bean>
+                </entry>
+                <entry key="remoteRDF">
+                    <bean id="remoteRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf.RemoteRDFDataUnitFactory">
+                        <property name="url" value="${database.rdf.url}"/>
+                        <property name="user" value="${database.rdf.user}"/>
+                        <property name="password" value="${database.rdf.password}"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
+        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
+        <property name="refreshStubOnConnectFailure">
+            <value>true</value>
+        </property>
+        <!-- if the RMI servrs is offline on start up then don't die -->
+        <property name="lookupStubOnStartup" value="false"/>
+    </bean>
+
+    <bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
+        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
+        <property name="refreshStubOnConnectFailure">
+            <value>true</value>
+        </property>
+        <!-- if the RMI servrs is offline on start up then don't die -->
+        <property name="lookupStubOnStartup" value="false"/>
+    </bean>
+
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
+
 </beans>

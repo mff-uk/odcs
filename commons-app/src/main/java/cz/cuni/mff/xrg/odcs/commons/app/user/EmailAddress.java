@@ -16,93 +16,95 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * An abstract representation of an email address.
- *
+ * 
  * @author Jan Vojt
  */
 @Entity
 @Table(name = "sch_email")
 public class EmailAddress implements Comparable<Object>, DataObject {
-	
-	@Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
-	@SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
-	private Long id;
 
-	/**
-	 * Email address
-	 */
-	@Column(name = "email")
-	private String email;
-	
-	/**
-	 * Default constructor for JPA.
-	 */
-	public EmailAddress() {
-	}
-	
-	/**
-	 * Create an <code>EmailAddress</code>.
-	 * 
-	 * @param addressAsText a full email address
-	 * @throws MalformedEmailAddressException if the parameter is not a full
-	 * email address.
-	 */
-	public EmailAddress(String addressAsText) throws MalformedEmailAddressException {
-		email = addressAsText;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
+    @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
+    private Long id;
 
-	/**
-	 * @return the email in the <code>EmailAddress</code>
-	 */
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * Email address
+     */
+    @Column(name = "email")
+    private String email;
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(1715616541, 3455617).append(id).append(email).toHashCode();
-	}
+    /**
+     * Default constructor for JPA.
+     */
+    public EmailAddress() {
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		if (obj.getClass() != getClass()) {
-			return false;
-		}
-		EmailAddress rhs = (EmailAddress) obj;
-		return new EqualsBuilder().append(id, rhs.getId())
-				.append(email, rhs.getEmail()).isEquals();
-	}
+    /**
+     * Create an <code>EmailAddress</code>.
+     * 
+     * @param addressAsText
+     *            a full email address
+     * @throws MalformedEmailAddressException
+     *             if the parameter is not a full
+     *             email address.
+     */
+    public EmailAddress(String addressAsText) throws MalformedEmailAddressException {
+        email = addressAsText;
+    }
 
-	/**
-	 * <b>Part of
-	 * <code>Comparable</code> interface. Sorts alphabetically.
-	 * 
-	 * @param obj
-	 */
-	@Override
-	public int compareTo(Object obj) {
-		EmailAddress ea = (EmailAddress) obj;
-		return new CompareToBuilder().append(this.email, ea.getEmail())
-				.append(this.id, ea.getId()).toComparison();
-	}
+    /**
+     * @return the email in the <code>EmailAddress</code>
+     */
+    public String getEmail() {
+        return email;
+    }
 
-	@Override
-	public String toString() {
-		return email;
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1715616541, 3455617).append(id).append(email).toHashCode();
+    }
 
-	@Override
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        EmailAddress rhs = (EmailAddress) obj;
+        return new EqualsBuilder().append(id, rhs.getId())
+                .append(email, rhs.getEmail()).isEquals();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-		
+    /**
+     * <b>Part of <code>Comparable</code> interface. Sorts alphabetically.
+     * 
+     * @param obj
+     */
+    @Override
+    public int compareTo(Object obj) {
+        EmailAddress ea = (EmailAddress) obj;
+        return new CompareToBuilder().append(this.email, ea.getEmail())
+                .append(this.id, ea.getId()).toComparison();
+    }
+
+    @Override
+    public String toString() {
+        return email;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

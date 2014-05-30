@@ -25,117 +25,120 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * CleanUp data after execution.
  * 
  * @author Petyr
- * 
  */
 @Component
 class CleanUp implements PostExecutor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CleanUp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CleanUp.class);
 
-	@Autowired
-	private AppConfig appConfig;
+    @Autowired
+    private AppConfig appConfig;
 
-	@Autowired
-	private ContextFacade contextFacade;
-	
-	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
-	}
+    @Autowired
+    private ContextFacade contextFacade;
 
-	@Override
-	public boolean postAction(PipelineExecution execution,
-			Map<Node, Context> contexts,
-			DependencyGraph graph) {
-		LOG.debug("CleanUp start .. ");
-		// first release contexts
-		for (Context item : contexts.values()) {
-			if (execution.isDebugging()) {
-				// close the data unit
-				// the data has already been saved 
-				// in DPU post executor after the DPU's execution
-				contextFacade.close(item);
-			} else {
-				// delete data ..
-				// but preserve context info as it can be used to examine the 
-				// execution
-				contextFacade.delete(item, true);
-			}
-		}
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
 
-		// prepare execution root
-		File rootDir = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-		
-		// get access to the infromation in execution context
-		ExecutionInfo info = new ExecutionInfo(execution.getContext());
-		
-		if (!execution.isDebugging()) {
-			// delete working directory
-			// the sub directories should be already deleted by DPU's
-			delete(rootDir, info.getWorkingPath());
-		}
+    @Override
+    public boolean postAction(PipelineExecution execution,
+            Map<Node, Context> contexts,
+            DependencyGraph graph) {
+        LOG.debug("CleanUp start .. ");
+        // first release contexts
+        for (Context item : contexts.values()) {
+            if (execution.isDebugging()) {
+                // close the data unit
+                // the data has already been saved 
+                // in DPU post executor after the DPU's execution
+                contextFacade.close(item);
+            } else {
+                // delete data ..
+                // but preserve context info as it can be used to examine the 
+                // execution
+                contextFacade.delete(item, true);
+            }
+        }
 
-		// delete result, storage if empty
-				
-		deleteIfEmpty(rootDir, info.getResultPath());
-		deleteIfEmpty(rootDir, info.getStoragePath());
-		// we delete the execution directory if it is empty
-		deleteIfEmpty(rootDir, info.getRootPath());
-		
-		LOG.debug("CleanUp has been finished .. ");
-		return true;
-	}
+        // prepare execution root
+        File rootDir = new File(
+                appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
 
-	/**
-	 * Try to delete directory in execution directory. If error occur then is
-	 * logged but otherwise ignored.
-	 * 
-	 * @param executionRoot Path to the execution root.
-	 * @param relativePath Relative sub-path from absolute path.
-	 */
-	private void delete(File executionRoot, String relativePath) {
-		File toDelete = new File(executionRoot, relativePath);
-		
-		LOG.debug("Deleting: {}", toDelete.toString());
-		
-		try {
-			FileUtils.deleteDirectory(toDelete);
-		} catch (IOException e) {
-			LOG.warn("Can't delete directory after execution", e);
-		}
-	}
+        // get access to the infromation in execution context
+        ExecutionInfo info = new ExecutionInfo(execution.getContext());
 
-	/**
-	 * Delete directory if it's empty.
-	 * 
-	 * @param executionRoot Path to the execution root.
-	 * @param relativePath Relative sub-path from absolute path.
-	 */
-	private void deleteIfEmpty(File executionRoot, String relativePath) {
-		File toDelete = new File(executionRoot, relativePath);
-		if (!toDelete.exists()) {
-			// file does not exist
-			return;
-		}
+        if (!execution.isDebugging()) {
+            // delete working directory
+            // the sub directories should be already deleted by DPU's
+            delete(rootDir, info.getWorkingPath());
+        }
 
-		LOG.debug("Deleting: {}", toDelete.toString());
-		
-		if (!toDelete.isDirectory()) {
-			LOG.warn("Directory to delete is file: {}", toDelete.toString());
-			return;
-		}
+        // delete result, storage if empty
 
-		// check if empty
-		if (toDelete.list().length == 0) {
-			// empty
-			try {
-				FileUtils.deleteDirectory(toDelete);
-			} catch (IOException e) {
-				LOG.warn("Can't delete directory after execution", e);
-			}
-		}
+        deleteIfEmpty(rootDir, info.getResultPath());
+        deleteIfEmpty(rootDir, info.getStoragePath());
+        // we delete the execution directory if it is empty
+        deleteIfEmpty(rootDir, info.getRootPath());
 
-	}
+        LOG.debug("CleanUp has been finished .. ");
+        return true;
+    }
+
+    /**
+     * Try to delete directory in execution directory. If error occur then is
+     * logged but otherwise ignored.
+     * 
+     * @param executionRoot
+     *            Path to the execution root.
+     * @param relativePath
+     *            Relative sub-path from absolute path.
+     */
+    private void delete(File executionRoot, String relativePath) {
+        File toDelete = new File(executionRoot, relativePath);
+
+        LOG.debug("Deleting: {}", toDelete.toString());
+
+        try {
+            FileUtils.deleteDirectory(toDelete);
+        } catch (IOException e) {
+            LOG.warn("Can't delete directory after execution", e);
+        }
+    }
+
+    /**
+     * Delete directory if it's empty.
+     * 
+     * @param executionRoot
+     *            Path to the execution root.
+     * @param relativePath
+     *            Relative sub-path from absolute path.
+     */
+    private void deleteIfEmpty(File executionRoot, String relativePath) {
+        File toDelete = new File(executionRoot, relativePath);
+        if (!toDelete.exists()) {
+            // file does not exist
+            return;
+        }
+
+        LOG.debug("Deleting: {}", toDelete.toString());
+
+        if (!toDelete.isDirectory()) {
+            LOG.warn("Directory to delete is file: {}", toDelete.toString());
+            return;
+        }
+
+        // check if empty
+        if (toDelete.list().length == 0) {
+            // empty
+            try {
+                FileUtils.deleteDirectory(toDelete);
+            } catch (IOException e) {
+                LOG.warn("Can't delete directory after execution", e);
+            }
+        }
+
+    }
 
 }

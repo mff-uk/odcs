@@ -1,14 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution;
 
-import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -27,156 +18,163 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
+import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
  * 
  * @author Petyr
- * 
  */
 public class Engine implements ApplicationListener<CheckDatabaseEvent> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
-	
-	/**
-	 * Publisher instance.
-	 */
-	@Autowired
-	protected ApplicationEventPublisher eventPublisher;
+    private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
 
-	/**
-	 * Application's configuration.
-	 */
-	@Autowired
-	protected AppConfig appConfig;
+    /**
+     * Publisher instance.
+     */
+    @Autowired
+    protected ApplicationEventPublisher eventPublisher;
 
-	/**
-	 * Bean factory used to create beans for single pipeline execution.
-	 */
-	@Autowired
-	private BeanFactory beanFactory;
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
 
-	/**
-	 * Pipeline facade.
-	 */
-	@Autowired
-	private PipelineFacade pipelineFacade;
-		
-	/**
-	 * Thread pool.
-	 */
-	protected ExecutorService executorService;
+    /**
+     * Bean factory used to create beans for single pipeline execution.
+     */
+    @Autowired
+    private BeanFactory beanFactory;
 
-	/**
-	 * Working directory.
-	 */
-	protected File workingDirectory;
+    /**
+     * Pipeline facade.
+     */
+    @Autowired
+    private PipelineFacade pipelineFacade;
 
-	/**
-	 * True if startUp method has already been called.
-	 */
-	protected Boolean startUpDone;
+    /**
+     * Thread pool.
+     */
+    protected ExecutorService executorService;
 
-	@PostConstruct
-	private void propertySetter() {
-		this.executorService = Executors.newCachedThreadPool();
-		this.startUpDone = false;
-		
-		workingDirectory = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-		LOG.info("Working dir: {}", workingDirectory.toString());
-		// make sure that our working directory exist
-		if (workingDirectory.isDirectory()) {
-			workingDirectory.mkdirs();
-		}
-	}
+    /**
+     * Working directory.
+     */
+    protected File workingDirectory;
 
-	/**
-	 * Ask executorService to run the pipeline. Call {@link #startUp} before
-	 * this function.
-	 * 
-	 * @param execution
-	 */
-	protected void run(PipelineExecution execution) {
-		Executor executor = beanFactory.getBean(Executor.class);
-		executor.bind(execution);
-		// execute
-		this.executorService.submit(executor);
-	}
+    /**
+     * True if startUp method has already been called.
+     */
+    protected Boolean startUpDone;
 
-	/**
-	 * Check database for new task (PipelineExecutions to run). Can run
-	 * concurrently. Check database every 20 seconds.
-	 */
-	@Async
-	@Scheduled(fixedDelay = 20000) 
-	protected synchronized void checkDatabase() {
-		if (!startUpDone) {
-			// we does not start any execution
-			// before start up method is executed
-			startUp();
-			return;
-		}
-		LOG.trace("Checking for new executions.");
-		List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions(PipelineExecutionStatus.QUEUED);
-		// run pipeline executions ..
-		for (PipelineExecution item : toExecute) {
-			run(item);
-		}
-	}
+    @PostConstruct
+    private void propertySetter() {
+        this.executorService = Executors.newCachedThreadPool();
+        this.startUpDone = false;
 
-	/**
-	 * Check database for hanging running pipelines. Should be run just once
-	 * before any execution starts.
-	 * 
-	 * Also setup engine according to it's configuration.
-	 */
-	protected synchronized void startUp() {
-		if (startUpDone) {
-			LOG.warn("Ignoring second startUp call");
-			return;
-		}
-		startUpDone = true;
+        workingDirectory = new File(
+                appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+        LOG.info("Working dir: {}", workingDirectory.toString());
+        // make sure that our working directory exist
+        if (workingDirectory.isDirectory()) {
+            workingDirectory.mkdirs();
+        }
+    }
 
-		ExecutionSanitizer sanitizer = beanFactory.getBean(ExecutionSanitizer.class);
-				
-		// list executions
-		List<PipelineExecution> running = pipelineFacade
-				.getAllExecutions(PipelineExecutionStatus.RUNNING);
-		for (PipelineExecution execution : running) {
-			MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
-			// hanging pipeline ..
-			sanitizer.sanitize(execution);
-			
-			try {
-				pipelineFacade.save(execution);
-			} catch (EntityNotFoundException ex) {
-				LOG.warn("Seems like someone deleted our pipeline run.", ex);
-			}
-			
-			MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
-		}
+    /**
+     * Ask executorService to run the pipeline. Call {@link #startUp} before
+     * this function.
+     * 
+     * @param execution
+     */
+    protected void run(PipelineExecution execution) {
+        Executor executor = beanFactory.getBean(Executor.class);
+        executor.bind(execution);
+        // execute
+        this.executorService.submit(executor);
+    }
 
-		List<PipelineExecution> cancelling = pipelineFacade
-				.getAllExecutions(PipelineExecutionStatus.CANCELLING);
-		
-		for (PipelineExecution execution : cancelling) {
-			MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
-			// hanging pipeline ..
-			sanitizer.sanitize(execution);
-			
-			try {
-				pipelineFacade.save(execution);
-			} catch (EntityNotFoundException ex) {
-				LOG.warn("Seems like someone deleted our pipeline run.", ex);
-			}
-			
-			MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
-		}
-	}
+    /**
+     * Check database for new task (PipelineExecutions to run). Can run
+     * concurrently. Check database every 20 seconds.
+     */
+    @Async
+    @Scheduled(fixedDelay = 20000)
+    protected synchronized void checkDatabase() {
+        if (!startUpDone) {
+            // we does not start any execution
+            // before start up method is executed
+            startUp();
+            return;
+        }
+        LOG.trace("Checking for new executions.");
+        List<PipelineExecution> toExecute = pipelineFacade.getAllExecutions(PipelineExecutionStatus.QUEUED);
+        // run pipeline executions ..
+        for (PipelineExecution item : toExecute) {
+            run(item);
+        }
+    }
 
-	@Override
-	public void onApplicationEvent(CheckDatabaseEvent event) {
-		checkDatabase();
-	}
+    /**
+     * Check database for hanging running pipelines. Should be run just once
+     * before any execution starts.
+     * Also setup engine according to it's configuration.
+     */
+    protected synchronized void startUp() {
+        if (startUpDone) {
+            LOG.warn("Ignoring second startUp call");
+            return;
+        }
+        startUpDone = true;
+
+        ExecutionSanitizer sanitizer = beanFactory.getBean(ExecutionSanitizer.class);
+
+        // list executions
+        List<PipelineExecution> running = pipelineFacade
+                .getAllExecutions(PipelineExecutionStatus.RUNNING);
+        for (PipelineExecution execution : running) {
+            MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
+            // hanging pipeline ..
+            sanitizer.sanitize(execution);
+
+            try {
+                pipelineFacade.save(execution);
+            } catch (EntityNotFoundException ex) {
+                LOG.warn("Seems like someone deleted our pipeline run.", ex);
+            }
+
+            MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
+        }
+
+        List<PipelineExecution> cancelling = pipelineFacade
+                .getAllExecutions(PipelineExecutionStatus.CANCELLING);
+
+        for (PipelineExecution execution : cancelling) {
+            MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
+            // hanging pipeline ..
+            sanitizer.sanitize(execution);
+
+            try {
+                pipelineFacade.save(execution);
+            } catch (EntityNotFoundException ex) {
+                LOG.warn("Seems like someone deleted our pipeline run.", ex);
+            }
+
+            MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(CheckDatabaseEvent event) {
+        checkDatabase();
+    }
 
 }

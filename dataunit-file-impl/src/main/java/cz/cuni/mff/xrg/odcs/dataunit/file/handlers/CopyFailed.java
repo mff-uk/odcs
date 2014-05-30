@@ -8,13 +8,13 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
  * @author Petyr
  */
 public class CopyFailed extends DataUnitException {
-	
-	/**
-	 * 
-	 * @param cause Cause of the {@link ContentWriteFailed}.
-	 */	
+
+    /**
+     * @param cause
+     *            Cause of the {@link ContentWriteFailed}.
+     */
     public CopyFailed(Throwable cause) {
         super(cause);
-    }	
-	
+    }
+
 }

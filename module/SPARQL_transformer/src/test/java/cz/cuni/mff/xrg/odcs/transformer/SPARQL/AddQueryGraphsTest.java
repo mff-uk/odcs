@@ -1,117 +1,136 @@
 package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
-import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 
-/**
- * Test funcionality add default set graph for SPARQL update queries used in
- * SPARQL transformer.
- *
- * @author Jiri Tomes
- */
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+
 public class AddQueryGraphsTest {
 
-	private final Logger logger = LoggerFactory.getLogger(
-			AddQueryGraphsTest.class);
+    private static WritableRDFDataUnit repository;
 
-	private static LocalRDFRepo repository;
+    private static TestEnvironment testEnvironment;
 
-	private static String GRAPH_NAME;
+    private static SPARQLTransformer trans;
 
-	@BeforeClass
-	public static void initialize() {
-		repository = RDFDataUnitFactory.createLocalRDFRepo("Local repository");
-		GRAPH_NAME = repository.getDataGraph().toString();
-	}
+    private static String GRAPH_NAME;
 
-	@AfterClass
-	public static void clean() {
-		repository.delete();
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(
+            AddQueryGraphsTest.class);
 
-	@Test
-	public void addGraphToInsertDataQuery() {
-		String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
-				+ "PREFIX ns: <http://example.org/ns#>"
-				+ "INSERT DATA\n"
-				+ "{ <http://example/book1>  ns:price  42 } ";
+    @BeforeClass
+    public static void initialize() {
+        testEnvironment = new TestEnvironment();
+        repository = testEnvironment.createRdfInput("LocalRepository", false);
+        GRAPH_NAME = repository.getWriteContext().stringValue();
+        trans = new SPARQLTransformer();
 
-		String expectedQuery = String.format(
-				"PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
-				+ "PREFIX ns: <http://example.org/ns#>"
-				+ "INSERT DATA\n"
-				+ "{ GRAPH <%s> { <http://example/book1>  ns:price  42 } } ",
-				GRAPH_NAME);
+    }
 
-		compareQueries(originalQuery, expectedQuery);
+    @AfterClass
+    public static void clean() {
+        testEnvironment.release();
+    }
 
-	}
+    @Test
+    public void addGraphToInsertDataQuery() throws RepositoryException {
+        String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+                + "PREFIX ns: <http://example.org/ns#>"
+                + "INSERT DATA\n"
+                + "{ <http://example/book1>  ns:price  42 } ";
 
-	@Test
-	public void addGraphToDeleteDataQuery() {
-		String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
-				+ "DELETE DATA\n"
-				+ "{ <http://example/book2> dc:title \"David Copperfield\" ;\n"
-				+ "dc:creator \"Edmund Wells\" . }";
+        String expectedQuery = String.format(
+                "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+                        + "PREFIX ns: <http://example.org/ns#>"
+                        + "INSERT DATA\n"
+                        + "{ GRAPH <%s> { <http://example/book1>  ns:price  42 } } ",
+                GRAPH_NAME);
 
-		String expectedQuery = String.format(
-				"PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
-				+ "DELETE DATA\n"
-				+ "{ GRAPH <%s> { <http://example/book2> dc:title \"David Copperfield\" ;\n"
-				+ "dc:creator \"Edmund Wells\" . } }",
-				GRAPH_NAME);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
+        assertTrue("This update query can not be executed by transformer",
+                tryExecuteUpdateQuery(originalQuery));
 
-		compareQueries(originalQuery, expectedQuery);
+    }
 
-	}
+    @Test
+    public void addGraphToDeleteDataQuery() throws RepositoryException {
+        String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+                + "DELETE DATA\n"
+                + "{ <http://example/book2> dc:title \"David Copperfield\" ;\n"
+                + "dc:creator \"Edmund Wells\" . }";
 
-	@Test
-	public void addGraphToInsertDeleteQuery() {
-		String originalQuery = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n"
-				+ "DELETE { ?person foaf:givenName 'Bill' }\n"
-				+ "INSERT { ?person foaf:givenName 'William' }\n"
-				+ "WHERE\n"
-				+ "{ ?person foaf:givenName 'Bill' }";
+        String expectedQuery = String.format(
+                "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
+                        + "DELETE DATA\n"
+                        + "{ GRAPH <%s> { <http://example/book2> dc:title \"David Copperfield\" ;\n"
+                        + "dc:creator \"Edmund Wells\" . } }",
+                GRAPH_NAME);
 
-		String expectedQuery = String.format(
-				"PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n"
-				+ " WITH <%s> "
-				+ "DELETE { ?person foaf:givenName 'Bill' }\n"
-				+ "INSERT { ?person foaf:givenName 'William' }\n"
-				+ "WHERE\n"
-				+ "{ ?person foaf:givenName 'Bill' }",
-				GRAPH_NAME);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
+        assertTrue("This update query can not be executed by transformer",
+                tryExecuteUpdateQuery(originalQuery));
 
-		compareQueries(originalQuery, expectedQuery);
+    }
 
-	}
+    @Test
+    public void addGraphToInsertDeleteQuery() throws RepositoryException {
+        String originalQuery = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n"
+                + "DELETE { ?person foaf:givenName 'Bill' }\n"
+                + "INSERT { ?person foaf:givenName 'William' }\n"
+                + "WHERE\n"
+                + "{ ?person foaf:givenName 'Bill' }";
 
-	private void compareQueries(String originalQuery, String expectedQuery) {
+        String expectedQuery = String.format(
+                "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n"
+                        + " WITH <%s> "
+                        + "DELETE { ?person foaf:givenName 'Bill' }\n"
+                        + "INSERT { ?person foaf:givenName 'William' }\n"
+                        + "WHERE\n"
+                        + "{ ?person foaf:givenName 'Bill' }",
+                GRAPH_NAME);
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        assertEquals(expectedQuery, returnedQuery);
+        
+        assertTrue("This update query can not be executed by transformer",
+                tryExecuteUpdateQuery(originalQuery));
+    }
 
-		String returnedQuery = repository.AddGraphToUpdateQuery(originalQuery);
+    private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException {
+        RepositoryConnection connection = null;
+        try {
+            connection = repository.getConnection();
 
-		boolean areSame = expectedQuery.equals(returnedQuery);
-		assertTrue("Queries are not SAME", areSame);
-
-		boolean canBeExecuted = tryExecuteUpdateQuery(originalQuery);
-		assertTrue("This update query can not be executed by transformer",
-				canBeExecuted);
-	}
-
-	private boolean tryExecuteUpdateQuery(String updateQuery) {
-		try {
-			repository.executeSPARQLUpdateQuery(updateQuery);
-			return true;
-		} catch (RDFException e) {
-			logger.debug("Exception duering exectution query " + updateQuery + e
-					.getMessage(), e);
-			return false;
-		}
-
-	}
+            CleverDataset dataSet = new CleverDataset();
+            dataSet.addDefaultGraphs(repository.getContexts());
+            dataSet.addNamedGraphs(repository.getContexts());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getWriteContext());
+            return true;
+        } catch (RDFException e) {
+            LOG.debug("Exception duering exectution query " + updateQuery + e
+                    .getMessage(), e);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable ex) {
+                    LOG.warn("Error closing connection", ex);
+                }
+            }
+        }
+        return false;
+    }
 }

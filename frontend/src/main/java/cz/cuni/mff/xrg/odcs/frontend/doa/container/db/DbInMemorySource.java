@@ -10,31 +10,34 @@ import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 
 /**
  * In memory source for container
- *
+ * 
  * @author Petyr
  * @param <T>
  */
-public class DbInMemorySource <T extends DataObject>
-	extends InMemorySource<T, DbQueryBuilder<T>, DbQuery<T>, DbQueryCount<T> > {
-	
-	/**
-	 * Constructor.
-	 * @param classAccessor Class accessor to use.
-	 */
-	public DbInMemorySource(ClassAccessor<T> classAccessor) {
-		super(classAccessor);
-	}
+public class DbInMemorySource<T extends DataObject>
+        extends InMemorySource<T, DbQueryBuilder<T>, DbQuery<T>, DbQueryCount<T>> {
 
-	/**
-	 * Constructor.
-	 *
-	 * @param classAccessor Class of data.
-	 * @param source Source of data.
-	 */
-	public DbInMemorySource(ClassAccessor<T> classAccessor, 
-			DataAccessRead<T, DbQueryBuilder<T>, DbQuery<T>, DbQueryCount<T>> source) {
-		super(classAccessor, source);
-	}
-	
-	
+    /**
+     * Constructor.
+     * 
+     * @param classAccessor
+     *            Class accessor to use.
+     */
+    public DbInMemorySource(ClassAccessor<T> classAccessor) {
+        super(classAccessor);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param classAccessor
+     *            Class of data.
+     * @param source
+     *            Source of data.
+     */
+    public DbInMemorySource(ClassAccessor<T> classAccessor,
+            DataAccessRead<T, DbQueryBuilder<T>, DbQuery<T>, DbQueryCount<T>> source) {
+        super(classAccessor, source);
+    }
+
 }

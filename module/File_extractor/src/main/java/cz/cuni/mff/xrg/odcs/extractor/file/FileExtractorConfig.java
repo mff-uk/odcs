@@ -1,152 +1,173 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.FileExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import org.openrdf.rio.RDFFormat;
+
+import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * File extractor configuration.
- *
+ * 
  * @author Petyr
  * @author Jiri Tomes
  */
 public class FileExtractorConfig extends DPUConfigObjectBase {
 
-	private String Path;
+    public void setPath(String path) {
+        Path = path;
+    }
 
-	private String FileSuffix;
+    private String Path;
 
-	private RDFFormatType RDFFormatValue;
+    private String FileSuffix;
 
-	private FileExtractType fileExtractType;
+    private RDFFormatType RDFFormatValue;
 
-	private boolean OnlyThisSuffix;
+    private FileExtractType fileExtractType;
 
-	private boolean UseStatisticalHandler;
+    private boolean OnlyThisSuffix;
 
-	private boolean failWhenErrors;
+    private boolean UseStatisticalHandler;
 
-	public FileExtractorConfig() {
-		this.Path = "";
-		this.FileSuffix = "";
-		this.RDFFormatValue = RDFFormatType.AUTO;
-		this.fileExtractType = FileExtractType.PATH_TO_FILE;
-		this.OnlyThisSuffix = false;
-		this.UseStatisticalHandler = true;
-		this.failWhenErrors = false;
-	}
+    private boolean failWhenErrors;
 
-	public FileExtractorConfig(String Path, String FileSuffix,
-			RDFFormatType RDFFormatValue, FileExtractType fileExtractType,
-			boolean OnlyThisSuffix, boolean UseStatisticalHandler,
-			boolean failWhenErrors) {
+    public void setFileSuffix(String fileSuffix) {
+        FileSuffix = fileSuffix;
+    }
 
-		this.Path = Path;
-		this.FileSuffix = FileSuffix;
-		this.RDFFormatValue = RDFFormatValue;
-		this.fileExtractType = fileExtractType;
-		this.OnlyThisSuffix = OnlyThisSuffix;
-		this.UseStatisticalHandler = UseStatisticalHandler;
-		this.failWhenErrors = failWhenErrors;
-	}
+    public void setRDFFormatValue(RDFFormatType RDFFormatValue) {
+        this.RDFFormatValue = RDFFormatValue;
+    }
 
-	/**
-	 * Returns the path to file as string value.
-	 *
-	 * @return the path to file as string value.
-	 */
-	public String getPath() {
-		return Path;
-	}
+    public void setFileExtractType(FileExtractType fileExtractType) {
+        this.fileExtractType = fileExtractType;
+    }
 
-	/**
-	 * Returns the value of file suffix, empty string if no suffix is defined.
-	 *
-	 * @return the file suffix, empty string if no suffix is defined.
-	 */
-	public String getFileSuffix() {
-		return FileSuffix;
-	}
+    public void setFailWhenErrors(boolean failWhenErrors) {
+        this.failWhenErrors = failWhenErrors;
+    }
 
-	/**
-	 * Returns selected {@link RDFFormatType} for extracted RDF data.
-	 *
-	 * @return selected {@link RDFFormatType} for extracted RDF data.
-	 */
-	public RDFFormatType getRDFFormatValue() {
-		return RDFFormatValue;
-	}
+    public FileExtractorConfig() {
+        this.Path = "";
+        this.FileSuffix = "";
+        this.RDFFormatValue = RDFFormatType.AUTO;
+        this.fileExtractType = FileExtractType.PATH_TO_FILE;
+        this.OnlyThisSuffix = false;
+        this.UseStatisticalHandler = true;
+        this.failWhenErrors = false;
+    }
 
-	/**
-	 * Returns one of possibilities defined in {@link FileExtractType} how to
-	 * data extract.
-	 *
-	 * @return one of possibilities defined in {@link FileExtractType} how to
-	 *         data extract.
-	 */
-	public FileExtractType getFileExtractType() {
-		return fileExtractType;
-	}
+    public FileExtractorConfig(String Path, String FileSuffix,
+            RDFFormatType RDFFormatValue, FileExtractType fileExtractType,
+            boolean OnlyThisSuffix, boolean UseStatisticalHandler,
+            boolean failWhenErrors) {
 
-	/**
-	 * Returns true, if only files with defined suffix are used for data
-	 * extraction, false otherwise.
-	 *
-	 * @return true, if only files with defined suffix are used for data
-	 *         extraction, false otherwise.
-	 */
-	public boolean useOnlyThisSuffix() {
-		return OnlyThisSuffix;
-	}
+        this.Path = Path;
+        this.FileSuffix = FileSuffix;
+        this.RDFFormatValue = RDFFormatValue;
+        this.fileExtractType = fileExtractType;
+        this.OnlyThisSuffix = OnlyThisSuffix;
+        this.UseStatisticalHandler = UseStatisticalHandler;
+        this.failWhenErrors = failWhenErrors;
+    }
 
-	/**
-	 * Returns true, if is used statistical handler for data extraction, false
-	 * otherwise.
-	 *
-	 * @return true, if is used statistical handler for data extraction, false
-	 *         otherwise.
-	 */
-	public boolean isUsedStatisticalHandler() {
-		return UseStatisticalHandler;
-	}
+    /**
+     * Returns the path to file as string value.
+     * 
+     * @return the path to file as string value.
+     */
+    public String getPath() {
+        return Path;
+    }
 
-	/**
-	 * Returns true, if execution should fail when some errors are detected,
-	 * false otherwise.
-	 *
-	 * @return true, if execution should fail when some errors are detected,
-	 *         false otherwise.
-	 */
-	public boolean isFailWhenErrors() {
-		return failWhenErrors;
-	}
+    /**
+     * Returns the value of file suffix, empty string if no suffix is defined.
+     * 
+     * @return the file suffix, empty string if no suffix is defined.
+     */
+    public String getFileSuffix() {
+        return FileSuffix;
+    }
 
-	public boolean isOnlyThisSuffix() {
-		return OnlyThisSuffix;
-	}
+    /**
+     * Returns selected RDFFormatType for extracted RDF data.
+     * 
+     * @return selected link RDFFormatType for extracted RDF data.
+     */
+    public RDFFormatType getRDFFormatValue() {
+        return RDFFormatValue;
+    }
 
-	public void setOnlyThisSuffix(boolean OnlyThisSuffix) {
-		this.OnlyThisSuffix = OnlyThisSuffix;
-	}
+    /**
+     * Returns one of possibilities defined in {@link FileExtractType} how to
+     * data extract.
+     * 
+     * @return one of possibilities defined in {@link FileExtractType} how to
+     *         data extract.
+     */
+    public FileExtractType getFileExtractType() {
+        return fileExtractType;
+    }
 
-	public boolean isUseStatisticalHandler() {
-		return UseStatisticalHandler;
-	}
+    /**
+     * Returns true, if only files with defined suffix are used for data
+     * extraction, false otherwise.
+     * 
+     * @return true, if only files with defined suffix are used for data
+     *         extraction, false otherwise.
+     */
+    public boolean useOnlyThisSuffix() {
+        return OnlyThisSuffix;
+    }
 
-	public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
-		this.UseStatisticalHandler = UseStatisticalHandler;
-	}	
-	
-	/**
-	 * Returns true, if DPU configuration is valid, false otherwise.
-	 *
-	 * @return true, if DPU configuration is valid, false otherwise.
-	 */
-	@Override
-	public boolean isValid() {
-		return Path != null
-				&& FileSuffix != null
-				&& RDFFormatValue != null
-				&& fileExtractType != null;
-	}
+    /**
+     * Returns true, if is used statistical handler for data extraction, false
+     * otherwise.
+     * 
+     * @return true, if is used statistical handler for data extraction, false
+     *         otherwise.
+     */
+    public boolean isUsedStatisticalHandler() {
+        return UseStatisticalHandler;
+    }
+
+    /**
+     * Returns true, if execution should fail when some errors are detected,
+     * false otherwise.
+     * 
+     * @return true, if execution should fail when some errors are detected,
+     *         false otherwise.
+     */
+    public boolean isFailWhenErrors() {
+        return failWhenErrors;
+    }
+
+    public boolean isOnlyThisSuffix() {
+        return OnlyThisSuffix;
+    }
+
+    public void setOnlyThisSuffix(boolean OnlyThisSuffix) {
+        this.OnlyThisSuffix = OnlyThisSuffix;
+    }
+
+    public boolean isUseStatisticalHandler() {
+        return UseStatisticalHandler;
+    }
+
+    public void setUseStatisticalHandler(boolean UseStatisticalHandler) {
+        this.UseStatisticalHandler = UseStatisticalHandler;
+    }
+
+    /**
+     * Returns true, if DPU configuration is valid, false otherwise.
+     * 
+     * @return true, if DPU configuration is valid, false otherwise.
+     */
+    @Override
+    public boolean isValid() {
+        return Path != null
+                && FileSuffix != null
+                && RDFFormatValue != null
+                && fileExtractType != null;
+    }
 }

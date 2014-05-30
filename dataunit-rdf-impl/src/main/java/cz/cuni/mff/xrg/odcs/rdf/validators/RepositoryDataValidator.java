@@ -1,227 +1,208 @@
 package cz.cuni.mff.xrg.odcs.rdf.validators;
 
-import cz.cuni.mff.xrg.odcs.rdf.data.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.repositories.LocalRDFRepo;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.openrdf.model.URI;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.*;
+import org.openrdf.rio.ParseErrorListener;
+import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
+
+import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 
 /**
  * Find out, if data in RDF repository are valid or not.
- *
  * Basic idea of RDF data validation :
- *
  * All RDF data saved in {@link #input} instance are load to temp file. Than
- * thanks {@link StatisticalHandler} and {@link RDFParser} are loaded to target
- * {@link RDFDataUnit} only validate data and it´s created string report
- * {@link #message} with finding problems(no valid data) as
- * {@link #findedProblems}. This defined target {@link RDFDataUnit} is more
- * described in method {@link #getGoalRepository()}. If target is
- * {@link #output} then valid data are loaded direct into {@link #output}, if
- * it´s instance of {@link LocalRDFRepo} than is destroyed after validation
- * ending proccess - execute method {@link #areDataValid().
- * }
- *
+ * thanks {@link StatisticalHandler} and {@link RDFParser} are loaded to target {@link RDFDataUnit} only validate data and it´s created string report
+ * {@link #message} with finding problems(no valid data) as {@link #findedProblems}. This defined target {@link RDFDataUnit} is more
+ * described in method {@link #getGoalRepository()}. If target is {@link #output} then valid data are loaded direct into {@link #output}, if
+ * it´s instance of {@link LocalRDFDataUnit} than is destroyed after validation
+ * ending proccess - execute method {@link #areDataValid(). * }
+ * 
  * @author Jiri Tomes
  */
 public class RepositoryDataValidator implements DataValidator {
 
-	private static Logger logger = Logger.getLogger(
-			RepositoryDataValidator.class);
+    private static Logger logger = Logger.getLogger(
+            RepositoryDataValidator.class);
 
-	private ManagableRdfDataUnit input;
+    private RDFDataUnit input;
 
-	private ManagableRdfDataUnit output;
+    private WritableRDFDataUnit goalRepo;
 
-	private String message;
+    private String message;
 
-	private List<TripleProblem> findedProblems;
+    private List<TripleProblem> findedProblems;
 
-	/**
-	 * Create new instance of {@link RepositoryDataValidator} that check data
-	 * for given input.
-	 *
-	 * @param input source from where are data checked if are valid.
-	 */
-	public RepositoryDataValidator(RDFDataUnit input) {
-		this.input = (ManagableRdfDataUnit)input;
-		this.output = null;
-		this.message = "";
-		this.findedProblems = new ArrayList<>();
-	}
+    final private String encode = "UTF-8";
 
-	/**
-	 * Create new instance of {@link RepositoryDataValidator} that check data
-	 * for given input and valid data store to output.
-	 *
-	 * @param input  source from where are data checked if are valid.
-	 * @param output target wher are valid data stored.
-	 */
-	public RepositoryDataValidator(RDFDataUnit input, RDFDataUnit output) {
-		this.input = (ManagableRdfDataUnit)input;
-		this.output = (ManagableRdfDataUnit)output;
-		this.message = "";
-		this.findedProblems = new ArrayList<>();
-	}
+    /**
+     * Create new instance of {@link RepositoryDataValidator} that check data
+     * for given input and valid data store to output.
+     * 
+     * @param input
+     *            source from where are data checked if are valid.
+     * @param output
+     *            target wher are valid data stored.
+     */
+    public RepositoryDataValidator(RDFDataUnit input, WritableRDFDataUnit output) {
+        this.input = input;
+        this.goalRepo = output;
+        this.message = "";
+        this.findedProblems = new ArrayList<>();
+    }
 
-	/**
-	 * If is defined output {@link RDFDataUnit} where to load RDF data than
-	 * return this {@link RDFDataUnit} instance, otherwise it´s created and
-	 * return new instance {@link RDFDataUnit } as implementation of
-	 * {@link LocalRDFRepo} which is used only for validation process and it´s
-	 * destroyed after data validation.
-	 *
-	 * See method {@link #areDataValid()} for more info.
-	 *
-	 * @return instance of {@link RDFDataUnit} need for creating report.
-	 */
-	private ManagableRdfDataUnit getGoalRepository() {
-		if (hasOutput()) {
-			return output;
-		} else {
-			ManagableRdfDataUnit tempRepo = RDFDataUnitFactory.createLocalRDFRepo(
-					"tempRepo");
+    /**
+     * Method for detection right syntax of data.
+     * 
+     * @return true, if data are valid, false otherwise. If repository has no
+     *         data(is empty) return true.
+     */
+    @Override
+    public boolean areDataValid() {
 
-			return tempRepo;
-		}
-	}
+        boolean isValid = false;
+        long tripleCount = -1;
+        RepositoryConnection connection = null;
+        try {
+            connection = input.getConnection();
+            tripleCount = connection.size(input.getContexts().toArray(new URI[0]));
 
-	/**
-	 * If is set output as {@link RDFDataUnit} instance where to data add or
-	 * not.
-	 */
-	private boolean hasOutput() {
-		if (output != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+            if (tripleCount == 0) {
+                isValid = true;
+            } else {
 
-	/**
-	 * Method for detection right syntax of data.
-	 *
-	 * @return true, if data are valid, false otherwise. If repository has no
-	 *         data(is empty) return true.
-	 */
-	@Override
-	public boolean areDataValid() {
+                File tempFile = null;
+                RepositoryConnection goalConnection = null;
+                try {
+                    tempFile = File.createTempFile("temp", "file");
+                    tempFile = File.createTempFile("temp", "file");
+                    FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
+                    OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
+                    RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
+                    connection.export(rdfWriter, input.getContexts().toArray(new URI[0]));
 
-		boolean isValid = false;
+                    try (InputStreamReader fileStream = new InputStreamReader(
+                            new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
+                        goalConnection = goalRepo.getConnection();
+                        final StatisticalHandler handler = new StatisticalHandler(
+                                goalConnection, true);
 
-		if (input.getTripleCount() == 0) {
-			isValid = true;
-		} else {
+                        handler.setGraphContext(goalRepo.getWriteContext());
 
-			File tempFile = null;
-			ManagableRdfDataUnit goalRepo = null;
-			try {
-				tempFile = File.createTempFile("temp", "file");
+                        RDFParser parser = Rio.createParser(RDFFormat.N3);
+                        parser.setRDFHandler(handler);
 
-				input.loadToFile(tempFile.getAbsolutePath(), RDFFormatType.N3,
-						true, false);
+                        ParserConfig config = parser.getParserConfig();
 
-				try (InputStreamReader fileStream = new InputStreamReader(
-						new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
+                        config.addNonFatalError(
+                                BasicParserSettings.VERIFY_DATATYPE_VALUES);
 
-					goalRepo = getGoalRepository();
+                        parser.setParserConfig(config);
 
-					final StatisticalHandler handler = new StatisticalHandler(
-							goalRepo.getConnection(), true);
+                        parser.setParseErrorListener(new ParseErrorListener() {
+                            @Override
+                            public void warning(String msg, int lineNo, int colNo) {
+                                handler.addWarning(msg, lineNo, colNo);
+                            }
 
-					handler.setGraphContext(goalRepo.getDataGraph());
+                            @Override
+                            public void error(String msg, int lineNo, int colNo) {
+                                handler.addError(msg, lineNo, colNo);
+                            }
 
-					RDFParser parser = Rio.createParser(RDFFormat.N3);
-					parser.setRDFHandler(handler);
+                            @Override
+                            public void fatalError(String msg, int lineNo, int colNo) {
+                                handler.addError(msg, lineNo, colNo);
+                            }
+                        });
 
-					ParserConfig config = parser.getParserConfig();
+                        parser.parse(fileStream, "");
 
-					config.addNonFatalError(
-							BasicParserSettings.VERIFY_DATATYPE_VALUES);
+                        isValid = !handler.hasFindedProblems();
+                        message = handler.getFindedProblemsAsString();
+                        findedProblems = handler.getFindedProblems();
+                    }
 
-					parser.setParserConfig(config);
+                } catch (IOException | RepositoryException e) {
+                    message = e.getMessage();
+                    logger.error(message);
 
-					parser.setParseErrorListener(new ParseErrorListener() {
-						@Override
-						public void warning(String msg, int lineNo, int colNo) {
-							handler.addWarning(msg, lineNo, colNo);
-						}
+                } catch (RDFParseException | RDFHandlerException e) {
+                    message = "Problem with data parsing :" + e.getMessage();
+                    logger.error(message);
+                } finally {
+                    if (goalConnection != null) {
+                        try {
+                            goalConnection.close();
+                        } catch (RepositoryException ex) {
+                            logger.warn("Error when closing connection", ex);
+                            // eat close exception, we cannot do anything clever here
+                        }
+                    }
+                    if (tempFile != null) {
+                        tempFile.delete();
+                    }
+                }
+            }
 
-						@Override
-						public void error(String msg, int lineNo, int colNo) {
-							handler.addError(msg, lineNo, colNo);
-						}
+        } catch (Exception e) {
+            message = e.getMessage();
+            logger.error(message);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    logger.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
+        return isValid;
 
-						@Override
-						public void fatalError(String msg, int lineNo, int colNo) {
-							handler.addError(msg, lineNo, colNo);
-						}
-					});
+    }
 
-					parser.parse(fileStream, "");
+    /**
+     * String message describes syntax problem of data validation.
+     * 
+     * @return empty string, when all data are valid.
+     */
+    @Override
+    public String getErrorMessage() {
+        return message;
+    }
 
-					isValid = !handler.hasFindedProblems();
-					message = handler.getFindedProblemsAsString();
-					findedProblems = handler.getFindedProblems();
-				}
-
-
-			} catch (IOException | CannotOverwriteFileException | RDFException | RepositoryException e) {
-				message = e.getMessage();
-				logger.error(message);
-
-			} catch (RDFParseException | RDFHandlerException e) {
-				message = "Problem with data parsing :" + e.getMessage();
-				logger.error(message);
-			} finally {
-				if (tempFile != null) {
-					tempFile.delete();
-				}
-				if (!hasOutput() && goalRepo != null) {
-					goalRepo.delete();
-				}
-			}
-		}
-
-		return isValid;
-
-	}
-
-	/**
-	 * String message describes syntax problem of data validation.
-	 *
-	 * @return empty string, when all data are valid.
-	 */
-	@Override
-	public String getErrorMessage() {
-		return message;
-	}
-
-	/**
-	 * Returns list of {@link TripleProblem} describes invalid triples and its
-	 * cause. If all data are valid return empty list.
-	 *
-	 * @return List of {@link TripleProblem} describes invalid triples and its
-	 *         cause. If all data are valid return empty list.
-	 */
-	@Override
-	public List<TripleProblem> getFindedProblems() {
-		return findedProblems;
-	}
+    /**
+     * Returns list of {@link TripleProblem} describes invalid triples and its
+     * cause. If all data are valid return empty list.
+     * 
+     * @return List of {@link TripleProblem} describes invalid triples and its
+     *         cause. If all data are valid return empty list.
+     */
+    @Override
+    public List<TripleProblem> getFindedProblems() {
+        return findedProblems;
+    }
 }

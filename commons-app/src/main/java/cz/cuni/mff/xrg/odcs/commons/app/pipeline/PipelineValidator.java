@@ -1,16 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.List;
+
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import java.util.List;
 
 /**
  * Class for validating the pipelines.
- *
+ * 
  * @author Bogo
  * @author Petyr
  */
@@ -20,8 +21,7 @@ public class PipelineValidator {
      * Checks if all mandatory inputs and outputs of DPUs in given graph are
      * satisfied. Returns report with found problems or null for successful
      * check.
-     *
-     *
+     * 
      * @param graph
      * @param explorer
      * @return report with found problems or null for success

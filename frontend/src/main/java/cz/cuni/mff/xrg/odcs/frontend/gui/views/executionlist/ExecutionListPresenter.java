@@ -9,204 +9,216 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 /**
  * Interface for presenter that take care about presenting information about
  * executions.
- *
+ * 
  * @author Petyr
  */
 public interface ExecutionListPresenter extends Presenter {
 
-	/**
-	 * Refresh data from data sources.
-	 */
-	public void refreshEventHandler();
+    /**
+     * Refresh data from data sources.
+     */
+    public void refreshEventHandler();
 
-	/**
-	 * Stop given execution.
-	 *
-	 * @param executionId
-	 */
-	public void stopEventHandler(long executionId);
+    /**
+     * Stop given execution.
+     * 
+     * @param executionId
+     */
+    public void stopEventHandler(long executionId);
 
-	/**
-	 * Show debug data for given execution.
-	 *
-	 * @param executionId
-	 */
-	public void showDebugEventHandler(long executionId);
+    /**
+     * Show debug data for given execution.
+     * 
+     * @param executionId
+     */
+    public void showDebugEventHandler(long executionId);
 
-	/**
-	 * Re-run given execution.
-	 *
-	 * @param executionId
-	 */
-	public void runEventHandler(long executionId);
+    /**
+     * Re-run given execution.
+     * 
+     * @param executionId
+     */
+    public void runEventHandler(long executionId);
 
-	/**
-	 * Re-run given execution in debug mode.
-	 *
-	 * @param executionId
-	 */
-	public void debugEventHandler(long executionId);
+    /**
+     * Re-run given execution in debug mode.
+     * 
+     * @param executionId
+     */
+    public void debugEventHandler(long executionId);
 
-	/**
-	 * Stop refreshing.
-	 */
-	public void stopRefreshEventHandler();
-	
-	/**
-	 * Tells whether user has permission to stop pipeline execution, so we know
-	 * whether to render stop button.
-	 * 
-	 * @param executionId id of pipeline execution
-	 * @return true if user has permission to stop given pipeline execution,
-	 *		   false otherwise
-	 */
-	public boolean canStopExecution(long executionId);
+    /**
+     * Stop refreshing.
+     */
+    public void stopRefreshEventHandler();
 
-	/**
-	 * Start refreshing of given {@link DebuggingView}.
-	 * 
-	 * @param debugView Detail to refresh.
-	 * @param execution Execution of the detail.
-	 */
-	public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
+    /**
+     * Tells whether user has permission to stop pipeline execution, so we know
+     * whether to render stop button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to stop given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canStopExecution(long executionId);
 
-	/**
-	 * Changes table page.
-	 * 
-	 * @param newPageNumber Page to select.
-	 * 
-	 */
-	public void pageChangedHandler(Integer newPageNumber);
+    /**
+     * Start refreshing of given {@link DebuggingView}.
+     * 
+     * @param debugView
+     *            Detail to refresh.
+     * @param execution
+     *            Execution of the detail.
+     */
+    public void startDebugRefreshEventHandler(DebuggingView debugView, PipelineExecution execution);
 
-	/**
-	 * Filters data by given parameter.
-	 * 
-	 * @param name Name of the filter. 
-	 * @param filterValue Value of the filter.
-	 * 
-	 */
-	public void filterParameterEventHander(String name, Object filterValue);
-	
-	/**
-	 * Navigates to given view.
-	 * 
-	 * @param where Class of the view.
-	 * @param param Params for the new view.
-	 * 
-	 */
-	public void navigateToEventHandler(Class where, Object param);
+    /**
+     * Changes table page.
+     * 
+     * @param newPageNumber
+     *            Page to select.
+     */
+    public void pageChangedHandler(Integer newPageNumber);
 
-	/**
-	 * View that can be used with the presenter.
-	 */
-	public interface ExecutionListView {
+    /**
+     * Filters data by given parameter.
+     * 
+     * @param name
+     *            Name of the filter.
+     * @param filterValue
+     *            Value of the filter.
+     */
+    public void filterParameterEventHander(String name, Object filterValue);
 
-		/**
-		 * Generate view, that interact with given presenter.
-		 *
-		 * @param presenter
-		 * @return view
-		 */
-		public Object enter(final ExecutionListPresenter presenter);
+    /**
+     * Navigates to given view.
+     * 
+     * @param where
+     *            Class of the view.
+     * @param param
+     *            Params for the new view.
+     */
+    public void navigateToEventHandler(Class where, Object param);
 
-		/**
-		 * Set data for view.
-		 *
-		 * @param dataObject
-		 */
-		public void setDisplay(ExecutionListData dataObject);
+    /**
+     * View that can be used with the presenter.
+     */
+    public interface ExecutionListView {
 
-		/**
-		 * Show detail for given execution.
-		 *
-		 * @param execution
-		 * @param detailDataObject
-		 */
-		public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
+        /**
+         * Generate view, that interact with given presenter.
+         * 
+         * @param presenter
+         * @return view
+         */
+        public Object enter(final ExecutionListPresenter presenter);
 
-		/**
-		 * Refreshes the table.
-		 * 
-		 * @param modified Whether the data are modified.
-		 * 
-		 */
-		public void refresh(boolean modified);
+        /**
+         * Set data for view.
+         * 
+         * @param dataObject
+         */
+        public void setDisplay(ExecutionListData dataObject);
 
-		/**
-		 * Selects execution with given id.
-		 * 
-		 * @param execId Id of execution to select.
-		 */
-		public void setSelectedRow(Long execId);
+        /**
+         * Show detail for given execution.
+         * 
+         * @param execution
+         * @param detailDataObject
+         */
+        public void showExecutionDetail(PipelineExecution execution, ExecutionDetailData detailDataObject);
 
-		/**
-		 * Sets value of given filter.
-		 * 
-		 * @param name Name of filter.
-		 * @param value Value of filter.
-		 */
-		public void setFilter(String name, Object value);
+        /**
+         * Refreshes the table.
+         * 
+         * @param modified
+         *            Whether the data are modified.
+         */
+        public void refresh(boolean modified);
 
-		/**
-		 * Navigates table to given page.
-		 * 
-		 * @param pageNumber Page to select.
-		 */
-		public void setPage(int pageNumber);
-	}
+        /**
+         * Selects execution with given id.
+         * 
+         * @param execId
+         *            Id of execution to select.
+         */
+        public void setSelectedRow(Long execId);
 
-	/**
-	 * Data object for handling informations between view and presenter.
-	 */
-	public final class ExecutionListData {
+        /**
+         * Sets value of given filter.
+         * 
+         * @param name
+         *            Name of filter.
+         * @param value
+         *            Value of filter.
+         */
+        public void setFilter(String name, Object value);
 
-		private final ReadOnlyContainer<PipelineExecution> container;
+        /**
+         * Navigates table to given page.
+         * 
+         * @param pageNumber
+         *            Page to select.
+         */
+        public void setPage(int pageNumber);
+    }
 
-		/**
-		 * Gets container with {@link PipelineExecution}s.
-		 * @return Container.
-		 */
-		public ReadOnlyContainer<PipelineExecution> getContainer() {
-			return container;
-		}
+    /**
+     * Data object for handling informations between view and presenter.
+     */
+    public final class ExecutionListData {
 
-		/**
-		 * Constructor.
-		 *
-		 * @param container Container to hold.
-		 */
-		public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
-			this.container = container;
-		}
-	}
+        private final ReadOnlyContainer<PipelineExecution> container;
 
-	/**
-	 * Data for execution detail.
-	 *
-	 * @deprecated
-	 */
-	@Deprecated
-	public class ExecutionDetailData {
-	
-		private final ReadOnlyContainer<MessageRecord> messageContainer;
+        /**
+         * Gets container with {@link PipelineExecution}s.
+         * 
+         * @return Container.
+         */
+        public ReadOnlyContainer<PipelineExecution> getContainer() {
+            return container;
+        }
 
-		/**
-		 * Gets {@link MessageRecord} container.
-		 *
-		 * @return container
-		 */
-		public ReadOnlyContainer<MessageRecord> getMessageContainer() {
-			return messageContainer;
-		}
+        /**
+         * Constructor.
+         * 
+         * @param container
+         *            Container to hold.
+         */
+        public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
+            this.container = container;
+        }
+    }
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param messageContainer Container to hold.
-		 */
-		public ExecutionDetailData(ReadOnlyContainer<MessageRecord> messageContainer) {
-			this.messageContainer = messageContainer;
-		}
+    /**
+     * Data for execution detail.
+     * 
+     * @deprecated
+     */
+    @Deprecated
+    public class ExecutionDetailData {
 
-	}
+        private final ReadOnlyContainer<MessageRecord> messageContainer;
+
+        /**
+         * Gets {@link MessageRecord} container.
+         * 
+         * @return container
+         */
+        public ReadOnlyContainer<MessageRecord> getMessageContainer() {
+            return messageContainer;
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param messageContainer
+         *            Container to hold.
+         */
+        public ExecutionDetailData(ReadOnlyContainer<MessageRecord> messageContainer) {
+            this.messageContainer = messageContainer;
+        }
+
+    }
 }

@@ -1,23 +1,25 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import ch.qos.logback.classic.Level;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import java.util.*;
-
-import ch.qos.logback.classic.Level;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,
  * as these should be created immutable by backend only.
- *
+ * 
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
@@ -29,7 +31,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return true if there exist logs with given level for given dpu instance
      * of given pipeline execution.
-     *
+     * 
      * @param exec
      * @param level
      * @return
@@ -47,7 +49,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return list of all usable log's levels without aggregations. Ordered
      * descending by priority.
-     *
+     * 
      * @return
      */
     @Override

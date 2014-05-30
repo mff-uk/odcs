@@ -11,23 +11,22 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
  * Event published during the pipeline execution termination on user request.
  * 
  * @author Petyr
- * 
  */
 public final class PipelineAbortedEvent extends PipelineEvent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineAbortedEvent.class);
-	
-	public PipelineAbortedEvent(PipelineExecution pipelineExec,	Object source) {
-		super(null, pipelineExec, source);
-		
-		LOG.info("Pipeline aborted on user request.");
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(PipelineAbortedEvent.class);
 
-	@Override
-	public MessageRecord getRecord() {
-		return new MessageRecord(time, MessageRecordType.PIPELINE_INFO,
-				dpuInstance, execution, 
-				"Pipeline execution aborted.",
-				"Pipeline execution aborted on user request.");
-	}
+    public PipelineAbortedEvent(PipelineExecution pipelineExec, Object source) {
+        super(null, pipelineExec, source);
+
+        LOG.info("Pipeline aborted on user request.");
+    }
+
+    @Override
+    public MessageRecord getRecord() {
+        return new MessageRecord(time, MessageRecordType.PIPELINE_INFO,
+                dpuInstance, execution,
+                "Pipeline execution aborted.",
+                "Pipeline execution aborted on user request.");
+    }
 }
