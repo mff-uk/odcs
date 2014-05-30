@@ -173,7 +173,7 @@ class OSGIModuleFacadeConfig {
                 }
             }
 
-            LOG.debug("list of package to expose");
+            LOG.debug("list of package to expose: ", list);
         } catch (IOException e) {
             LOG.error("Error", e);
         }
