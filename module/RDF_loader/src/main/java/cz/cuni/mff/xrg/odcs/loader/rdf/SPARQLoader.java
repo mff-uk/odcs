@@ -7,10 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
@@ -24,11 +22,12 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.binary.Base64;
+import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
@@ -74,7 +73,30 @@ import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
  * @author Jiri Tomes
  */
 public class SPARQLoader {
-
+	class CloseableTrio implements AutoCloseable {
+		CloseableHttpClient httpClient;
+		CloseableHttpResponse response;
+		InputStreamReader reader;
+		
+		@Override
+		public void close() {
+			try {
+				reader.close();
+			} catch (IOException ex) {
+				logger.warn("Error in close http reader", ex);
+			}
+			try {
+				response.close();
+			} catch (IOException ex) {
+				logger.warn("Error in close http response", ex);
+			}
+			try {
+				httpClient.close();
+			} catch (IOException ex) {
+				logger.warn("Error in close http client", ex);
+			}
+		}
+	}
     private static Logger logger = LoggerFactory.getLogger(SPARQLoader.class);
 
     /**
@@ -621,7 +643,7 @@ public class SPARQLoader {
                     .valueOf(partsCount);
 
             try {
-                try (InputStreamReader inputStreamReader = getEndpointStreamReader(
+                try (CloseableTrio trio = getEndpointStreamReader(
                         endpointURL, endpointGraphs, query)) {
                 }
 
@@ -648,8 +670,6 @@ public class SPARQLoader {
 
                 }
 
-            } catch (IOException e) {
-                throw new RDFException(e.getMessage(), e);
             }
         }
 
@@ -703,15 +723,13 @@ public class SPARQLoader {
 
         while (true) {
             try {
-                try (InputStreamReader result = getWholeRepEndpointStreamReader(
+                try (CloseableTrio trio = getWholeRepEndpointStreamReader(
                         endpointURL, moveQuery)) {
                 }
 
                 //Move data to target graph successfuly - stop the infinity loop
                 break;
 
-            } catch (IOException e) {
-                throw new RDFException(e.getMessage(), e);
 
             } catch (RDFException e) {
                 if (context.canceled()) {
@@ -755,7 +773,7 @@ public class SPARQLoader {
 
     }
 
-    private InputStreamReader getWholeRepEndpointStreamReader(URL endpointURL,
+    private CloseableTrio getWholeRepEndpointStreamReader(URL endpointURL,
             String query) throws RDFException {
 
 //		return getEncodedStreamReader(endpointURL, new LinkedList<String>(),
@@ -766,7 +784,7 @@ public class SPARQLoader {
 
     }
 
-    private InputStreamReader getEndpointStreamReader(URL endpointURL,
+    private CloseableTrio getEndpointStreamReader(URL endpointURL,
             List<String> endpointGraph, String query) throws RDFException {
 
         LoaderPostType postType = endpointParams.getPostType();
@@ -832,11 +850,11 @@ public class SPARQLoader {
 
         while (true) {
             try {
-                try (InputStreamReader inputStreamReader = getEndpointStreamReader(
+                try (CloseableTrio trio = getEndpointStreamReader(
                         endpointURL, targetGraphs,
                         countQuery)) {
 
-                    Scanner scanner = new Scanner(inputStreamReader);
+                    try (Scanner scanner = new Scanner(trio.reader)) {
 
                     String regexp = ">[0-9]+<";
                     Pattern pattern = Pattern.compile(regexp);
@@ -853,16 +871,15 @@ public class SPARQLoader {
                             count = Long.parseLong(number);
                             find = true;
 
-                        }
+							}
 
-                    }
-                }
+						}
+					}
+
+				}
 
                 //Finding graph size successfuly - stop the infinity loop
                 break;
-
-            } catch (IOException e) {
-                throw new RDFException(e.getMessage(), e);
 
             } catch (RDFException e) {
                 if (context.canceled()) {
@@ -1143,18 +1160,12 @@ public class SPARQLoader {
 
         while (true) {
             try {
-                try (InputStreamReader inputStreamReader = getWholeRepEndpointStreamReader(
+                try (CloseableTrio trio = getWholeRepEndpointStreamReader(
                         endpointURL, deleteQuery)) {
-                }
+				}
 
                 //Clear graph successfuly - stop the infinity loop
                 break;
-
-            } catch (IOException e) {
-                final String message = String.format(
-                        "InputStreamReader was not closed. %s", e.getMessage());
-                logger.error(message, e);
-
             } catch (RDFException e) {
                 if (context.canceled()) {
                     //stop clear graph
@@ -1193,28 +1204,36 @@ public class SPARQLoader {
         }
     }
 
-    private void setPOSTConnection(HttpURLConnection httpConnection,
-            String parameters,
-            String contentType) throws IOException {
+    private  CloseableHttpClient setPOSTConnection(URL endpointURL) throws IOException {
+        CloseableHttpClient httpclient = null;
 
-        httpConnection.setRequestMethod("POST");
-        if (this.username.length() > 0) {
-            String userPass = this.username + ":" + this.password;
-            Base64 coder = new Base64(-1);
-            byte[] userPassEncoded = coder.encode(userPass.getBytes());
-            String basicAuth = "Basic " + new String(userPassEncoded);
-            httpConnection.setRequestProperty("Authorization", basicAuth);
+        if (endpointURL.toString().contains("sparql-auth")) {
+
+            //prepare new credentialProvider
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(
+                    AuthScope.ANY,
+                    new UsernamePasswordCredentials(this.username, this.password));
+
+            //create new client using the given creadentials
+            httpclient = HttpClients.custom()
+                    .setDefaultCredentialsProvider(credsProvider)
+                    .build();
+
         }
-        httpConnection.setRequestProperty("Content-Type", contentType);
-        httpConnection.setRequestProperty("Accept", "*/*");
+        else if (endpointURL.toString().contains("sparql")) {
+            //only sparql endpoint
 
-        httpConnection.setRequestProperty("Content-Length", ""
-                + Integer.toString(parameters.length()));
+            //no authentization needed
+            //create new client using the given creadentials
+            httpclient = HttpClients.custom()
+                    .build();
 
-        httpConnection.setUseCaches(false);
-        httpConnection.setDoInput(true);
-        httpConnection.setDoOutput(true);
-
+        }
+        else {
+            logger.error("Strange endpoint address {}, CRUD endpoint was not set properly. Loader will probably not be able to connect to the target endpoint.  ", endpointURL.toString());
+        }
+        return httpclient;
     }
 
     private String getHTTPResponseErrorMessage(HttpURLConnection httpConnection)
@@ -1306,11 +1325,11 @@ public class SPARQLoader {
      *             if unknown host, connection problems, no permission
      *             for this action.
      */
-    private InputStreamReader getEncodedStreamReader(URL endpointURL,
+    private CloseableTrio getEncodedStreamReader(URL endpointURL,
             List<String> endpointGraphURI, String query,
             RDFFormat format) throws RDFException {
 
-        String queryParam = String.format("%s=%s", endpointParams
+        String queryParam = String.format("?%s=%s", endpointParams
                 .getQueryParam(),
                 getEncodedString(query));
 
@@ -1325,57 +1344,68 @@ public class SPARQLoader {
         logger.debug("Request content: {}", parameters);
         logger.debug("Request method: POST with URL encoder");
 
-        URL call = null;
-        try {
-            call = new URL(endpointURL.toString());
-        } catch (MalformedURLException e) {
-            final String message = "Malfolmed URL exception by construct extract URL. ";
-            logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
-        }
-
-        HttpURLConnection httpConnection = null;
+        CloseableHttpClient httpConnection = null;
 
         int retryCount = 0;
 
         while (true) {
             try {
 
-                httpConnection = (HttpURLConnection) call.openConnection();
+                httpConnection = setPOSTConnection(endpointURL);
 
-                setPOSTConnection(httpConnection, parameters,
-                        "application/x-www-form-urlencoded");
+                //prepare new post request
+                HttpPost post = new HttpPost(endpointURL.toString() + parameters);
+//                if (authentizationRequired) {
+//                    post.addHeader("X-Requested-Auth", "Digest");
+//                    //Basic authentication not supported by Virtuoso
+//                    //using Digest authentication which is supported by Virtuoso
+//                }
 
-                try (OutputStream os = httpConnection.getOutputStream()) {
-                    os.write(parameters.getBytes());
-                    os.flush();
+                post.addHeader("Content-Type", "application/x-www-form-urlencoded");
+                //text/turtle not supported by Virtuoso
+                //post.addHeader("Content-Type", "text/turtle");
+
+                //create new file entity being submitted via HTTP POST
+                logger.info("Executing HTTP POST Request " + post.getRequestLine());
+                if (httpConnection == null) {
+                    context.sendMessage(MessageType.ERROR, "getEncodedStreamReader: HTTP POST failed, http client cannot be initialized");
                 }
+                try {
+                    CloseableHttpResponse response = httpConnection.execute(post);
+                    logger.info("Result: {}, {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
-                int httpResponseCode = httpConnection.getResponseCode();
-                String httpResponseMessage = httpConnection.getResponseMessage();
-
-                logger.debug("HTTP Response code: {}", httpResponseCode);
-                logger.debug("HTTP Response message: {}", httpResponseMessage);
-
-                int firstResponseNumber = getFirstResponseNumber(
-                        httpResponseCode);
-
-                if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
-
-                    String errorMessage = getHTTPResponseErrorMessage(
-                            httpConnection);
-
-                    throw new InsertPartException(
-                            errorMessage + "\n\n" + "URL endpoint: " + endpointURL
-                                    .toString() + " POST content: " + parameters);
-                } else {
-
-                    InputStreamReader inputStreamReader = new InputStreamReader(
-                            httpConnection.getInputStream(), Charset.forName(
-                                    encode));
-
-                    return inputStreamReader;
-                }
+                
+    
+                    int httpResponseCode = response.getStatusLine().getStatusCode();
+                    String httpResponseMessage = response.getStatusLine().getReasonPhrase();
+                    logger.debug("HTTP Response code: {}", httpResponseCode);
+                    logger.debug("HTTP Response message: {}", httpResponseMessage);
+    
+                    int firstResponseNumber = getFirstResponseNumber(
+                            httpResponseCode);
+    
+                    if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
+    
+//                        String errorMessage = getHTTPResponseErrorMessage(
+//                                httpConnection);
+    
+                        throw new InsertPartException(
+                                httpResponseMessage + "\n\nURL endpoint: " + endpointURL
+                                        .toString() + " POST content: " + parameters);
+                    } else {
+    
+                        InputStreamReader inputStreamReader = new InputStreamReader(
+                                response.getEntity().getContent(), Charset.forName(
+                                        encode));
+                        CloseableTrio result = new CloseableTrio();
+                        result.httpClient = httpConnection;
+                        result.response = response;
+                        result.reader = inputStreamReader;
+                        return result;
+                    }                
+                } catch (IOException e) {
+                    context.sendMessage(MessageType.ERROR, "getEncodedStreamReader: HTTP POST failed, " + e.getLocalizedMessage());
+                }        
 
             } catch (UnknownHostException e) {
                 final String message = "Unknown host: ";
@@ -1392,10 +1422,6 @@ public class SPARQLoader {
                             + "Endpoint HTTP connection stream cannot be opened. ";
 
                     logger.debug(errorMessage);
-
-                    if (httpConnection != null) {
-                        httpConnection.disconnect();
-                    }
 
                     throw new RDFException(errorMessage + e.getMessage(), e);
                 }
@@ -1729,7 +1755,7 @@ public class SPARQLoader {
      *             if unknown host, connection problems, no permission
      *             for this action.
      */
-    private InputStreamReader getUnencodedQueryStreamReader(URL endpointURL,
+    private CloseableTrio getUnencodedQueryStreamReader(URL endpointURL,
             List<String> endpointGraphURI, String query) throws RDFException {
 
         String defaultGraphParam = getGraphParam(endpointParams
@@ -1742,57 +1768,65 @@ public class SPARQLoader {
         logger.debug("Parameters in URL adress: {}", parameters);
         logger.debug("Request method: POST with unencoded query");
 
-        URL call = null;
-        try {
-            call = new URL(endpointURL.toString() + parameters);
-
-        } catch (MalformedURLException e) {
-            final String message = "Malfolmed URL exception by construct extract URL. ";
-            logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
-        }
-
-        HttpURLConnection httpConnection = null;
+        CloseableHttpClient httpConnection = null;
 
         int retryCount = 0;
 
         while (true) {
             try {
 
-                httpConnection = (HttpURLConnection) call.openConnection();
-                setPOSTConnection(httpConnection, query,
-                        "application/sparql-update");
+                httpConnection= setPOSTConnection(endpointURL);
 
-                try (OutputStream os = httpConnection.getOutputStream()) {
-                    os.write(query.getBytes());
-                    os.flush();
+                //prepare new post request
+                HttpPost post = new HttpPost(endpointURL.toString() + parameters);
+//                if (authentizationRequired) {
+//                    post.addHeader("X-Requested-Auth", "Digest");
+//                    //Basic authentication not supported by Virtuoso
+//                    //using Digest authentication which is supported by Virtuoso
+//                }
+                post.addHeader("Content-Type", "application/sparql-update");
+                
+                //create new file entity being submitted via HTTP POST
+                logger.info("Executing HTTP POST Request " + post.getRequestLine());
+                if (httpConnection == null) {
+                    context.sendMessage(MessageType.ERROR, "Graph Store Protocol: HTTP POST failed, http client cannot be initialized");
                 }
+                try {
+                	CloseableHttpResponse response = httpConnection.execute(post);
+                    logger.info("Result: {}, {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
 
-                int httpResponseCode = httpConnection.getResponseCode();
-                String httpResponseMessage = httpConnection.getResponseMessage();
-
-                logger.debug("HTTP Response code: {}", httpResponseCode);
-                logger.debug("HTTP Response message: {}", httpResponseMessage);
-
-                int firstResponseNumber = getFirstResponseNumber(
-                        httpResponseCode);
-
-                if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
-
-                    String errorMessage = getHTTPResponseErrorMessage(
-                            httpConnection);
-
-                    throw new InsertPartException(
-                            errorMessage + "\n\n" + "URL endpoint: " + endpointURL
-                                    .toString() + " POST direct content: " + query);
-                } else {
-
-                    InputStreamReader inputStreamReader = new InputStreamReader(
-                            httpConnection.getInputStream(), Charset.forName(
-                                    encode));
-
-                    return inputStreamReader;
-                }
+                
+    
+                    int httpResponseCode = response.getStatusLine().getStatusCode();
+                    String httpResponseMessage = response.getStatusLine().getReasonPhrase();
+                    logger.debug("HTTP Response code: {}", httpResponseCode);
+                    logger.debug("HTTP Response message: {}", httpResponseMessage);
+    
+                    int firstResponseNumber = getFirstResponseNumber(
+                            httpResponseCode);
+    
+                    if (firstResponseNumber != HTTP_OK_RESPONSE_PREFIX) {
+    
+//                        String errorMessage = getHTTPResponseErrorMessage(
+//                                httpConnection);
+    
+                        throw new InsertPartException(
+                                httpResponseMessage + "\n\nURL endpoint: " + endpointURL
+                                        .toString() + " POST content: " + parameters);
+                    } else {
+    
+                        InputStreamReader inputStreamReader = new InputStreamReader(
+                                response.getEntity().getContent(), Charset.forName(
+                                        encode));
+                        CloseableTrio result = new CloseableTrio();
+                        result.httpClient= httpConnection;
+                        result.response = response;
+                        result.reader = inputStreamReader;
+                        return result;
+                    }                
+                } catch (IOException e) {
+                    context.sendMessage(MessageType.ERROR, " POST direct content: HTTP POST failed, " + e.getLocalizedMessage());
+                }        
 
             } catch (UnknownHostException e) {
                 final String message = "Unknown host: ";
@@ -1808,9 +1842,6 @@ public class SPARQLoader {
 
                     logger.debug(errorMessage);
 
-                    if (httpConnection != null) {
-                        httpConnection.disconnect();
-                    }
 
                     throw new RDFException(errorMessage + e.getMessage(), e);
                 }
