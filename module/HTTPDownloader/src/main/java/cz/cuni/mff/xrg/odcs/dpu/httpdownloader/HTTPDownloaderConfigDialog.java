@@ -27,9 +27,9 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
      */
     private static final long serialVersionUID = -5668436075836909428L;
 
-    private static final String READ_TIMEOUT_LABEL = "Read timeout (HTTP)";
-
     private static final String CONNECTION_TIMEOUT_LABEL = "Connection timeout (HTTP)";
+
+    private static final String READ_TIMEOUT_LABEL = "Read timeout (HTTP)";
 
     private static final String MAP_TEXT = "Files to download (each on one line in format symbolicName;URL)";
 
@@ -58,7 +58,6 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
         ta.setRows(50);
         ta.setColumns(50);
         mainLayout.addComponent(ta);
-        connectionTimeout.setValue(325);
         setCompositionRoot(mainLayout);
     }
 
@@ -107,11 +106,11 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
             throw new ConfigException(ex);
         }
         
-        HTTPDownloaderConfig httpDownloaderConfig = new HTTPDownloaderConfig();
-        httpDownloaderConfig.setSymbolicNameToURIMap(symbolicNameToURIMap);
-        httpDownloaderConfig.setConnectionTimeout(connectionTimeout.getValue());
-        httpDownloaderConfig.setReadTimeout(readTimeout.getValue());
-        return httpDownloaderConfig;
+        HTTPDownloaderConfig conf = new HTTPDownloaderConfig();
+        conf.setSymbolicNameToURIMap(symbolicNameToURIMap);
+        conf.setConnectionTimeout(connectionTimeout.getValue());
+        conf.setReadTimeout(readTimeout.getValue());
+        return conf;
     }
 
 }

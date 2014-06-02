@@ -7,9 +7,14 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class HTTPDownloaderConfig extends DPUConfigObjectBase {
 
-    private int connectionTimeout;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4485340550430571717L;
 
-    private int readTimeout;
+    private int connectionTimeout = 2000;
+
+    private int readTimeout = 2000;
 
     private Map<String, String> symbolicNameToURIMap;
 

@@ -5,7 +5,10 @@ import java.io.IOException;
 
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,23 +43,38 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
-//        String shortMessage = this.getClass().getName() + " starting.";
-//        String longMessage = String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
-//        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-//        LOG.info(shortMessage + " " + longMessage);
+        String shortMessage = this.getClass().getName() + " starting.";
+        String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
+        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        LOG.info(shortMessage + " " + longMessage);
         FileListIteration fileListIteration = fileInput.getFileList();
+
+        if (!fileListIteration.hasNext()) {
+            return;
+        }
 
         RepositoryConnection connection = null;
         try {
             while (fileListIteration.hasNext()) {
                 connection = rdfOutput.getConnection();
+
+                RDFInserter rdfInserter = new ComitSizeInserter(connection, config.getCommitSize());
+                rdfInserter.enforceContext(rdfOutput.getWriteContext());
+
+                ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
+
                 FileListDataUnitEntry entry = fileListIteration.next();
-                if (dpuContext.isDebugging()) {
-                    LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
-                }
                 try {
-                    connection.add(new File(entry.getFilesystemURI()), null, null, rdfOutput.getWriteContext());
-                } catch (RepositoryException | RDFParseException | IOException ex) {
+                    if (dpuContext.isDebugging()) {
+                        LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
+                    }
+//                    ParseErrorCollector parseErrorCollector= new ParseErrorCollector();
+                    loader.load(new File(entry.getFilesystemURI()), null, null, rdfInserter, new ParseErrorLogger());
+
+                    if (dpuContext.isDebugging()) {
+                        LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
+                    }
+                } catch (RDFHandlerException | RDFParseException | IOException ex) {
                     dpuContext.sendMessage(MessageType.ERROR, "Error when extracting.", "Symbolic name " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI(), ex);
                 } finally {
                     if (connection != null) {
@@ -66,9 +84,6 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
                             dpuContext.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                         }
                     }
-                }
-                if (dpuContext.isDebugging()) {
-                    LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
                 }
             }
         } catch (RepositoryException ex) {

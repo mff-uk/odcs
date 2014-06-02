@@ -4,6 +4,11 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class TripleGeneratorConfig extends DPUConfigObjectBase {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2013582783757162253L;
+
     private int tripleCount = 1000000;
 
     private int commitSize = 50000;

@@ -13,6 +13,7 @@ import org.openrdf.rio.RDFFormat;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
@@ -29,7 +30,11 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
 
     private static final String MAP_TEXT = "Symbolic name to baseURI and Format map. Line format: symbolicName;baseURI(optional);FileFormat(optional)";
 
+    private static final String COMMIT_SIZE_LABEL = "Commit size (0 = one file, one transaction, 1 = autocommit connection, n = commit every n triples)";
+
     private ObjectProperty<String> mapText = new ObjectProperty<String>("");
+
+    private ObjectProperty<Integer> commitSize = new ObjectProperty<Integer>(0);
 
     public FileExtractor2ConfigDialog() {
         super(FileExtractor2Config.class);
@@ -42,6 +47,8 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
         // top-level component properties
         setWidth("100%");
         setHeight("100%");
+        mainLayout.addComponent(new TextField(COMMIT_SIZE_LABEL, commitSize));
+
         TextArea ta = new TextArea(MAP_TEXT, mapText);
         ta.setRows(50);
         ta.setColumns(50);
@@ -51,6 +58,8 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
 
     @Override
     public void setConfiguration(FileExtractor2Config conf) throws ConfigException {
+        commitSize.setValue(conf.getCommitSize());
+        
         StringBuilder sb = new StringBuilder();
         for (String key : conf.getSymbolicNameToBaseURIMap().keySet()) {
             sb.append(key);
@@ -108,10 +117,11 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
             throw new ConfigException(ex);
         }
 
-        FileExtractor2Config fileExtractor2Config = new FileExtractor2Config();
-        fileExtractor2Config.setSymbolicNameToBaseURIMap(symbolicNameToBaseURIMap);
-        fileExtractor2Config.setSymbolicNameToFormatMap(symbolicNameToFormatMap);
-        return fileExtractor2Config;
+        FileExtractor2Config conf = new FileExtractor2Config();
+        conf.setSymbolicNameToBaseURIMap(symbolicNameToBaseURIMap);
+        conf.setSymbolicNameToFormatMap(symbolicNameToFormatMap);
+        conf.setCommitSize(commitSize.getValue());
+        return conf;
     }
 
 }
