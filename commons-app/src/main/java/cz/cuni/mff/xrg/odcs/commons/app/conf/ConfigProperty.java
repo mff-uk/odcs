@@ -59,9 +59,11 @@ public enum ConfigProperty {
     EMAIL_ADMIN("email.admin");
 
     private final String property;
-
+    public final String springValue;
+    
     private ConfigProperty(final String property) {
         this.property = property;
+        this.springValue ="${" + property + "}";
     }
 
     @Override
