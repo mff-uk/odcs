@@ -4,17 +4,12 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>odcs</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
     <name>backend</name>
     <description></description>
-
-    <properties>
-        <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
-        <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    </properties>
 
     <dependencies>
         <dependency> <!-- JUnit dependency -->
@@ -115,6 +110,7 @@
                     </resource>
                  </resources>-->
 
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -184,12 +180,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 
 </project>
