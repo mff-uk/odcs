@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
@@ -37,6 +38,9 @@ class CleanUp implements PostExecutor {
     @Autowired
     private ContextFacade contextFacade;
 
+    @Autowired
+    private RDFDataUnitFactory rdfDataUnitFactory;
+    
     @Override
     public int getOrder() {
         return Ordered.LOWEST_PRECEDENCE;
@@ -61,7 +65,8 @@ class CleanUp implements PostExecutor {
                 contextFacade.delete(item, true);
             }
         }
-
+        rdfDataUnitFactory.cleanPipeline(execution.getContext().generatePipelineId());
+        
         // prepare execution root
         File rootDir = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));

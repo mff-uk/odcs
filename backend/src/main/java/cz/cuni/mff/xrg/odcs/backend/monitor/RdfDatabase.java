@@ -133,7 +133,7 @@ class RdfDatabase {
             return;
         }
 
-        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "notarealname", "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
         RepositoryConnection connection = null;
         try {
             // ok we have the repository

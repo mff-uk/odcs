@@ -7,7 +7,7 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
     private String repositoryPath;
 
     @Override
-    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
+    public ManagableRdfDataUnit create(String pipelineId, String dataUnitName, String dataGraph) {
         return new LocalRDFDataUnit(repositoryPath, dataUnitName, dataGraph);
     }
 
@@ -17,5 +17,10 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
 
     public void setRepositoryPath(String repositoryPath) {
         this.repositoryPath = repositoryPath;
+    }
+
+    @Override
+    public void cleanPipeline(String pipelineId) {
+        // no-op
     }
 }

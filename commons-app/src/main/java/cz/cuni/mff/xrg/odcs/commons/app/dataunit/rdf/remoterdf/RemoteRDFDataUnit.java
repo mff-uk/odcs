@@ -23,8 +23,6 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoteRDFDataUnit.class);
 
-    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
-
     private Repository repository;
 
     /**
@@ -47,6 +45,7 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
      * @throws RepositoryException
      */
     public RemoteRDFDataUnit(String url, String user, String password,
+            String pipelineId, 
             String dataUnitName, String dataGraph) {
         super(dataUnitName, dataGraph);
 
@@ -58,12 +57,12 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
                 }
             }
             repository = repositoryManager
-                    .getRepository(GLOBAL_REPOSITORY_ID);
+                    .getRepository(pipelineId);
             if (repository == null) {
                 repositoryManager.addRepositoryConfig(
-                        new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
+                        new RepositoryConfig(pipelineId, new SailRepositoryConfig(new NativeStoreConfig()))
                         );
-                repository = repositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+                repository = repositoryManager.getRepository(pipelineId);
             }
             if (repository == null) {
                 throw new RuntimeException("Could not initialize repository");

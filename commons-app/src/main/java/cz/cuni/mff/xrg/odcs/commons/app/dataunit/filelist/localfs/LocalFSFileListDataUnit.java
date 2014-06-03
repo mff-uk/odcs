@@ -61,7 +61,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
             this.workingDirectoryCannonicalPath = workingDirectory.getCanonicalPath();
             this.workingDirectoryURI = workingDirectory.toURI().toASCIIString();
-            this.backingStore = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
+//            this.backingStore = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
             this.ownerThread = Thread.currentThread();
         } catch (IOException ex) {
             throw new DataUnitCreateException("Error creating data unit.", ex);
@@ -194,26 +194,26 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     //ManageableDataUnit interface
     @Override
     public void clear() {
-        ManagableRdfDataUnit tempDataUnit = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
-        FileListIteration iteration = new FileListIterationImpl(tempDataUnit, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
-        try {
-            while (iteration.hasNext()) {
-                FileListDataUnitEntry entry = iteration.next();
-                Files.delete(Paths.get(entry.getFilesystemURI()));
-            }
-        } catch (DataUnitException ex) {
-            LOG.error("Error in clear", ex);
-        } catch (IOException ex) {
-            LOG.error("Error in clear", ex);
-        } finally {
-            try {
-                iteration.close();
-                tempDataUnit.release();
-            } catch (DataUnitException ex) {
-                LOG.warn("Error in close", ex);
-            }
-        }
-        backingStore.clear();
+//        ManagableRdfDataUnit tempDataUnit = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
+//        FileListIteration iteration = new FileListIterationImpl(tempDataUnit, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
+//        try {
+//            while (iteration.hasNext()) {
+//                FileListDataUnitEntry entry = iteration.next();
+//                Files.delete(Paths.get(entry.getFilesystemURI()));
+//            }
+//        } catch (DataUnitException ex) {
+//            LOG.error("Error in clear", ex);
+//        } catch (IOException ex) {
+//            LOG.error("Error in clear", ex);
+//        } finally {
+//            try {
+//                iteration.close();
+//                tempDataUnit.release();
+//            } catch (DataUnitException ex) {
+//                LOG.warn("Error in close", ex);
+//            }
+//        }
+//        backingStore.clear();
     }
 
     //ManageableDataUnit interface

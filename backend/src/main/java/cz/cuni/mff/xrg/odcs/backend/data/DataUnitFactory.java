@@ -54,12 +54,13 @@ public class DataUnitFactory {
      * @throws RepositoryException
      */
     public ManagableDataUnit create(DataUnitType type,
+            String pipelineId,
             String id,
             String name,
             File directory) {
         switch (type) {
             case RDF:
-                return rdfDataUnitFactory.create(name, GraphUrl.translateDataUnitId(id));
+                return rdfDataUnitFactory.create(pipelineId, name, GraphUrl.translateDataUnitId(id));
 //				throw new RuntimeException("Pure RDF DataUnit can't "
 //						+ "be created.");
 //			case RDF_Local:

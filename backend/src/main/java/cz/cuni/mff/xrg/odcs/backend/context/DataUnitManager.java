@@ -212,6 +212,7 @@ final class DataUnitManager {
                 File directory = new File(workingDir,
                         context.getDataUnitTmpPath(dpuInstance, index));
                 ManagableDataUnit dataUnit = dataUnitFactory.create(info.getType(),
+                        context.generatePipelineId(),
                         id, info.getName(), directory);
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
@@ -267,7 +268,7 @@ final class DataUnitManager {
                 dpuInstance, index));
         // create instance
         ManagableDataUnit dataUnit;
-        dataUnit = dataUnitFactory.create(type, id, name, directory);
+        dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), id, name, directory);
         // add to storage
         dataUnits.add(dataUnit);
         indexes.put(dataUnit, index);
