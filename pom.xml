@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cz.cuni.mff.xrg.odcs</groupId>
     <artifactId>odcs</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     <name>ODCleanStore</name>
     <description/>
@@ -33,7 +33,7 @@
         <!-- odcs version, used to create OSGI import/export package list used
         to enable custom user versions of DPUs by using <version> for this reason
         <version> can't be used to specify OSGI packages -->
-        <odcs.version>1.1.0-SNAPSHOT</odcs.version>
+        <odcs.version>1.1.0</odcs.version>
         <skipTests>false</skipTests>
         <!-- spring version -->
         <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
