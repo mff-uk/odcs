@@ -70,16 +70,10 @@ public class PipelineExport extends Window {
         final HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
 
-        Button btnExport = new Button("export", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
-        });
+        Button btnExport = new Button("export");
         buttonLayout.addComponent(btnExport);
         buttonLayout.setComponentAlignment(btnExport, Alignment.MIDDLE_LEFT);
-
-        Button btnCancel = new Button("cancel", new Button.ClickListener() {
+        Button btnCancel = new Button("close", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
