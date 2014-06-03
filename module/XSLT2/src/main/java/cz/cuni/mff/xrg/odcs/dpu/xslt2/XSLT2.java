@@ -58,13 +58,13 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
         if (config.getXslTemplate().isEmpty()) {
             throw new DPUException("No XSLT available, execution interrupted");
         }
-        
+
         String shortMessage = this.getClass().getName() + " starting.";
-        String longMessage =  "";//String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
+        String longMessage = "";//String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
-        
-      //try to compile XSLT
+
+        //try to compile XSLT
         TransformerFactory tfactory = new net.sf.saxon.TransformerFactoryImpl(); //TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
         Templates templates;
         try {
@@ -77,24 +77,24 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
 
         dpuContext.sendMessage(MessageType.INFO, "Processing FILE INPUT");
         LOG.info("Processing FILE INPUT");
-        
+
         FileListIteration fileListIteration = fileInput.getFileList();
-        int filesSuccessfulCount= 0;
+        int filesSuccessfulCount = 0;
         int all = 0;
         while (fileListIteration.hasNext()) {
             FileListDataUnitEntry entry = fileListIteration.next();
             String inSymbolicName = entry.getSymbolicName();
-            
+
             File inputFile = new File(entry.getFilesystemURI());
-            
+
             File outputFile = new File(fileOutput.createFile(inSymbolicName));
             try {
                 all++;
-                executeXSLT(templates, inputFile, outputFile, Collections.<String, String>emptyMap());
+                executeXSLT(templates, inputFile, outputFile, Collections.<String, String> emptyMap());
                 filesSuccessfulCount++;
-                
+
                 if (dpuContext.isDebugging()) {
-                    dpuContext.sendMessage(MessageType.DEBUG, "Processed file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());                
+                    dpuContext.sendMessage(MessageType.DEBUG, "Processed file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
                     LOG.debug("Processed file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
                 }
             } catch (TransformerException ex) {
@@ -112,7 +112,6 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
         }
     }
 
-
     /**
      * @param xslTemplate
      * @param inputFile
@@ -120,29 +119,29 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
      * @param exp
      *            Compiled stylesheet
      * @return
-     * @throws TransformerException 
+     * @throws TransformerException
      */
     private void executeXSLT(Templates templates, File inputFile, File outputFile, Map<String, String> xsltParams) throws TransformerException {
-            Transformer transformer = templates.newTransformer();
-            transformer.setParameter(OutputKeys.INDENT, "yes");
-            if (!config.getOutputXSLTMethod().isEmpty()) {
-                LOG.debug("Overwriting output method in XSLT from the DPU configuration to {}", config.getOutputXSLTMethod());
-                transformer.setParameter(OutputKeys.METHOD, config.getOutputXSLTMethod());
-            }
+        Transformer transformer = templates.newTransformer();
+        transformer.setParameter(OutputKeys.INDENT, "yes");
+        if (!config.getOutputXSLTMethod().isEmpty()) {
+            LOG.debug("Overwriting output method in XSLT from the DPU configuration to {}", config.getOutputXSLTMethod());
+            transformer.setParameter(OutputKeys.METHOD, config.getOutputXSLTMethod());
+        }
 
-            //set params for the template!
-            for (String s : xsltParams.keySet()) {
-                //QName langParam = new QName(s);
-                //transformer.setParameter(s, new XdmAtomicValue(xsltParams.get(s)));
-                transformer.setParameter(s, xsltParams.get(s));
-                LOG.debug("Set param {} with value {}", s, xsltParams.get(s));
-            }
+        //set params for the template!
+        for (String s : xsltParams.keySet()) {
+            //QName langParam = new QName(s);
+            //transformer.setParameter(s, new XdmAtomicValue(xsltParams.get(s)));
+            transformer.setParameter(s, xsltParams.get(s));
+            LOG.debug("Set param {} with value {}", s, xsltParams.get(s));
+        }
 
-            Date start = new Date();
-            LOG.debug("XSLT is about to be executed");
-            transformer.transform(new StreamSource(inputFile),
-                    new StreamResult(outputFile));
+        Date start = new Date();
+        LOG.debug("XSLT is about to be executed");
+        transformer.transform(new StreamSource(inputFile),
+                new StreamResult(outputFile));
 
-            LOG.debug("XSLT executed in {} ms", (System.currentTimeMillis() - start.getTime()));
+        LOG.debug("XSLT executed in {} ms", (System.currentTimeMillis() - start.getTime()));
     }
 }

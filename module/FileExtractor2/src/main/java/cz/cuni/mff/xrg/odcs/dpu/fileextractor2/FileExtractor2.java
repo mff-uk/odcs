@@ -58,7 +58,7 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
             while (fileListIteration.hasNext()) {
                 connection = rdfOutput.getConnection();
 
-                RDFInserter rdfInserter = new ComitSizeInserter(connection, config.getCommitSize());
+                RDFInserter rdfInserter = new CommitSizeInserter(connection, config.getCommitSize());
                 rdfInserter.enforceContext(rdfOutput.getWriteContext());
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());

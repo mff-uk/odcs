@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.fileextractor2;
+package cz.cuni.mff.xrg.odcs.dpu.filestosparqlloader;
 
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
@@ -6,7 +6,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
 
-public class ComitSizeInserter extends RDFInserter {
+public class CommitSizeInserter extends RDFInserter {
 
     private int commitSize = 50000;
 
@@ -14,7 +14,7 @@ public class ComitSizeInserter extends RDFInserter {
 
     private int statementCounter = 0;
 
-    public ComitSizeInserter(RepositoryConnection con, int commitSize) {
+    public CommitSizeInserter(RepositoryConnection con, int commitSize) {
         super(con);
         this.commitSize = commitSize;
     }
