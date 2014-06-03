@@ -75,9 +75,6 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
         dpuContext.sendMessage(MessageType.INFO, "Stylesheet was compiled successully");
         LOG.info("Stylesheet was compiled successully");
 
-        dpuContext.sendMessage(MessageType.INFO, "Processing FILE INPUT");
-        LOG.info("Processing FILE INPUT");
-
         FileListIteration fileListIteration = fileInput.getFileList();
         int filesSuccessfulCount = 0;
         int all = 0;
