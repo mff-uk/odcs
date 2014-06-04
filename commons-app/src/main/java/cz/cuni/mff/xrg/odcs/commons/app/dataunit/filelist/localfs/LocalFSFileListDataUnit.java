@@ -61,7 +61,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
             this.workingDirectoryCannonicalPath = workingDirectory.getCanonicalPath();
             this.workingDirectoryURI = workingDirectory.toURI().toASCIIString();
-            this.backingStore = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
+//            this.backingStore = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
             this.ownerThread = Thread.currentThread();
         } catch (IOException ex) {
             throw new DataUnitCreateException("Error creating data unit.", ex);

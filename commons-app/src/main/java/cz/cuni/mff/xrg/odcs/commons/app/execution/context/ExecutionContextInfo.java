@@ -197,6 +197,11 @@ public class ExecutionContextInfo implements DataObject {
                 + dpuInstance.getId().toString() + "_du_" + index.toString();
     }
 
+    
+    public String generatePipelineId() {
+        return "exec_" + String.valueOf(execution.getId());
+    }
+    
     /**
      * Return context information class {@link ProcessingUnitInfo} for given
      * DPU. If the context does not exist, then create new.

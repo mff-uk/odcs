@@ -96,7 +96,7 @@ public class RepositoryFrontendHelper {
                     String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
                     ManagableRdfDataUnit repository =
-                            rdfDataUnitFactory.create(info.getName(), namedGraph);
+                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), info.getName(), namedGraph);
 
                     return repository;
 

@@ -1,5 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf;
 
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.manager.RemoteRepositoryManager;
+import org.openrdf.repository.manager.RepositoryManager;
+import org.openrdf.repository.manager.RepositoryProvider;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
@@ -11,8 +17,8 @@ public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
     private String password;
 
     @Override
-    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
-        return new RemoteRDFDataUnit(url, user, password, dataUnitName, dataGraph);
+    public ManagableRdfDataUnit create(String pipelineId, String dataUnitName, String dataGraph) {
+        return new RemoteRDFDataUnit(url, user, password, pipelineId, dataUnitName, dataGraph);
     }
 
     public String getUrl() {
@@ -37,6 +43,21 @@ public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public void cleanPipeline(String pipelineId) {
+        try {
+            RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
+            if (repositoryManager instanceof RemoteRepositoryManager) {
+                if (user != null && !user.isEmpty()) {
+                    ((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
+                }
+            }
+            repositoryManager.removeRepository(pipelineId);
+        } catch (RepositoryConfigException | RepositoryException ex) {
+            throw new RuntimeException("Could not remove repository", ex);
+        }
     }
 
 }

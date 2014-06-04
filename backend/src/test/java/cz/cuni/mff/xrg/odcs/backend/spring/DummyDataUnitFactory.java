@@ -17,6 +17,7 @@ public class DummyDataUnitFactory extends DataUnitFactory {
 
     @Override
     public ManagableDataUnit create(DataUnitType type,
+            String pipelineId,
             String id,
             String name,
             File directory) {

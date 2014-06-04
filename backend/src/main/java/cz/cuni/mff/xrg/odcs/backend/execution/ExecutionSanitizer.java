@@ -180,7 +180,7 @@ class ExecutionSanitizer {
             final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
             // create instance
 
-            ManagableDataUnit dataUnit = dataUnitFactory.create(type, id, name, directory);
+            ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), id, name, directory);
             // delete data .. 
             dataUnit.clear();
             dataUnit.release();
