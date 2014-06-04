@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BooleanQuery;
@@ -194,26 +194,8 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
     //ManageableDataUnit interface
     @Override
     public void clear() {
-//        ManagableRdfDataUnit tempDataUnit = rdfDataUnitFactory.create(dataUnitName, workingDirectoryURI);
-//        FileListIteration iteration = new FileListIterationImpl(tempDataUnit, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
-//        try {
-//            while (iteration.hasNext()) {
-//                FileListDataUnitEntry entry = iteration.next();
-//                Files.delete(Paths.get(entry.getFilesystemURI()));
-//            }
-//        } catch (DataUnitException ex) {
-//            LOG.error("Error in clear", ex);
-//        } catch (IOException ex) {
-//            LOG.error("Error in clear", ex);
-//        } finally {
-//            try {
-//                iteration.close();
-//                tempDataUnit.release();
-//            } catch (DataUnitException ex) {
-//                LOG.warn("Error in close", ex);
-//            }
-//        }
-//        backingStore.clear();
+        FileUtils.deleteQuietly(this.workingDirectory);
+        backingStore.clear();
     }
 
     //ManageableDataUnit interface

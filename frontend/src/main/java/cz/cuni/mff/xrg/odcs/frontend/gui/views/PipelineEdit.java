@@ -771,8 +771,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        // JMC: disable export pipeline button, because this functionality isn't fully functional (and deterministic)
-        // rightPartOfButtonBar.addComponent(buttonExport);
+        rightPartOfButtonBar.addComponent(buttonExport);
         buttonBar.addComponent(rightPartOfButtonBar);
 
         buttonBar.setSpacing(true);

@@ -4,7 +4,7 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-base</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
         <relativePath>../module-base/pom.xml</relativePath>
     </parent>
     <groupId>cz.cuni.mff.xrg.odcs</groupId>
@@ -20,6 +20,7 @@
         <module>FileExtractor2</module>
         <module>XSLT2</module>
         <module>TripleGenerator</module>
+        <module>FilesToSPARQLLoader</module>
 	<!-- Old DPUs -->
         <module>File_extractor</module>
         <module>File_loader</module>

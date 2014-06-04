@@ -9,9 +9,11 @@ import org.openrdf.model.Graph;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.GraphQuery;
+import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.QueryResults;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.impl.DatasetImpl;
@@ -36,7 +38,6 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 
 /**
  * SPARQL Transformer.
@@ -475,13 +476,9 @@ public class SPARQLTransformer
             LOG.debug("Query {} is valid.", constructQuery);
 
             try {
-
-                MyGraphQueryResult result = new MyGraphQueryResult(graphQuery
-                        .evaluate());
-
-                LOG.debug(
-                        "Query {} has not null result.", constructQuery);
-                return result.asGraph();
+                GraphQueryResult result = graphQuery.evaluate();
+                LOG.debug("Query {} has not null result.", constructQuery);
+                return QueryResults.asModel(result);
 
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(

@@ -6,21 +6,21 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>FileExtractor2</artifactId>
+    <artifactId>FilesToSPARQLLoader</artifactId>
 
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>0.0.1</version>
 
     <packaging>bundle</packaging>
 
-    <description>FileExtractor2 extracts RDF data from any format.</description>
+    <description>Loads RDF data stored in files to the specified remote SPARQL endpoint.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.fileextractor2</dpu.package>
-        <dpu.mainClass>FileExtractor2</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestosparqlloader</dpu.package>
+        <dpu.mainClass>FilesToSPARQLLoader</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>
