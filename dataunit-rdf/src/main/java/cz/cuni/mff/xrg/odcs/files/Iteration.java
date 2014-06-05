@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.filelist;
+package cz.cuni.mff.xrg.odcs.files;
 
 import java.util.NoSuchElementException;
 

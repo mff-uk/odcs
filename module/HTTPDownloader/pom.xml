@@ -12,7 +12,7 @@
 
     <artifactId>HTTPDownloader</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>bundle</packaging>
     <description>HTTPDownloader downloads file list given in configuration and saves each file under symbolicName as specified by configuration.</description>
 

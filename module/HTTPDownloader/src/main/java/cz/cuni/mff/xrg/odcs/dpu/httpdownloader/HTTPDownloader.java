@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
@@ -17,14 +18,14 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.filelist.WritableFileListDataUnit;
+import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsExtractor
 public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> implements ConfigDialogProvider<HTTPDownloaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(HTTPDownloader.class);
 
     @OutputDataUnit(name = "fileOutput")
-    public WritableFileListDataUnit fileOutput;
+    public WritableFilesDataUnit fileOutput;
 
     public HTTPDownloader() {
         super(HTTPDownloaderConfig.class);
@@ -39,8 +40,10 @@ public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> imple
         String longMessage = String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
-        
+
         for (String symbolicName : symbolicNameToURIMap.keySet()) {
+            checkCancelled(dpuContext);
+            
             String downloadedFilename = fileOutput.createFile(symbolicName);
             File downloadedFile = new File(downloadedFilename);
             String downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
@@ -59,5 +62,11 @@ public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> imple
     @Override
     public AbstractConfigDialog<HTTPDownloaderConfig> getConfigurationDialog() {
         return new HTTPDownloaderConfigDialog();
+    }
+
+    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
+        if (dpuContext.canceled()) {
+            throw new DPUCancelledException();
+        }
     }
 }

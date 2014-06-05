@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
@@ -28,20 +29,20 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListIteration;
-import cz.cuni.mff.xrg.odcs.filelist.WritableFileListDataUnit;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
+import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 
 @AsExtractor
 public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialogProvider<XSLT2Config> {
     private static final Logger LOG = LoggerFactory.getLogger(XSLT2.class);
 
     @InputDataUnit(name = "fileInput")
-    public FileListDataUnit fileInput;
+    public FilesDataUnit fileInput;
 
     @OutputDataUnit(name = "fileOutput")
-    public WritableFileListDataUnit fileOutput;
+    public WritableFilesDataUnit fileOutput;
 
     public XSLT2() {
         super(XSLT2Config.class);
@@ -75,29 +76,35 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
         dpuContext.sendMessage(MessageType.INFO, "Stylesheet was compiled successully");
         LOG.info("Stylesheet was compiled successully");
 
-        FileListIteration fileListIteration = fileInput.getFileList();
+        FilesIteration filesIteration = fileInput.getFiles();
         int filesSuccessfulCount = 0;
         int all = 0;
-        while (fileListIteration.hasNext()) {
-            FileListDataUnitEntry entry = fileListIteration.next();
-            String inSymbolicName = entry.getSymbolicName();
+        try {
+            while (filesIteration.hasNext()) {
+                checkCancelled(dpuContext);
 
-            File inputFile = new File(entry.getFilesystemURI());
+                FilesDataUnitEntry entry = filesIteration.next();
+                String inSymbolicName = entry.getSymbolicName();
 
-            File outputFile = new File(fileOutput.createFile(inSymbolicName));
-            try {
-                all++;
-                executeXSLT(templates, inputFile, outputFile, Collections.<String, String> emptyMap());
-                filesSuccessfulCount++;
+                File inputFile = new File(entry.getFilesystemURI());
 
-                if (dpuContext.isDebugging()) {
-                    dpuContext.sendMessage(MessageType.DEBUG, "Processed file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
-                    LOG.debug("Processed file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
+                File outputFile = new File(fileOutput.createFile(inSymbolicName));
+                try {
+                    all++;
+                    executeXSLT(templates, inputFile, outputFile, Collections.<String, String> emptyMap());
+                    filesSuccessfulCount++;
+
+                    if (dpuContext.isDebugging()) {
+                        dpuContext.sendMessage(MessageType.DEBUG, "Processed file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
+                        LOG.debug("Processed file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
+                    }
+                } catch (TransformerException ex) {
+                    dpuContext.sendMessage(MessageType.WARNING, "Problem processing file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
+                    LOG.warn("Problem processing file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
                 }
-            } catch (TransformerException ex) {
-                dpuContext.sendMessage(MessageType.WARNING, "Problem processing file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
-                LOG.warn("Problem processing file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
             }
+        } finally {
+            filesIteration.close();
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, all);
         if (filesSuccessfulCount < all) {
@@ -140,5 +147,11 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
                 new StreamResult(outputFile));
 
         LOG.debug("XSLT executed in {} ms", (System.currentTimeMillis() - start.getTime()));
+    }
+
+    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
+        if (dpuContext.canceled()) {
+            throw new DPUCancelledException();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.filelist;
+package cz.cuni.mff.xrg.odcs.files;
 
 import java.net.URI;
 
@@ -6,14 +6,14 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
-public interface FileListDataUnit extends DataUnit {
-    interface FileListDataUnitEntry {
+public interface FilesDataUnit extends DataUnit {
+    interface FilesDataUnitEntry {
         String getSymbolicName();
 
         URI getFilesystemURI();
     }
     
-    interface FileListIteration extends CloseableIteration<FileListDataUnit.FileListDataUnitEntry, DataUnitException> {
+    interface FilesIteration extends CloseableIteration<FilesDataUnit.FilesDataUnitEntry, DataUnitException> {
         
     }
     
@@ -23,5 +23,5 @@ public interface FileListDataUnit extends DataUnit {
      */
     RDFData getRDFData();
     
-    FileListDataUnit.FileListIteration getFileList() throws DataUnitException;
+    FilesDataUnit.FilesIteration getFiles() throws DataUnitException;
 }

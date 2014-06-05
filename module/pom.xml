@@ -15,13 +15,13 @@
 
     <!-- list of core modules -->
     <modules>
-	<!-- New DPUs -->
+	<!-- New DPUs  -->
         <module>HTTPDownloader</module>
         <module>FileExtractor2</module>
         <module>XSLT2</module>
         <module>TripleGenerator</module>
         <module>FilesToSPARQLLoader</module>
-	<!-- Old DPUs -->
+	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>
         <module>RDF_extractor</module>

@@ -32,7 +32,7 @@ public class OdcsTerms {
     public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/containsGraph";
     public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/writeGraph";
 
-    public static final String DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/filelist/symbolicName";
+    public static final String DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/symbolicName";
 
     /**
      * Predicate to associate certain subject (URI representing certain file) with an XSLT parameter

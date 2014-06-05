@@ -6,17 +6,23 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
 
-public class CommitSizeInserter extends RDFInserter {
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
+
+public class CancellableCommitSizeInserter extends RDFInserter {
 
     private int commitSize = 50000;
 
     private boolean transactionOpen = false;
 
     private int statementCounter = 0;
+    
+    private DPUContext dpuContext;
 
-    public CommitSizeInserter(RepositoryConnection con, int commitSize) {
+    public CancellableCommitSizeInserter(RepositoryConnection con, int commitSize, DPUContext dpuContext) {
         super(con);
         this.commitSize = commitSize;
+        this.dpuContext = dpuContext;
     }
 
     @Override
@@ -32,6 +38,9 @@ public class CommitSizeInserter extends RDFInserter {
         super.handleStatement(st);
         statementCounter++;
         if (transactionOpen && (statementCounter == commitSize)) {
+            if (dpuContext.canceled()) {
+                throw new RDFCancelException("Cancelled by user");
+            }
             try {
                 con.commit();
             } catch (RepositoryException e) {

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.filelist.localfs;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -10,12 +10,12 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnitEntryImpl;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListIteration;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnitEntryImpl;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
-public class FileListIterationImpl implements FileListIteration {
+public class FilesIterationImpl implements FilesIteration {
     private RepositoryConnection connection = null;
 
     private RepositoryResult<Statement> result = null;
@@ -24,7 +24,7 @@ public class FileListIterationImpl implements FileListIteration {
     
     private String symbolicNamePredicate;
     
-    public FileListIterationImpl(RDFData backingStore, String symbolicNamePredicate) {
+    public FilesIterationImpl(RDFData backingStore, String symbolicNamePredicate) {
         this.backingStore = backingStore;
         this.symbolicNamePredicate = symbolicNamePredicate;
     }
@@ -35,14 +35,14 @@ public class FileListIterationImpl implements FileListIteration {
     }
 
     @Override
-    public FileListDataUnitEntry next() throws DataUnitException {
+    public FilesDataUnitEntry next() throws DataUnitException {
         if (result == null) {
             init();
         }
 
         try {
             Statement statement = result.next();
-            return new FileListDataUnitEntryImpl(statement.getObject().stringValue(), new java.net.URI(statement.getSubject().stringValue()));
+            return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), new java.net.URI(statement.getSubject().stringValue()));
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error iterating underlying repository", ex);
         } catch (URISyntaxException ex) {

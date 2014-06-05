@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.filelist;
+package cz.cuni.mff.xrg.odcs.files;
 
 /**
  * An {@link Iteration} that can be closed to free resources that it is holding.

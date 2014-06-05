@@ -22,9 +22,9 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListIteration;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsExtractor
@@ -32,7 +32,7 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
     private static final Logger LOG = LoggerFactory.getLogger(FileExtractor2.class);
 
     @InputDataUnit(name = "fileInput")
-    public FileListDataUnit fileInput;
+    public FilesDataUnit fileInput;
 
     @OutputDataUnit(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -47,15 +47,15 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
         String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
-        FileListIteration fileListIteration = fileInput.getFileList();
+        FilesIteration filesIteration = fileInput.getFiles();
 
-        if (!fileListIteration.hasNext()) {
+        if (!filesIteration.hasNext()) {
             return;
         }
 
         RepositoryConnection connection = null;
         try {
-            while (fileListIteration.hasNext()) {
+            while (filesIteration.hasNext()) {
                 connection = rdfOutput.getConnection();
 
                 RDFInserter rdfInserter = new CommitSizeInserter(connection, config.getCommitSize());
@@ -63,7 +63,7 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
 
-                FileListDataUnitEntry entry = fileListIteration.next();
+                FilesDataUnitEntry entry = filesIteration.next();
                 try {
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());

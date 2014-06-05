@@ -18,7 +18,7 @@ public class FileUploader extends ConfigurableBase<FileUploaderConfig> implement
     private static final Logger LOG = LoggerFactory.getLogger(FileUploader.class);
 
     @OutputDataUnit(name = "fileOutput")
-    public WritableFileListDataUnit fileOutput;
+    public WritableFilesDataUnit fileOutput;
 
     public FileUploader() {
         super(FileUploaderConfig.class);

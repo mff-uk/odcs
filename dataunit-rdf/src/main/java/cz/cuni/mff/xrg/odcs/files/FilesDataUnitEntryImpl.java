@@ -1,15 +1,15 @@
-package cz.cuni.mff.xrg.odcs.filelist;
+package cz.cuni.mff.xrg.odcs.files;
 
 import java.net.URI;
 
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit.FileListDataUnitEntry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 
-public class FileListDataUnitEntryImpl implements FileListDataUnitEntry {
+public class FilesDataUnitEntryImpl implements FilesDataUnitEntry {
     private String symbolicName;
 
     private URI filesystemURI;
 
-    public FileListDataUnitEntryImpl(String symbolicName, URI filesystemURI) {
+    public FilesDataUnitEntryImpl(String symbolicName, URI filesystemURI) {
         this.symbolicName = symbolicName;
         this.filesystemURI = filesystemURI;
     }

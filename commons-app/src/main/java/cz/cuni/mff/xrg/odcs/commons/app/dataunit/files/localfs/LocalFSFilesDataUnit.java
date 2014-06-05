@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.filelist.localfs;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.filelist.ManageableWritableFileListDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
@@ -31,8 +31,8 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
-public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUnit {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalFSFileListDataUnit.class);
+public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
+    private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);
 
     @Autowired
     private RDFDataUnitFactory rdfDataUnitFactory;
@@ -51,11 +51,11 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
 
     private Thread ownerThread;
 
-    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
+    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    public LocalFSFileListDataUnit(String globalWorkingDirectory, String dataUnitName) throws DataUnitCreateException {
+    public LocalFSFilesDataUnit(String globalWorkingDirectory, String dataUnitName) throws DataUnitCreateException {
         try {
             this.dataUnitName = dataUnitName;
             this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
@@ -86,7 +86,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         return dataUnitName;
     }
 
-    //FileListDataUnit interface
+    //FilesDataUnit interface
     @Override
     public RDFData getRDFData() {
         if (!ownerThread.equals(Thread.currentThread())) {
@@ -96,17 +96,17 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         return backingStore;
     }
 
-    //FileListDataUnit interface
+    //FilesDataUnit interface
     @Override
-    public FileListIteration getFileList() throws DataUnitException {
+    public FilesIteration getFiles() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
-        return new FileListIterationImpl(backingStore, OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE);
+        return new FilesIterationImpl(backingStore, OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE);
     }
 
-    //WritableFileListDataUnit interface
+    //WritableFilesDataUnit interface
     @Override
     public String getBasePath() {
         if (!ownerThread.equals(Thread.currentThread())) {
@@ -116,7 +116,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         return workingDirectoryCannonicalPath;
     }
 
-    //WritableFileListDataUnit interface
+    //WritableFilesDataUnit interface
     @Override
     public void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
@@ -143,7 +143,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
             ValueFactory valueFactory = connection.getValueFactory();
             Statement statement = valueFactory.createStatement(
                     valueFactory.createURI(existingFile.toURI().toASCIIString()),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_FILELIST_SYMBOLIC_NAME_PREDICATE),
+                    valueFactory.createURI(OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE),
                     valueFactory.createLiteral(proposedSymbolicName)
                     );
             connection.add(statement, backingStore.getWriteContext());
@@ -163,7 +163,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         }
     }
 
-    //WritableFileListDataUnit interface
+    //WritableFilesDataUnit interface
     @Override
     public String createFile() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
@@ -173,7 +173,7 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
         return this.createFile("");
     }
 
-    //WritableFileListDataUnit interface
+    //WritableFilesDataUnit interface
     @Override
     public String createFile(String proposedSymbolicName) throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
@@ -221,9 +221,9 @@ public class LocalFSFileListDataUnit implements ManageableWritableFileListDataUn
                     + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
 
-        final LocalFSFileListDataUnit otherFileListDataUnit = (LocalFSFileListDataUnit) otherDataUnit;
-        otherFileListDataUnit.getRDFData(); // Just a marker line to drawn attention here when someone search for usages of getter method
-        backingStore.merge(otherFileListDataUnit.backingStore);
+        final LocalFSFilesDataUnit otherFilesDataUnit = (LocalFSFilesDataUnit) otherDataUnit;
+        otherFilesDataUnit.getRDFData(); // Just a marker line to drawn attention here when someone search for usages of getter method
+        backingStore.merge(otherFilesDataUnit.backingStore);
     }
 
     @Override
