@@ -31,9 +31,9 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 
     private boolean validDataBefore;
 
-    private Long retryTime;
+    private Long retryTime = 60000L;
 
-    private Integer retrySize;
+    private Integer retrySize = 5;
 
     private LoaderEndpointParams endpointParams;
 
@@ -53,8 +53,6 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
         this.insertOption = InsertType.STOP_WHEN_BAD_PART;
         this.chunkSize = 100;
         this.validDataBefore = false;
-        this.retrySize = -1;
-        this.retryTime = 1000L;
         this.endpointParams = new LoaderEndpointParams();
         this.useSparqlGraphProtocol = true;
         this.penetrable = false;
@@ -250,6 +248,42 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
 //                if (useSparqlGraphProtocol == null) {
 //                    seSparqlGraphProtocol = false;
 //                }
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+
+    public void setGraphsUri(List<String> graphsUri) {
+        GraphsUri = graphsUri;
+    }
+
+    public void setGraphOption(WriteGraphType graphOption) {
+        this.graphOption = graphOption;
+    }
+
+    public void setInsertOption(InsertType insertOption) {
+        this.insertOption = insertOption;
+    }
+
+    public void setChunkSize(long chunkSize) {
+        this.chunkSize = chunkSize;
+    }
+
+    public void setValidDataBefore(boolean validDataBefore) {
+        this.validDataBefore = validDataBefore;
+    }
+
+    public void setRetryTime(Long retryTime) {
+        this.retryTime = retryTime;
+    }
+
+    public void setRetrySize(Integer retrySize) {
+        this.retrySize = retrySize;
+    }
+
+    public void setEndpointParams(LoaderEndpointParams endpointParams) {
+        this.endpointParams = endpointParams;
     }
 
 }

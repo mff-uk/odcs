@@ -83,11 +83,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
     private TextField textFieldGraph;
 
     /**
-     * For setting size of insert part to load.
-     */
-    private TextField chunkParts;
-
-    /**
      * Set Count of attempts to reconnect if the connection fails. For infinite
      * loop use zero or negative integer
      */
@@ -115,11 +110,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
      */
     private TextField defaultGraphParamField;
 
-    /**
-     * Button for set default chunk size.
-     */
-    private Button chunkDefault;
-
     private Button buttonGraphRem;
 
     private Button buttonGraphAdd;
@@ -133,8 +123,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
     private List<InsertItem> insertItems = new ArrayList<>();
 
     private CheckBox validateDataBefore;
-
-    private CheckBox useGraphProtocol;
 
     private PostItem last;
 
@@ -815,21 +803,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
         verticalLayoutProtocol.addComponent(params);
 
-        useGraphProtocol = new CheckBox("Use SPARQL Graph Protocol for loading data");
-
-//We do not disable other SPARQL protocols, because they are used for counting the resulting data.
-//                useGraphProtocol.addValueChangeListener(new ValueChangeListener() {
-//                    @Override
-//                    public void valueChange(ValueChangeEvent event) {
-//                        postTypeOption.setEnabled(!useGraphProtocol.getValue());
-//                        queryParamField.setEnabled(!useGraphProtocol.getValue());
-//                        defaultGraphParamField.setEnabled(!useGraphProtocol.getValue());
-//                        chunkParts.setEnabled(!useGraphProtocol.getValue());
-//                    }
-//                });
-
-        verticalLayoutProtocol.addComponent(useGraphProtocol);
-
         return verticalLayoutProtocol;
     }
 
@@ -863,77 +836,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
         dataPartsOption.setHeight("-1px");
         dataPartsOption.setMultiSelect(false);
         verticalLayoutDetails.addComponent(dataPartsOption);
-
-        VerticalLayout chunkSizeV = new VerticalLayout();
-        chunkSizeV.setSpacing(true);
-        chunkSizeV.setStyleName("graypanel");
-
-        chunkSizeV.addComponent(new Label(
-                "Chunk size of triples which inserted at once"));
-
-        HorizontalLayout chunkSizeH = new HorizontalLayout();
-        chunkSizeH.setSpacing(true);
-        // Create chunkparts
-        chunkParts = new TextField();
-        chunkParts.setValue("100");
-        chunkParts.setNullRepresentation("");
-        chunkParts.setImmediate(true);
-        chunkParts.setWidth("100px");
-        chunkParts.setHeight("-1px");
-
-        chunkParts.setInputPrompt(
-                "Chunk size of triples which inserted at once");
-        chunkParts.addValidator(new Validator() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void validate(Object value) throws Validator.InvalidValueException {
-                if (value != null) {
-                    String size = value.toString().trim();
-
-                    try {
-                        long result = Long.parseLong(size);
-
-                        if (result <= 0) {
-                            ex = new Validator.InvalidValueException(
-                                    "Chunk size must be number greater than 0");
-                            throw ex;
-                        }
-
-                    } catch (NumberFormatException e) {
-                        ex = new Validator.InvalidValueException(
-                                "Chunk size must be a number");
-                        throw ex;
-                    }
-
-                } else {
-                    throw new Validator.EmptyValueException(
-                            "Chunk size is a null");
-                }
-            }
-        });
-
-        chunkSizeH.addComponent(chunkParts);
-
-        //add button
-        chunkDefault = new Button("Default size");
-        chunkDefault.setImmediate(true);
-        chunkDefault.setWidth("90px");
-        chunkDefault.setHeight("-1px");
-        chunkDefault.addClickListener(new Button.ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                String value = String.valueOf(SPARQLoader.getDefaultChunkSize());
-                chunkParts.setValue(value);
-            }
-        });
-
-        chunkSizeH.addComponent(chunkDefault);
-        chunkSizeV.addComponent(chunkSizeH);
-
-        verticalLayoutDetails.addComponent(chunkSizeV);
 
         VerticalLayout attempts = new VerticalLayout();
         attempts.setSpacing(true);
@@ -1034,7 +936,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
     private boolean allComponentAreValid() {
 
         boolean areValid = textFieldSparql.isValid()
-                && chunkParts.isValid()
+               
                 && retrySizeField.isValid()
                 && retryTimeField.isValid()
                 && areGraphsNameValid();
@@ -1057,17 +959,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
                 errors = errors + "; Graph name must start with prefix \"http://\" and contain no white spaces";
             } else {
                 errors = errors + "Graph name must start with prefix \"http://\" and contain no white spaces";
-            }
-        }
-
-        try {
-            chunkParts.validate();
-
-        } catch (Validator.InvalidValueException e) {
-            if (!errors.equals("") && !errors.endsWith("; ")) {
-                errors = errors + "; " + e.getMessage();
-            } else {
-                errors = errors + e.getMessage();
             }
         }
 
@@ -1124,8 +1015,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
             WriteGraphType graphType = getGraphType(graphDescription);
             InsertType insertType = getInsertType(insertDescription);
 
-            long chunkSize = Long.parseLong(chunkParts.getValue());
-
             int retrySize = Integer.parseInt(retrySizeField.getValue());
             long retryTime = Long.parseLong(retryTimeField.getValue());
 
@@ -1143,13 +1032,13 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
             LoaderEndpointParams endpointParams = new LoaderEndpointParams(
                     queryParam, defaultGraphParam, postType);
 
-            Boolean useSparqlGraphProtocol = useGraphProtocol.getValue();
+//            Boolean useSparqlGraphProtocol = useGraphProtocol.getValue();
 
             RDFLoaderConfig config = new RDFLoaderConfig(SPARQLEndpoint,
                     hostName, password, getDefaultGraphs(), graphType,
                     insertType,
-                    chunkSize, validDataBefore, retryTime, retrySize,
-                    endpointParams, useSparqlGraphProtocol);
+                    1, validDataBefore, retryTime, retrySize,
+                    endpointParams, true);
 
             config.setPenetrable(checkBoxCopyInput.getValue());
 
@@ -1190,9 +1079,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
             optionGroupDetail.setValue(graphDescription);
             dataPartsOption.setValue(insertDescription);
 
-            String chunkSize = String.valueOf(conf.getChunkSize());
-            chunkParts.setValue(chunkSize);
-
             String retrySize = String.valueOf(conf.getRetrySize());
             retrySizeField.setValue(retrySize);
 
@@ -1210,8 +1096,6 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
             queryParamField.setValue(endpointParams.getQueryParam());
             defaultGraphParamField.setValue(endpointParams
                     .getDefaultGraphParam());
-
-            useGraphProtocol.setValue(conf.isUseSparqlGraphProtocol());
 
             try {
                 defaultGraphs = conf.getGraphsUri();

@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
@@ -97,30 +99,25 @@ public class SPARQLLoaderSysTest {
 
     //@Test
     public void loadDataToSPARQLEndpointTest() {
+        RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+
+        RDFLoaderConfig c = new RDFLoaderConfig();
+        c.setEndpointParams(virtuosoParams);
+        c.setHost_name(USER);
+        c.setPassword(PASSWORD);
+        c.setSPARQL_endpoint(UPDATE_ENDPOINT);
+        c.setGraphsUri(Arrays.asList("http://ld.opendata.cz/resource/myGraph/001"));
+        c.setInsertOption(InsertType.SKIP_BAD_PARTS);
+        c.setGraphOption(WriteGraphType.MERGE);
+
         try {
-            RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
+            SPARQLoader loader = new SPARQLoader(repository,
+                    getTestContext(), c);
 
-            URL endpointURL = new URL("http://ld.opendata.cz:8894/sparql-auth");
-            String defaultGraphUri = "http://ld.opendata.cz/resource/myGraph/001";
-            String name = "SPARQL";
-            String password = "nejlepsipaper";
-            WriteGraphType graphType = WriteGraphType.MERGE;
-            InsertType insertType = InsertType.SKIP_BAD_PARTS;
-
-            try {
-                SPARQLoader loader = new SPARQLoader(repository,
-                        getTestContext(), virtuosoParams, false, name, password);
-
-                loader.loadToSPARQLEndpoint(endpointURL, defaultGraphUri, name,
-                        password, graphType, insertType);
-            } catch (RDFException e) {
-                fail(e.getMessage());
-            }
-
-        } catch (MalformedURLException ex) {
-            logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
+            loader.loadToSPARQLEndpoint();
+        } catch (DPUException e) {
+            fail(e.getMessage());
         }
-
     }
 
     private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
@@ -131,33 +128,31 @@ public class SPARQLLoaderSysTest {
         connection.add(subject, predicate, object);
 
         String goalGraphName = "http://tempGraph";
-        URL endpoint = getUpdateEndpoint();
 
         boolean isLoaded = false;
-
+        RDFLoaderConfig c = new RDFLoaderConfig();
+        c.setEndpointParams(virtuosoParams);
+        c.setHost_name(USER);
+        c.setPassword(PASSWORD);
+        c.setSPARQL_endpoint(UPDATE_ENDPOINT);
+        c.setGraphsUri(Arrays.asList(goalGraphName));
+        c.setInsertOption(InsertType.SKIP_BAD_PARTS);
+        c.setGraphOption(WriteGraphType.OVERRIDE);
+        
         SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-                virtuosoParams, false, USER, PASSWORD);
+                c);
         try {
 
-            loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
-                    PASSWORD,
-                    WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
+            loader.loadToSPARQLEndpoint();
             isLoaded = true;
 
-        } catch (RDFException e) {
+        } catch (DPUException e) {
             logger.error("INSERT triple: {} {} {} to SPARQL endpoint failed",
                     subject.stringValue(),
                     predicate.stringValue(),
                     object.stringValue());
 
-        } finally {
-            try {
-                loader.clearEndpointGraph(endpoint, goalGraphName);
-            } catch (RDFException e) {
-                logger.error(
-                        "TEMP graph <" + goalGraphName + "> was not delete");
-            }
-        }
+        } 
         connection.close();
         assertTrue(isLoaded);
     }
