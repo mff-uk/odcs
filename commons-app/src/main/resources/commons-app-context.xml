@@ -17,14 +17,14 @@
     <!-- enable aspects -->
     <aop:aspectj-autoproxy/>
 
-    <!-- factory for data source is needed to choose correct database platform -->
-    <bean id="dataSourceFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.DataSourceFactory"/>
 
-    <!-- data source with db login properties loaded from application configuration -->
-    <bean id="dataSource"
-          factory-bean="dataSourceFactory"
-          factory-method="getDataSource"
-          destroy-method="close"/>
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${database.sql.driver}"/>
+        <property name="url" value="${database.sql.url}"/>
+        <property name="username" value="${database.sql.user}"/>
+        <property name="password" value="${database.sql.password}"/>
+    </bean>
+
 
     <!-- EntityManager factory -->
     <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
