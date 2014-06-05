@@ -146,8 +146,7 @@ final class DataUnitManager {
             } else {
                 item.store();
             }
-            
-           
+
         }
     }
 
@@ -244,8 +243,7 @@ final class DataUnitManager {
      * @return Created DataUnit.
      * @throw DataUnitCreateException
      */
-    public ManagableDataUnit addDataUnit(DataUnitType type, String name)
-            {
+    public ManagableDataUnit addDataUnit(DataUnitType type, String name) {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&

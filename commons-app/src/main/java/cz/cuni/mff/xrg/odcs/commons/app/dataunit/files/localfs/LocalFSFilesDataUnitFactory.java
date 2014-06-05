@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperties;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.WritableFilesDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 
 public class LocalFSFilesDataUnitFactory implements WritableFilesDataUnitFactory {
 
@@ -12,8 +13,12 @@ public class LocalFSFilesDataUnitFactory implements WritableFilesDataUnitFactory
     private String globalWorkingDirectory;
     
     @Override
-    public ManageableWritableFilesDataUnit create(String dataUnitName, String dataGraph) {
+    public ManageableWritableFilesDataUnit create(String pipelineId, String dataUnitName) {
+        try {
+            return new LocalFSFilesDataUnit(globalWorkingDirectory, pipelineId, dataUnitName);
+        } catch (DataUnitCreateException e) {
+            e.printStackTrace();
+        }
         return null;
-//        return new LocalFSFilesDataUnit(globalWorkingDirectory, dataUnitName);
     }
 }

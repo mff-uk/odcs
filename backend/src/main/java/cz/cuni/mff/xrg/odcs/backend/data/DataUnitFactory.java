@@ -61,35 +61,6 @@ public class DataUnitFactory {
         switch (type) {
             case RDF:
                 return rdfDataUnitFactory.create(pipelineId, name, GraphUrl.translateDataUnitId(id));
-//				throw new RuntimeException("Pure RDF DataUnit can't "
-//						+ "be created.");
-//			case RDF_Local:
-//				// create DataUnit
-//				ManagableDataUnit localRepository = new LocalRDFDataUnit(
-//								appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR)
-//								
-//								, 
-//						name, GraphUrl.translateDataUnitId(id));
-//
-//				// create container with DataUnit and index
-//				return localRepository;
-//			case RDF_Virtuoso:
-//				// load configuration from appConfig
-//				AppConfig config = appConfig.getSubConfiguration(
-//						ConfigProperty.RDF
-//				);
-//				
-//				final String url = "jdbc:virtuoso://" + config.getString(ConfigProperty.DATABASE_HOSTNAME) + ":"
-//						+ config.getString(ConfigProperty.DATABASE_PORT) + "/charset=UTF-8/log_enable=2";
-//				// create repository
-//				ManagableDataUnit virtosoRepository = new VirtuosoRDFDataUnit(
-//						url,
-//						config.getString(ConfigProperty.DATABASE_USER),
-//						config.getString(ConfigProperty.DATABASE_PASSWORD),
-//						name, 
-//						GraphUrl.translateDataUnitId(id));
-//				
-//				return virtosoRepository;
             case FILE:
                 // create the DataUnit and return it
                 return FileDataUnitFactory.create(name, directory);
