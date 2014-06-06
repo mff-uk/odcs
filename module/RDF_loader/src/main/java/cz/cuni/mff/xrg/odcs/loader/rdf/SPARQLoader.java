@@ -46,7 +46,6 @@ import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
  * Responsible to load RDF data to SPARQL endpoint. Need special for SPARQL
@@ -126,7 +125,6 @@ public class SPARQLoader {
      * @param chunkSize
      *            Size of insert part of triples which insert at once to
      *            SPARQL endpoint.
-     * @throws DPUException
      */
     public void loadToSPARQLEndpoint()
             throws DPUException {
@@ -162,43 +160,45 @@ public class SPARQLoader {
                         .build();
             }
 
-            for (String graph : config.getGraphsUri()) {
-                Long graphSizeBefore = getSPARQLEndpointGraphSize(
-                        graph);
-
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
-                        graph, graphSizeBefore, config.getSPARQL_endpoint()));
-                checkCancel();
-            }
-
-            for (String endpointGraph : config.getGraphsUri()) {
-                //clean target graph if nessasarry - via using given WriteGraphType 
-                if (WriteGraphType.FAIL.equals(config.getGraphOption())) {
-                    //if target graph is not empty, exception is thrown
-
-                    long SPARQLGraphSize = getSPARQLEndpointGraphSize(
-                            endpointGraph);
-
-                    if (SPARQLGraphSize > 0) {
-                        throw new DPUException(
-                                "Graph <" + endpointGraph + "> is not empty (has "
-                                        + SPARQLGraphSize
-                                        + " triples) - Loading to SPARQL endpoint FAILs.");
-                    }
-                }
-                checkCancel();
-            }
-            //starting to load data to target SPARQL endpoint
-
-            final GraphPairCollection collection = getGraphPairs(config.getGraphsUri());
-
             boolean shouldRepeat = true;
             int retryCount = 0;
+            GraphPairCollection collection = null;
             while (shouldRepeat) {
                 shouldRepeat = false;
                 retryCount++;
+
                 try {
+                    for (String graph : config.getGraphsUri()) {
+                        Long graphSizeBefore = getSPARQLEndpointGraphSize(
+                                graph);
+
+                        context.sendMessage(MessageType.INFO, String.format(
+                                "Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
+                                graph, graphSizeBefore, config.getSPARQL_endpoint()));
+                        checkCancel();
+                    }
+
+                    for (String endpointGraph : config.getGraphsUri()) {
+                        //clean target graph if nessasarry - via using given WriteGraphType 
+                        if (WriteGraphType.FAIL.equals(config.getGraphOption())) {
+                            //if target graph is not empty, exception is thrown
+
+                            long SPARQLGraphSize = getSPARQLEndpointGraphSize(
+                                    endpointGraph);
+
+                            if (SPARQLGraphSize > 0) {
+                                throw new DPUException(
+                                        "Graph <" + endpointGraph + "> is not empty (has "
+                                                + SPARQLGraphSize
+                                                + " triples) - Loading to SPARQL endpoint FAILs.");
+                            }
+                        }
+                        checkCancel();
+                    }
+                    //starting to load data to target SPARQL endpoint
+
+                    collection = getGraphPairs(config.getGraphsUri());
+
                     //SPARQL graph protocol is used
                     checkCancel();
                     loadDataPartsUsingGraphStoreProtocol(endpointURL, collection.getTempGraphs());
@@ -208,7 +208,27 @@ public class SPARQLoader {
 
                     checkCancel();
                     moveDataToTarget(collection);
-                } catch (DPUException ex) {
+                    
+                    clearEndpointGraphs(endpointURL, collection.getTempGraphs());
+
+                    for (String graph : config.getGraphsUri()) {
+                        checkCancel();
+
+                        Long graphSizeAfter = getSPARQLEndpointGraphSize(
+                                graph);
+
+                        context.sendMessage(MessageType.INFO, String.format(
+                                "Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
+                                graph, graphSizeAfter, endpointURL.toString()));
+
+                        long loadedTriples = getLoadedTripleCount(graph);
+
+                        context.sendMessage(MessageType.INFO, String.format(
+                                "Loaded %s triples to SPARQL endpoint %s",
+                                loadedTriples, endpointURL.toString()));
+                    }
+                    
+                } catch (DPUNonFatalException ex) {
                     checkCancel();
 
                     shouldRepeat = false;
@@ -226,7 +246,7 @@ public class SPARQLoader {
                                         "Attempt %s Loading data to SPARQL endpoint failed. Reason of cause :%s",
                                         retryCount, ex.getMessage());
 
-                                logger.debug(errorMessage);
+                                logger.warn(errorMessage);
                                 context.sendMessage(MessageType.WARNING, errorMessage, "", ex);
 
                                 try {
@@ -241,38 +261,18 @@ public class SPARQLoader {
                             }
                             break;
                         case STOP_WHEN_BAD_PART:
-                            break;
+                            throw new DPUException(ex);
                         case SKIP_BAD_PARTS:
-                            break;
-                    }
-                } finally {
-                    try {
-                        clearEndpointGraphs(endpointURL, collection.getTempGraphs());
-                    } catch (DPUException ex) {
-                        context.sendMessage(MessageType.WARNING, "Error cleaning temp graph", "", ex);
+                            throw new DPUException(ex);
                     }
                 }
             }
 
-            for (String graph : config.getGraphsUri()) {
-                checkCancel();
-
-                Long graphSizeAfter = getSPARQLEndpointGraphSize(
-                        graph);
-
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
-                        graph, graphSizeAfter, endpointURL.toString()));
-
-                long loadedTriples = getLoadedTripleCount(graph);
-
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Loaded %s triples to SPARQL endpoint %s",
-                        loadedTriples, endpointURL.toString()));
-            }
         } finally {
             try {
-                httpClient.close();
+                if (httpClient != null) {
+                    httpClient.close();
+                }
             } catch (IOException ex) {
                 context.sendMessage(MessageType.WARNING, "Error in close httpClient", "", ex);
             }
@@ -287,7 +287,7 @@ public class SPARQLoader {
      *            Collection of names of graphs where are data loader
      * @return instance of {@link GraphPairCollection} with pairs
      *         graph,tempGraph.
-     * @throws DPUException
+     * @throws DPUException 
      */
     private GraphPairCollection getGraphPairs(List<String> graphs) throws DPUException {
 
@@ -337,7 +337,7 @@ public class SPARQLoader {
      *            target endpoint where data are loaded to.
      * @param collection
      *            collection contains pairs graph-temp_graph
-     * @throws DPUException
+     * @throws DPUException 
      */
     private void moveDataToTarget(GraphPairCollection collection) throws DPUException {
 
@@ -358,9 +358,8 @@ public class SPARQLoader {
      *            String value of graph from data are moved
      * @param targetGraph
      *            String value of graph to data are moved.
-     * @throws DPUException
      */
-    private void moveDataToTarget(String tempGraph, String targetGraph) throws DPUException {
+    private void moveDataToTarget(String tempGraph, String targetGraph) throws DPUNonFatalException {
         String moveQuery;
         if (WriteGraphType.OVERRIDE.equals(config.getGraphOption())) {
             moveQuery = String.format("MOVE <%s> TO <%s>", tempGraph, targetGraph);
@@ -380,7 +379,7 @@ public class SPARQLoader {
                 tempGraph, targetGraph));
     }
 
-    private CloseableHttpResponse getEndpointStreamReader(String endpointURL, List<String> endpointGraph, String query) throws DPUException {
+    private CloseableHttpResponse getEndpointStreamReader(String endpointURL, List<String> endpointGraph, String query) throws DPUNonFatalException {
         LoaderPostType postType = config.getEndpointParams().getPostType();
 
         switch (postType) {
@@ -402,13 +401,10 @@ public class SPARQLoader {
      * @param endpointGraph
      *            String name of graph which size we can find out.
      * @return graph size for given graph and SPARQL endpoint.
-     * @throws DPUException
-     * @throws RDFException
-     *             if endpoint is not available or cause problems.
      * @throws IOException
      * @throws IllegalStateException
      */
-    private long getSPARQLEndpointGraphSize(String endpointGraph) throws DPUException {
+    private long getSPARQLEndpointGraphSize(String endpointGraph) throws DPUNonFatalException {
 
         String countQuery = "SELECT (count(*) as ?count) WHERE {?x ?y ?z}";
 
@@ -444,7 +440,7 @@ public class SPARQLoader {
 
             }
         } catch (IOException ex) {
-            throw new DPUException(ex);
+            throw new DPUNonFatalException(ex);
         } finally {
             if (scanner != null) {
                 scanner.close();
@@ -471,9 +467,8 @@ public class SPARQLoader {
      *            URL address of update endpoint connect to.
      * @param endpointGraph
      *            Graph name in URI format.
-     * @throws DPUException
      */
-    private void clearEndpointGraph(String endpointGraph) throws DPUException {
+    private void clearEndpointGraph(String endpointGraph) throws DPUNonFatalException {
         String endpointURL = config.getSPARQL_endpoint();
 
         //TODO Virtuoso specific part DEFINE sql:log-enable 3 - because of non-effective clearing of graphs which caused that removing graph was often unsuccessful
@@ -523,9 +518,8 @@ public class SPARQLoader {
      *            RDF data format for given returned RDF data.
      * @return Result of given SPARQL query apply to given graph. If it produce
      *         some RDF data, there are in specified RDF format.
-     * @throws DPUException
      */
-    private CloseableHttpResponse getEncodedStreamReader(String endpointURL, List<String> endpointGraphURI, String query, RDFFormat format) throws DPUException {
+    private CloseableHttpResponse getEncodedStreamReader(String endpointURL, List<String> endpointGraphURI, String query, RDFFormat format) throws DPUNonFatalException {
 
         String queryParam = String.format("?%s=%s", config.getEndpointParams()
                 .getQueryParam(),
@@ -567,14 +561,14 @@ public class SPARQLoader {
 //                        String errorMessage = getHTTPResponseErrorMessage(
 //                                httpConnection);
 
-                throw new DPUException(
+                throw new DPUNonFatalException(
                         httpResponseMessage + "\n\nURL endpoint: " + endpointURL
                                 .toString() + " POST content: " + parameters);
             } else {
                 return response;
             }
         } catch (IOException ex) {
-            throw new DPUException(ex);
+            throw new DPUNonFatalException(ex);
         }
     }
 
@@ -623,7 +617,7 @@ public class SPARQLoader {
             logger.debug("Phase 1 Finished: data is serialized to RDF/XML file");
 
         } catch (RepositoryException | QueryEvaluationException | RDFHandlerException | MalformedQueryException ex) {
-            throw new DPUException(ex);
+            throw new DPUNonFatalException(ex);
         } finally {
             if (connection != null) {
                 try {
@@ -636,7 +630,7 @@ public class SPARQLoader {
                 fos.flush();
                 fos.close();
             } catch (IOException ex) {
-                throw new DPUException(ex);
+                throw new DPUNonFatalException(ex);
             }
         }
         checkCancel();
@@ -670,7 +664,7 @@ public class SPARQLoader {
             response = httpClient.execute(post);
             logger.info("Result: {}, {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
         } catch (IOException ex) {
-            throw new DPUException(ex);
+            throw new DPUNonFatalException(ex);
         } finally {
             if (response != null) {
                 EntityUtils.consumeQuietly(response.getEntity());
@@ -691,10 +685,9 @@ public class SPARQLoader {
      *            SPARQL query to execute on sparql endpoint
      * @return Result of given SPARQL query apply to given graph. If it produce
      *         some RDF data, there are in specified RDF format.
-     * @throws DPUException
      */
     private CloseableHttpResponse getUnencodedQueryStreamReader(String endpointURL,
-            List<String> endpointGraphURI, String query) throws DPUException {
+            List<String> endpointGraphURI, String query) throws DPUNonFatalException {
 
         String defaultGraphParam = getGraphParam(config.getEndpointParams()
                 .getDefaultGraphParam(), endpointGraphURI, true);
@@ -727,14 +720,14 @@ public class SPARQLoader {
 
             if (firstResponseNumber != 2) {
 
-                throw new DPUException(
+                throw new DPUNonFatalException(
                         httpResponseMessage + "\n\nURL endpoint: " + endpointURL
                                 .toString() + " POST content: " + parameters);
             } else {
                 return response;
             }
         } catch (IOException ex) {
-            throw new DPUException(ex);
+            throw new DPUNonFatalException(ex);
         }
     }
 
