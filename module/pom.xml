@@ -21,6 +21,7 @@
         <module>XSLT2</module>
         <module>TripleGenerator</module>
         <module>FilesToSPARQLLoader</module>
+        <module>FileDataUnitToFilesDataUnit</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>

@@ -12,7 +12,7 @@ public class DataUnitTypeResolver {
         } else if (FileDataUnit.class.isAssignableFrom(classType)) {
             return DataUnitType.FILE;
         } else if (FilesDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILE_LIST;
+            return DataUnitType.FILES;
         }
         return null;
     }

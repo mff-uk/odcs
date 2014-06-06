@@ -71,7 +71,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     //DataUnit interface
     @Override
     public DataUnitType getType() {
-        return DataUnitType.FILE_LIST;
+        return DataUnitType.FILES;
     }
 
     //DataUnit interface
@@ -119,7 +119,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     //WritableFilesDataUnit interface
     @Override
     public void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
+        if (!ownerThread.equals(Thread.currentThread())) {                      
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
@@ -130,6 +130,14 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
         if (!existingFile.isFile()) {
             throw new IllegalArgumentException("Only files are permitted to be added. File " + existingFileFullPath + " is not a proper file.");
         }
+//        try {
+//            if (!FileSystems.getDefault().getPath(existingFile.getCanonicalPath()).startsWith(workingDirectoryCannonicalPath)) {
+//                throw new IllegalArgumentException("Only files under the " + workingDirectoryCannonicalPath + " are permitted to be added. File " + existingFileFullPath + " is not located there.");
+//            }
+//        } catch (IOException ex) {
+//            throw new IllegalArgumentException("Only files under the " + workingDirectoryCannonicalPath + " are permitted to be added. File " + existingFileFullPath + " is not located there.", ex);
+//        }
+
         RepositoryConnection connection = null;
         try {
             connection = backingStore.getConnection();
@@ -160,8 +168,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                     // eat close exception, we cannot do anything clever here
                 }
             }
-        }
-    }
+        }    }
 
     //WritableFilesDataUnit interface
     @Override
