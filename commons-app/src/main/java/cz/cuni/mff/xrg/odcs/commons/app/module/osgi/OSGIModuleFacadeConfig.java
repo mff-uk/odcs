@@ -6,13 +6,12 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -21,14 +20,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.dataunit_file;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.ontology;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -137,8 +131,6 @@ class OSGIModuleFacadeConfig {
         appendPackages(packageList, commons_web.PACKAGE_LIST);
         appendPackages(packageList, commons_module.PACKAGE_LIST);
         appendPackages(packageList, rdf.PACKAGE_LIST);
-        appendPackages(packageList, dataunit_file.PACKAGE_LIST);
-        appendPackages(packageList, ontology.PACKAGE_LIST);
 
         this.additionalPackages = packageList.toString();
         // check if load data from backend's library directory

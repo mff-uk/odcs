@@ -130,7 +130,7 @@ public final class openrdf {
                     + "org.openrdf.sail.rdbms.postgresql,"
                     + "org.openrdf.sail.rdbms.schema,"
                     + "org.openrdf.sail.rdbms.util,"
-                    + "org.openrdf.util.iterators"
+                    + "org.openrdf.util.iterators,"
                     + "info.aduna.io,"
                     + "info.aduna.iteration,"
                     + "info.aduna.lang,"
