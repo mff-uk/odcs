@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.fileextractor2;
+package cz.cuni.mff.xrg.odcs.dpu.filestordf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2Config> {
+public class FilesToRDFConfigDialog extends BaseConfigDialog<FilesToRDFConfig> {
     /**
      * 
      */
@@ -36,8 +36,8 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
 
     private ObjectProperty<Integer> commitSize = new ObjectProperty<Integer>(0);
 
-    public FileExtractor2ConfigDialog() {
-        super(FileExtractor2Config.class);
+    public FilesToRDFConfigDialog() {
+        super(FilesToRDFConfig.class);
         initialize();
     }
 
@@ -57,7 +57,7 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
     }
 
     @Override
-    public void setConfiguration(FileExtractor2Config conf) throws ConfigException {
+    public void setConfiguration(FilesToRDFConfig conf) throws ConfigException {
         commitSize.setValue(conf.getCommitSize());
         
         StringBuilder sb = new StringBuilder();
@@ -75,7 +75,7 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
     }
 
     @Override
-    public FileExtractor2Config getConfiguration() throws ConfigException {
+    public FilesToRDFConfig getConfiguration() throws ConfigException {
         Map<String, String> symbolicNameToBaseURIMap = new LinkedHashMap<>();
         Map<String, String> symbolicNameToFormatMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
@@ -117,7 +117,7 @@ public class FileExtractor2ConfigDialog extends BaseConfigDialog<FileExtractor2C
             throw new ConfigException(ex);
         }
 
-        FileExtractor2Config conf = new FileExtractor2Config();
+        FilesToRDFConfig conf = new FilesToRDFConfig();
         conf.setSymbolicNameToBaseURIMap(symbolicNameToBaseURIMap);
         conf.setSymbolicNameToFormatMap(symbolicNameToFormatMap);
         conf.setCommitSize(commitSize.getValue());

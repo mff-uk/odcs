@@ -20,7 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
@@ -30,7 +30,7 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 
-@AsExtractor
+@AsLoader
 public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderConfig> implements ConfigDialogProvider<FilesToSPARQLLoaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToSPARQLLoader.class);
 

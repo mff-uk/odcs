@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
-@AsExtractor
+@AsTransformer
 public class FileDataUnitToFilesDataUnit extends NonConfigurableBase {
     private static final Logger LOG = LoggerFactory.getLogger(FileDataUnitToFilesDataUnit.class);
 

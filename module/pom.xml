@@ -17,9 +17,9 @@
     <modules>
 	<!-- New DPUs  -->
         <module>HTTPDownloader</module>
-        <module>FileExtractor2</module>
         <module>XSLT2</module>
         <module>TripleGenerator</module>
+        <module>FilesToRDF</module>
         <module>FilesToSPARQLLoader</module>
         <module>FileDataUnitToFilesDataUnit</module>
 	<!-- Old DPUs  -->

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.fileextractor2;
+package cz.cuni.mff.xrg.odcs.dpu.filestordf;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
@@ -27,9 +27,9 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
-@AsExtractor
-public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> implements ConfigDialogProvider<FileExtractor2Config> {
-    private static final Logger LOG = LoggerFactory.getLogger(FileExtractor2.class);
+@AsTransformer
+public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig> implements ConfigDialogProvider<FilesToRDFConfig> {
+    private static final Logger LOG = LoggerFactory.getLogger(FilesToRDF.class);
 
     @InputDataUnit(name = "fileInput")
     public FilesDataUnit fileInput;
@@ -37,8 +37,8 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
     @OutputDataUnit(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
 
-    public FileExtractor2() {
-        super(FileExtractor2Config.class);
+    public FilesToRDF() {
+        super(FilesToRDFConfig.class);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class FileExtractor2 extends ConfigurableBase<FileExtractor2Config> imple
     }
 
     @Override
-    public AbstractConfigDialog<FileExtractor2Config> getConfigurationDialog() {
-        return new FileExtractor2ConfigDialog();
+    public AbstractConfigDialog<FilesToRDFConfig> getConfigurationDialog() {
+        return new FilesToRDFConfigDialog();
     }
 }

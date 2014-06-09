@@ -9,18 +9,18 @@
         <version>1.1.0</version>
     </parent>
 
-    <artifactId>FileExtractor2</artifactId>
+    <artifactId>FilesToRDF</artifactId>
 
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.1.0</version>
 
     <packaging>bundle</packaging>
 
-    <description>FileExtractor2 extracts RDF data from any format.</description>
+    <description>FilesToRDF extracts RDF data from any file format.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.fileextractor2</dpu.package>
-        <dpu.mainClass>FileExtractor2</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestordf</dpu.package>
+        <dpu.mainClass>FilesToRDF</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>

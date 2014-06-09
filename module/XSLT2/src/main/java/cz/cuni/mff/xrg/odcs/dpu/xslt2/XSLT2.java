@@ -22,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
+import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
@@ -30,11 +30,11 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
+import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
-@AsExtractor
+@AsTransformer
 public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialogProvider<XSLT2Config> {
     private static final Logger LOG = LoggerFactory.getLogger(XSLT2.class);
 
