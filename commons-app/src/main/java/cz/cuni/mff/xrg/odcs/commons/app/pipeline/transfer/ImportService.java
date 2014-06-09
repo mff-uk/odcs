@@ -129,7 +129,9 @@ public class ImportService {
             // add schedules
             final File scheduleFile = new File(tempDirectory,
                     ArchiveStructure.SCHEDULE.getValue());
-            importSchedules(scheduleFile, pipe, user);
+            if (scheduleFile.exists()) {
+                importSchedules(scheduleFile, pipe, user);
+            }
 
         } catch (ImportException ex) {
             throw ex;
@@ -197,30 +199,31 @@ public class ImportService {
 
             // TODO add version check here
         }
+        //TODO jan.marcek need to explain
         // copy user data
-        if (userDataDir.exists()) {
-            try {
-                final File dest = resourceManager
-                        .getDPUDataUserDir(result, user);
-                FileUtils.copyDirectory(userDataDir, dest);
-            } catch (MissingResourceException ex) {
-                throw new ImportException("Missing resource.", ex);
-            } catch (IOException ex) {
-                throw new ImportException("Failed to copy DPU user data", ex);
-            }
-        }
-
-        // copy global data
-        if (globalDataDir.exists()) {
-            try {
-                final File dest = resourceManager.getDPUDataGlobalDir(result);
-                FileUtils.copyDirectory(globalDataDir, dest);
-            } catch (MissingResourceException ex) {
-                throw new ImportException("Missing resource.", ex);
-            } catch (IOException ex) {
-                throw new ImportException("Failed to copy DPU global data", ex);
-            }
-        }
+//        if (userDataDir.exists()) {
+//            try {
+//                final File dest = resourceManager
+//                        .getDPUDataUserDir(result, user);
+//                FileUtils.copyDirectory(userDataDir, dest);
+//            } catch (MissingResourceException ex) {
+//                throw new ImportException("Missing resource.", ex);
+//            } catch (IOException ex) {
+//                throw new ImportException("Failed to copy DPU user data", ex);
+//            }
+//        }
+//
+//        // copy global data
+//        if (globalDataDir.exists()) {
+//            try {
+//                final File dest = resourceManager.getDPUDataGlobalDir(result);
+//                FileUtils.copyDirectory(globalDataDir, dest);
+//            } catch (MissingResourceException ex) {
+//                throw new ImportException("Missing resource.", ex);
+//            } catch (IOException ex) {
+//                throw new ImportException("Failed to copy DPU global data", ex);
+//            }
+//        }
 
         return result;
     }

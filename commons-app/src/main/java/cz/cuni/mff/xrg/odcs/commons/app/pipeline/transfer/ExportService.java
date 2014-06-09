@@ -97,7 +97,10 @@ public class ExportService {
                 ZipOutputStream zipStream = new ZipOutputStream(fos)) {
             // save information about pipeline and schedule
             savePipeline(pipeline, zipStream);
-            saveSchedule(pipeline, zipStream);
+
+            if (setting.isChbExportSchedule()) {
+                saveSchedule(pipeline, zipStream);
+            }
             // save jar and dpu files
             HashSet<Long> savedTemplateId = new HashSet<>();
 			HashSet<String> savedTemplateDir = new HashSet<>();
@@ -113,10 +116,12 @@ public class ExportService {
 					final String jarDirectory = template.getJarDirectory();
 					if (savedTemplateDir.contains(jarDirectory)) {
 						// jar already exported
-					} else {
-						savedTemplateDir.add(jarDirectory);
-						saveDPUJar(template, zipStream);
-					}                    
+                    } else {
+                        savedTemplateDir.add(jarDirectory);
+                        if (setting.isExportJars()) {
+                            saveDPUJar(template, zipStream);
+                        }
+                    }
                     // copy data
                     if (setting.isExportDPUUserData()) {
                         saveDPUDataUser(template, user, zipStream);
@@ -227,7 +232,8 @@ public class ExportService {
         } catch (MissingResourceException ex) {
             throw new ExportException("Failed to get path to jar file.");
         }
-
+        
+        
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
                 + File.separator + template.getJarDirectory();
 

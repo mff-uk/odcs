@@ -34,6 +34,10 @@ public class PipelineExport extends Window {
 
     private CheckBox chbExportDPUData;
 
+    private CheckBox chbExportJars;
+
+    private CheckBox chbExportSchedule;
+
     /**
      * Export service.
      */
@@ -62,10 +66,22 @@ public class PipelineExport extends Window {
 
         final VerticalLayout detailLayout = new VerticalLayout();
 
-        chbExportDPUData = new CheckBox("Export DPU data:");
-        chbExportDPUData.setWidth("100%");
-        chbExportDPUData.setValue(true);
-        detailLayout.addComponent(chbExportDPUData);
+        //jan.marcek now, I'm confused, a method is really strange. The purpose of this is unknown,  
+        //chbExportDPUData = new CheckBox("Export DPU data");
+        //chbExportDPUData.setWidth("100%");
+        //chbExportDPUData.setValue(true);
+        //detailLayout.addComponent(chbExportDPUData);
+
+        chbExportJars = new CheckBox("Export DPUs JARs");
+        chbExportJars.setWidth("100%");
+        chbExportJars.setValue(true);
+        detailLayout.addComponent(chbExportJars);
+
+        chbExportSchedule = new CheckBox("Export pipeline's schedule");
+        chbExportSchedule.setWidth("100%");
+        chbExportSchedule.setValue(true);
+        detailLayout.addComponent(chbExportSchedule);
+
 
         final HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
@@ -98,11 +114,12 @@ public class PipelineExport extends Window {
 
             @Override
             public InputStream getStream() {
-                ExportSetting setting = new ExportSetting(chbExportDPUData.getValue());
+                //jan.marcek be aware to change exportSetting when you allow chbExportDPUData
+                ExportSetting setting = new ExportSetting(false, chbExportJars.getValue(), chbExportSchedule.getValue());
                 LOG.debug("Exporting DPU date: {}", setting.isExportDPUUserData());
+                LOG.debug("Exporting DPU's jars: {}", setting.isExportJars());
+                LOG.debug("Exporting DPU's schedule: {}", setting.isChbExportSchedule());
 
-                // TODO we should add some waiting dialog here, or 
-                //	we can split the action -> prepare download, download
                 LOG.debug("Constructing output stream.");
                 File pplFile;
                 try {
