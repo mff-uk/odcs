@@ -66,11 +66,10 @@ public class PipelineExport extends Window {
 
         final VerticalLayout detailLayout = new VerticalLayout();
 
-        //jan.marcek now, I'm confused, a method is really strange. The purpose of this is unknown,  
-        //chbExportDPUData = new CheckBox("Export DPU data");
-        //chbExportDPUData.setWidth("100%");
-        //chbExportDPUData.setValue(true);
-        //detailLayout.addComponent(chbExportDPUData);
+        chbExportDPUData = new CheckBox("Export DPU data");
+        chbExportDPUData.setWidth("100%");
+        chbExportDPUData.setValue(true);
+        detailLayout.addComponent(chbExportDPUData);
 
         chbExportJars = new CheckBox("Export DPUs JARs");
         chbExportJars.setWidth("100%");
@@ -114,8 +113,7 @@ public class PipelineExport extends Window {
 
             @Override
             public InputStream getStream() {
-                //jan.marcek be aware to change exportSetting when you allow chbExportDPUData
-                ExportSetting setting = new ExportSetting(false, chbExportJars.getValue(), chbExportSchedule.getValue());
+                ExportSetting setting = new ExportSetting(chbExportDPUData.getValue(), chbExportJars.getValue(), chbExportSchedule.getValue());
                 LOG.debug("Exporting DPU date: {}", setting.isExportDPUUserData());
                 LOG.debug("Exporting DPU's jars: {}", setting.isExportJars());
                 LOG.debug("Exporting DPU's schedule: {}", setting.isChbExportSchedule());
