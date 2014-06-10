@@ -4,18 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.FileDownloader;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
@@ -38,6 +37,10 @@ public class PipelineExport extends Window {
 
     private CheckBox chbExportSchedule;
 
+    private Label usedJarsLabel;
+
+    private Label usedJarsText;
+
     /**
      * Export service.
      */
@@ -48,16 +51,17 @@ public class PipelineExport extends Window {
      */
     private Pipeline pipeline;
 
-    public PipelineExport(ExportService exportService) {
+    public PipelineExport(ExportService exportService, Pipeline pipeline) {
         this.exportService = exportService;
+        this.pipeline = pipeline;
         init();
     }
 
     private void init() {
         this.setResizable(false);
         this.setModal(true);
-        this.setWidth("320px");
-        this.setHeight("320px");
+        this.setWidth("400px");
+        this.setHeight("350px");
         this.setCaption("Pipeline export");
 
         final VerticalLayout mainLayout = new VerticalLayout();
@@ -65,6 +69,7 @@ public class PipelineExport extends Window {
         mainLayout.setSizeFull();
 
         final VerticalLayout detailLayout = new VerticalLayout();
+        detailLayout.setWidth("100%");
 
         chbExportDPUData = new CheckBox("Export DPU data");
         chbExportDPUData.setWidth("100%");
@@ -81,10 +86,33 @@ public class PipelineExport extends Window {
         chbExportSchedule.setValue(true);
         detailLayout.addComponent(chbExportSchedule);
 
+        final VerticalLayout usedJarsLayout = new VerticalLayout();
+        usedJarsLayout.setWidth("100%");
+
+        Panel panel = new Panel("Used dpus:");
+        panel.setWidth("100%");
+        panel.setHeight("150px");
+
+        TreeMap<String, String> usedDpus = exportService.getDpusInformation(pipeline);
+
+        Table table = new Table();
+        table.addContainerProperty("DPU template", String.class,  null);
+        table.addContainerProperty("DPU jar's name",  String.class,  null);
+        table.setSizeUndefined();
+
+        Integer i = 1;
+        for(Map.Entry<String,String> entry : usedDpus.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            table.addItem(new Object[] {key,value}, i++);
+        }
+
+        panel.setContent(table);
+        usedJarsLayout.addComponent(panel);
+
 
         final HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
-
         Button btnExport = new Button("export");
         buttonLayout.addComponent(btnExport);
         buttonLayout.setComponentAlignment(btnExport, Alignment.MIDDLE_LEFT);
@@ -99,9 +127,9 @@ public class PipelineExport extends Window {
 
         // add to the main layout
         mainLayout.addComponent(detailLayout);
-        mainLayout.setExpandRatio(detailLayout, 1);
+        mainLayout.addComponent(usedJarsLayout);
         mainLayout.addComponent(buttonLayout);
-        mainLayout.setExpandRatio(buttonLayout, 0);
+        mainLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_CENTER);
         setContent(mainLayout);
 
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
@@ -140,8 +168,5 @@ public class PipelineExport extends Window {
         fileDownloader.extend(btnExport);
     }
 
-    public void setData(Pipeline pipeline) {
-        this.pipeline = pipeline;
-    }
 
 }
