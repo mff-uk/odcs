@@ -68,17 +68,17 @@ public class PipelineExport extends Window {
 
         chbExportDPUData = new CheckBox("Export DPU data");
         chbExportDPUData.setWidth("100%");
-        chbExportDPUData.setValue(true);
+        chbExportDPUData.setValue(false);
         detailLayout.addComponent(chbExportDPUData);
 
         chbExportJars = new CheckBox("Export DPUs JARs");
         chbExportJars.setWidth("100%");
-        chbExportJars.setValue(true);
+        chbExportJars.setValue(false);
         detailLayout.addComponent(chbExportJars);
 
         chbExportSchedule = new CheckBox("Export pipeline's schedule");
         chbExportSchedule.setWidth("100%");
-        chbExportSchedule.setValue(true);
+        chbExportSchedule.setValue(false);
         detailLayout.addComponent(chbExportSchedule);
 
         final VerticalLayout usedJarsLayout = new VerticalLayout();
