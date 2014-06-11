@@ -20,7 +20,13 @@ public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
     }
 
     @Override
-    public void cleanPipeline(String pipelineId) {
+    public void clean(String pipelineId) {
         // no-op
+    }
+
+    @Override
+    public void release(String pipelineId) {
+        // TODO Auto-generated method stub
+        
     }
 }

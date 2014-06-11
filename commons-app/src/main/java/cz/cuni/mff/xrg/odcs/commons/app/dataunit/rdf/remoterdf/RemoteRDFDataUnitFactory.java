@@ -46,7 +46,7 @@ public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
     }
 
     @Override
-    public void cleanPipeline(String pipelineId) {
+    public void clean(String pipelineId) {
         try {
             RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
             if (repositoryManager instanceof RemoteRepositoryManager) {
@@ -55,6 +55,21 @@ public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
                 }
             }
             repositoryManager.removeRepository(pipelineId);
+        } catch (RepositoryConfigException | RepositoryException ex) {
+            throw new RuntimeException("Could not remove repository", ex);
+        }
+    }
+
+    @Override
+    public void release(String pipelineId) {
+        try {
+            RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
+            if (repositoryManager instanceof RemoteRepositoryManager) {
+                if (user != null && !user.isEmpty()) {
+                    ((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
+                }
+            }
+            repositoryManager.getRepository(pipelineId).shutDown();
         } catch (RepositoryConfigException | RepositoryException ex) {
             throw new RuntimeException("Could not remove repository", ex);
         }

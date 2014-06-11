@@ -27,7 +27,7 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
     }
 
     @Override
-    public void cleanPipeline(String pipelineId) {
+    public void clean(String pipelineId) {
         try {
             File managerDir = new File(repositoryPath);
             if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
@@ -39,4 +39,20 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
             throw new RuntimeException("Could not remove repository", ex);
         }
     }
+
+    @Override
+    public void release(String pipelineId) {
+        try {
+            File managerDir = new File(repositoryPath);
+            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                throw new RuntimeException("Could not create repository manager directory.");
+            }
+            LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
+            localRepositoryManager.getRepository(pipelineId).shutDown();;
+        } catch (RepositoryConfigException | RepositoryException ex) {
+            throw new RuntimeException("Could not remove repository", ex);
+        }
+    }
+    
+    
 }

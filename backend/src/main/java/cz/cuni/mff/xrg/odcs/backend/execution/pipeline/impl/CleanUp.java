@@ -65,9 +65,11 @@ class CleanUp implements PostExecutor {
                 contextFacade.delete(item, true);
             }
         }
-        if (!execution.isDebugging()) {
-            rdfDataUnitFactory.cleanPipeline(execution.getContext().generatePipelineId());
-        }        
+        if (execution.isDebugging()) {
+            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
+        } else {
+            rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
+        }     
         // prepare execution root
         File rootDir = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
