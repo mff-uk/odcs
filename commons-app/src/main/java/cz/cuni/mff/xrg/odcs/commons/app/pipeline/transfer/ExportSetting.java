@@ -9,8 +9,14 @@ public class ExportSetting {
 
     private boolean exportDPUUserData;
 
-    public ExportSetting(boolean exportDPUUserData) {
+    private boolean exportJars;
+
+    private boolean chbExportSchedule;
+
+    public ExportSetting(boolean exportDPUUserData, boolean exportJars, boolean chbExportSchedule) {
         this.exportDPUUserData = exportDPUUserData;
+        this.exportJars = exportJars;
+        this.chbExportSchedule = chbExportSchedule;
     }
 
     public boolean isExportDPUUserData() {
@@ -21,4 +27,19 @@ public class ExportSetting {
         this.exportDPUUserData = exportDPUUserData;
     }
 
+    public boolean isExportJars() {
+        return exportJars;
+    }
+
+    public void setExportJars(boolean exportJars) {
+        this.exportJars = exportJars;
+    }
+
+    public boolean isChbExportSchedule() {
+        return chbExportSchedule;
+    }
+
+    public void setChbExportSchedule(boolean chbExportSchedule) {
+        this.chbExportSchedule = chbExportSchedule;
+    }
 }

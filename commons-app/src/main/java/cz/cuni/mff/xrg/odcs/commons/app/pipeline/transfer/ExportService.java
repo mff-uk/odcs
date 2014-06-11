@@ -4,12 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
@@ -51,7 +57,7 @@ public class ExportService {
 
     /**
      * Create a temp file and exportPipeline pipeline into it.
-     * 
+     *
      * @param pipeline
      * @param setting
      * @return File with exportPipelineed pipeline.
@@ -74,9 +80,29 @@ public class ExportService {
         return targetFile;
     }
 
+
+    public TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
+        TreeMap<String, String> informationMap = new TreeMap<>();
+        PipelineGraph graph = pipeline.getGraph();
+
+        for (Node node : graph.getNodes()) {
+            DPUInstanceRecord dpu = node.getDpuInstance();
+            DPUTemplateRecord template = dpu.getTemplate();
+            String instanceName = dpu.getName();
+            String name = template.getJarName();
+
+            if (!informationMap.containsKey(instanceName)) {
+                informationMap.put(instanceName, name);
+            }
+        }
+
+        return informationMap;
+    }
+
+
     /**
      * Export given pipeline and all it's dependencies into given file.
-     * 
+     *
      * @param pipeline
      * @param targetFile
      * @param setting
@@ -97,11 +123,14 @@ public class ExportService {
                 ZipOutputStream zipStream = new ZipOutputStream(fos)) {
             // save information about pipeline and schedule
             savePipeline(pipeline, zipStream);
-            saveSchedule(pipeline, zipStream);
+
+            if (setting.isChbExportSchedule()) {
+                saveSchedule(pipeline, zipStream);
+            }
             // save jar and dpu files
             HashSet<Long> savedTemplateId = new HashSet<>();
 			HashSet<String> savedTemplateDir = new HashSet<>();
-			
+
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
@@ -113,10 +142,12 @@ public class ExportService {
 					final String jarDirectory = template.getJarDirectory();
 					if (savedTemplateDir.contains(jarDirectory)) {
 						// jar already exported
-					} else {
-						savedTemplateDir.add(jarDirectory);
-						saveDPUJar(template, zipStream);
-					}                    
+                    } else {
+                        savedTemplateDir.add(jarDirectory);
+                        if (setting.isExportJars()) {
+                            saveDPUJar(template, zipStream);
+                        }
+                    }
                     // copy data
                     if (setting.isExportDPUUserData()) {
                         saveDPUDataUser(template, user, zipStream);
@@ -136,7 +167,7 @@ public class ExportService {
 
     /**
      * Serialise pipeline into zip stream.
-     * 
+     *
      * @param pipeline
      * @param zipStream
      * @throws ExportException
@@ -157,7 +188,7 @@ public class ExportService {
     /**
      * Serialise all schedule that are visible to current used into given zip
      * stream.
-     * 
+     *
      * @param pipeline
      * @param zipStream
      * @throws ExportException
@@ -179,7 +210,7 @@ public class ExportService {
 
     /**
      * Save jar file for given DPU into subdirectory in given directory.
-     * 
+     *
      * @param template
      * @param zipStream
      * @throws ExportException
@@ -227,7 +258,8 @@ public class ExportService {
         } catch (MissingResourceException ex) {
             throw new ExportException("Failed to get path to jar file.");
         }
-
+        
+        
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
                 + File.separator + template.getJarDirectory();
 
