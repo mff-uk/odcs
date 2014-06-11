@@ -36,7 +36,8 @@
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
 			<artifactId>Saxon-HE</artifactId>
-			<version>9.4.0-9</version>
+			<version>9.4</version>
+			<!--<version>9.4.0-9</version>-->
 			<!--<version>9.5.1-5</version>-->
 			<type>jar</type>
 		</dependency>

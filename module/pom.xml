@@ -22,6 +22,7 @@
         <module>FilesToRDF</module>
         <module>FilesToSPARQLLoader</module>
         <module>FileDataUnitToFilesDataUnit</module>
+        <module>FilesDataUnitToFileDataUnit</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>
