@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dpu.filedataunittofilesdataunit;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +39,16 @@ public class FileDataUnitToFilesDataUnit extends NonConfigurableBase {
         LOG.info(shortMessage);
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
+        Path rootPath = fileInput.getRootDir().asFile().toPath();
         while (fileInputIterator.hasNext()) {
             checkCancelled(dpuContext);
 
             FileHandler handlerItem = fileInputIterator.next();
             String canonicalPath;
             try {
+                Path path = handlerItem.asFile().toPath();
                 canonicalPath = handlerItem.asFile().getCanonicalPath();
-                filesOutput.addExistingFile(canonicalPath, canonicalPath);
+                filesOutput.addExistingFile(rootPath.relativize(path).toString(), canonicalPath);
                 if (dpuContext.isDebugging()) {
                     LOG.trace("Added symbolic name " + canonicalPath + " path URI " + canonicalPath + " to destination data unit.");
                 }

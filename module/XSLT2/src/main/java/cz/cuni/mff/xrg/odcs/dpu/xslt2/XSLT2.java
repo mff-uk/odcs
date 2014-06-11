@@ -2,18 +2,16 @@ package cz.cuni.mff.xrg.odcs.dpu.xslt2;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,25 +58,28 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
             throw new DPUException("No XSLT available, execution interrupted");
         }
 
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = "";//String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
 
         //try to compile XSLT
-        TransformerFactory tfactory = new net.sf.saxon.TransformerFactoryImpl(); //TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
-        Templates templates;
+        Processor proc = new Processor(false);
+        XsltCompiler comp = proc.newXsltCompiler();
+        XsltExecutable exp;
         try {
-            templates = tfactory.newTemplates(new StreamSource(new StringReader(config.getXslTemplate())));
-        } catch (TransformerConfigurationException ex) {
+            exp = comp.compile(new StreamSource(new StringReader(config.getXslTemplate())));
+        } catch (SaxonApiException ex) {
             throw new DPUException("Cannot compile XSLT", ex);
         }
-        dpuContext.sendMessage(MessageType.INFO, "Stylesheet was compiled successully");
+        XsltTransformer trans = exp.load();
+        
         LOG.info("Stylesheet was compiled successully");
 
         FilesIteration filesIteration = fileInput.getFiles();
         int filesSuccessfulCount = 0;
         int all = 0;
+
         try {
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
@@ -86,19 +87,40 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
                 FilesDataUnitEntry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
 
-                File inputFile = new File(entry.getFilesystemURI());
-
                 File outputFile = new File(fileOutput.createFile(inSymbolicName));
+                File inputFile = new File(entry.getFilesystemURI());
                 try {
                     all++;
-                    executeXSLT(templates, inputFile, outputFile, Collections.<String, String> emptyMap());
+
+                    Date start = new Date();
+                    if (dpuContext.isDebugging()) {
+                        long inputSizeM = inputFile.length() / 1024 / 1024;
+                        LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
+                        LOG.debug("Starting transformation of file "+ inSymbolicName + " size " + String.valueOf(inputSizeM) + "M");
+                    }
+                    Serializer out = new Serializer(outputFile);
+                    if (!config.getOutputXSLTMethod().isEmpty()) {
+                        out.setOutputProperty(Serializer.Property.METHOD, config.getOutputXSLTMethod());
+                    }
+                    out.setOutputProperty(Serializer.Property.INDENT, "yes");
+
+//                    DocumentBuilder builder = proc.newDocumentBuilder();
+//                    builder.setTreeModel(TreeModel.TINY_TREE_CONDENSED);
+//                    XdmNode source = builder.build(new StreamSource(entry.getFilesystemURI().toASCIIString()));
+//                    trans.setInitialContextNode(source);
+                    
+                    trans.setSource(new StreamSource(inputFile));
+                    trans.setDestination(out);
+                    trans.transform();
+                    trans.getUnderlyingController().clearDocumentPool();
+                    
                     filesSuccessfulCount++;
 
                     if (dpuContext.isDebugging()) {
-                        dpuContext.sendMessage(MessageType.DEBUG, "Processed file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
-                        LOG.debug("Processed file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI());
+                        LOG.debug("Transformed file #{} in {}. Symbolic name {} a file URI {}", filesSuccessfulCount, (System.currentTimeMillis() - start.getTime()), inSymbolicName, entry.getFilesystemURI());
+                        LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
                     }
-                } catch (TransformerException ex) {
+                } catch (SaxonApiException ex) {
                     dpuContext.sendMessage(MessageType.WARNING, "Problem processing file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
                     LOG.warn("Problem processing file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
                 }
@@ -106,7 +128,7 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
         } finally {
             filesIteration.close();
         }
-        String message = String.format("Processed %d/%d", filesSuccessfulCount, all);
+        String message = String.format("Transformed %d/%d", filesSuccessfulCount, all);
         if (filesSuccessfulCount < all) {
             dpuContext.sendMessage(MessageType.WARNING, message);
             LOG.warn(message);
@@ -114,39 +136,6 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
             dpuContext.sendMessage(MessageType.INFO, message);
             LOG.info(message);
         }
-    }
-
-    /**
-     * @param xslTemplate
-     * @param inputFile
-     * @param xsltParams
-     * @param exp
-     *            Compiled stylesheet
-     * @return
-     * @throws TransformerException
-     */
-    private void executeXSLT(Templates templates, File inputFile, File outputFile, Map<String, String> xsltParams) throws TransformerException {
-        Transformer transformer = templates.newTransformer();
-        transformer.setParameter(OutputKeys.INDENT, "yes");
-        if (!config.getOutputXSLTMethod().isEmpty()) {
-            LOG.debug("Overwriting output method in XSLT from the DPU configuration to {}", config.getOutputXSLTMethod());
-            transformer.setParameter(OutputKeys.METHOD, config.getOutputXSLTMethod());
-        }
-
-        //set params for the template!
-        for (String s : xsltParams.keySet()) {
-            //QName langParam = new QName(s);
-            //transformer.setParameter(s, new XdmAtomicValue(xsltParams.get(s)));
-            transformer.setParameter(s, xsltParams.get(s));
-            LOG.debug("Set param {} with value {}", s, xsltParams.get(s));
-        }
-
-        Date start = new Date();
-        LOG.debug("XSLT is about to be executed");
-        transformer.transform(new StreamSource(inputFile),
-                new StreamResult(outputFile));
-
-        LOG.debug("XSLT executed in {} ms", (System.currentTimeMillis() - start.getTime()));
     }
 
     private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
