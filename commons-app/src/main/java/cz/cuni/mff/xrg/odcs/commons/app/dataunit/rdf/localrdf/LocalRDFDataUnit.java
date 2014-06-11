@@ -25,8 +25,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 public class LocalRDFDataUnit extends AbstractRDFDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(LocalRDFDataUnit.class);
 
-    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository";
-
     private Repository repository;
 
     /**
@@ -41,7 +39,7 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
      * @param dataUnitName
      *            DataUnit's name. If not used in Pipeline can be empty String.
      */
-    public LocalRDFDataUnit(String repositoryPath, String dataUnitName,
+    public LocalRDFDataUnit(String repositoryPath, String pipelineId, String dataUnitName,
             String dataGraph) {
         super(dataUnitName, dataGraph);
 
@@ -52,12 +50,12 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
             }
             LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
             repository = localRepositoryManager
-                    .getRepository(GLOBAL_REPOSITORY_ID);
+                    .getRepository(pipelineId);
             if (repository == null) {
                 localRepositoryManager.addRepositoryConfig(
-                        new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new NativeStoreConfig()))
+                        new RepositoryConfig(pipelineId, new SailRepositoryConfig(new NativeStoreConfig()))
                         );
-                repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
+                repository = localRepositoryManager.getRepository(pipelineId);
             }
             if (repository == null) {
                 throw new RuntimeException("Could not initialize repository");

@@ -89,7 +89,7 @@ public class LocalRDFRepoSysTest {
             throw new RuntimeException(e.getMessage());
         }
 
-        rdfRepo = new LocalRDFDataUnit(pathRepo.toString(),
+        rdfRepo = new LocalRDFDataUnit(pathRepo.toString(), "testtt",
                 "myTestName", "http://default");
     }
 

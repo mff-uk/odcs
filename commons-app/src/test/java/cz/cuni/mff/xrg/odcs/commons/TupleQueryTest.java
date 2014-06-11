@@ -41,7 +41,7 @@ public class TupleQueryTest {
      */
     @BeforeClass
     public static void inicialize() throws IOException {
-        repository = new LocalRDFDataUnit(Files.createTempDirectory(null).toFile().getAbsolutePath(), "", "http://default");
+        repository = new LocalRDFDataUnit(Files.createTempDirectory(null).toFile().getAbsolutePath(), "", "fdsf", "http://default");
     }
 
     /**
