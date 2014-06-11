@@ -129,7 +129,9 @@ public class ImportService {
             // add schedules
             final File scheduleFile = new File(tempDirectory,
                     ArchiveStructure.SCHEDULE.getValue());
-            importSchedules(scheduleFile, pipe, user);
+            if (scheduleFile.exists()) {
+                importSchedules(scheduleFile, pipe, user);
+            }
 
         } catch (ImportException ex) {
             throw ex;
