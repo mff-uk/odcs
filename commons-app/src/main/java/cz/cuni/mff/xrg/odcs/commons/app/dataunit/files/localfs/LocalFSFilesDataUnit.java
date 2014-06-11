@@ -19,7 +19,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
@@ -33,9 +32,6 @@ import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);
-
-    @Autowired
-    private RDFDataUnitFactory rdfDataUnitFactory;
 
     private String dataUnitName;
 
@@ -55,7 +51,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    public LocalFSFilesDataUnit(String globalWorkingDirectory, String pipelineId, String dataUnitName) throws DataUnitCreateException {
+    public LocalFSFilesDataUnit(RDFDataUnitFactory rdfDataUnitFactory, String globalWorkingDirectory, String pipelineId, String dataUnitName) throws DataUnitCreateException {
         try {
             this.dataUnitName = dataUnitName;
             this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
@@ -140,14 +136,16 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
         RepositoryConnection connection = null;
         try {
+            // TODO michal.klempa think of not connecting everytime
             connection = backingStore.getConnection();
             connection.begin();
-            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
-            if (fileExistsQuery.evaluate()) {
-                connection.rollback();
-                throw new IllegalArgumentException("File with symbolic name "
-                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
-            }
+            // TODO michal.klempa - add one query at isReleaseReady instead of this
+//            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
+//            if (fileExistsQuery.evaluate()) {
+//                connection.rollback();
+//                throw new IllegalArgumentException("File with symbolic name "
+//                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
+//            }
             ValueFactory valueFactory = connection.getValueFactory();
             Statement statement = valueFactory.createStatement(
                     valueFactory.createURI(existingFile.toURI().toASCIIString()),
@@ -157,7 +155,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
             connection.add(statement, backingStore.getWriteContext());
             connection.commit();
             generatedFilenames.remove(existingFileFullPath);
-        } catch (RepositoryException | QueryEvaluationException | MalformedQueryException ex) {
+        } catch (RepositoryException ex) {
             throw new DataUnitException("Error when adding file.", ex);
         } finally {
             if (connection != null) {
@@ -229,7 +227,6 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
         }
 
         final LocalFSFilesDataUnit otherFilesDataUnit = (LocalFSFilesDataUnit) otherDataUnit;
-        otherFilesDataUnit.getRDFData(); // Just a marker line to drawn attention here when someone search for usages of getter method
         backingStore.merge(otherFilesDataUnit.backingStore);
     }
 

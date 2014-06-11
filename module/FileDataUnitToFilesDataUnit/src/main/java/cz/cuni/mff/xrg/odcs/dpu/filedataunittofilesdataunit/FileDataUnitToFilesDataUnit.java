@@ -45,9 +45,9 @@ public class FileDataUnitToFilesDataUnit extends NonConfigurableBase {
             String canonicalPath;
             try {
                 canonicalPath = handlerItem.asFile().getCanonicalPath();
-                filesOutput.addExistingFile(canonicalPath, canonicalPath);
+                filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
                 if (dpuContext.isDebugging()) {
-                    LOG.trace("Added symbolic name " + canonicalPath + " path URI " + canonicalPath + " to destination data unit.");
+                    LOG.trace("Added symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
                 }
             } catch (IOException ex) {
                 dpuContext.sendMessage(MessageType.ERROR, "Error when adding.", "Handler item rooted path: " + handlerItem.getRootedPath(), ex);
