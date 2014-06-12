@@ -6,13 +6,13 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>module-core</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
     </parent>
 
 
     <artifactId>HTTPDownloader</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>bundle</packaging>
     <description>HTTPDownloader downloads file list given in configuration and saves each file under symbolicName as specified by configuration.</description>
 
