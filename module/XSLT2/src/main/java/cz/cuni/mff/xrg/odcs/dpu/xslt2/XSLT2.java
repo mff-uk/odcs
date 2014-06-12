@@ -86,8 +86,9 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
 
                 FilesDataUnitEntry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
-
-                File outputFile = new File(fileOutput.createFile(inSymbolicName));
+                
+                String outputFilename = fileOutput.createFile(inSymbolicName);
+                File outputFile = new File(outputFilename);
                 File inputFile = new File(entry.getFilesystemURI());
                 try {
                     all++;
@@ -114,6 +115,7 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
                     trans.transform();
                     trans.getUnderlyingController().clearDocumentPool();
                     
+                    fileOutput.addExistingFile(inSymbolicName, outputFilename);
                     filesSuccessfulCount++;
 
                     if (dpuContext.isDebugging()) {
