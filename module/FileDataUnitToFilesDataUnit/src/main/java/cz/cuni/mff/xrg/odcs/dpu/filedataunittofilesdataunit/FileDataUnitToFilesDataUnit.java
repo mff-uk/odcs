@@ -38,7 +38,9 @@ public class FileDataUnitToFilesDataUnit extends NonConfigurableBase {
         LOG.info(shortMessage);
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
+        long all = 0L;
         while (fileInputIterator.hasNext()) {
+        	all++;
             checkCancelled(dpuContext);
 
             FileHandler handlerItem = fileInputIterator.next();
@@ -47,7 +49,7 @@ public class FileDataUnitToFilesDataUnit extends NonConfigurableBase {
                 canonicalPath = handlerItem.asFile().getCanonicalPath();
                 filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
                 if (dpuContext.isDebugging()) {
-                    LOG.trace("Added symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
+                    LOG.trace("Added #" + String.valueOf(all) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
                 }
             } catch (IOException ex) {
                 dpuContext.sendMessage(MessageType.ERROR, "Error when adding.", "Handler item rooted path: " + handlerItem.getRootedPath(), ex);

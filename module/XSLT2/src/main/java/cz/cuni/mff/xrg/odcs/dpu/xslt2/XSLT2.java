@@ -97,7 +97,7 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
                     if (dpuContext.isDebugging()) {
                         long inputSizeM = inputFile.length() / 1024 / 1024;
                         LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
-                        LOG.debug("Starting transformation of file "+ inSymbolicName + " size " + String.valueOf(inputSizeM) + "M");
+                        LOG.debug("Starting "+ String.valueOf(all)+" transformation of file "+ inSymbolicName + " size " + String.valueOf(inputSizeM) + "M");
                     }
                     Serializer out = new Serializer(outputFile);
                     if (!config.getOutputXSLTMethod().isEmpty()) {
@@ -117,7 +117,7 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
                     
                     fileOutput.addExistingFile(inSymbolicName, outputFilename);
                     filesSuccessfulCount++;
-
+                    
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Transformed file #{} in {}. Symbolic name {} a file URI {}", filesSuccessfulCount, (System.currentTimeMillis() - start.getTime()), inSymbolicName, entry.getFilesystemURI());
                         LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
