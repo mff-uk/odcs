@@ -9,18 +9,18 @@
         <version>1.2.0</version>
     </parent>
 
-    <artifactId>FilesToRDF</artifactId>
+    <artifactId>FilesToRDFTransformer</artifactId>
 
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.2.0</version>
 
     <packaging>bundle</packaging>
 
-    <description>FilesToRDF extracts RDF data from any file format.</description>
+    <description>FilesToRDFTransformer extracts RDF data from Files (any file format) and adds them to RDF.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestordf</dpu.package>
-        <dpu.mainClass>FilesToRDF</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestordftransformer</dpu.package>
+        <dpu.mainClass>FilesToRDFTransformer</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>

@@ -10,15 +10,15 @@
     </parent>
 
 
-    <artifactId>HTTPDownloader</artifactId>
+    <artifactId>HTTPToFilesExtractor</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.2.0</version>
     <packaging>bundle</packaging>
-    <description>HTTPDownloader downloads file list given in configuration and saves each file under symbolicName as specified by configuration.</description>
+    <description>HTTPToFilesExtractor downloads list URIs given in configuration and saves them to Files.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.httpdownloader</dpu.package>
-        <dpu.mainClass>HTTPDownloader</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor</dpu.package>
+        <dpu.mainClass>HTTPToFilesExtractor</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>

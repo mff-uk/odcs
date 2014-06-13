@@ -10,15 +10,15 @@
     </parent>
 
 
-    <artifactId>FilesDataUnitToFileDataUnit</artifactId>
+    <artifactId>FilesToFileTransformer</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.2.0</version>
     <packaging>bundle</packaging>
-    <description>Converts FilesDataUnit to FileDataUnit. Does not copy files.</description>
+    <description>FilesToFileTransformer converts Files to FileDataUnit. Does not copy files.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filesdataunittofiledataunit</dpu.package>
-        <dpu.mainClass>FilesDataUnitToFileDataUnit</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestofiletransformer</dpu.package>
+        <dpu.mainClass>FilesToFileTransformer</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>

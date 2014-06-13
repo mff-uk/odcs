@@ -16,13 +16,14 @@
     <!-- list of core modules -->
     <modules>
 	<!-- New DPUs  -->
-        <module>HTTPDownloader</module>
-        <module>XSLT2</module>
-        <module>TripleGenerator</module>
-        <module>FilesToRDF</module>
+        <module>FilesToFilesXSLT2Transformer</module>
+        <module>FilesToFileTransformer</module>
+        <module>FilesToRDFTransformer</module>
         <module>FilesToSPARQLLoader</module>
-        <module>FileDataUnitToFilesDataUnit</module>
-        <module>FilesDataUnitToFileDataUnit</module>
+        <module>FileToFilesTransformer</module>
+        <module>HTTPToFilesExtractor</module>
+        <module>RDFToRDFMerger2Transformer</module>
+        <module>TripleGeneratorToRDFExtractor</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>

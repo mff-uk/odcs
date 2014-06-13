@@ -10,15 +10,15 @@
     </parent>
 
 
-    <artifactId>MergerRDF2</artifactId>
+    <artifactId>RDFToRDFMerger2Transformer</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
     <version>1.1.0</version>
     <packaging>bundle</packaging>
-    <description>Merges RDF DataUnits fast.</description>
+    <description>RDFToRDFMerger2Transformer merges RDF data in no time.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.mergerrdf2</dpu.package>
-        <dpu.mainClass>MergerRDF2</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.rdftordfmerger2transformer</dpu.package>
+        <dpu.mainClass>RDFToRDFMerger2Transformer</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>

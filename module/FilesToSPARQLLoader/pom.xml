@@ -16,7 +16,7 @@
 
     <packaging>bundle</packaging>
 
-    <description>Loads RDF data stored in files to the specified remote SPARQL endpoint.</description>
+    <description>FilesToSPARQLLoader loads RDF data stored in Files to the specified remote SPARQL endpoint.</description>
 
     <properties>
         <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestosparqlloader</dpu.package>

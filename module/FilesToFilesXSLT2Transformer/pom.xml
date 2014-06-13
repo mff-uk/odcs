@@ -9,18 +9,18 @@
         <version>1.2.0</version>
     </parent>
 
-	<artifactId>XSLT2</artifactId>
+	<artifactId>FilesToFilesXSLT2Transformer</artifactId>
 
 	<!-- TODO 2: specify module version, can be left unchanged -->
 	<version>1.2.0</version>
 
 	<packaging>bundle</packaging>
 
-	<description>XSLT2 does XSLT over files.</description>
+	<description>FilesToFilesXSLT2Transformer does XSLT over Files and outputs Files.</description>
 
 	<properties>
-		<dpu.package>cz.cuni.mff.xrg.odcs.dpu.xslt2</dpu.package>
-		<dpu.mainClass>XSLT2</dpu.mainClass>
+		<dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer</dpu.package>
+		<dpu.mainClass>FilesToFilesXSLT2Transformer</dpu.mainClass>
 		<!-- TODO 6: Put path to the ODCL DPUs directory here -->
 		<!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' 
 			profiles -->
