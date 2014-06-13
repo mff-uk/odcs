@@ -43,7 +43,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: CommitSize: %d, QueryEndpointUrl: %s, UpdateEndpointUrl: %s", config.getCommitSize(), config.getQueryEndpointUrl(), config.getUpdateEndpointUrl());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);

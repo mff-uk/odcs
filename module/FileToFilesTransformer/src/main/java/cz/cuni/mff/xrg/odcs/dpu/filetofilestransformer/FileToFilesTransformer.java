@@ -33,7 +33,7 @@ public class FileToFilesTransformer extends NonConfigurableBase {
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(MessageType.INFO, shortMessage);
         LOG.info(shortMessage);
 

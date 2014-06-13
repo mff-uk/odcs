@@ -36,7 +36,7 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPDToFilesExtractor
         Map<String, String> symbolicNameToURIMap = config.getSymbolicNameToURIMap();
         int connectionTimeout = config.getConnectionTimeout();
         int readTimeout = config.getReadTimeout();
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);

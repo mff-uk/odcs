@@ -4,6 +4,8 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.sail.memory.model.MemValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
@@ -18,7 +20,8 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsExtractor
 public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGeneratorToRDFExtractorConfig> implements ConfigDialogProvider<TripleGeneratorToRDFExtractorConfig> {
-
+	private static final Logger LOG = LoggerFactory.getLogger(TripleGeneratorToRDFExtractor.class);
+	
     public TripleGeneratorToRDFExtractor() {
         super(TripleGeneratorToRDFExtractorConfig.class);
     }
@@ -27,9 +30,13 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
     public WritableRDFDataUnit rdfOutput;
 
     @Override
-    public void execute(DPUContext context)
+    public void execute(DPUContext dpuContext)
             throws DPUException,
             DataUnitException {
+    	String shortMessage = this.getClass().getSimpleName() + " starting.";
+        dpuContext.sendMessage(MessageType.INFO, shortMessage);
+        LOG.info(shortMessage);
+        
         RepositoryConnection connection = null;
         try {
             connection = rdfOutput.getConnection();
@@ -44,24 +51,24 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
                         ), rdfOutput.getWriteContext());
                 if ((i % 25000) == 0) {
                     connection.commit();
-                    context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(i));
-                    if (context.canceled()) {
+                    dpuContext.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(i));
+                    if (dpuContext.canceled()) {
                         break;
                     }
                     connection.begin();
                 }
             }
             connection.commit();
-            context.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteContext())));
+            dpuContext.sendMessage(MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteContext())));
         } catch (RepositoryException ex) {
-            context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+            dpuContext.sendMessage(MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                    dpuContext.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
         }

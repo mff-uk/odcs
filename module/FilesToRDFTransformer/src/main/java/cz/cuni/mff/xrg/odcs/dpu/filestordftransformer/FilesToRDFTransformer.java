@@ -43,7 +43,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
