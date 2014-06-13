@@ -21,14 +21,14 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsExtractor
-public class HTTPToFilesExtractor extends ConfigurableBase<HTTPDToFilesExtractorConfig> implements ConfigDialogProvider<HTTPDToFilesExtractorConfig> {
+public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorConfig> implements ConfigDialogProvider<HTTPToFilesExtractorConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(HTTPToFilesExtractor.class);
 
     @OutputDataUnit(name = "fileOutput")
     public WritableFilesDataUnit fileOutput;
 
     public HTTPToFilesExtractor() {
-        super(HTTPDToFilesExtractorConfig.class);
+        super(HTTPToFilesExtractorConfig.class);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPDToFilesExtractor
     }
 
     @Override
-    public AbstractConfigDialog<HTTPDToFilesExtractorConfig> getConfigurationDialog() {
+    public AbstractConfigDialog<HTTPToFilesExtractorConfig> getConfigurationDialog() {
         return new HTTPToFilesExtractorConfigDialog();
     }
 

@@ -33,7 +33,7 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsTransformer
-public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesXSLT2Config> implements ConfigDialogProvider<FilesToFilesXSLT2Config> {
+public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesXSLT2TransformerConfig> implements ConfigDialogProvider<FilesToFilesXSLT2TransformerConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToFilesXSLT2Transformer.class);
 
     @InputDataUnit(name = "fileInput")
@@ -43,12 +43,12 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
     public WritableFilesDataUnit fileOutput;
 
     public FilesToFilesXSLT2Transformer() {
-        super(FilesToFilesXSLT2Config.class);
+        super(FilesToFilesXSLT2TransformerConfig.class);
     }
 
     @Override
-    public AbstractConfigDialog<FilesToFilesXSLT2Config> getConfigurationDialog() {
-        return new FilesToFilesXSLT2ConfigDialog();
+    public AbstractConfigDialog<FilesToFilesXSLT2TransformerConfig> getConfigurationDialog() {
+        return new FilesToFilesXSLT2TransformerConfigDialog();
     }
 
     @Override

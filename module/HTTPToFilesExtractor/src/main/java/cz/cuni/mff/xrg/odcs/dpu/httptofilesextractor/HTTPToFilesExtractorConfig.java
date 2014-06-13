@@ -5,7 +5,7 @@ import java.util.Map;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class HTTPDToFilesExtractorConfig extends DPUConfigObjectBase {
+public class HTTPToFilesExtractorConfig extends DPUConfigObjectBase {
 
     /**
      * 
@@ -19,7 +19,7 @@ public class HTTPDToFilesExtractorConfig extends DPUConfigObjectBase {
     private Map<String, String> symbolicNameToURIMap;
 
     // DPUTemplateConfig must provide public non-parametric constructor
-    public HTTPDToFilesExtractorConfig() {
+    public HTTPToFilesExtractorConfig() {
         this.symbolicNameToURIMap = new LinkedHashMap<>();
     }
 

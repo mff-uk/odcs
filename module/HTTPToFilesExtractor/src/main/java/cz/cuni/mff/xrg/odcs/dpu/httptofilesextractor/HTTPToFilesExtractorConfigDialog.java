@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFilesExtractorConfig> {
+public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPToFilesExtractorConfig> {
     /**
      * 
      */
@@ -40,7 +40,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFi
     private ObjectProperty<String> mapText = new ObjectProperty<String>("");
 
     public HTTPToFilesExtractorConfigDialog() {
-        super(HTTPDToFilesExtractorConfig.class);
+        super(HTTPToFilesExtractorConfig.class);
         initialize();
     }
 
@@ -62,7 +62,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFi
     }
 
     @Override
-    public void setConfiguration(HTTPDToFilesExtractorConfig conf) throws ConfigException {
+    public void setConfiguration(HTTPToFilesExtractorConfig conf) throws ConfigException {
         connectionTimeout.setValue(conf.getConnectionTimeout());
         readTimeout.setValue(conf.getReadTimeout());
 
@@ -77,7 +77,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFi
     }
 
     @Override
-    public HTTPDToFilesExtractorConfig getConfiguration() throws ConfigException {
+    public HTTPToFilesExtractorConfig getConfiguration() throws ConfigException {
         Map<String, String> symbolicNameToURIMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
 
@@ -106,7 +106,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFi
             throw new ConfigException(ex);
         }
         
-        HTTPDToFilesExtractorConfig conf = new HTTPDToFilesExtractorConfig();
+        HTTPToFilesExtractorConfig conf = new HTTPToFilesExtractorConfig();
         conf.setSymbolicNameToURIMap(symbolicNameToURIMap);
         conf.setConnectionTimeout(connectionTimeout.getValue());
         conf.setReadTimeout(readTimeout.getValue());

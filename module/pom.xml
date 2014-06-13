@@ -24,6 +24,7 @@
         <module>FileToFilesTransformer</module>
         <module>HTTPToFilesExtractor</module>
         <module>RDFToRDFMerger2Transformer</module>
+        <module>FilesToFilesMerger2Transformer</module>
         <module>TripleGeneratorToRDFExtractor</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>

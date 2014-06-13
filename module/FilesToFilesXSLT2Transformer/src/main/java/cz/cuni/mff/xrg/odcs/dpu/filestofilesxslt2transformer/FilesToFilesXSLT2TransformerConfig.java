@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class FilesToFilesXSLT2Config extends DPUConfigObjectBase {
+public class FilesToFilesXSLT2TransformerConfig extends DPUConfigObjectBase {
 
 	/**
      * 
@@ -14,7 +14,7 @@ public class FilesToFilesXSLT2Config extends DPUConfigObjectBase {
 	private String xslTemplateFileName;
 	private String outputXSLTMethod = "text";
 
-	public FilesToFilesXSLT2Config() {
+	public FilesToFilesXSLT2TransformerConfig() {
 	}
 
 	public String getXslTemplate() {

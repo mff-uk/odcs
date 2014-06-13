@@ -30,8 +30,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToFilesXSLT2ConfigDialog extends
-		BaseConfigDialog<FilesToFilesXSLT2Config> {
+public class FilesToFilesXSLT2TransformerConfigDialog extends
+		BaseConfigDialog<FilesToFilesXSLT2TransformerConfig> {
 
 	/**
      * 
@@ -39,7 +39,7 @@ public class FilesToFilesXSLT2ConfigDialog extends
 	private static final long serialVersionUID = 63148374398039L;
 
 	private static final Logger log = LoggerFactory
-			.getLogger(FilesToFilesXSLT2ConfigDialog.class);
+			.getLogger(FilesToFilesXSLT2TransformerConfigDialog.class);
 
 	// output of xslt - could be xml/text/...
 	private TextField tfOutputXSLTMethod;
@@ -55,8 +55,8 @@ public class FilesToFilesXSLT2ConfigDialog extends
 	// TODO refactor
 	static int fl = 0;
 
-	public FilesToFilesXSLT2ConfigDialog() {
-		super(FilesToFilesXSLT2Config.class);
+	public FilesToFilesXSLT2TransformerConfigDialog() {
+		super(FilesToFilesXSLT2TransformerConfig.class);
 		buildMainLayout();
 		Panel panel = new Panel();
 		panel.setSizeFull();
@@ -203,7 +203,7 @@ public class FilesToFilesXSLT2ConfigDialog extends
 	}
 
 	@Override
-	public void setConfiguration(FilesToFilesXSLT2Config conf)
+	public void setConfiguration(FilesToFilesXSLT2TransformerConfig conf)
 			throws ConfigException {
 		// get configuration from the CONFIG object to dialog
 
@@ -216,7 +216,7 @@ public class FilesToFilesXSLT2ConfigDialog extends
 	}
 
 	@Override
-	public FilesToFilesXSLT2Config getConfiguration() throws ConfigException {
+	public FilesToFilesXSLT2TransformerConfig getConfiguration() throws ConfigException {
 		// get the conf from the dialog
 
 		// check that certain xslt was uploaded
@@ -233,7 +233,7 @@ public class FilesToFilesXSLT2ConfigDialog extends
 		// prepare output type:
 		// TODO storing the textarea content not needed - not readed when the
 		// configuration is shown
-		FilesToFilesXSLT2Config conf = null;
+		FilesToFilesXSLT2TransformerConfig conf = null;
 
 		return conf;
 
@@ -343,7 +343,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
 			@Override
 			public void buttonClick(final Button.ClickEvent event) {
 				upload.interruptUpload();
-				FilesToFilesXSLT2ConfigDialog.fl = 1;
+				FilesToFilesXSLT2TransformerConfigDialog.fl = 1;
 			}
 		});
 		cancelButton.setVisible(false);
