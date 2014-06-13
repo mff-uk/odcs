@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.xslt2;
+package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -22,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
+public class FilesToFilesXSLT2ConfigDialog extends BaseConfigDialog<FilesToFilesXSLT2Config> {
 
     /**
      * 
@@ -30,7 +30,7 @@ public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
     private static final long serialVersionUID = 6314899321374398039L;
 
     private static final Logger log = LoggerFactory.getLogger(
-            XSLT2ConfigDialog.class);
+            FilesToFilesXSLT2ConfigDialog.class);
 
     private static final String OUTPUT_RDFXML = "RDF/XML";
 
@@ -62,8 +62,8 @@ public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
     //TODO refactor
     static int fl = 0;
 
-    public XSLT2ConfigDialog() {
-        super(XSLT2Config.class);
+    public FilesToFilesXSLT2ConfigDialog() {
+        super(FilesToFilesXSLT2Config.class);
         buildMainLayout();
         Panel panel = new Panel();
         panel.setSizeFull();
@@ -326,7 +326,7 @@ public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
     }
 
     @Override
-    public void setConfiguration(XSLT2Config conf) throws ConfigException {
+    public void setConfiguration(FilesToFilesXSLT2Config conf) throws ConfigException {
         //get configuration from the CONFIG object to dialog
 
         if (!conf.getXslTemplate().isEmpty()) {
@@ -368,7 +368,7 @@ public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
     }
 
     @Override
-    public XSLT2Config getConfiguration() throws ConfigException {
+    public FilesToFilesXSLT2Config getConfiguration() throws ConfigException {
         //get the conf from the dialog
 
         //check that certain xslt was uploaded
@@ -404,26 +404,26 @@ public class XSLT2ConfigDialog extends BaseConfigDialog<XSLT2Config> {
 
         //prepare output type:
         // TODO storing the textarea content not needed - not readed when the configuration is shown
-        XSLT2Config.OutputType ot = null;
-        XSLT2Config conf = null;
+        FilesToFilesXSLT2Config.OutputType ot = null;
+        FilesToFilesXSLT2Config conf = null;
         switch ((String) ogOutputFormat.getValue()) {
             case OUTPUT_RDFXML:
-                ot = XSLT2Config.OutputType.RDFXML;
-                conf = new XSLT2Config(taXSLTemplate.getValue().trim(),
+                ot = FilesToFilesXSLT2Config.OutputType.RDFXML;
+                conf = new FilesToFilesXSLT2Config(taXSLTemplate.getValue().trim(),
                         lFileName.getValue().trim(), ot, tfOutputXSLTMethod
                                 .getValue().trim(), tfEscaped.getValue().trim(),
                         parsedNumberOfTries);
                 break;
             case OUTPUT_TTL:
-                ot = XSLT2Config.OutputType.TTL;
-                conf = new XSLT2Config(taXSLTemplate.getValue().trim(),
+                ot = FilesToFilesXSLT2Config.OutputType.TTL;
+                conf = new FilesToFilesXSLT2Config(taXSLTemplate.getValue().trim(),
                         lFileName.getValue().trim(), ot, tfOutputXSLTMethod
                                 .getValue().trim(), tfEscaped.getValue().trim(),
                         parsedNumberOfTries);
                 break;
             case OUTPUT_WRAP:
-                ot = XSLT2Config.OutputType.Literal;
-                conf = new XSLT2Config(taXSLTemplate.getValue().trim(),
+                ot = FilesToFilesXSLT2Config.OutputType.Literal;
+                conf = new FilesToFilesXSLT2Config(taXSLTemplate.getValue().trim(),
                         lFileName.getValue().trim(), ot, tfOutputPredicate
                                 .getValue().trim(), tfOutputXSLTMethod.getValue().trim(),
                         tfEscaped.getValue().trim(), parsedNumberOfTries);
@@ -541,7 +541,7 @@ class UploadInfoWindow extends Window implements Upload.StartedListener,
             @Override
             public void buttonClick(final Button.ClickEvent event) {
                 upload.interruptUpload();
-                XSLT2ConfigDialog.fl = 1;
+                FilesToFilesXSLT2ConfigDialog.fl = 1;
             }
         });
         cancelButton.setVisible(false);

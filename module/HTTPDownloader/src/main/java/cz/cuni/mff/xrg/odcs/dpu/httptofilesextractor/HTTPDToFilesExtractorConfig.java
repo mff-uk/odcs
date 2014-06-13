@@ -1,11 +1,11 @@
-package cz.cuni.mff.xrg.odcs.dpu.httpdownloader;
+package cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class HTTPDownloaderConfig extends DPUConfigObjectBase {
+public class HTTPDToFilesExtractorConfig extends DPUConfigObjectBase {
 
     /**
      * 
@@ -19,7 +19,7 @@ public class HTTPDownloaderConfig extends DPUConfigObjectBase {
     private Map<String, String> symbolicNameToURIMap;
 
     // DPUTemplateConfig must provide public non-parametric constructor
-    public HTTPDownloaderConfig() {
+    public HTTPDToFilesExtractorConfig() {
         this.symbolicNameToURIMap = new LinkedHashMap<>();
     }
 

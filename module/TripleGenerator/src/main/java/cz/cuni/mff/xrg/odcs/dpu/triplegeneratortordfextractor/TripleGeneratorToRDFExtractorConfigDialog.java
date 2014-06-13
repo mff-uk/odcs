@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.triplegenerator;
+package cz.cuni.mff.xrg.odcs.dpu.triplegeneratortordfextractor;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.FormLayout;
@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGeneratorConfig> {
+public class TripleGeneratorToRDFExtractorConfigDialog extends BaseConfigDialog<TripleGeneratorToRDFExtractorConfig> {
     /**
      * 
      */
@@ -25,8 +25,8 @@ public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGenerato
 
     private ObjectProperty<Integer> commitSize = new ObjectProperty<Integer>(0);
 
-    public TripleGeneratorConfigDialog() {
-        super(TripleGeneratorConfig.class);
+    public TripleGeneratorToRDFExtractorConfigDialog() {
+        super(TripleGeneratorToRDFExtractorConfig.class);
         initialize();
     }
 
@@ -44,14 +44,14 @@ public class TripleGeneratorConfigDialog extends BaseConfigDialog<TripleGenerato
     }
 
     @Override
-    public void setConfiguration(TripleGeneratorConfig conf) throws ConfigException {
+    public void setConfiguration(TripleGeneratorToRDFExtractorConfig conf) throws ConfigException {
         tripleCount.setValue(conf.getTripleCount());
         commitSize.setValue(conf.getCommitSize());
     }
 
     @Override
-    public TripleGeneratorConfig getConfiguration() throws ConfigException {
-        TripleGeneratorConfig config = new TripleGeneratorConfig();
+    public TripleGeneratorToRDFExtractorConfig getConfiguration() throws ConfigException {
+        TripleGeneratorToRDFExtractorConfig config = new TripleGeneratorToRDFExtractorConfig();
         config.setTripleCount(tripleCount.getValue());
         config.setCommitSize(commitSize.getValue());
         return config;

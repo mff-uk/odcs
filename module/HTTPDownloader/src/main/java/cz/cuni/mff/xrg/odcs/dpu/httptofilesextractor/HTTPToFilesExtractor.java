@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.httpdownloader;
+package cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,14 +21,14 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsExtractor
-public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> implements ConfigDialogProvider<HTTPDownloaderConfig> {
-    private static final Logger LOG = LoggerFactory.getLogger(HTTPDownloader.class);
+public class HTTPToFilesExtractor extends ConfigurableBase<HTTPDToFilesExtractorConfig> implements ConfigDialogProvider<HTTPDToFilesExtractorConfig> {
+    private static final Logger LOG = LoggerFactory.getLogger(HTTPToFilesExtractor.class);
 
     @OutputDataUnit(name = "fileOutput")
     public WritableFilesDataUnit fileOutput;
 
-    public HTTPDownloader() {
-        super(HTTPDownloaderConfig.class);
+    public HTTPToFilesExtractor() {
+        super(HTTPDToFilesExtractorConfig.class);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class HTTPDownloader extends ConfigurableBase<HTTPDownloaderConfig> imple
     }
 
     @Override
-    public AbstractConfigDialog<HTTPDownloaderConfig> getConfigurationDialog() {
-        return new HTTPDownloaderConfigDialog();
+    public AbstractConfigDialog<HTTPDToFilesExtractorConfig> getConfigurationDialog() {
+        return new HTTPToFilesExtractorConfigDialog();
     }
 
     private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filedataunittofilesdataunit;
+package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 
 import java.util.Deque;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestordf;
+package cz.cuni.mff.xrg.odcs.dpu.filestordftransformer;
 
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;

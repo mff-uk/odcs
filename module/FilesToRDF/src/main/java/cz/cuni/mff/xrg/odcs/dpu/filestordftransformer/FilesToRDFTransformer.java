@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestordf;
+package cz.cuni.mff.xrg.odcs.dpu.filestordftransformer;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,8 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsTransformer
-public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig> implements ConfigDialogProvider<FilesToRDFConfig> {
-    private static final Logger LOG = LoggerFactory.getLogger(FilesToRDF.class);
+public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransformerConfig> implements ConfigDialogProvider<FilesToRDFTransformerConfig> {
+    private static final Logger LOG = LoggerFactory.getLogger(FilesToRDFTransformer.class);
 
     @InputDataUnit(name = "fileInput")
     public FilesDataUnit fileInput;
@@ -37,8 +37,8 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig> implements Co
     @OutputDataUnit(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
 
-    public FilesToRDF() {
-        super(FilesToRDFConfig.class);
+    public FilesToRDFTransformer() {
+        super(FilesToRDFTransformerConfig.class);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class FilesToRDF extends ConfigurableBase<FilesToRDFConfig> implements Co
     }
 
     @Override
-    public AbstractConfigDialog<FilesToRDFConfig> getConfigurationDialog() {
-        return new FilesToRDFConfigDialog();
+    public AbstractConfigDialog<FilesToRDFTransformerConfig> getConfigurationDialog() {
+        return new FilesToRDFTransformerConfigDialog();
     }
 }

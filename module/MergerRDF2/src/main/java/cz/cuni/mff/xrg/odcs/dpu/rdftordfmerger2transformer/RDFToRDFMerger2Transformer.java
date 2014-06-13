@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.mergerrdf2;
+package cz.cuni.mff.xrg.odcs.dpu.rdftordfmerger2transformer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,8 @@ import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsTransformer
-public class MergerRDF2 extends NonConfigurableBase {
-    private static final Logger LOG = LoggerFactory.getLogger(MergerRDF2.class);
+public class RDFToRDFMerger2Transformer extends NonConfigurableBase {
+    private static final Logger LOG = LoggerFactory.getLogger(RDFToRDFMerger2Transformer.class);
 
     @InputDataUnit(name = "rdfInput")
     public RDFDataUnit rdfInput;
@@ -25,7 +25,7 @@ public class MergerRDF2 extends NonConfigurableBase {
     @OutputDataUnit(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
 
-    public MergerRDF2() {
+    public RDFToRDFMerger2Transformer() {
     }
 
     @Override

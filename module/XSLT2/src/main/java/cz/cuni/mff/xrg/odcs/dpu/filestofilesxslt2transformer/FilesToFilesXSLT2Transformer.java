@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.xslt2;
+package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import java.io.File;
 import java.io.StringReader;
@@ -33,8 +33,8 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsTransformer
-public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialogProvider<XSLT2Config> {
-    private static final Logger LOG = LoggerFactory.getLogger(XSLT2.class);
+public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesXSLT2Config> implements ConfigDialogProvider<FilesToFilesXSLT2Config> {
+    private static final Logger LOG = LoggerFactory.getLogger(FilesToFilesXSLT2Transformer.class);
 
     @InputDataUnit(name = "fileInput")
     public FilesDataUnit fileInput;
@@ -42,13 +42,13 @@ public class XSLT2 extends ConfigurableBase<XSLT2Config> implements ConfigDialog
     @OutputDataUnit(name = "fileOutput")
     public WritableFilesDataUnit fileOutput;
 
-    public XSLT2() {
-        super(XSLT2Config.class);
+    public FilesToFilesXSLT2Transformer() {
+        super(FilesToFilesXSLT2Config.class);
     }
 
     @Override
-    public AbstractConfigDialog<XSLT2Config> getConfigurationDialog() {
-        return new XSLT2ConfigDialog();
+    public AbstractConfigDialog<FilesToFilesXSLT2Config> getConfigurationDialog() {
+        return new FilesToFilesXSLT2ConfigDialog();
     }
 
     @Override

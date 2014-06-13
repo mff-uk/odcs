@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.triplegenerator;
+package cz.cuni.mff.xrg.odcs.dpu.triplegeneratortordfextractor;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
@@ -17,10 +17,10 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsExtractor
-public class TripleGenerator extends ConfigurableBase<TripleGeneratorConfig> implements ConfigDialogProvider<TripleGeneratorConfig> {
+public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGeneratorToRDFExtractorConfig> implements ConfigDialogProvider<TripleGeneratorToRDFExtractorConfig> {
 
-    public TripleGenerator() {
-        super(TripleGeneratorConfig.class);
+    public TripleGeneratorToRDFExtractor() {
+        super(TripleGeneratorToRDFExtractorConfig.class);
     }
 
     @OutputDataUnit(name = "output")
@@ -68,7 +68,7 @@ public class TripleGenerator extends ConfigurableBase<TripleGeneratorConfig> imp
     }
 
     @Override
-    public AbstractConfigDialog<TripleGeneratorConfig> getConfigurationDialog() {
-        return new TripleGeneratorConfigDialog();
+    public AbstractConfigDialog<TripleGeneratorToRDFExtractorConfig> getConfigurationDialog() {
+        return new TripleGeneratorToRDFExtractorConfigDialog();
     }
 }

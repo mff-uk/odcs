@@ -14,7 +14,7 @@
  * implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package cz.cuni.mff.xrg.odcs.dpu.filestordf;
+package cz.cuni.mff.xrg.odcs.dpu.filestordftransformer;
 
 import info.aduna.io.GZipUtil;
 import info.aduna.io.ZipUtil;

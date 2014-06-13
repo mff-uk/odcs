@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filesdataunittofiledataunit;
+package cz.cuni.mff.xrg.odcs.dpu.filestofiletransformer;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -26,8 +26,8 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 
 @AsTransformer
-public class FilesDataUnitToFileDataUnit extends NonConfigurableBase {
-    private static final Logger LOG = LoggerFactory.getLogger(FilesDataUnitToFileDataUnit.class);
+public class FilesToFileTransformer extends NonConfigurableBase {
+    private static final Logger LOG = LoggerFactory.getLogger(FilesToFileTransformer.class);
 
     @InputDataUnit(name = "filesInput")
     public FilesDataUnit filesInput;
@@ -35,7 +35,7 @@ public class FilesDataUnitToFileDataUnit extends NonConfigurableBase {
     @OutputDataUnit(name = "fileOutput")
     public FileDataUnit fileOutput;
 
-    public FilesDataUnitToFileDataUnit() {
+    public FilesToFileTransformer() {
     }
 
     @Override

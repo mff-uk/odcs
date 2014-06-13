@@ -1,8 +1,8 @@
-package cz.cuni.mff.xrg.odcs.dpu.triplegenerator;
+package cz.cuni.mff.xrg.odcs.dpu.triplegeneratortordfextractor;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class TripleGeneratorConfig extends DPUConfigObjectBase {
+public class TripleGeneratorToRDFExtractorConfig extends DPUConfigObjectBase {
 
     /**
      * 

@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.httpdownloader;
+package cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderConfig> {
+public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPDToFilesExtractorConfig> {
     /**
      * 
      */
@@ -39,8 +39,8 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
 
     private ObjectProperty<String> mapText = new ObjectProperty<String>("");
 
-    public HTTPDownloaderConfigDialog() {
-        super(HTTPDownloaderConfig.class);
+    public HTTPToFilesExtractorConfigDialog() {
+        super(HTTPDToFilesExtractorConfig.class);
         initialize();
     }
 
@@ -62,7 +62,7 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
     }
 
     @Override
-    public void setConfiguration(HTTPDownloaderConfig conf) throws ConfigException {
+    public void setConfiguration(HTTPDToFilesExtractorConfig conf) throws ConfigException {
         connectionTimeout.setValue(conf.getConnectionTimeout());
         readTimeout.setValue(conf.getReadTimeout());
 
@@ -77,7 +77,7 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
     }
 
     @Override
-    public HTTPDownloaderConfig getConfiguration() throws ConfigException {
+    public HTTPDToFilesExtractorConfig getConfiguration() throws ConfigException {
         Map<String, String> symbolicNameToURIMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
 
@@ -106,7 +106,7 @@ public class HTTPDownloaderConfigDialog extends BaseConfigDialog<HTTPDownloaderC
             throw new ConfigException(ex);
         }
         
-        HTTPDownloaderConfig conf = new HTTPDownloaderConfig();
+        HTTPDToFilesExtractorConfig conf = new HTTPDToFilesExtractorConfig();
         conf.setSymbolicNameToURIMap(symbolicNameToURIMap);
         conf.setConnectionTimeout(connectionTimeout.getValue());
         conf.setReadTimeout(readTimeout.getValue());

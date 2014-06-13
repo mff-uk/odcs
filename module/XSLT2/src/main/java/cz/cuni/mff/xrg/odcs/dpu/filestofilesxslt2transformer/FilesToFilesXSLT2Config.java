@@ -1,9 +1,9 @@
-package cz.cuni.mff.xrg.odcs.dpu.xslt2;
+package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 
-public class XSLT2Config extends DPUConfigObjectBase {
+public class FilesToFilesXSLT2Config extends DPUConfigObjectBase {
 
     /**
      * 
@@ -89,17 +89,17 @@ public class XSLT2Config extends DPUConfigObjectBase {
         return FILE_DATAUNIT_PATH;
     }
 
-    public XSLT2Config() {
+    public FilesToFilesXSLT2Config() {
     }
 
-    public XSLT2Config(String xslT, String xslTFileName, OutputType ot, String op, String outputXSLTMeth, String escaped, int parsedNumberOfTries) {
+    public FilesToFilesXSLT2Config(String xslT, String xslTFileName, OutputType ot, String op, String outputXSLTMeth, String escaped, int parsedNumberOfTries) {
 
         this(xslT, xslTFileName, ot, outputXSLTMeth, escaped, parsedNumberOfTries);
         this.outputPredicate = op;
 
     }
 
-    public XSLT2Config(String xslT, String xslTFileName, OutputType ot, String outputXSLTMeth, String escaped, int parsedNumberOfTries) {
+    public FilesToFilesXSLT2Config(String xslT, String xslTFileName, OutputType ot, String outputXSLTMeth, String escaped, int parsedNumberOfTries) {
         this.xslTemplate = xslT;
         this.xslTemplateFileNameShownInDialog = xslTFileName;
         this.outputType = ot;
