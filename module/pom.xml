@@ -20,6 +20,7 @@
         <module>FilesToFileTransformer</module>
         <module>FilesToRDFTransformer</module>
         <module>FilesToSPARQLLoader</module>
+        <module>FilesToLocalDirectoryLoader</module>
         <module>FileToFilesTransformer</module>
         <module>HTTPToFilesExtractor</module>
         <module>RDFToRDFMerger2Transformer</module>
