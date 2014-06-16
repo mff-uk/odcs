@@ -29,6 +29,12 @@
     <dependencies>
 
         <!-- TODO 7: add dependencies here -->
+                <dependency>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-lang3</artifactId>
+                        <version>3.0</version>
+                </dependency>
+
 
         <!-- Sample dependency defining a maven artifact - Saxon JAR - available on Maven repositories. If you have configured on your machine access to any maven repository, the following lines should work for you and should automatically make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly
     added to the resulting OSGi bundle

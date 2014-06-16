@@ -4,50 +4,47 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class FilesToFilesXSLT2TransformerConfig extends DPUConfigObjectBase {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 4343875087541528977L;
+    private static final long serialVersionUID = 4343875087541528977L;
 
-	private String xslTemplate = "";
-	private String xslTemplateFileNameShownInDialog = "";
-	private String xslTemplateFileName;
-	private String outputXSLTMethod = "text";
+    private String xslTemplate = "";
 
-	public FilesToFilesXSLT2TransformerConfig() {
-	}
+    private String xslTemplateFileNameShownInDialog = "";
 
-	public String getXslTemplate() {
-		return xslTemplate;
-	}
+    private boolean skipOnError = false;
 
-	public void setXslTemplate(String xslTemplate) {
-		this.xslTemplate = xslTemplate;
-	}
+    public FilesToFilesXSLT2TransformerConfig() {
+    }
 
-	public String getXslTemplateFileNameShownInDialog() {
-		return xslTemplateFileNameShownInDialog;
-	}
+    public String getXslTemplate() {
+        return xslTemplate;
+    }
 
-	public void setXslTemplateFileNameShownInDialog(
-			String xslTemplateFileNameShownInDialog) {
-		this.xslTemplateFileNameShownInDialog = xslTemplateFileNameShownInDialog;
-	}
+    public void setXslTemplate(String xslTemplate) {
+        this.xslTemplate = xslTemplate;
+    }
 
-	public String getOutputXSLTMethod() {
-		return outputXSLTMethod;
-	}
+    public String getXslTemplateFileNameShownInDialog() {
+        return xslTemplateFileNameShownInDialog;
+    }
 
-	public void setOutputXSLTMethod(String outputXSLTMethod) {
-		this.outputXSLTMethod = outputXSLTMethod;
-	}
+    public void setXslTemplateFileNameShownInDialog(
+            String xslTemplateFileNameShownInDialog) {
+        this.xslTemplateFileNameShownInDialog = xslTemplateFileNameShownInDialog;
+    }
 
-	public String getXslTemplateFileName() {
-		return xslTemplateFileName;
-	}
+    public boolean isSkipOnError() {
+        return skipOnError;
+    }
 
-	public void setXslTemplateFileName(String xslTemplateFileName) {
-		this.xslTemplateFileName = xslTemplateFileName;
-	}
+    public void setSkipOnError(boolean skipOnError) {
+        this.skipOnError = skipOnError;
+    }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "[templateFile=" + xslTemplateFileNameShownInDialog + ",skipOnError=" + String.valueOf(skipOnError) + "]";
+    }
 }

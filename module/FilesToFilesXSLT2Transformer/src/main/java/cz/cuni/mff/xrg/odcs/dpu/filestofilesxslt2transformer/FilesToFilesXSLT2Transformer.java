@@ -36,8 +36,8 @@ import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesXSLT2TransformerConfig> implements ConfigDialogProvider<FilesToFilesXSLT2TransformerConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToFilesXSLT2Transformer.class);
 
-    @InputDataUnit(name = "fileInput")
-    public FilesDataUnit fileInput;
+    @InputDataUnit(name = "filesInput")
+    public FilesDataUnit filesInput;
 
     @OutputDataUnit(name = "fileOutput")
     public WritableFilesDataUnit fileOutput;
@@ -52,16 +52,15 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, DataUnitException {
+    public void execute(DPUContext dpuContext) throws DPUException {
         //check that XSLT is available 
         if (config.getXslTemplate().isEmpty()) {
-            throw new DPUException("No XSLT available, execution interrupted");
+            throw new DPUException("No XSLT template available, execution interrupted");
         }
 
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        String longMessage = "";//String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
+        String longMessage = String.valueOf(config);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-        LOG.info(shortMessage + " " + longMessage);
 
         //try to compile XSLT
         Processor proc = new Processor(false);
@@ -73,76 +72,113 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
             throw new DPUException("Cannot compile XSLT", ex);
         }
         XsltTransformer trans = exp.load();
-        
-        LOG.info("Stylesheet was compiled successully");
 
-        FilesIteration filesIteration = fileInput.getFiles();
-        int filesSuccessfulCount = 0;
-        int all = 0;
+        dpuContext.sendMessage(MessageType.INFO, "Stylesheet was compiled successully");
+
+        FilesIteration filesIteration;
+        try {
+            filesIteration = filesInput.getFiles();
+        } catch (DataUnitException ex) {
+            throw new DPUException("Could not obtain filesInput", ex);
+        }
+        long filesSuccessfulCount = 0L;
+        long index = 0L;
 
         try {
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnitEntry entry = filesIteration.next();
-                String inSymbolicName = entry.getSymbolicName();
-                
-                String outputFilename = fileOutput.createFile(inSymbolicName);
-                File outputFile = new File(outputFilename);
-                File inputFile = new File(entry.getFilesystemURI());
+                FilesDataUnitEntry entry;
                 try {
-                    all++;
+                    entry = filesIteration.next();
 
-                    Date start = new Date();
-                    if (dpuContext.isDebugging()) {
-                        long inputSizeM = inputFile.length() / 1024 / 1024;
-                        LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
-                        LOG.debug("Starting "+ String.valueOf(all)+" transformation of file "+ inSymbolicName + " size " + String.valueOf(inputSizeM) + "M");
-                    }
-                    Serializer out = new Serializer(outputFile);
-                    if (!config.getOutputXSLTMethod().isEmpty()) {
-                        out.setOutputProperty(Serializer.Property.METHOD, config.getOutputXSLTMethod());
-                    }
-                    out.setOutputProperty(Serializer.Property.INDENT, "yes");
+                    String inSymbolicName = entry.getSymbolicName();
+
+                    String outputFilename = fileOutput.createFile(inSymbolicName);
+                    File outputFile = new File(outputFilename);
+                    File inputFile = new File(entry.getFilesystemURI());
+                    try {
+                        index++;
+
+                        Date start = new Date();
+                        if (dpuContext.isDebugging()) {
+                            long inputSizeM = inputFile.length() / 1024 / 1024;
+                            LOG.debug("Memory used: {}M", String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024));
+                            LOG.debug("Processing {} file {} length {}M", appendNumber(index), entry, inputSizeM);
+
+                        }
+                        Serializer out = new Serializer(outputFile);
 
 //                    DocumentBuilder builder = proc.newDocumentBuilder();
 //                    builder.setTreeModel(TreeModel.TINY_TREE_CONDENSED);
 //                    XdmNode source = builder.build(new StreamSource(entry.getFilesystemURI().toASCIIString()));
 //                    trans.setInitialContextNode(source);
-                    
-                    trans.setSource(new StreamSource(inputFile));
-                    trans.setDestination(out);
-                    trans.transform();
-                    trans.getUnderlyingController().clearDocumentPool();
-                    
-                    fileOutput.addExistingFile(inSymbolicName, outputFilename);
-                    filesSuccessfulCount++;
-                    
-                    if (dpuContext.isDebugging()) {
-                        LOG.debug("Transformed file #{} in {}. Symbolic name {} a file URI {}", filesSuccessfulCount, (System.currentTimeMillis() - start.getTime()), inSymbolicName, entry.getFilesystemURI());
-                        LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024) + "M");
+
+                        trans.setSource(new StreamSource(inputFile));
+                        trans.setDestination(out);
+                        trans.transform();
+                        trans.getUnderlyingController().clearDocumentPool();
+
+                        fileOutput.addExistingFile(inSymbolicName, outputFilename);
+                        filesSuccessfulCount++;
+
+                        if (dpuContext.isDebugging()) {
+                            LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
+                            LOG.debug("Memory used: " + String.valueOf((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "M");
+                        }
+                    } catch (SaxonApiException | DataUnitException ex) {
+                        dpuContext.sendMessage(
+                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                "Error processing " + appendNumber(index) + " file",
+                                String.valueOf(entry),
+                                ex);
                     }
-                } catch (SaxonApiException ex) {
-                    dpuContext.sendMessage(MessageType.WARNING, "Problem processing file.", "Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
-                    LOG.warn("Problem processing file. Symbolic name " + inSymbolicName + " file URI " + entry.getFilesystemURI(), ex);
+                } catch (DataUnitException ex) {
+                    dpuContext.sendMessage(
+                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            "DataUnit exception.",
+                            "",
+                            ex);
                 }
             }
+        } catch (DataUnitException ex) {
+            throw new DPUException("Error iterating filesInput.", ex);
         } finally {
-            filesIteration.close();
+            try {
+                filesIteration.close();
+            } catch (DataUnitException ex) {
+                LOG.warn("Error closing filesInput", ex);
+            }
         }
-        String message = String.format("Transformed %d/%d", filesSuccessfulCount, all);
-        if (filesSuccessfulCount < all) {
-            dpuContext.sendMessage(MessageType.WARNING, message);
-            LOG.warn(message);
-        } else {
-            dpuContext.sendMessage(MessageType.INFO, message);
-            LOG.info(message);
-        }
+        String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
+        dpuContext.sendMessage(filesSuccessfulCount < index ? MessageType.WARNING : MessageType.INFO, message);
     }
 
     private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
         if (dpuContext.canceled()) {
             throw new DPUCancelledException();
+        }
+    }
+
+    public static String appendNumber(long number) {
+        String value = String.valueOf(number);
+        if (value.length() > 1) {
+            // Check for special case: 11 - 13 are all "th".
+            // So if the second to last digit is 1, it is "th".
+            char secondToLastDigit = value.charAt(value.length() - 2);
+            if (secondToLastDigit == '1')
+                return value + "th";
+        }
+        char lastDigit = value.charAt(value.length() - 1);
+        switch (lastDigit) {
+            case '1':
+                return value + "st";
+            case '2':
+                return value + "nd";
+            case '3':
+                return value + "rd";
+            default:
+                return value + "th";
         }
     }
 }

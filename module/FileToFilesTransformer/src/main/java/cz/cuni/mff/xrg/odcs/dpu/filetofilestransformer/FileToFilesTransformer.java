@@ -38,9 +38,9 @@ public class FileToFilesTransformer extends NonConfigurableBase {
         LOG.info(shortMessage);
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
-        long all = 0L;
+        long index = 0L;
         while (fileInputIterator.hasNext()) {
-        	all++;
+            index++;
             checkCancelled(dpuContext);
 
             FileHandler handlerItem = fileInputIterator.next();
@@ -49,7 +49,7 @@ public class FileToFilesTransformer extends NonConfigurableBase {
                 canonicalPath = handlerItem.asFile().getCanonicalPath();
                 filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
                 if (dpuContext.isDebugging()) {
-                    LOG.trace("Added #" + String.valueOf(all) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
+                    LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
                 }
             } catch (IOException ex) {
                 dpuContext.sendMessage(MessageType.ERROR, "Error when adding.", "Handler item rooted path: " + handlerItem.getRootedPath(), ex);
@@ -60,6 +60,28 @@ public class FileToFilesTransformer extends NonConfigurableBase {
     private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
         if (dpuContext.canceled()) {
             throw new DPUCancelledException();
+        }
+    }
+
+    public static String appendNumber(long number) {
+        String value = String.valueOf(number);
+        if (value.length() > 1) {
+            // Check for special case: 11 - 13 are all "th".
+            // So if the second to last digit is 1, it is "th".
+            char secondToLastDigit = value.charAt(value.length() - 2);
+            if (secondToLastDigit == '1')
+                return value + "th";
+        }
+        char lastDigit = value.charAt(value.length() - 1);
+        switch (lastDigit) {
+            case '1':
+                return value + "st";
+            case '2':
+                return value + "nd";
+            case '3':
+                return value + "rd";
+            default:
+                return value + "th";
         }
     }
 }

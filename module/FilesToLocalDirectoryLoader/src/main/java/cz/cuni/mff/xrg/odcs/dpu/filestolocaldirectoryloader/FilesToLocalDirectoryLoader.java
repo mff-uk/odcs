@@ -2,7 +2,11 @@ package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,78 +27,123 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 
 @AsLoader
 public class FilesToLocalDirectoryLoader extends
-		ConfigurableBase<FilesToLocalDirectoryLoaderConfig> implements
-		ConfigDialogProvider<FilesToLocalDirectoryLoaderConfig> {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(FilesToLocalDirectoryLoader.class);
+        ConfigurableBase<FilesToLocalDirectoryLoaderConfig> implements
+        ConfigDialogProvider<FilesToLocalDirectoryLoaderConfig> {
+    private static final Logger LOG = LoggerFactory
+            .getLogger(FilesToLocalDirectoryLoader.class);
 
-	@InputDataUnit(name = "fileInput")
-	public FilesDataUnit filesInput;
+    @InputDataUnit(name = "filesInput")
+    public FilesDataUnit filesInput;
 
-	public FilesToLocalDirectoryLoader() {
-		super(FilesToLocalDirectoryLoaderConfig.class);
-	}
+    public FilesToLocalDirectoryLoader() {
+        super(FilesToLocalDirectoryLoaderConfig.class);
+    }
 
-	@Override
-	public void execute(DPUContext dpuContext) throws DPUException,
-			DataUnitException, InterruptedException {
-		String shortMessage = this.getClass().getSimpleName() + " starting.";
-		String longMessage = String.format(
-				"Configuration: destination: %d, moveFiles: %s",
-				config.getDestination(), config.isMoveFiles());
-		dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-		LOG.info(shortMessage + " " + longMessage);
+    @Override
+    public void execute(DPUContext dpuContext) throws DPUException,
+            InterruptedException {
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
+        String longMessage = String.valueOf(config);
+        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
 
-		FilesIteration filesIteration = filesInput.getFiles();
-		String destinationAbsolutePath = new File(config.getDestination())
-				.getAbsolutePath();
-		boolean moveFiles = config.isMoveFiles();
-		try {
-			while (filesIteration.hasNext()) {
-				checkCancelled(dpuContext);
+        FilesIteration filesIteration;
+        try {
+            filesIteration = filesInput.getFiles();
+        } catch (DataUnitException ex) {
+            throw new DPUException("Could not obtain filesInput", ex);
+        }
+        String destinationAbsolutePath = new File(config.getDestination())
+                .getAbsolutePath();
 
-				FilesDataUnitEntry entry = filesIteration.next();
-				Path inputPath = new File(entry.getFilesystemURI()).toPath();
-				Path outputPath = new File(destinationAbsolutePath + '/'
-						+ entry.getSymbolicName()).toPath();
-				try {
-					if (dpuContext.isDebugging()) {
-						LOG.debug("Starting loading of file "
-								+ entry.getSymbolicName() + " path URI "
-								+ entry.getFilesystemURI());
-					}
-					if (moveFiles) {
-						java.nio.file.Files.move(inputPath, outputPath);
-					} else {
-						java.nio.file.Files.copy(inputPath, outputPath);
-					}
-					if (dpuContext.isDebugging()) {
-						LOG.debug("Finished loading of file "
-								+ entry.getSymbolicName() + " path URI "
-								+ entry.getFilesystemURI());
-					}
-				} catch (IOException ex) {
-					dpuContext.sendMessage(MessageType.ERROR,
-							"Error when loading.",
-							"Symbolic name " + entry.getSymbolicName()
-									+ " path URI " + entry.getFilesystemURI(),
-							ex);
-				}
-			}
-		} finally {
-			filesIteration.close();
-		}
-	}
+        boolean moveFiles = config.isMoveFiles();
+        ArrayList<CopyOption> copyOptions = new ArrayList<>(1);
+        if (config.isReplaceExisting()) {
+            copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+        }
+        CopyOption[] copyOptionsArray = copyOptions.toArray(new CopyOption[copyOptions.size()]);
 
-	@Override
-	public AbstractConfigDialog<FilesToLocalDirectoryLoaderConfig> getConfigurationDialog() {
-		return new FilesToLocalDirectoryLoaderConfigDialog();
-	}
+        long index = 0L;
+        try {
+            while (filesIteration.hasNext()) {
+                index++;
+                checkCancelled(dpuContext);
 
-	private void checkCancelled(DPUContext dpuContext)
-			throws DPUCancelledException {
-		if (dpuContext.canceled()) {
-			throw new DPUCancelledException();
-		}
-	}
+                FilesDataUnitEntry entry;
+                try {
+                    entry = filesIteration.next();
+                    Path inputPath = new File(entry.getFilesystemURI()).toPath();
+                    Path outputPath = new File(destinationAbsolutePath + '/'
+                            + entry.getSymbolicName()).toPath();
+                    try {
+                        Date start = new Date();
+                        if (dpuContext.isDebugging()) {
+                            LOG.debug("Processing {} file {}", appendNumber(index), entry);
+                        }
+                        if (moveFiles) {
+                            java.nio.file.Files.move(inputPath, outputPath, copyOptionsArray);
+                        } else {
+                            java.nio.file.Files.copy(inputPath, outputPath, copyOptionsArray);
+                        }
+                        if (dpuContext.isDebugging()) {
+                            LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);
+                        }
+                    } catch (IOException ex) {
+                        dpuContext.sendMessage(
+                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                "Error processing " + appendNumber(index) + " file",
+                                String.valueOf(entry),
+                                ex);
+                    }
+                } catch (DataUnitException ex) {
+                    dpuContext.sendMessage(
+                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            "DataUnit exception.",
+                            "",
+                            ex);
+                }
+            }
+        } catch (DataUnitException ex) {
+            throw new DPUException("Error iterating filesInput.", ex);
+        } finally {
+            try {
+                filesIteration.close();
+            } catch (DataUnitException ex) {
+                LOG.warn("Error closing filesInput", ex);
+            }
+        }
+    }
+
+    @Override
+    public AbstractConfigDialog<FilesToLocalDirectoryLoaderConfig> getConfigurationDialog() {
+        return new FilesToLocalDirectoryLoaderConfigDialog();
+    }
+
+    private void checkCancelled(DPUContext dpuContext)
+            throws DPUCancelledException {
+        if (dpuContext.canceled()) {
+            throw new DPUCancelledException();
+        }
+    }
+
+    public static String appendNumber(long number) {
+        String value = String.valueOf(number);
+        if (value.length() > 1) {
+            // Check for special case: 11 - 13 are all "th".
+            // So if the second to last digit is 1, it is "th".
+            char secondToLastDigit = value.charAt(value.length() - 2);
+            if (secondToLastDigit == '1')
+                return value + "th";
+        }
+        char lastDigit = value.charAt(value.length() - 1);
+        switch (lastDigit) {
+            case '1':
+                return value + "st";
+            case '2':
+                return value + "nd";
+            case '3':
+                return value + "rd";
+            default:
+                return value + "th";
+        }
+    }
 }

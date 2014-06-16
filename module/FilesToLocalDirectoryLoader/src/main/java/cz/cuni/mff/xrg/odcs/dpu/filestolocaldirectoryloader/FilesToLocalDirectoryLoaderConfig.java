@@ -1,34 +1,62 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 public class FilesToLocalDirectoryLoaderConfig extends DPUConfigObjectBase {
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = -3161162556703740405L;
+    private static final long serialVersionUID = -3161162556703740405L;
 
-	private String destination = "/tmp";
+    private String destination = "/tmp";
 
-	private boolean moveFiles = false;
+    private boolean moveFiles = false;
 
-	// DPUTemplateConfig must provide public non-parametric constructor
-	public FilesToLocalDirectoryLoaderConfig() {
-	}
+    private boolean replaceExisting = false;
 
-	public String getDestination() {
-		return destination;
-	}
+    private boolean skipOnError = false;
 
-	public void setDestination(String destination) {
-		this.destination = destination;
-	}
+    // DPUTemplateConfig must provide public non-parametric constructor
+    public FilesToLocalDirectoryLoaderConfig() {
+    }
 
-	public boolean isMoveFiles() {
-		return moveFiles;
-	}
+    public String getDestination() {
+        return destination;
+    }
 
-	public void setMoveFiles(boolean moveFiles) {
-		this.moveFiles = moveFiles;
-	}
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public boolean isMoveFiles() {
+        return moveFiles;
+    }
+
+    public void setMoveFiles(boolean moveFiles) {
+        this.moveFiles = moveFiles;
+    }
+
+    public boolean isReplaceExisting() {
+        return replaceExisting;
+    }
+
+    public void setReplaceExisting(boolean replaceExisting) {
+        this.replaceExisting = replaceExisting;
+    }
+
+    public boolean isSkipOnError() {
+        return skipOnError;
+    }
+
+    public void setSkipOnError(boolean skipOnError) {
+        this.skipOnError = skipOnError;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+    }
 }

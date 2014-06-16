@@ -1,8 +1,10 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
 import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
@@ -22,13 +24,23 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 	private static final String DESTINATION_LABEL = "Destination directory absolute path";
 
 	private static final String MOVE_FILES_LABEL = "Move files instead of copy";
+	
+	private static final String REPLACE_EXISTING_LABEL = "Replace existing files";
 
-	private ObjectProperty<String> destination = new ObjectProperty<String>("");
+    private static final String SKIP_ON_ERROR_LABEL = "Skip file on error";
+    
+    private ObjectProperty<String> destination = new ObjectProperty<String>("");
 
 	private ObjectProperty<Boolean> moveFiles = new ObjectProperty<Boolean>(
 			false);
 
-	public FilesToLocalDirectoryLoaderConfigDialog() {
+	private ObjectProperty<Boolean> replaceExisting = new ObjectProperty<Boolean>(
+			false);
+
+    private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(
+            false);
+
+    public FilesToLocalDirectoryLoaderConfigDialog() {
 		super(FilesToLocalDirectoryLoaderConfig.class);
 		initialize();
 	}
@@ -41,7 +53,9 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 		setHeight("100%");
 		mainLayout.addComponent(new TextField(DESTINATION_LABEL, destination));
 		mainLayout.addComponent(new CheckBox(MOVE_FILES_LABEL, moveFiles));
-
+		mainLayout.addComponent(new CheckBox(REPLACE_EXISTING_LABEL, replaceExisting));
+        mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
+		
 		setCompositionRoot(mainLayout);
 	}
 
@@ -50,6 +64,8 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 			throws ConfigException {
 		destination.setValue(conf.getDestination());
 		moveFiles.setValue(conf.isMoveFiles());
+		replaceExisting.setValue(conf.isReplaceExisting());
+		skipOnError.setValue(conf.isSkipOnError());
 	}
 
 	@Override
@@ -58,6 +74,8 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 		FilesToLocalDirectoryLoaderConfig conf = new FilesToLocalDirectoryLoaderConfig();
 		conf.setDestination(destination.getValue());
 		conf.setMoveFiles(moveFiles.getValue());
+		conf.setReplaceExisting(replaceExisting.getValue());
+		conf.setSkipOnError(skipOnError.getValue());
 		return conf;
 	}
 

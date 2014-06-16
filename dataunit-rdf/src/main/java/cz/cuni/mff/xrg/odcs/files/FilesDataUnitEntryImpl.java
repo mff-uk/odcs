@@ -23,5 +23,9 @@ public class FilesDataUnitEntryImpl implements FilesDataUnitEntry {
     public URI getFilesystemURI() {
         return filesystemURI;
     }
-
+    
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "[symbolicName=" + symbolicName + ",filesystemURI=" + filesystemURI.toASCIIString() + "]";
+    }
 }
