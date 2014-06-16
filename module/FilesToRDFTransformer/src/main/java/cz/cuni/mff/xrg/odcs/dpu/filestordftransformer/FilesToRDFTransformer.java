@@ -31,8 +31,8 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransformerConfig> implements ConfigDialogProvider<FilesToRDFTransformerConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToRDFTransformer.class);
 
-    @InputDataUnit(name = "fileInput")
-    public FilesDataUnit fileInput;
+    @InputDataUnit(name = "filesInput")
+    public FilesDataUnit filesInput;
 
     @OutputDataUnit(name = "rdfOutput")
     public WritableRDFDataUnit rdfOutput;
@@ -47,7 +47,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
         String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
-        FilesIteration filesIteration = fileInput.getFiles();
+        FilesIteration filesIteration = filesInput.getFiles();
 
         if (!filesIteration.hasNext()) {
             return;

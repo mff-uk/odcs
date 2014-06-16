@@ -24,8 +24,8 @@ import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorConfig> implements ConfigDialogProvider<HTTPToFilesExtractorConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(HTTPToFilesExtractor.class);
 
-    @OutputDataUnit(name = "fileOutput")
-    public WritableFilesDataUnit fileOutput;
+    @OutputDataUnit(name = "filesOutput")
+    public WritableFilesDataUnit filesOutput;
 
     public HTTPToFilesExtractor() {
         super(HTTPToFilesExtractorConfig.class);
@@ -44,12 +44,12 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
         for (String symbolicName : symbolicNameToURIMap.keySet()) {
             checkCancelled(dpuContext);
             
-            String downloadedFilename = fileOutput.createFile(symbolicName);
+            String downloadedFilename = filesOutput.createFile(symbolicName);
             File downloadedFile = new File(downloadedFilename);
             String downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
             try {
                 FileUtils.copyURLToFile(new java.net.URL(downloadFromLocation), downloadedFile, connectionTimeout, readTimeout);
-                fileOutput.addExistingFile(symbolicName, downloadedFilename);
+                filesOutput.addExistingFile(symbolicName, downloadedFilename);
                 if (dpuContext.isDebugging()) {
                     LOG.debug("Downloaded " + symbolicName + " from " + downloadFromLocation + " to " + downloadedFilename);
                 }

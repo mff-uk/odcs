@@ -39,8 +39,8 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
     @InputDataUnit(name = "filesInput")
     public FilesDataUnit filesInput;
 
-    @OutputDataUnit(name = "fileOutput")
-    public WritableFilesDataUnit fileOutput;
+    @OutputDataUnit(name = "filesOutput")
+    public WritableFilesDataUnit filesOutput;
 
     public FilesToFilesXSLT2Transformer() {
         super(FilesToFilesXSLT2TransformerConfig.class);
@@ -94,7 +94,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
                     String inSymbolicName = entry.getSymbolicName();
 
-                    String outputFilename = fileOutput.createFile(inSymbolicName);
+                    String outputFilename = filesOutput.createFile(inSymbolicName);
                     File outputFile = new File(outputFilename);
                     File inputFile = new File(entry.getFilesystemURI());
                     try {
@@ -119,7 +119,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
                         trans.transform();
                         trans.getUnderlyingController().clearDocumentPool();
 
-                        fileOutput.addExistingFile(inSymbolicName, outputFilename);
+                        filesOutput.addExistingFile(inSymbolicName, outputFilename);
                         filesSuccessfulCount++;
 
                         if (dpuContext.isDebugging()) {

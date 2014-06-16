@@ -42,7 +42,6 @@ public class FilesToFileTransformer extends NonConfigurableBase {
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(MessageType.INFO, shortMessage);
-        LOG.info(shortMessage);
 
         FilesIteration filesIteration = filesInput.getFiles();
         try {
