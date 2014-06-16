@@ -52,7 +52,9 @@ public class FilesToLocalDirectoryLoader extends
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
-        String destinationAbsolutePath = new File(config.getDestination())
+        File destinationDirFile = new File(config.getDestination());
+        destinationDirFile.mkdirs();
+        String destinationAbsolutePath = destinationDirFile
                 .getAbsolutePath();
 
         boolean moveFiles = config.isMoveFiles();
