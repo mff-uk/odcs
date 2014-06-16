@@ -82,20 +82,32 @@ public class ExportService {
 
 
     public TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
+        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline);
+
         TreeMap<String, String> informationMap = new TreeMap<>();
-        PipelineGraph graph = pipeline.getGraph();
+        if (pipeline != null) {
+            PipelineGraph graph = pipeline.getGraph();
+            if (graph != null) {
+                for (Node node : graph.getNodes()) {
+                    DPUInstanceRecord dpu = node.getDpuInstance();
+                    if(dpu == null)
+                        continue;
 
-        for (Node node : graph.getNodes()) {
-            DPUInstanceRecord dpu = node.getDpuInstance();
-            DPUTemplateRecord template = dpu.getTemplate();
-            String instanceName = dpu.getName();
-            String name = template.getJarName();
+                    DPUTemplateRecord template = dpu.getTemplate();
+                    String instanceName = dpu.getName();
 
-            if (!informationMap.containsKey(instanceName)) {
-                informationMap.put(instanceName, name);
+                    if(template == null)
+                        continue;
+                    String name = template.getJarName();
+
+                    if (!informationMap.containsKey(instanceName)) {
+                        informationMap.put(instanceName, name);
+                    }
+                }
             }
         }
 
+        LOG.debug("<<< Leaving getDpusInformation: {}", informationMap);
         return informationMap;
     }
 

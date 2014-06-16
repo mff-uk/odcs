@@ -233,6 +233,7 @@ public class SPARQLoader {
 
                     shouldRepeat = false;
                     switch (config.getInsertOption()) {
+                        case SKIP_BAD_PARTS:
                         case REPEAT_IF_BAD_PART:
                             if (retryCount >= config.getRetrySize()) {
                                 final String errorMessage = String.format(
@@ -261,8 +262,6 @@ public class SPARQLoader {
                             }
                             break;
                         case STOP_WHEN_BAD_PART:
-                            throw new DPUException(ex);
-                        case SKIP_BAD_PARTS:
                             throw new DPUException(ex);
                     }
                 }

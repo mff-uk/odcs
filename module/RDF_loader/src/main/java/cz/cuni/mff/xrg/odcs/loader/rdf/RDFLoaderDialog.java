@@ -222,7 +222,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
             }
         }
 
-        return "";
+        return insertItems.get(0).getDescription();
     }
 
     /**
@@ -351,9 +351,9 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
     }
 
     private void mapInsertItems() {
-        InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS,
-                "Continue with the loading "
-                        + "process, resulting data will be incomplete");
+//        InsertItem skip = new InsertItem(InsertType.SKIP_BAD_PARTS,
+//                "Continue with the loading "
+//                        + "process, resulting data will be incomplete");
         InsertItem stop = new InsertItem(InsertType.STOP_WHEN_BAD_PART,
                 "Stop the loading process and "
                         + "end with an error");
@@ -361,12 +361,12 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
         InsertItem repeat = new InsertItem(InsertType.REPEAT_IF_BAD_PART,
                 "Repeat the loading process once again");
 
-        insertItems.add(stop);
-        insertItems.add(skip);
+//        insertItems.add(skip);
         insertItems.add(repeat);
+        insertItems.add(stop);
 
         dataPartsOption.addItem(stop.getDescription());
-        dataPartsOption.addItem(skip.getDescription());
+//        dataPartsOption.addItem(skip.getDescription());
         dataPartsOption.addItem(repeat.getDescription());
 
         dataPartsOption.setValue(stop.getDescription());

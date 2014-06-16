@@ -34,8 +34,8 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderConfig> implements ConfigDialogProvider<FilesToSPARQLLoaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToSPARQLLoader.class);
 
-    @InputDataUnit(name = "fileInput")
-    public FilesDataUnit fileInput;
+    @InputDataUnit(name = "filesInput")
+    public FilesDataUnit filesInput;
 
     public FilesToSPARQLLoader() {
         super(FilesToSPARQLLoaderConfig.class);
@@ -43,7 +43,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
-        String shortMessage = this.getClass().getName() + " starting.";
+        String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: CommitSize: %d, QueryEndpointUrl: %s, UpdateEndpointUrl: %s", config.getCommitSize(), config.getQueryEndpointUrl(), config.getUpdateEndpointUrl());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
@@ -65,7 +65,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             return;
         }
 
-        FilesIteration filesIteration = fileInput.getFiles();
+        FilesIteration filesIteration = filesInput.getFiles();
 
         if (!filesIteration.hasNext()) {
             return;

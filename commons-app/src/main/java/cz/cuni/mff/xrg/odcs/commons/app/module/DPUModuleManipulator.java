@@ -75,6 +75,11 @@ public class DPUModuleManipulator {
             throw new DPUCreateException(
                     "The DPU's file has not been loaded properly.");
         }
+        if (!sourceFile.exists()) {
+			LOG.error("Unable to find dpu: " + name);
+			throw new DPUCreateException("Unable to find dpu: " + name);
+		}
+        
         // get directory name and also validate the DPU's file name
         final String newDpuFileName = sourceFile.getName();
         final String newDpuDirName =  getDirectoryName(newDpuFileName);

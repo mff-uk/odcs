@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cz.cuni.mff.xrg.odcs</groupId>
     <artifactId>odcs</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
     <name>ODCleanStore</name>
     <description/>
@@ -33,7 +33,7 @@
         <!-- odcs version, used to create OSGI import/export package list used
         to enable custom user versions of DPUs by using <version> for this reason
         <version> can't be used to specify OSGI packages -->
-        <odcs.version>1.1.0</odcs.version>
+        <odcs.version>1.2.0</odcs.version>
         <skipTests>false</skipTests>
         <!-- spring version -->
         <org.springframework.version>3.1.2.RELEASE</org.springframework.version>
@@ -120,69 +120,46 @@
     </pluginRepositories>
 
     <build>
-      <pluginManagement>
-         <plugins>
-           <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-compiler-plugin</artifactId>
-             <configuration>
-               <source>${project.java.version}</source>
-               <target>${project.java.version}</target>
-             </configuration>
-           </plugin>
-         </plugins>
-      </pluginManagement>
-			
-      <plugins>
-        <!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <excludes>
-              <exclude>**/*SysTest.java</exclude>
-              <exclude>**/*DoesntPassTest.java</exclude>
-            </excludes>
-          </configuration>
-        </plugin>
- 				<!-- Build will fail with earlier versions - so enforce it -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.3.1</version>
-					<executions>
-						<execution>
-							<id>enforce-maven</id>
-							<goals>
-								<goal>enforce</goal>
-							</goals>
-							<configuration>
-								<rules>
-	 								<requireMavenVersion>
-										<version>[3.0,)</version>
-										<message>Apache Maven version 3 is the minimum for the build</message>
-									</requireMavenVersion>
-								</rules>    
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${project.java.version}</source>
+                        <target>${project.java.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.1</version>
-				</plugin>
+        <plugins>
+            <!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*SysTest.java</exclude>
+                        <exclude>**/*DoesntPassTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+            </plugin>
 
 
-				<!-- JRebel plugin for instant redeploy -->
-        <plugin>
-          <groupId>org.zeroturnaround</groupId>
-          <artifactId>jrebel-maven-plugin</artifactId>
-          <version>1.1.5</version>
-          <executions>
-            <execution>
-              <id>generate-rebel-xml</id>
+            <!-- JRebel plugin for instant redeploy -->
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>generate</goal>
@@ -209,8 +186,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-        </plugins>
+            </plugin>			
+		</plugins>
     </build>
 
     <profiles>
