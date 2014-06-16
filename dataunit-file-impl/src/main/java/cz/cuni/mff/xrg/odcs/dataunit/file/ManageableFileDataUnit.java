@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
+import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
@@ -9,5 +10,4 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
  */
 public interface ManageableFileDataUnit
         extends FileDataUnit, ManagableDataUnit {
-
 }

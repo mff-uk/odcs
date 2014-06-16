@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -18,6 +19,7 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -54,19 +56,6 @@ public class SPARQLLoaderRequestSysTest {
         testEnvironment = new TestEnvironment();
     }
 
-    private URL getEndpoint() {
-        URL endpoint = null;
-        try {
-            endpoint = new URL(
-                    //					testEnvironment.createSPARQLEndpoint("http://kuku"));
-                    ENDPOINT);
-        } catch (MalformedURLException ex) {
-            logger.debug(ex.getMessage());
-        }
-
-        return endpoint;
-    }
-
     private void loadToEndpoint(LoaderEndpointParams params,
             String defaultGraphURI) throws RepositoryException {
         WritableRDFDataUnit repository = testEnvironment.createRdfInput("testInnn", false);
@@ -83,27 +72,26 @@ public class SPARQLLoaderRequestSysTest {
 
             connection.add(subject, predicate, object, repository.getWriteContext());
         }
+        RDFLoaderConfig c = new RDFLoaderConfig();
+        c.setEndpointParams(params);
+        c.setHost_name(USER);
+        c.setPassword(PASSWORD);
+        c.setSPARQL_endpoint(ENDPOINT);
+        c.setGraphsUri(Arrays.asList(defaultGraphURI));
+        c.setInsertOption(InsertType.STOP_WHEN_BAD_PART);
+        c.setGraphOption(WriteGraphType.OVERRIDE);
 
-        URL endpoint = getEndpoint();
         SPARQLoader loader = new SPARQLoader(repository, testEnvironment.getContext(),
-                params, false, USER, PASSWORD);
+                c);
         try {
-            loader.loadToSPARQLEndpoint(endpoint, defaultGraphURI, USER,
-                    PASSWORD,
-                    WriteGraphType.OVERRIDE, InsertType.STOP_WHEN_BAD_PART);
+            loader.loadToSPARQLEndpoint();
 
-            assertEquals(connection.size(repository.getWriteContext()), loader
-                    .getSPARQLEndpointGraphSize(endpoint, defaultGraphURI));
+//            assertEquals(connection.size(repository.getWriteContext()), loader
+//                    .getSPARQLEndpointGraphSize(defaultGraphURI));
 
-        } catch (RDFException e) {
+        } catch (DPUException e) {
             fail(e.getMessage());
-        } finally {
-            try {
-                loader.clearEndpointGraph(endpoint, defaultGraphURI);
-            } catch (RDFException e) {
-                logger.debug(e.getMessage());
-            }
-        }
+        } 
         connection.close();
     }
 

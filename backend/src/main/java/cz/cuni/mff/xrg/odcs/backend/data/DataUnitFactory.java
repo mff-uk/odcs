@@ -6,6 +6,7 @@ import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.FilesDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
@@ -34,6 +35,9 @@ public class DataUnitFactory {
 
     @Autowired
     private RDFDataUnitFactory rdfDataUnitFactory;
+    
+    @Autowired
+    private FilesDataUnitFactory filesDataUnitFactory; 
 
     public DataUnitFactory() {
     }
@@ -54,41 +58,15 @@ public class DataUnitFactory {
      * @throws RepositoryException
      */
     public ManagableDataUnit create(DataUnitType type,
+            String pipelineId,
             String id,
             String name,
             File directory) {
         switch (type) {
+            case FILES:
+                return filesDataUnitFactory.createManageableWritable(pipelineId, name);
             case RDF:
-                return rdfDataUnitFactory.create(name, GraphUrl.translateDataUnitId(id));
-//				throw new RuntimeException("Pure RDF DataUnit can't "
-//						+ "be created.");
-//			case RDF_Local:
-//				// create DataUnit
-//				ManagableDataUnit localRepository = new LocalRDFDataUnit(
-//								appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR)
-//								
-//								, 
-//						name, GraphUrl.translateDataUnitId(id));
-//
-//				// create container with DataUnit and index
-//				return localRepository;
-//			case RDF_Virtuoso:
-//				// load configuration from appConfig
-//				AppConfig config = appConfig.getSubConfiguration(
-//						ConfigProperty.RDF
-//				);
-//				
-//				final String url = "jdbc:virtuoso://" + config.getString(ConfigProperty.DATABASE_HOSTNAME) + ":"
-//						+ config.getString(ConfigProperty.DATABASE_PORT) + "/charset=UTF-8/log_enable=2";
-//				// create repository
-//				ManagableDataUnit virtosoRepository = new VirtuosoRDFDataUnit(
-//						url,
-//						config.getString(ConfigProperty.DATABASE_USER),
-//						config.getString(ConfigProperty.DATABASE_PASSWORD),
-//						name, 
-//						GraphUrl.translateDataUnitId(id));
-//				
-//				return virtosoRepository;
+                return rdfDataUnitFactory.create(pipelineId, name, GraphUrl.translateDataUnitId(id));
             case FILE:
                 // create the DataUnit and return it
                 return FileDataUnitFactory.create(name, directory);

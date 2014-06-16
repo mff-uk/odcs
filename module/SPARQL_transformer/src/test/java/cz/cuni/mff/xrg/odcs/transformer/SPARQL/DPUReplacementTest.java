@@ -23,7 +23,8 @@ public class DPUReplacementTest {
     /**
      * Test DPU replacement on SPARQL CONSTRUCT query.
      */
-    @Test
+//    @Test
+        //tests non-feature now.
     public void constructQueryTest() {
 
         String query = "CONSTRUCT {?s ?p ?o. ?x ?y ?z} where "

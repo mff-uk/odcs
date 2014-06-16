@@ -11,7 +11,7 @@ public class VirtuosoRDFDataUnitFactory implements RDFDataUnitFactory {
     private String password;
 
     @Override
-    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
+    public ManagableRdfDataUnit create(String pipelineId, String dataUnitName, String dataGraph) {
         return new VirtuosoRDFDataUnit(url, user, password, dataUnitName, dataGraph);
     }
 
@@ -37,5 +37,16 @@ public class VirtuosoRDFDataUnitFactory implements RDFDataUnitFactory {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public void clean(String pipelineId) {
+        // no-op
+    }
+
+    @Override
+    public void release(String pipelineId) {
+        // TODO Auto-generated method stub
+        
     }
 }

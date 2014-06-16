@@ -47,7 +47,6 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.MyGraphQueryResult;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
@@ -97,7 +96,7 @@ public class RepositoryFrontendHelper {
                     String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
                     ManagableRdfDataUnit repository =
-                            rdfDataUnitFactory.create(info.getName(), namedGraph);
+                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), info.getName(), namedGraph);
 
                     return repository;
 
@@ -381,13 +380,9 @@ public class RepositoryFrontendHelper {
             log.debug("Query {} is valid.", constructQuery);
 
             try {
-
-                MyGraphQueryResult result = new MyGraphQueryResult(graphQuery
-                        .evaluate());
-
-                log.debug(
-                        "Query {} has not null result.", constructQuery);
-                return result.asGraph();
+                GraphQueryResult result = graphQuery.evaluate();
+                log.debug("Query {} has not null result.", constructQuery);
+                return QueryResults.asModel(result);
 
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(

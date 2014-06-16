@@ -55,7 +55,7 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
 
-            return new LocalRDFDataUnit(workingDirectory.toString(), name,
+            return new LocalRDFDataUnit(workingDirectory.toString(), name, "test_env_" + String.valueOf(this.hashCode()),
                     namedGraph);
         }
     }

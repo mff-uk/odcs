@@ -764,15 +764,13 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                final PipelineExport dialog = new PipelineExport(exportService);
-                dialog.setData(pipeline);
+                final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
             }
         });
 
-        // JMC: disable export pipeline button, because this functionality isn't fully functional (and deterministic)
-        // rightPartOfButtonBar.addComponent(buttonExport);
+        rightPartOfButtonBar.addComponent(buttonExport);
         buttonBar.addComponent(rightPartOfButtonBar);
 
         buttonBar.setSpacing(true);

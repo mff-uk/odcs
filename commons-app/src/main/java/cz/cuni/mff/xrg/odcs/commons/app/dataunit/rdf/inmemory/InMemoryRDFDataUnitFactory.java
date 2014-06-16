@@ -7,7 +7,7 @@ public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
     private String repositoryPath;
 
     @Override
-    public ManagableRdfDataUnit create(String dataUnitName, String dataGraph) {
+    public ManagableRdfDataUnit create(String pipelineId, String dataUnitName, String dataGraph) {
         return new InMemoryRDFDataUnit(repositoryPath, dataUnitName, dataGraph);
     }
 
@@ -17,5 +17,16 @@ public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
 
     public void setRepositoryPath(String repositoryPath) {
         this.repositoryPath = repositoryPath;
+    }
+
+    @Override
+    public void clean(String pipelineId) {
+        // no-op
+    }
+
+    @Override
+    public void release(String pipelineId) {
+        // TODO Auto-generated method stub
+        
     }
 }

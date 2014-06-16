@@ -1,28 +1,22 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.server.FileDownloader;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
+import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Škoda Petr
@@ -34,6 +28,14 @@ public class PipelineExport extends Window {
 
     private CheckBox chbExportDPUData;
 
+    private CheckBox chbExportJars;
+
+    private CheckBox chbExportSchedule;
+
+    private Label usedJarsLabel;
+
+    private Label usedJarsText;
+
     /**
      * Export service.
      */
@@ -44,16 +46,17 @@ public class PipelineExport extends Window {
      */
     private Pipeline pipeline;
 
-    public PipelineExport(ExportService exportService) {
+    public PipelineExport(ExportService exportService, Pipeline pipeline) {
         this.exportService = exportService;
+        this.pipeline = pipeline;
         init();
     }
 
     private void init() {
         this.setResizable(false);
         this.setModal(true);
-        this.setWidth("320px");
-        this.setHeight("320px");
+        this.setWidth("400px");
+        this.setHeight("350px");
         this.setCaption("Pipeline export");
 
         final VerticalLayout mainLayout = new VerticalLayout();
@@ -61,25 +64,53 @@ public class PipelineExport extends Window {
         mainLayout.setSizeFull();
 
         final VerticalLayout detailLayout = new VerticalLayout();
+        detailLayout.setWidth("100%");
 
-        chbExportDPUData = new CheckBox("Export DPU data:");
+        chbExportDPUData = new CheckBox("Export DPU data");
         chbExportDPUData.setWidth("100%");
-        chbExportDPUData.setValue(true);
+        chbExportDPUData.setValue(false);
         detailLayout.addComponent(chbExportDPUData);
+
+        chbExportJars = new CheckBox("Export DPUs JARs");
+        chbExportJars.setWidth("100%");
+        chbExportJars.setValue(false);
+        detailLayout.addComponent(chbExportJars);
+
+        chbExportSchedule = new CheckBox("Export pipeline's schedule");
+        chbExportSchedule.setWidth("100%");
+        chbExportSchedule.setValue(false);
+        detailLayout.addComponent(chbExportSchedule);
+
+        final VerticalLayout usedJarsLayout = new VerticalLayout();
+        usedJarsLayout.setWidth("100%");
+
+        Panel panel = new Panel("Used dpus:");
+        panel.setWidth("100%");
+        panel.setHeight("150px");
+
+        TreeMap<String, String> usedDpus = exportService.getDpusInformation(pipeline);
+
+        Table table = new Table();
+        table.addContainerProperty("DPU template", String.class,  null);
+        table.addContainerProperty("DPU jar's name",  String.class,  null);
+        table.setWidth("100%");
+        table.setHeight("130px");
+        //add dpu's information to table
+        for (Map.Entry<String, String> entry : usedDpus.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            table.addItem(new Object[]{key, value}, null);
+        }
+
+        panel.setContent(table);
+        usedJarsLayout.addComponent(panel);
 
         final HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
-
-        Button btnExport = new Button("export", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
-        });
+        Button btnExport = new Button("export");
         buttonLayout.addComponent(btnExport);
         buttonLayout.setComponentAlignment(btnExport, Alignment.MIDDLE_LEFT);
-
-        Button btnCancel = new Button("cancel", new Button.ClickListener() {
+        Button btnCancel = new Button("close", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -90,9 +121,9 @@ public class PipelineExport extends Window {
 
         // add to the main layout
         mainLayout.addComponent(detailLayout);
-        mainLayout.setExpandRatio(detailLayout, 1);
+        mainLayout.addComponent(usedJarsLayout);
         mainLayout.addComponent(buttonLayout);
-        mainLayout.setExpandRatio(buttonLayout, 0);
+        mainLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_CENTER);
         setContent(mainLayout);
 
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
@@ -104,11 +135,11 @@ public class PipelineExport extends Window {
 
             @Override
             public InputStream getStream() {
-                ExportSetting setting = new ExportSetting(chbExportDPUData.getValue());
+                ExportSetting setting = new ExportSetting(chbExportDPUData.getValue(), chbExportJars.getValue(), chbExportSchedule.getValue());
                 LOG.debug("Exporting DPU date: {}", setting.isExportDPUUserData());
+                LOG.debug("Exporting DPU's jars: {}", setting.isExportJars());
+                LOG.debug("Exporting DPU's schedule: {}", setting.isChbExportSchedule());
 
-                // TODO we should add some waiting dialog here, or 
-                //	we can split the action -> prepare download, download
                 LOG.debug("Constructing output stream.");
                 File pplFile;
                 try {
@@ -131,8 +162,5 @@ public class PipelineExport extends Window {
         fileDownloader.extend(btnExport);
     }
 
-    public void setData(Pipeline pipeline) {
-        this.pipeline = pipeline;
-    }
 
 }

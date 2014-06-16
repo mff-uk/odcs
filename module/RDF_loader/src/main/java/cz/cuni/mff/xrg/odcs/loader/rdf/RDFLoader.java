@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import org.openrdf.model.URI;
@@ -25,7 +23,6 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
@@ -72,15 +69,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
             throws DPUException,
             DataUnitException {
 
-        final String endpoint = config.getSPARQLEndpoint();
-        URL endpointURL = null;
-        try {
-            endpointURL = new URL(endpoint);
-        } catch (MalformedURLException ex) {
-
-            throw new DPUException(ex);
-        }
-
+        final String endpointURL = config.getSPARQLEndpoint();
         final List<String> defaultGraphsURI = config.getGraphsUri();
         final String hostName = config.getHostName();
         final String password = config.getPassword();
@@ -88,6 +77,18 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         final InsertType insertType = config.getInsertOption();
         final long chunkSize = config.getChunkSize();
         final boolean validateDataBefore = config.isValidDataBefore();
+
+        //check that SPARQL endpoint URL is correct
+        ParamController.testEndpointSyntax(endpointURL);
+
+        ParamController.testNullParameter(defaultGraphsURI,
+                "Default graph must be specifed");
+        ParamController.testEmptyParameter(defaultGraphsURI,
+                "Default graph must be specifed");
+
+        ParamController.testPositiveParameter(chunkSize,
+                "Chunk size must be number greater than 0");
+        
 
         LoaderEndpointParams endpointParams = config.getEndpointParams();
 
@@ -123,7 +124,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
                 context.sendMessage(MessageType.INFO, message, dataValidator
                         .getErrorMessage());
 
-                throw new RDFException(message);
+                throw new DPUException(message);
             } else {
                 context.sendMessage(MessageType.INFO,
                         "RDF Data VALIDATION SUCCESFULL");
@@ -158,41 +159,12 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         context.sendMessage(MessageType.INFO, tripleInfoMessage);
 
         try {
-            SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, retrySize,
-                    retryTime, endpointParams, config.isUseSparqlGraphProtocol(), hostName, password);
+            SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, config);
 
-            for (String graph : defaultGraphsURI) {
-                Long graphSizeBefore = loader.getSPARQLEndpointGraphSize(
-                        endpointURL, graph, hostName, password);
+            loader.loadToSPARQLEndpoint();
 
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
-                        graph, graphSizeBefore, endpointURL.toString()));
-
-            }
-
-            loader.loadToSPARQLEndpoint(endpointURL, defaultGraphsURI,
-                    hostName, password, graphType, insertType, chunkSize);
-
-            for (String graph : defaultGraphsURI) {
-
-                Long graphSizeAfter = loader.getSPARQLEndpointGraphSize(
-                        endpointURL, graph, hostName, password);
-
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
-                        graph, graphSizeAfter, endpointURL.toString()));
-
-                long loadedTriples = loader.getLoadedTripleCount(graph);
-
-                context.sendMessage(MessageType.INFO, String.format(
-                        "Loaded %s triples to SPARQL endpoint %s",
-                        loadedTriples, endpointURL.toString()));
-            }
-
-        } catch (RDFDataUnitException ex) {
-            context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
-                    .fillInStackTrace().toString());
+        } catch (DPUException ex) {
+            context.sendMessage(MessageType.ERROR, ex.getMessage(), "", ex);
         }
 
         if (config.isPenetrable()) {

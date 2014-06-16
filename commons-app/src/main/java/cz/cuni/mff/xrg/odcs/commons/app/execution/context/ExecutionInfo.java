@@ -112,4 +112,7 @@ public class ExecutionInfo {
         return getRootPath() + File.separatorChar + WORKING_DIR;
     }
 
+    public ExecutionContextInfo getExecutionContext() {
+        return executionContext;
+    }
 }

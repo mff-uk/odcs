@@ -4,7 +4,7 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>odcs</artifactId>
-        <version>1.0.0</version>
+        <version>1.2.0</version>
     </parent>
     <artifactId>module-base</artifactId>
     <packaging>pom</packaging>
@@ -42,7 +42,13 @@
 
     <!-- list common/vital module dependencies -->
     <dependencies>
-
+        <dependency> <!-- commons project -->
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>commons</artifactId>
+            <version>${odcs.version}</version>
+            <type>jar</type>
+        </dependency>
+        
         <dependency> <!-- commons-web project -->
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>commons-web</artifactId>

@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.filelist.FileListDataUnit;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 public class DataUnitTypeResolver {
@@ -11,8 +11,8 @@ public class DataUnitTypeResolver {
             return DataUnitType.RDF;
         } else if (FileDataUnit.class.isAssignableFrom(classType)) {
             return DataUnitType.FILE;
-        } else if (FileListDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILE_LIST;
+        } else if (FilesDataUnit.class.isAssignableFrom(classType)) {
+            return DataUnitType.FILES;
         }
         return null;
     }

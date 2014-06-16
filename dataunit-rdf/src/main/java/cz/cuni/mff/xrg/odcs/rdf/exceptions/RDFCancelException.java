@@ -12,6 +12,11 @@ import org.openrdf.rio.RDFParser;
 public class RDFCancelException extends RDFHandlerException {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 6289348156771806583L;
+
+    /**
      * Create new instance of {@link RDFCancelException} with the specific
      * message.
      * 

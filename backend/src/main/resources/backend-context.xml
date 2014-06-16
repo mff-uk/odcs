@@ -90,6 +90,8 @@
     <!-- data unit factory class -->
     <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory"/>
 
+	<bean id="filesDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnitFactory"/>
+	
     <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
         <property name="key" value="${database.rdf.platform}"/>
         <property name="implementations">

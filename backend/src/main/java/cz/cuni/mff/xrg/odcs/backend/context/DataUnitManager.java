@@ -146,8 +146,7 @@ final class DataUnitManager {
             } else {
                 item.store();
             }
-            
-           
+
         }
     }
 
@@ -212,6 +211,7 @@ final class DataUnitManager {
                 File directory = new File(workingDir,
                         context.getDataUnitTmpPath(dpuInstance, index));
                 ManagableDataUnit dataUnit = dataUnitFactory.create(info.getType(),
+                        context.generatePipelineId(),
                         id, info.getName(), directory);
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
@@ -243,8 +243,7 @@ final class DataUnitManager {
      * @return Created DataUnit.
      * @throw DataUnitCreateException
      */
-    public ManagableDataUnit addDataUnit(DataUnitType type, String name)
-            {
+    public ManagableDataUnit addDataUnit(DataUnitType type, String name) {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&
@@ -267,7 +266,7 @@ final class DataUnitManager {
                 dpuInstance, index));
         // create instance
         ManagableDataUnit dataUnit;
-        dataUnit = dataUnitFactory.create(type, id, name, directory);
+        dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), id, name, directory);
         // add to storage
         dataUnits.add(dataUnit);
         indexes.put(dataUnit, index);

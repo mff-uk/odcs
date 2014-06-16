@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import org.junit.AfterClass;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
@@ -112,20 +114,25 @@ public class SPARQLLoaderTest1 {
     private void tryInsertToSPARQLEndpoint() {
 
         String goalGraphName = OUTPUT_GRAPH;
-        URL endpoint = getUpdateEndpoint();
 
         boolean isLoaded = false;
-
+        RDFLoaderConfig c = new RDFLoaderConfig();
+        c.setEndpointParams(virtuosoParams);
+        c.setHost_name(USER);
+        c.setPassword(PASSWORD);
+        c.setSPARQL_endpoint(UPDATE_ENDPOINT);
+        c.setGraphsUri(Arrays.asList(goalGraphName));
+        c.setInsertOption(InsertType.SKIP_BAD_PARTS);
+        c.setGraphOption(WriteGraphType.OVERRIDE);
+        
         SPARQLoader loader = new SPARQLoader(repository, getTestContext(),
-                virtuosoParams, true, USER, PASSWORD);
+               c);
         try {
 
-            loader.loadToSPARQLEndpoint(endpoint, goalGraphName, USER,
-                    PASSWORD,
-                    WriteGraphType.OVERRIDE, InsertType.SKIP_BAD_PARTS);
+            loader.loadToSPARQLEndpoint();
             isLoaded = true;
 
-        } catch (RDFException e) {
+        } catch (DPUException e) {
             logger.error("INSERT  failed");
 
         } finally {
@@ -151,20 +158,4 @@ public class SPARQLLoaderTest1 {
         return environment.getContext();
     }
 
-    private URL getUpdateEndpoint() {
-
-        URL endpoint = null;
-
-        try {
-            endpoint = new URL(UPDATE_ENDPOINT);
-
-        } catch (MalformedURLException e) {
-            logger.debug("Malformed URL to SPARQL update endpoint " + e
-                    .getMessage());
-
-        } finally {
-            return endpoint;
-        }
-
-    }
 }

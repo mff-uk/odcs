@@ -40,7 +40,7 @@ CREATE TABLE `dpu_instance`
   `name` VARCHAR(1024),
   `use_dpu_description` SMALLINT,
   `description` TEXT,
-  `configuration` BLOB,
+  `configuration` LONGBLOB,
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
