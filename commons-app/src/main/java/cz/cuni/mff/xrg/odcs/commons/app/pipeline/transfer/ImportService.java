@@ -156,7 +156,7 @@ public class ImportService {
         try {
             return (Pipeline) xStream.fromXML(sourceFile);
         } catch (Throwable t) {
-            String msg = "Missing or wrong pipeline file ";
+            String msg = "Missing or wrong pipeline file";
             LOG.error(msg);
             throw new ImportException(msg, t);
         }

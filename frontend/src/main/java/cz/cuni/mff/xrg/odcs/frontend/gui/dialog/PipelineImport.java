@@ -42,6 +42,8 @@ public class PipelineImport extends Window {
     Table missingDpusTable = new Table();
     
     Button btnImport = new Button();
+    
+    Panel panelMissingDpus = new Panel();
 
     
     /**
@@ -179,8 +181,10 @@ public class PipelineImport extends Window {
                     if (missingDpus.size() > 0) {
                         btnImport.setEnabled(false);
                         Notification.show("You have to install missing dpus from table.", Notification.Type.ERROR_MESSAGE);
+
                     } else {
                         btnImport.setEnabled(true);
+
                     }
 
                     // show result on table - these dpus which are missing
@@ -219,17 +223,16 @@ public class PipelineImport extends Window {
         final VerticalLayout missingJarsLayout = new VerticalLayout();
         missingJarsLayout.setWidth("100%");
 
-        Panel panel2 = new Panel("The DPUs are missing in the system (Need to install):");
-        panel2.setWidth("100%");
-        panel2.setHeight("150px");
+        panelMissingDpus = new Panel("The DPUs are missing in the system (Need to install):");
+        panelMissingDpus.setWidth("100%");
+        panelMissingDpus.setHeight("150px");
 
         missingDpusTable.addContainerProperty("DPU template", String.class,  null);
         missingDpusTable.addContainerProperty("DPU jar's name",  String.class,  null);
         missingDpusTable.setWidth("100%");
         missingDpusTable.setHeight("130px");
-
-        panel2.setContent(missingDpusTable);
-        missingJarsLayout.addComponent(panel2);
+        panelMissingDpus.setContent(missingDpusTable);
+        missingJarsLayout.addComponent(panelMissingDpus);
 
 
         // bottom buttons
