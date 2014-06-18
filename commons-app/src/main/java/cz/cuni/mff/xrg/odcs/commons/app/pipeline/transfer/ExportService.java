@@ -1,29 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.thoughtworks.xstream.XStream;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -35,6 +12,21 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Export given pipeline into file.
@@ -78,37 +70,6 @@ public class ExportService {
         final File targetFile = new File(tempDir, fileName.toString());
         exportPipeline(pipeline, targetFile, setting);
         return targetFile;
-    }
-
-
-    public TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
-        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline);
-
-        TreeMap<String, String> informationMap = new TreeMap<>();
-        if (pipeline != null) {
-            PipelineGraph graph = pipeline.getGraph();
-            if (graph != null) {
-                for (Node node : graph.getNodes()) {
-                    DPUInstanceRecord dpu = node.getDpuInstance();
-                    if(dpu == null)
-                        continue;
-
-                    DPUTemplateRecord template = dpu.getTemplate();
-                    String instanceName = dpu.getName();
-
-                    if(template == null)
-                        continue;
-                    String name = template.getJarName();
-
-                    if (!informationMap.containsKey(instanceName)) {
-                        informationMap.put(instanceName, name);
-                    }
-                }
-            }
-        }
-
-        LOG.debug("<<< Leaving getDpusInformation: {}", informationMap);
-        return informationMap;
     }
 
 

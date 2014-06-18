@@ -1,23 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.thoughtworks.xstream.XStream;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -34,6 +17,22 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Service for importing pipelines exported by {@link ExportService}.
@@ -94,7 +93,7 @@ public class ImportService {
             pipe.setUser(user);
             pipe.setShareType(ShareType.PRIVATE);
 
-            // TODO Check for DPU versions here and warn in case of problems
+            // TODO skoda: Check for DPU versions here and warn in case of problems
 
             Map<DPUTemplateRecord, DPUTemplateRecord> importedTemplates = new HashMap<>();
             for (Node node : pipe.getGraph().getNodes()) {
@@ -157,7 +156,9 @@ public class ImportService {
         try {
             return (Pipeline) xStream.fromXML(sourceFile);
         } catch (Throwable t) {
-            throw new ImportException("Failed to deserialize pipeline.", t);
+            String msg = "Missing or wrong pipeline file";
+            LOG.error(msg);
+            throw new ImportException(msg, t);
         }
     }
 
@@ -285,11 +286,41 @@ public class ImportService {
                 zipEntry = zipInput.getNextEntry();
             }
         } catch (FileNotFoundException ex) {
-            throw new ImportException("Failed to establish temp directory.", ex);
+            throw new ImportException("Wrong uploaded file.", ex);
         } catch (IOException ex) {
             throw new ImportException("Failed to unzip given zip file.", ex);
         }
 
     }
+
+    public MissingAndUsedDpusResult getMissingAndUsedDpus(File zipFile) throws ImportException, MissingResourceException {
+        LOG.debug(">>> Entering getMissingAndUsedDpus(zipFile={})", zipFile);
+
+        File tempDirectory = resourceManager.getNewImportTempDir();
+        unpack(zipFile, tempDirectory);
+        Pipeline pipeline = loadPipeline(tempDirectory);
+
+        TreeMap<String, String> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
+        TreeMap<String, String> missingDpus = new TreeMap<>();
+
+        for (Node node : pipeline.getGraph().getNodes()) {
+            final DPUInstanceRecord dpu = node.getDpuInstance();
+            final DPUTemplateRecord template = dpu.getTemplate();
+
+            // try to detect if dpus are installed
+            DPUTemplateRecord dpuTemplateRecord = dpuFacade.getByJarName(template
+                    .getJarName());
+            if (dpuTemplateRecord == null) {
+                // these dpus is missing
+                if (!missingDpus.containsKey(dpu.getName())) {
+                    missingDpus.put(dpu.getName(), template.getJarName());
+                }
+            }
+        }
+        MissingAndUsedDpusResult result = new MissingAndUsedDpusResult(usedDpus, missingDpus);
+        LOG.debug("<<< Leaving getMissingAndUsedDpus: {}", result);
+        return result;
+    }
+
 
 }

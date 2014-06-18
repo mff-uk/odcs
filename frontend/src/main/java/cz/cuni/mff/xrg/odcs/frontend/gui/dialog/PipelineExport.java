@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportExportCommons;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import org.slf4j.Logger;
@@ -88,7 +89,7 @@ public class PipelineExport extends Window {
         panel.setWidth("100%");
         panel.setHeight("150px");
 
-        TreeMap<String, String> usedDpus = exportService.getDpusInformation(pipeline);
+        TreeMap<String, String> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
 
         Table table = new Table();
         table.addContainerProperty("DPU template", String.class,  null);

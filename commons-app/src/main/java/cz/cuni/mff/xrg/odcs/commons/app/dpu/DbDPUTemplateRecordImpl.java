@@ -51,4 +51,16 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
         return executeList(query);
     }
 
+	@Override
+	public DPUTemplateRecord getByJarName(String jarName) {
+		  final String stringQuery = "SELECT e FROM DPUTemplateRecord e"
+	                + " WHERE e.jarName = :jarName";
+
+	        TypedQuery<DPUTemplateRecord> query = createTypedQuery(stringQuery);
+	        query.setParameter("jarName", jarName);
+
+	        return execute(query);
+		
+	}
+
 }
