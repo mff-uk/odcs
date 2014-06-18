@@ -26,6 +26,17 @@ public interface DbDPUTemplateRecord extends DbAccess<DPUTemplateRecord> {
      */
     public DPUTemplateRecord getByDirectory(String directory);
 
+    
+    /**
+     * Fetch DPU template using given DPU jar.
+     * 
+     * @param jarName
+     *            name of dpu's jar
+     * @return DPU template
+     */
+    public DPUTemplateRecord getByJarName(String jarName);
+    
+    
     /**
      * Fetch all child DPU templates for a given DPU template.
      * 
