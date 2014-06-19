@@ -62,17 +62,17 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
-    public Pipeline importPipeline(File zipFile) throws ImportException {
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException {
         final File tempDir;
         try {
             tempDir = resourceManager.getNewImportTempDir();
         } catch (MissingResourceException ex) {
             throw new ImportException("Failed to get temp directory.", ex);
         }
-        return importPipeline(zipFile, tempDir);
+        return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
-    public Pipeline importPipeline(File zipFile, File tempDirectory)
+    public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException {
         // delete tempDirectory
         FileUtils.deleteQuietly(tempDirectory);
@@ -116,7 +116,7 @@ public class ImportService {
                                     + template.getJarDirectory());
                     // import
                     templateToUse = importDPUTemplate(template, user, jarFile,
-                            userDataFile, globalDataFile);
+                            userDataFile, globalDataFile, importUserDataFile);
                     // add to cache
                     importedTemplates.put(template, templateToUse);
                 }
@@ -128,7 +128,7 @@ public class ImportService {
             // add schedules
             final File scheduleFile = new File(tempDirectory,
                     ArchiveStructure.SCHEDULE.getValue());
-            if (scheduleFile.exists()) {
+            if (scheduleFile.exists() && importScheduleFile) {
                 importSchedules(scheduleFile, pipe, user);
             }
 
@@ -177,7 +177,7 @@ public class ImportService {
      * @throws ImportException
      */
     private DPUTemplateRecord importDPUTemplate(DPUTemplateRecord template,
-            User user, File jarFile, File userDataDir, File globalDataDir)
+            User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
             throws ImportException {
         // try to detect if there already exist same DPU
         DPUTemplateRecord result = dpuFacade.getByDirectory(template
@@ -201,7 +201,7 @@ public class ImportService {
             // TODO add version check here
         }
         // copy user data
-        if (userDataDir.exists()) {
+        if (userDataDir.exists() && importUserDataFile) {
             try {
                 final File dest = resourceManager
                         .getDPUDataUserDir(result, user);
@@ -293,31 +293,58 @@ public class ImportService {
 
     }
 
-    public MissingAndUsedDpusResult getMissingAndUsedDpus(File zipFile) throws ImportException, MissingResourceException {
-        LOG.debug(">>> Entering getMissingAndUsedDpus(zipFile={})", zipFile);
+	public ImportedFileInformation getMissingAndUsedDpus(File zipFile)
+			throws ImportException, MissingResourceException {
+		LOG.debug(">>> Entering getMissingAndUsedDpus(zipFile={})", zipFile);
 
-        File tempDirectory = resourceManager.getNewImportTempDir();
-        unpack(zipFile, tempDirectory);
-        Pipeline pipeline = loadPipeline(tempDirectory);
+		boolean isUserData = false;
+		boolean isScheduleFile = false;
 
-        TreeMap<String, String> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
-        TreeMap<String, String> missingDpus = new TreeMap<>();
+		
+		File tempDirectory = resourceManager.getNewImportTempDir();
+		unpack(zipFile, tempDirectory);
+		Pipeline pipeline = loadPipeline(tempDirectory);
 
-        for (Node node : pipeline.getGraph().getNodes()) {
-            final DPUInstanceRecord dpu = node.getDpuInstance();
-            final DPUTemplateRecord template = dpu.getTemplate();
+		TreeMap<String, String> usedDpus = ImportExportCommons
+				.getDpusInformation(pipeline);
+		TreeMap<String, String> missingDpus = new TreeMap<>();
 
-            // try to detect if dpus are installed
-            DPUTemplateRecord dpuTemplateRecord = dpuFacade.getByJarName(template
-                    .getJarName());
-            if (dpuTemplateRecord == null) {
-                // these dpus is missing
-                if (!missingDpus.containsKey(dpu.getName())) {
-                    missingDpus.put(dpu.getName(), template.getJarName());
-                }
-            }
-        }
-        MissingAndUsedDpusResult result = new MissingAndUsedDpusResult(usedDpus, missingDpus);
+		for (Node node : pipeline.getGraph().getNodes()) {
+			final DPUInstanceRecord dpu = node.getDpuInstance();
+			final DPUTemplateRecord template = dpu.getTemplate();
+
+			// try to detect if dpus are installed
+			DPUTemplateRecord dpuTemplateRecord = dpuFacade
+					.getByJarName(template.getJarName());
+			if (dpuTemplateRecord == null) {
+				// these dpus is missing
+				if (!missingDpus.containsKey(dpu.getName())) {
+					missingDpus.put(dpu.getName(), template.getJarName());
+				}
+			}
+			final File userDataFile = new File(tempDirectory,
+					ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
+							+ template.getJarDirectory());
+			
+			if (userDataFile.exists()) {
+				isUserData = true;
+
+			}
+
+		}
+
+		final File scheduleFile = new File(tempDirectory,
+				ArchiveStructure.SCHEDULE.getValue());
+		if (scheduleFile.exists()) {
+			isScheduleFile = true;
+
+		}
+
+		ImportedFileInformation result = new ImportedFileInformation(usedDpus,
+				missingDpus, isUserData, isScheduleFile);
+        
+		
+        
         LOG.debug("<<< Leaving getMissingAndUsedDpus: {}", result);
         return result;
     }
