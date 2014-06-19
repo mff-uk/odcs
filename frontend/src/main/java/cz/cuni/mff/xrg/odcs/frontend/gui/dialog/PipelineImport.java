@@ -163,7 +163,6 @@ public class PipelineImport extends Window {
                 uploadInfoWindow.setClosable(true);
                 uploadInfoWindow.close();
                 // hide uploader
-                //upload.setVisible(false);
                 File zippedFile = fileUploadReceiver.getFile();
                 try {
                     MissingAndUsedDpusResult result = importService.
@@ -180,7 +179,8 @@ public class PipelineImport extends Window {
 
                     if (missingDpus.size() > 0) {
                         btnImport.setEnabled(false);
-                        Notification.show("You have to install missing dpus from table.", Notification.Type.ERROR_MESSAGE);
+                        Notification.show("It is not possible to import pipeline due to missing DPUs.\n" +
+                                "Please install DPUs from table and then run import again", Notification.Type.ERROR_MESSAGE);
 
                     } else {
                         btnImport.setEnabled(true);
@@ -207,7 +207,7 @@ public class PipelineImport extends Window {
         final VerticalLayout usedJarsLayout = new VerticalLayout();
         usedJarsLayout.setWidth("100%");
 
-        Panel panel = new Panel("The DPUs are used in a pipeline:");
+        Panel panel = new Panel("The DPUs which are used in imported pipeline:");
         panel.setWidth("100%");
         panel.setHeight("150px");
 
@@ -223,7 +223,7 @@ public class PipelineImport extends Window {
         final VerticalLayout missingJarsLayout = new VerticalLayout();
         missingJarsLayout.setWidth("100%");
 
-        panelMissingDpus = new Panel("The DPUs are missing in the system (Need to install):");
+        panelMissingDpus = new Panel("The DPUs which are missing in system. Install them before import:");
         panelMissingDpus.setWidth("100%");
         panelMissingDpus.setHeight("150px");
 
