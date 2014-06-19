@@ -139,6 +139,8 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                 dpuContext.sendMessage(MessageType.WARNING, "Error shutting down the remote SPARQL repository", ex.getMessage(), ex);
             }
         }
+        String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
+        dpuContext.sendMessage(filesSuccessfulCount < index ? MessageType.WARNING : MessageType.INFO, message);
     }
 
     @Override
