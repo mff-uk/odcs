@@ -293,9 +293,9 @@ public class ImportService {
 
     }
 
-	public ImportedFileInformation getMissingAndUsedDpus(File zipFile)
+	public ImportedFileInformation getInportedInformation(File zipFile)
 			throws ImportException, MissingResourceException {
-		LOG.debug(">>> Entering getMissingAndUsedDpus(zipFile={})", zipFile);
+		LOG.debug(">>> Entering getInportedInformation(zipFile={})", zipFile);
 
 		boolean isUserData = false;
 		boolean isScheduleFile = false;
@@ -330,6 +330,7 @@ public class ImportService {
 				isUserData = true;
 
 			}
+			LOG.debug("userDataFile: " + userDataFile.toString());
 
 		}
 
@@ -345,7 +346,7 @@ public class ImportService {
         
 		
         
-        LOG.debug("<<< Leaving getMissingAndUsedDpus: {}", result);
+        LOG.debug("<<< Leaving getInportedInformation: {}", result);
         return result;
     }
 
