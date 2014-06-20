@@ -293,9 +293,9 @@ public class ImportService {
 
     }
 
-	public ImportedFileInformation getInportedInformation(File zipFile)
+	public ImportedFileInformation getImportedInformation(File zipFile)
 			throws ImportException, MissingResourceException {
-		LOG.debug(">>> Entering getInportedInformation(zipFile={})", zipFile);
+		LOG.debug(">>> Entering getImportedInformation(zipFile={})", zipFile);
 
 		boolean isUserData = false;
 		boolean isScheduleFile = false;
@@ -346,7 +346,7 @@ public class ImportService {
         
 		
         
-        LOG.debug("<<< Leaving getInportedInformation: {}", result);
+        LOG.debug("<<< Leaving getImportedInformation: {}", result);
         return result;
     }
 

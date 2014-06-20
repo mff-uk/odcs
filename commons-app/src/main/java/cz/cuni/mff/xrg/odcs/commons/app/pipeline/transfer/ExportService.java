@@ -234,7 +234,7 @@ public class ExportService {
         
         
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
-                + File.separator + template.getJarDirectory();
+                + "/" + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }

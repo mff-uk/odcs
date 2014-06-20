@@ -170,7 +170,7 @@ public class PipelineImport extends Window {
                 File zippedFile = fileUploadReceiver.getFile();
                 try {
                     ImportedFileInformation result = importService.
-                            getInportedInformation(zippedFile);
+                            getImportedInformation(zippedFile);
 					usedDpus = result.getUsedDpus();
 					missingDpus = result.getMissingDpus();
 
