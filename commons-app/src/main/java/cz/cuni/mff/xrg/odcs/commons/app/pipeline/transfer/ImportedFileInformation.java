@@ -50,4 +50,13 @@ public class ImportedFileInformation {
 	public void setScheduleFile(boolean scheduleFile) {
 		this.scheduleFile = scheduleFile;
 	}
+
+	@Override
+	public String toString() {
+		return "ImportedFileInformation [usedDpus=" + usedDpus
+				+ ", missingDpus=" + missingDpus + ", userDataFile="
+				+ userDataFile + ", scheduleFile=" + scheduleFile + "]";
+	}
+	
+	
 }
