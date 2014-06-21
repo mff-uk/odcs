@@ -16,7 +16,7 @@ import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.MissingAndUsedDpusResult;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 
@@ -37,13 +37,17 @@ public class PipelineImport extends Window {
     private  TreeMap<String, String> usedDpus = new TreeMap<>();
     private  TreeMap<String, String> missingDpus = new TreeMap<>();
 
-    Table usedDpusTable = new Table();
+    private Table usedDpusTable = new Table();
+
+    private Table missingDpusTable = new Table();
+
+    private Button btnImport = new Button();
+
+    private Panel panelMissingDpus = new Panel();
     
-    Table missingDpusTable = new Table();
-    
-    Button btnImport = new Button();
-    
-    Panel panelMissingDpus = new Panel();
+    private CheckBox chbExportDPUData = new CheckBox("Import user's data");
+
+    private CheckBox chbExportSchedule = new CheckBox("Import pipeline's schedule");
 
     
     /**
@@ -165,11 +169,25 @@ public class PipelineImport extends Window {
                 // hide uploader
                 File zippedFile = fileUploadReceiver.getFile();
                 try {
-                    MissingAndUsedDpusResult result = importService.
-                            getMissingAndUsedDpus(zippedFile);
-                    usedDpus = result.getUsedDpus();
-                    missingDpus = result.getMissingDpus();
+                    ImportedFileInformation result = importService.
+                            getImportedInformation(zippedFile);
+					usedDpus = result.getUsedDpus();
+					missingDpus = result.getMissingDpus();
 
+					chbExportDPUData.setValue(false);
+					chbExportSchedule.setValue(false);
+
+					if (result.isUserDataFile()) {
+						chbExportDPUData.setEnabled(true);
+					} else {
+						chbExportDPUData.setEnabled(false);
+					}
+
+					if (result.isScheduleFile()) {
+						chbExportSchedule.setEnabled(true);
+					} else {
+						chbExportSchedule.setEnabled(false);
+					}
                     // show result on table  these dpus which are in use
                     for (Map.Entry<String, String> entry : usedDpus.entrySet()) {
                         String key = entry.getKey();
@@ -203,6 +221,16 @@ public class PipelineImport extends Window {
 
         detailLayout.addComponent(upload, 1, 1);
         detailLayout.setComponentAlignment(upload, Alignment.TOP_LEFT);
+        final  HorizontalLayout checkBoxesLayout = new HorizontalLayout();
+        checkBoxesLayout.setWidth("100%");
+        checkBoxesLayout.setMargin(true);
+        chbExportSchedule.setEnabled(false);
+        chbExportDPUData.setEnabled(false);
+        checkBoxesLayout.addComponent(chbExportSchedule);
+        checkBoxesLayout.setComponentAlignment(chbExportSchedule, Alignment.MIDDLE_LEFT);
+        checkBoxesLayout.addComponent(chbExportDPUData);
+        checkBoxesLayout.setComponentAlignment(chbExportDPUData, Alignment.MIDDLE_RIGHT);
+
 
         final VerticalLayout usedJarsLayout = new VerticalLayout();
         usedJarsLayout.setWidth("100%");
@@ -250,7 +278,7 @@ public class PipelineImport extends Window {
                     // import
                     final File zipFile = fileUploadReceiver.getFile();
                     try {
-                        importedPipeline = importService.importPipeline(zipFile);
+                        importedPipeline = importService.importPipeline(zipFile, chbExportDPUData.getValue(), chbExportSchedule.getValue());
                         close();
                     } catch (ImportException ex) {
                         LOG.error("Import failed.", ex);
@@ -275,7 +303,9 @@ public class PipelineImport extends Window {
         // add to the main layout
         mainLayout.addComponent(detailLayout);
         mainLayout.setExpandRatio(detailLayout, 1);
-     
+        mainLayout.addComponent(checkBoxesLayout);
+        mainLayout.setExpandRatio(checkBoxesLayout, 1);
+
         mainLayout.addComponent(usedJarsLayout);
         mainLayout.setExpandRatio(usedJarsLayout, 3);
         mainLayout.addComponent(missingJarsLayout);

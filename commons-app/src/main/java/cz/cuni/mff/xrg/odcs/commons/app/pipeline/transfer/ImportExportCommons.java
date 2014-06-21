@@ -15,6 +15,8 @@ import java.util.TreeMap;
 public class ImportExportCommons {
     private static final Logger LOG = LoggerFactory.getLogger(ImportExportCommons.class);
 
+    public static String  uniteSeparator = "/";
+
     public static TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
         LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline);
 
