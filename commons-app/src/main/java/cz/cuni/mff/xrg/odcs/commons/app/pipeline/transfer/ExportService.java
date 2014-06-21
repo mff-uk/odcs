@@ -201,7 +201,7 @@ public class ExportService {
         byte[] buffer = new byte[4096];
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_JAR.getValue() +
-                    File.separator + template.getJarPath());
+                    ImportExportCommons.uniteSeparator + template.getJarPath());
             zipStream.putNextEntry(ze);
             // move jar file into the zip file
             try (FileInputStream in = new FileInputStream(source)) {
@@ -234,7 +234,7 @@ public class ExportService {
         
         
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
-                + "/" + template.getJarDirectory();
+                + ImportExportCommons.uniteSeparator + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }
@@ -256,7 +256,7 @@ public class ExportService {
         }
 
         final String zipPrefix = ArchiveStructure.DPU_DATA_GLOBAL.getValue()
-                + File.separator + template.getJarDirectory();
+                + ImportExportCommons.uniteSeparator  + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }
@@ -300,7 +300,7 @@ public class ExportService {
             }
             try {
                 // prepare relative path in archive
-                final String relativePath = targetPrefix + File.separator
+                final String relativePath = targetPrefix + ImportExportCommons.uniteSeparator
                         + file.getCanonicalPath().substring(sourceLenght);
                 // ...
                 final ZipEntry ze = new ZipEntry(relativePath);
