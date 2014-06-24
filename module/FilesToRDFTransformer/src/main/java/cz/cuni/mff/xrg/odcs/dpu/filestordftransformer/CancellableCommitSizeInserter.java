@@ -5,18 +5,29 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CommitSizeInserter extends RDFInserter {
+import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 
+public class CancellableCommitSizeInserter extends RDFInserter {
+    private static final Logger LOG = LoggerFactory.getLogger(CancellableCommitSizeInserter.class);
+    
     private int commitSize = 50000;
 
     private boolean transactionOpen = false;
 
     private int statementCounter = 0;
+    
+    private long realStatementCounter = 0L;
 
-    public CommitSizeInserter(RepositoryConnection con, int commitSize) {
+    private DPUContext dpuContext;
+
+    public CancellableCommitSizeInserter(RepositoryConnection con, int commitSize, DPUContext dpuContext) {
         super(con);
         this.commitSize = commitSize;
+        this.dpuContext = dpuContext;
     }
 
     @Override
@@ -32,8 +43,15 @@ public class CommitSizeInserter extends RDFInserter {
         super.handleStatement(st);
         statementCounter++;
         if (transactionOpen && (statementCounter == commitSize)) {
+            if (dpuContext.canceled()) {
+                throw new RDFCancelException("Cancelled by user");
+            }
             try {
                 con.commit();
+                if (LOG.isDebugEnabled()) {
+                    realStatementCounter+= statementCounter;
+                    LOG.debug("Commit {}", realStatementCounter);
+                }
             } catch (RepositoryException e) {
                 try {
                     con.rollback();

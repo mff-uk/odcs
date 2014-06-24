@@ -8,6 +8,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
             while (filesIteration.hasNext()) {
                 connection = rdfOutput.getConnection();
 
-                RDFInserter rdfInserter = new CommitSizeInserter(connection, config.getCommitSize());
+                RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection, config.getCommitSize(), dpuContext);
                 rdfInserter.enforceContext(rdfOutput.getWriteContext());
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
@@ -69,7 +70,8 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
                         LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
                     }
 //                    ParseErrorCollector parseErrorCollector= new ParseErrorCollector();
-                    loader.load(new File(entry.getFilesystemURI()), null, null, rdfInserter, new ParseErrorLogger());
+                    
+                    loader.load(new File(entry.getFilesystemURI()), null, Rio.getParserFormatForFileName(entry.getSymbolicName()), rdfInserter, new ParseErrorLogger());
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
