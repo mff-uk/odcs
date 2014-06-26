@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +35,11 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
 
     private static final String STOP = "rdf_load_stop()";
 
-    private static final String STATUS_COUNT_DONE = "select count(*) from DB.DBA.load_list where ll_file like ? and ll_state = 2 and ll_started >= ?";
+    private static final String STATUS_COUNT_DONE = "select count(*) from DB.DBA.load_list where ll_file like ? and ll_state = 2";
 
     private static final String STATUS_COUNT_PROCESSING = "select count(*) from DB.DBA.load_list where ll_file like ? and ll_state <> 2";
 
-    private static final String STATUS_ERROR = "select * from DB.DBA.load_list where ll_file like ? and ll_error <> NULL";
+    private static final String STATUS_ERROR = "select * from DB.DBA.load_list where ll_file like ? and ll_error IS NOT NULL";
 
     private static final String DELETE = "delete from DB.DBA.load_list where ll_file like ?";
 
@@ -64,6 +67,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
         }
         Connection connection = null;
         boolean started = false;
+        ExecutorService executor = null;
         try {
             connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
             Statement statementNow = connection.createStatement();
@@ -86,7 +90,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             PreparedStatement statementStatusCountDone = connection.prepareStatement(STATUS_COUNT_DONE);
             statementStatusCountProcessing.setString(1, config.getLoadDirectoryPath() + "%");
             statementStatusCountDone.setString(1, config.getLoadDirectoryPath() + "%");
-            statementStatusCountDone.setTimestamp(2, startTimestamp);
 
             ResultSet resultSetProcessing = statementStatusCountProcessing.executeQuery();
             resultSetProcessing.next();
@@ -97,18 +100,40 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                 LOG.info("Nothing to do. Stopping.");
                 return;
             }
-            
-            Statement statementRun = connection.createStatement();
+
+            executor = Executors.newFixedThreadPool(config.getThreadCount());
             for (int i = 0; i < config.getThreadCount(); i++) {
-                ResultSet resultSetRun = statementRun.executeQuery(RUN);
-                resultSetRun.close();
+                executor.execute(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Connection connection = null;
+                        try {
+                            connection = DriverManager.getConnection(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
+                            Statement statementRun = connection.createStatement();
+                            ResultSet resultSetRun = statementRun.executeQuery(RUN);
+                            resultSetRun.close();
+                            statementRun.close();
+                        } catch (SQLException ex) {
+                            LOG.error("Error in worker", ex);
+                        } finally {
+                            if (connection != null) {
+                                try {
+                                    connection.close();
+                                } catch (SQLException ex) {
+                                    LOG.warn("Error closing connection", ex);
+                                }
+                            }
+                        }
+                    }
+                });
             }
+            executor.shutdown();
             started = true;
-            statementRun.close();
             LOG.info("Started {} run threads", config.getThreadCount());
             
             int done = 0;
-            while (done < all) {
+            while (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS)) {
                 checkCancelled(dpuContext);
 
                 ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
@@ -117,21 +142,26 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                 resultSetDoneLoop.close();
 
                 LOG.info("Processing {}/{} files", done, all);
-                Thread.sleep(config.getStatusUpdateInterval() * 1000L);
             }
+            LOG.info("Finished all threads");
+
+            ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
+            resultSetDoneLoop.next();
+            done = resultSetDoneLoop.getInt(1);
+            resultSetDoneLoop.close();
             LOG.info("Processed {}/{} files", done, all);
-            
+
             PreparedStatement statementsErrorRows = connection.prepareStatement(STATUS_ERROR);
             statementsErrorRows.setString(1, config.getLoadDirectoryPath() + "%");
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
                 dpuContext.sendMessage(
                         config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
-                        "Error processing file "+ resultSetErrorRows.getString(1)+", error "+resultSetErrorRows.getString(8));
+                        "Error processing file " + resultSetErrorRows.getString(1) + ", error " + resultSetErrorRows.getString(8));
             }
             resultSetErrorRows.close();
             statementsErrorRows.close();
-            
+
             LOG.info("Done.");
         } catch (SQLException ex) {
             throw new DPUException("Error executing query", ex);
@@ -144,6 +174,15 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                     stop.close();
                 } catch (SQLException ex1) {
                     LOG.error("Error executing query", ex1);
+                }
+            }
+            if (executor != null && started) {
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    executor.shutdownNow(); // Cancel currently executing tasks
+                    // Wait a while for tasks to respond to being cancelled
+                    if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                        LOG.error("Pool did not terminate");
+                    }
                 }
             }
         } finally {
