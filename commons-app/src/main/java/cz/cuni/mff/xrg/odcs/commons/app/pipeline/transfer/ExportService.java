@@ -149,7 +149,7 @@ public class ExportService {
                 ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
                 dpusInformation.add(exportedDpuItem);
             }
-            saveDpuInfos(dpusInformation, zipStream);
+            saveDpusInfo(dpusInformation, zipStream);
 
         } catch (IOException ex) {
             targetFile.delete();
