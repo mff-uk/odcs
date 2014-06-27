@@ -345,21 +345,20 @@ public class ExportService {
         }
     }
 
-    public void saveDpuInfos(TreeSet<ExportedDpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
-        XStream xStream = new XStream(new DomDriver());
+    public void saveDpusInfo(TreeSet<ExportedDpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
+        LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
 
-        List<ExportedDpuItem> dpus = new  ArrayList<ExportedDpuItem>();
+        XStream xStream = new XStream(new DomDriver());
+        List<ExportedDpuItem> dpus = new ArrayList<ExportedDpuItem>();
         dpus.addAll(dpusInformation);
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", ExportedDpuItem.class);
 
         String serializedDpuItem = xStream.toXML(dpus);
+        LOG.debug("used dpus:\n{}", serializedDpuItem);
 
-        System.out.println(serializedDpuItem);
         byte[] buffer = new byte[4096];
-
         try {
-
             File serializedTarget = File.createTempFile("temp", ".tmp");
             FileUtils.writeStringToFile(serializedTarget, serializedDpuItem);
 
@@ -376,6 +375,8 @@ public class ExportService {
         } catch (IOException ex) {
             throw new ExportException("Failed to infos  jar file.", ex);
         }
-
+        LOG.debug("<<< Leaving saveDpusInfo()");
     }
+
+
 }

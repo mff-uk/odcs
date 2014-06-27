@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.TreeSet;
 
 import static org.mockito.Mockito.mock;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 public class ExportUsedDpusTest {
     @Test
-    public void Test() throws IOException, ImportException, ExportException {
+    public void ExportTest() throws IOException, ImportException, ExportException {
         ImportService importService = new ImportService();
         Path tmpPath = Files.createTempDirectory("dir");
         File tmpDir = tmpPath.toFile();
@@ -50,10 +51,7 @@ public class ExportUsedDpusTest {
         }
         TreeSet<ExportedDpuItem> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
         System.out.println("===================================================================");
-        for (ExportedDpuItem dpuItem : usedDpus) {
-            System.out.println(dpuItem);
-        }
-
+        System.out.println(usedDpus);
 
         ExportService exportService = new ExportService();
         ExportService exportServiceMock = spy(exportService);
@@ -65,6 +63,24 @@ public class ExportUsedDpusTest {
         User userMock = new User();
         when(authMock.getUser()).thenReturn(userMock);
         exportServiceMock.exportPipeline(pipeline, tmpTarget, setting, authMock);
+
+    }
+
+    @Test
+    public void ImportTest() throws IOException, ImportException, ExportException {
+        ImportService importService = new ImportService();
+        Path tmpPath = Files.createTempDirectory("dir");
+        File tmpDir = tmpPath.toFile();
+
+        String zipResource = ExportUsedDpusTest.class.getResource(
+                "/pipelineWithUsedDpus.zip").getPath();
+
+        File zipFile = new File(zipResource);
+        importService.unpack(zipFile, tmpDir);
+        List<ExportedDpuItem>  result = importService.loadUsedDpus(tmpDir);
+        System.out.println(result);
+
+
 
     }
 

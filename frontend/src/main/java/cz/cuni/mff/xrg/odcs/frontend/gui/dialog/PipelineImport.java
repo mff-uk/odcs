@@ -1,9 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportedDpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -34,8 +38,8 @@ public class PipelineImport extends Window {
 
     private Pipeline importedPipeline = null;
 
-    private  TreeMap<String, String> usedDpus = new TreeMap<>();
-    private  TreeMap<String, String> missingDpus = new TreeMap<>();
+    private List<ExportedDpuItem> usedDpus = new ArrayList<>();
+    private  TreeMap<String, ExportedDpuItem> missingDpus = new TreeMap<>();
 
     private Table usedDpusTable = new Table();
 
@@ -77,7 +81,7 @@ public class PipelineImport extends Window {
     private void init() {
         this.setResizable(false);
         this.setModal(true);
-        this.setWidth("420px");
+        this.setWidth("500px");
         this.setHeight("520px");
         this.markAsDirtyRecursive();
 
@@ -169,10 +173,8 @@ public class PipelineImport extends Window {
                 // hide uploader
                 File zippedFile = fileUploadReceiver.getFile();
                 try {
-                    ImportedFileInformation result = importService.
-                            getImportedInformation(zippedFile);
-                    //TODO fix it result.getUsedDpus();
-					usedDpus = null;
+                    ImportedFileInformation result = importService.getImportedInformation(zippedFile);
+					usedDpus = result.getUsedDpus();
 					missingDpus = result.getMissingDpus();
 
 					chbExportDPUData.setValue(false);
@@ -189,11 +191,14 @@ public class PipelineImport extends Window {
 					} else {
 						chbExportSchedule.setEnabled(false);
 					}
-                    // show result on table  these dpus which are in use
-                    for (Map.Entry<String, String> entry : usedDpus.entrySet()) {
-                        String key = entry.getKey();
-                        String value = entry.getValue();
-                        usedDpusTable.addItem(new Object[]{key, value}, null);
+					
+					if(usedDpus == null) {
+						LOG.warn("used dpus file doesn't exist");
+					}else {
+                        // show result on table  these dpus which are in use
+                        for (ExportedDpuItem entry : usedDpus) {
+                            usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
+                        }
                     }
 
                     if (missingDpus.size() > 0) {
@@ -207,10 +212,10 @@ public class PipelineImport extends Window {
                     }
 
                     // show result on table - these dpus which are missing
-                    for (Map.Entry<String, String> entry : missingDpus.entrySet()) {
+                    for (Map.Entry<String, ExportedDpuItem> entry : missingDpus.entrySet()) {
                         String key = entry.getKey();
-                        String value = entry.getValue();
-                        missingDpusTable.addItem(new Object[]{key, value}, null);
+                        ExportedDpuItem value = entry.getValue();
+                        missingDpusTable.addItem(new Object[]{value.getDpuName(), value.getJarName(), value.getVersion()}, null);
                     }
 
 
@@ -242,6 +247,8 @@ public class PipelineImport extends Window {
 
         usedDpusTable.addContainerProperty("DPU template", String.class,  null);
         usedDpusTable.addContainerProperty("DPU jar's name",  String.class,  null);
+        usedDpusTable.addContainerProperty("Version",  String.class,  null);
+
         usedDpusTable.setWidth("100%");
         usedDpusTable.setHeight("130px");
 
@@ -258,6 +265,8 @@ public class PipelineImport extends Window {
 
         missingDpusTable.addContainerProperty("DPU template", String.class,  null);
         missingDpusTable.addContainerProperty("DPU jar's name",  String.class,  null);
+        missingDpusTable.addContainerProperty("version",  String.class,  null);
+
         missingDpusTable.setWidth("100%");
         missingDpusTable.setHeight("130px");
         panelMissingDpus.setContent(missingDpusTable);
