@@ -235,7 +235,7 @@ public class SPARQLoader {
                     switch (config.getInsertOption()) {
                         case SKIP_BAD_PARTS:
                         case REPEAT_IF_BAD_PART:
-                            if (retryCount >= config.getRetrySize()) {
+                            if (retryCount == config.getRetrySize()) {
                                 final String errorMessage = String.format(
                                         "Count of retryConnection for Loading data to SPARQL endpoint is OVER (TOTAL %s ATTEMPTS). ",
                                         retryCount);
