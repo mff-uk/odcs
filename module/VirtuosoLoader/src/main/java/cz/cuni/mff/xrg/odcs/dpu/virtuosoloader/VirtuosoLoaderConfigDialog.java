@@ -28,7 +28,9 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
 
     private static final String INCLUDE_SUBDIRECTORIES_LABEL = "Include subdirectories";
 
-    private static final String TARGET_CONTEXT_LABEL = "Target context";
+    private static final String LOAD_FILE_PATTERN_LABEL = "File name pattern";
+
+    private static final String TARGET_CONTEXT_LABEL = "Target graph";
 
     private static final String STATUS_UPDATE_INTERVAL_LABEL = "Update status interval (s)";
 
@@ -45,6 +47,8 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
     private ObjectProperty<String> loadDirectoryPath = new ObjectProperty<String>("");
 
     private ObjectProperty<Boolean> includeSubdirectories = new ObjectProperty<Boolean>(true);
+
+    private ObjectProperty<String> loadFilePattern = new ObjectProperty<String>("");
 
     private ObjectProperty<String> targetContext = new ObjectProperty<String>("");
 
@@ -72,6 +76,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         mainLayout.addComponent(new TextField(PASSWORD_LABEL, password));
         mainLayout.addComponent(new TextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
         mainLayout.addComponent(new TextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
+        mainLayout.addComponent(new TextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
         mainLayout.addComponent(new TextField(TARGET_CONTEXT_LABEL, targetContext));
         mainLayout.addComponent(new TextField(STATUS_UPDATE_INTERVAL_LABEL, statusUpdateInterval));
         mainLayout.addComponent(new TextField(THREAD_COUNT_LABEL, threadCount));
@@ -87,6 +92,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         password.setValue(conf.getPassword());
         loadDirectoryPath.setValue(conf.getLoadDirectoryPath());
         includeSubdirectories.setValue(conf.isIncludeSubdirectories());
+        loadFilePattern.setValue(conf.getLoadFilePattern());
         targetContext.setValue(conf.getTargetContext());
         statusUpdateInterval.setValue(conf.getStatusUpdateInterval());
         threadCount.setValue(conf.getThreadCount());
@@ -101,6 +107,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         conf.setPassword(password.getValue());
         conf.setLoadDirectoryPath(loadDirectoryPath.getValue());
         conf.setIncludeSubdirectories(includeSubdirectories.getValue());
+        conf.setLoadFilePattern(loadFilePattern.getValue());
         conf.setTargetContext(targetContext.getValue());
         conf.setStatusUpdateInterval(statusUpdateInterval.getValue());
         conf.setThreadCount(threadCount.getValue());

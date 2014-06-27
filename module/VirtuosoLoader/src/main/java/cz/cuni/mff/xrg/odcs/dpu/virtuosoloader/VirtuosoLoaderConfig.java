@@ -18,6 +18,8 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     private boolean includeSubdirectories = true;
 
+    private String loadFilePattern = "%";
+
     private String targetContext = "";
 
     private long statusUpdateInterval = 60L;
@@ -67,6 +69,14 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     public void setIncludeSubdirectories(boolean includeSubdirectories) {
         this.includeSubdirectories = includeSubdirectories;
+    }
+
+    public String getLoadFilePattern() {
+        return loadFilePattern;
+    }
+
+    public void setLoadFilePattern(String loadFilePattern) {
+        this.loadFilePattern = loadFilePattern;
     }
 
     public String getTargetContext() {

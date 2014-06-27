@@ -27,9 +27,9 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> implements ConfigDialogProvider<VirtuosoLoaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
-    private static final String LD_DIR = "ld_dir (?, '%', ?)";
+    private static final String LD_DIR = "ld_dir (?, ?, ?)";
 
-    private static final String LD_DIR_ALL = "ld_dir_all (?, '%', ?)";
+    private static final String LD_DIR_ALL = "ld_dir_all (?, ?, ?)";
 
     private static final String NOW = "select now()";
 
@@ -80,7 +80,8 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
 
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
-            statementLdDir.setString(2, config.getTargetContext());
+            statementLdDir.setString(2, config.getLoadFilePattern());
+            statementLdDir.setString(3, config.getTargetContext());
             ResultSet resultSetLdDir = statementLdDir.executeQuery();
             resultSetLdDir.close();
             statementLdDir.close();
