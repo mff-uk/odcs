@@ -1,16 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ImportedFileInformation {
 
-	private TreeMap<String, String> usedDpus = new TreeMap<>();
+	private TreeSet<ExportedDpuItem>  usedDpus = new TreeSet<>();
 	private TreeMap<String, String> missingDpus = new TreeMap<>();
 
 	boolean userDataFile = false;
 	boolean scheduleFile = false;
 
-	public ImportedFileInformation(TreeMap<String, String> usedDpus,
+	public ImportedFileInformation(TreeSet<ExportedDpuItem> usedDpus,
 			TreeMap<String, String> missingDpus, boolean userDataFile, boolean scheduleFile) {
 
 		this.usedDpus = usedDpus;
@@ -19,11 +20,11 @@ public class ImportedFileInformation {
 		this.scheduleFile = scheduleFile;
 	}
 
-	public TreeMap<String, String> getUsedDpus() {
+	public TreeSet<ExportedDpuItem>  getUsedDpus() {
 		return usedDpus;
 	}
 
-	public void setUsedDpus(TreeMap<String, String> usedDpus) {
+	public void setUsedDpus(TreeSet<ExportedDpuItem> usedDpus) {
 		this.usedDpus = usedDpus;
 	}
 

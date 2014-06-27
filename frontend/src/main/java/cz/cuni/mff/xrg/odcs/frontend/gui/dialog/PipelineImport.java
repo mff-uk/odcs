@@ -171,7 +171,8 @@ public class PipelineImport extends Window {
                 try {
                     ImportedFileInformation result = importService.
                             getImportedInformation(zippedFile);
-					usedDpus = result.getUsedDpus();
+                    //TODO fix it result.getUsedDpus();
+					usedDpus = null;
 					missingDpus = result.getMissingDpus();
 
 					chbExportDPUData.setValue(false);

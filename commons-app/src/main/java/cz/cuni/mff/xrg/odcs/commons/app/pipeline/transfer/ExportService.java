@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -22,9 +23,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -67,21 +70,31 @@ public class ExportService {
         fileName.append(pipeline.getId().toString());
         fileName.append(".zip");
 
-        final File targetFile = new File(tempDir, fileName.toString());
-        exportPipeline(pipeline, targetFile, setting);
+        File targetFile = new File(tempDir, fileName.toString());
+        exportPipeline(pipeline, targetFile, setting, this.authCtx);
         return targetFile;
     }
 
 
+    public AuthenticationContext getAuthCtx() {
+        return authCtx;
+    }
+
+    public void setAuthCtx(AuthenticationContext authCtx) {
+        this.authCtx = authCtx;
+    }
+
     /**
      * Export given pipeline and all it's dependencies into given file.
+     *
      *
      * @param pipeline
      * @param targetFile
      * @param setting
+     * @param authCtx
      * @throws ExportException
      */
-    public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting)
+    public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting, AuthenticationContext authCtx)
             throws ExportException {
 
         if (authCtx == null) {
@@ -104,6 +117,9 @@ public class ExportService {
             HashSet<Long> savedTemplateId = new HashSet<>();
 			HashSet<String> savedTemplateDir = new HashSet<>();
 
+            TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
+
+
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
@@ -112,11 +128,12 @@ public class ExportService {
                 } else {
                     savedTemplateId.add(template.getId());
                     // export jar file
-					final String jarDirectory = template.getJarDirectory();
-					if (savedTemplateDir.contains(jarDirectory)) {
-						// jar already exported
+                    final String jarDirectory = template.getJarDirectory();
+                    if (savedTemplateDir.contains(jarDirectory)) {
+                        // jar already exported
                     } else {
                         savedTemplateDir.add(jarDirectory);
+
                         if (setting.isExportJars()) {
                             saveDPUJar(template, zipStream);
                         }
@@ -127,7 +144,13 @@ public class ExportService {
                         saveDPUDataGlobal(template, zipStream);
                     }
                 }
+                // TODO jmc added version
+                String version = "unknown";
+                ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
+                dpusInformation.add(exportedDpuItem);
             }
+            saveDpuInfos(dpusInformation, zipStream);
+
         } catch (IOException ex) {
             targetFile.delete();
             throw new ExportException(
@@ -322,4 +345,37 @@ public class ExportService {
         }
     }
 
+    public void saveDpuInfos(TreeSet<ExportedDpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
+        XStream xStream = new XStream(new DomDriver());
+
+        List<ExportedDpuItem> dpus = new  ArrayList<ExportedDpuItem>();
+        dpus.addAll(dpusInformation);
+        xStream.alias("dpus", List.class);
+        xStream.alias("dpu", ExportedDpuItem.class);
+
+        String serializedDpuItem = xStream.toXML(dpus);
+
+        System.out.println(serializedDpuItem);
+        byte[] buffer = new byte[4096];
+
+        try {
+
+            File serializedTarget = File.createTempFile("temp", ".tmp");
+            FileUtils.writeStringToFile(serializedTarget, serializedDpuItem);
+
+            final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
+            zipStream.putNextEntry(ze);
+
+            // move jar file into the zip file
+            try (FileInputStream in = new FileInputStream(serializedTarget)) {
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    zipStream.write(buffer, 0, len);
+                }
+            }
+        } catch (IOException ex) {
+            throw new ExportException("Failed to infos  jar file.", ex);
+        }
+
+    }
 }

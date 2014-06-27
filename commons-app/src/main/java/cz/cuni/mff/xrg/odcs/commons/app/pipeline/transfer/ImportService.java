@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -149,7 +150,7 @@ public class ImportService {
      * @return
      * @throws ImportException
      */
-    private Pipeline loadPipeline(File baseDir) throws ImportException {
+    public Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline();
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
                 .getValue());
@@ -263,7 +264,7 @@ public class ImportService {
      * @param sourceZip
      * @param targetDir
      */
-    private void unpack(File sourceZip, File targetDir) throws ImportException {
+    public void unpack(File sourceZip, File targetDir) throws ImportException {
         byte[] buffer = new byte[4096];
         targetDir.mkdirs();
 
@@ -305,11 +306,11 @@ public class ImportService {
 		unpack(zipFile, tempDirectory);
 		Pipeline pipeline = loadPipeline(tempDirectory);
 
-		TreeMap<String, String> usedDpus = ImportExportCommons
-				.getDpusInformation(pipeline);
-		TreeMap<String, String> missingDpus = new TreeMap<>();
+        TreeSet<ExportedDpuItem> usedDpus = ImportExportCommons
+                .getDpusInformation(pipeline);
+        TreeMap<String, String> missingDpus = new TreeMap<>();
 
-		for (Node node : pipeline.getGraph().getNodes()) {
+        for (Node node : pipeline.getGraph().getNodes()) {
 			final DPUInstanceRecord dpu = node.getDpuInstance();
 			final DPUTemplateRecord template = dpu.getTemplate();
 

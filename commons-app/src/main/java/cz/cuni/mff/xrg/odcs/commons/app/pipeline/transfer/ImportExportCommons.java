@@ -10,17 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ImportExportCommons {
     private static final Logger LOG = LoggerFactory.getLogger(ImportExportCommons.class);
 
     public static String  uniteSeparator = "/";
 
-    public static TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
-        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline);
+    public static  TreeSet<ExportedDpuItem> getDpusInformation(Pipeline pipeline) {
+        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline.getId());
 
-        TreeMap<String, String> informationMap = new TreeMap<>();
+        TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
         if (pipeline != null) {
             PipelineGraph graph = pipeline.getGraph();
             if (graph != null) {
@@ -34,17 +36,19 @@ public class ImportExportCommons {
 
                     if (template == null)
                         continue;
-                    String name = template.getJarName();
 
-                    if (!informationMap.containsKey(instanceName)) {
-                        informationMap.put(instanceName, name);
+                    String jarName = template.getJarName();
+                    String version = "unknown";
+                    ExportedDpuItem exportedDpuItem = new ExportedDpuItem(instanceName, jarName, version);
+                    if (!dpusInformation.contains(exportedDpuItem)) {
+                        dpusInformation.add(exportedDpuItem);
                     }
                 }
             }
         }
 
-        LOG.debug("<<< Leaving getDpusInformation: {}", informationMap);
-        return informationMap;
+        LOG.debug("<<< Leaving getDpusInformation: {}", dpusInformation);
+        return dpusInformation;
     }
     
     
