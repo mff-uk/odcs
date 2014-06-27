@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -29,22 +30,25 @@ public class ImportExportCommons {
         if (pipeline != null) {
             PipelineGraph graph = pipeline.getGraph();
             if (graph != null) {
-                for (Node node : graph.getNodes()) {
-                    DPUInstanceRecord dpu = node.getDpuInstance();
-                    if (dpu == null)
-                        continue;
+                Set<Node> nodes = graph.getNodes();
+                if (nodes != null) {
+                    for (Node node : nodes) {
+                        DPUInstanceRecord dpu = node.getDpuInstance();
+                        if (dpu == null)
+                            continue;
 
-                    DPUTemplateRecord template = dpu.getTemplate();
-                    String instanceName = dpu.getName();
+                        DPUTemplateRecord template = dpu.getTemplate();
+                        String instanceName = dpu.getName();
 
-                    if (template == null)
-                        continue;
+                        if (template == null)
+                            continue;
 
-                    String jarName = template.getJarName();
-                    String version = "unknown";
-                    ExportedDpuItem exportedDpuItem = new ExportedDpuItem(instanceName, jarName, version);
-                    if (!dpusInformation.contains(exportedDpuItem)) {
-                        dpusInformation.add(exportedDpuItem);
+                        String jarName = template.getJarName();
+                        String version = "unknown";
+                        ExportedDpuItem exportedDpuItem = new ExportedDpuItem(instanceName, jarName, version);
+                        if (!dpusInformation.contains(exportedDpuItem)) {
+                            dpusInformation.add(exportedDpuItem);
+                        }
                     }
                 }
             }

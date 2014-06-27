@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -318,65 +320,74 @@ public class ImportService {
 
     }
 
-	public ImportedFileInformation getImportedInformation(File zipFile)
-			throws ImportException, MissingResourceException {
-		LOG.debug(">>> Entering getImportedInformation(zipFile={})", zipFile);
+    public ImportedFileInformation getImportedInformation(File zipFile)
+            throws ImportException, MissingResourceException {
+        LOG.debug(">>> Entering getImportedInformation(zipFile={})", zipFile);
 
-		boolean isUserData = false;
-		boolean isScheduleFile = false;
+        boolean isUserData = false;
+        boolean isScheduleFile = false;
 
-		
-		File tempDirectory = resourceManager.getNewImportTempDir();
-		unpack(zipFile, tempDirectory);
-		Pipeline pipeline = loadPipeline(tempDirectory);
+        File tempDirectory = resourceManager.getNewImportTempDir();
+        unpack(zipFile, tempDirectory);
+        Pipeline pipeline = loadPipeline(tempDirectory);
 
         List<ExportedDpuItem> usedDpus = loadUsedDpus(tempDirectory);
         TreeMap<String, ExportedDpuItem> missingDpus = new TreeMap<>();
-		
 
-        for (Node node : pipeline.getGraph().getNodes()) {
-			final DPUInstanceRecord dpu = node.getDpuInstance();
-			final DPUTemplateRecord template = dpu.getTemplate();
+        if (pipeline != null) {
+            PipelineGraph graph = pipeline.getGraph();
+            if (graph != null) {
+                Set<Node> nodes = graph.getNodes();
+                if (nodes != null) {
+                    for (Node node : nodes) {
+                        DPUInstanceRecord dpu = node.getDpuInstance();
+                        if (dpu == null)
+                            continue;
 
-			// try to detect if dpus are installed
-			DPUTemplateRecord dpuTemplateRecord = dpuFacade
-					.getByJarName(template.getJarName());
-			// TODO jmc 
-			String version = "unknown";
-			ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
-			if (dpuTemplateRecord == null) {
-				// these dpus is missing
-				if (!missingDpus.containsKey(dpu.getName())) {
-					missingDpus.put(dpu.getName(), exportedDpuItem);
-				}
-			}
-			final File userDataFile = new File(tempDirectory,
-					ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
-							+ template.getJarDirectory());
-			
-			if (userDataFile.exists()) {
-				isUserData = true;
+                        DPUTemplateRecord template = dpu.getTemplate();
+                        String instanceName = dpu.getName();
 
-			}
-			LOG.debug("userDataFile: " + userDataFile.toString());
+                        if (template == null)
+                            continue;
 
-		}
+                        // try to detect if dpus are installed
+                        DPUTemplateRecord dpuTemplateRecord = dpuFacade
+                                .getByJarName(template.getJarName());
+                        // TODO jmc
+                        String version = "unknown";
+                        ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
+                        if (dpuTemplateRecord == null) {
+                            // these dpus is missing
+                            if (!missingDpus.containsKey(dpu.getName())) {
+                                missingDpus.put(dpu.getName(), exportedDpuItem);
+                            }
+                        }
+                        final File userDataFile = new File(tempDirectory,
+                                ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
+                                        + template.getJarDirectory());
 
-		final File scheduleFile = new File(tempDirectory,
-				ArchiveStructure.SCHEDULE.getValue());
-		if (scheduleFile.exists()) {
-			isScheduleFile = true;
+                        if (userDataFile.exists()) {
+                            isUserData = true;
 
-		}
+                        }
+                        LOG.debug("userDataFile: " + userDataFile.toString());
+                    }
 
-		ImportedFileInformation result = new ImportedFileInformation(usedDpus,
-				missingDpus, isUserData, isScheduleFile);
-        
-		
-        
+                    final File scheduleFile = new File(tempDirectory,
+                            ArchiveStructure.SCHEDULE.getValue());
+                    if (scheduleFile.exists()) {
+                        isScheduleFile = true;
+                    }
+                }
+            }
+        }
+
+        ImportedFileInformation result = new ImportedFileInformation(usedDpus,
+                missingDpus, isUserData, isScheduleFile);
+
+
         LOG.debug("<<< Leaving getImportedInformation: {}", result);
         return result;
     }
-
 
 }

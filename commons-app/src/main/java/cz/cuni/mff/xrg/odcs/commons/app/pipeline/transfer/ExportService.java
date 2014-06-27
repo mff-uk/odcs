@@ -71,7 +71,7 @@ public class ExportService {
         fileName.append(".zip");
 
         File targetFile = new File(tempDir, fileName.toString());
-        exportPipeline(pipeline, targetFile, setting, this.authCtx);
+        exportPipeline(pipeline, targetFile, setting, getAuthCtx());
         return targetFile;
     }
 
@@ -119,7 +119,6 @@ public class ExportService {
 
             TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
 
-
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
@@ -147,7 +146,10 @@ public class ExportService {
                 // TODO jmc added version
                 String version = "unknown";
                 ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
-                dpusInformation.add(exportedDpuItem);
+                if (!dpusInformation.contains(exportedDpuItem)) {
+                    dpusInformation.add(exportedDpuItem);
+                }
+
             }
             saveDpusInfo(dpusInformation, zipStream);
 
@@ -349,6 +351,7 @@ public class ExportService {
         LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
 
         XStream xStream = new XStream(new DomDriver());
+        // treeSet is not possible to aliasing
         List<ExportedDpuItem> dpus = new ArrayList<ExportedDpuItem>();
         dpus.addAll(dpusInformation);
         xStream.alias("dpus", List.class);
