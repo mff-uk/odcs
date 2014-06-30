@@ -345,7 +345,6 @@ public class ImportService {
                             continue;
 
                         DPUTemplateRecord template = dpu.getTemplate();
-                        String instanceName = dpu.getName();
 
                         if (template == null)
                             continue;
@@ -353,7 +352,7 @@ public class ImportService {
                         // try to detect if dpus are installed
                         DPUTemplateRecord dpuTemplateRecord = dpuFacade
                                 .getByJarName(template.getJarName());
-                        // TODO jmc
+                        // TODO jmc add version
                         String version = "unknown";
                         ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
                         if (dpuTemplateRecord == null) {

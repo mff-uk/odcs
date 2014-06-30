@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -381,5 +383,39 @@ public class ExportService {
         LOG.debug("<<< Leaving saveDpusInfo()");
     }
 
+    public TreeSet<ExportedDpuItem> getDpusInformation(Pipeline pipeline) {
+        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline.getId());
+
+        TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
+        if (pipeline != null) {
+            PipelineGraph graph = pipeline.getGraph();
+            if (graph != null) {
+                Set<Node> nodes = graph.getNodes();
+                if (nodes != null) {
+                    for (Node node : nodes) {
+                        DPUInstanceRecord dpu = node.getDpuInstance();
+                        if (dpu == null)
+                            continue;
+
+                        DPUTemplateRecord template = dpu.getTemplate();
+                        String instanceName = dpu.getName();
+
+                        if (template == null)
+                            continue;
+
+                        String jarName = template.getJarName();
+                        String version = "unknown";
+                        ExportedDpuItem exportedDpuItem = new ExportedDpuItem(instanceName, jarName, version);
+                        if (!dpusInformation.contains(exportedDpuItem)) {
+                            dpusInformation.add(exportedDpuItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        LOG.debug("<<< Leaving getDpusInformation: {}", dpusInformation);
+        return dpusInformation;
+    }
 
 }

@@ -89,7 +89,7 @@ public class PipelineExport extends Window {
         panel.setWidth("100%");
         panel.setHeight("150px");
 
-        TreeSet<ExportedDpuItem> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
+        TreeSet<ExportedDpuItem> usedDpus = exportService.getDpusInformation(pipeline);
 
         Table table = new Table();
         table.addContainerProperty("DPU template", String.class,  null);
