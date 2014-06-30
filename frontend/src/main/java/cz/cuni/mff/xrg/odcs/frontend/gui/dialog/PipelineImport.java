@@ -191,13 +191,15 @@ public class PipelineImport extends Window {
 					} else {
 						chbExportSchedule.setEnabled(false);
 					}
-					
-					if(usedDpus == null) {
-						LOG.warn("used dpus file doesn't exist");
-					}else {
+
+                    if (usedDpus == null) {
+                        String msg = "It is not possible to read the file [used_dpu.xml]\nwhere used dpus are.";
+                        LOG.warn(msg);
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                    } else {
                         // show result on table  these dpus which are in use
                         for (ExportedDpuItem entry : usedDpus) {
-                            usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
+                            usedDpusTable.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
                         }
                     }
 
