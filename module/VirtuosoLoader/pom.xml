@@ -9,24 +9,37 @@
         <version>1.2.1</version>
     </parent>
 
-    <artifactId>FilesToRDFTransformer</artifactId>
+    <artifactId>VirtuosoLoader</artifactId>
 
     <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>1.2.3</version>
+    <version>1.2.2</version>
 
     <packaging>bundle</packaging>
 
-    <description>FilesToRDFTransformer extracts RDF data from Files (any file format) and adds them to RDF.</description>
+    <description>VirtuosoLoader issues Virtuoso internal functions to load directory of RDF data.</description>
 
     <properties>
-        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestordftransformer</dpu.package>
-        <dpu.mainClass>FilesToRDFTransformer</dpu.mainClass>
+        <dpu.package>cz.cuni.mff.xrg.odcs.dpu.virtuosoloader</dpu.package>
+        <dpu.mainClass>VirtuosoLoader</dpu.mainClass>
         <!-- TODO 6: Put path to the ODCL DPUs directory here -->
         <!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' profiles -->
         <dpu.odcl.dir></dpu.odcl.dir>
     </properties>
+<repositories>
+         <repository>
+             <id>cz.cuni.mff.ms.xrg.odcl</id>
+             <url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
+         </repository>
+</repositories>
+
 
     <dependencies>
+         <dependency>
+             <groupId>com.openlinksw</groupId>
+             <artifactId>virtjdbc</artifactId>
+             <version>4.1</version>
+         </dependency>
+
  <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-lang3</artifactId>

@@ -10,7 +10,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnitEntryImpl;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;

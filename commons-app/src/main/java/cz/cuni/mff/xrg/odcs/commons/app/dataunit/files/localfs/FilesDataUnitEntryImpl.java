@@ -1,7 +1,8 @@
-package cz.cuni.mff.xrg.odcs.files;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.net.URI;
 
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 
 public class FilesDataUnitEntryImpl implements FilesDataUnitEntry {
