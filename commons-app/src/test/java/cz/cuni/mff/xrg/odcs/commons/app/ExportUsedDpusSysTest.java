@@ -11,7 +11,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportedDpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportExportCommons;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import org.junit.Test;
@@ -28,14 +27,14 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 
-public class ExportUsedDpusTest {
+public class ExportUsedDpusSysTest {
     @Test
     public void ExportTest() throws IOException, ImportException, ExportException {
         ImportService importService = new ImportService();
         Path tmpPath = Files.createTempDirectory("dir");
         File tmpDir = tmpPath.toFile();
 
-        String zipResource = ExportUsedDpusTest.class.getResource(
+        String zipResource = ExportUsedDpusSysTest.class.getResource(
                 "/pipeline.zip").getPath();
 
         File zipFile = new File(zipResource);
@@ -64,6 +63,7 @@ public class ExportUsedDpusTest {
         when(authMock.getUser()).thenReturn(userMock);
         exportServiceMock.exportPipeline(pipeline, tmpTarget, setting, authMock);
 
+
     }
 
     @Test
@@ -72,16 +72,13 @@ public class ExportUsedDpusTest {
         Path tmpPath = Files.createTempDirectory("dir");
         File tmpDir = tmpPath.toFile();
 
-        String zipResource = ExportUsedDpusTest.class.getResource(
+        String zipResource = ExportUsedDpusSysTest.class.getResource(
                 "/pipelineWithUsedDpus.zip").getPath();
 
         File zipFile = new File(zipResource);
         importService.unpack(zipFile, tmpDir);
         List<ExportedDpuItem>  result = importService.loadUsedDpus(tmpDir);
         System.out.println(result);
-
-
-
     }
 
 }
