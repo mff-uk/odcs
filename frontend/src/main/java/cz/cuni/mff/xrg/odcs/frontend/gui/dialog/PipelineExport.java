@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportExportCommons;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import org.slf4j.Logger;
@@ -16,8 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * @author Škoda Petr
@@ -56,7 +55,7 @@ public class PipelineExport extends Window {
     private void init() {
         this.setResizable(false);
         this.setModal(true);
-        this.setWidth("400px");
+        this.setWidth("500px");
         this.setHeight("350px");
         this.setCaption("Pipeline export");
 
@@ -89,18 +88,17 @@ public class PipelineExport extends Window {
         panel.setWidth("100%");
         panel.setHeight("150px");
 
-        TreeMap<String, String> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
+        TreeSet<DpuItem> usedDpus = exportService.getDpusInformation(pipeline);
 
         Table table = new Table();
         table.addContainerProperty("DPU template", String.class,  null);
         table.addContainerProperty("DPU jar's name",  String.class,  null);
+        table.addContainerProperty("Version",  String.class,  null);
         table.setWidth("100%");
         table.setHeight("130px");
         //add dpu's information to table
-        for (Map.Entry<String, String> entry : usedDpus.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            table.addItem(new Object[]{key, value}, null);
+        for (DpuItem entry : usedDpus) {
+            table.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
         }
 
         panel.setContent(table);
