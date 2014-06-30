@@ -1,17 +1,20 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
+
 
 public class ImportedFileInformation {
 
-	private TreeMap<String, String> usedDpus = new TreeMap<>();
-	private TreeMap<String, String> missingDpus = new TreeMap<>();
+	private List<DpuItem> usedDpus = new ArrayList<>();
+	private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
 	boolean userDataFile = false;
 	boolean scheduleFile = false;
 
-	public ImportedFileInformation(TreeMap<String, String> usedDpus,
-			TreeMap<String, String> missingDpus, boolean userDataFile, boolean scheduleFile) {
+	public ImportedFileInformation(List<DpuItem> usedDpus,
+			TreeMap<String, DpuItem> missingDpus, boolean userDataFile, boolean scheduleFile) {
 
 		this.usedDpus = usedDpus;
 		this.missingDpus = missingDpus;
@@ -19,19 +22,19 @@ public class ImportedFileInformation {
 		this.scheduleFile = scheduleFile;
 	}
 
-	public TreeMap<String, String> getUsedDpus() {
+	public List<DpuItem>  getUsedDpus() {
 		return usedDpus;
 	}
 
-	public void setUsedDpus(TreeMap<String, String> usedDpus) {
+	public void setUsedDpus(List<DpuItem> usedDpus) {
 		this.usedDpus = usedDpus;
 	}
 
-	public TreeMap<String, String> getMissingDpus() {
+	public TreeMap<String, DpuItem> getMissingDpus() {
 		return missingDpus;
 	}
 
-	public void setMissingDpus(TreeMap<String, String> missingDpus) {
+	public void setMissingDpus(TreeMap<String, DpuItem> missingDpus) {
 		this.missingDpus = missingDpus;
 	}
 
