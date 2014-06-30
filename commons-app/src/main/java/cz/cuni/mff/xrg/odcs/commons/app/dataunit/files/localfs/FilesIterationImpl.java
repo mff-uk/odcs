@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
-import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 
 import org.openrdf.model.Statement;
@@ -11,10 +10,10 @@ import org.openrdf.repository.RepositoryResult;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
+import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
-public class FilesIterationImpl implements FilesIteration {
+public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIteration {
     private RepositoryConnection connection = null;
 
     private RepositoryResult<Statement> result = null;
@@ -41,12 +40,9 @@ public class FilesIterationImpl implements FilesIteration {
 
         try {
             Statement statement = result.next();
-            return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), new java.net.URI(statement.getSubject().stringValue()));
+            return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), statement.getSubject().stringValue());
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error iterating underlying repository", ex);
-        } catch (URISyntaxException ex) {
-            // This is impossible, all URIs are created using File.toURI().toASCIIString(), but who ever knows what will break
-            throw new DataUnitException("Malformed URI", ex);
         } catch (NoSuchElementException ex) {
             this.close();
             throw ex;

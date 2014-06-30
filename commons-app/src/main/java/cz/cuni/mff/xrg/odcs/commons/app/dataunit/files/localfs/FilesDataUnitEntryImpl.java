@@ -1,16 +1,13 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
-import java.net.URI;
-
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
 
-public class FilesDataUnitEntryImpl implements FilesDataUnitEntry {
+public class FilesDataUnitEntryImpl implements FilesDataUnit.FilesDataUnitEntry {
     private String symbolicName;
 
-    private URI filesystemURI;
+    private String filesystemURI;
 
-    public FilesDataUnitEntryImpl(String symbolicName, URI filesystemURI) {
+    public FilesDataUnitEntryImpl(String symbolicName, String filesystemURI) {
         this.symbolicName = symbolicName;
         this.filesystemURI = filesystemURI;
     }
@@ -21,12 +18,12 @@ public class FilesDataUnitEntryImpl implements FilesDataUnitEntry {
     }
 
     @Override
-    public URI getFilesystemURI() {
+    public String getFilesystemURI() {
         return filesystemURI;
     }
     
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[symbolicName=" + symbolicName + ",filesystemURI=" + filesystemURI.toASCIIString() + "]";
+        return this.getClass().getSimpleName() + "[symbolicName=" + symbolicName + ",filesystemURI=" + filesystemURI + "]";
     }
 }

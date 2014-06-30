@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,14 +42,10 @@ public class FileToFilesTransformer extends NonConfigurableBase {
 
             FileHandler handlerItem = fileInputIterator.next();
             String canonicalPath;
-            try {
-                canonicalPath = handlerItem.asFile().getCanonicalPath();
-                filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
-                if (dpuContext.isDebugging()) {
-                    LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
-                }
-            } catch (IOException ex) {
-                dpuContext.sendMessage(MessageType.ERROR, "Error when adding.", "Handler item rooted path: " + handlerItem.getRootedPath(), ex);
+            canonicalPath = handlerItem.asFile().toURI().toASCIIString();
+            filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
+            if (dpuContext.isDebugging()) {
+                LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
             }
         }
     }

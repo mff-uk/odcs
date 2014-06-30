@@ -1,27 +1,43 @@
 package cz.cuni.mff.xrg.odcs.files;
 
-import java.net.URI;
-
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public interface FilesDataUnit extends DataUnit {
     interface FilesDataUnitEntry {
+        /**
+         * 
+         * @return Symbolic name under which the file is stored inside this data unit.
+         */
         String getSymbolicName();
 
-        URI getFilesystemURI();
+        /**
+         * 
+         * @return URI of the real file location, for example: http://example.com/my_file.png or file://c:/Users/example/myDoc.doc
+         */
+        String getFilesystemURI();
     }
-    
-    interface FilesIteration extends CloseableIteration<FilesDataUnit.FilesDataUnitEntry, DataUnitException> {
-        
+
+    interface FilesIteration {
+        public boolean hasNext() throws DataUnitException;
+
+        public FilesDataUnit.FilesDataUnitEntry next() throws DataUnitException;
+
+        public void close() throws DataUnitException;
     }
-    
+
     /**
-     * Get all RDF data regarding this data unit.
-     * @return
+     * 
+     * @return RDF data regarding this data unit.
      */
     RDFData getRDFData();
-    
+
+    /**
+     * List the files.
+     * 
+     * @return
+     * @throws DataUnitException
+     */
     FilesDataUnit.FilesIteration getFiles() throws DataUnitException;
 }
