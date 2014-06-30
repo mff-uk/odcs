@@ -6,8 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportedDpuItem;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportExportCommons;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import org.slf4j.Logger;
@@ -89,7 +88,7 @@ public class PipelineExport extends Window {
         panel.setWidth("100%");
         panel.setHeight("150px");
 
-        TreeSet<ExportedDpuItem> usedDpus = exportService.getDpusInformation(pipeline);
+        TreeSet<DpuItem> usedDpus = exportService.getDpusInformation(pipeline);
 
         Table table = new Table();
         table.addContainerProperty("DPU template", String.class,  null);
@@ -98,7 +97,7 @@ public class PipelineExport extends Window {
         table.setWidth("100%");
         table.setHeight("130px");
         //add dpu's information to table
-        for (ExportedDpuItem entry : usedDpus) {
+        for (DpuItem entry : usedDpus) {
             table.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
         }
 

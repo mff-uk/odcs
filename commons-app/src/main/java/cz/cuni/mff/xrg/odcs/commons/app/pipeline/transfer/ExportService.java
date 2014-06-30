@@ -119,7 +119,7 @@ public class ExportService {
             HashSet<Long> savedTemplateId = new HashSet<>();
 			HashSet<String> savedTemplateDir = new HashSet<>();
 
-            TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
+            TreeSet<DpuItem> dpusInformation = new TreeSet<>();
 
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
@@ -147,9 +147,9 @@ public class ExportService {
                 }
                 // TODO jmc added version
                 String version = "unknown";
-                ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
-                if (!dpusInformation.contains(exportedDpuItem)) {
-                    dpusInformation.add(exportedDpuItem);
+                DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
+                if (!dpusInformation.contains(dpuItem)) {
+                    dpusInformation.add(dpuItem);
                 }
 
             }
@@ -349,15 +349,15 @@ public class ExportService {
         }
     }
 
-    public void saveDpusInfo(TreeSet<ExportedDpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
+    public void saveDpusInfo(TreeSet<DpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
         LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
 
         XStream xStream = new XStream(new DomDriver());
         // treeSet is not possible to aliasing
-        List<ExportedDpuItem> dpus = new ArrayList<ExportedDpuItem>();
+        List<DpuItem> dpus = new ArrayList<DpuItem>();
         dpus.addAll(dpusInformation);
         xStream.alias("dpus", List.class);
-        xStream.alias("dpu", ExportedDpuItem.class);
+        xStream.alias("dpu", DpuItem.class);
 
         String serializedDpuItem = xStream.toXML(dpus);
         LOG.debug("used dpus:\n{}", serializedDpuItem);
@@ -383,10 +383,10 @@ public class ExportService {
         LOG.debug("<<< Leaving saveDpusInfo()");
     }
 
-    public TreeSet<ExportedDpuItem> getDpusInformation(Pipeline pipeline) {
+    public TreeSet<DpuItem> getDpusInformation(Pipeline pipeline) {
         LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline.getId());
 
-        TreeSet<ExportedDpuItem> dpusInformation = new TreeSet<>();
+        TreeSet<DpuItem> dpusInformation = new TreeSet<>();
         if (pipeline != null) {
             PipelineGraph graph = pipeline.getGraph();
             if (graph != null) {
@@ -405,9 +405,9 @@ public class ExportService {
 
                         String jarName = template.getJarName();
                         String version = "unknown";
-                        ExportedDpuItem exportedDpuItem = new ExportedDpuItem(instanceName, jarName, version);
-                        if (!dpusInformation.contains(exportedDpuItem)) {
-                            dpusInformation.add(exportedDpuItem);
+                        DpuItem dpuItem = new DpuItem(instanceName, jarName, version);
+                        if (!dpusInformation.contains(dpuItem)) {
+                            dpusInformation.add(dpuItem);
                         }
                     }
                 }

@@ -1,12 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-public class ExportedDpuItem implements Comparable {
+public class DpuItem implements Comparable {
 
     private String dpuName;
     private String jarName;
     private String version;
 
-    public ExportedDpuItem(String dpuName, String jarName, String version) {
+    public DpuItem(String dpuName, String jarName, String version) {
         this.dpuName = dpuName;
         this.jarName = jarName;
         this.version = version;
@@ -50,7 +50,7 @@ public class ExportedDpuItem implements Comparable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ExportedDpuItem that = (ExportedDpuItem) o;
+        DpuItem that = (DpuItem) o;
 
         if (dpuName != null ? !dpuName.equals(that.dpuName) : that.dpuName != null) return false;
         if (jarName != null ? !jarName.equals(that.jarName) : that.jarName != null) return false;
@@ -69,8 +69,8 @@ public class ExportedDpuItem implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-    	ExportedDpuItem exportedDpuItem = (ExportedDpuItem)o;
-    	int result = this.getDpuName().compareToIgnoreCase(exportedDpuItem.getDpuName());
+    	DpuItem dpuItem = (DpuItem)o;
+    	int result = this.getDpuName().compareToIgnoreCase(dpuItem.getDpuName());
         return result;
     }
 }

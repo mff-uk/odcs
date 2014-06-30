@@ -165,10 +165,10 @@ public class ImportService {
         }
     }
 
-    public  List<ExportedDpuItem> loadUsedDpus(File baseDir) throws ImportException {
+    public  List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
         XStream xStream = new XStream(new DomDriver());
         xStream.alias("dpus", List.class);
-        xStream.alias("dpu", ExportedDpuItem.class);
+        xStream.alias("dpu", DpuItem.class);
 
         final File sourceFile = new File(baseDir, ArchiveStructure.USED_DPUS
                 .getValue());
@@ -178,7 +178,7 @@ public class ImportService {
         }
         try {
             @SuppressWarnings("unchecked")
-            List<ExportedDpuItem> result = (List<ExportedDpuItem>) xStream.fromXML(sourceFile);
+            List<DpuItem> result = (List<DpuItem>) xStream.fromXML(sourceFile);
             return  result;
         } catch (Throwable t) {
             String msg = "Missing or wrong used dpu file";
@@ -331,8 +331,8 @@ public class ImportService {
         unpack(zipFile, tempDirectory);
         Pipeline pipeline = loadPipeline(tempDirectory);
 
-        List<ExportedDpuItem> usedDpus = loadUsedDpus(tempDirectory);
-        TreeMap<String, ExportedDpuItem> missingDpus = new TreeMap<>();
+        List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
+        TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
         if (pipeline != null) {
             PipelineGraph graph = pipeline.getGraph();
@@ -354,11 +354,11 @@ public class ImportService {
                                 .getByJarName(template.getJarName());
                         // TODO jmc add version
                         String version = "unknown";
-                        ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpu.getName(), template.getJarName(), version);
+                        DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
                         if (dpuTemplateRecord == null) {
                             // these dpus is missing
                             if (!missingDpus.containsKey(dpu.getName())) {
-                                missingDpus.put(dpu.getName(), exportedDpuItem);
+                                missingDpus.put(dpu.getName(), dpuItem);
                             }
                         }
                         final File userDataFile = new File(tempDirectory,

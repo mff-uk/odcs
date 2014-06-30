@@ -7,14 +7,14 @@ import java.util.TreeMap;
 
 public class ImportedFileInformation {
 
-	private List<ExportedDpuItem> usedDpus = new ArrayList<>();
-	private TreeMap<String, ExportedDpuItem> missingDpus = new TreeMap<>();
+	private List<DpuItem> usedDpus = new ArrayList<>();
+	private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
 	boolean userDataFile = false;
 	boolean scheduleFile = false;
 
-	public ImportedFileInformation(List<ExportedDpuItem> usedDpus,
-			TreeMap<String, ExportedDpuItem> missingDpus, boolean userDataFile, boolean scheduleFile) {
+	public ImportedFileInformation(List<DpuItem> usedDpus,
+			TreeMap<String, DpuItem> missingDpus, boolean userDataFile, boolean scheduleFile) {
 
 		this.usedDpus = usedDpus;
 		this.missingDpus = missingDpus;
@@ -22,19 +22,19 @@ public class ImportedFileInformation {
 		this.scheduleFile = scheduleFile;
 	}
 
-	public List<ExportedDpuItem>  getUsedDpus() {
+	public List<DpuItem>  getUsedDpus() {
 		return usedDpus;
 	}
 
-	public void setUsedDpus(List<ExportedDpuItem> usedDpus) {
+	public void setUsedDpus(List<DpuItem> usedDpus) {
 		this.usedDpus = usedDpus;
 	}
 
-	public TreeMap<String, ExportedDpuItem> getMissingDpus() {
+	public TreeMap<String, DpuItem> getMissingDpus() {
 		return missingDpus;
 	}
 
-	public void setMissingDpus(TreeMap<String, ExportedDpuItem> missingDpus) {
+	public void setMissingDpus(TreeMap<String, DpuItem> missingDpus) {
 		this.missingDpus = missingDpus;
 	}
 

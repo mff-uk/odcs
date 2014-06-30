@@ -6,15 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportedDpuItem;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -38,8 +35,8 @@ public class PipelineImport extends Window {
 
     private Pipeline importedPipeline = null;
 
-    private List<ExportedDpuItem> usedDpus = new ArrayList<>();
-    private  TreeMap<String, ExportedDpuItem> missingDpus = new TreeMap<>();
+    private List<DpuItem> usedDpus = new ArrayList<>();
+    private  TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
     private Table usedDpusTable = new Table();
 
@@ -198,7 +195,7 @@ public class PipelineImport extends Window {
                         Notification.show(msg, Notification.Type.WARNING_MESSAGE);
                     } else {
                         // show result on table  these dpus which are in use
-                        for (ExportedDpuItem entry : usedDpus) {
+                        for (DpuItem entry : usedDpus) {
                             usedDpusTable.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
                         }
                     }
@@ -214,9 +211,9 @@ public class PipelineImport extends Window {
                     }
 
                     // show result on table - these dpus which are missing
-                    for (Map.Entry<String, ExportedDpuItem> entry : missingDpus.entrySet()) {
+                    for (Map.Entry<String, DpuItem> entry : missingDpus.entrySet()) {
                         String key = entry.getKey();
-                        ExportedDpuItem value = entry.getValue();
+                        DpuItem value = entry.getValue();
                         missingDpusTable.addItem(new Object[]{value.getDpuName(), value.getJarName(), value.getVersion()}, null);
                     }
 

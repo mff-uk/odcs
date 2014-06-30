@@ -6,7 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportedDpuItem;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -42,7 +42,7 @@ public class ImportTest {
         Pipeline pipeline = importService.loadPipeline(tmpDir);
         ExportService exportService = new ExportService();
         ExportService exportServiceMock = spy(exportService);
-        TreeSet<ExportedDpuItem> usedDpus = exportService.getDpusInformation(pipeline);
+        TreeSet<DpuItem> usedDpus = exportService.getDpusInformation(pipeline);
         Assert.assertEquals(usedDpus.size(), 2);
 
         File tmpTarget = File.createTempFile("temp", ".tmp");
@@ -66,7 +66,7 @@ public class ImportTest {
 
         File zipFile = new File(zipResource);
         importService.unpack(zipFile, tmpDir);
-        List<ExportedDpuItem> result = importService.loadUsedDpus(tmpDir);
+        List<DpuItem> result = importService.loadUsedDpus(tmpDir);
         Assert.assertEquals(result.size(), 2);
     }
 
