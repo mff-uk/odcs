@@ -49,12 +49,12 @@ public class ExportUsedDpusTest {
             String version = "unknown";
             ExportedDpuItem exportedDpuItem = new ExportedDpuItem(dpuName, jarName, version);
         }
-        TreeSet<ExportedDpuItem> usedDpus = ImportExportCommons.getDpusInformation(pipeline);
-        System.out.println("===================================================================");
-        System.out.println(usedDpus);
 
         ExportService exportService = new ExportService();
         ExportService exportServiceMock = spy(exportService);
+        TreeSet<ExportedDpuItem> usedDpus = exportService.getDpusInformation(pipeline);
+        System.out.println("===================================================================");
+        System.out.println(usedDpus);
 
         File tmpTarget = File.createTempFile("temp", ".tmp");
 
