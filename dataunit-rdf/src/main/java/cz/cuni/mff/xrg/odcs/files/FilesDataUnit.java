@@ -19,7 +19,7 @@ public interface FilesDataUnit extends DataUnit {
         String getFilesystemURI();
     }
 
-    interface FilesIteration {
+    interface FilesIteration extends AutoCloseable {
         public boolean hasNext() throws DataUnitException;
 
         public FilesDataUnit.FilesDataUnitEntry next() throws DataUnitException;
