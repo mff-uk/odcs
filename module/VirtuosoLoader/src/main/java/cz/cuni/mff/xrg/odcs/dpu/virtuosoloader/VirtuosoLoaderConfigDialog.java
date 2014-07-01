@@ -34,6 +34,8 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
 
     private static final String TARGET_CONTEXT_LABEL = "Target graph";
 
+    private static final String TARGET_TEMP_CONTEXT_LABEL = "Target temporary graph";
+
     private static final String STATUS_UPDATE_INTERVAL_LABEL = "Update status interval (s)";
 
     private static final String THREAD_COUNT_LABEL = "Thread count";
@@ -55,6 +57,8 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
     private ObjectProperty<String> loadFilePattern = new ObjectProperty<String>("");
 
     private ObjectProperty<String> targetContext = new ObjectProperty<String>("");
+
+    private ObjectProperty<String> targetTempContext = new ObjectProperty<String>("");
 
     private ObjectProperty<Long> statusUpdateInterval = new ObjectProperty<Long>(60L);
 
@@ -78,11 +82,12 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         mainLayout.addComponent(new TextField(VIRTUOSO_URL_LABEL, virtuosoUrl));
         mainLayout.addComponent(new TextField(USERNAME_LABEL, username));
         mainLayout.addComponent(new TextField(PASSWORD_LABEL, password));
-        mainLayout.addComponent(new TextField(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
+        mainLayout.addComponent(new CheckBox(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(new TextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
         mainLayout.addComponent(new TextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
         mainLayout.addComponent(new TextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
         mainLayout.addComponent(new TextField(TARGET_CONTEXT_LABEL, targetContext));
+        mainLayout.addComponent(new TextField(TARGET_TEMP_CONTEXT_LABEL, targetTempContext));
         mainLayout.addComponent(new TextField(STATUS_UPDATE_INTERVAL_LABEL, statusUpdateInterval));
         mainLayout.addComponent(new TextField(THREAD_COUNT_LABEL, threadCount));
         mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
@@ -100,6 +105,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         includeSubdirectories.setValue(conf.isIncludeSubdirectories());
         loadFilePattern.setValue(conf.getLoadFilePattern());
         targetContext.setValue(conf.getTargetContext());
+        targetTempContext.setValue(conf.getTargetTempContext());
         statusUpdateInterval.setValue(conf.getStatusUpdateInterval());
         threadCount.setValue(conf.getThreadCount());
         skipOnError.setValue(conf.isSkipOnError());
@@ -116,6 +122,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         conf.setIncludeSubdirectories(includeSubdirectories.getValue());
         conf.setLoadFilePattern(loadFilePattern.getValue());
         conf.setTargetContext(targetContext.getValue());
+        conf.setTargetTempContext(targetTempContext.getValue());
         conf.setStatusUpdateInterval(statusUpdateInterval.getValue());
         conf.setThreadCount(threadCount.getValue());
         conf.setSkipOnError(skipOnError.getValue());

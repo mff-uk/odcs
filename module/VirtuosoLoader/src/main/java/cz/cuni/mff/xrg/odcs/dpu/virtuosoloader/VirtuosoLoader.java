@@ -11,9 +11,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
@@ -42,8 +49,12 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
     private static final String STATUS_ERROR = "select * from DB.DBA.load_list where ll_file like ? and ll_error IS NOT NULL";
 
     private static final String DELETE = "delete from DB.DBA.load_list where ll_file like ?";
-    
-    private static final String CLEAR_GRAPH = "SPARQL DEFINE sql:log-enable 3; CLEAR GRAPH <%s>;";
+
+    private static final String MOVE_QUERY = "MOVE <%s> TO <%s>";
+
+    private static final String ADD_QUERY = "ADD <%s> TO <%s>";
+
+    private static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
 
     private static final String RUN = "rdf_loader_run()";
 
@@ -64,9 +75,9 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
         try {
             Class.forName("virtuoso.jdbc4.Driver");
         } catch (ClassNotFoundException ex) {
-            LOG.error("Error loading driver", ex);
-            return;
+            throw new DPUException("Error loading driver", ex);
         }
+
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
@@ -80,17 +91,10 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             statementNow.close();
             LOG.info("Start time {}", startTimestamp);
 
-            if (config.isClearDestinationGraph()) {
-                LOG.info("Clearing destination graph before load.");
-                Statement clearGraphStatement = connection.createStatement();
-                clearGraphStatement.execute(String.format(CLEAR_GRAPH,  config.getTargetContext()));
-                LOG.info("Cleared destination graph.");
-            }
-            
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
             statementLdDir.setString(2, config.getLoadFilePattern());
-            statementLdDir.setString(3, config.getTargetContext());
+            statementLdDir.setString(3, config.getTargetTempContext());
             ResultSet resultSetLdDir = statementLdDir.executeQuery();
             resultSetLdDir.close();
             statementLdDir.close();
@@ -141,7 +145,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             executor.shutdown();
             started = true;
             LOG.info("Started {} load threads", config.getThreadCount());
-            
+
             int done = 0;
             while (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS)) {
                 checkCancelled(dpuContext);
@@ -210,6 +214,47 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                     connection.close();
                 } catch (SQLException ex) {
                     LOG.warn("Error closing connection", ex);
+                }
+            }
+        }
+
+        VirtuosoRepository virtuosoRepository = null;
+        RepositoryConnection repositoryConnection = null;
+        try {
+            virtuosoRepository = new VirtuosoRepository(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
+            virtuosoRepository.initialize();
+            repositoryConnection = virtuosoRepository.getConnection();
+            if (config.isClearDestinationGraph()) {
+                LOG.info("Clearing destination graph, moving loaded data to destination graph, clearing temporary graph.");
+                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(MOVE_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
+                update.execute();
+                LOG.info("Cleared destination graph, moved data to destination graph, cleared temporary graph.");
+            } else {
+                LOG.info("Adding loaded data to destination graph");
+                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
+                update.execute();
+                LOG.info("Added data to destination graph.");
+                LOG.info("Clearing temporary graph.");
+                Update update2 = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetTempContext()));    
+                update2.execute();
+                LOG.info("Cleared temporary graph.");
+            }
+            
+        } catch (MalformedQueryException | RepositoryException | UpdateExecutionException ex) {
+            throw new DPUException("Error working with Virtuoso using Repository API", ex);
+        } finally {
+            if (repositoryConnection != null) {
+                try {
+                    repositoryConnection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error closing repository connection", ex);
+                }
+            }
+            if (virtuosoRepository != null) {
+                try {
+                    virtuosoRepository.shutDown();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error shutdown repository", ex);
                 }
             }
         }
