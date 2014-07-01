@@ -24,6 +24,8 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
 
     private static final String PASSWORD_LABEL = "Password";
 
+    private static final String CLEAR_DESTINATION_GRAPH_LABEL = "Clear destination graph before loading";
+
     private static final String LOAD_DIRECTORY_PATH_LABEL = "Directory to load path";
 
     private static final String INCLUDE_SUBDIRECTORIES_LABEL = "Include subdirectories";
@@ -43,6 +45,8 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
     private ObjectProperty<String> username = new ObjectProperty<String>("");
 
     private ObjectProperty<String> password = new ObjectProperty<String>("");
+
+    private ObjectProperty<Boolean> clearDestinationGraph = new ObjectProperty<Boolean>(false);
 
     private ObjectProperty<String> loadDirectoryPath = new ObjectProperty<String>("");
 
@@ -74,6 +78,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         mainLayout.addComponent(new TextField(VIRTUOSO_URL_LABEL, virtuosoUrl));
         mainLayout.addComponent(new TextField(USERNAME_LABEL, username));
         mainLayout.addComponent(new TextField(PASSWORD_LABEL, password));
+        mainLayout.addComponent(new TextField(CLEAR_DESTINATION_GRAPH_LABEL, clearDestinationGraph));
         mainLayout.addComponent(new TextField(LOAD_DIRECTORY_PATH_LABEL, loadDirectoryPath));
         mainLayout.addComponent(new TextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
         mainLayout.addComponent(new TextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
@@ -90,6 +95,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         virtuosoUrl.setValue(conf.getVirtuosoUrl());
         username.setValue(conf.getUsername());
         password.setValue(conf.getPassword());
+        clearDestinationGraph.setValue(conf.isClearDestinationGraph());
         loadDirectoryPath.setValue(conf.getLoadDirectoryPath());
         includeSubdirectories.setValue(conf.isIncludeSubdirectories());
         loadFilePattern.setValue(conf.getLoadFilePattern());
@@ -105,6 +111,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         conf.setVirtuosoUrl(virtuosoUrl.getValue());
         conf.setUsername(username.getValue());
         conf.setPassword(password.getValue());
+        conf.setClearDestinationGraph(clearDestinationGraph.getValue());
         conf.setLoadDirectoryPath(loadDirectoryPath.getValue());
         conf.setIncludeSubdirectories(includeSubdirectories.getValue());
         conf.setLoadFilePattern(loadFilePattern.getValue());

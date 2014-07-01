@@ -14,6 +14,8 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     private String password = "";
 
+    private boolean clearDestinationGraph = false;
+
     private String loadDirectoryPath = "";
 
     private boolean includeSubdirectories = true;
@@ -27,7 +29,7 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
     private int threadCount = 1;
 
     private boolean skipOnError = false;
-
+    
     public VirtuosoLoaderConfig() {
     }
 
@@ -53,6 +55,14 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isClearDestinationGraph() {
+        return clearDestinationGraph;
+    }
+
+    public void setClearDestinationGraph(boolean clearDestinationGraph) {
+        this.clearDestinationGraph = clearDestinationGraph;
     }
 
     public String getLoadDirectoryPath() {

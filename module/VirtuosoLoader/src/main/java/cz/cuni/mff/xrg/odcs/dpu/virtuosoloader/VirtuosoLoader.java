@@ -42,6 +42,8 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
     private static final String STATUS_ERROR = "select * from DB.DBA.load_list where ll_file like ? and ll_error IS NOT NULL";
 
     private static final String DELETE = "delete from DB.DBA.load_list where ll_file like ?";
+    
+    private static final String CLEAR_GRAPH = "SPARQL DEFINE sql:log-enable 3; CLEAR GRAPH <%s>;";
 
     private static final String RUN = "rdf_loader_run()";
 
@@ -78,6 +80,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             statementNow.close();
             LOG.info("Start time {}", startTimestamp);
 
+            if (config.isClearDestinationGraph()) {
+                LOG.info("Clearing destination graph before load.");
+                Statement clearGraphStatement = connection.createStatement();
+                clearGraphStatement.execute(String.format(CLEAR_GRAPH,  config.getTargetContext()));
+                LOG.info("Cleared destination graph.");
+            }
+            
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
             statementLdDir.setString(2, config.getLoadFilePattern());
@@ -131,7 +140,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             }
             executor.shutdown();
             started = true;
-            LOG.info("Started {} run threads", config.getThreadCount());
+            LOG.info("Started {} load threads", config.getThreadCount());
             
             int done = 0;
             while (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS)) {
