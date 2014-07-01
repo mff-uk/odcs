@@ -28,12 +28,6 @@ public class OdcsTerms {
     public static final String DATA_UNIT_FILE_PATH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/file/filePath";
 
     
-    public static final String DATA_UNIT_STORE_GRAPH = "http://linked.opendata.cz/ontology/odcs/dataunit";
-    public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/containsGraph";
-    public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/writeGraph";
-
-    public static final String DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/symbolicName";
-
     /**
      * Predicate to associate certain subject (URI representing certain file) with an XSLT parameter
      */

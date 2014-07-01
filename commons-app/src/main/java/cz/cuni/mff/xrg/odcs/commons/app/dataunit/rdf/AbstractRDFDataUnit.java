@@ -36,6 +36,10 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
  */
 public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
+    public static final String DATA_UNIT_STORE_GRAPH = "http://linked.opendata.cz/ontology/odcs/dataunit";
+    public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/containsGraph";
+    public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/writeGraph";
+
     private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
     /**
@@ -291,15 +295,15 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             for (URI context : this.getContexts()) {
                 connection.add(valueFactory.createStatement(
                         this.getWriteContext(),
-                        valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
+                        valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
                         context),
-                        valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                        valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             }
             connection.add(valueFactory.createStatement(
                     this.getWriteContext(),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
+                    valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
                     this.writeContext),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                    valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
         } catch (RepositoryException ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -322,19 +326,19 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             
             ValueFactory valueFactory = connection.getValueFactory();
             RepositoryResult<Statement> result = connection.getStatements(this.getWriteContext(), 
-                            valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE), 
+                            valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE), 
                             null, 
                             false, 
-                            valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                            valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             while (result.hasNext()) {
                 Statement contextStatement = result.next();
                 this.readContexts.add( valueFactory.createURI(contextStatement.getObject().stringValue()));
             }
             RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getWriteContext(), 
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE), 
+                    valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE), 
                     null, 
                     false, 
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                    valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             
             int i = 0;
             while (writeContextResult.hasNext()) {

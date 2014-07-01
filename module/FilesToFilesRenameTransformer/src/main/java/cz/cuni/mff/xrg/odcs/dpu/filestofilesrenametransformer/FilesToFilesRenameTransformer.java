@@ -63,7 +63,7 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
                     entry = filesIteration.next();
                     index++;
 
-                    filesOutput.addExistingFile( entry.getSymbolicName() + ".ttl", entry.getFilesystemURI().getPath());
+                    filesOutput.addExistingFile( entry.getSymbolicName() + ".ttl", entry.getFilesystemURI());
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(

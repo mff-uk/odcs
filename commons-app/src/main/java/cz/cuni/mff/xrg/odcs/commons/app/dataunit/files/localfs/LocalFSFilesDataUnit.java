@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
@@ -23,7 +24,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
@@ -41,7 +42,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     private Thread ownerThread;
 
-    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
+    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + FilesDataUnit.SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
@@ -92,7 +93,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
-        return new FilesIterationImpl(backingStore, OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE);
+        return new FilesIterationImpl(backingStore);
     }
 
     //WritableFilesDataUnit interface
@@ -140,12 +141,19 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 //                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
 //            }
             ValueFactory valueFactory = connection.getValueFactory();
+            BNode blankNodeId = valueFactory.createBNode();
             Statement statement = valueFactory.createStatement(
-                    valueFactory.createURI(existingFile.toURI().toASCIIString()),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE),
+                    blankNodeId,
+                    valueFactory.createURI(FilesDataUnit.SYMBOLIC_NAME_PREDICATE),
                     valueFactory.createLiteral(proposedSymbolicName)
                     );
+            Statement statement2 = valueFactory.createStatement(
+                    blankNodeId,
+                    valueFactory.createURI(FilesDataUnit.FILESYSTEM_URI_PREDICATE),
+                    valueFactory.createLiteral(existingFile.toURI().toASCIIString())
+                    );
             connection.add(statement, backingStore.getWriteContext());
+            connection.add(statement2, backingStore.getWriteContext());
             connection.commit();
             generatedFilenames.remove(existingFileURI);
         } catch (RepositoryException ex) {

@@ -3,10 +3,6 @@ package cz.cuni.mff.xrg.odcs.rdf;
 import java.util.List;
 import java.util.Map;
 
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;

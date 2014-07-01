@@ -93,7 +93,7 @@ public class FilesToFilesystemLoader extends
                     FileObject inputFileObject = null;
                     FileObject outputFileObject =null;
                     try {
-                        inputFileObject= fileSystemManager.resolveFile(entry.getFilesystemURI().toASCIIString());
+                        inputFileObject= fileSystemManager.resolveFile(entry.getFilesystemURI());
                         outputFileObject = destinationFileObject.resolveFile(entry.getSymbolicName());
 
                         Date start = new Date();

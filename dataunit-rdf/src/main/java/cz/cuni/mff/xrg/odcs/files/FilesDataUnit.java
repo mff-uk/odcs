@@ -5,6 +5,9 @@ import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public interface FilesDataUnit extends DataUnit {
+    public static final String SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/symbolicName";
+    public static final String FILESYSTEM_URI_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/filesystemURI";
+
     interface FilesDataUnitEntry {
         /**
          * 
