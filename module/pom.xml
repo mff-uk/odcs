@@ -26,6 +26,7 @@
         <module>RDFToRDFMerger2Transformer</module>
         <module>FilesToFilesMerger2Transformer</module>
         <module>TripleGeneratorToRDFExtractor</module>
+        <module>VirtuosoLoader</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>

@@ -3,7 +3,7 @@ package cz.cuni.mff.xrg.odcs.files;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 public interface WritableFilesDataUnit extends FilesDataUnit {
-    interface WritableFilesIteration extends FilesIteration {
+    interface WritableFilesIteration extends Iteration {
         public void remove() throws DataUnitException;
     }
     

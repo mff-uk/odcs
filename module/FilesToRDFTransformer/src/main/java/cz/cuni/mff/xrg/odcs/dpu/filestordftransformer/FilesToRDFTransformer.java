@@ -24,8 +24,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 @AsTransformer
@@ -48,7 +48,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
         String longMessage = String.format("Configuration: commitSize: %d", config.getCommitSize());
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
-        FilesIteration filesIteration = filesInput.getFiles();
+        Iteration filesIteration = filesInput.getFiles();
 
         if (!filesIteration.hasNext()) {
             return;
@@ -64,7 +64,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
 
-                FilesDataUnitEntry entry = filesIteration.next();
+                Entry entry = filesIteration.next();
                 try {
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());

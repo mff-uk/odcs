@@ -10,7 +10,7 @@ import org.openrdf.repository.RepositoryResult;
 
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
+import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
@@ -33,7 +33,7 @@ public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIt
     }
 
     @Override
-    public FilesDataUnitEntry next() throws DataUnitException {
+    public Entry next() throws DataUnitException {
         if (result == null) {
             init();
         }

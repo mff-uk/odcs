@@ -8,7 +8,7 @@ public interface FilesDataUnit extends DataUnit {
     public static final String SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/symbolicName";
     public static final String FILESYSTEM_URI_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/filesystemURI";
 
-    interface FilesDataUnitEntry {
+    interface Entry {
         /**
          * 
          * @return Symbolic name under which the file is stored inside this data unit.
@@ -22,10 +22,10 @@ public interface FilesDataUnit extends DataUnit {
         String getFilesystemURI();
     }
 
-    interface FilesIteration extends AutoCloseable {
+    interface Iteration extends AutoCloseable {
         public boolean hasNext() throws DataUnitException;
 
-        public FilesDataUnit.FilesDataUnitEntry next() throws DataUnitException;
+        public FilesDataUnit.Entry next() throws DataUnitException;
 
         public void close() throws DataUnitException;
     }
@@ -42,5 +42,5 @@ public interface FilesDataUnit extends DataUnit {
      * @return
      * @throws DataUnitException
      */
-    FilesDataUnit.FilesIteration getFiles() throws DataUnitException;
+    FilesDataUnit.Iteration getFiles() throws DataUnitException;
 }
