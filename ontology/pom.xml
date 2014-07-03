@@ -5,7 +5,7 @@
     <parent>
         <artifactId>odcs</artifactId>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </parent>
     <artifactId>ontology</artifactId>
     <name>ontology</name>
