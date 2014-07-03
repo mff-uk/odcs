@@ -22,8 +22,6 @@ import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 
 @AsTransformer
 public class FilesToFileTransformer extends NonConfigurableBase {
@@ -43,12 +41,12 @@ public class FilesToFileTransformer extends NonConfigurableBase {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(MessageType.INFO, shortMessage);
 
-        Iteration filesIteration = filesInput.getFiles();
+        FilesDataUnit.Iteration filesIteration = filesInput.getFiles();
         try {
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                Entry entry = filesIteration.next();
+                FilesDataUnit.Entry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
 
                 if (dpuContext.isDebugging()) {

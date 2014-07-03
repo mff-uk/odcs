@@ -43,7 +43,7 @@ public class OpenEvent implements DataObject {
      * Timestamp when the event occurred.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "opened")
+    @Column(name = "opened", nullable = false)
     private Date timestamp;
 
     @Override

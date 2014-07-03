@@ -13,8 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @AsTransformer
@@ -45,7 +43,7 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
 //        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
       dpuContext.sendMessage(MessageType.INFO, shortMessage, "");
 
-        FilesIteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFiles();
         } catch (DataUnitException ex) {
@@ -58,7 +56,7 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnitEntry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     index++;

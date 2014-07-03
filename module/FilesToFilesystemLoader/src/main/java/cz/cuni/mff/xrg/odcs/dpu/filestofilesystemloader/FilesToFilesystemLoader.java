@@ -29,8 +29,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
 
 @AsLoader
 public class FilesToFilesystemLoader extends
@@ -53,7 +51,7 @@ public class FilesToFilesystemLoader extends
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
 
-        FilesIteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFiles();
         } catch (DataUnitException ex) {
@@ -87,7 +85,7 @@ public class FilesToFilesystemLoader extends
                 index++;
                 checkCancelled(dpuContext);
 
-                FilesDataUnitEntry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     FileObject inputFileObject = null;
