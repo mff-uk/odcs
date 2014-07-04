@@ -78,6 +78,47 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             throw new DPUException("Error loading driver", ex);
         }
 
+        VirtuosoRepository virtuosoRepository = null;
+        RepositoryConnection repositoryConnection = null;
+        try {
+            virtuosoRepository = new VirtuosoRepository(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
+            virtuosoRepository.initialize();
+            repositoryConnection = virtuosoRepository.getConnection();
+            if (config.isClearDestinationGraph()) {
+                LOG.info("Clearing destination graph");
+                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetContext()));    
+                update.execute();
+                LOG.info("Cleared destination graph");
+            } 
+//            else {
+//                LOG.info("Adding loaded data to destination graph");
+//                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
+//                update.execute();
+//                LOG.info("Added data to destination graph.");
+//                LOG.info("Clearing temporary graph.");
+//                Update update2 = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetTempContext()));    
+//                update2.execute();
+//                LOG.info("Cleared temporary graph.");
+//            }
+        } catch (MalformedQueryException | RepositoryException | UpdateExecutionException ex) {
+            throw new DPUException("Error working with Virtuoso using Repository API", ex);
+        } finally {
+            if (repositoryConnection != null) {
+                try {
+                    repositoryConnection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error closing repository connection", ex);
+                }
+            }
+            if (virtuosoRepository != null) {
+                try {
+                    virtuosoRepository.shutDown();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error shutdown repository", ex);
+                }
+            }
+        }
+        
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
@@ -214,47 +255,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                     connection.close();
                 } catch (SQLException ex) {
                     LOG.warn("Error closing connection", ex);
-                }
-            }
-        }
-
-        VirtuosoRepository virtuosoRepository = null;
-        RepositoryConnection repositoryConnection = null;
-        try {
-            virtuosoRepository = new VirtuosoRepository(config.getVirtuosoUrl(), config.getUsername(), config.getPassword());
-            virtuosoRepository.initialize();
-            repositoryConnection = virtuosoRepository.getConnection();
-            if (config.isClearDestinationGraph()) {
-                LOG.info("Clearing destination graph, moving loaded data to destination graph, clearing temporary graph.");
-                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(MOVE_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
-                update.execute();
-                LOG.info("Cleared destination graph, moved data to destination graph, cleared temporary graph.");
-            } else {
-                LOG.info("Adding loaded data to destination graph");
-                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
-                update.execute();
-                LOG.info("Added data to destination graph.");
-                LOG.info("Clearing temporary graph.");
-                Update update2 = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetTempContext()));    
-                update2.execute();
-                LOG.info("Cleared temporary graph.");
-            }
-            
-        } catch (MalformedQueryException | RepositoryException | UpdateExecutionException ex) {
-            throw new DPUException("Error working with Virtuoso using Repository API", ex);
-        } finally {
-            if (repositoryConnection != null) {
-                try {
-                    repositoryConnection.close();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error closing repository connection", ex);
-                }
-            }
-            if (virtuosoRepository != null) {
-                try {
-                    virtuosoRepository.shutDown();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error shutdown repository", ex);
                 }
             }
         }

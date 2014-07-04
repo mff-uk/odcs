@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestordftransformer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -69,7 +70,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
                     }
 //                    ParseErrorCollector parseErrorCollector= new ParseErrorCollector();
                     
-                    loader.load(new File(entry.getFilesystemURI()), null, Rio.getParserFormatForFileName(entry.getSymbolicName()), rdfInserter, new ParseErrorLogger());
+                    loader.load(new File(URI.create(entry.getFilesystemURI())), null, Rio.getParserFormatForFileName(entry.getSymbolicName()), rdfInserter, new ParseErrorLogger());
 
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());

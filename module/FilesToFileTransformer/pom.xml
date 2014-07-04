@@ -12,7 +12,7 @@
 
     <artifactId>FilesToFileTransformer</artifactId>
     <!-- TODO 2: specify module version, can be left unchanged -->
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>bundle</packaging>
     <description>FilesToFileTransformer converts Files to FileDataUnit. Does not copy files.</description>
 
