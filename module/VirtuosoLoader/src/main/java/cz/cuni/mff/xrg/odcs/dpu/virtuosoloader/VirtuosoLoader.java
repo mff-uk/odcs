@@ -135,7 +135,8 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             PreparedStatement statementLdDir = connection.prepareStatement(config.isIncludeSubdirectories() ? LD_DIR_ALL : LD_DIR);
             statementLdDir.setString(1, config.getLoadDirectoryPath());
             statementLdDir.setString(2, config.getLoadFilePattern());
-            statementLdDir.setString(3, config.getTargetTempContext());
+//            statementLdDir.setString(3, config.getTargetTempContext());
+            statementLdDir.setString(3, config.getTargetContext());
             ResultSet resultSetLdDir = statementLdDir.executeQuery();
             resultSetLdDir.close();
             statementLdDir.close();
