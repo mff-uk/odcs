@@ -4,7 +4,7 @@
     <parent>
         <groupId>cz.cuni.mff.xrg.odcs</groupId>
         <artifactId>odcs</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </parent>
     <artifactId>commons-web</artifactId>
     <name>commons-web</name>
@@ -12,6 +12,13 @@
     <packaging>bundle</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-api</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
+
         <dependency> <!-- commons project -->
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>commons</artifactId>
@@ -55,11 +62,6 @@
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-api</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
