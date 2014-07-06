@@ -44,8 +44,8 @@
 
     <modules>
         <!-- commons -->
-        <module>commons</module>
         <module>plugin_devenv</module>
+        <module>commons</module>
         <!-- dataunits -->
         <module>dataunit</module>
         <module>dataunit-file</module>
