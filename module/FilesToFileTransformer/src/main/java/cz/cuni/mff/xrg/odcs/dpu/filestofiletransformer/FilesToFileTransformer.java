@@ -8,14 +8,12 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
@@ -25,26 +23,28 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 
-@AsTransformer
+@DPU.AsTransformer
 public class FilesToFileTransformer extends NonConfigurableBase {
+
     private static final Logger LOG = LoggerFactory.getLogger(FilesToFileTransformer.class);
 
-    @InputDataUnit(name = "filesInput")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit filesInput;
 
-    @OutputDataUnit(name = "fileOutput")
+    @DataUnit.AsOutput(name = "fileOutput")
     public FileDataUnit fileOutput;
 
     public FilesToFileTransformer() {
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
+    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        dpuContext.sendMessage(MessageType.INFO, shortMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
-        Iteration filesIteration = filesInput.getFiles();
+        Iteration filesIteration = null;
         try {
+            filesIteration = filesInput.getFiles();
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
@@ -71,8 +71,16 @@ public class FilesToFileTransformer extends NonConfigurableBase {
                     }
                 }
             }
+        } catch (DataUnitException ex) {
+            throw new DPUException(ex.getMessage(), ex.getCause());
         } finally {
-            filesIteration.close();
+            if (filesIteration != null) {
+                try {
+                    filesIteration.close();
+                } catch (DataUnitException ex) {
+                    throw new DPUException(ex.getMessage(), ex.getCause());
+                }
+            }
         }
     }
 
