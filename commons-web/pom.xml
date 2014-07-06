@@ -11,6 +11,10 @@
     <description></description>
     <packaging>bundle</packaging>
 
+    <properties>
+        <dpu-api.version>1.0.0</dpu-api.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
@@ -105,7 +109,9 @@
                         <Export-Package>cz.cuni.mff.xrg.odcs.commons.web.*;version="${odcs.version}"</Export-Package>
                         <!-- import commons and vaadin -->
                         <Import-Package>
-                            com.vaadin.ui;version="${vaadin.version}",cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}"
+                            com.vaadin.ui;version="${vaadin.version}",
+                            cz.cuni.mff.xrg.odcs.commons.*;version="${odcs.version}",
+                            eu.unifiedviews.dpu.config;version="${dpu-api.version}"
                         </Import-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                     </instructions>
