@@ -9,16 +9,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 
@@ -243,7 +242,7 @@ final class DataUnitManager {
      * @return Created DataUnit.
      * @throw DataUnitCreateException
      */
-    public ManagableDataUnit addDataUnit(DataUnitType type, String name) {
+    public ManagableDataUnit addDataUnit(DataUnit.Type type, String name) {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&

@@ -1,7 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.data;
 
+import eu.unifiedviews.dataunit.DataUnit;
+
 /**
- * Provide additional functionality to the {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} that enable management in
+ * Provide additional functionality to the {@link eu.unifiedviews.dataunit.DataUnit} that enable management in
  * sense of load, store, merge and delete. It is separated from the DataUnit
  * interface because DPU developer do not need to see methods needed by the
  * engine and defined in ManagableDataUnit
@@ -36,7 +38,7 @@ public interface ManagableDataUnit extends DataUnit {
      * DataUnit is not in read-only mode.
      * 
      * @param unit
-     *            {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} to merge
+     *            {@link eu.unifiedviews.dataunit.DataUnit} to merge
      *            with
      */
     void merge(DataUnit unit) throws IllegalArgumentException;

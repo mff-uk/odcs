@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.module.config;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
  * Base class for DPU's configuration. Provide default implementation
@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  * 
  * @author Petyr
  */
-public class DPUConfigObjectBase implements DPUConfigObject {
+public class DPUConfigObjectBase implements DPUConfig {
 
     @Override
     public boolean isValid() {

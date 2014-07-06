@@ -17,15 +17,14 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.RDFData;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);
@@ -60,13 +59,13 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     //DataUnit interface
     @Override
-    public DataUnitType getType() {
-        return DataUnitType.FILES;
+    public DataUnit.Type getType() {
+        return DataUnit.Type.FILES;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnitType dataUnitType) {
+    public boolean isType(DataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 

@@ -22,17 +22,17 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
- * Class provides functionality to serialize, deserialize and create instance of {@link DPUConfigObject}. {@link DPUConfigObject} is serialized as XML, using
+ * Class provides functionality to serialize, deserialize and create instance of {@link DPUConfig}. {@link DPUConfig} is serialized as XML, using
  * XStream.
  * 
  * @author Petyr
  * @param <C>
  */
-public class ConfigWrap<C extends DPUConfigObject> {
+public class ConfigWrap<C extends DPUConfig> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigWrap.class);
 
@@ -119,10 +119,10 @@ public class ConfigWrap<C extends DPUConfigObject> {
      * @param configStr
      *            Serialized configuration.
      * @return Deserialized configuration.
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
     @SuppressWarnings("unchecked")
-    public C deserialize(String configStr) throws ConfigException {
+    public C deserialize(String configStr) throws DPUConfigException {
         if (configStr == null || configStr.isEmpty()) {
             return null;
         }
@@ -140,11 +140,11 @@ public class ConfigWrap<C extends DPUConfigObject> {
             Object obj = objIn.readObject();
             config = (C) obj;
         } catch (IOException e) {
-            throw new ConfigException("Can't deserialize configuration.", e);
+            throw new DPUConfigException("Can't deserialize configuration.", e);
         } catch (ClassNotFoundException e) {
-            throw new ConfigException("Can't re-cast configuration object.", e);
+            throw new DPUConfigException("Can't re-cast configuration object.", e);
         } catch (Exception e) {
-            throw new ConfigException(e);
+            throw new DPUConfigException(e);
         }
 
         // TODO: use Commons BeanUtils
@@ -193,9 +193,9 @@ public class ConfigWrap<C extends DPUConfigObject> {
      * @param config
      *            Configuration to serialize.
      * @return Serialized configuration, can be null.
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
-    public String serialize(C config) throws ConfigException {
+    public String serialize(C config) throws DPUConfigException {
         if (config == null) {
             return null;
         }
@@ -220,7 +220,7 @@ public class ConfigWrap<C extends DPUConfigObject> {
             }
             result = byteOut.toByteArray();
         } catch (IOException e) {
-            throw new ConfigException("Can't serialize configuration.", e);
+            throw new DPUConfigException("Can't serialize configuration.", e);
         }
         return new String(result, Charset.forName("UTF-8"));
     }

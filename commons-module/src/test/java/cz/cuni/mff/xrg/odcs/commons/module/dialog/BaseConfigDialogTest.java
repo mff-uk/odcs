@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 
 /**
@@ -26,19 +26,19 @@ public class BaseConfigDialogTest extends BaseConfigDialog<SimpleTestConfig> {
 
     @Override
     protected void setConfiguration(SimpleTestConfig conf)
-            throws ConfigException {
+            throws DPUConfigException {
         actualConfiguration = conf;
     }
 
     @Override
-    protected SimpleTestConfig getConfiguration() throws ConfigException {
+    protected SimpleTestConfig getConfiguration() throws DPUConfigException {
         return actualConfiguration;
     }
 
     // - - - - - - - - - - - - - - tests - - - - - - - - - - - - - - - - - - //
 
     @Test
-    public void hasConfigChangeTest() throws ConfigException {
+    public void hasConfigChangeTest() throws DPUConfigException {
         SimpleTestConfig c = new SimpleTestConfig("hi", 42);
         SimpleTestConfig cEqual = new SimpleTestConfig("hi", 42);
         SimpleTestConfig cNonEqual = new SimpleTestConfig("i", 41);

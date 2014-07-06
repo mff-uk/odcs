@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dpu.DPUContext;
+
 
 /**
  * Types for execution.record.
@@ -44,7 +45,7 @@ public enum MessageRecordType {
      *            message type
      * @return record type
      */
-    public static MessageRecordType fromMessageType(MessageType type) {
+    public static MessageRecordType fromMessageType(DPUContext.MessageType type) {
         switch (type) {
             case DEBUG:
                 return MessageRecordType.DPU_DEBUG;

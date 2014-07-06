@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**

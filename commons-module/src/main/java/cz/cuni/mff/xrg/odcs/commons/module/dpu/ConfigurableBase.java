@@ -1,21 +1,21 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
+import eu.unifiedviews.dpu.config.DPUConfig;
+import eu.unifiedviews.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 
 /**
  * Convenience base class for configurable DPUs. Every DPU may either extend
- * this class or directly implement {@link Configurable} interface.
+ * this class or directly implement {@link DPUConfigurable} interface.
  * 
  * @author Petyr
  * @author Tomas Knap
  * @param <C>
  */
-public abstract class ConfigurableBase<C extends DPUConfigObject>
-        implements Configurable<C>, DPU {
+public abstract class ConfigurableBase<C extends DPUConfig>
+        implements DPUConfigurable<C>, DPU {
 
     /**
      * Object configuration.
@@ -39,7 +39,7 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
     }
 
     @Override
-    public void configure(String configString) throws ConfigException {
+    public void configure(String configString) throws DPUConfigException {
         // set configuration for configWrap
         C newConfig = configWrap.deserialize(configString);
         if (newConfig == null) {
@@ -50,12 +50,12 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
             // use configuration from configWrap
             config = newConfig;
         } else {
-            throw new ConfigException("Invalid configuration.");
+            throw new DPUConfigException("Invalid configuration.");
         }
     }
 
     @Override
-    public String getConf() throws ConfigException {
+    public String getConf() throws DPUConfigException {
         return configWrap.serialize(config);
     }
 
@@ -65,19 +65,15 @@ public abstract class ConfigurableBase<C extends DPUConfigObject>
      * 
      * @param newConfig
      *            New configuration.
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             In case of invalid configuration.
      */
-    public void configureDirectly(C newConfig) throws ConfigException {
+    public void configureDirectly(C newConfig) throws DPUConfigException {
         if (newConfig != null && newConfig.isValid()) {
             config = newConfig;
         } else {
-            throw new ConfigException("Invalid configuration.");
+            throw new DPUConfigException("Invalid configuration.");
         }
-    }
-
-    @Override
-    public void cleanUp() {
     }
 
 }

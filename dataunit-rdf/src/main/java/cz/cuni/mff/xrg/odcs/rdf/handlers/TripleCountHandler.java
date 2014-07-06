@@ -10,7 +10,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;

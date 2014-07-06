@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.dpu;
 
+import eu.unifiedviews.dpu.DPUException;
+
 public class DPUCancelledException extends DPUException {
 
     /**

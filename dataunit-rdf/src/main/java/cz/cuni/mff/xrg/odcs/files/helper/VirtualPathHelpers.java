@@ -9,7 +9,7 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 
 public abstract class VirtualPathHelpers {

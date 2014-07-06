@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dataunit.file.handlers;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Thrown in case that some file/directory can not be copied.

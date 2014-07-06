@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
  * Test suite for {@link ConfigWrap} class.
@@ -25,34 +25,34 @@ public class ConfigWrapTest {
     @SuppressWarnings("rawtypes")
     private ConfigWrap configWrap;
 
-    private DPUConfigObject configObject;
+    private DPUConfig configObject;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Before
     public void setup() {
-        configObject = mock(DPUConfigObject.class, withSettings().serializable());
+        configObject = mock(DPUConfig.class, withSettings().serializable());
         configWrap = new ConfigWrap(configObject.getClass());
     }
 
     @Test
-    public void deserialisationNull() throws ConfigException {
-        DPUConfigObject newObject = configWrap.deserialize(null);
+    public void deserialisationNull() throws DPUConfigException {
+        DPUConfig newObject = configWrap.deserialize(null);
         assertNull(newObject);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void serialisationNull() throws ConfigException {
+    public void serialisationNull() throws DPUConfigException {
         String serialized = configWrap.serialize(null);
         assertNull(serialized);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void serialisation() throws ConfigException {
+    public void serialisation() throws DPUConfigException {
         String serialized = configWrap.serialize(configObject);
 
-        DPUConfigObject newObject =
+        DPUConfig newObject =
                 configWrap.deserialize(serialized);
 
         assertNotNull(newObject);
@@ -61,7 +61,7 @@ public class ConfigWrapTest {
 
     @Test
     public void newInstace() {
-        DPUConfigObject newObject = configWrap.createInstance();
+        DPUConfig newObject = configWrap.createInstance();
         assertNotNull(newObject);
     }
 

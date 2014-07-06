@@ -13,15 +13,13 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.dataunit.file.ManageableFileDataUnit;
@@ -73,7 +71,6 @@ public class TestEnvironment {
     /**
      * Create test environment. As working directory is used temp file.
      * 
-     * @return Test environment.
      */
     public TestEnvironment() {
         try {
@@ -186,7 +183,6 @@ public class TestEnvironment {
      * @param useVirtuoso
      *            If true then Virtuoso is used as a storage.
      * @return Created input {@link RDFDataUnit}.
-     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
      */
     public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
@@ -237,7 +233,7 @@ public class TestEnvironment {
      * @param resourceName
      *            Path to the resources.
      * @return Created input {@link FileDataUnit}.
-     * @throws cz.cuni.mff.xrg.odcs.commons.data.DataUnitException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     public FileDataUnit createFileInputFromResource(String name,
             String resourceName)
@@ -416,9 +412,9 @@ public class TestEnvironment {
      */
     private void connectDataUnits(DPU dpuInstance) throws Exception {
         // add inputs
-        List<AnnotationContainer<InputDataUnit>> inputAnnotations = AnnotationGetter
-                .getAnnotations(dpuInstance, InputDataUnit.class);
-        for (AnnotationContainer<InputDataUnit> item : inputAnnotations) {
+        List<AnnotationContainer<DataUnit.AsInput>> inputAnnotations = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsInput.class);
+        for (AnnotationContainer<DataUnit.AsInput> item : inputAnnotations) {
             ManagableDataUnit dataUnit = getInputDataUnit(item.getField(),
                     item.annotation.name());
             if (dataUnit == null && !item.getAnnotation().optional()) {
@@ -433,9 +429,9 @@ public class TestEnvironment {
         }
 
         // add outputs
-        List<AnnotationContainer<OutputDataUnit>> outputAnnotations = AnnotationGetter
-                .getAnnotations(dpuInstance, OutputDataUnit.class);
-        for (AnnotationContainer<OutputDataUnit> item : outputAnnotations) {
+        List<AnnotationContainer<DataUnit.AsOutput>> outputAnnotations = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsOutput.class);
+        for (AnnotationContainer<DataUnit.AsOutput> item : outputAnnotations) {
             ManagableDataUnit dataUnit = getOutputDataUnit(item.getField(),
                     item.annotation.name());
             item.getField().set(dpuInstance, dataUnit);

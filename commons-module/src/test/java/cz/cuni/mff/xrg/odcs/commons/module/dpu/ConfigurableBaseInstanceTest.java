@@ -5,11 +5,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Test suite for {@link ConfigurableBase} class.
@@ -33,11 +33,11 @@ public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> 
     /**
      * Configuration is not changed on configure(null).
      * 
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigException
      */
     @Test
-    public void nullSet() throws ConfigException {
-        DPUConfigObject oldConfig = config;
+    public void nullSet() throws DPUConfigException {
+        DPUConfig oldConfig = config;
         assertNotNull(oldConfig);
 
         this.configure(null);
@@ -45,10 +45,16 @@ public class ConfigurableBaseInstanceTest extends ConfigurableBase<ConfigDummy> 
         assertEquals(oldConfig, config);
     }
 
+    /**
+     *
+     * @param context
+     * @throws DPUException
+     * @throws DataUnitException
+     * @throws InterruptedException
+     */
     @Override
     public void execute(DPUContext context)
             throws DPUException,
-            DataUnitException,
             InterruptedException {
 
     }

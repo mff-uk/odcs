@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Facade that provides method for manipulation with {@link Context}.

@@ -20,6 +20,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -30,7 +31,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -91,7 +91,7 @@ public class DPUPresenterImpl implements DPUPresenter {
         try {
             dpuWrap.saveConfig();
             Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show("The configuration have not been saved.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (DPUWrapException e) {
             Notification.show(

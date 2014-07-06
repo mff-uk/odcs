@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.web;
 
 import com.vaadin.ui.CustomComponent;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
  * Base abstract class for a configuration dialog.
@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
  * @author Petyr
  * @param <C>
  */
-public abstract class AbstractConfigDialog<C extends DPUConfigObject>
+public abstract class AbstractConfigDialog<C extends DPUConfig>
         extends CustomComponent {
 
     /**
@@ -27,18 +27,18 @@ public abstract class AbstractConfigDialog<C extends DPUConfigObject>
      * 
      * @param conf
      *            Serialized configuration object.
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
-    public abstract void setConfig(String conf) throws ConfigException;
+    public abstract void setConfig(String conf) throws DPUConfigException;
 
     /**
      * Return current configuration from dialog in serialized form. If the
      * configuration is invalid then throws.
      * 
      * @return Serialized configuration object.
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigException
      */
-    public abstract String getConfig() throws ConfigException;
+    public abstract String getConfig() throws DPUConfigException;
 
     /**
      * Return text that should be used as a DPU tool tip. The text should

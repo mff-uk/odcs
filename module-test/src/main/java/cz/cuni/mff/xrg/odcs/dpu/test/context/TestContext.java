@@ -6,8 +6,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.

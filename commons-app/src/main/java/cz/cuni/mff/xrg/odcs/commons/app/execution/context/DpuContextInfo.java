@@ -3,8 +3,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 import java.io.File;
 import java.util.List;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 
 /**
  * Class used to work with context for single DPU, or global context if no DPU
@@ -61,7 +61,7 @@ public class DpuContextInfo {
      *            DataUnit type.
      * @return Index of new DataUnitInfo.
      */
-    public Integer createInput(String name, DataUnitType type) {
+    public Integer createInput(String name, DataUnit.Type type) {
         return addDataUnit(name, type, true);
     }
 
@@ -74,7 +74,7 @@ public class DpuContextInfo {
      *            DataUnit type.
      * @return Index of new DataUnitInfo.
      */
-    public Integer createOutput(String name, DataUnitType type) {
+    public Integer createOutput(String name, DataUnit.Type type) {
         return addDataUnit(name, type, false);
     }
 
@@ -89,7 +89,7 @@ public class DpuContextInfo {
      *            True in case of input DataUnit.
      * @return Index of new DataUnitInfo.
      */
-    private Integer addDataUnit(String name, DataUnitType type, boolean isInput) {
+    private Integer addDataUnit(String name, DataUnit.Type type, boolean isInput) {
         // add information
         Integer index = 0;
         if (dpuInfo.dataUnits.isEmpty()) {

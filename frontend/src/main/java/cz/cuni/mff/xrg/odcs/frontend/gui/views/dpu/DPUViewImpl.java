@@ -19,12 +19,12 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
+import eu.unifiedviews.dpu.config.DPUConfig;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
@@ -320,7 +320,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
         tabSheet.setSelectedTab(dataTab);
         if (selectedDpuWrap != null) {
-            AbstractConfigDialog<DPUConfigObject> configDialog = null;
+            AbstractConfigDialog<DPUConfig> configDialog = null;
             //getting configuration dialog of selected DPU Template
             try {
                 configDialog = selectedDpuWrap.getDialog();
@@ -859,7 +859,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         // refresh configuration
         try {
             selectedDpuWrap.configuredDialog();
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show(
                     "Configuration problem",
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);

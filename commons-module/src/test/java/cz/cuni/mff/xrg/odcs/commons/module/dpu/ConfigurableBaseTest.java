@@ -5,10 +5,9 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Test suite for {@link ConfigurableBase} class.
@@ -30,7 +29,6 @@ public class ConfigurableBaseTest {
         @Override
         public void execute(DPUContext context)
                 throws DPUException,
-                DataUnitException,
                 InterruptedException {
 
         }
@@ -39,10 +37,10 @@ public class ConfigurableBaseTest {
     /**
      * Test not null default configuration.
      * 
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     * @throws eu.unifiedviews.dpu.config.DPUConfigException
      */
     @Test
-    public void notNullInit() throws ConfigException {
+    public void notNullInit() throws DPUConfigException {
         ConfigurableDummy configurable = new ConfigurableDummy();
         assertNotNull(configurable.getConf());
     }
@@ -50,10 +48,10 @@ public class ConfigurableBaseTest {
     /**
      * When null is set the configuration should not change.
      * 
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     * @throws eu.unifiedviews.dpu.config.DPUConfigException
      */
     @Test
-    public void nullSet() throws ConfigException {
+    public void nullSet() throws DPUConfigException {
         ConfigurableDummy configurable = new ConfigurableDummy();
         String oldConfig = configurable.getConf();
         assertNotNull(oldConfig);

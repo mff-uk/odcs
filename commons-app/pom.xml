@@ -297,6 +297,11 @@
             <version>1.8.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 

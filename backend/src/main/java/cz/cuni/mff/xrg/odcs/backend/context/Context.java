@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -21,10 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 public class Context implements DPUContext {
 
@@ -182,7 +181,7 @@ public class Context implements DPUContext {
      * @return Created DataUni.
      * @throws DataUnitCreateException
      */
-    public ManagableDataUnit addOutputDataUnit(DataUnitType type, String name)
+    public ManagableDataUnit addOutputDataUnit(DataUnit.Type type, String name)
              {
         return outputsManager.addDataUnit(type, name);
     }
@@ -256,20 +255,20 @@ public class Context implements DPUContext {
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
     @Override
-    public void sendMessage(MessageType type, String shortMessage) {
+    public void sendMessage(DPUContext.MessageType type, String shortMessage) {
         // jest re-call the other function
         sendMessage(type, shortMessage, "");
     }
 
     @Override
-    public void sendMessage(MessageType type,
+    public void sendMessage(DPUContext.MessageType type,
             String shortMessage,
             String fullMessage) {
         sendMessage(type, shortMessage, fullMessage, null);
     }
 
     @Override
-    public void sendMessage(MessageType type,
+    public void sendMessage(DPUContext.MessageType type,
             String shortMessage,
             String fullMessage,
             Exception exception) {

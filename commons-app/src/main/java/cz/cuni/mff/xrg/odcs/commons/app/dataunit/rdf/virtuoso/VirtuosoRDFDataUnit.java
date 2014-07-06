@@ -11,9 +11,9 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.RDFData;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 
 /**

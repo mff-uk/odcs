@@ -8,10 +8,11 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+
 
 /**
  * Hold and manage context for pipeline execution.
@@ -136,14 +137,14 @@ public class ExecutionContextInfo implements DataObject {
      * @param name
      *            Name of data unit.
      * @param type
-     *            {@link DataUnitType Type} of data unit.
+     *            {@link DataUnit.Type Type} of data unit.
      * @return Index of new DataUnitInfo.
      * @deprecated use {@link ExecutionInfo} instead
      */
     @Deprecated
     public Integer createInput(DPUInstanceRecord dpuInstance,
             String name,
-            DataUnitType type) {
+            DataUnit.Type type) {
         return getContext(dpuInstance).addDataUnit(name, type, true);
     }
 
@@ -156,14 +157,14 @@ public class ExecutionContextInfo implements DataObject {
      * @param name
      *            Name of data unit.
      * @param type
-     *            {@link DataUnitType Type} of data unit.
+     *            {@link DataUnit.Type Type} of data unit.
      * @return Index of new DataUnitInfo.
      * @deprecated use {@link ExecutionInfo} instead
      */
     @Deprecated
     public Integer createOutput(DPUInstanceRecord dpuInstance,
             String name,
-            DataUnitType type) {
+            DataUnit.Type type) {
         return getContext(dpuInstance).addDataUnit(name, type, false);
     }
 

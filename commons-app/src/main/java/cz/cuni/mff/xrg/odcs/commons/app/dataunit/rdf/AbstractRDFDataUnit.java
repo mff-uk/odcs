@@ -20,10 +20,8 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
@@ -76,13 +74,13 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //DataUnit interface
     @Override
-    public DataUnitType getType() {
-        return DataUnitType.RDF;
+    public DataUnit.Type getType() {
+        return DataUnit.Type.RDF;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnitType dataUnitType) {
+    public boolean isType(DataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 

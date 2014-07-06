@@ -3,7 +3,8 @@ package cz.cuni.mff.xrg.odcs.rdf;
 import java.util.List;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import eu.unifiedviews.dataunit.RDFData;
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 

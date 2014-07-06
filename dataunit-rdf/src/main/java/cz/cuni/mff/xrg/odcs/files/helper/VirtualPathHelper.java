@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.files.helper;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 public interface VirtualPathHelper {
     public static final String VIRTUAL_PATH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/virtualPath";

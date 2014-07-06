@@ -58,19 +58,19 @@ public class PlaceholdersHelper {
 
     /**
      * Returns true if some of repository in collection of {@link RDFDataUnit} need for SPARQL construct/update query based on DPU name is type of
-     * {@link DataUnitType#RDF_Local}, false otherwise.
+     * {@link DataUnit.Type#RDF_Local}, false otherwise.
      * If method returns true, is necessary to create temp repository(calling
      * method {@link #getExecutableTempRepository()}, where this SPARQL
      * construct/update query can be executed.
      * 
      * @return true if some of repository in collection of {@link RDFDataUnit} need for SPARQL construct/update query based on DPU name is type
-     *         of {@link DataUnitType#RDF_Local}, false otherwise.
+     *         of {@link DataUnit.Type#RDF_Local}, false otherwise.
      */
 //	TODO michal.klempa this should not be needed anymore
 //	public boolean needExecutableRepository() {
 //		boolean hasLocal = false;
 //		for (RDFDataUnit nextRepository : usedRepositories) {
-//			if (nextRepository.getType() == DataUnitType.RDF_Local) {
+//			if (nextRepository.getType() == DataUnit.Type.RDF_Local) {
 //				hasLocal = true;
 //				break;
 //			}

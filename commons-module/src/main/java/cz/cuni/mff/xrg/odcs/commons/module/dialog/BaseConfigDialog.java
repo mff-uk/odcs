@@ -3,8 +3,8 @@ package cz.cuni.mff.xrg.odcs.commons.module.dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
 import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
@@ -17,7 +17,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
  * @param <C>
  *            Particular configuration object of the DPU
  */
-public abstract class BaseConfigDialog<C extends DPUConfigObject>
+public abstract class BaseConfigDialog<C extends DPUConfig>
         extends AbstractConfigDialog<C> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseConfigDialog.class);
@@ -55,11 +55,11 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
     }
 
     @Override
-    public void setConfig(String conf) throws ConfigException {
+    public void setConfig(String conf) throws DPUConfigException {
         C config;
         try {
             config = configWrap.deserialize(conf);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             LOG.error("Failed to deserialize configuration, using default instead.");
             // failed to deserialize configuraiton, use default
             config = configWrap.createInstance();
@@ -75,7 +75,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
             // null -> try to use default configuration
             config = configWrap.createInstance();
             if (config == null) {
-                throw new ConfigException(
+                throw new DPUConfigException(
                         "Missing configuration and failed to create default."
                                 + "No configuration has been loaded into dialog.");
             }
@@ -88,27 +88,27 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
         if (!config.isValid()) {
             if (originalConfigNull) {
                 // newly created configuration is invalid
-                throw new ConfigException(
+                throw new DPUConfigException(
                         "The default configuration is invalid, there is "
                                 + "probably problem in DPU's implementation.");
             } else {
                 // notify for invalid configuration
-                throw new ConfigException(
+                throw new DPUConfigException(
                         "Invalid configuration loaded into dialog.");
             }
         }
     }
 
     @Override
-    public String getConfig() throws ConfigException {
+    public String getConfig() throws DPUConfigException {
         C configuration = getConfiguration();
         // check for validity before saving
         if (configuration == null) {
-            throw new ConfigException("Configuration dialog return null.");
+            throw new DPUConfigException("Configuration dialog return null.");
         }
 
         if (!configuration.isValid()) {
-            throw new ConfigException("Cofiguration dialog returns invalid configuration.");
+            throw new DPUConfigException("Cofiguration dialog returns invalid configuration.");
         }
 
         lastSetConfig = configWrap.serialize(getConfiguration());
@@ -131,7 +131,7 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
         try {
             C config = getConfiguration();
             configString = configWrap.serialize(config);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             // exception according to definition return false
             LOG.warn("Dialog configuration is invalid. It's assumed unchanged: ",
                     e.getLocalizedMessage());
@@ -157,21 +157,21 @@ public abstract class BaseConfigDialog<C extends DPUConfigObject>
 
     /**
      * Set dialog interface according to passed configuration. If the passed
-     * configuration is invalid ConfigException can be thrown.
+ configuration is invalid DPUConfigException can be thrown.
      * 
      * @param conf
      *            Configuration object.
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
-    protected abstract void setConfiguration(C conf) throws ConfigException;
+    protected abstract void setConfiguration(C conf) throws DPUConfigException;
 
     /**
      * Get configuration from dialog. In case of presence invalid configuration
-     * in dialog throw ConfigException.
+ in dialog throw DPUConfigException.
      * 
      * @return Configuration object.
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException
+     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigException
      */
-    protected abstract C getConfiguration() throws ConfigException;
+    protected abstract C getConfiguration() throws DPUConfigException;
 
 }

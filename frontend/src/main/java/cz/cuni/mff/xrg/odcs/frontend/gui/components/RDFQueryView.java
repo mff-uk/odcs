@@ -33,7 +33,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import eu.unifiedviews.dataunit.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;

@@ -22,13 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
 
 /**
  * Test suite for {@link Configurator} class.
@@ -114,16 +114,16 @@ public class ConfiguratorTest {
      * Try configurable object, the configuration function should
      * be called with configuration from dpuInstance.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
     @Test
-    public void configurableTest() throws ConfigException {
+    public void configurableTest() throws DPUConfigException {
         String rawConfig = "<a/>";
 
         DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
         when(dpu.getRawConf()).thenReturn(rawConfig);
         Node node = new Node(dpu);
-        Configurable dpuInstance = mock(Configurable.class);
+        DPUConfigurable dpuInstance = mock(DPUConfigurable.class);
         PipelineExecution execution = mock(PipelineExecution.class);
 
         Context context = mock(Context.class);
@@ -138,17 +138,17 @@ public class ConfiguratorTest {
     }
 
     /**
-     * Configurable object throw exception then configured. The exception
+     * DPUConfigurable object throw exception then configured. The exception
      * should not be propagate instead call should return
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
     @Test
-    public void throwTest() throws ConfigException {
+    public void throwTest() throws DPUConfigException {
         DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
         Node node = new Node(dpu);
-        Configurable dpuInstance = mock(Configurable.class);
-        doThrow(new ConfigException()).when(dpuInstance).configure(null);
+        DPUConfigurable dpuInstance = mock(DPUConfigurable.class);
+        doThrow(new DPUConfigException()).when(dpuInstance).configure(null);
         PipelineExecution execution = mock(PipelineExecution.class);
 
         // create Context with given DPUInstanceRecord

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
@@ -19,9 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
 
 /**
  * Examine the given DPU instance for {@link InputDataUnit} annotations. If
@@ -63,9 +62,9 @@ public class AnnotationsInput implements DPUPreExecutor {
         Context context = contexts.get(node);
 
         // InputDataUnit annotation
-        List<AnnotationContainer<InputDataUnit>> inputAnnotations = AnnotationGetter
-                .getAnnotations(dpuInstance, InputDataUnit.class);
-        for (AnnotationContainer<InputDataUnit> item : inputAnnotations) {
+        List<AnnotationContainer<DataUnit.AsInput>> inputAnnotations = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsInput.class);
+        for (AnnotationContainer<DataUnit.AsInput> item : inputAnnotations) {
             if (annotationInput(item, dpuInstance, context)) {
                 // ok
             } else {
@@ -160,14 +159,14 @@ public class AnnotationsInput implements DPUPreExecutor {
      * @return False in case of error.
      */
     protected boolean annotationInput(
-            AnnotationContainer<InputDataUnit> annotationContainer,
+            AnnotationContainer<DataUnit.AsInput> annotationContainer,
             Object dpuInstance,
             Context context) {
         if (annotationContainer == null) {
             return true;
         }
         final Field field = annotationContainer.getField();
-        final InputDataUnit annotation = annotationContainer.getAnnotation();
+        final DataUnit.AsInput annotation = annotationContainer.getAnnotation();
 
         LinkedList<ManagableDataUnit> typeMatch = filter(context.getInputs(),
                 field.getType());

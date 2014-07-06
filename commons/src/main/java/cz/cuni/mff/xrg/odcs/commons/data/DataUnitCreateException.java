@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.data;
 
+import eu.unifiedviews.dataunit.DataUnitException;
+
 /**
  * Exception related to DataUnits creation.
  * 

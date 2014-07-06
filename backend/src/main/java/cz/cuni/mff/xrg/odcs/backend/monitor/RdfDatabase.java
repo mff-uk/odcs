@@ -24,13 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 
 /**
@@ -133,7 +133,7 @@ class RdfDatabase {
             return;
         }
 
-        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "notarealname", "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnit.Type.RDF, "notarealname", "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
         RepositoryConnection connection = null;
         try {
             // ok we have the repository

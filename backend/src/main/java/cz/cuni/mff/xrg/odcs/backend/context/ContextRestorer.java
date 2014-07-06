@@ -3,8 +3,8 @@ package cz.cuni.mff.xrg.odcs.backend.context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
 
 /**
  * Reconstruct given {@link Context} based on {@link ExecutionContextInfo} and prepare it for usage.

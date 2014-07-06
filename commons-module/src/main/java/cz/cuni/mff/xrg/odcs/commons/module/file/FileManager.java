@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.module.file;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Class for easier management of DPU's files.

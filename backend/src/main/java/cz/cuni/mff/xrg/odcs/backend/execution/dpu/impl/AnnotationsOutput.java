@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
@@ -19,10 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 
 /**
  * Examine the given DPU instance for annotations. If there is {@link OutputDataUnit} annotation on field then create or assign suitable
@@ -62,9 +60,9 @@ public class AnnotationsOutput implements DPUPreExecutor {
         Context context = contexts.get(node);
 
         // OutputDataUnit annotation
-        List<AnnotationContainer<OutputDataUnit>> outputAnnotations = AnnotationGetter
-                .getAnnotations(dpuInstance, OutputDataUnit.class);
-        for (AnnotationContainer<OutputDataUnit> item : outputAnnotations) {
+        List<AnnotationContainer<DataUnit.AsOutput>> outputAnnotations = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsOutput.class);
+        for (AnnotationContainer<DataUnit.AsOutput> item : outputAnnotations) {
             if (annotationOutput(item, dpuInstance, context)) {
                 // ok
             } else {
@@ -117,18 +115,18 @@ public class AnnotationsOutput implements DPUPreExecutor {
      * @return False in case of error.
      */
     protected boolean annotationOutput(
-            AnnotationContainer<OutputDataUnit> annotationContainer,
+            AnnotationContainer<DataUnit.AsOutput> annotationContainer,
             Object dpuInstance,
             Context context) {
         if (annotationContainer == null) {
             return true;
         }
         final Field field = annotationContainer.getField();
-        final OutputDataUnit annotation = annotationContainer.getAnnotation();
+        final DataUnit.AsOutput annotation = annotationContainer.getAnnotation();
         LOG.debug("Data unit name is: {}", annotation.name());
 
         // get type
-        DataUnitType type;
+        DataUnit.Type type;
         type = DataUnitTypeResolver.resolveClassToType(field.getType());
 
         //classToDataUnitType(field.getType());

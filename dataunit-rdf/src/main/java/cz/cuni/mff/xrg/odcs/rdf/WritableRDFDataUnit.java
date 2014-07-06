@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.rdf;
 
 import org.openrdf.model.URI;
 
+import eu.unifiedviews.dataunit.RDFData;
+
 public interface WritableRDFDataUnit extends RDFDataUnit {
     /**
      * Get name of the context which is considered to be owned by data unit and is the only one into which

@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.files;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.RDFData;
 
 public interface FilesDataUnit extends DataUnit {
     public static final String SYMBOLIC_NAME_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/symbolicName";
@@ -27,6 +27,7 @@ public interface FilesDataUnit extends DataUnit {
 
         public FilesDataUnit.Entry next() throws DataUnitException;
 
+        @Override
         public void close() throws DataUnitException;
     }
 

@@ -26,6 +26,11 @@
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <!-- define license -->

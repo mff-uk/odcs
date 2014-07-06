@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.files;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 public interface WritableFilesDataUnit extends FilesDataUnit {
     interface WritableFilesIteration extends Iteration {
