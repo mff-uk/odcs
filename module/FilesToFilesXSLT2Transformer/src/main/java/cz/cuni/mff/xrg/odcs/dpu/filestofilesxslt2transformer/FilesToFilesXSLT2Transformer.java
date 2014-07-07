@@ -26,8 +26,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
 @DPU.AsTransformer
@@ -73,7 +71,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
         dpuContext.sendMessage(DPUContext.MessageType.INFO, "Stylesheet was compiled successully");
 
-        Iteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFiles();
         } catch (DataUnitException ex) {
@@ -86,7 +84,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                Entry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
 

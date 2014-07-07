@@ -53,7 +53,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
 
     private static final String MOVE_QUERY = "DEFINE sql:log-enable 3 MOVE <%s> TO <%s>";
 
-    private static final String ADD_QUERY = "ADD <%s> TO <%s>";
+    private static final String ADD_QUERY = "DEFINE sql:log-enable 3 ADD <%s> TO <%s>";
 
     private static final String CLEAR_QUERY = "DEFINE sql:log-enable 3 CLEAR GRAPH <%s>";
 

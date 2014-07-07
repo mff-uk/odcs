@@ -21,8 +21,6 @@ import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 
 @DPU.AsLoader
 public class FilesToLocalDirectoryLoader extends
@@ -45,7 +43,7 @@ public class FilesToLocalDirectoryLoader extends
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
-        Iteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFiles();
         } catch (DataUnitException ex) {
@@ -69,7 +67,7 @@ public class FilesToLocalDirectoryLoader extends
                 index++;
                 checkCancelled(dpuContext);
 
-                Entry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     Path inputPath = new File(entry.getFilesystemURI()).toPath();
