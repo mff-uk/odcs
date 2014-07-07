@@ -12,7 +12,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -70,7 +70,7 @@ public class FilesToSPARQLLoaderConfigDialog extends BaseConfigDialog<FilesToSPA
     }
 
     @Override
-    public void setConfiguration(FilesToSPARQLLoaderConfig conf) throws ConfigException {
+    public void setConfiguration(FilesToSPARQLLoaderConfig conf) throws DPUConfigException {
         queryEndpointUrl.setValue(conf.getQueryEndpointUrl());
         updateEndpointUrl.setValue(conf.getUpdateEndpointUrl());
         commitSize.setValue(conf.getCommitSize());
@@ -85,7 +85,7 @@ public class FilesToSPARQLLoaderConfigDialog extends BaseConfigDialog<FilesToSPA
     }
 
     @Override
-    public FilesToSPARQLLoaderConfig getConfiguration() throws ConfigException {
+    public FilesToSPARQLLoaderConfig getConfiguration() throws DPUConfigException {
         BufferedReader br = new BufferedReader(new StringReader(targetContexts.getValue()));
 
         String line;
@@ -95,7 +95,7 @@ public class FilesToSPARQLLoaderConfigDialog extends BaseConfigDialog<FilesToSPA
                 targetContexts.add(line);
             }
         } catch (IOException ex) {
-            throw new ConfigException(ex);
+            throw new DPUConfigException(ex);
         }
 
         FilesToSPARQLLoaderConfig conf = new FilesToSPARQLLoaderConfig();

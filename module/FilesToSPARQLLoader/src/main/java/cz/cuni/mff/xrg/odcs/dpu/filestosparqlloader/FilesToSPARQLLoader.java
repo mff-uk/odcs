@@ -14,16 +14,16 @@ import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.repository.util.RDFLoader;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
@@ -31,11 +31,11 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 
-@AsLoader
+@DPU.AsLoader
 public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderConfig> implements ConfigDialogProvider<FilesToSPARQLLoaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToSPARQLLoader.class);
 
-    @InputDataUnit(name = "filesInput")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit filesInput;
 
     public FilesToSPARQLLoader() {
@@ -46,7 +46,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
     public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: CommitSize: %d, QueryEndpointUrl: %s, UpdateEndpointUrl: %s", config.getCommitSize(), config.getQueryEndpointUrl(), config.getUpdateEndpointUrl());
-        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
 
         Set<String> targetContexts = config.getTargetContexts();
@@ -104,7 +104,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                         filesSuccessfulCount++;
                     } catch (RepositoryException | RDFHandlerException | RDFParseException | IOException ex) {
                         dpuContext.sendMessage(
-                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                                 "Error processing " + appendNumber(index) + " file",
                                 String.valueOf(entry),
                                 ex);
@@ -119,7 +119,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                     }
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(
-                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                             "DataUnit exception.",
                             "",
                             ex);
@@ -131,16 +131,16 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             try {
                 filesIteration.close();
             } catch (DataUnitException ex) {
-                dpuContext.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                dpuContext.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
             }
             try {
                 sparqlRepository.shutDown();
             } catch (RepositoryException ex) {
-                dpuContext.sendMessage(MessageType.WARNING, "Error shutting down the remote SPARQL repository", ex.getMessage(), ex);
+                dpuContext.sendMessage(DPUContext.MessageType.WARNING, "Error shutting down the remote SPARQL repository", ex.getMessage(), ex);
             }
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
-        dpuContext.sendMessage(filesSuccessfulCount < index ? MessageType.WARNING : MessageType.INFO, message);
+        dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
     }
 
     @Override
