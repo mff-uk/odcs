@@ -45,4 +45,38 @@ public interface ManagableDataUnit extends DataUnit {
     
     void store();
     void load();
+    
+    /**
+     * Types of DataUnit interface implementation.
+     *
+     * @author Petyr
+     */
+    public enum Type {
+
+        /**
+         * General RDF type, the repository will be selected by the application.
+         */
+        RDF,
+        /**
+         * Represent file data unit.
+         */
+        FILE,
+        FILES
+    }
+
+    /**
+     * Return type of data unit interface implementation.
+     *
+     * @return DataUnit type.
+     */
+    ManagableDataUnit.Type getType();
+
+    /**
+     * Check my type against provided.
+     *
+     * @param dataUnitType
+     * @return True if equals
+     */
+    boolean isType(ManagableDataUnit.Type dataUnitType);
+
 }

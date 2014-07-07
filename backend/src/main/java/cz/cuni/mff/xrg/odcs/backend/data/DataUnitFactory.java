@@ -53,7 +53,7 @@ public class DataUnitFactory {
      *            DataUnit's working directory.
      * @return DataUnit
      */
-    public ManagableDataUnit create(DataUnit.Type type,
+    public ManagableDataUnit create(ManagableDataUnit.Type type,
             String pipelineId,
             String id,
             String name,

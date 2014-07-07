@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,13 +75,13 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //DataUnit interface
     @Override
-    public DataUnit.Type getType() {
-        return DataUnit.Type.RDF;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.RDF;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnit.Type dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 

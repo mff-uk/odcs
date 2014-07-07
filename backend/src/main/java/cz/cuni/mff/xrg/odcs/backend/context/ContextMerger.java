@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
@@ -84,7 +83,7 @@ class ContextMerger {
 
         // add the rest from right
         while (iterSource.hasNext()) {
-            DataUnit source = iterSource.next();
+            ManagableDataUnit source = iterSource.next();
             String sourceName = source.getDataUnitName();
             String targetName;
             // get command

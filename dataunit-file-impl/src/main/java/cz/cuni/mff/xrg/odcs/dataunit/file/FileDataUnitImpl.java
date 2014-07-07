@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.XStream;
 
 import eu.unifiedviews.dataunit.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandlerImpl;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
@@ -50,12 +51,12 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
     }
 
     @Override
-    public DataUnit.Type getType() {
-        return DataUnit.Type.FILE;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.FILE;
     }
 
     @Override
-    public boolean isType(DataUnit.Type dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 

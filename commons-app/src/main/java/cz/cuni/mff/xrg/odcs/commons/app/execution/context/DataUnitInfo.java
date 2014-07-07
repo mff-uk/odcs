@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
  * Holds information about single {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} context.
@@ -50,7 +51,7 @@ public class DataUnitInfo implements DataObject {
      */
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "type")
-    private DataUnit.Type type;
+    private ManagableDataUnit.Type type;
 
     /**
      * True if use as input otherwise false.
@@ -76,7 +77,7 @@ public class DataUnitInfo implements DataObject {
      */
     public DataUnitInfo(Integer index,
             String name,
-            DataUnit.Type type,
+            ManagableDataUnit.Type type,
             boolean isInput) {
         this.index = index;
         this.name = name;
@@ -103,7 +104,7 @@ public class DataUnitInfo implements DataObject {
     /**
      * @return DateUnit'stype.
      */
-    public DataUnit.Type getType() {
+    public ManagableDataUnit.Type getType() {
         return type;
     }
 

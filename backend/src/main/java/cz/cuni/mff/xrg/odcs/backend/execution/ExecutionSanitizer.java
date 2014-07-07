@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
@@ -172,7 +171,7 @@ class ExecutionSanitizer {
             // we need to construct the DataUnit, create it and then 
             // delete it
             int index = dataUnitInfo.getIndex();
-            final DataUnit.Type type = dataUnitInfo.getType();
+            final ManagableDataUnit.Type type = dataUnitInfo.getType();
             final String id = context.generateDataUnitId(dpuInstance, index);
             final String name = dataUnitInfo.getName();
 

@@ -10,6 +10,7 @@ import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
  * Contains and manage information about execution for single {@link DPUInstanceRecord}. The information class (this) is created at the
@@ -60,7 +61,7 @@ public class ProcessingUnitInfo implements DataObject {
      * @deprecated use {@link DpuContextInfo} instead
      */
     @Deprecated
-    public Integer addDataUnit(String name, DataUnit.Type type, boolean isInput) {
+    public Integer addDataUnit(String name, ManagableDataUnit.Type type, boolean isInput) {
         // add information
         Integer index = 0;
         if (dataUnits.isEmpty()) {

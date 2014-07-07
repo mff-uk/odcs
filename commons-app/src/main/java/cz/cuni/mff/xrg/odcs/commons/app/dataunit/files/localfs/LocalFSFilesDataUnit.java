@@ -25,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDa
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
@@ -60,13 +61,13 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     //DataUnit interface
     @Override
-    public DataUnit.Type getType() {
-        return DataUnit.Type.FILES;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.FILES;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnit.Type dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 

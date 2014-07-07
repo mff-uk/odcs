@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
@@ -22,7 +21,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 public class Context implements DPUContext {
@@ -179,9 +177,8 @@ public class Context implements DPUContext {
      * @param name
      *            DataUnit name.
      * @return Created DataUni.
-     * @throws DataUnitCreateException
      */
-    public ManagableDataUnit addOutputDataUnit(DataUnit.Type type, String name)
+    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name)
              {
         return outputsManager.addDataUnit(type, name);
     }

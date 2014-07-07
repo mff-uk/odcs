@@ -126,7 +126,7 @@ public class AnnotationsOutput implements DPUPreExecutor {
         LOG.debug("Data unit name is: {}", annotation.name());
 
         // get type
-        DataUnit.Type type;
+        ManagableDataUnit.Type type;
         type = DataUnitTypeResolver.resolveClassToType(field.getType());
 
         //classToDataUnitType(field.getType());
