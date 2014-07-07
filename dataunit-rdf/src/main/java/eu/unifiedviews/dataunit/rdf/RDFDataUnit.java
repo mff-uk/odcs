@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.rdf;
+package eu.unifiedviews.dataunit.rdf;
 
 import java.util.List;
 import java.util.Map;

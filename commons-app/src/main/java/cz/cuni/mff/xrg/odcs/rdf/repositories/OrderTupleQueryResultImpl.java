@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
 
 /**

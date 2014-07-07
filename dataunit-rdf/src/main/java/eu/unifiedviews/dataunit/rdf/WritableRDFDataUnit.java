@@ -1,8 +1,9 @@
-package cz.cuni.mff.xrg.odcs.rdf;
+package eu.unifiedviews.dataunit.rdf;
 
 import org.openrdf.model.URI;
 
 import eu.unifiedviews.dataunit.RDFData;
+
 
 public interface WritableRDFDataUnit extends RDFDataUnit {
     /**

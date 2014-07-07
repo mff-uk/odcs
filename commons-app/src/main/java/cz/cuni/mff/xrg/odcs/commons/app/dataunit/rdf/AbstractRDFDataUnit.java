@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.RDFData;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;

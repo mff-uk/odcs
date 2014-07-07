@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dataunit.RDFData;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 /**
  * Implementation of Virtuoso repository - RDF data and intermediate results are
