@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -21,25 +20,26 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
+
 
 /**
  * Extracts RDF data from a file.
@@ -47,7 +47,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
  * @author Jiri Tomes
  * @author Petyr
  */
-@AsExtractor
+@DPU.AsExtractor
 public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         implements ConfigDialogProvider<FileExtractorConfig> {
 
@@ -58,7 +58,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
     /**
      * The repository for file extractor.
      */
-    @OutputDataUnit(name = "output")
+    @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit rdfDataUnit;
 
     public FileExtractor() {
@@ -70,13 +70,11 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
      * 
      * @param context
      *            File extractor context.
-     * @throws DataUnitException
-     *             if this DPU fails.
      * @throws DPUException
      *             if this DPU fails.
      */
     @Override
-    public void execute(DPUContext context) throws DataUnitException, DPUException {
+    public void execute(DPUContext context) throws DPUException {
 
         final String baseURI = "";
         final FileExtractType extractType = config.getFileExtractType();
@@ -112,7 +110,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                         .getFoundGlobalProblemsAsString();
                 StatisticalHandler.clearParsingProblems();
 
-                context.sendMessage(MessageType.WARNING,
+                context.sendMessage(DPUContext.MessageType.WARNING,
                         "Statistical and error handler has found during parsing problems triples (these triples were not added)",
                         problems);
                 RepositoryConnection connection = null;
@@ -125,16 +123,13 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                         try {
                             connection.close();
                         } catch (RepositoryException ex) {
-                            context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                            context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                         }
                     }
                 }
             }
-        } catch (RDFException e) {
-            context.sendMessage(MessageType.ERROR, e.getMessage(), e
-                    .fillInStackTrace().toString());
-        } catch (RepositoryException e) {
-            context.sendMessage(MessageType.ERROR, e.getMessage(), e
+        } catch (RDFException | RepositoryException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, e.getMessage(), e
                     .fillInStackTrace().toString());
         }
     }
@@ -169,11 +164,11 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         RDFParser parser = Rio.createParser(format);
         parser.setRDFHandler(handler);
 
-        ParserConfig config = parser.getParserConfig();
+        ParserConfig tmpConfig = parser.getParserConfig();
 
-        config.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
+        tmpConfig.addNonFatalError(BasicParserSettings.VERIFY_DATATYPE_VALUES);
 
-        parser.setParserConfig(config);
+        parser.setParserConfig(tmpConfig);
 
         if (handler instanceof StatisticalHandler) {
             setErrorsListenerToParser(parser, (StatisticalHandler) handler);
@@ -277,7 +272,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                     try {
                         connection.close();
                     } catch (RepositoryException ex) {
-                        context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                        context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                     }
                 }
             }
@@ -405,7 +400,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                     try {
                         connection.close();
                     } catch (RepositoryException ex) {
-                        context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                        context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                     }
                 }
             }
@@ -498,7 +493,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                     try {
                         connection.close();
                     } catch (RepositoryException ex) {
-                        context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                        context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                     }
                 }
             }

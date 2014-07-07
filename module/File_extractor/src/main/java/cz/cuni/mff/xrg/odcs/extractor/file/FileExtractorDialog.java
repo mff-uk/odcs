@@ -7,10 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import org.openrdf.rio.RDFFormat;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -24,8 +22,8 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfig;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -156,13 +154,13 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
      *         configuration dialog.
      */
     @Override
-    public FileExtractorConfig getConfiguration() throws ConfigException {
+    public FileExtractorConfig getConfiguration() throws DPUConfigException {
 
         if (getContext().isTemplate()) {
         }
 
         if (!textFieldPath.isValid()) {
-            throw new ConfigException(ex.getMessage(), ex);
+            throw new DPUConfigException(ex.getMessage(), ex);
         } else {
 
             String path;
@@ -206,7 +204,7 @@ public class FileExtractorDialog extends BaseConfigDialog<FileExtractorConfig> {
             } else if (selectedValue.endsWith(CONTINUE)) {
                 failWhenErrors = false;
             } else {
-                throw new ConfigException(
+                throw new DPUConfigException(
                         "No value for case using statistical and error handler");
             }
 
