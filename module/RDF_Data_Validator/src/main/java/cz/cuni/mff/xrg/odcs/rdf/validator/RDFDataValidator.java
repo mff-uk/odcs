@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
@@ -154,7 +155,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
                 makeValidationReport(validator, graphName, context, stopExecution);
 
             }
-        } catch (RDFException | RepositoryException e) {
+        } catch ( RepositoryException | DataUnitException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, e.getMessage(),
                     e.fillInStackTrace().toString());
         }
