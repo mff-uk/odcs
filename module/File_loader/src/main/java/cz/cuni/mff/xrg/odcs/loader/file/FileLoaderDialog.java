@@ -19,8 +19,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfig;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -255,18 +255,18 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
     /**
      * Set values from from dialog where the configuration object may be edited
-     * to configuration object implementing {@link DPUConfigObject} interface
+     * to configuration object implementing {@link DPUConfig} interface
      * and configuring DPU.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when the field {@link #textFieldFilePath} contains null value.
      * @return config Object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
      *         configuration dialog.
      */
     @Override
-    public FileLoaderConfig getConfiguration() throws ConfigException {
+    public FileLoaderConfig getConfiguration() throws DPUConfigException {
         if (!textFieldFilePath.isValid()) {
-            throw new ConfigException(ex.getMessage(), ex);
+            throw new DPUConfigException(ex.getMessage(), ex);
         } else {
             boolean diffName = checkBoxDiffName.getValue();
             String filePath = textFieldFilePath.getValue().trim();
@@ -300,7 +300,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
+    public void setConfiguration(FileLoaderConfig conf) throws DPUConfigException {
         try {
             checkBoxDiffName.setValue(conf.isDiffName());
             textFieldFilePath.setValue(conf.getFilePath().trim());
@@ -314,14 +314,14 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
         } catch (Property.ReadOnlyException | Converter.ConversionException e) {
             // throw setting exception
-            throw new ConfigException(e.getMessage(), e);
+            throw new DPUConfigException(e.getMessage(), e);
         }
     }
 
     /**
-     * Returns desription of file loader as string.
+     * Returns description of file loader as string.
      * 
-     * @return desription of file loader as string.
+     * @return description of file loader as string.
      */
     @Override
     public String getDescription() {
