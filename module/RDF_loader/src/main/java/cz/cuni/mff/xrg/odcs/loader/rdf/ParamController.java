@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import eu.unifiedviews.dpu.DPUException;
+
 
 /**
  * Responsible for test/controll parameters needed for method RDF.

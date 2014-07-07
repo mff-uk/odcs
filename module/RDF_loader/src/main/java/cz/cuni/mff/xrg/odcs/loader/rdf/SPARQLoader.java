@@ -1,5 +1,10 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
+import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,7 +19,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -39,13 +43,6 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
 /**
  * Responsible to load RDF data to SPARQL endpoint. Need special for SPARQL
@@ -172,7 +169,7 @@ public class SPARQLoader {
                         Long graphSizeBefore = getSPARQLEndpointGraphSize(
                                 graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
                                 graph, graphSizeBefore, config.getSPARQL_endpoint()));
                         checkCancel();
@@ -217,13 +214,13 @@ public class SPARQLoader {
                         Long graphSizeAfter = getSPARQLEndpointGraphSize(
                                 graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
                                 graph, graphSizeAfter, endpointURL.toString()));
 
                         long loadedTriples = getLoadedTripleCount(graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Loaded %s triples to SPARQL endpoint %s",
                                 loadedTriples, endpointURL.toString()));
                     }
@@ -248,7 +245,7 @@ public class SPARQLoader {
                                         retryCount, ex.getMessage());
 
                                 logger.warn(errorMessage);
-                                context.sendMessage(MessageType.WARNING, errorMessage, "", ex);
+                                context.sendMessage(DPUContext.MessageType.WARNING, errorMessage, "", ex);
 
                                 try {
                                     //sleep and attempt to reconnect
@@ -273,7 +270,7 @@ public class SPARQLoader {
                     httpClient.close();
                 }
             } catch (IOException ex) {
-                context.sendMessage(MessageType.WARNING, "Error in close httpClient", "", ex);
+                context.sendMessage(DPUContext.MessageType.WARNING, "Error in close httpClient", "", ex);
             }
         }
     }
@@ -622,7 +619,7 @@ public class SPARQLoader {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, "Error closing connection", ex.getMessage(), ex);
+                    context.sendMessage(DPUContext.MessageType.WARNING, "Error closing connection", ex.getMessage(), ex);
                 }
             }
             try {

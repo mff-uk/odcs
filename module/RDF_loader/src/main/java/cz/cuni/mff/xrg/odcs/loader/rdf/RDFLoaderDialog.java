@@ -1,18 +1,16 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Configuration dialog for DPU SPARQL Loader.
@@ -1001,11 +999,11 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
      *         configuration dialog.
      */
     @Override
-    public RDFLoaderConfig getConfiguration() throws ConfigException {
+    public RDFLoaderConfig getConfiguration() throws DPUConfigException {
         if (!allComponentAreValid()) {
             String message = validationMessage();
 
-            throw new ConfigException(message);
+            throw new DPUConfigException(message);
         } else {
             saveEditedTexts();
 
@@ -1059,7 +1057,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(RDFLoaderConfig conf) throws ConfigException {
+    public void setConfiguration(RDFLoaderConfig conf) throws DPUConfigException {
         try {
             String endp = conf.getSPARQLEndpoint().trim();
 
@@ -1111,7 +1109,7 @@ public class RDFLoaderDialog extends BaseConfigDialog<RDFLoaderConfig> {
 
         } catch (UnsupportedOperationException | Property.ReadOnlyException e) {
             // throw setting exception
-            throw new ConfigException(e.getMessage(), e);
+            throw new DPUConfigException(e.getMessage(), e);
         }
     }
 
