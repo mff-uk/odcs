@@ -24,7 +24,7 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -199,7 +199,7 @@ public class FilesToFilesRenameTransformerConfigDialog extends
 
     @Override
     public void setConfiguration(FilesToFilesRenameTransformerConfig conf)
-            throws ConfigException {
+            throws DPUConfigException {
         // get configuration from the CONFIG object to dialog
 
         if (!conf.getXslTemplate().isEmpty()) {
@@ -211,13 +211,13 @@ public class FilesToFilesRenameTransformerConfigDialog extends
 
     @Override
     public FilesToFilesRenameTransformerConfig getConfiguration()
-            throws ConfigException {
+            throws DPUConfigException {
         // get the conf from the dialog
 
         // check that certain xslt was uploaded
         if (taXSLTemplate.getValue().trim().isEmpty()) {
             // no config!
-            throw new ConfigException("No configuration file uploaded");
+            throw new DPUConfigException("No configuration file uploaded");
 
         }
 
