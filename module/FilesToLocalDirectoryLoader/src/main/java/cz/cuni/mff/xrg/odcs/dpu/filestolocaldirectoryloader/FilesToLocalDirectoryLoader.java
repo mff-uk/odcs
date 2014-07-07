@@ -11,13 +11,12 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
@@ -25,14 +24,14 @@ import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Iteration;
 
-@AsLoader
+@DPU.AsLoader
 public class FilesToLocalDirectoryLoader extends
         ConfigurableBase<FilesToLocalDirectoryLoaderConfig> implements
         ConfigDialogProvider<FilesToLocalDirectoryLoaderConfig> {
     private static final Logger LOG = LoggerFactory
             .getLogger(FilesToLocalDirectoryLoader.class);
 
-    @InputDataUnit(name = "filesInput")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit filesInput;
 
     public FilesToLocalDirectoryLoader() {
@@ -44,7 +43,7 @@ public class FilesToLocalDirectoryLoader extends
             InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.valueOf(config);
-        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
         Iteration filesIteration;
         try {
@@ -91,14 +90,14 @@ public class FilesToLocalDirectoryLoader extends
                         }
                     } catch (IOException ex) {
                         dpuContext.sendMessage(
-                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                                 "Error processing " + appendNumber(index) + " file",
                                 String.valueOf(entry),
                                 ex);
                     }
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(
-                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                             "DataUnit exception.",
                             "",
                             ex);
