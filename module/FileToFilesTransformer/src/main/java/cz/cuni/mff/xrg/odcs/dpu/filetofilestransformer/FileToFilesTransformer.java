@@ -3,36 +3,34 @@ package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
-@AsTransformer
+@DPU.AsTransformer
 public class FileToFilesTransformer extends NonConfigurableBase {
     private static final Logger LOG = LoggerFactory.getLogger(FileToFilesTransformer.class);
 
-    @InputDataUnit(name = "fileInput")
+    @DataUnit.AsInput(name = "fileInput")
     public FileDataUnit fileInput;
 
-    @OutputDataUnit(name = "filesOutput")
+    @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
 
     public FileToFilesTransformer() {
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
+    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        dpuContext.sendMessage(MessageType.INFO, shortMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
         long index = 0L;
@@ -43,7 +41,11 @@ public class FileToFilesTransformer extends NonConfigurableBase {
             FileHandler handlerItem = fileInputIterator.next();
             String canonicalPath;
             canonicalPath = handlerItem.asFile().toURI().toASCIIString();
-            filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
+            try {
+                filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
+            } catch (DataUnitException ex) {
+                throw new DPUException(ex.getMessage(), ex.getCause());
+            }
             if (dpuContext.isDebugging()) {
                 LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
             }
