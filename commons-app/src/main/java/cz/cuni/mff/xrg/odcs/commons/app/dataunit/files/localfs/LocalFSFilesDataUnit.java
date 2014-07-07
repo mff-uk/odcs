@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,11 +109,11 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     //WritableFilesDataUnit interface
     @Override
     public void addExistingFile(String proposedSymbolicName, String existingFileURI) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {                      
+        if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
 
-        File existingFile = new File(existingFileURI);
+        File existingFile = new File(URI.create(existingFileURI));
         if (!existingFile.exists()) {
             throw new IllegalArgumentException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
         }
@@ -166,7 +167,8 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                     // eat close exception, we cannot do anything clever here
                 }
             }
-        }    }
+        }
+    }
 
     //WritableFilesDataUnit interface
     @Override
@@ -234,12 +236,12 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     public void load() {
         backingStore.load();
     }
-    
+
     @Override
     public void store() {
         backingStore.store();
     }
-    
+
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;

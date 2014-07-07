@@ -24,7 +24,7 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     private String targetContext = "";
 
-    private String targetTempContext = "";
+//    private String targetTempContext = "";
 
     private long statusUpdateInterval = 60L;
 
@@ -97,14 +97,6 @@ public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
 
     public void setTargetContext(String targetContext) {
         this.targetContext = targetContext;
-    }
-
-    public String getTargetTempContext() {
-        return targetTempContext;
-    }
-
-    public void setTargetTempContext(String targetTempContext) {
-        this.targetTempContext = targetTempContext;
     }
 
     public long getStatusUpdateInterval() {

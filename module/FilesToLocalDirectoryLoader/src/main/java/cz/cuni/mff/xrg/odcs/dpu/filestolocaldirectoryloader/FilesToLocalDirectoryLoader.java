@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.CopyOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -70,7 +71,7 @@ public class FilesToLocalDirectoryLoader extends
                 FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
-                    Path inputPath = new File(entry.getFilesystemURI()).toPath();
+                    Path inputPath = new File(URI.create(entry.getFilesystemURI())).toPath();
                     Path outputPath = new File(destinationAbsolutePath + '/'
                             + entry.getSymbolicName()).toPath();
                     try {

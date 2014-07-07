@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -46,10 +47,10 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
 
             String downloadedFilename = null;
             File downloadedFile = null;
-            String downloadFromLocation= null;
+            String downloadFromLocation = null;
             try {
                 downloadedFilename = filesOutput.createFile(symbolicName);
-                downloadedFile = new File(downloadedFilename);
+                downloadedFile = new File(URI.create(downloadedFilename));
                 downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
                 FileUtils.copyURLToFile(new java.net.URL(downloadFromLocation), downloadedFile, connectionTimeout, readTimeout);
                 filesOutput.addExistingFile(symbolicName, downloadedFilename);

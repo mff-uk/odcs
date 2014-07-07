@@ -58,7 +58,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
 
     private ObjectProperty<String> targetContext = new ObjectProperty<String>("");
 
-    private ObjectProperty<String> targetTempContext = new ObjectProperty<String>("");
+//    private ObjectProperty<String> targetTempContext = new ObjectProperty<String>("");
 
     private ObjectProperty<Long> statusUpdateInterval = new ObjectProperty<Long>(60L);
 
@@ -87,7 +87,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         mainLayout.addComponent(new TextField(INCLUDE_SUBDIRECTORIES_LABEL, includeSubdirectories));
         mainLayout.addComponent(new TextField(LOAD_FILE_PATTERN_LABEL, loadFilePattern));
         mainLayout.addComponent(new TextField(TARGET_CONTEXT_LABEL, targetContext));
-        mainLayout.addComponent(new TextField(TARGET_TEMP_CONTEXT_LABEL, targetTempContext));
+//        mainLayout.addComponent(new TextField(TARGET_TEMP_CONTEXT_LABEL, targetTempContext));
         mainLayout.addComponent(new TextField(STATUS_UPDATE_INTERVAL_LABEL, statusUpdateInterval));
         mainLayout.addComponent(new TextField(THREAD_COUNT_LABEL, threadCount));
         mainLayout.addComponent(new CheckBox(SKIP_ON_ERROR_LABEL, skipOnError));
@@ -105,7 +105,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         includeSubdirectories.setValue(conf.isIncludeSubdirectories());
         loadFilePattern.setValue(conf.getLoadFilePattern());
         targetContext.setValue(conf.getTargetContext());
-        targetTempContext.setValue(conf.getTargetTempContext());
+//        targetTempContext.setValue(conf.getTargetTempContext());
         statusUpdateInterval.setValue(conf.getStatusUpdateInterval());
         threadCount.setValue(conf.getThreadCount());
         skipOnError.setValue(conf.isSkipOnError());
@@ -122,7 +122,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
         conf.setIncludeSubdirectories(includeSubdirectories.getValue());
         conf.setLoadFilePattern(loadFilePattern.getValue());
         conf.setTargetContext(targetContext.getValue());
-        conf.setTargetTempContext(targetTempContext.getValue());
+//        conf.setTargetTempContext(targetTempContext.getValue());
         conf.setStatusUpdateInterval(statusUpdateInterval.getValue());
         conf.setThreadCount(threadCount.getValue());
         conf.setSkipOnError(skipOnError.getValue());

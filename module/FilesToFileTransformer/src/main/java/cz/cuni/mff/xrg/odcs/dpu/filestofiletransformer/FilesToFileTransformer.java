@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestofiletransformer;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -60,7 +61,7 @@ public class FilesToFileTransformer extends NonConfigurableBase {
                     String next = it.next().toString();
                     boolean lastOne = !it.hasNext();
                     if (lastOne) {
-                        FileHandler result = currentHandler.addExistingFile(new File(entry.getFilesystemURI()), new OptionsAdd(true, false));
+                        FileHandler result = currentHandler.addExistingFile(new File(URI.create(entry.getFilesystemURI())), new OptionsAdd(true, false));
                         if (dpuContext.isDebugging()) {
                             LOG.debug("Added {}", result.getRootedPath());
                         }

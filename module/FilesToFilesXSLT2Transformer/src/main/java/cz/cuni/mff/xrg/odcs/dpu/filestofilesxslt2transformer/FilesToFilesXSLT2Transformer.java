@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Date;
 
 import javax.xml.transform.stream.StreamSource;
@@ -91,8 +92,8 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
                     String inSymbolicName = entry.getSymbolicName();
 
                     String outputFilename = filesOutput.createFile(inSymbolicName);
-                    File outputFile = new File(outputFilename);
-                    File inputFile = new File(entry.getFilesystemURI());
+                    File outputFile = new File(URI.create(outputFilename));
+                    File inputFile = new File(URI.create(entry.getFilesystemURI()));
                     try {
                         index++;
 
