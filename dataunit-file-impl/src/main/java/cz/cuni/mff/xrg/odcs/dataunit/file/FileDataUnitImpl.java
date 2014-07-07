@@ -92,7 +92,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
         // and delete it's content
         if (dataDir.exists()) {
             try {
-                FileUtils.forceDelete(dataDir);
+                FileUtils.cleanDirectory(dataDir);
             } catch (IOException ex) {
                 LOG.error("Failed to clean directory.", ex);
             }
