@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -11,8 +10,8 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 /**
  * @author Jiri Tomes

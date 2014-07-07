@@ -28,13 +28,9 @@ import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;

@@ -10,8 +10,8 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class SPARQLTest {
     private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);

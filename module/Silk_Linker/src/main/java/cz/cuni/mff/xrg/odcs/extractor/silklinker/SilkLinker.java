@@ -33,11 +33,12 @@ import org.xml.sax.SAXException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 
 /**
