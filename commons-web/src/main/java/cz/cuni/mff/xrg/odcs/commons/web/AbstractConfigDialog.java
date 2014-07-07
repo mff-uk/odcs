@@ -27,7 +27,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfig>
      * 
      * @param conf
      *            Serialized configuration object.
-     * @throws DPUConfigException
+     * @throws eu.unifiedviews.dpu.config.DPUConfigException
      */
     public abstract void setConfig(String conf) throws DPUConfigException;
 
@@ -36,7 +36,7 @@ public abstract class AbstractConfigDialog<C extends DPUConfig>
      * configuration is invalid then throws.
      * 
      * @return Serialized configuration object.
-     * @throws cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigException
+     * @throws eu.unifiedviews.dpu.config.DPUConfigException
      */
     public abstract String getConfig() throws DPUConfigException;
 
