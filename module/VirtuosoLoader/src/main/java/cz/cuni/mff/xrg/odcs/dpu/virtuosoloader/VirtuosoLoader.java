@@ -17,20 +17,21 @@ import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
+
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 
-@AsLoader
+@DPU.AsLoader
 public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> implements ConfigDialogProvider<VirtuosoLoaderConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoLoader.class);
 
@@ -170,7 +171,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             ResultSet resultSetErrorRows = statementsErrorRows.executeQuery();
             while (resultSetErrorRows.next()) {
                 dpuContext.sendMessage(
-                        config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                        config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                         "Error processing file " + resultSetErrorRows.getString(1) + ", error " + resultSetErrorRows.getString(8));
             }
             resultSetErrorRows.close();

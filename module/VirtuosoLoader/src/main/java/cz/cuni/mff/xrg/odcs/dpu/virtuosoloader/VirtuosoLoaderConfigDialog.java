@@ -5,7 +5,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -96,7 +96,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
     }
 
     @Override
-    public void setConfiguration(VirtuosoLoaderConfig conf) throws ConfigException {
+    public void setConfiguration(VirtuosoLoaderConfig conf) throws DPUConfigException {
         virtuosoUrl.setValue(conf.getVirtuosoUrl());
         username.setValue(conf.getUsername());
         password.setValue(conf.getPassword());
@@ -112,7 +112,7 @@ public class VirtuosoLoaderConfigDialog extends BaseConfigDialog<VirtuosoLoaderC
     }
 
     @Override
-    public VirtuosoLoaderConfig getConfiguration() throws ConfigException {
+    public VirtuosoLoaderConfig getConfiguration() throws DPUConfigException {
         VirtuosoLoaderConfig conf = new VirtuosoLoaderConfig();
         conf.setVirtuosoUrl(virtuosoUrl.getValue());
         conf.setUsername(username.getValue());
