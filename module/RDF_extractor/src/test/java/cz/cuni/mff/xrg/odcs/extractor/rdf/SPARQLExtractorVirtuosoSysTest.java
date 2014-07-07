@@ -16,14 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
 /**
  * Test funcionality extaction for Virtuoso from SPARQL endpoint.
- * 
+ *
  * @author Jiri Tomes
  */
 public class SPARQLExtractorVirtuosoSysTest {
@@ -65,22 +64,19 @@ public class SPARQLExtractorVirtuosoSysTest {
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
 
-            try {
-                SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                        testEnvironment.getContext(), virtuoso);
-                extractor.extractFromSPARQLEndpoint(endpointURL,
-                        query, "", "", usedRDFFormat,
-                        HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
-                        true);
-
-            } catch (RDFException e) {
-                fail(e.getMessage());
-            }
+            SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                    testEnvironment.getContext(), virtuoso);
+            extractor.extractFromSPARQLEndpoint(endpointURL,
+                    query, "", "", usedRDFFormat,
+                    HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
+                    true);
 
             long sizeAfter = connection.size(repository.getWriteContext());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
+        } catch (RDFException ex) {
+            logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
@@ -101,21 +97,18 @@ public class SPARQLExtractorVirtuosoSysTest {
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
 
-            try {
-                SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                        testEnvironment.getContext(), virtuoso);
-                extractor
-                        .extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
-                                query);
-
-            } catch (RDFException e) {
-                fail(e.getMessage());
-            }
+            SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                    testEnvironment.getContext(), virtuoso);
+            extractor
+                    .extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
+                            query);
 
             long sizeAfter = connection.size(repository.getWriteContext());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
+        } catch (RDFException ex) {
+            logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
@@ -137,20 +130,18 @@ public class SPARQLExtractorVirtuosoSysTest {
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
 
-            try {
-                SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                        testEnvironment.getContext(), virtuoso);
+            SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                    testEnvironment.getContext(), virtuoso);
 
-                extractor
-                        .extractFromSPARQLEndpoint(endpointURL, query);
-            } catch (RDFException e) {
-                fail(e.getMessage());
-            }
+            extractor
+                    .extractFromSPARQLEndpoint(endpointURL, query);
 
             long sizeAfter = connection.size(repository.getWriteContext());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
+        } catch (RDFException ex) {
+            logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }
@@ -175,20 +166,18 @@ public class SPARQLExtractorVirtuosoSysTest {
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 
-            try {
-                SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                        testEnvironment.getContext(), virtuoso);
-                extractor.extractFromSPARQLEndpoint(
-                        endpoint, query, "", "",
-                        format);
-            } catch (RDFException e) {
-                fail(e.getMessage());
-            }
+            SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                    testEnvironment.getContext(), virtuoso);
+            extractor.extractFromSPARQLEndpoint(
+                    endpoint, query, "", "",
+                    format);
 
             long sizeAfter = connection.size(repository.getWriteContext());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
+        } catch (RDFException ex) {
+            logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
         }

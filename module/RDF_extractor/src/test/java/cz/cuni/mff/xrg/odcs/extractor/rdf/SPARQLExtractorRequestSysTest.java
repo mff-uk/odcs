@@ -13,10 +13,11 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * @author Jiri Tomes
@@ -59,15 +60,15 @@ public class SPARQLExtractorRequestSysTest {
                 "CONSTRUCT {?x ?y ?z} WHERE {?x ?y ?z} LIMIT %s",
                 EXTRACTED_TRIPLES);
 
-        SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                getTestContext(), params);
         RepositoryConnection connection = null;
         try {
+            SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                    getTestContext(), params);
             extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
             assertEquals(connection.size(repository.getWriteContext()), EXTRACTED_TRIPLES);
-        } catch (RDFException e) {
-            fail(e.getMessage());
+        } catch (RDFException ex) {
+            fail(ex.getMessage());
         } finally {
             if (connection != null) {
                 try {

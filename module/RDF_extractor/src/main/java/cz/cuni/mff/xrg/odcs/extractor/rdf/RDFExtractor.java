@@ -9,30 +9,27 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import java.util.logging.Level;
 
 /**
  * Extracts RDF data from SPARQL endpoint.
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
-@AsExtractor
+@DPU.AsExtractor
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
         implements ConfigDialogProvider<RDFExtractorConfig> {
 
@@ -41,7 +38,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
     /**
      * The repository for SPARQL extractor.
      */
-    @OutputDataUnit(name = "output")
+    @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit rdfDataUnit;
 
     public RDFExtractor() {
@@ -50,18 +47,13 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
     /**
      * Execute the SPARQL extractor.
-     * 
-     * @param context
-     *            SPARQL extractor context.
-     * @throws DataUnitException
-     *             if this DPU fails.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context SPARQL extractor context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context)
-            throws DPUException,
-            DataUnitCreateException {
+            throws DPUException {
         RepositoryConnection connection = null;
 
         try {
@@ -118,7 +110,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
             if (usedSplitConstruct) {
                 if (splitConstructSize <= 0) {
-                    context.sendMessage(MessageType.ERROR,
+                    context.sendMessage(DPUContext.MessageType.ERROR,
                             "Split construct size must be positive number");
                 }
 
@@ -148,7 +140,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                 }
 
                 if (extractFail && lastrepoSize == 0) {
-                    throw new RDFException(
+                    throw new DPUException(
                             "No extracted triples from SPARQL endpoint");
                 }
 
@@ -166,29 +158,31 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                     "Extracted %s triples from SPARQL endpoint %s",
                     triplesCount, endpointURL.toString());
 
-            context.sendMessage(MessageType.INFO, tripleInfoMessage);
+            context.sendMessage(DPUContext.MessageType.INFO, tripleInfoMessage);
 
         } catch (InvalidQueryException ex) {
             LOG.debug("InvalidQueryException", ex);
-            context.sendMessage(MessageType.ERROR,
+            context.sendMessage(DPUContext.MessageType.ERROR,
                     "InvalidQueryException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
-            LOG.debug("RDFDataUnitException", ex);
-            context.sendMessage(MessageType.ERROR, "MalformedURLException: "
+            LOG.debug("MalformedURLException", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, "MalformedURLException: "
                     + ex.getMessage());
             throw new DPUException(ex);
-        } catch (RDFDataUnitException ex) {
-            context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
-                    .fillInStackTrace().toString());
         } catch (RepositoryException e) {
-            context.sendMessage(MessageType.ERROR,
+            context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
+        } catch (RDFException ex) {
+            LOG.debug("RDFException", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
+                    + ex.getMessage());
+            throw new DPUException(ex);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
+                    context.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
         }
@@ -203,7 +197,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                     .getFoundGlobalProblemsAsString();
             StatisticalHandler.clearParsingProblems();
 
-            context.sendMessage(MessageType.WARNING,
+            context.sendMessage(DPUContext.MessageType.WARNING,
                     "Statistical and error handler has found during parsing problems triples (these triples were not added)",
                     problems);
         }
@@ -211,7 +205,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
     /**
      * Returns the configuration dialogue for SPARQL extractor.
-     * 
+     *
      * @return the configuration dialogue for SPARQL extractor.
      */
     @Override

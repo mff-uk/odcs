@@ -12,8 +12,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
@@ -1337,18 +1336,18 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
      * to configuration object implementing {@link DPUConfigObject} interface
      * and configuring DPU
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when field {@link #textFieldSparql} contains null value.
      * @return config Object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
      *         configuration dialog.
      */
     @Override
-    public RDFExtractorConfig getConfiguration() throws ConfigException {
+    public RDFExtractorConfig getConfiguration() throws DPUConfigException {
 
         if (!allComponentAreValid()) {
 //			throw new ConfigException(ex.getMessage(), ex);
             String message = validationMessage();
-            throw new ConfigException(message);
+            throw new DPUConfigException(message);
         } else if (!isQueryValid) {
             throw new SPARQLValidationException(errorMessage);
         } else {
@@ -1370,7 +1369,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
             } else if (selectedValue.endsWith(CONTINUE)) {
                 failWhenErrors = false;
             } else {
-                throw new ConfigException(
+                throw new DPUConfigException(
                         "No value for case using statistical and error handler");
             }
 
@@ -1434,7 +1433,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(RDFExtractorConfig conf) throws ConfigException {
+    public void setConfiguration(RDFExtractorConfig conf) throws DPUConfigException {
         try {
             String endp = conf.getSPARQLEndpoint().trim();
 
@@ -1489,7 +1488,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
 
         } catch (UnsupportedOperationException | Property.ReadOnlyException | Converter.ConversionException e) {
             // throw setting exception
-            throw new ConfigException(e.getMessage(), e);
+            throw new DPUConfigException(e.getMessage(), e);
         }
     }
 

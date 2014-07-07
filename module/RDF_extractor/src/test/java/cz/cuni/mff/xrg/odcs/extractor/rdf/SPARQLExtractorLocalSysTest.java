@@ -16,10 +16,11 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Test extraction funcionality for Local RDF storage from SPARQL endpoint.
- * 
+ *
  * @author Jiri Tomes
  */
 public class SPARQLExtractorLocalSysTest {
@@ -56,19 +57,16 @@ public class SPARQLExtractorLocalSysTest {
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
 
-                try {
-                    SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                            testEnvironment.getContext(), virtuoso);
+                SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                        testEnvironment.getContext(), virtuoso);
 
-                    extractor.extractFromSPARQLEndpoint(endpointURL, query);
-
-                } catch (RDFException e) {
-                    fail(e.getMessage());
-                }
+                extractor.extractFromSPARQLEndpoint(endpointURL, query);
 
                 long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
+            } catch (RDFException ex) {
+                LOG.error("RDFException: " + ex.getMessage());
             } finally {
                 if (connection != null) {
                     try {
@@ -101,19 +99,17 @@ public class SPARQLExtractorLocalSysTest {
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
 
-                try {
-                    SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                            testEnvironment.getContext(), virtuoso);
+                SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                        testEnvironment.getContext(), virtuoso);
 
-                    extractor
-                            .extractFromSPARQLEndpoint(endpointURL, query);
-                } catch (RDFException e) {
-                    fail(e.getMessage());
-                }
+                extractor
+                        .extractFromSPARQLEndpoint(endpointURL, query);
 
                 long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
+            } catch (RDFException ex) {
+                LOG.error("RDFException: " + ex.getMessage());
             } finally {
                 if (connection != null) {
                     try {
@@ -150,19 +146,17 @@ public class SPARQLExtractorLocalSysTest {
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph("http://BigGraph");
 
-                try {
-                    SPARQLExtractor extractor = new SPARQLExtractor(repository,
-                            testEnvironment.getContext(), virtuoso);
-                    extractor.extractFromSPARQLEndpoint(
-                            endpoint, query, "", "", format);
-                } catch (RDFException e) {
-                    fail(e.getMessage());
-                }
+                SPARQLExtractor extractor = new SPARQLExtractor(repository,
+                        testEnvironment.getContext(), virtuoso);
+                extractor.extractFromSPARQLEndpoint(
+                        endpoint, query, "", "", format);
 
                 long sizeAfter = connection.size(repository.getWriteContext());
 
                 assertTrue(sizeBefore < sizeAfter);
 
+            } catch (RDFException ex) {
+                LOG.error("RDFException: " + ex.getMessage());
             } finally {
                 if (connection != null) {
                     try {
