@@ -15,7 +15,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -57,7 +57,7 @@ public class FilesToRDFTransformerConfigDialog extends BaseConfigDialog<FilesToR
     }
 
     @Override
-    public void setConfiguration(FilesToRDFTransformerConfig conf) throws ConfigException {
+    public void setConfiguration(FilesToRDFTransformerConfig conf) throws DPUConfigException {
         commitSize.setValue(conf.getCommitSize());
         
         StringBuilder sb = new StringBuilder();
@@ -75,7 +75,7 @@ public class FilesToRDFTransformerConfigDialog extends BaseConfigDialog<FilesToR
     }
 
     @Override
-    public FilesToRDFTransformerConfig getConfiguration() throws ConfigException {
+    public FilesToRDFTransformerConfig getConfiguration() throws DPUConfigException {
         Map<String, String> symbolicNameToBaseURIMap = new LinkedHashMap<>();
         Map<String, String> symbolicNameToFormatMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
@@ -86,35 +86,35 @@ public class FilesToRDFTransformerConfigDialog extends BaseConfigDialog<FilesToR
             while ((line = br.readLine()) != null) {
                 String[] val = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, ";");
                 if (val.length < 2) {
-                    throw new ConfigException(String.format("Line %d %s has invalid format.", i, line));
+                    throw new DPUConfigException(String.format("Line %d %s has invalid format.", i, line));
                 }
 
                 if (symbolicNameToBaseURIMap.containsKey(val[0])) {
-                    throw new ConfigException(String.format("Duplicate symbolic name %s on line %d.", val[0], i));
+                    throw new DPUConfigException(String.format("Duplicate symbolic name %s on line %d.", val[0], i));
                 }
 
                 if (val[1] != null && val[1].length() > 0) {
                     try {
                         new URIImpl(val[1]);
                     } catch (IllegalArgumentException ex) {
-                        throw new ConfigException(String.format("Wrong URI on line %d symbolic name", i, val[0]), ex);
+                        throw new DPUConfigException(String.format("Wrong URI on line %d symbolic name", i, val[0]), ex);
                     }
                     if (!val[1].startsWith("http://")) {
-                        throw new ConfigException(String.format("Wrong base URI on line %d symbolic name", i, val[0]));
+                        throw new DPUConfigException(String.format("Wrong base URI on line %d symbolic name", i, val[0]));
                     }
                     symbolicNameToBaseURIMap.put(val[0], val[1]);
                 }
 
                 if (val[2] != null && val[2].length() > 0) {
                     if (null == RDFFormat.valueOf(val[2])) {
-                        throw new ConfigException(String.format("Unsupported format %s on line %d symbolic name", val[2], i, val[0]));
+                        throw new DPUConfigException(String.format("Unsupported format %s on line %d symbolic name", val[2], i, val[0]));
                     }
                     symbolicNameToFormatMap.put(val[0], val[2]);
                 }
                 i++;
             }
         } catch (IOException ex) {
-            throw new ConfigException(ex);
+            throw new DPUConfigException(ex);
         }
 
         FilesToRDFTransformerConfig conf = new FilesToRDFTransformerConfig();
