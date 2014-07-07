@@ -27,7 +27,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.InvalidConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.DataSourceFactory;
 
 /**
  * Translate Vaadin's filters into {@link javax.persistence.criteria.Predicate}.
@@ -40,30 +39,10 @@ class VaadinFilterTranslator implements FilterTranslator {
     /**
      * SQL syntax for LIKE in WHERE clause specific for given platform.
      */
-    private static String SQL_LIKE_ARGUMENT;
+    private static String SQL_LIKE_ARGUMENT = "%%%s%%";
 
     @Autowired
     private AppConfig config;
-
-    @PostConstruct
-    public void configurePlatformSpecifics() {
-        // normal run -> determine platform from configuration
-        String dbEngine = config
-                .getSubConfiguration(ConfigProperty.RDBMS)
-                .getString(ConfigProperty.DATABASE_PLATFORM);
-
-        switch (dbEngine) {
-            case DataSourceFactory.MYSQL_VALUE:
-                SQL_LIKE_ARGUMENT = "%%%s%%";
-                break;
-            case DataSourceFactory.VIRTUOSO_VALUE:
-                SQL_LIKE_ARGUMENT = "**%s";
-                break;
-            default:
-                throw new InvalidConfigPropertyException(
-                        ConfigProperty.DATABASE_PLATFORM);
-        }
-    }
 
     @Override
     public Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root) {
