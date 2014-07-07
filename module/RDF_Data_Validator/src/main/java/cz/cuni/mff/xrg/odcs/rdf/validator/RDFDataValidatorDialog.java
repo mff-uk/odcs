@@ -3,8 +3,7 @@ package cz.cuni.mff.xrg.odcs.rdf.validator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -82,7 +81,7 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
      * Load values from configuration object implementing {@link DPUConfigObject} interface and configuring DPU into the dialog
      * where the configuration object may be edited.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when components
      *             are in read-only mode or when values loading to
      *             this fields could not be converted. Also when
@@ -92,7 +91,7 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(RDFDataValidatorConfig conf) throws ConfigException {
+    public void setConfiguration(RDFDataValidatorConfig conf) throws DPUConfigException {
         failExecution.setValue(conf.canStopExecution());
         createOutput.setValue(conf.hasSometimesOutput());
     }
@@ -102,14 +101,14 @@ public class RDFDataValidatorDialog extends BaseConfigDialog<RDFDataValidatorCon
      * to configuration object implementing {@link DPUConfigObject} interface
      * and configuring DPU
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when some of
      *             fields contains null value.
      * @return config object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
      *         configuration dialog.
      */
     @Override
-    public RDFDataValidatorConfig getConfiguration() throws ConfigException {
+    public RDFDataValidatorConfig getConfiguration() throws DPUConfigException {
         boolean stopExecution = failExecution.getValue();
         boolean sometimesOutput = createOutput.getValue();
 
