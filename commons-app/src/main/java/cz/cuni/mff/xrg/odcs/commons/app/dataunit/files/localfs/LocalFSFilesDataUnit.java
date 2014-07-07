@@ -26,7 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);

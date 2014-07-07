@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 public class DataUnitTypeResolver {
     public static ManagableDataUnit.Type resolveClassToType(Class<?> classType) {

@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 public class FilesDataUnitEntryImpl implements FilesDataUnit.Entry {
     private String symbolicName;

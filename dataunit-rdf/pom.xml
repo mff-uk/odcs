@@ -306,6 +306,11 @@
                         </exclusions>
                  </dependency>
         -->
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-files</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <!-- define license -->

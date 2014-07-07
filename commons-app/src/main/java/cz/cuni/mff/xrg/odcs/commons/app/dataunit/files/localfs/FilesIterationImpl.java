@@ -10,9 +10,9 @@ import org.openrdf.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.RDFData;
 import eu.unifiedviews.dataunit.DataUnitException;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.Entry;
-import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 
 public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIteration {
     private RepositoryConnection connection = null;

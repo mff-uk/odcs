@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnitException;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 public abstract class VirtualPathHelpers {
     public VirtualPathHelper create(FilesDataUnit filesDataUnit) {
