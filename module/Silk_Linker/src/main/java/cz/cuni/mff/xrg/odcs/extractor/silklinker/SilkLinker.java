@@ -8,7 +8,9 @@ import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -16,41 +18,44 @@ import javax.xml.transform.stream.StreamResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParseException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
+
 
 /**
  * Simple XSLT Extractor
  * 
  * @author tomasknap
  */
-@AsExtractor
+@DPU.AsExtractor
 public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
         implements DPU, ConfigDialogProvider<SilkLinkerConfig> {
 
     private static final Logger log = LoggerFactory.getLogger(
             SilkLinker.class);
 
-    @OutputDataUnit(name = "links_confirmed")
+    @DataUnit.AsOutput(name = "links_confirmed")
     public WritableRDFDataUnit outputConfirmed;
 
-    @OutputDataUnit(name = "links_to_be_verified")
+    @DataUnit.AsOutput(name = "links_to_be_verified")
     public WritableRDFDataUnit outputToVerify;
 
     /**
@@ -74,7 +79,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
         if (configString == null || configString.isEmpty()) {
             log.error("No config file specifed");
-            context.sendMessage(MessageType.ERROR, "No config file specifed: ");
+            context.sendMessage(DPUContext.MessageType.ERROR, "No config file specifed: ");
             return;
 
         }
@@ -183,7 +188,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             StreamResult result = new StreamResult(configFile);
             transformer.transform(source, result);
 
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | TransformerException | DOMException | SAXException e) {
             log.error(e.getLocalizedMessage());
         }
         try {
@@ -220,7 +225,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             printProcessOutput(p);
         } catch (IOException ex) {
             log.error(ex.getLocalizedMessage());
-            context.sendMessage(MessageType.ERROR, "Problem executing Silk: "
+            context.sendMessage(DPUContext.MessageType.ERROR, "Problem executing Silk: "
                     + ex.getMessage());
         }
         log.info("Silk was executed");
@@ -241,16 +246,16 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             String baseURI = "";
             connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getWriteContext());
 
-        } catch (Exception ex) {
+        } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
-            context.sendMessage(MessageType.ERROR, "RDFException: "
+            context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                    context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
         }
@@ -271,9 +276,9 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             connection2 = outputToVerify.getConnection();
             String baseURI = "";
             connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getWriteContext());
-        } catch (Exception ex) {
+        } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
-            context.sendMessage(MessageType.ERROR, "RDFException: "
+            context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
         } finally {
             if (connection != null) {
@@ -286,10 +291,6 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             }
         }
 
-    }
-
-    @Override
-    public void cleanUp() {
     }
 
     private static void printProcessOutput(Process process) {
@@ -311,7 +312,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
             }
             log.debug(notes.toString());
             in.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
     }

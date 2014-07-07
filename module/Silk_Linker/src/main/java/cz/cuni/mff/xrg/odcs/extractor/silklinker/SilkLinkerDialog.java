@@ -14,7 +14,7 @@ import java.util.Date;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -186,10 +186,10 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
      * 
      * @param conf
      *            Configuration
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
     @Override
-    public void setConfiguration(SilkLinkerConfig conf) throws ConfigException {
+    public void setConfiguration(SilkLinkerConfig conf) throws DPUConfigException {
 
         if (conf.getSilkConf() != null && !conf.getSilkConf().isEmpty()) {
             silkConfigTextArea.setValue(conf.getSilkConf());
@@ -211,17 +211,17 @@ public class SilkLinkerDialog extends BaseConfigDialog<SilkLinkerConfig> {
      * @throws ConfigException
      */
     @Override
-    public SilkLinkerConfig getConfiguration() throws ConfigException {
+    public SilkLinkerConfig getConfiguration() throws DPUConfigException {
         //get the conf from textArea
 
         if (!tfMinConfidenceConfirmed.isValid()) {
-            throw new ConfigException("Configuration cannot be saved, because of invalid values");
+            throw new DPUConfigException("Configuration cannot be saved, because of invalid values");
         }
         else if (!tfMinConfidenceToBeVerified.isValid()) {
-            throw new ConfigException("Configuration cannot be saved, because of invalid values");
+            throw new DPUConfigException("Configuration cannot be saved, because of invalid values");
         }
         else if (silkConfigTextArea.getValue().trim().isEmpty()) {
-            throw new ConfigException("Configuration cannot be saved, because no Silk config file was specified");
+            throw new DPUConfigException("Configuration cannot be saved, because no Silk config file was specified");
         }
         else {
             SilkLinkerConfig conf = new SilkLinkerConfig(silkConfigTextArea.getValue(), lFileName.getValue(), tfMinConfidenceConfirmed.getValue().trim(), tfMinConfidenceToBeVerified.getValue().trim());
