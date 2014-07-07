@@ -8,23 +8,23 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
 
-@AsExtractor
+@DPU.AsExtractor
 public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorConfig> implements ConfigDialogProvider<HTTPToFilesExtractorConfig> {
+
     private static final Logger LOG = LoggerFactory.getLogger(HTTPToFilesExtractor.class);
 
-    @OutputDataUnit(name = "filesOutput")
+    @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
 
     public HTTPToFilesExtractor() {
@@ -32,29 +32,34 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
+    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         Map<String, String> symbolicNameToURIMap = config.getSymbolicNameToURIMap();
         int connectionTimeout = config.getConnectionTimeout();
         int readTimeout = config.getReadTimeout();
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.format("Configuration: files to download: %d, connectionTimeout: %d, readTimeout: %d", symbolicNameToURIMap.size(), connectionTimeout, readTimeout);
-        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
 
         for (String symbolicName : symbolicNameToURIMap.keySet()) {
             checkCancelled(dpuContext);
-            
-            String downloadedFilename = filesOutput.createFile(symbolicName);
-            File downloadedFile = new File(downloadedFilename);
-            String downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
+
+            String downloadedFilename = null;
+            File downloadedFile = null;
+            String downloadFromLocation= null;
             try {
+                downloadedFilename = filesOutput.createFile(symbolicName);
+                downloadedFile = new File(downloadedFilename);
+                downloadFromLocation = symbolicNameToURIMap.get(symbolicName);
                 FileUtils.copyURLToFile(new java.net.URL(downloadFromLocation), downloadedFile, connectionTimeout, readTimeout);
                 filesOutput.addExistingFile(symbolicName, downloadedFilename);
                 if (dpuContext.isDebugging()) {
                     LOG.debug("Downloaded " + symbolicName + " from " + downloadFromLocation + " to " + downloadedFilename);
                 }
+            } catch (DataUnitException ex) {
+                dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when downloading.", "Symbolic name " + symbolicName + " from location ", ex);
             } catch (IOException ex) {
-                dpuContext.sendMessage(MessageType.ERROR, "Error when downloading.", "Symbolic name " + symbolicName + " from location " + downloadFromLocation + " could not be saved to " + downloadedFilename, ex);
+                dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when downloading.", "Symbolic name " + symbolicName + " from location " + downloadFromLocation + " could not be saved to " + downloadedFilename, ex);
             }
         }
     }

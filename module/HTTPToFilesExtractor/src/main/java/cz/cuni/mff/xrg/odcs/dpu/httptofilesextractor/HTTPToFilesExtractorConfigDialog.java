@@ -14,7 +14,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
@@ -62,7 +62,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPToFil
     }
 
     @Override
-    public void setConfiguration(HTTPToFilesExtractorConfig conf) throws ConfigException {
+    public void setConfiguration(HTTPToFilesExtractorConfig conf) throws DPUConfigException {
         connectionTimeout.setValue(conf.getConnectionTimeout());
         readTimeout.setValue(conf.getReadTimeout());
 
@@ -77,7 +77,7 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPToFil
     }
 
     @Override
-    public HTTPToFilesExtractorConfig getConfiguration() throws ConfigException {
+    public HTTPToFilesExtractorConfig getConfiguration() throws DPUConfigException {
         Map<String, String> symbolicNameToURIMap = new LinkedHashMap<>();
         BufferedReader br = new BufferedReader(new StringReader(mapText.getValue()));
 
@@ -87,23 +87,23 @@ public class HTTPToFilesExtractorConfigDialog extends BaseConfigDialog<HTTPToFil
             while ((line = br.readLine()) != null) {
                 String[] val = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, ";");
                 if (val.length != 2) {
-                    throw new ConfigException(String.format("Line %d %s has invalid format.", i, line));
+                    throw new DPUConfigException(String.format("Line %d %s has invalid format.", i, line));
                 }
 
                 if (symbolicNameToURIMap.containsKey(val[0])) {
-                    throw new ConfigException(String.format("Duplicate symbolic name %s on line %d.", val[0], i));
+                    throw new DPUConfigException(String.format("Duplicate symbolic name %s on line %d.", val[0], i));
                 }
 
                 try {
                     new java.net.URL(val[1]);
                 } catch (MalformedURLException ex) {
-                    throw new ConfigException(String.format("Wrong URL on line %d symbolic name", i, val[0]), ex);
+                    throw new DPUConfigException(String.format("Wrong URL on line %d symbolic name", i, val[0]), ex);
                 }
                 symbolicNameToURIMap.put(val[0], val[1]);
                 i++;
             }
         } catch (IOException ex) {
-            throw new ConfigException(ex);
+            throw new DPUConfigException(ex);
         }
         
         HTTPToFilesExtractorConfig conf = new HTTPToFilesExtractorConfig();
