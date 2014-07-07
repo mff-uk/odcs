@@ -16,19 +16,16 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.QueryResults;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
@@ -38,52 +35,53 @@ import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * SPARQL Transformer.
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  * @author tknap
  */
-@AsTransformer
+@DPU.AsTransformer
 public class SPARQLTransformer
         extends ConfigurableBase<SPARQLTransformerConfig>
         implements ConfigDialogProvider<SPARQLTransformerConfig> {
 
     private final Logger LOG = LoggerFactory.getLogger(SPARQLTransformer.class);
 
-    public static final String[] DPUNames = { "input", "optional1", "optional2", "optional3" };
+    public static final String[] DPUNames = {"input", "optional1", "optional2", "optional3"};
 
     /**
      * The repository input for SPARQL transformer.
      */
-    @InputDataUnit(name = "input")
+    @DataUnit.AsInput(name = "input")
     public RDFDataUnit intputDataUnit;
 
     //three other optional inputs, which may be used in the queries
     /**
      * The first repository optional input for SPARQL transformer.
      */
-    @InputDataUnit(name = "optional1", optional = true)
+    @DataUnit.AsInput(name = "optional1", optional = true)
     public RDFDataUnit intputOptional1;
 
     /**
      * The second repository optional input for SPARQL transformer.
      */
-    @InputDataUnit(name = "optional2", optional = true)
+    @DataUnit.AsInput(name = "optional2", optional = true)
     public RDFDataUnit intputOptional2;
 
     /**
      * The third repository optional input for SPARQL transformer.
      */
-    @InputDataUnit(name = "optional3", optional = true)
+    @DataUnit.AsInput(name = "optional3", optional = true)
     public RDFDataUnit intputOptional3;
 
     /**
      * The repository output for SPARQL transformer.
      */
-    @OutputDataUnit(name = "output")
+    @DataUnit.AsOutput(name = "output")
     public WritableRDFDataUnit outputDataUnit;
 
     public SPARQLTransformer() {
@@ -121,17 +119,13 @@ public class SPARQLTransformer
 
     /**
      * Execute the SPARQL transformer.
-     * 
-     * @param context
-     *            SPARQL transformer context.
-     * @throws DataUnitException
-     *             if this DPU fails.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context SPARQL transformer context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context)
-            throws DPUException, DataUnitException {
+            throws DPUException {
 
         //GET ALL possible inputs
         List<RDFDataUnit> inputs = getInputs();
@@ -139,11 +133,11 @@ public class SPARQLTransformer
         final List<SPARQLQueryPair> queryPairs = config.getQueryPairs();
 
         if (queryPairs == null) {
-            context.sendMessage(MessageType.ERROR,
+            context.sendMessage(DPUContext.MessageType.ERROR,
                     "All queries for SPARQL transformer are null values");
         } else {
             if (queryPairs.isEmpty()) {
-                context.sendMessage(MessageType.ERROR,
+                context.sendMessage(DPUContext.MessageType.ERROR,
                         "Queries for SPARQL transformer are empty",
                         "SPARQL transformer must constains at least one SPARQL query");
             }
@@ -161,10 +155,10 @@ public class SPARQLTransformer
             boolean isConstructQuery = nextPair.isConstructType();
 
             if (updateQuery == null) {
-                context.sendMessage(MessageType.ERROR,
+                context.sendMessage(DPUContext.MessageType.ERROR,
                         "Query number " + queryCount + " is not defined");
             } else if (updateQuery.trim().isEmpty()) {
-                context.sendMessage(MessageType.ERROR,
+                context.sendMessage(DPUContext.MessageType.ERROR,
                         "Query number " + queryCount + " is not defined",
                         "SPARQL transformer must constain at least one SPARQL (Update) query");
             }
@@ -201,14 +195,14 @@ public class SPARQLTransformer
                     try {
                         connectionInput = intputDataUnit.getConnection();
                         graph = executeConstructQuery(connectionInput, constructQuery, dataSet);
-                    } catch (RepositoryException ex) {
+                    } catch (RepositoryException | DataUnitException ex) {
                         LOG.error("Could not add triples from graph", ex);
                     } finally {
                         if (connectionInput != null) {
                             try {
                                 connectionInput.close();
                             } catch (RepositoryException ex) {
-                                context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                                context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                             }
                         }
                     }
@@ -226,7 +220,7 @@ public class SPARQLTransformer
                                 try {
                                     connection.close();
                                 } catch (RepositoryException ex) {
-                                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                                    context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                                 }
                             }
                         }
@@ -245,7 +239,6 @@ public class SPARQLTransformer
 //					TODO michal.klempa this should not be needed anymore
 //					boolean needRepository = placeHolders
 //							.needExecutableRepository();
-
                     if (isFirstUpdateQuery) {
 
                         isFirstUpdateQuery = false;
@@ -266,7 +259,7 @@ public class SPARQLTransformer
                     CleverDataset dataset = new CleverDataset();
                     dataset.addDefaultGraph(outputDataUnit.getWriteContext());
                     dataset.addNamedGraph(outputDataUnit.getWriteContext());
-                    
+
                     RepositoryConnection connection = null;
                     try {
                         connection = outputDataUnit.getConnection();
@@ -280,13 +273,12 @@ public class SPARQLTransformer
                             try {
                                 connection.close();
                             } catch (RepositoryException ex) {
-                                context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                                context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                             }
                         }
                     }
 
 //					} else {
-
 //						outputDataUnit.executeSPARQLUpdateQuery(
 //								replacedUpdateQuery);
 //						TODO michal.klempa this should not be needed anymore
@@ -294,7 +286,7 @@ public class SPARQLTransformer
                 }
 
             } catch (RDFDataUnitException ex) {
-                context.sendMessage(MessageType.ERROR, ex.getMessage(), ex
+                context.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex
                         .fillInStackTrace().toString());
 //				TODO michal.klempa this should not be needed anymore
 //			} catch (RepositoryException e) {
@@ -310,14 +302,14 @@ public class SPARQLTransformer
             LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
                     queryCount, beforeTriplesCount, afterTriplesCount);
         } catch (RepositoryException e) {
-            context.sendMessage(MessageType.ERROR,
+            context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                    context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
         }
@@ -333,7 +325,7 @@ public class SPARQLTransformer
 
     /**
      * Returns the configuration dialogue for SPARQL transformer.
-     * 
+     *
      * @return the configuration dialogue for SPARQL transformer.
      */
     @Override
@@ -343,13 +335,11 @@ public class SPARQLTransformer
 
     /**
      * Transform RDF in repository by SPARQL updateQuery.
-     * 
-     * @param updateQuery
-     *            String value of update SPARQL query.
-     * @param dataset
-     *            Set of graph URIs used for update query.
-     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
-     *             when transformation fault.
+     *
+     * @param updateQuery String value of update SPARQL query.
+     * @param dataset Set of graph URIs used for update query.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException when
+     * transformation fault.
      */
     public void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, Dataset dataset, URI dataGraph)
             throws RDFException {
@@ -385,16 +375,15 @@ public class SPARQLTransformer
         } catch (RepositoryException ex) {
             throw new RDFException(
                     "Connection to repository is not available. "
-                            + ex.getMessage(), ex);
+                    + ex.getMessage(), ex);
         }
 
     }
 
     /**
-     * @param updateQuery
-     *            String value of SPARQL update query.
+     * @param updateQuery String value of SPARQL update query.
      * @return String extension of given update query works with set repository
-     *         GRAPH.
+     * GRAPH.
      */
     public String AddGraphToUpdateQuery(String updateQuery, URI dataGraph) {
 
@@ -453,14 +442,12 @@ public class SPARQLTransformer
     /**
      * Make construct query over graph URIs in dataSet and return interface
      * Graph as result contains iterator for statements (triples).
-     * 
-     * @param constructQuery
-     *            String representation of SPARQL query.
-     * @param dataSet
-     *            Set of graph URIs used for construct query.
+     *
+     * @param constructQuery String representation of SPARQL query.
+     * @param dataSet Set of graph URIs used for construct query.
      * @return Interface Graph as result of construct SPARQL query.
-     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException
-     *             when query is not valid.
+     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException when
+     * query is not valid.
      */
     public Graph executeConstructQuery(RepositoryConnection connection, String constructQuery, Dataset dataSet)
             throws InvalidQueryException {
@@ -483,14 +470,14 @@ public class SPARQLTransformer
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
                         "This query is probably not valid. " + ex
-                                .getMessage(),
+                        .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
                     "This query is probably not valid. "
-                            + ex.getMessage(), ex);
+                    + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);

@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 
@@ -195,7 +194,7 @@ public class PlaceholdersHelper {
                 final String message = "Graph for DPU name " + DPUName + " was not replased";
 
                 if (context != null) {
-                    context.sendMessage(MessageType.ERROR, message);
+                    context.sendMessage(DPUContext.MessageType.ERROR, message);
                 }
                 throw new DPUException(message);
             }

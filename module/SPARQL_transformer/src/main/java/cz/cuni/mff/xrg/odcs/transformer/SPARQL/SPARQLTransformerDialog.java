@@ -12,8 +12,7 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
@@ -170,10 +169,10 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
     }
 
     /**
-     * Load values from configuration object implementing {@link DPUConfigObject} interface and configuring DPU into the dialog
+     * Load values from configuration object implementing {@link DPUConfig} interface and configuring DPU into the dialog
      * where the configuration object may be edited.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception not used in current implementation of
      *             this method.
      * @param conf
@@ -181,7 +180,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(SPARQLTransformerConfig conf) throws ConfigException {
+    public void setConfiguration(SPARQLTransformerConfig conf) throws DPUConfigException {
         queries.clear();
         queryTypes.clear();
         accordion.removeAllComponents();
@@ -198,14 +197,14 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
      * to configuration object implementing {@link DPUConfigObject} interface
      * and configuring DPU
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when any of
      *             SPARQL queries are invalid.
      * @return conf Object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
      *         configuration dialog.
      */
     @Override
-    public SPARQLTransformerConfig getConfiguration() throws ConfigException {
+    public SPARQLTransformerConfig getConfiguration() throws DPUConfigException {
 
         SPARQLTransformerConfig conf = new SPARQLTransformerConfig();
         List<SPARQLQueryPair> queryPairs = conf.getQueryPairs();
@@ -213,7 +212,7 @@ public class SPARQLTransformerDialog extends BaseConfigDialog<SPARQLTransformerC
         for (int i = 0; i < queries.size(); i++) {
             TextArea txtQuery = queries.get(i);
             if (!txtQuery.isValid()) {
-                throw new ConfigException("All queries must be valid!");
+                throw new DPUConfigException("All queries must be valid!");
             }
             // add to conf
             final boolean isConstruct = queryTypes.get(txtQuery) == QueryType.CONSTRUCT;
