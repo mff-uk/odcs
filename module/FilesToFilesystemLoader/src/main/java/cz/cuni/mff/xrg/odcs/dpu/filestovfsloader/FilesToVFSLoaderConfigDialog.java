@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesystemloader;
+package cz.cuni.mff.xrg.odcs.dpu.filestovfsloader;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
@@ -12,8 +12,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToFilesystemLoaderConfigDialog extends
-		BaseConfigDialog<FilesToFilesystemLoaderConfig> {
+public class FilesToVFSLoaderConfigDialog extends
+		BaseConfigDialog<FilesToVFSLoaderConfig> {
 	/**
      * 
      */
@@ -45,8 +45,8 @@ public class FilesToFilesystemLoaderConfigDialog extends
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(
             false);
 
-    public FilesToFilesystemLoaderConfigDialog() {
-		super(FilesToFilesystemLoaderConfig.class);
+    public FilesToVFSLoaderConfigDialog() {
+		super(FilesToVFSLoaderConfig.class);
 		initialize();
 	}
 
@@ -67,7 +67,7 @@ public class FilesToFilesystemLoaderConfigDialog extends
 	}
 
 	@Override
-	public void setConfiguration(FilesToFilesystemLoaderConfig conf)
+	public void setConfiguration(FilesToVFSLoaderConfig conf)
 			throws ConfigException {
 		destination.setValue(conf.getDestination());
         username.setValue(conf.getUsername());
@@ -78,9 +78,9 @@ public class FilesToFilesystemLoaderConfigDialog extends
 	}
 
 	@Override
-	public FilesToFilesystemLoaderConfig getConfiguration()
+	public FilesToVFSLoaderConfig getConfiguration()
 			throws ConfigException {
-		FilesToFilesystemLoaderConfig conf = new FilesToFilesystemLoaderConfig();
+		FilesToVFSLoaderConfig conf = new FilesToVFSLoaderConfig();
 		conf.setDestination(destination.getValue());
         conf.setUsername(username.getValue());
         conf.setPassword(password.getValue());

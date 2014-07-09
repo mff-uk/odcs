@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesystemloader;
+package cz.cuni.mff.xrg.odcs.dpu.filestovfsloader;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -31,17 +31,17 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 
 @AsLoader
-public class FilesToFilesystemLoader extends
-        ConfigurableBase<FilesToFilesystemLoaderConfig> implements
-        ConfigDialogProvider<FilesToFilesystemLoaderConfig> {
+public class FilesToVFSLoader extends
+        ConfigurableBase<FilesToVFSLoaderConfig> implements
+        ConfigDialogProvider<FilesToVFSLoaderConfig> {
     private static final Logger LOG = LoggerFactory
-            .getLogger(FilesToFilesystemLoader.class);
+            .getLogger(FilesToVFSLoader.class);
 
     @InputDataUnit(name = "filesInput")
     public FilesDataUnit filesInput;
 
-    public FilesToFilesystemLoader() {
-        super(FilesToFilesystemLoaderConfig.class);
+    public FilesToVFSLoader() {
+        super(FilesToVFSLoaderConfig.class);
     }
 
     @Override
@@ -57,6 +57,7 @@ public class FilesToFilesystemLoader extends
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
+        
         FileSystemManager fileSystemManager = null;
         FileObject destinationFileObject  = null;
         FileSystemOptions options = null; 
@@ -156,8 +157,8 @@ public class FilesToFilesystemLoader extends
     }
 
     @Override
-    public AbstractConfigDialog<FilesToFilesystemLoaderConfig> getConfigurationDialog() {
-        return new FilesToFilesystemLoaderConfigDialog();
+    public AbstractConfigDialog<FilesToVFSLoaderConfig> getConfigurationDialog() {
+        return new FilesToVFSLoaderConfigDialog();
     }
 
     private void checkCancelled(DPUContext dpuContext)
