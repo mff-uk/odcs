@@ -40,17 +40,10 @@ public abstract class ConfigurableBase<C extends DPUConfig>
 
     @Override
     public void configure(String configString) throws DPUConfigException {
-        // set configuration for configWrap
-        C newConfig = configWrap.deserialize(configString);
-        if (newConfig == null) {
-            return;
-        }
-
-        if (newConfig.isValid()) {
-            // use configuration from configWrap
-            config = newConfig;
-        } else {
-            throw new DPUConfigException("Invalid configuration.");
+        if (configString != null) {
+            // set configuration for configWrap
+            C newConfig = configWrap.deserialize(configString);
+            configureDirectly(newConfig);
         }
     }
 
