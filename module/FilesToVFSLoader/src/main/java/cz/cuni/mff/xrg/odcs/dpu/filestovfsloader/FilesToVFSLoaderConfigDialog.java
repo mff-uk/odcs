@@ -1,19 +1,19 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesystemloader;
+package cz.cuni.mff.xrg.odcs.dpu.filestovfsloader;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
  * configuration.
  */
-public class FilesToFilesystemLoaderConfigDialog extends
-		BaseConfigDialog<FilesToFilesystemLoaderConfig> {
+public class FilesToVFSLoaderConfigDialog extends
+		BaseConfigDialog<FilesToVFSLoaderConfig> {
 	/**
      * 
      */
@@ -45,8 +45,8 @@ public class FilesToFilesystemLoaderConfigDialog extends
     private ObjectProperty<Boolean> skipOnError = new ObjectProperty<Boolean>(
             false);
 
-    public FilesToFilesystemLoaderConfigDialog() {
-		super(FilesToFilesystemLoaderConfig.class);
+    public FilesToVFSLoaderConfigDialog() {
+		super(FilesToVFSLoaderConfig.class);
 		initialize();
 	}
 
@@ -67,8 +67,8 @@ public class FilesToFilesystemLoaderConfigDialog extends
 	}
 
 	@Override
-	public void setConfiguration(FilesToFilesystemLoaderConfig conf)
-			throws ConfigException {
+	public void setConfiguration(FilesToVFSLoaderConfig conf)
+			throws DPUConfigException {
 		destination.setValue(conf.getDestination());
         username.setValue(conf.getUsername());
         password.setValue(conf.getPassword());
@@ -78,9 +78,9 @@ public class FilesToFilesystemLoaderConfigDialog extends
 	}
 
 	@Override
-	public FilesToFilesystemLoaderConfig getConfiguration()
-			throws ConfigException {
-		FilesToFilesystemLoaderConfig conf = new FilesToFilesystemLoaderConfig();
+	public FilesToVFSLoaderConfig getConfiguration()
+			throws DPUConfigException {
+		FilesToVFSLoaderConfig conf = new FilesToVFSLoaderConfig();
 		conf.setDestination(destination.getValue());
         conf.setUsername(username.getValue());
         conf.setPassword(password.getValue());

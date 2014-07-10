@@ -2,8 +2,8 @@ package cz.cuni.mff.xrg.odcs.files.helper;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 
-public interface VirtualPathHelper {
-    public static final String VIRTUAL_PATH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/files/virtualPath";
+public interface VirtualPathHelper extends AutoCloseable {
+    public static final String PREDICATE_VIRTUAL_PATH = "http://linked.opendata.cz/ontology/odcs/dataunit/files/virtualPath";
 
     //    interface Entry extends FilesDataUnit.Entry {
 //        String getVirtualFilePath();
@@ -17,5 +17,6 @@ public interface VirtualPathHelper {
 //    
     String getVirtualPath(String symbolicName) throws DataUnitException;
 
-    void setVirtualPath(String symbolicName, String virtualPath) throws DataUnitException;
+    @Override
+    public void close() throws DataUnitException;
 }

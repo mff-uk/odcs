@@ -28,6 +28,7 @@
         <module>TripleGeneratorToRDFExtractor</module>
         <module>FilesToFilesRenameTransformer</module>
         <module>VirtuosoLoader</module>
+        <module>FilesToVFSLoader</module>
 	<!-- Old DPUs  -->
         <module>File_extractor</module>
         <module>File_loader</module>

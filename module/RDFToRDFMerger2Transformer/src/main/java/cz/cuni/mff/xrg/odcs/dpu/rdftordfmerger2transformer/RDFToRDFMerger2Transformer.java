@@ -11,6 +11,7 @@ import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 @DPU.AsTransformer
 public class RDFToRDFMerger2Transformer extends NonConfigurableBase {
@@ -31,6 +32,10 @@ public class RDFToRDFMerger2Transformer extends NonConfigurableBase {
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
         LOG.info(shortMessage);
         
-        ((ManagableDataUnit) rdfOutput).merge(rdfInput);
+        try {
+            ((ManagableDataUnit) rdfOutput).merge(rdfInput);
+        } catch (DataUnitException ex) {
+            throw new DPUException(ex);
+        }
     }
 }

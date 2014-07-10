@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesystemloader;
+package cz.cuni.mff.xrg.odcs.dpu.filestovfsloader;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -18,30 +18,29 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
 
-@AsLoader
-public class FilesToFilesystemLoader extends
-        ConfigurableBase<FilesToFilesystemLoaderConfig> implements
-        ConfigDialogProvider<FilesToFilesystemLoaderConfig> {
+@DPU.AsLoader
+public class FilesToVFSLoader extends
+        ConfigurableBase<FilesToVFSLoaderConfig> implements
+        ConfigDialogProvider<FilesToVFSLoaderConfig> {
     private static final Logger LOG = LoggerFactory
-            .getLogger(FilesToFilesystemLoader.class);
+            .getLogger(FilesToVFSLoader.class);
 
-    @InputDataUnit(name = "filesInput")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit filesInput;
 
-    public FilesToFilesystemLoader() {
-        super(FilesToFilesystemLoaderConfig.class);
+    public FilesToVFSLoader() {
+        super(FilesToVFSLoaderConfig.class);
     }
 
     @Override
@@ -49,14 +48,15 @@ public class FilesToFilesystemLoader extends
             InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.valueOf(config);
-        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
-        FilesDataUnit.Iteration filesIteration;
+        FilesDataUnit.FileIteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
+        
         FileSystemManager fileSystemManager = null;
         FileObject destinationFileObject  = null;
         FileSystemOptions options = null; 
@@ -85,13 +85,13 @@ public class FilesToFilesystemLoader extends
                 index++;
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry;
+                FilesDataUnit.FileEntry entry;
                 try {
                     entry = filesIteration.next();
                     FileObject inputFileObject = null;
                     FileObject outputFileObject =null;
                     try {
-                        inputFileObject= fileSystemManager.resolveFile(entry.getFilesystemURI());
+                        inputFileObject= fileSystemManager.resolveFile(entry.getFileURIString());
                         outputFileObject = destinationFileObject.resolveFile(entry.getSymbolicName());
 
                         Date start = new Date();
@@ -111,7 +111,7 @@ public class FilesToFilesystemLoader extends
                         }
                     } catch (IOException ex) {
                         dpuContext.sendMessage(
-                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                                 "Error processing " + appendNumber(index) + " file",
                                 String.valueOf(entry),
                                 ex);
@@ -133,7 +133,7 @@ public class FilesToFilesystemLoader extends
                     }
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(
-                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                             "DataUnit exception.",
                             "",
                             ex);
@@ -156,8 +156,8 @@ public class FilesToFilesystemLoader extends
     }
 
     @Override
-    public AbstractConfigDialog<FilesToFilesystemLoaderConfig> getConfigurationDialog() {
-        return new FilesToFilesystemLoaderConfigDialog();
+    public AbstractConfigDialog<FilesToVFSLoaderConfig> getConfigurationDialog() {
+        return new FilesToVFSLoaderConfigDialog();
     }
 
     private void checkCancelled(DPUContext dpuContext)

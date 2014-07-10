@@ -8,6 +8,9 @@ import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
+import eu.unifiedviews.dataunit.DataUnitException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @DPU.AsTransformer
 public class FilesToFilesMerger2Transformer extends NonConfigurableBase {
@@ -26,6 +29,10 @@ public class FilesToFilesMerger2Transformer extends NonConfigurableBase {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
         
-        ((ManagableDataUnit) filesOutput).merge(filesInput);
+        try {
+            ((ManagableDataUnit) filesOutput).merge(filesInput);
+        } catch (DataUnitException ex) {
+            throw new DPUException(ex);
+        }
     }
 }

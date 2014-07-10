@@ -1,11 +1,11 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesystemloader;
+package cz.cuni.mff.xrg.odcs.dpu.filestovfsloader;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class FilesToFilesystemLoaderConfig extends DPUConfigObjectBase {
+public class FilesToVFSLoaderConfig extends DPUConfigObjectBase {
     /**
      * 
      */
@@ -24,7 +24,7 @@ public class FilesToFilesystemLoaderConfig extends DPUConfigObjectBase {
     private String password = null;
 
     // DPUTemplateConfig must provide public non-parametric constructor
-    public FilesToFilesystemLoaderConfig() {
+    public FilesToVFSLoaderConfig() {
     }
 
     public String getDestination() {
