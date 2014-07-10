@@ -146,7 +146,7 @@ public class AnnotationsOutput implements DPUPreExecutor {
         dataUnit = context.addOutputDataUnit(type, annotation.name());
 
         LOG.debug("out: {}.{} = {}", context.getDPU().getName(), field.getName(),
-                dataUnit.getDataUnitName());
+                dataUnit.getName());
         // and set it
         return setDataUnit(field, dpuInstance, dataUnit, context);
     }

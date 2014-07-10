@@ -246,7 +246,7 @@ final class DataUnitManager {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&
-                    du.getDataUnitName().compareTo(name) == 0) {
+                    du.getName().compareTo(name) == 0) {
                 // the DPU already exist .. 
                 LOG.trace("dataUnit with name: {} type: {} already exist", name, type.toString());
                 return du;

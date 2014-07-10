@@ -140,7 +140,7 @@ public class AnnotationsInput implements DPUPreExecutor {
             String name) {
         LinkedList<ManagableDataUnit> result = new LinkedList<>();
         for (ManagableDataUnit item : candidates) {
-            if (item.getDataUnitName().compareToIgnoreCase(name) == 0) {
+            if (item.getName().compareToIgnoreCase(name) == 0) {
                 result.add(item);
             }
         }
@@ -202,7 +202,7 @@ public class AnnotationsInput implements DPUPreExecutor {
 
             LOG.debug("in: {}.{} = {}", context.getDPU().getName(), field
                     .getName(),
-                    nameMatch.getFirst().getDataUnitName());
+                    nameMatch.getFirst().getName());
 
             // use first with required name
             return setDataUnit(field, dpuInstance, nameMatch.getFirst(),
