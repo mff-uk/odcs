@@ -8,22 +8,22 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 
-import eu.unifiedviews.dataunit.RDFData;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.FilesDataUnit.Entry;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
-public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIteration {
+public class WritableFileIterationImpl implements WritableFilesDataUnit.WritableFileIteration {
+
     private RepositoryConnection connection = null;
 
     private RepositoryConnection connection2 = null;
 
     private RepositoryResult<Statement> result = null;
 
-    private RDFData backingStore = null;
+    private RDFDataUnit backingStore = null;
 
-    public FilesIterationImpl(RDFData backingStore) {
+    public WritableFileIterationImpl(RDFDataUnit backingStore) {
         this.backingStore = backingStore;
     }
 
@@ -33,14 +33,16 @@ public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIt
     }
 
     @Override
-    public Entry next() throws DataUnitException {
+    public FilesDataUnit.FileEntry next() throws DataUnitException {
         if (result == null) {
             init();
         }
         RepositoryResult<Statement> result2 = null;
         try {
             Statement statement = result.next();
-            result2 = connection2.getStatements(statement.getSubject(), connection.getValueFactory().createURI(FilesDataUnit.FILESYSTEM_URI_PREDICATE), null, false, backingStore.getContexts().toArray(new URI[0]));
+            result2 = connection2.getStatements(statement.getSubject(),
+                    connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                    null, false, backingStore.getDataGraphnames().toArray(new URI[0]));
             Statement filesytemURIStatement = result2.next();
             return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), filesytemURIStatement.getObject().stringValue());
         } catch (RepositoryException ex) {
@@ -98,21 +100,13 @@ public class FilesIterationImpl implements WritableFilesDataUnit.WritableFilesIt
     private void init() throws DataUnitException {
         if (result == null) {
             if (connection == null) {
-                try {
-                    connection = backingStore.getConnection();
-                } catch (RepositoryException ex) {
-                    throw new DataUnitException("Error when connecting to backing RDF store.", ex);
-                }
+                connection = backingStore.getConnection();
             }
             if (connection2 == null) {
-                try {
-                    connection2 = backingStore.getConnection();
-                } catch (RepositoryException ex) {
-                    throw new DataUnitException("Error when connecting to backing RDF store.", ex);
-                }
+                connection2 = backingStore.getConnection();
             }
             try {
-                result = connection.getStatements(null, connection.getValueFactory().createURI(FilesDataUnit.SYMBOLIC_NAME_PREDICATE), null, false, backingStore.getContexts().toArray(new URI[0]));
+                result = connection.getStatements(null, connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getDataGraphnames().toArray(new URI[0]));
             } catch (RepositoryException ex) {
                 throw new DataUnitException("Error obtaining file list.", ex);
             }

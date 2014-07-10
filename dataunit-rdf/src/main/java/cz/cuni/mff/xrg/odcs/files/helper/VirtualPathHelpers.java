@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.files.helper;
 
 import java.sql.Statement;
 
-import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -30,10 +29,8 @@ public abstract class VirtualPathHelpers {
             RepositoryConnection connection = null;
             RepositoryResult<Statement> repositoryResult = null;
             try {
-                connection = filesDataUnit.getRDFData().getConnection();
+                connection = filesDataUnit.getConnection();
 //                repositoryResult = connection.prepareTupleQuery(QueryLanguage.SPARQL, "SELECT WHERE { ");
-            } catch (RepositoryException ex) {
-                throw new DataUnitException("", ex);
             } finally {
                 if (repositoryResult != null) {
                     try {

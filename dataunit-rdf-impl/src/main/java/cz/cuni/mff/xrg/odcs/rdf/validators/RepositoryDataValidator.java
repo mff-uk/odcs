@@ -64,7 +64,7 @@ public class RepositoryDataValidator implements DataValidator {
      * @param input
      *            source from where are data checked if are valid.
      * @param output
-     *            target wher are valid data stored.
+     *            target where are valid data stored.
      */
     public RepositoryDataValidator(RDFDataUnit input, WritableRDFDataUnit output) {
         this.input = input;
@@ -87,7 +87,7 @@ public class RepositoryDataValidator implements DataValidator {
         RepositoryConnection connection = null;
         try {
             connection = input.getConnection();
-            tripleCount = connection.size(input.getContexts().toArray(new URI[0]));
+            tripleCount = connection.size(input.getDataGraphnames().toArray(new URI[0]));
 
             if (tripleCount == 0) {
                 isValid = true;
@@ -101,7 +101,7 @@ public class RepositoryDataValidator implements DataValidator {
                     FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
                     OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
                     RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
-                    connection.export(rdfWriter, input.getContexts().toArray(new URI[0]));
+                    connection.export(rdfWriter, input.getDataGraphnames().toArray(new URI[0]));
 
                     try (InputStreamReader fileStream = new InputStreamReader(
                             new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
@@ -109,7 +109,7 @@ public class RepositoryDataValidator implements DataValidator {
                         final StatisticalHandler handler = new StatisticalHandler(
                                 goalConnection, true);
 
-                        handler.setGraphContext(goalRepo.getWriteContext());
+                        handler.setGraphContext(goalRepo.getWriteDataGraph());
 
                         RDFParser parser = Rio.createParser(RDFFormat.N3);
                         parser.setRDFHandler(handler);

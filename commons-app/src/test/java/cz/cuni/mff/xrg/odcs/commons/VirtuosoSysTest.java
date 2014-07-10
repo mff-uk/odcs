@@ -14,6 +14,7 @@ import org.openrdf.repository.RepositoryException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * @author Jiri Tomes
@@ -32,11 +33,11 @@ public class VirtuosoSysTest extends LocalRDFRepoSysTest {
      * Basic setting before initializing test class.
      */
     @BeforeClass
-    public static void setUpLogger() throws RepositoryException {
+    public static void setUpLogger() throws RepositoryException, DataUnitException {
 
         rdfRepo = new VirtuosoRDFDataUnit(url, user, password, "", defaultGraph);
         RepositoryConnection connection = rdfRepo.getConnection();
-        connection.clear(rdfRepo.getWriteContext());
+        connection.clear(rdfRepo.getWriteDataGraph());
         connection.close();
     }
 

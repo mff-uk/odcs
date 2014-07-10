@@ -61,7 +61,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
     }
 
     @Override
-    public String getDataUnitName() {
+    public String getName() {
         return this.name;
     }
 
@@ -148,4 +148,5 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
         // TODO Recall save(directory)
         
     }
+    
 }
