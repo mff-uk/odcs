@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -144,7 +145,7 @@ class RdfDatabase {
 
             LOG.trace("executeQuery:ends");
             queryEnd = new Date();
-        } catch (QueryEvaluationException | RepositoryException | MalformedQueryException e) {
+        } catch (QueryEvaluationException | RepositoryException | DataUnitException | MalformedQueryException e) {
             // this should not happen
             LOG.error("Failed to execute check query.", e);
         } finally {
@@ -162,8 +163,8 @@ class RdfDatabase {
         String query = "select * where {?s ?p ?o} limit 1";
         TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
         CleverDataset dataSet = new CleverDataset();
-        dataSet.addDefaultGraphs(virtuosoRepository.getContexts());
-        dataSet.addNamedGraphs(virtuosoRepository.getContexts());
+        dataSet.addDefaultGraphs(virtuosoRepository.getDataGraphnames());
+        dataSet.addNamedGraphs(virtuosoRepository.getDataGraphnames());
         tupleQuery.setDataset(dataSet);
         tupleQuery.evaluate();
     }
