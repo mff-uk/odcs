@@ -81,12 +81,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
     @Override
     public void release() {
-        final File dataDir = this.rootDirHandler.asFile();
-        try {
-            FileUtils.forceDelete(dataDir);
-        } catch (IOException ex) {
-            LOG.error("Failed to delete root directory.", ex);
-        }
+        // we are ready ..
     }
 
     @Override
@@ -139,19 +134,18 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
     @Override
     public void isReleaseReady() {
-        // TODO Auto-generated method stub
-
+        // this method has no meaning for FileDataUnit
     }
     
     @Override
     public void load() {
-        // TODO Auto-generated method stub
+        // TODO Recall load(directory)
         
     }
     
     @Override
     public void store() {
-        // TODO Auto-generated method stub
+        // TODO Recall save(directory)
         
     }
 }
