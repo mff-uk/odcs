@@ -51,6 +51,13 @@
         
         <dependency>
             <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-rdf</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
+        
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-files</artifactId>
             <version>1.0.0</version>
             <type>jar</type>
