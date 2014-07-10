@@ -15,13 +15,14 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Test funcionality extaction for Virtuoso from SPARQL endpoint.
+ * Test functionality extraction for Virtuoso from SPARQL endpoint.
  *
  * @author Jiri Tomes
  */
@@ -49,7 +50,7 @@ public class SPARQLExtractorVirtuosoSysTest {
     }
 
     @Test
-    public void extractNSoud() throws RepositoryException {
+    public void extractNSoud() throws RepositoryException, DataUnitException {
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
             RDFFormat usedRDFFormat = RDFFormat.NTRIPLES;
@@ -59,7 +60,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o} limit 5000";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getWriteContext());
+            long sizeBefore = connection.size(repository.getWriteDataGraph());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -71,7 +72,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                     HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE,
                     true);
 
-            long sizeAfter = connection.size(repository.getWriteContext());
+            long sizeAfter = connection.size(repository.getWriteDataGraph());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -83,7 +84,7 @@ public class SPARQLExtractorVirtuosoSysTest {
     }
 
     //@Test
-    public void extractBigDataFromEndpoint() throws RepositoryException {
+    public void extractBigDataFromEndpoint() throws RepositoryException, DataUnitException {
 
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
@@ -92,7 +93,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "CONSTRUCT {?s ?p ?o} where {?s ?p ?o}";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getWriteContext());
+            long sizeBefore = connection.size(repository.getWriteDataGraph());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -103,7 +104,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                     .extractFromSPARQLEndpoint(endpointURL, defaultGraphUri,
                             query);
 
-            long sizeAfter = connection.size(repository.getWriteContext());
+            long sizeAfter = connection.size(repository.getWriteDataGraph());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -115,7 +116,7 @@ public class SPARQLExtractorVirtuosoSysTest {
     }
 
     @Test
-    public void extractDataFromSPARQLEndpointTest() throws RepositoryException {
+    public void extractDataFromSPARQLEndpointTest() throws RepositoryException, DataUnitException {
 
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
@@ -125,7 +126,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             String query = "construct {?s ?o ?p} where {?s ?o ?p} LIMIT 50";
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getWriteContext());
+            long sizeBefore = connection.size(repository.getWriteDataGraph());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
             virtuoso.addDefaultGraph(defaultGraphUri);
@@ -136,7 +137,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             extractor
                     .extractFromSPARQLEndpoint(endpointURL, query);
 
-            long sizeAfter = connection.size(repository.getWriteContext());
+            long sizeAfter = connection.size(repository.getWriteDataGraph());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
@@ -152,7 +153,7 @@ public class SPARQLExtractorVirtuosoSysTest {
      * for build, use only when debugging
      */
     @Test
-    public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException {
+    public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException, DataUnitException {
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
@@ -162,7 +163,7 @@ public class SPARQLExtractorVirtuosoSysTest {
             RDFFormat format = RDFFormat.N3;
 
             RepositoryConnection connection = repository.getConnection();
-            long sizeBefore = connection.size(repository.getWriteContext());
+            long sizeBefore = connection.size(repository.getWriteDataGraph());
 
             ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
 
@@ -172,7 +173,7 @@ public class SPARQLExtractorVirtuosoSysTest {
                     endpoint, query, "", "",
                     format);
 
-            long sizeAfter = connection.size(repository.getWriteContext());
+            long sizeAfter = connection.size(repository.getWriteDataGraph());
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();

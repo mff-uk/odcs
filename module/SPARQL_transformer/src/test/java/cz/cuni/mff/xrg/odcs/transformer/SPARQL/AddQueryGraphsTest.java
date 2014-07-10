@@ -14,10 +14,11 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 public class AddQueryGraphsTest {
 
-    private static WritableRDFDataUnit repository;
+    private static WritableRDFDataUnit writeRepository;
 
     private static TestEnvironment testEnvironment;
 
@@ -29,12 +30,11 @@ public class AddQueryGraphsTest {
             AddQueryGraphsTest.class);
 
     @BeforeClass
-    public static void initialize() {
+    public static void initialize() throws DataUnitException {
         testEnvironment = new TestEnvironment();
-        repository = testEnvironment.createRdfInput("LocalRepository", false);
-        GRAPH_NAME = repository.getWriteContext().stringValue();
+        writeRepository = testEnvironment.createRdfInput("LocalRepository", false);
+        GRAPH_NAME = writeRepository.getWriteDataGraph().stringValue();
         trans = new SPARQLTransformer();
-
     }
 
     @AfterClass
@@ -43,7 +43,7 @@ public class AddQueryGraphsTest {
     }
 
     @Test
-    public void addGraphToInsertDataQuery() throws RepositoryException {
+    public void addGraphToInsertDataQuery() throws RepositoryException, DataUnitException {
         String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
                 + "PREFIX ns: <http://example.org/ns#>"
                 + "INSERT DATA\n"
@@ -56,7 +56,7 @@ public class AddQueryGraphsTest {
                         + "{ GRAPH <%s> { <http://example/book1>  ns:price  42 } } ",
                 GRAPH_NAME);
 
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
@@ -65,7 +65,7 @@ public class AddQueryGraphsTest {
     }
 
     @Test
-    public void addGraphToDeleteDataQuery() throws RepositoryException {
+    public void addGraphToDeleteDataQuery() throws RepositoryException, DataUnitException {
         String originalQuery = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n"
                 + "DELETE DATA\n"
                 + "{ <http://example/book2> dc:title \"David Copperfield\" ;\n"
@@ -78,7 +78,7 @@ public class AddQueryGraphsTest {
                         + "dc:creator \"Edmund Wells\" . } }",
                 GRAPH_NAME);
 
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
@@ -87,7 +87,7 @@ public class AddQueryGraphsTest {
     }
 
     @Test
-    public void addGraphToInsertDeleteQuery() throws RepositoryException {
+    public void addGraphToInsertDeleteQuery() throws RepositoryException, DataUnitException {
         String originalQuery = "PREFIX foaf:  <http://xmlns.com/foaf/0.1/>\n"
                 + "DELETE { ?person foaf:givenName 'Bill' }\n"
                 + "INSERT { ?person foaf:givenName 'William' }\n"
@@ -102,22 +102,22 @@ public class AddQueryGraphsTest {
                         + "WHERE\n"
                         + "{ ?person foaf:givenName 'Bill' }",
                 GRAPH_NAME);
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, repository.getWriteContext());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
                 tryExecuteUpdateQuery(originalQuery));
     }
 
-    private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException {
+    private boolean tryExecuteUpdateQuery(String updateQuery) throws RepositoryException, DataUnitException {
         RepositoryConnection connection = null;
         try {
-            connection = repository.getConnection();
+            connection = writeRepository.getConnection();
 
             CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(repository.getContexts());
-            dataSet.addNamedGraphs(repository.getContexts());
-            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, repository.getWriteContext());
+            dataSet.addDefaultGraphs(writeRepository.getDataGraphnames());
+            dataSet.addNamedGraphs(writeRepository.getDataGraphnames());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, writeRepository.getWriteDataGraph());
             return true;
         } catch (RDFException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e

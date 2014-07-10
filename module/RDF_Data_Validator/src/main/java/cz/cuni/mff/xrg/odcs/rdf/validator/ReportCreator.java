@@ -17,6 +17,7 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Class responsible for creting RDF report message from given found out
@@ -72,7 +73,7 @@ public class ReportCreator {
         return prefix + "/validation/error/";
     }
 
-    private void addReports(WritableRDFDataUnit repository) {
+    private void addReports(WritableRDFDataUnit repository) throws RDFException {
 
         int count = 0;
 
@@ -94,19 +95,21 @@ public class ReportCreator {
             try {
                 connection = repository.getConnection();
                 connection.add(getSubject(count), new URIImpl("rdf:type"),
-                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getWriteContext());
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getWriteDataGraph());
                 connection.add(getSubject(count), getPredicate("subject"),
-                        getObject(sub), repository.getWriteContext());
+                        getObject(sub), repository.getWriteDataGraph());
                 connection.add(getSubject(count), getPredicate("predicate"),
-                        getObject(pred), repository.getWriteContext());
+                        getObject(pred), repository.getWriteDataGraph());
                 connection.add(getSubject(count), getPredicate("object"),
-                        getObject(obj), repository.getWriteContext());
+                        getObject(obj), repository.getWriteDataGraph());
                 connection.add(getSubject(count), getPredicate("reason"),
-                        getObject(message), repository.getWriteContext());
+                        getObject(message), repository.getWriteDataGraph());
                 connection.add(getSubject(count), getPredicate("sourceLine"),
-                        getObject(line), repository.getWriteContext());
+                        getObject(line), repository.getWriteDataGraph());
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
+            } catch ( DataUnitException e) {
+                throw new RDFException(e);
             } finally {
                 if (connection != null) {
                     try {
@@ -121,7 +124,7 @@ public class ReportCreator {
         }
     }
 
-    private void setNamespaces(RDFDataUnit repository) throws RDFException {
+    private void setNamespaces(WritableRDFDataUnit repository) throws RDFException {
         RepositoryConnection connection = null;
         try {
 
@@ -134,7 +137,7 @@ public class ReportCreator {
             connection.setNamespace("odcs-val", ODCS_VAL);
             connection.setNamespace("exec-error", EXEC_ERROR);
 
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataUnitException e) {
             final String message = "Not possible to set namespace"
                     + e.getMessage();
             LOG.debug(message);

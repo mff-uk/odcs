@@ -22,6 +22,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Extracts RDF data from SPARQL endpoint.
@@ -39,7 +40,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
      * The repository for SPARQL extractor.
      */
     @DataUnit.AsOutput(name = "output")
-    public WritableRDFDataUnit rdfDataUnit;
+    public WritableRDFDataUnit outputRdfDataUnit;
 
     public RDFExtractor() {
         super(RDFExtractorConfig.class);
@@ -101,12 +102,12 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                 LOG.info("Split construct size is null, using 50000");
             }
 
-            SPARQLExtractor extractor = new SPARQLExtractor(rdfDataUnit, context,
+            SPARQLExtractor extractor = new SPARQLExtractor(outputRdfDataUnit, context,
                     retrySize, retryTime, endpointParams);
 
             long lastrepoSize = 0;
-            connection = rdfDataUnit.getConnection();
-            lastrepoSize = connection.size(rdfDataUnit.getWriteContext());
+            connection = outputRdfDataUnit.getConnection();
+            lastrepoSize = connection.size(outputRdfDataUnit.getWriteDataGraph());
 
             if (usedSplitConstruct) {
                 if (splitConstructSize <= 0) {
@@ -128,7 +129,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
                             hostName, password, RDFFormat.NTRIPLES,
                             handlerExtractType, false);
 
-                    long newrepoSize = connection.size(rdfDataUnit.getWriteContext());
+                    long newrepoSize = connection.size(outputRdfDataUnit.getWriteDataGraph());
 
                     checkParsingProblems(useStatisticHandler, context);
                     if (lastrepoSize < newrepoSize) {
@@ -152,7 +153,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
 
                 checkParsingProblems(useStatisticHandler, context);
             }
-            final long triplesCount = connection.size(rdfDataUnit.getWriteContext());
+            final long triplesCount = connection.size(outputRdfDataUnit.getWriteDataGraph());
 
             String tripleInfoMessage = String.format(
                     "Extracted %s triples from SPARQL endpoint %s",
@@ -175,6 +176,11 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
         } catch (RDFException ex) {
             LOG.debug("RDFException", ex);
             context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
+                    + ex.getMessage());
+            throw new DPUException(ex);
+        } catch (DataUnitException ex) {
+            LOG.debug("DataUnitException", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, "DataUnitException: "
                     + ex.getMessage());
             throw new DPUException(ex);
         } finally {

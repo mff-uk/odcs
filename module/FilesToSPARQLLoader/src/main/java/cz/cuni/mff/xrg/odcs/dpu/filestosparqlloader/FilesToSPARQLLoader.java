@@ -55,9 +55,9 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             i++;
         }
 
-        FilesDataUnit.Iteration filesIteration;
+        FilesDataUnit.FileIteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
@@ -76,7 +76,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry;
+                FilesDataUnit.FileEntry entry;
                 try {
                     entry = filesIteration.next();
                     RepositoryConnection connection = null;
@@ -94,7 +94,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                             LOG.debug("Processing {} file {}", appendNumber(index), entry);
                         }
                         
-                        loader.load(new File(java.net.URI.create(entry.getFilesystemURI())), null, null, rdfInserter);
+                        loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, null, rdfInserter);
 
                         if (dpuContext.isDebugging()) {
                             LOG.debug("Processed {} file in {}s", appendNumber(index), (System.currentTimeMillis() - start.getTime()) / 1000);

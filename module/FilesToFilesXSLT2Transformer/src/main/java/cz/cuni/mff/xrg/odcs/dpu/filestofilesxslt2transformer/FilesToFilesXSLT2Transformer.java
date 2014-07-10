@@ -72,9 +72,9 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
         dpuContext.sendMessage(DPUContext.MessageType.INFO, "Stylesheet was compiled successully");
 
-        FilesDataUnit.Iteration filesIteration;
+        FilesDataUnit.FileIteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
@@ -85,7 +85,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry;
+                FilesDataUnit.FileEntry entry;
                 try {
                     entry = filesIteration.next();
 
@@ -93,7 +93,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
                     String outputFilename = filesOutput.createFile(inSymbolicName);
                     File outputFile = new File(URI.create(outputFilename));
-                    File inputFile = new File(URI.create(entry.getFilesystemURI()));
+                    File inputFile = new File(URI.create(entry.getFileURIString()));
                     try {
                         index++;
 

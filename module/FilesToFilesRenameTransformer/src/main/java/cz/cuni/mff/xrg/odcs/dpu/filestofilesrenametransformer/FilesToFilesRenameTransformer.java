@@ -42,9 +42,9 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
 //        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
       dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, "");
 
-        FilesDataUnit.Iteration filesIteration;
+        FilesDataUnit.FileIteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
@@ -55,12 +55,12 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry;
+                FilesDataUnit.FileEntry entry;
                 try {
                     entry = filesIteration.next();
                     index++;
 
-                    filesOutput.addExistingFile( entry.getSymbolicName() + ".ttl", entry.getFilesystemURI());
+                    filesOutput.addExistingFile( entry.getSymbolicName() + ".ttl", entry.getFileURIString());
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(

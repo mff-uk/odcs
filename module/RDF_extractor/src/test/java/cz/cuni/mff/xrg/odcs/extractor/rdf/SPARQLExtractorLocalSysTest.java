@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,13 +12,13 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Test extraction funcionality for Local RDF storage from SPARQL endpoint.
+ * Test extraction functionality for Local RDF storage from SPARQL endpoint.
  *
  * @author Jiri Tomes
  */
@@ -42,7 +41,7 @@ public class SPARQLExtractorLocalSysTest {
     }
 
     //@Test
-    public void extractBigDataFromEndpoint() throws RepositoryException {
+    public void extractBigDataFromEndpoint() throws RepositoryException, DataUnitException {
 
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
@@ -53,7 +52,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getWriteContext());
+                long sizeBefore = connection.size(repository.getWriteDataGraph());
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
 
@@ -62,7 +61,7 @@ public class SPARQLExtractorLocalSysTest {
 
                 extractor.extractFromSPARQLEndpoint(endpointURL, query);
 
-                long sizeAfter = connection.size(repository.getWriteContext());
+                long sizeAfter = connection.size(repository.getWriteDataGraph());
 
                 assertTrue(sizeBefore < sizeAfter);
             } catch (RDFException ex) {
@@ -83,7 +82,7 @@ public class SPARQLExtractorLocalSysTest {
     }
 
     //@Test
-    public void extractDataFromSPARQLEndpointTest() throws RepositoryException {
+    public void extractDataFromSPARQLEndpointTest() throws RepositoryException, DataUnitException {
 
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
@@ -94,7 +93,7 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getWriteContext());
+                long sizeBefore = connection.size(repository.getWriteDataGraph());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph(defaultGraphUri);
@@ -102,10 +101,9 @@ public class SPARQLExtractorLocalSysTest {
                 SPARQLExtractor extractor = new SPARQLExtractor(repository,
                         testEnvironment.getContext(), virtuoso);
 
-                extractor
-                        .extractFromSPARQLEndpoint(endpointURL, query);
+                extractor.extractFromSPARQLEndpoint(endpointURL, query);
 
-                long sizeAfter = connection.size(repository.getWriteContext());
+                long sizeAfter = connection.size(repository.getWriteDataGraph());
 
                 assertTrue(sizeBefore < sizeAfter);
             } catch (RDFException ex) {
@@ -128,9 +126,12 @@ public class SPARQLExtractorLocalSysTest {
     /**
      * This is not unit test, as it depends on remote server -> commented out
      * for build, use only when debugging
+     *
+     * @throws org.openrdf.repository.RepositoryException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     //@Test
-    public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException {
+    public void extractDataFromSPARQLEndpointNamePasswordTest() throws RepositoryException, DataUnitException {
         try {
             WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
             URL endpoint = new URL(QUERY_ENDPOINT.toString());
@@ -141,17 +142,16 @@ public class SPARQLExtractorLocalSysTest {
             RepositoryConnection connection = null;
             try {
                 connection = repository.getConnection();
-                long sizeBefore = connection.size(repository.getWriteContext());
+                long sizeBefore = connection.size(repository.getWriteDataGraph());
 
                 ExtractorEndpointParams virtuoso = getVirtuosoEndpoint();
                 virtuoso.addDefaultGraph("http://BigGraph");
 
                 SPARQLExtractor extractor = new SPARQLExtractor(repository,
                         testEnvironment.getContext(), virtuoso);
-                extractor.extractFromSPARQLEndpoint(
-                        endpoint, query, "", "", format);
+                extractor.extractFromSPARQLEndpoint(endpoint, query, "", "", format);
 
-                long sizeAfter = connection.size(repository.getWriteContext());
+                long sizeAfter = connection.size(repository.getWriteDataGraph());
 
                 assertTrue(sizeBefore < sizeAfter);
 

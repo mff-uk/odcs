@@ -41,17 +41,17 @@ public class FilesToFileTransformer extends NonConfigurableBase {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
-        FilesDataUnit.Iteration filesIteration = null;
+        FilesDataUnit.FileIteration filesIteration = null;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry = filesIteration.next();
+                FilesDataUnit.FileEntry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
 
                 if (dpuContext.isDebugging()) {
-                    LOG.debug("Adding symbolic name {} file URI {}", inSymbolicName, entry.getFilesystemURI());
+                    LOG.debug("Adding symbolic name {} file URI {}", inSymbolicName, entry.getFileURIString());
                 }
 
                 Path p = FileSystems.getDefault().getPath(inSymbolicName);
@@ -61,7 +61,7 @@ public class FilesToFileTransformer extends NonConfigurableBase {
                     String next = it.next().toString();
                     boolean lastOne = !it.hasNext();
                     if (lastOne) {
-                        FileHandler result = currentHandler.addExistingFile(new File(URI.create(entry.getFilesystemURI())), new OptionsAdd(true, false));
+                        FileHandler result = currentHandler.addExistingFile(new File(URI.create(entry.getFileURIString())), new OptionsAdd(true, false));
                         if (dpuContext.isDebugging()) {
                             LOG.debug("Added {}", result.getRootedPath());
                         }

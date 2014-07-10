@@ -51,7 +51,7 @@ public class LocalRdfTest {
             WritableRDFDataUnit output = env.createRdfOutput("output", false);
             connection = output.getConnection();
             env.run(extractor);
-            long actualSize = connection.size(output.getWriteContext());
+            long actualSize = connection.size(output.getWriteDataGraph());
             // verify result
             assertEquals(expectedSize, actualSize);
         } finally {

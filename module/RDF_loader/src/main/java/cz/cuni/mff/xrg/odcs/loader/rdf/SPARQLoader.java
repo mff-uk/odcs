@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
@@ -59,7 +60,7 @@ public class SPARQLoader {
      */
     private static final String encode = "UTF-8";
 
-    private RDFDataUnit rdfDataUnit;
+    private RDFDataUnit inputRdfDataUnit;
 
     private RDFLoaderConfig config;
 
@@ -95,7 +96,7 @@ public class SPARQLoader {
      */
     public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
             RDFLoaderConfig config) {
-        this.rdfDataUnit = rdfDataUnit;
+        this.inputRdfDataUnit = rdfDataUnit;
         this.context = context;
         this.config = config;
     }
@@ -598,12 +599,12 @@ public class SPARQLoader {
         RepositoryConnection connection = null;
         try {
             logger.debug("Phase 1 Started: data is serialized to RDF/XML file");
-            connection = rdfDataUnit.getConnection();
+            connection = inputRdfDataUnit.getConnection();
 
             GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
             CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
-            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
+            dataSet.addDefaultGraphs(inputRdfDataUnit.getDataGraphnames());
+            dataSet.addNamedGraphs(inputRdfDataUnit.getDataGraphnames());
             graphQuery.setDataset(dataSet);
             logger.debug("Dataset: {}", dataSet);
 
@@ -612,7 +613,7 @@ public class SPARQLoader {
 
             logger.debug("Phase 1 Finished: data is serialized to RDF/XML file");
 
-        } catch (RepositoryException | QueryEvaluationException | RDFHandlerException | MalformedQueryException ex) {
+        } catch (RepositoryException | DataUnitException | QueryEvaluationException | RDFHandlerException | MalformedQueryException ex) {
             throw new DPUNonFatalException(ex);
         } finally {
             if (connection != null) {

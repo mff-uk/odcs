@@ -67,7 +67,8 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
     }
 
     private void makeValidationReport(DataValidator validator,
-            String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
+            String graphName, DPUContext context, boolean stopExecution)
+            throws CannotOverwriteFileException, RDFException, RepositoryException, DataUnitException {
 
         context.sendMessage(DPUContext.MessageType.INFO,
                 "Start creating VALIDATION REPORT", String.format(
@@ -87,7 +88,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
             RepositoryConnection connection = null;
             try {
                 connection = dataOutput.getConnection();
-                connection.clear(dataOutput.getWriteContext());
+                connection.clear(dataOutput.getWriteDataGraph());
             } catch (RepositoryException ex) {
                 LOG.warn("Error", ex);
             } finally {
@@ -109,7 +110,6 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
      * Execute the RDF Data validator.
      *
      * @param context RDF Data validator context.
-     * @throws DataUnitException if this DPU fails.
      * @throws DPUException if this DPU fails.
      */
     @Override
@@ -123,7 +123,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
             DataValidator validator = new RepositoryDataValidator(dataInput,
                     dataOutput);
-            String graphName = dataInput.getContexts().toString();
+            String graphName = dataInput.getDataGraphnames().toString();
 
             if (sometimesOutput) {
                 if (!validator.areDataValid()) {

@@ -47,9 +47,9 @@ public class Test {
             Resource subject = factory.createURI("http://my.subject");
             URI predicate = factory.createURI("http://my.predicate");
             Value object = factory.createLiteral("My company s.r.o. \"HOME\"");
-            connection.add(subject, predicate, object, input.getWriteContext());
+            connection.add(subject, predicate, object, input.getWriteDataGraph());
             connection.commit();
-            long expectedSize = connection.size(input.getWriteContext());
+            long expectedSize = connection.size(input.getWriteDataGraph());
             env.run(fileLoader);
             RDFFormat format = Rio.getParserFormatForFileName(tempFile.getName());
 

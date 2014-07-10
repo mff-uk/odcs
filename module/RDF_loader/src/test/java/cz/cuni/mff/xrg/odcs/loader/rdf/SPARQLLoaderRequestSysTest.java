@@ -22,6 +22,7 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * @author Jiri Tomes
@@ -54,7 +55,7 @@ public class SPARQLLoaderRequestSysTest {
     }
 
     private void loadToEndpoint(LoaderEndpointParams params,
-            String defaultGraphURI) throws RepositoryException {
+            String defaultGraphURI) throws RepositoryException, DataUnitException {
         WritableRDFDataUnit repository = testEnvironment.createRdfInput("testInnn", false);
         RepositoryConnection connection = repository.getConnection();
         ValueFactory factory = connection.getValueFactory();
@@ -67,7 +68,7 @@ public class SPARQLLoaderRequestSysTest {
 
             Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
-            connection.add(subject, predicate, object, repository.getWriteContext());
+            connection.add(subject, predicate, object, repository.getWriteDataGraph());
         }
         RDFLoaderConfig c = new RDFLoaderConfig();
         c.setEndpointParams(params);
@@ -93,7 +94,7 @@ public class SPARQLLoaderRequestSysTest {
     }
 
     @Test
-    public void POSTEncodeTest() throws RepositoryException {
+    public void POSTEncodeTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "using-graph-uri";
 

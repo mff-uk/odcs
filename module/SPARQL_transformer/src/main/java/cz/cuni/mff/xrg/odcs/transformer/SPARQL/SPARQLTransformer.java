@@ -32,7 +32,6 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 
@@ -87,13 +86,13 @@ public class SPARQLTransformer
         super(SPARQLTransformerConfig.class);
     }
 
-    private Dataset createGraphDataSet(List<RDFDataUnit> inputs) {
+    private Dataset createGraphDataSet(List<RDFDataUnit> inputs) throws DataUnitException {
         CleverDataset dataSet = new CleverDataset();
 
         for (RDFDataUnit repository : inputs) {
             if (repository != null) {
-                dataSet.addDefaultGraphs(repository.getContexts());
-                dataSet.addNamedGraphs(repository.getContexts());
+                dataSet.addDefaultGraphs(repository.getDataGraphnames());
+                dataSet.addNamedGraphs(repository.getDataGraphnames());
             }
         }
         return dataSet;
@@ -194,7 +193,7 @@ public class SPARQLTransformer
                     try {
                         connectionInput = intputDataUnit.getConnection();
                         graph = executeConstructQuery(connectionInput, constructQuery, dataSet);
-                    } catch (RepositoryException | DataUnitException ex) {
+                    } catch ( DataUnitException ex) {
                         LOG.error("Could not add triples from graph", ex);
                     } finally {
                         if (connectionInput != null) {
@@ -210,8 +209,8 @@ public class SPARQLTransformer
                         RepositoryConnection connection = null;
                         try {
                             connection = outputDataUnit.getConnection();
-                            connection.add(graph, outputDataUnit.getWriteContext());
-                        } catch (RepositoryException ex) {
+                            connection.add(graph, outputDataUnit.getWriteDataGraph());
+                        } catch (RepositoryException | DataUnitException ex) {
                             LOG.error("Could not add triples from graph", ex);
 
                         } finally {
@@ -256,15 +255,15 @@ public class SPARQLTransformer
 //					TODO michal.klempa this should not be needed anymore
 //					if (needRepository) {
                     CleverDataset dataset = new CleverDataset();
-                    dataset.addDefaultGraph(outputDataUnit.getWriteContext());
-                    dataset.addNamedGraph(outputDataUnit.getWriteContext());
+                    dataset.addDefaultGraph(outputDataUnit.getWriteDataGraph());
+                    dataset.addNamedGraph(outputDataUnit.getWriteDataGraph());
 
                     RepositoryConnection connection = null;
                     try {
                         connection = outputDataUnit.getConnection();
-                        executeSPARQLUpdateQuery(connection, replacedUpdateQuery, dataset, outputDataUnit.getWriteContext());
+                        executeSPARQLUpdateQuery(connection, replacedUpdateQuery, dataset, outputDataUnit.getWriteDataGraph());
 
-                    } catch (RepositoryException ex) {
+                    } catch (DataUnitException ex) {
                         LOG.error("Could not add triples from graph", ex);
 
                     } finally {
@@ -272,7 +271,8 @@ public class SPARQLTransformer
                             try {
                                 connection.close();
                             } catch (RepositoryException ex) {
-                                context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                                context.sendMessage(DPUContext.MessageType.WARNING,
+                                        ex.getMessage(), ex.fillInStackTrace().toString());
                             }
                         }
                     }
@@ -284,7 +284,7 @@ public class SPARQLTransformer
 //					}
                 }
 
-            } catch (RDFDataUnitException ex) {
+            } catch (DataUnitException ex) {
                 context.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex
                         .fillInStackTrace().toString());
 //				TODO michal.klempa this should not be needed anymore
@@ -296,13 +296,15 @@ public class SPARQLTransformer
         RepositoryConnection connection = null;
         try {
             connection = intputDataUnit.getConnection();
-            final long beforeTriplesCount = connection.size(intputDataUnit.getContexts().toArray(new URI[0]));
-            final long afterTriplesCount = connection.size(outputDataUnit.getWriteContext());
+            final long beforeTriplesCount = connection.size(intputDataUnit.getDataGraphnames().toArray(new URI[0]));
+            final long afterTriplesCount = connection.size(outputDataUnit.getWriteDataGraph());
             LOG.info("Transformed thanks {} SPARQL queries {} triples into {}",
                     queryCount, beforeTriplesCount, afterTriplesCount);
         } catch (RepositoryException e) {
             context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
+        } catch (DataUnitException ex) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "DataUnit exception " + ex.getMessage(), ex.fillInStackTrace().toString());
         } finally {
             if (connection != null) {
                 try {
@@ -316,7 +318,7 @@ public class SPARQLTransformer
     }
 
     //	TODO michal.klempa this should not be needed anymore
-    private void prepareRepository(List<RDFDataUnit> inputs) {
+    private void prepareRepository(List<RDFDataUnit> inputs) throws DataUnitException {
         for (RDFDataUnit input : inputs) {
             outputDataUnit.addAll(input);
         }

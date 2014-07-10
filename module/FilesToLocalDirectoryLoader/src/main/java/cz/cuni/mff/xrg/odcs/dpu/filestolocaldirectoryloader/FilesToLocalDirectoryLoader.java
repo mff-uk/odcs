@@ -44,9 +44,9 @@ public class FilesToLocalDirectoryLoader extends
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
-        FilesDataUnit.Iteration filesIteration;
+        FilesDataUnit.FileIteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
@@ -68,10 +68,10 @@ public class FilesToLocalDirectoryLoader extends
                 index++;
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.Entry entry;
+                FilesDataUnit.FileEntry entry;
                 try {
                     entry = filesIteration.next();
-                    Path inputPath = new File(URI.create(entry.getFilesystemURI())).toPath();
+                    Path inputPath = new File(URI.create(entry.getFileURIString())).toPath();
                     Path outputPath = new File(destinationAbsolutePath + '/'
                             + entry.getSymbolicName()).toPath();
                     try {

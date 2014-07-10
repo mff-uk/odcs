@@ -26,13 +26,14 @@ import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
+import eu.unifiedviews.dataunit.DataUnitException;
 import java.io.FileNotFoundException;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.UnsupportedRDFormatException;
 
 /**
  * Loads RDF data into file.
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -48,7 +49,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
      * The repository for file loader.
      */
     @DataUnit.AsInput(name = "input")
-    public RDFDataUnit rdfDataUnit;
+    public RDFDataUnit inputDataUnit;
 
     @DataUnit.AsOutput(name = "validationDataUnit", description = "Never connect any data to this unit please!")
     public WritableRDFDataUnit validationDataUnit;
@@ -62,11 +63,9 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
     /**
      * Execute the file loader.
-     * 
-     * @param context
-     *            File loader context.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context File loader context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context) throws DPUException {
@@ -79,7 +78,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
 
         if (validateDataBefore) {
             DataValidator dataValidator = new RepositoryDataValidator(
-                    rdfDataUnit, validationDataUnit);
+                    inputDataUnit, validationDataUnit);
 
             if (!dataValidator.areDataValid()) {
                 final String message = "RDF Data to load are not valid - LOADING to File FAIL";
@@ -100,8 +99,8 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
         RepositoryConnection connection = null;
         long triplesCount = 0;
         try {
-            connection = rdfDataUnit.getConnection();
-            triplesCount = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
+            connection = inputDataUnit.getConnection();
+            triplesCount = connection.size(inputDataUnit.getDataGraphnames().toArray(new URI[0]));
             FileOutputStream out = new FileOutputStream(filePath);
             OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
             File file = new File(filePath);
@@ -114,11 +113,14 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
             }
 
             RDFWriter rdfWriter = Rio.createWriter(format, os);
-            connection.export(rdfWriter, rdfDataUnit.getContexts().toArray(new URI[0]));
+            connection.export(rdfWriter, inputDataUnit.getDataGraphnames().toArray(new URI[0]));
 
         } catch (RepositoryException e) {
             context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
+        } catch (DataUnitException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR,
+                    "DataUnit exception" + e.getMessage(), e.fillInStackTrace().toString());
         } catch (FileNotFoundException | RDFHandlerException | UnsupportedRDFormatException ex) {
             context.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());
@@ -135,14 +137,19 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
         logger.info("Loading {} triples", triplesCount);
 
         if (config.isPenetrable()) {
-            inputShadow.addAll(rdfDataUnit);
+            try {
+                inputShadow.addAll(inputDataUnit);
+            } catch (DataUnitException e) {
+                context.sendMessage(DPUContext.MessageType.ERROR,
+                        "DataUnit exception" + e.getMessage(), e.fillInStackTrace().toString());
+            }
         }
 
     }
 
     /**
      * Returns the configuration dialogue for file loader.
-     * 
+     *
      * @return the configuration dialogue for file loader.
      */
     @Override

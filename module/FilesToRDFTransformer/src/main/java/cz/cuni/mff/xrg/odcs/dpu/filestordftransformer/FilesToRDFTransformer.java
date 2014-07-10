@@ -15,13 +15,15 @@ import org.openrdf.rio.helpers.ParseErrorLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
@@ -51,7 +53,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
         RepositoryConnection connection = null;
         try {
-            FilesDataUnit.Iteration filesIteration = filesInput.getFiles();
+            FilesDataUnit.FileIteration filesIteration = filesInput.getFileIteration();
 
             if (!filesIteration.hasNext()) {
                 return;
@@ -61,24 +63,25 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
                 connection = rdfOutput.getConnection();
 
                 RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection, config.getCommitSize(), dpuContext);
-                rdfInserter.enforceContext(rdfOutput.getWriteContext());
+                rdfInserter.enforceContext(rdfOutput.getWriteDataGraph());
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
 
-                FilesDataUnit.Entry entry = filesIteration.next();
+                FilesDataUnit.FileEntry entry = filesIteration.next();
                 try {
                     if (dpuContext.isDebugging()) {
-                        LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
+                        LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFileURIString());
                     }
 //                    ParseErrorCollector parseErrorCollector= new ParseErrorCollector();
                     
-                    loader.load(new File(URI.create(entry.getFilesystemURI())), null, Rio.getParserFormatForFileName(entry.getSymbolicName()), rdfInserter, new ParseErrorLogger());
+                    loader.load(new File(URI.create(entry.getFileURIString())), null, Rio.getParserFormatForFileName(entry.getSymbolicName()), rdfInserter, new ParseErrorLogger());
 
                     if (dpuContext.isDebugging()) {
-                        LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI());
+                        LOG.debug("Finished extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFileURIString());
                     }
                 } catch (RDFHandlerException | RDFParseException | IOException ex) {
-                    dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when extracting.", "Symbolic name " + entry.getSymbolicName() + " path URI " + entry.getFilesystemURI(), ex);
+                    dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when extracting.",
+                            "Symbolic name " + entry.getSymbolicName() + " path URI " + entry.getFileURIString(), ex);
                 } finally {
                     if (connection != null) {
                         try {
@@ -90,7 +93,6 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
                 }
             }
         } catch (DataUnitException ex) {
-        } catch (RepositoryException ex) {
             dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when extracting.", "", ex);
         } finally {
             if (connection != null) {

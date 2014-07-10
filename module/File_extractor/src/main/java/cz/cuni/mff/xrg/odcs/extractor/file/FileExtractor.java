@@ -39,11 +39,11 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
-
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Extracts RDF data from a file.
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
@@ -59,7 +59,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
      * The repository for file extractor.
      */
     @DataUnit.AsOutput(name = "output")
-    public WritableRDFDataUnit rdfDataUnit;
+    public WritableRDFDataUnit writableRdfDataUnit;
 
     public FileExtractor() {
         super(FileExtractorConfig.class);
@@ -67,11 +67,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     /**
      * Execute the file extractor.
-     * 
-     * @param context
-     *            File extractor context.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context File extractor context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context) throws DPUException {
@@ -91,7 +89,6 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         RDFFormatType formatType = config.getRDFFormatValue();
         final RDFFormat format = RDFFormatType.getRDFFormatByType(formatType);
 
-
         LOG.debug("extractType: {}", extractType);
         LOG.debug("formatType: {}", formatType);
         LOG.debug("path: {}", path);
@@ -102,7 +99,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         long triplesCount = 0;
         try {
             extractFromFile(extractType, format, path, fileSuffix,
-                    baseURI, onlyThisSuffix, handlerExtractType, rdfDataUnit, context);
+                    baseURI, onlyThisSuffix, handlerExtractType, writableRdfDataUnit, context);
 
             if (useStatisticHandler && StatisticalHandler.hasParsingProblems()) {
 
@@ -115,20 +112,23 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                         problems);
                 RepositoryConnection connection = null;
                 try {
-                    connection = rdfDataUnit.getConnection();
-                    triplesCount = connection.size(rdfDataUnit.getWriteContext());
+                    connection = writableRdfDataUnit.getConnection();
+                    triplesCount = connection.size(writableRdfDataUnit.getWriteDataGraph());
                     LOG.info("Extracted {} triples", triplesCount);
+                } catch (DataUnitException ex) {
+                    throw new DPUException(ex);
                 } finally {
                     if (connection != null) {
                         try {
                             connection.close();
                         } catch (RepositoryException ex) {
-                            context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                            context.sendMessage(DPUContext.MessageType.WARNING,
+                                    ex.getMessage(), ex.fillInStackTrace().toString());
                         }
                     }
                 }
             }
-        } catch (RDFException | RepositoryException e) {
+        } catch (RepositoryException | DataUnitException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, e.getMessage(), e
                     .fillInStackTrace().toString());
         }
@@ -179,7 +179,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     /**
      * Returns the configuration dialogue for File extractor.
-     * 
+     *
      * @return the configuration dialogue for File extractor.
      */
     @Override
@@ -189,9 +189,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void parseFileUsingHandler(TripleCountHandler handler,
             RDFFormat fileFormat,
-            InputStreamReader is, String baseURI) throws RDFException {
+            InputStreamReader is, String baseURI) throws RDFException, DataUnitException {
 
-        handler.setGraphContext(rdfDataUnit.getWriteContext());
+        handler.setGraphContext(writableRdfDataUnit.getWriteDataGraph());
         RDFParser parser = getRDFParser(fileFormat, handler);
 
         try {
@@ -203,7 +203,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void parseFileUsingStandardHandler(RDFFormat fileFormat,
             InputStreamReader is, String baseURI,
-            RepositoryConnection connection) throws RDFException {
+            RepositoryConnection connection) throws RDFException, DataUnitException {
 
         TripleCountHandler handler = new TripleCountHandler(connection);
         parseFileUsingHandler(handler, fileFormat, is, baseURI);
@@ -211,7 +211,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void parseFileUsingStatisticalHandler(RDFFormat fileFormat,
             InputStreamReader is, String baseURI,
-            RepositoryConnection connection, boolean failWhenErrors) throws RDFException {
+            RepositoryConnection connection, boolean failWhenErrors) throws RDFException, DataUnitException {
 
         StatisticalHandler handler = new StatisticalHandler(connection);
         parseFileUsingHandler(handler, fileFormat, is, baseURI);
@@ -228,7 +228,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void extractDataFileFromHTTPSource(String path, RDFFormat format,
             String baseURI,
-            HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context) throws RDFException {
+            HandlerExtractType handlerExtractType, RDFDataUnit repo, DPUContext context)
+            throws RDFException, DataUnitException {
+
         URL urlPath;
         try {
             urlPath = new URL(path);
@@ -284,7 +286,8 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
 
     private void addFileToRepository(RDFFormat fileFormat, File dataFile,
             String baseURI,
-            HandlerExtractType handlerExtractType, RepositoryConnection connection, Resource... graphs) throws RDFException {
+            HandlerExtractType handlerExtractType, RepositoryConnection connection, Resource... graphs)
+            throws RDFException, DataUnitException {
 
         //in case that RDF format is AUTO or not fixed.
         if (fileFormat == null) {
@@ -311,7 +314,6 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             }
 
             //connection.commit();
-
         } catch (IOException ex) {
             LOG.debug(ex.getMessage(), ex);
             throw new RDFException("IO Exception: " + ex.getMessage(), ex);
@@ -347,7 +349,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             String baseURI,
             HandlerExtractType handlerExtractType, boolean skipFiles, RepositoryConnection connection,
             Resource... graphs)
-            throws RDFException {
+            throws RDFException, DataUnitException {
 
         if (files == null) {
             return; // nothing to add
@@ -360,19 +362,16 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 addFileToRepository(format, nextFile, baseURI,
                         handlerExtractType, connection, graphs);
 
-            } catch (RDFException e) {
-
-                if (skipFiles) {
-                    final String message = String.format(
-                            "RDF data from file <%s> was skiped", nextFile
-                                    .getAbsolutePath());
-                    LOG.error(message);
-
-                } else {
-                    throw new RDFException(e.getMessage(), e);
+            } catch (DataUnitException e) {
+                if (!skipFiles) {
+                    throw e;
                 }
-
             }
+            final String message = String.format(
+                    "RDF data from file <%s> was skiped", nextFile
+                    .getAbsolutePath());
+            LOG.error(message);
+
         }
     }
 
@@ -390,10 +389,10 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 connection.begin();
                 addFilesInDirectoryToRepository(format, files, baseURI,
                         handlerExtractType, skipFiles, connection,
-                        repo.getWriteContext());
+                        repo.getWriteDataGraph());
 
                 connection.commit();
-            } catch (RepositoryException e) {
+            } catch (RepositoryException | DataUnitException e) {
                 throw new RDFException(e.getMessage(), e);
             } finally {
                 if (connection != null) {
@@ -407,43 +406,32 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
         } else {
             throw new RDFException(
                     "Path to directory \"" + dirFile.getAbsolutePath()
-                            + "\" doesnt exist");
+                    + "\" doesnt exist");
         }
     }
 
     /**
      * Extract RDF triples from RDF file to repository.
-     * 
-     * @param extractType
-     *            One of defined enum type for extraction data
-     *            from file.
-     * @param format
-     *            One of RDFFormat value for parsing triples, if
-     *            value is null RDFFormat is selected by
-     *            filename.
-     * @param path
-     *            String path to file/directory
-     * @param suffix
-     *            String suffix of fileName (example: ".ttl",
-     *            ".xml", etc)
-     * @param baseURI
-     *            String name of defined used URI
-     * @param useSuffix
-     *            boolean value, if extract files only with
-     *            defined suffix or not.
-     * @param handlerExtractType
-     *            Possibilies how to choose handler for data
-     *            extraction and how to solve finded problems
-     *            with no valid data.
-     * @throws RDFException
-     *             when extraction fail.
+     *
+     * @param extractType One of defined enum type for extraction data from
+     * file.
+     * @param format One of RDFFormat value for parsing triples, if value is
+     * null RDFFormat is selected by filename.
+     * @param path String path to file/directory
+     * @param suffix String suffix of fileName (example: ".ttl", ".xml", etc)
+     * @param baseURI String name of defined used URI
+     * @param useSuffix boolean value, if extract files only with defined suffix
+     * or not.
+     * @param handlerExtractType Possibilities how to choose handler for data
+     * extraction and how to solve found problems with no valid data.
+     * @throws RDFException when extraction fail.
      */
     public void extractFromFile(FileExtractType extractType,
             RDFFormat format,
             String path, String suffix,
             String baseURI, boolean useSuffix,
             HandlerExtractType handlerExtractType, WritableRDFDataUnit repo, DPUContext context)
-            throws RDFException {
+            throws RDFException, DataUnitException {
 
         ParamController.testNullParameter(path,
                 "Mandatory target path in extractor is null.");
@@ -484,9 +472,9 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 connection.begin();
                 addFileToRepository(format, dirFile, baseURI,
                         handlerExtractType,
-                        connection, repo.getWriteContext());
+                        connection, repo.getWriteDataGraph());
                 connection.commit();
-            } catch (RepositoryException e) {
+            } catch (RepositoryException | DataUnitException e) {
                 throw new RDFException(e.getMessage(), e);
             } finally {
                 if (connection != null) {

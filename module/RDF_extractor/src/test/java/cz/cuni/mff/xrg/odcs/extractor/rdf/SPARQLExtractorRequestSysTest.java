@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * @author Jiri Tomes
@@ -53,7 +53,7 @@ public class SPARQLExtractorRequestSysTest {
         return environment.getContext();
     }
 
-    private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException {
+    private void extractFromEndpoint(ExtractorEndpointParams params) throws RepositoryException, DataUnitException {
         WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         URL endpoint = getEndpoint();
         String query = String.format(
@@ -66,7 +66,7 @@ public class SPARQLExtractorRequestSysTest {
                     getTestContext(), params);
             extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
-            assertEquals(connection.size(repository.getWriteContext()), EXTRACTED_TRIPLES);
+            assertEquals(connection.size(repository.getWriteDataGraph()), EXTRACTED_TRIPLES);
         } catch (RDFException ex) {
             fail(ex.getMessage());
         } finally {
@@ -86,7 +86,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void GetSimpleTest() throws RepositoryException {
+    public void GetSimpleTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "";
         String namedGraphParam = "";
@@ -99,7 +99,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void GetDefaultGraphParamTest() throws RepositoryException {
+    public void GetDefaultGraphParamTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "default-graph-uri";
         String namedGraphParam = "";
@@ -114,7 +114,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void GetAllGraphParamTest() throws RepositoryException {
+    public void GetAllGraphParamTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "default-graph-uri";
         String namedGraphParam = "named-graph-uri";
@@ -130,7 +130,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void POSTEncodeSimpleTest() throws RepositoryException {
+    public void POSTEncodeSimpleTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "";
         String namedGraphParam = "";
@@ -143,7 +143,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void POSTEncodeDefaultGraphParamTest() throws RepositoryException {
+    public void POSTEncodeDefaultGraphParamTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "default-graph-uri";
         String namedGraphParam = "";
@@ -158,7 +158,7 @@ public class SPARQLExtractorRequestSysTest {
     }
 
     @Test
-    public void POSTEncodeAllGraphParamTest() throws RepositoryException {
+    public void POSTEncodeAllGraphParamTest() throws RepositoryException, DataUnitException {
         String graphParam = "query";
         String defaultGraphParam = "default-graph-uri";
         String namedGraphParam = "named-graph-uri";

@@ -31,15 +31,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.module.utils.DataUnitUtils;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Simple XSLT Extractor
@@ -72,7 +73,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
     }
 
     @Override
-    public void execute(DPUContext context) {
+    public void execute(DPUContext context) throws DPUException {
         //inputs (sample config file is in the file module/Silk_Linker/be-sameAs.xml)
 
         //get Silk conf stored in String (from textarea)
@@ -245,12 +246,16 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection = outputConfirmed.getConnection();
             String baseURI = "";
-            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getWriteContext());
+            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getWriteDataGraph());
 
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
+        } catch (DataUnitException ex) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "DataUnitException: "
+                    + ex.getMessage());
+            throw new DPUException(ex);
         } finally {
             if (connection != null) {
                 try {
@@ -276,11 +281,15 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection2 = outputToVerify.getConnection();
             String baseURI = "";
-            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getWriteContext());
+            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getWriteDataGraph());
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
                     + ex.getMessage());
+        } catch (DataUnitException ex) {
+            context.sendMessage(DPUContext.MessageType.ERROR, "DataUnitException: "
+                    + ex.getMessage());
+            throw new DPUException(ex);
         } finally {
             if (connection != null) {
                 try {

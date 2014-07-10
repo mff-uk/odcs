@@ -15,6 +15,7 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 @DPU.AsExtractor
 public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGeneratorToRDFExtractorConfig> implements ConfigDialogProvider<TripleGeneratorToRDFExtractorConfig> {
@@ -45,7 +46,7 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
                         f.createURI("http://example.org/people/d" + String.valueOf(j++)),
                         f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
                         f.createLiteral("Alice" + String.valueOf(j++))
-                        ), rdfOutput.getWriteContext());
+                        ), rdfOutput.getWriteDataGraph());
                 if ((i % 25000) == 0) {
                     connection.commit();
                     dpuContext.sendMessage(DPUContext.MessageType.DEBUG, "Number of triples " + String.valueOf(i));
@@ -56,8 +57,9 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
                 }
             }
             connection.commit();
-            dpuContext.sendMessage(DPUContext.MessageType.DEBUG, "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteContext())));
-        } catch (RepositoryException ex) {
+            dpuContext.sendMessage(DPUContext.MessageType.DEBUG,
+                    "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteDataGraph())));
+        } catch (RepositoryException | DataUnitException ex) {
             dpuContext.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());
         } finally {

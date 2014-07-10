@@ -21,10 +21,11 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviewsdataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Test funcionality loading to SPARQL endpoint.
@@ -56,7 +57,7 @@ public class SPARQLLoaderSysTest {
     }
 
     @Test
-    public void InsertingToEndpointTest1() throws RepositoryException {
+    public void InsertingToEndpointTest1() throws RepositoryException, DataUnitException {
         fail();
         WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
         RepositoryConnection connection = repository.getConnection();
@@ -69,7 +70,7 @@ public class SPARQLLoaderSysTest {
     }
 
     @Test
-    public void InsertingToEndpointTest2() throws RepositoryException {
+    public void InsertingToEndpointTest2() throws RepositoryException, DataUnitException {
         WritableRDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
@@ -83,7 +84,7 @@ public class SPARQLLoaderSysTest {
     }
 
     @Test
-    public void InsertingToEndpointTest3() throws RepositoryException {
+    public void InsertingToEndpointTest3() throws RepositoryException, DataUnitException {
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
@@ -120,7 +121,7 @@ public class SPARQLLoaderSysTest {
     }
 
     private void tryInsertToSPARQLEndpoint(Resource subject, URI predicate,
-            Value object) throws RepositoryException {
+            Value object) throws RepositoryException, DataUnitException {
         RDFDataUnit repository = testEnvironment.createRdfFDataUnit("");
 
         RepositoryConnection connection = repository.getConnection();
