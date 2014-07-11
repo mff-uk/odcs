@@ -53,7 +53,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
         RepositoryConnection connection = null;
         try {
-            FilesDataUnit.Iteration filesIteration = filesInput.getFileIteration();
+            FilesDataUnit.Iteration filesIteration = filesInput.getIteration();
 
             if (!filesIteration.hasNext()) {
                 return;

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -30,13 +32,15 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
- *
+ * 
  * @author Jiri Tomes
  */
 public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     public static final String DATA_UNIT_STORE_GRAPH = "http://linked.opendata.cz/ontology/odcs/dataunit";
+
     public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/containsGraph";
+
     public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/writeGraph";
 
     private FileRDFMetadataExtractor fileRDFMetadataExtractor;
@@ -367,5 +371,10 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 }
             }
         }
+    }
+    
+    @Override
+    public Iteration getIteration() throws DataUnitException {
+        throw new NotImplementedException();
     }
 }

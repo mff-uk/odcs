@@ -44,7 +44,7 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
 
         FilesDataUnit.Iteration filesIteration;
         try {
-            filesIteration = filesInput.getFileIteration();
+            filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }

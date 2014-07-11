@@ -10,10 +10,9 @@ import org.openrdf.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
-public class WritableFileIterationImpl implements WritableFilesDataUnit.WritableFileIteration {
+public class WritableFileIterationImpl implements FilesDataUnit.Iteration {
 
     private RepositoryConnection connection = null;
 
@@ -25,11 +24,6 @@ public class WritableFileIterationImpl implements WritableFilesDataUnit.Writable
 
     public WritableFileIterationImpl(RDFDataUnit backingStore) {
         this.backingStore = backingStore;
-    }
-
-    @Override
-    public void remove() throws DataUnitException {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -43,7 +43,7 @@ public class FilesToFileTransformer extends NonConfigurableBase {
 
         FilesDataUnit.Iteration filesIteration = null;
         try {
-            filesIteration = filesInput.getFileIteration();
+            filesIteration = filesInput.getIteration();
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 

@@ -18,16 +18,14 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
@@ -93,7 +91,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     //FilesDataUnit interface
     @Override
-    public WritableFilesDataUnit.WritableFileIteration getFileIteration() throws DataUnitException {
+    public FilesDataUnit.Iteration getIteration() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }

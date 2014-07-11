@@ -52,7 +52,7 @@ public class FilesToVFSLoader extends
 
         FilesDataUnit.Iteration filesIteration;
         try {
-            filesIteration = filesInput.getFileIteration();
+            filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }

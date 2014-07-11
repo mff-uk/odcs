@@ -74,7 +74,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
         FilesDataUnit.Iteration filesIteration;
         try {
-            filesIteration = filesInput.getFileIteration();
+            filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
