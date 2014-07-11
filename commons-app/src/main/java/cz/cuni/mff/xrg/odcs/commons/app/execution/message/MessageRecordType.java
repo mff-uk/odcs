@@ -55,8 +55,6 @@ public enum MessageRecordType {
                 return MessageRecordType.DPU_WARNING;
             case ERROR:
                 return MessageRecordType.DPU_ERROR;
-            case TERMINATION_REQUEST:
-                return MessageRecordType.DPU_TERMINATION_REQUEST;
             default:
                 return MessageRecordType.DPU_INFO;
         }

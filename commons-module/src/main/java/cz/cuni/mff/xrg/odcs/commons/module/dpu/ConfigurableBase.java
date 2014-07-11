@@ -48,7 +48,7 @@ public abstract class ConfigurableBase<C extends DPUConfig>
     }
 
     @Override
-    public String getConf() throws DPUConfigException {
+    public String getDefaultConfiguration() throws DPUConfigException {
         return configWrap.serialize(config);
     }
 

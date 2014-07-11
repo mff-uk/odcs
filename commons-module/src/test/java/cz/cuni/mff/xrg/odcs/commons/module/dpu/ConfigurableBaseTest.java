@@ -42,7 +42,7 @@ public class ConfigurableBaseTest {
     @Test
     public void notNullInit() throws DPUConfigException {
         ConfigurableDummy configurable = new ConfigurableDummy();
-        assertNotNull(configurable.getConf());
+        assertNotNull(configurable.getDefaultConfiguration());
     }
 
     /**
@@ -53,12 +53,12 @@ public class ConfigurableBaseTest {
     @Test
     public void nullSet() throws DPUConfigException {
         ConfigurableDummy configurable = new ConfigurableDummy();
-        String oldConfig = configurable.getConf();
+        String oldConfig = configurable.getDefaultConfiguration();
         assertNotNull(oldConfig);
         String nullByteConfig = null;
         configurable.configure(nullByteConfig);
-        assertNotNull(configurable.getConf());
-        String newConfig = configurable.getConf();
+        assertNotNull(configurable.getDefaultConfiguration());
+        String newConfig = configurable.getDefaultConfiguration();
         // configuration is unchanged
         assertEquals(oldConfig, newConfig);
     }

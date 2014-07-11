@@ -159,7 +159,7 @@ public class DPUModuleManipulator {
         if (dpuObject instanceof DPUConfigurable) {
             DPUConfigurable configurable = (DPUConfigurable) dpuObject;
             try {
-                newTemplate.setRawConf(configurable.getConf());
+                newTemplate.setRawConf(configurable.getDefaultConfiguration());
             } catch (DPUConfigException e) {
                 // failed to load default configuration .. 
                 newDPUFile.delete();
