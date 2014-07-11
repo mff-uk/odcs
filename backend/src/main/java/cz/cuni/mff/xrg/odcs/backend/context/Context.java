@@ -287,9 +287,6 @@ public class Context implements DPUContext {
             case ERROR:
                 this.errorMessage = true;
                 break;
-            case TERMINATION_REQUEST:
-                this.stopExecution = true;
-                break;
             default:
         }
     }
