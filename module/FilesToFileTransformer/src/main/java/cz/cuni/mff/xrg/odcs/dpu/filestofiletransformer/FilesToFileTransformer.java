@@ -41,13 +41,13 @@ public class FilesToFileTransformer extends NonConfigurableBase {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
-        FilesDataUnit.FileIteration filesIteration = null;
+        FilesDataUnit.Iteration filesIteration = null;
         try {
             filesIteration = filesInput.getFileIteration();
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.FileEntry entry = filesIteration.next();
+                FilesDataUnit.Entry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
 
                 if (dpuContext.isDebugging()) {

@@ -55,7 +55,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             i++;
         }
 
-        FilesDataUnit.FileIteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
@@ -76,7 +76,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             while (filesIteration.hasNext()) {
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.FileEntry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     RepositoryConnection connection = null;

@@ -33,7 +33,7 @@ public class WritableFileIterationImpl implements WritableFilesDataUnit.Writable
     }
 
     @Override
-    public FilesDataUnit.FileEntry next() throws DataUnitException {
+    public FilesDataUnit.Entry next() throws DataUnitException {
         if (result == null) {
             init();
         }

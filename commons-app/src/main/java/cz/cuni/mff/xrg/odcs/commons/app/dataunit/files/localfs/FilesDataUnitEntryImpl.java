@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
-public class FilesDataUnitEntryImpl implements FilesDataUnit.FileEntry {
+public class FilesDataUnitEntryImpl implements FilesDataUnit.Entry {
     private String symbolicName;
 
     private String fileURIString;

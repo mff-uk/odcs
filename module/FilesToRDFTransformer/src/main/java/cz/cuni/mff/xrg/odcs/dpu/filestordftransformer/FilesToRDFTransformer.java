@@ -53,7 +53,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
         RepositoryConnection connection = null;
         try {
-            FilesDataUnit.FileIteration filesIteration = filesInput.getFileIteration();
+            FilesDataUnit.Iteration filesIteration = filesInput.getFileIteration();
 
             if (!filesIteration.hasNext()) {
                 return;
@@ -67,7 +67,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
 
-                FilesDataUnit.FileEntry entry = filesIteration.next();
+                FilesDataUnit.Entry entry = filesIteration.next();
                 try {
                     if (dpuContext.isDebugging()) {
                         LOG.debug("Starting extraction of file " + entry.getSymbolicName() + " path URI " + entry.getFileURIString());

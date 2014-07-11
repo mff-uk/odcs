@@ -50,7 +50,7 @@ public class FilesToVFSLoader extends
         String longMessage = String.valueOf(config);
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
-        FilesDataUnit.FileIteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
             filesIteration = filesInput.getFileIteration();
         } catch (DataUnitException ex) {
@@ -85,7 +85,7 @@ public class FilesToVFSLoader extends
                 index++;
                 checkCancelled(dpuContext);
 
-                FilesDataUnit.FileEntry entry;
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     FileObject inputFileObject = null;
