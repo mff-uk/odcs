@@ -108,7 +108,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
         view.setDisplay(dataObject);
 
         // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
 
         // return main component
         return viewObject;
