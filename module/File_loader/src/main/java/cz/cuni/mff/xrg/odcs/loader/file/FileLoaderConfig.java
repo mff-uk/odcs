@@ -112,7 +112,6 @@ public class FileLoaderConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return FilePath != null
         && RDFFileFormat != null;

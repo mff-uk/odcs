@@ -4,8 +4,6 @@ import java.io.FileNotFoundException;
 
 import com.vaadin.ui.UI;
 
-import eu.unifiedviews.dpu.config.DPUConfig;
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -14,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -31,7 +30,7 @@ public class DPURecordWrap {
     /**
      * DPU's configuration dialog.
      */
-    private AbstractConfigDialog<DPUConfig> configDialog = null;
+    private AbstractConfigDialog<?> configDialog = null;
 
     /**
      * True if represents the template.
@@ -77,7 +76,7 @@ public class DPURecordWrap {
      * @throws ModuleException
      * @throws FileNotFoundException
      */
-    public AbstractConfigDialog<DPUConfig> getDialog()
+    public AbstractConfigDialog<?> getDialog()
             throws ModuleException, FileNotFoundException, DPUWrapException {
         // load configuration dialog
         try {
@@ -169,9 +168,9 @@ public class DPURecordWrap {
         Object instance = dpuRecord.getInstance();
         // now try to load the dialog
         if (instance instanceof ConfigDialogProvider<?>) {
-            ConfigDialogProvider<DPUConfig> dialogProvider;
+            ConfigDialogProvider<?> dialogProvider;
             // 'unchecked casting' .. we check type in condition above
-            dialogProvider = (ConfigDialogProvider<DPUConfig>) instance;
+            dialogProvider = (ConfigDialogProvider<?>) instance;
             // get configuration dialog
             configDialog = dialogProvider.getConfigurationDialog();
             if (configDialog != null) {

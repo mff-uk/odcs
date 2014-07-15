@@ -81,7 +81,6 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
         return confFileLabel;
     }
 
-    @Override
     public boolean isValid() {
         return confFile != null;
     }

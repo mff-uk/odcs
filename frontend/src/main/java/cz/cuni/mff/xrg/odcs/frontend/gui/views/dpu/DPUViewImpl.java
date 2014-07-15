@@ -19,8 +19,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
-import eu.unifiedviews.dpu.config.DPUConfig;
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -37,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * @author Bogo
@@ -320,7 +319,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
         tabSheet.setSelectedTab(dataTab);
         if (selectedDpuWrap != null) {
-            AbstractConfigDialog<DPUConfig> configDialog = null;
+            AbstractConfigDialog<?> configDialog = null;
             //getting configuration dialog of selected DPU Template
             try {
                 configDialog = selectedDpuWrap.getDialog();

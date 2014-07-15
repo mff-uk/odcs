@@ -1,10 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
-import java.util.Collection;
 import java.util.List;
-
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import org.openrdf.rio.RDFFormat;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -19,9 +15,9 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import eu.unifiedviews.dpu.config.DPUConfig;
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Configuration dialog for DPU RDF File Loader.
@@ -255,7 +251,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
     /**
      * Set values from from dialog where the configuration object may be edited
-     * to configuration object implementing {@link DPUConfig} interface
+     * to configuration object  interface
      * and configuring DPU.
      * 
      * @throws DPUConfigException

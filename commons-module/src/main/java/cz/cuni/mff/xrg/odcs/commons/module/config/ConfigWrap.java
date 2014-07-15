@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,16 +22,15 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
- * Class provides functionality to serialize, deserialize and create instance of {@link DPUConfig}. {@link DPUConfig} is serialized as XML, using
+ * Class provides functionality to serialize, deserialize and create instance config which is serialized as XML, using
  * XStream.
  * 
  * @author Petyr
  * @param <C>
  */
-public class ConfigWrap<C extends DPUConfig> {
+public class ConfigWrap<C> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigWrap.class);
 
@@ -173,16 +171,6 @@ public class ConfigWrap<C extends DPUConfig> {
             }
         }
 
-        // the config does not have to implement this, so be carefull
-        try {
-            config.onDeserialize();
-        } catch (AbstractMethodError e) {
-            // the method is missing, well ignore this, just log
-            LOG.warn("The DPU does not implement abstract method onSerialize() "
-                    + "it probably does not inherit from base class. "
-                    + "The call was ignored.", e);
-        }
-
         return config;
     }
 
@@ -198,15 +186,6 @@ public class ConfigWrap<C extends DPUConfig> {
     public String serialize(C config) throws DPUConfigException {
         if (config == null) {
             return null;
-        }
-        // the config does not have to implement this, so be carefull
-        try {
-            config.onSerialize();
-        } catch (AbstractMethodError e) {
-            // the method is missing, well ignore this, just log
-            LOG.warn("The DPU does not implement abstract method onSerialize() "
-                    + "it probably does not inherit from base class. "
-                    + "The call was ignored.", e);
         }
 
         byte[] result = null;

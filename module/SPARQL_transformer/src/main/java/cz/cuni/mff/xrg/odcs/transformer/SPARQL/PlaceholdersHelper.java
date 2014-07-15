@@ -8,9 +8,10 @@ import java.util.regex.Pattern;
 
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.help.PlaceHolder;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

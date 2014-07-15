@@ -16,13 +16,12 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * @author Jiri Tomes

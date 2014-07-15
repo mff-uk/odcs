@@ -1,10 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.module.dpu;
 
+import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
+import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.DPUConfigurable;
-import eu.unifiedviews.dpu.config.DPUConfig;
-import eu.unifiedviews.dpu.DPU;
-import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 
 /**
  * Convenience base class for configurable DPUs. Every DPU may either extend
@@ -14,8 +13,8 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
  * @author Tomas Knap
  * @param <C>
  */
-public abstract class ConfigurableBase<C extends DPUConfig>
-        implements DPUConfigurable<C>, DPU {
+public abstract class ConfigurableBase<C>
+        implements DPUConfigurable, DPU {
 
     /**
      * Object configuration.
@@ -62,7 +61,7 @@ public abstract class ConfigurableBase<C extends DPUConfig>
      *             In case of invalid configuration.
      */
     public void configureDirectly(C newConfig) throws DPUConfigException {
-        if (newConfig != null && newConfig.isValid()) {
+        if (newConfig != null) {
             config = newConfig;
         } else {
             throw new DPUConfigException("Invalid configuration.");

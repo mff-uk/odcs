@@ -3,11 +3,10 @@ package cz.cuni.mff.xrg.odcs.commons.module.dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfig;
 import cz.cuni.mff.xrg.odcs.commons.module.config.ConfigWrap;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Class which should be used by DPU developer as a base class from which his
@@ -17,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
  * @param <C>
  *            Particular configuration object of the DPU
  */
-public abstract class BaseConfigDialog<C extends DPUConfig>
+public abstract class BaseConfigDialog<C>
         extends AbstractConfigDialog<C> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseConfigDialog.class);
@@ -84,19 +83,6 @@ public abstract class BaseConfigDialog<C extends DPUConfig>
         // in every case set the configuration
         setConfiguration(config);
         lastSetConfig = conf;
-
-        if (!config.isValid()) {
-            if (originalConfigNull) {
-                // newly created configuration is invalid
-                throw new DPUConfigException(
-                        "The default configuration is invalid, there is "
-                                + "probably problem in DPU's implementation.");
-            } else {
-                // notify for invalid configuration
-                throw new DPUConfigException(
-                        "Invalid configuration loaded into dialog.");
-            }
-        }
     }
 
     @Override
@@ -105,10 +91,6 @@ public abstract class BaseConfigDialog<C extends DPUConfig>
         // check for validity before saving
         if (configuration == null) {
             throw new DPUConfigException("Configuration dialog return null.");
-        }
-
-        if (!configuration.isValid()) {
-            throw new DPUConfigException("Cofiguration dialog returns invalid configuration.");
         }
 
         lastSetConfig = configWrap.serialize(getConfiguration());

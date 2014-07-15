@@ -18,7 +18,6 @@ public class SimpleTestConfig extends DPUConfigObjectBase {
         this.value = value;
     }
 
-    @Override
     public boolean isValid() {
         return true;
     }

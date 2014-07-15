@@ -29,13 +29,13 @@ import com.vaadin.ui.Notification;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 /**
  * Implementation of {@link Query} interface for RDF queries. Just read-only

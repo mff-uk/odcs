@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * Test funcionality loading to SPARQL endpoint.

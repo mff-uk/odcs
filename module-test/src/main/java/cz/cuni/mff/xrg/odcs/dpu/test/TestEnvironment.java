@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;

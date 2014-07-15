@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfigurable;
-import eu.unifiedviews.dpu.config.DPUConfig;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
@@ -18,6 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
 
 /**
  * Load configuration into DPU.
@@ -55,7 +54,7 @@ class Configurator implements DPUPreExecutor {
         Context context = contexts.get(node);
         DPUInstanceRecord dpu = node.getDpuInstance();
 
-        if (dpuInstance instanceof DPUConfigurable<?>) {
+        if (dpuInstance instanceof DPUConfigurable) {
             // can be configured
         } else {
             // do not configure
@@ -63,7 +62,7 @@ class Configurator implements DPUPreExecutor {
             return true;
         }
         @SuppressWarnings("unchecked")
-        DPUConfigurable<DPUConfig> configurable = (DPUConfigurable<DPUConfig>) dpuInstance;
+        DPUConfigurable configurable = (DPUConfigurable) dpuInstance;
         try {
             configurable.configure(dpu.getRawConf());
 

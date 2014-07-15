@@ -12,8 +12,4 @@ public class ConfigDummy extends DPUConfigObjectBase {
     public ConfigDummy() {
     }
 
-    @Override
-    public boolean isValid() {
-        return true;
-    }
 }

@@ -223,7 +223,6 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return SPARQL_endpoint != null
                 && Host_name != null
@@ -236,19 +235,6 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
                 && endpointParams != null;
     }
 
-    /**
-     * Fill missing configuration with default values.
-     */
-    @Override
-    public void onDeserialize() {
-        if (endpointParams == null) {
-            endpointParams = new LoaderEndpointParams();
-        }
-
-//                if (useSparqlGraphProtocol == null) {
-//                    seSparqlGraphProtocol = false;
-//                }
-    }
 
     public void setPassword(String password) {
         Password = password;

@@ -25,8 +25,6 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
@@ -34,6 +32,8 @@ import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * SPARQL Transformer.

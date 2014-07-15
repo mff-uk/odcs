@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.web;
 
-import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
  * Interface which provides graphical configuration dialog associated with the
@@ -9,7 +8,7 @@ import eu.unifiedviews.dpu.config.DPUConfig;
  * @author Petyr
  * @param <C>
  */
-public interface ConfigDialogProvider<C extends DPUConfig> {
+public interface ConfigDialogProvider<C> {
 
     /**
      * @return Configuration dialog.

@@ -46,7 +46,6 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return queryPairs != null;
     }
@@ -74,11 +73,11 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
     /**
      * Fill missing configuration with default values.
      */
-    @Override
-    public void onDeserialize() {
-        if (SPARQL_Update_Query != null) {
-            queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
-                    isConstructType));
-        }
-    }
+//    @Override
+//    public void onDeserialize() {
+//        if (SPARQL_Update_Query != null) {
+//            queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
+//                    isConstructType));
+//        }
+//    }
 }

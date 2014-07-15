@@ -1,12 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import java.io.FileNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import eu.unifiedviews.dpu.config.DPUConfig;
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -17,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * @author Bogo
@@ -82,7 +82,7 @@ public class PipelineValidator {
         DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
 
         // load instance
-        AbstractConfigDialog<DPUConfig> confDialog;
+        AbstractConfigDialog<?> confDialog;
         try {
             confDialog = dpuInstance.getDialog();
             if (confDialog == null) {

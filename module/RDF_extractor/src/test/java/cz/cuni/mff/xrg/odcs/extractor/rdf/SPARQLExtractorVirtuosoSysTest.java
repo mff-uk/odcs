@@ -15,11 +15,11 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * Test functionality extraction for Virtuoso from SPARQL endpoint.

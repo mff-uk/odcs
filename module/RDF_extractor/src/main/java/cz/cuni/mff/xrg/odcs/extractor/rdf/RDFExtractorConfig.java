@@ -272,7 +272,6 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return SPARQL_endpoint != null
                 && Host_name != null
@@ -287,13 +286,13 @@ public class RDFExtractorConfig extends DPUConfigObjectBase {
     /**
      * Fill missing configuration with default values.
      */
-    @Override
-    public void onDeserialize() {
-        if (endpointParams.getDefaultGraphURI().isEmpty() && GraphsUri != null) {
-            for (String defaultGraph : GraphsUri) {
-                endpointParams.addDefaultGraph(defaultGraph);
-            }
-        }
-    }
+//    @Override
+//    public void onDeserialize() {
+//        if (endpointParams.getDefaultGraphURI().isEmpty() && GraphsUri != null) {
+//            for (String defaultGraph : GraphsUri) {
+//                endpointParams.addDefaultGraph(defaultGraph);
+//            }
+//        }
+//    }
 
 }

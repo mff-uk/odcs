@@ -29,8 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
-
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
@@ -40,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * Responsible for the RDF data extraction from SPARQL endpoint. Class contains

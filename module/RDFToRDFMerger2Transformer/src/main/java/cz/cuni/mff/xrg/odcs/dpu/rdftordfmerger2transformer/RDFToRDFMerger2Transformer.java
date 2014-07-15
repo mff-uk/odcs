@@ -7,11 +7,11 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 @DPU.AsTransformer
 public class RDFToRDFMerger2Transformer extends NonConfigurableBase {

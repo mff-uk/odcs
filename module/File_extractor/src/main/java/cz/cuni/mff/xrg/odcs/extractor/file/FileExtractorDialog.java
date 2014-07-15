@@ -8,8 +8,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -22,9 +20,9 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfig;
 import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Configuration dialog for DPU RDF File Extractor.

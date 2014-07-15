@@ -162,7 +162,6 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return Path != null
                 && FileSuffix != null

@@ -66,7 +66,6 @@ public class RDFDataValidatorConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return true;
     }

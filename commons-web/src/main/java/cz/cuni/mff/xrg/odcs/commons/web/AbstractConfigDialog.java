@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.commons.web;
 import com.vaadin.ui.CustomComponent;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfig;
 
 /**
  * Base abstract class for a configuration dialog.
@@ -11,7 +10,7 @@ import eu.unifiedviews.dpu.config.DPUConfig;
  * @author Petyr
  * @param <C>
  */
-public abstract class AbstractConfigDialog<C extends DPUConfig>
+public abstract class AbstractConfigDialog<C>
         extends CustomComponent {
 
     /**
