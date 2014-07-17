@@ -99,6 +99,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
      */
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
+    
 
     @Override
     public Object enter() {
@@ -109,8 +110,20 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
         // prepare view
         Object viewObject = view.enter(this);
+        addRefreshManager();
 
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+        // set data object
+        view.setDisplay(dataObject);
+
+        // add initial name filter
+        view.setFilter("owner.username", utils.getUserName());
+
+        // return main component
+        return viewObject;
+    }
+
+    private void addRefreshManager() {
+    	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
@@ -128,18 +141,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
                 }
             }
         });
+	}
 
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
-
-        // return main component
-        return viewObject;
-    }
-
-    @Override
+	@Override
     public void setParameters(Object configuration) {
         if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
             int pageNumber = 0;

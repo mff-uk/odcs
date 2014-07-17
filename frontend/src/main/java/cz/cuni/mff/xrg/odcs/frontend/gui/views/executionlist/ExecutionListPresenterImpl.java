@@ -90,8 +90,18 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
         dataObject = new ExecutionListData(c);
         // prepare view
         Object viewObject = view.enter(this);
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
-        refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+        addRefresgManager();
+
+        // set data object
+        view.setDisplay(dataObject);
+        
+        // return main component
+        return viewObject;
+    }
+    
+    private void addRefresgManager() {
+    	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+    	refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
             @Override
@@ -103,14 +113,6 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
                 }
             }
         });
-
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-
-        // return main component
-        return viewObject;
     }
 
     @Override
