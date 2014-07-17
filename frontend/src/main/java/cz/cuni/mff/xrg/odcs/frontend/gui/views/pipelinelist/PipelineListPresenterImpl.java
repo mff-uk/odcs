@@ -117,8 +117,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    if (hasModifiedExecutions) {
+                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad) 
+                    		|| pipelineFacade.hasModifiedExecutions(lastLoad);
+                    if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
