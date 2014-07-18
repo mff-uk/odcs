@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.dialog;
 
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
 
 /**
  * Implementation of {@link ConfigDialogContext}.

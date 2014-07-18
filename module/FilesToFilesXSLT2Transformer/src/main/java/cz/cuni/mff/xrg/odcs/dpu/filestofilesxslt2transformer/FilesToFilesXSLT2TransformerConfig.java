@@ -1,13 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class FilesToFilesXSLT2TransformerConfig extends DPUConfigObjectBase {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4343875087541528977L;
+public class FilesToFilesXSLT2TransformerConfig {
 
     private String xslTemplate = "";
 

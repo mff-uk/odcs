@@ -3,9 +3,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestosparqlloader;
 import java.util.Collections;
 import java.util.Set;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
-public class FilesToSPARQLLoaderConfig extends DPUConfigObjectBase {
+public class FilesToSPARQLLoaderConfig {
     /**
      * 
      */
@@ -13,7 +11,7 @@ public class FilesToSPARQLLoaderConfig extends DPUConfigObjectBase {
 
     private String queryEndpointUrl = "";
 
-    private String updateEndpointUrl = ""; 
+    private String updateEndpointUrl = "";
 
     private int commitSize = 10000;
 

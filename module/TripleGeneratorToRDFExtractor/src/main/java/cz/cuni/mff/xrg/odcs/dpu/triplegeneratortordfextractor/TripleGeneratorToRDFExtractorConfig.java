@@ -1,13 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dpu.triplegeneratortordfextractor;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
-public class TripleGeneratorToRDFExtractorConfig extends DPUConfigObjectBase {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2013582783757162253L;
+public class TripleGeneratorToRDFExtractorConfig {
 
     private int tripleCount = 1000000;
 

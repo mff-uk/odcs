@@ -1,12 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dpu.virtuosoloader;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class VirtuosoLoaderConfig extends DPUConfigObjectBase {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -31611625503740405L;
+public class VirtuosoLoaderConfig {
 
     private String virtuosoUrl = "";
 

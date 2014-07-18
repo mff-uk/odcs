@@ -1,13 +1,7 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestofilesrenametransformer;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
-public class FilesToFilesRenameTransformerConfig extends DPUConfigObjectBase {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4343875087541528977L;
+public class FilesToFilesRenameTransformerConfig {
 
     private String xslTemplate = "";
 

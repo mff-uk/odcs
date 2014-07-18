@@ -13,7 +13,7 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;

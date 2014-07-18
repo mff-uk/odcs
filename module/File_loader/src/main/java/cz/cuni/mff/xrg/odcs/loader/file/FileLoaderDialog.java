@@ -15,9 +15,9 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
 /**
  * Configuration dialog for DPU RDF File Loader.

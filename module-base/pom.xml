@@ -48,6 +48,13 @@
             <version>1.0.0</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dpu-api-helpers</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
         
         <dependency>
             <groupId>eu.unifiedviews</groupId>

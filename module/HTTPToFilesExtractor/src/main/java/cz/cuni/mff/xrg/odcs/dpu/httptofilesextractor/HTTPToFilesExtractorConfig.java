@@ -3,14 +3,7 @@ package cz.cuni.mff.xrg.odcs.dpu.httptofilesextractor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
-public class HTTPToFilesExtractorConfig extends DPUConfigObjectBase {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4485340550430571717L;
+public class HTTPToFilesExtractorConfig {
 
     private int connectionTimeout = 2000;
 

@@ -3,9 +3,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
-public class FilesToLocalDirectoryLoaderConfig extends DPUConfigObjectBase {
+public class FilesToLocalDirectoryLoaderConfig {
     /**
      * 
      */

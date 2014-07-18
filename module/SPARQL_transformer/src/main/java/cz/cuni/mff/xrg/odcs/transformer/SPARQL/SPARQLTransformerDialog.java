@@ -13,7 +13,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;

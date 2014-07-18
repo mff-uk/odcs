@@ -3,15 +3,13 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
 /**
  * SPARQL transformer configuration.
  * 
  * @author Jiri Tomes
  * @author tknap
  */
-public class SPARQLTransformerConfig extends DPUConfigObjectBase {
+public class SPARQLTransformerConfig {
 
     private List<SPARQLQueryPair> queryPairs;
 

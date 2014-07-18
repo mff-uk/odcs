@@ -5,9 +5,10 @@ import com.vaadin.data.Validator;
 import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -12,6 +11,7 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
 
 @DPU.AsTransformer
 public class FileToFilesTransformer extends NonConfigurableBase {

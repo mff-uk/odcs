@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
@@ -13,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
  * @author Petyr
  * @author Jiri Tomes
  */
-public class RDFLoaderConfig extends DPUConfigObjectBase {
+public class RDFLoaderConfig {
 
     private String SPARQL_endpoint;
 

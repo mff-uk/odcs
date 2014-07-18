@@ -1,9 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import org.openrdf.rio.RDFFormat;
-
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Enum for naming setting values.
@@ -11,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
  * @author Petyr
  * @author Jiri Tomes
  */
-public class FileLoaderConfig extends DPUConfigObjectBase {
+public class FileLoaderConfig {
 
     private String FilePath;
 

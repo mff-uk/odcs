@@ -7,8 +7,9 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

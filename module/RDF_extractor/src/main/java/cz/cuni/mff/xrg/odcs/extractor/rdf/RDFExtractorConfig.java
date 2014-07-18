@@ -2,15 +2,13 @@ package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
 /**
  * SPARQL extractor configuration.
  * 
  * @author Petyr
  * @author Jiri Tomes
  */
-public class RDFExtractorConfig extends DPUConfigObjectBase {
+public class RDFExtractorConfig {
 
     private String SPARQL_endpoint;
 
