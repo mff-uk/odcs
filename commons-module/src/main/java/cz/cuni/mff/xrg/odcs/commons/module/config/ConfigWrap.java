@@ -236,10 +236,12 @@ public class ConfigWrap<C> {
                 writeMethod.invoke(target, value);
             } catch (IntrospectionException ex) {
                 LOG.error("Failed to set class value for: {}.{} ",
-                        configClass.getSimpleName(), fieldName, ex);
+                        configClass.getSimpleName(), fieldName);
+                LOG.error("Failed to set class value", ex);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 LOG.error("Failed to set class value for: {}.{} ",
-                        configClass.getSimpleName(), fieldName, ex);
+                        configClass.getSimpleName(), fieldName);
+                LOG.error("Failed to set class value", ex);
             }
         }
     }

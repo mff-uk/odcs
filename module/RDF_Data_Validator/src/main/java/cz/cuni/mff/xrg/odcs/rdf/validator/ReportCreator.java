@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.rdf.validator;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -11,12 +10,13 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
@@ -27,7 +27,7 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
  */
 public class ReportCreator {
 
-    private static final Logger LOG = Logger.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
             ReportCreator.class);
 
     private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";

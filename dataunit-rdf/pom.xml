@@ -27,12 +27,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency> <!-- commons project -->
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency> <!-- openRDF dependency-->
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-config</artifactId>

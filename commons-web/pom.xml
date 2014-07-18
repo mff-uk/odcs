@@ -23,14 +23,6 @@
             <type>jar</type>
         </dependency>
 
-        <dependency> <!-- commons project -->
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>commons</artifactId>
-            <!-- the version has to be specify -->
-            <version>${odcs.version}</version>
-            <type>jar</type>
-        </dependency>
-
         <dependency> <!-- JUnit dependency -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -3,13 +3,14 @@ package cz.cuni.mff.xrg.odcs.rdf.handlers;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Class allows monitoring about the extraction data process - information about
@@ -18,6 +19,8 @@ import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
  * @author Jiri Tomes
  */
 public class StatisticalHandler extends TripleCountHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(StatisticalHandler.class);
 
     private static final int TRIPLE_LOGGED_SIZE = 100000;
 
@@ -34,7 +37,6 @@ public class StatisticalHandler extends TripleCountHandler {
      */
     public StatisticalHandler(RepositoryConnection connection) {
         super(connection);
-        logger = Logger.getLogger(StatisticalHandler.class);
     }
 
     /**
@@ -50,7 +52,6 @@ public class StatisticalHandler extends TripleCountHandler {
     public StatisticalHandler(RepositoryConnection connection,
             DPUContext context) {
         super(connection, context);
-        logger = Logger.getLogger(StatisticalHandler.class);
     }
 
     /**
@@ -66,7 +67,6 @@ public class StatisticalHandler extends TripleCountHandler {
      */
     public StatisticalHandler(RepositoryConnection connection, boolean checkData) {
         super(connection, checkData);
-        logger = Logger.getLogger(StatisticalHandler.class);
     }
 
     /**

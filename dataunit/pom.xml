@@ -19,13 +19,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency> <!-- commons project -->
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>commons</artifactId>
-            <!-- the version has to be specify -->
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dpu-api</artifactId>

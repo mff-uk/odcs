@@ -57,14 +57,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency> <!-- commons project -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons</artifactId>
-            <!-- the version has to be specify -->
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-
         <dependency> <!-- commons-app project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-app</artifactId>

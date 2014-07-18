@@ -3,18 +3,19 @@ package cz.cuni.mff.xrg.odcs.rdf.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Class for counting of extracted triples from SPARQL endpoint or given file.
@@ -29,7 +30,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
      * Responsible for log event in class {@link TripleCountHandler} and it´s
      * subclasses.
      */
-    protected Logger logger = Logger.getLogger(TripleCountHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(TripleCountHandler.class);
 
     private List<TripleProblem> warnings = new ArrayList<>();
 

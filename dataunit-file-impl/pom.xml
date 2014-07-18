@@ -21,12 +21,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency> <!-- commons project -->
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency> <!-- dataunit project -->
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>dataunit</artifactId>
