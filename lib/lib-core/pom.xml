@@ -28,9 +28,9 @@
                             <artifactItems>
 
                                 <dependency> <!-- commons-module project -->
-                                    <groupId>cz.cuni.mff.xrg.odcs</groupId>
-                                    <artifactId>commons-module</artifactId>
-                                    <version>${project.version}</version>
+                                    <groupId>eu.unifiedviews</groupId>
+                                    <artifactId>uv-dpu-api-helpers</artifactId>
+                                    <version>1.0.0</version>
                                 </dependency>
 
                                 <dependency> <!-- needed for SPARQL Loader - HTTP POST requests -->git

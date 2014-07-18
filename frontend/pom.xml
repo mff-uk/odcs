@@ -70,14 +70,6 @@
 			<type>jar</type>
 		</dependency>
 
-		<dependency> <!-- commons-web project -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>commons-web</artifactId>
-			<!-- the version has to be specify -->
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
 		<dependency> <!-- RDF data unit -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dataunit-rdf-impl</artifactId>

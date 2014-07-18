@@ -70,12 +70,6 @@
                                     <version>2.4.0</version>
                                 </dependency>
 
-                                <dependency> <!-- commons-web project -->
-                                    <groupId>cz.cuni.mff.xrg.odcs</groupId>
-                                    <artifactId>commons-web</artifactId>
-                                    <version>${project.version}</version>
-                                </dependency>
-
                             </artifactItems>
                         </configuration>
                     </execution>
