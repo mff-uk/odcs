@@ -53,8 +53,6 @@
         <module>dataunit-rdf-impl</module>
         <!-- odcs libraries -->
         <module>commons-app</module>
-        <module>commons-module</module>
-        <module>commons-web</module>
         <!-- application -->
         <module>frontend</module>
         <module>backend</module>
