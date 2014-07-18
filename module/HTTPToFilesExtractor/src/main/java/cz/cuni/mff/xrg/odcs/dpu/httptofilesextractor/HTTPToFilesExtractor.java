@@ -9,16 +9,15 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 @DPU.AsExtractor
 public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorConfig> implements ConfigDialogProvider<HTTPToFilesExtractorConfig> {
@@ -42,8 +41,11 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
         LOG.info(shortMessage + " " + longMessage);
 
+        boolean shouldContinue = !dpuContext.canceled();
         for (String symbolicName : symbolicNameToURIMap.keySet()) {
-            checkCancelled(dpuContext);
+            if (!shouldContinue) {
+                break;
+            }
 
             String downloadedFilename = null;
             File downloadedFile = null;
@@ -62,6 +64,7 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
             } catch (IOException ex) {
                 dpuContext.sendMessage(DPUContext.MessageType.ERROR, "Error when downloading.", "Symbolic name " + symbolicName + " from location " + downloadFromLocation + " could not be saved to " + downloadedFilename, ex);
             }
+            shouldContinue = !dpuContext.canceled();
         }
     }
 
@@ -70,9 +73,4 @@ public class HTTPToFilesExtractor extends ConfigurableBase<HTTPToFilesExtractorC
         return new HTTPToFilesExtractorConfigDialog();
     }
 
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
-    }
 }

@@ -3,16 +3,15 @@ package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 @DPU.AsTransformer
 public class FileToFilesTransformer extends NonConfigurableBase {
@@ -34,9 +33,9 @@ public class FileToFilesTransformer extends NonConfigurableBase {
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
         long index = 0L;
-        while (fileInputIterator.hasNext()) {
+        boolean shouldContinue = !dpuContext.canceled();
+        while ((shouldContinue) && (fileInputIterator.hasNext())) {
             index++;
-            checkCancelled(dpuContext);
 
             FileHandler handlerItem = fileInputIterator.next();
             String canonicalPath;
@@ -49,12 +48,7 @@ public class FileToFilesTransformer extends NonConfigurableBase {
             if (dpuContext.isDebugging()) {
                 LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
             }
-        }
-    }
-
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
+            shouldContinue = !dpuContext.canceled();
         }
     }
 

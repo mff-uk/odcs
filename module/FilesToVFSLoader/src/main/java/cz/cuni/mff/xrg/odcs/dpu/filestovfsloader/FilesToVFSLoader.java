@@ -56,12 +56,12 @@ public class FilesToVFSLoader extends
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
-        
+
         FileSystemManager fileSystemManager = null;
-        FileObject destinationFileObject  = null;
-        FileSystemOptions options = null; 
+        FileObject destinationFileObject = null;
+        FileSystemOptions options = null;
         try {
-            options = new FileSystemOptions(); 
+            options = new FileSystemOptions();
             if (config.getUsername() != null && !config.getUsername().isEmpty() && config.getPassword() != null) {
                 StaticUserAuthenticator auth = new StaticUserAuthenticator(null, config.getUsername(), config.getPassword());
                 DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(options, auth);
@@ -80,18 +80,19 @@ public class FilesToVFSLoader extends
         boolean replaceExisting = config.isReplaceExisting();
 
         long index = 0L;
+        boolean shouldContinue = !dpuContext.canceled();
+
         try {
-            while (filesIteration.hasNext()) {
+            while ((shouldContinue) && (filesIteration.hasNext())) {
                 index++;
-                checkCancelled(dpuContext);
 
                 FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     FileObject inputFileObject = null;
-                    FileObject outputFileObject =null;
+                    FileObject outputFileObject = null;
                     try {
-                        inputFileObject= fileSystemManager.resolveFile(entry.getFileURIString());
+                        inputFileObject = fileSystemManager.resolveFile(entry.getFileURIString());
                         outputFileObject = destinationFileObject.resolveFile(entry.getSymbolicName());
 
                         Date start = new Date();
@@ -138,6 +139,8 @@ public class FilesToVFSLoader extends
                             "",
                             ex);
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
@@ -158,13 +161,6 @@ public class FilesToVFSLoader extends
     @Override
     public AbstractConfigDialog<FilesToVFSLoaderConfig> getConfigurationDialog() {
         return new FilesToVFSLoaderConfigDialog();
-    }
-
-    private void checkCancelled(DPUContext dpuContext)
-            throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
     }
 
     public static String appendNumber(long number) {

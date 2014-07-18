@@ -9,18 +9,17 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 @DPU.AsTransformer
 public class FilesToFileTransformer extends NonConfigurableBase {
@@ -42,11 +41,10 @@ public class FilesToFileTransformer extends NonConfigurableBase {
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
         FilesDataUnit.Iteration filesIteration = null;
+        boolean shouldContinue = !dpuContext.canceled();
         try {
             filesIteration = filesInput.getIteration();
-            while (filesIteration.hasNext()) {
-                checkCancelled(dpuContext);
-
+            while ((shouldContinue) && (filesIteration.hasNext())) {
                 FilesDataUnit.Entry entry = filesIteration.next();
                 String inSymbolicName = entry.getSymbolicName();
 
@@ -69,6 +67,8 @@ public class FilesToFileTransformer extends NonConfigurableBase {
                         currentHandler = currentHandler.addNewDirectory(next);
                     }
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException(ex.getMessage(), ex.getCause());
@@ -83,9 +83,4 @@ public class FilesToFileTransformer extends NonConfigurableBase {
         }
     }
 
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
-    }
 }

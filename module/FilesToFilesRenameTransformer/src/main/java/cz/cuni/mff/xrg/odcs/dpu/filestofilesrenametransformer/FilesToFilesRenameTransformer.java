@@ -3,16 +3,14 @@ package cz.cuni.mff.xrg.odcs.dpu.filestofilesrenametransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
-
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 
 @DPU.AsTransformer
 public class FilesToFilesRenameTransformer extends NonConfigurableBase {
@@ -40,7 +38,7 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
 //        String longMessage = String.valueOf(config);
 //        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
-      dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, "");
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, "");
 
         FilesDataUnit.Iteration filesIteration;
         try {
@@ -50,17 +48,16 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
         }
         long filesSuccessfulCount = 0L;
         long index = 0L;
+        boolean shouldContinue = !dpuContext.canceled();
 
         try {
-            while (filesIteration.hasNext()) {
-                checkCancelled(dpuContext);
-
+            while ((shouldContinue) && (filesIteration.hasNext())) {
                 FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
                     index++;
 
-                    filesOutput.addExistingFile( entry.getSymbolicName() + ".ttl", entry.getFileURIString());
+                    filesOutput.addExistingFile(entry.getSymbolicName() + ".ttl", entry.getFileURIString());
                     filesSuccessfulCount++;
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(
@@ -69,6 +66,8 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
                             "",
                             ex);
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
@@ -81,12 +80,6 @@ public class FilesToFilesRenameTransformer extends NonConfigurableBase {
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
         dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
-    }
-
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
     }
 
     public static String appendNumber(long number) {

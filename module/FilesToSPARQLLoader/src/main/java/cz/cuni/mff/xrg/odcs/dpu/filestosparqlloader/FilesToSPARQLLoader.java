@@ -14,20 +14,18 @@ import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.repository.util.RDFLoader;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 @DPU.AsLoader
 public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderConfig> implements ConfigDialogProvider<FilesToSPARQLLoaderConfig> {
@@ -71,11 +69,9 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
 
         long filesSuccessfulCount = 0L;
         long index = 0L;
-        
+        boolean shouldContinue = !dpuContext.canceled();
         try {
-            while (filesIteration.hasNext()) {
-                checkCancelled(dpuContext);
-
+            while ((shouldContinue) && (filesIteration.hasNext())) {
                 FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
@@ -93,7 +89,7 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                         if (dpuContext.isDebugging()) {
                             LOG.debug("Processing {} file {}", appendNumber(index), entry);
                         }
-                        
+
                         loader.load(new File(java.net.URI.create(entry.getFileURIString())), null, null, rdfInserter);
 
                         if (dpuContext.isDebugging()) {
@@ -122,6 +118,8 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
                             "",
                             ex);
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
@@ -146,13 +144,6 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
         return new FilesToSPARQLLoaderConfigDialog();
     }
 
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
-    }
-    
-
     public static String appendNumber(long number) {
         String value = String.valueOf(number);
         if (value.length() > 1) {
@@ -173,5 +164,5 @@ public class FilesToSPARQLLoader extends ConfigurableBase<FilesToSPARQLLoaderCon
             default:
                 return value + "th";
         }
-    }    
+    }
 }

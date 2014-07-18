@@ -12,16 +12,15 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
 import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
 import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 @DPU.AsLoader
 public class FilesToLocalDirectoryLoader extends
@@ -63,10 +62,10 @@ public class FilesToLocalDirectoryLoader extends
         CopyOption[] copyOptionsArray = copyOptions.toArray(new CopyOption[copyOptions.size()]);
 
         long index = 0L;
+        boolean shouldContinue = !dpuContext.canceled();
         try {
-            while (filesIteration.hasNext()) {
+            while ((shouldContinue)&& (filesIteration.hasNext())) {
                 index++;
-                checkCancelled(dpuContext);
 
                 FilesDataUnit.Entry entry;
                 try {
@@ -101,6 +100,8 @@ public class FilesToLocalDirectoryLoader extends
                             "",
                             ex);
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
@@ -116,13 +117,6 @@ public class FilesToLocalDirectoryLoader extends
     @Override
     public AbstractConfigDialog<FilesToLocalDirectoryLoaderConfig> getConfigurationDialog() {
         return new FilesToLocalDirectoryLoaderConfigDialog();
-    }
-
-    private void checkCancelled(DPUContext dpuContext)
-            throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
     }
 
     public static String appendNumber(long number) {

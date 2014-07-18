@@ -87,10 +87,10 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             repositoryConnection = virtuosoRepository.getConnection();
             if (config.isClearDestinationGraph()) {
                 LOG.info("Clearing destination graph");
-                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetContext()));    
+                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(CLEAR_QUERY, config.getTargetContext()));
                 update.execute();
                 LOG.info("Cleared destination graph");
-            } 
+            }
 //            else {
 //                LOG.info("Adding loaded data to destination graph");
 //                Update update = repositoryConnection.prepareUpdate(QueryLanguage.SPARQL, String.format(ADD_QUERY, config.getTargetTempContext(), config.getTargetContext()));    
@@ -119,7 +119,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                 }
             }
         }
-        
+
         Connection connection = null;
         boolean started = false;
         ExecutorService executor = null;
@@ -190,15 +190,15 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             LOG.info("Started {} load threads", config.getThreadCount());
 
             int done = 0;
-            while (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS)) {
-                checkCancelled(dpuContext);
-
+            boolean shouldContinue = !dpuContext.canceled();
+            while ((shouldContinue) && (!executor.awaitTermination(config.getStatusUpdateInterval(), TimeUnit.SECONDS))) {
                 ResultSet resultSetDoneLoop = statementStatusCountDone.executeQuery();
                 resultSetDoneLoop.next();
                 done = resultSetDoneLoop.getInt(1);
                 resultSetDoneLoop.close();
 
                 LOG.info("Processing {}/{} files", done, all);
+                shouldContinue = !dpuContext.canceled();
             }
             LOG.info("Finished all threads");
 
@@ -222,7 +222,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             LOG.info("Done.");
         } catch (SQLException ex) {
             throw new DPUException("Error executing query", ex);
-        } catch (DPUCancelledException ex) {
+        } finally {
             LOG.info("User cancelled.");
             if (connection != null && started) {
                 try {
@@ -242,7 +242,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
                     }
                 }
             }
-        } finally {
             try {
                 PreparedStatement delete = connection.prepareStatement(DELETE);
                 delete.setString(1, config.getLoadDirectoryPath() + "%");
@@ -265,12 +264,6 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
     @Override
     public AbstractConfigDialog<VirtuosoLoaderConfig> getConfigurationDialog() {
         return new VirtuosoLoaderConfigDialog();
-    }
-
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
     }
 
     public static String appendNumber(long number) {
