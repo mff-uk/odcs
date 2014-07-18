@@ -87,7 +87,7 @@ public class FileHandlerImpl extends HandlerImpl implements ManageableHandler, F
     @Override
     public void setContent(String newContent) throws FileDataUnitException {
         if (isLink) {
-            throw new DataUnitAccessException("Can't modify 'linked' file!");
+            throw new FileDataUnitException("Can't modify 'linked' file!");
         }
         try {
             // create file if it does not exits

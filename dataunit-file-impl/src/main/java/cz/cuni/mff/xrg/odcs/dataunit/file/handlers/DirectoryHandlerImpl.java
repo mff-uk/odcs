@@ -657,11 +657,11 @@ public class DirectoryHandlerImpl extends HandlerImpl implements ManageableHandl
 
     /**
      * Check if the modification are permitted on this directory. If not then
-     * throw {@link DataUnitAccessException}.
+     * throw {@link RuntimeException}.
      */
     private void accessCheck() {
         if (isLink) {
-            throw new DataUnitAccessException("Can't modify linked directory.");
+            throw new RuntimeException("Can't modify linked directory.");
         }
     }
 

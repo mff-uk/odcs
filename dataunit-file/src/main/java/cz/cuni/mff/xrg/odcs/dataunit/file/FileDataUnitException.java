@@ -15,4 +15,8 @@ public abstract class FileDataUnitException extends Exception {
         super(cause);
     }
 
+    public FileDataUnitException(String string) {
+        super(string);
+    }
+
 }
