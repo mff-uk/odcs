@@ -231,7 +231,7 @@ final class DataUnitManager {
     }
 
     /**
-     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitCreateException} is
+     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitException} is
      * thrown.
      * The DataUnit's name can be further changed. If the {@link DataUnit} witch given name and type alredy exist then is returned.
      * 

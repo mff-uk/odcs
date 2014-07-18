@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
@@ -47,7 +46,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    public LocalFSFilesDataUnit(RDFDataUnitFactory rdfDataUnitFactory, String globalWorkingDirectory, String pipelineId, String dataUnitName) throws DataUnitCreateException {
+    public LocalFSFilesDataUnit(RDFDataUnitFactory rdfDataUnitFactory, String globalWorkingDirectory, String pipelineId, String dataUnitName) throws DataUnitException {
         try {
             this.dataUnitName = dataUnitName;
             this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
@@ -55,7 +54,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
             this.backingStore = rdfDataUnitFactory.create(pipelineId, dataUnitName, workingDirectoryURI);
             this.ownerThread = Thread.currentThread();
         } catch (IOException ex) {
-            throw new DataUnitCreateException("Error creating data unit.", ex);
+            throw new DataUnitException("Error creating data unit.", ex);
         }
     }
 
