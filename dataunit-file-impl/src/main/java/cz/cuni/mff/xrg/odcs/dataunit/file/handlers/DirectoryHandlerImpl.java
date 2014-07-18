@@ -11,9 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Implementation of {@link ManageableDirectoryHandler}.

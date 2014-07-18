@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
+import java.nio.channels.UnsupportedAddressTypeException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -375,6 +375,6 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     
     @Override
     public Iteration getIteration() throws DataUnitException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }
