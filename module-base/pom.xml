@@ -69,6 +69,13 @@
             <version>1.0.0</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>uv-dataunit-helpers</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>
         
         <dependency> <!-- RDF data unit -->
             <groupId>cz.cuni.mff.xrg.odcs</groupId>

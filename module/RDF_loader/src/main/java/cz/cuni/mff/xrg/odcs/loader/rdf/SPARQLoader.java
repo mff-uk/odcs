@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -32,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Component for monitoring rdf storage availability.
@@ -162,10 +161,6 @@ class RdfDatabase {
     private void executeQuery(VirtuosoRDFDataUnit virtuosoRepository, RepositoryConnection connection) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String query = "select * where {?s ?p ?o} limit 1";
         TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-        CleverDataset dataSet = new CleverDataset();
-        dataSet.addDefaultGraphs(virtuosoRepository.getDataGraphnames());
-        dataSet.addNamedGraphs(virtuosoRepository.getDataGraphnames());
-        tupleQuery.setDataset(dataSet);
         tupleQuery.evaluate();
     }
 

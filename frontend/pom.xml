@@ -175,6 +175,12 @@
 			<artifactId>uv-dpu-api-helpers</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<version>1.0.0</version>
+		</dependency>		
 	</dependencies>
 
 	<!-- define license -->
