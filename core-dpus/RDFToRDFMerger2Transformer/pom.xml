@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
-		<artifactId>dpu-base-pom</artifactId>
+		<artifactId>dpu-core-base-pom</artifactId>
 		<version>1.0.0</version>
-		<relativePath>../dpu-base-pom.xml</relativePath>
+		<relativePath>../dpu-core-base-pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>

@@ -14,10 +14,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLUpdateValidator;
 
 /**
  * Configuration dialog for DPU SPARQL Transformer.

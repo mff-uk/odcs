@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 

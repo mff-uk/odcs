@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dpu.DPUContext;

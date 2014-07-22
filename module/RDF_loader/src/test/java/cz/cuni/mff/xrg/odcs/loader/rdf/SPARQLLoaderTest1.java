@@ -19,9 +19,6 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
@@ -80,7 +77,7 @@ public class SPARQLLoaderTest1 {
 ////        private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-graph-crud-auth";
 
     @BeforeClass
-    public static void setRDFDataUnit() throws RDFException {
+    public static void setRDFDataUnit() throws DPUException {
 
 //		repository = new VirtuosoRDFDataUnit(URL, 
 //				USER, PASSWORD, "input", INPUT_GRAPH);

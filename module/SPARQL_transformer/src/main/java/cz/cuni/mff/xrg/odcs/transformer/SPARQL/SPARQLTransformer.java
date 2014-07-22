@@ -25,8 +25,6 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
@@ -343,7 +341,7 @@ public class SPARQLTransformer
      * transformation fault.
      */
     public void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, Dataset dataset, URI dataGraph)
-            throws RDFException {
+            throws DPUException {
 
         try {
             String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
@@ -363,7 +361,7 @@ public class SPARQLTransformer
         } catch (MalformedQueryException e) {
 
             LOG.debug(e.getMessage());
-            throw new RDFException(e.getMessage(), e);
+            throw new DPUException(e.getMessage(), e);
 
         } catch (UpdateExecutionException ex) {
 
@@ -371,10 +369,10 @@ public class SPARQLTransformer
             LOG.debug(message);
             LOG.debug(ex.getMessage());
 
-            throw new RDFException(message + ex.getMessage(), ex);
+            throw new DPUException(message + ex.getMessage(), ex);
 
         } catch (RepositoryException ex) {
-            throw new RDFException(
+            throw new DPUException(
                     "Connection to repository is not available. "
                     + ex.getMessage(), ex);
         }

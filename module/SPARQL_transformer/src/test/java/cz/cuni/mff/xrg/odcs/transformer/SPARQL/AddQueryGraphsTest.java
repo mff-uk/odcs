@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
 
 public class AddQueryGraphsTest {
@@ -119,7 +119,7 @@ public class AddQueryGraphsTest {
             dataSet.addNamedGraphs(writeRepository.getDataGraphnames());
             trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, writeRepository.getWriteDataGraph());
             return true;
-        } catch (RDFException e) {
+        } catch (DPUException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e
                     .getMessage(), e);
         } finally {

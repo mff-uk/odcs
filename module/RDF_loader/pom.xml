@@ -4,15 +4,17 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.mff.xrg.odcs</groupId>
-		<artifactId>module-core</artifactId>
-		<version>1.2.2</version>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>dpu-base-pom</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../dpu-base-pom.xml</relativePath>
 	</parent>
+
+	<groupId>eu.unifiedviews</groupId>
 	<artifactId>SPARQL_Loader</artifactId>
 	<packaging>bundle</packaging>
 	<description>Loads RDF data.</description>
-	<version>1.0.1</version>
-
+	<version>1.3.0</version>
 
 	<properties>
 		<dpu.package>cz.cuni.mff.xrg.odcs.loader.rdf</dpu.package>
@@ -25,28 +27,28 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.7</version>
 		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dataunit-rdf-impl</artifactId>
-			<version>${odcs.version}</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3.3</version>
 			<type>jar</type>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.9</version>
 		</dependency>
-
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>module-test</artifactId>
+			<version>1.2.2</version>
+		</dependency>
 	</dependencies>
 
 	<!-- define license -->

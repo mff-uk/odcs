@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.unifiedviews</groupId>
-    <artifactId>plugin-dpus</artifactId>
+    <artifactId>uv-core-dpus</artifactId>
     <version>1.3.0</version>
     <packaging>pom</packaging>
     <description>Maven parent project for core modules-DPU implementations.</description>
@@ -10,25 +10,8 @@
     <!-- list of core modules -->
     <modules>
 	<!-- New DPUs  -->
-        <module>FilesToFilesXSLT2Transformer</module>
-        <module>FilesToFileTransformer</module>
-        <module>FilesToRDFTransformer</module>
-        <module>FilesToSPARQLLoader</module>
-        <module>FilesToLocalDirectoryLoader</module>
-        <module>FileToFilesTransformer</module>
-        <module>HTTPToFilesExtractor</module>
-        <module>TripleGeneratorToRDFExtractor</module>
-        <module>FilesToFilesRenameTransformer</module>
-        <module>VirtuosoLoader</module>
-        <module>FilesToVFSLoader</module>
-	<!-- Old DPUs  -->
-        <module>File_extractor</module>
-        <module>File_loader</module>
-        <module>RDF_extractor</module>
-        <module>RDF_loader</module>
-        <module>SPARQL_transformer</module>
-        <module>RDF_Data_Validator</module>
-        <module>Silk_Linker</module>
+        <module>RDFToRDFMerger2Transformer</module>
+        <module>FilesToFilesMerger2Transformer</module>
     </modules>
 
     <properties>

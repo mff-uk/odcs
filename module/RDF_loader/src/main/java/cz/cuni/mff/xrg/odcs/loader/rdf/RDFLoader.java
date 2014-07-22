@@ -15,13 +15,10 @@ import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dpu.DPUContext.MessageType;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
  * Loads RDF data to SPARQL endpoint.
@@ -101,27 +98,7 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         }
 
         if (validateDataBefore) {
-
-            context.sendMessage(DPUContext.MessageType.INFO,
-                    "Starting RDF data VALIDATION");
-
-            DataValidator dataValidator = new RepositoryDataValidator(
-                    inputDataUnit, validationDataUnit);
-
-            if (!dataValidator.areDataValid()) {
-                final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
-                LOG.error(dataValidator.getErrorMessage());
-
-                context.sendMessage(DPUContext.MessageType.INFO, message, dataValidator
-                        .getErrorMessage());
-
-                throw new DPUException(message);
-            } else {
-                context.sendMessage(DPUContext.MessageType.INFO,
-                        "RDF Data VALIDATION SUCCESFULL");
-                context.sendMessage(DPUContext.MessageType.INFO,
-                        "Loading data to SPARQL endpoint STARTS JUST NOW");
-            }
+            context.sendMessage(MessageType.ERROR, "Data validation is unsupported, use data validation DPU");
         }
 
         RepositoryConnection connection = null;

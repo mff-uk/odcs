@@ -3,9 +3,6 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-
 /**
  * SPARQL loader configuration.
  * 

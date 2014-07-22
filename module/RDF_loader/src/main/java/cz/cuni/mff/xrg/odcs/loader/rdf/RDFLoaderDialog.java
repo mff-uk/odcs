@@ -6,8 +6,6 @@ import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

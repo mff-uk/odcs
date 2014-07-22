@@ -44,7 +44,6 @@
 			<version>2.7.11</version>
 			<type>jar</type>
 		</dependency>
-
 	</dependencies>
 
 	<build>
