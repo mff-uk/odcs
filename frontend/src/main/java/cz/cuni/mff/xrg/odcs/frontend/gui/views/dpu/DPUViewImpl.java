@@ -117,6 +117,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private Page.BrowserWindowResizeListener resizeListener = null;
 
     private Panel dpuTreePanel;
+    
+    private boolean isInitialized = false;
 
     /**
      * Constructor.
@@ -129,7 +131,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        buildMainLayout();
+        if (!isInitialized) {
+        	buildMainLayout();
+        	isInitialized = true;
+		}
+        
         setCompositionRoot(mainLayout);
         return this;
     }
