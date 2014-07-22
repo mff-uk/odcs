@@ -38,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
@@ -51,9 +52,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "PipelineList")
-public class PipelineListPresenterImpl implements PipelineListPresenter {
+public class PipelineListPresenterImpl implements PipelineListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
 
@@ -100,9 +101,15 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
     
+    private boolean isInitialized = false;
 
     @Override
     public Object enter() {
+    	if (isInitialized) {
+    		addRefreshManager();
+			return view.enter(this);
+		}
+    	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
         cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
@@ -118,6 +125,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
         // add initial name filter
         view.setFilter("owner.username", utils.getUserName());
 
+        isInitialized = true;
+        
         // return main component
         return viewObject;
     }
@@ -308,5 +317,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
         UI.getCurrent().addWindow(dialog);
         dialog.bringToFront();
     }
+
+	@Override
+	public void doAfterLogout() {
+		isInitialized = false;
+	}
 
 }

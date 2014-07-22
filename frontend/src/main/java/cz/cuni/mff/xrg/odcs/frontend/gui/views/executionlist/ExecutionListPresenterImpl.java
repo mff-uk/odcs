@@ -31,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
@@ -42,9 +43,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Petyr
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "ExecutionList")
-public class ExecutionListPresenterImpl implements ExecutionListPresenter {
+public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
@@ -78,9 +79,16 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     private Date lastLoad = new Date(0L);
 
     private ClassNavigator navigator;
+    
+    private boolean isInitialized = false;
 
     @Override
     public Object enter() {
+    	if (isInitialized) {
+    		addRefreshManager();
+			return view.enter(this);
+		}
+    	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
         cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
@@ -90,16 +98,18 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
         dataObject = new ExecutionListData(c);
         // prepare view
         Object viewObject = view.enter(this);
-        addRefresgManager();
+        addRefreshManager();
 
         // set data object
         view.setDisplay(dataObject);
+        
+        isInitialized = true;
         
         // return main component
         return viewObject;
     }
     
-    private void addRefresgManager() {
+    private void addRefreshManager() {
     	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
     	refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
@@ -282,4 +292,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
             navigator.navigateTo(where, param.toString());
         }
     }
+
+	@Override
+	public void doAfterLogout() {
+		isInitialized = false;
+	}
 }
