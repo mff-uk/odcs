@@ -28,17 +28,10 @@ import org.openrdf.rio.helpers.BasicParserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InsertPartException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.TripleCountHandler;
-import cz.cuni.mff.xrg.odcs.rdf.help.ParamController;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Responsible for the RDF data extraction from SPARQL endpoint. Class contains
@@ -160,9 +153,9 @@ public class SPARQLExtractor {
      *
      * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
      * data.
-     * @throws RDFException when extraction data from SPARQL endpoint fail.
+     * @throws DPUException when extraction data from SPARQL endpoint fail.
      */
-    public void extractFromSPARQLEndpoint(URL endpointURL) throws RDFException, DataUnitException {
+    public void extractFromSPARQLEndpoint(URL endpointURL) throws DPUException, DataUnitException {
 
         extractFromSPARQLEndpoint(endpointURL, DEFAULT_CONSTRUCT_QUERY, "", "");
     }
@@ -174,10 +167,10 @@ public class SPARQLExtractor {
      * @param endpointURL Remote URL connection to SPARQL endpoint contains RDF
      * data.
      * @param query String SPARQL query.
-     * @throws RDFException when extraction data fault.
+     * @throws DPUException when extraction data fault.
      */
     public void extractFromSPARQLEndpoint(URL endpointURL,
-            String query) throws RDFException, DataUnitException {
+            String query) throws DPUException, DataUnitException {
 
         extractFromSPARQLEndpoint(endpointURL, query, "", "");
     }
@@ -190,10 +183,10 @@ public class SPARQLExtractor {
      * data.
      * @param hostName String name needed for authentication.
      * @param password String password needed for authentication.
-     * @throws RDFException when extraction data from SPARQL endpoint fail.
+     * @throws DPUException when extraction data from SPARQL endpoint fail.
      */
     public void extractFromSPARQLEndpoint(URL endpointURL,
-            String hostName, String password) throws RDFException, DataUnitException {
+            String hostName, String password) throws DPUException, DataUnitException {
 
         extractFromSPARQLEndpoint(endpointURL, DEFAULT_CONSTRUCT_QUERY, hostName,
                 password);
@@ -208,11 +201,11 @@ public class SPARQLExtractor {
      * @param query String SPARQL query.
      * @param hostName String name needed for authentication.
      * @param password String password needed for authentication.
-     * @throws RDFException when extraction data fault.
+     * @throws DPUException when extraction data fault.
      */
     public void extractFromSPARQLEndpoint(URL endpointURL,
             String query, String hostName,
-            String password) throws RDFException, DataUnitException {
+            String password) throws DPUException, DataUnitException {
 
         extractFromSPARQLEndpoint(endpointURL, query,
                 hostName, password, RDFFormat.N3);
@@ -229,11 +222,11 @@ public class SPARQLExtractor {
      * @param password String password needed for authentication.
      * @param format Type of RDF format for saving data (example: TURTLE,
      * RDF/XML,etc.)
-     * @throws RDFException when extraction data fault.
+     * @throws DPUException when extraction data fault.
      */
     public void extractFromSPARQLEndpoint(URL endpointURL,
             String query, String hostName, String password, RDFFormat format)
-            throws RDFException, DataUnitException {
+            throws DPUException, DataUnitException {
 
         extractFromSPARQLEndpoint(endpointURL, query,
                 hostName, password, format, HandlerExtractType.STANDARD_HANDLER,
@@ -256,7 +249,7 @@ public class SPARQLExtractor {
      * @param extractFail boolean value, if true stop pipeline(cause exception)
      * when no triples were extracted. if false step triple count extraction
      * criterium.
-     * @throws RDFException when extraction data fault.
+     * @throws DPUException when extraction data fault.
      */
     public void extractFromSPARQLEndpoint(
             URL endpointURL,
@@ -264,7 +257,7 @@ public class SPARQLExtractor {
             String hostName,
             String password,
             RDFFormat format,
-            HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException, DataUnitException {
+            HandlerExtractType handlerExtractType, boolean extractFail) throws DataUnitException, DPUException {
 
         ParamController.testEndpointSyntax(endpointURL);
 
@@ -291,7 +284,7 @@ public class SPARQLExtractor {
 
             logger.debug(message);
 
-            throw new RDFException(message, e);
+            throw new DPUException(message, e);
 
         } finally {
             if (connection != null) {
@@ -334,7 +327,7 @@ public class SPARQLExtractor {
     private void extractDataFromEnpointGraph(URL endpointURL,
             String query, RDFFormat format,
             RepositoryConnection connection,
-            HandlerExtractType handlerExtractType, boolean extractFail) throws RDFException, DataUnitException {
+            HandlerExtractType handlerExtractType, boolean extractFail) throws DPUException, DataUnitException {
 
         InputStreamReader inputStreamReader = getEndpointStreamReader(
                 endpointURL, query, format);
@@ -376,7 +369,7 @@ public class SPARQLExtractor {
 
                 if (errorHandler.hasFindedProblems() && failWhenMistake) {
 
-                    throw new RDFException(errorHandler
+                    throw new DPUException(errorHandler
                             .getFindedProblemsAsString());
                 }
             }
@@ -385,7 +378,7 @@ public class SPARQLExtractor {
             final String message = "Http connection can can not open stream. ";
             logger.error(message);
 
-            throw new RDFException(message + ex.getMessage(), ex);
+            throw new DPUException(message + ex.getMessage(), ex);
 
         } catch (RDFCancelException e) {
             logger.debug(e.getMessage());
@@ -393,12 +386,12 @@ public class SPARQLExtractor {
                 connection.clear(outputDataUnit.getWriteDataGraph());
             } catch (RepositoryException e1) {
                 logger.debug(e.getMessage());
-                throw new RDFException(e1.getMessage(), e1);
+                throw new DPUException(e1.getMessage(), e1);
             }
 
         } catch (RDFHandlerException | RDFParseException ex) {
             logger.error(ex.getMessage(), ex);
-            throw new RDFException(ex.getMessage(), ex);
+            throw new DPUException(ex.getMessage(), ex);
         } finally {
             if (inputStreamReader != null) {
                 try {
@@ -412,15 +405,15 @@ public class SPARQLExtractor {
 
     }
 
-    private void caseNoTriples(TripleCounter handler) throws RDFException {
+    private void caseNoTriples(TripleCounter handler) throws DPUException {
 
         if (handler.isEmpty()) {
-            throw new RDFException("No extracted triples from SPARQL endpoint");
+            throw new DPUException("No extracted triples from SPARQL endpoint");
         }
     }
 
     private InputStreamReader getEndpointStreamReader(URL endpointURL,
-            String query, RDFFormat format) throws RDFException {
+            String query, RDFFormat format) throws DPUException {
 
         ExtractorRequestType requestType = endpointParams.getRequestType();
 
@@ -439,7 +432,7 @@ public class SPARQLExtractor {
 
     private String getGraphParam(String graphParam, List<String> graphs,
             boolean isFirstParam)
-            throws RDFException {
+            throws DPUException {
 
         if (graphs.isEmpty()) {
             return "";
@@ -469,11 +462,11 @@ public class SPARQLExtractor {
      * @param format RDF data format for given returned RDF data.
      * @return Result of given SPARQL query apply to given graph. If it produce
      * some RDF data, there are in specified RDF format.
-     * @throws RDFException if unknown host, connection problems, no permission
+     * @throws DPUException if unknown host, connection problems, no permission
      * for this action.
      */
     private InputStreamReader getEncodedGETStreamReader(URL endpointURL,
-            String query, RDFFormat format) throws RDFException {
+            String query, RDFFormat format) throws DPUException {
 
         String queryParam = String.format("?%s=%s", endpointParams
                 .getQueryParam(), getEncodedString(query));
@@ -503,7 +496,7 @@ public class SPARQLExtractor {
 
             final String message = "Malfolmed URL exception by construct extract URL. ";
             logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
+            throw new DPUException(message + e.getMessage(), e);
         }
 
         HttpURLConnection httpConnection = null;
@@ -553,7 +546,7 @@ public class SPARQLExtractor {
 
             } catch (UnknownHostException e) {
                 final String message = "Unknown host: ";
-                throw new RDFException(message + e.getMessage(), e);
+                throw new DPUException(message + e.getMessage(), e);
 
             } catch (IOException e) {
                 retryCount++;
@@ -569,7 +562,7 @@ public class SPARQLExtractor {
                         httpConnection.disconnect();
                     }
 
-                    throw new RDFException(errorMessage + e.getMessage(), e);
+                    throw new DPUException(errorMessage + e.getMessage(), e);
                 }
 
             }
@@ -649,11 +642,11 @@ public class SPARQLExtractor {
      * @param format RDF data format for given returned RDF data.
      * @return Result of given SPARQL query apply to given graph. If it produce
      * some RDF data, there are in specified RDF format.
-     * @throws RDFException if unknown host, connection problems, no permission
+     * @throws DPUException if unknown host, connection problems, no permission
      * for this action.
      */
     private InputStreamReader getEncodedPOSTStreamReader(URL endpointURL,
-            String query, RDFFormat format) throws RDFException {
+            String query, RDFFormat format) throws DPUException {
 
         String queryParam = String.format("%s=%s", endpointParams
                 .getQueryParam(), getEncodedString(query));
@@ -682,7 +675,7 @@ public class SPARQLExtractor {
         } catch (MalformedURLException e) {
             final String message = "Malfolmed URL exception by construct extract URL. ";
             logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
+            throw new DPUException(message + e.getMessage(), e);
         }
 
         HttpURLConnection httpConnection = null;
@@ -729,7 +722,7 @@ public class SPARQLExtractor {
 
             } catch (UnknownHostException e) {
                 final String message = "Unknown host: ";
-                throw new RDFException(message + e.getMessage(), e);
+                throw new DPUException(message + e.getMessage(), e);
 
             } catch (IOException e) {
                 retryCount++;
@@ -745,7 +738,7 @@ public class SPARQLExtractor {
                         httpConnection.disconnect();
                     }
 
-                    throw new RDFException(errorMessage + e.getMessage(), e);
+                    throw new DPUException(errorMessage + e.getMessage(), e);
                 }
 
             }
@@ -786,12 +779,12 @@ public class SPARQLExtractor {
         }
     }
 
-    private String getEncoder(RDFFormat format) throws RDFException {
+    private String getEncoder(RDFFormat format) throws DPUException {
         String encoder = getEncodedString(format.getDefaultMIMEType());
         return encoder;
     }
 
-    private String getEncodedString(String text) throws RDFException {
+    private String getEncodedString(String text) throws DPUException {
         String result = null;
         try {
             result = URLEncoder.encode(text, encode);
@@ -799,7 +792,7 @@ public class SPARQLExtractor {
         } catch (UnsupportedEncodingException e) {
             String message = "Encode " + encode + " is not supported. ";
             logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
+            throw new DPUException(message + e.getMessage(), e);
         }
         return result;
     }
@@ -812,12 +805,12 @@ public class SPARQLExtractor {
      * @param format RDF data format for given returned RDF data.
      * @return Result of given SPARQL query apply to given graph. If it produce
      * some RDF data, there are in specified RDF format.
-     * @throws RDFException if unknown host, connection problems, no permission
+     * @throws DPUException if unknown host, connection problems, no permission
      * for this action.
      */
     private InputStreamReader getUnencodedQueryStreamReader(URL endpointURL,
             String query,
-            RDFFormat format) throws RDFException {
+            RDFFormat format) throws DPUException {
 
         String formatParam = String.format("?format=%s", getEncoder(format));
 
@@ -842,7 +835,7 @@ public class SPARQLExtractor {
         } catch (MalformedURLException e) {
             final String message = "Malfolmed URL exception by construct extract URL. ";
             logger.debug(message);
-            throw new RDFException(message + e.getMessage(), e);
+            throw new DPUException(message + e.getMessage(), e);
         }
 
         HttpURLConnection httpConnection = null;
@@ -889,7 +882,7 @@ public class SPARQLExtractor {
 
             } catch (UnknownHostException e) {
                 final String message = "Unknown host: ";
-                throw new RDFException(message + e.getMessage(), e);
+                throw new DPUException(message + e.getMessage(), e);
 
             } catch (IOException e) {
                 retryCount++;
@@ -905,7 +898,7 @@ public class SPARQLExtractor {
                         httpConnection.disconnect();
                     }
 
-                    throw new RDFException(errorMessage + e.getMessage(), e);
+                    throw new DPUException(errorMessage + e.getMessage(), e);
                 }
 
             }

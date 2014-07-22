@@ -13,11 +13,11 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * @author Jiri Tomes
@@ -67,7 +67,7 @@ public class SPARQLExtractorRequestSysTest {
             extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
             assertEquals(connection.size(repository.getWriteDataGraph()), EXTRACTED_TRIPLES);
-        } catch (RDFException ex) {
+        } catch (DPUException ex) {
             fail(ex.getMessage());
         } finally {
             if (connection != null) {

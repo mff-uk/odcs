@@ -6,8 +6,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-
 /**
  * @author Jiri Tomes
  */

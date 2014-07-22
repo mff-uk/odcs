@@ -19,8 +19,8 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 public class Test {
     private static final Logger LOG = LoggerFactory.getLogger(Test.class);

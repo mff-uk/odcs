@@ -13,11 +13,9 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Class responsible for creting RDF report message from given found out
@@ -52,7 +50,7 @@ public class ReportCreator {
      * @throws RDFException
      *             if some problem during making report.
      */
-    public void makeOutputReport(WritableRDFDataUnit repository) throws RDFException {
+    public void makeOutputReport(WritableRDFDataUnit repository) throws DPUException {
 
         setNamespaces(repository);
         addReports(repository);
@@ -73,7 +71,7 @@ public class ReportCreator {
         return prefix + "/validation/error/";
     }
 
-    private void addReports(WritableRDFDataUnit repository) throws RDFException {
+    private void addReports(WritableRDFDataUnit repository) throws DPUException {
 
         int count = 0;
 
@@ -108,8 +106,8 @@ public class ReportCreator {
                         getObject(line), repository.getWriteDataGraph());
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
-            } catch ( DataUnitException e) {
-                throw new RDFException(e);
+            } catch (DataUnitException e) {
+                throw new DPUException(e);
             } finally {
                 if (connection != null) {
                     try {
@@ -124,7 +122,7 @@ public class ReportCreator {
         }
     }
 
-    private void setNamespaces(WritableRDFDataUnit repository) throws RDFException {
+    private void setNamespaces(WritableRDFDataUnit repository) throws DPUException {
         RepositoryConnection connection = null;
         try {
 
@@ -141,7 +139,7 @@ public class ReportCreator {
             final String message = "Not possible to set namespace"
                     + e.getMessage();
             LOG.debug(message);
-            throw new RDFException(message);
+            throw new DPUException(message);
         } finally {
             if (connection != null) {
                 try {

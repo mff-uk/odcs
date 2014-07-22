@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.extractor.rdf;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,10 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Test functionality extraction for Virtuoso from SPARQL endpoint.
@@ -36,7 +34,7 @@ public class SPARQLExtractorVirtuosoSysTest {
     private static final String QUERY_ENDPOINT = "http://localhost:8890/sparql";
 
     @BeforeClass
-    public static void setRDFDataUnit() throws RDFException {
+    public static void setRDFDataUnit() throws DPUException {
 
     }
 
@@ -76,7 +74,7 @@ public class SPARQLExtractorVirtuosoSysTest {
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
-        } catch (RDFException ex) {
+        } catch (DPUException ex) {
             logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
@@ -108,7 +106,7 @@ public class SPARQLExtractorVirtuosoSysTest {
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
-        } catch (RDFException ex) {
+        } catch (DPUException ex) {
             logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
@@ -141,7 +139,7 @@ public class SPARQLExtractorVirtuosoSysTest {
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
-        } catch (RDFException ex) {
+        } catch (DPUException ex) {
             logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());
@@ -177,7 +175,7 @@ public class SPARQLExtractorVirtuosoSysTest {
 
             assertTrue(sizeBefore < sizeAfter);
             connection.close();
-        } catch (RDFException ex) {
+        } catch (DPUException ex) {
             logger.error("RDFException: " + ex.getMessage());
         } catch (MalformedURLException ex) {
             logger.error("Bad URL for SPARQL endpoint: " + ex.getMessage());

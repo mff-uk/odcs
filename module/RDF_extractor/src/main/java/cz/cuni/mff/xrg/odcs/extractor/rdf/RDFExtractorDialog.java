@@ -14,9 +14,6 @@ import com.vaadin.ui.*;
 
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 
 /**
  * Configuration dialog for DPU SPARQL Extractor.
@@ -464,7 +461,7 @@ public class RDFExtractorDialog extends BaseConfigDialog<RDFExtractorConfig> {
                             return;
                         }
 
-                        cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator validator = new SPARQLQueryValidator(
+                        QueryValidator validator = new SPARQLQueryValidator(
                                 query, SPARQLQueryType.CONSTRUCT);
 
                         if (!validator.isQueryValid()) {

@@ -10,15 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
@@ -172,11 +168,6 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig>
         } catch (RepositoryException e) {
             context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
-        } catch (RDFException ex) {
-            LOG.debug("RDFException", ex);
-            context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "
-                    + ex.getMessage());
-            throw new DPUException(ex);
         } catch (DataUnitException ex) {
             LOG.debug("DataUnitException", ex);
             context.sendMessage(DPUContext.MessageType.ERROR, "DataUnitException: "

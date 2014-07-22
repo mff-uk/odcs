@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 /**
  * Enum for naming setting values.

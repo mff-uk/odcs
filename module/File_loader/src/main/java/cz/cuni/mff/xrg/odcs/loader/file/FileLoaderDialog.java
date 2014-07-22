@@ -15,7 +15,6 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
@@ -150,7 +149,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
         //add checkbox for data validation
         validateDataBefore = new CheckBox(
-                "Validate data before loading - "
+                "(UNSUPPORTED) Validate data before loading - "
                         + "if validation fails, the loading fails immediately");
         validateDataBefore.setValue(false);
         validateDataBefore.setWidth("-1px");

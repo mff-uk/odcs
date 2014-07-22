@@ -1,38 +1,33 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.UnsupportedRDFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUContext;
-import eu.unifiedviews.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUContext.MessageType;
+import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-
-import java.io.FileNotFoundException;
-
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.UnsupportedRDFormatException;
 
 /**
  * Loads RDF data into file.
@@ -80,23 +75,7 @@ public class FileLoader extends ConfigurableBase<FileLoaderConfig>
         final boolean validateDataBefore = config.isValidDataBefore();
 
         if (validateDataBefore) {
-            DataValidator dataValidator = new RepositoryDataValidator(
-                    inputDataUnit, validationDataUnit);
-
-            if (!dataValidator.areDataValid()) {
-                final String message = "RDF Data to load are not valid - LOADING to File FAIL";
-                logger.error(dataValidator.getErrorMessage());
-
-                context.sendMessage(DPUContext.MessageType.WARNING, message, dataValidator
-                        .getErrorMessage());
-
-                throw new DPUException(message);
-            } else {
-                context.sendMessage(DPUContext.MessageType.INFO,
-                        "RDF Data for loading to file are valid");
-                context.sendMessage(DPUContext.MessageType.INFO,
-                        "Loading data to file STARTS JUST NOW");
-            }
+            context.sendMessage(MessageType.ERROR, "Data validation is unsupported, use data validation DPU");
         }
 
         RepositoryConnection connection = null;

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 
 public class CancellableCommitSizeInserter extends RDFInserter {
     private static final Logger LOG = LoggerFactory.getLogger(CancellableCommitSizeInserter.class);
@@ -44,7 +43,7 @@ public class CancellableCommitSizeInserter extends RDFInserter {
         statementCounter++;
         if (transactionOpen && (statementCounter == commitSize)) {
             if (dpuContext.canceled()) {
-                throw new RDFCancelException("Cancelled by user");
+                throw new RDFHandlerException("Cancelled by user");
             }
             try {
                 con.commit();

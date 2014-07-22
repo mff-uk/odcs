@@ -15,10 +15,6 @@ import eu.unifiedviews.dpu.DPUException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
 
 /**
  * DPU for RDF data validation and save validation report in RDF TURTLE (TTL)
@@ -67,7 +63,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
     private void makeValidationReport(DataValidator validator,
             String graphName, DPUContext context, boolean stopExecution)
-            throws CannotOverwriteFileException, RDFException, RepositoryException, DataUnitException {
+            throws DPUException, DataUnitException {
 
         context.sendMessage(DPUContext.MessageType.INFO,
                 "Start creating VALIDATION REPORT", String.format(
@@ -100,7 +96,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
                     }
                 }
             }
-            throw new RDFException(
+            throw new DPUException(
                     "RDFDataValidator found some invalid data - pipeline execution is stopped");
         }
     }
@@ -154,7 +150,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
                 makeValidationReport(validator, graphName, context, stopExecution);
 
             }
-        } catch ( RepositoryException | DataUnitException e) {
+        } catch ( DataUnitException e) {
             context.sendMessage(DPUContext.MessageType.ERROR, e.getMessage(),
                     e.fillInStackTrace().toString());
         }

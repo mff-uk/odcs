@@ -4,32 +4,24 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cz.cuni.mff.xrg.odcs</groupId>
-		<artifactId>module-core</artifactId>
-		<version>1.2.2</version>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>dpu-base-pom</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../dpu-base-pom.xml</relativePath>
 	</parent>
 
+	<groupId>eu.unifiedviews</groupId>
 	<artifactId>FilesToVFSLoader</artifactId>
-
-	<!-- TODO 2: specify module version, can be left unchanged -->
-	<version>1.2.2</version>
-
+	<version>1.3.0</version>
 	<packaging>bundle</packaging>
-
 	<description>FilesToVFSLoader loads Files to any filesystem supported by Apache Commons VFS.</description>
 
 	<properties>
 		<dpu.package>cz.cuni.mff.xrg.odcs.dpu.filestovfsloader</dpu.package>
 		<dpu.mainClass>FilesToVFSLoader</dpu.mainClass>
-		<!-- TODO 6: Put path to the ODCL DPUs directory here -->
-		<!-- this is required in order to use 'copy-to-odcl' and 'publish-to-odcl' 
-			profiles -->
-		<dpu.odcl.dir></dpu.odcl.dir>
 	</properties>
 
 	<dependencies>
-
-		<!-- TODO 7: add dependencies here -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -65,28 +57,6 @@
 			<artifactId>jackrabbit-webdav</artifactId>
 			<version>2.8.0</version>
 		</dependency>
-
-
-
-
-		<!-- Sample dependency defining a maven artifact - Saxon JAR - available 
-			on Maven repositories. If you have configured on your machine access to any 
-			maven repository, the following lines should work for you and should automatically 
-			make SAXON HE 9.2.1.5 available. The dependency (jar file) will be automaticaly 
-			added to the resulting OSGi bundle <dependency> <groupId>net.sourceforge.saxon</groupId> 
-			<artifactId>saxonhe</artifactId> <version>9.2.1.5</version> <type>jar</type> 
-			</dependency> -->
-
-		<!-- Alternatively, if you would like to refer to local dependency on the 
-			file system, use following code to import local dependency from sample project 
-			(folder) file/lib/MyLib.java. The dependency (jar file) will be automaticaly 
-			added to the resulting OSGi bundle. Prefer the reference to publicly available 
-			Maven repository (previous dependency example) over local repository (the 
-			following dependency example) - if you move the development of DPU to a different 
-			machine, local repository will not work there. <dependency> <groupId>com.surname.intlib</groupId> 
-			<artifactId>MyLib</artifactId> <version>1.0.0</version> <scope>system</scope> 
-			<systemPath>${project.basedir}/lib/MyLib.java</systemPath> </dependency> -->
-
 	</dependencies>
 
 </project>

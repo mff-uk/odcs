@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-
 /**
  * File extractor configuration.
  * 
