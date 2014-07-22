@@ -63,6 +63,7 @@
         <!-- build modules-->
         <module>module-base</module>
         <module>module</module>
+        <module>core-dpus</module>
         <module>ontology</module>
     </modules>
 

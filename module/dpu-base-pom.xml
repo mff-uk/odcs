@@ -87,6 +87,16 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*SysTest.java</exclude>
+						<exclude>**/*DoesntPassTest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin> <!-- main build plugin for modules -->
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
