@@ -84,6 +84,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     private HashMap<Date, Label> runTimeLabels = new HashMap<>();
 
     private ExecutionListPresenter presenter;
+    
+    private boolean isInitialized = false;
 
     @Autowired
     private Utils utils;
@@ -93,8 +95,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     @Override
     public Object enter(final ExecutionListPresenter presenter) {
         // build page
-        buildPage(presenter);
-        this.presenter = presenter;
+    	this.presenter = presenter;
+    	if (!isInitialized) {
+    		buildPage(presenter);
+    		isInitialized = true;
+		}
         return this;
     }
 

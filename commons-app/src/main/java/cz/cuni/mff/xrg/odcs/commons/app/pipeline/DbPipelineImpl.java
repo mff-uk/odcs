@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -51,4 +52,19 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         return execute(query);
     }
 
+    @Override
+    public boolean hasModified(Date since) {
+        final String stringQuery = "SELECT MAX(e.lastChange)"
+                + " FROM Pipeline e";
+
+        TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
+        Date lastModified = (Date) query.getSingleResult();
+
+        if (lastModified == null) {
+            // there are no executions in DB
+            return false;
+        }
+
+        return lastModified.after(since);
+    }
 }
