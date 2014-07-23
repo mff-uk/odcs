@@ -26,6 +26,7 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -34,7 +35,6 @@
 			<version>9.4</version>
 			<!--<version>9.4.0-9</version> -->
 			<!--<version>9.5.1-5</version> -->
-			<type>jar</type>
 		</dependency>
 
 		<dependency>
@@ -43,32 +43,5 @@
 			<version>1.2</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin> <!-- main build plugin for modules -->
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.3.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<!-- dependencies embedding -->
-						<Embed-Dependency>Saxon-HE;scope=*,xml-resolver;scope=*</Embed-Dependency>
-						<!-- use provided for dependencies that are provided by application -->
-						<Embed-Transitive>${embed.transitive}</Embed-Transitive>
-						<!-- using true cause adding new imports for new packages !! -->
-						<!-- dependencies location in output file -->
-						<Embed-Directory>dependency</Embed-Directory>
-						<Embed-StripGroup>false</Embed-StripGroup>
-						<!-- information for ODCleanStore -->
-						<DPU-Package>${dpu.package}</DPU-Package>
-						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
-						<Build-Time>${maven.build.timestamp}</Build-Time>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
 

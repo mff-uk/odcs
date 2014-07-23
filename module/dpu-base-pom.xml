@@ -17,47 +17,47 @@
 		<dpu.mainClass></dpu.mainClass>
 	</properties>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api-helpers</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-helpers</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.7</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -104,6 +104,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<!-- use provided for dependencies that are provided by application -->
 						<Embed-Transitive>${embed.transitive}</Embed-Transitive>
 						<!-- using true cause adding new imports for new packages !! -->

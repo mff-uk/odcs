@@ -11,7 +11,6 @@ import org.openrdf.query.QueryEvaluationException;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
