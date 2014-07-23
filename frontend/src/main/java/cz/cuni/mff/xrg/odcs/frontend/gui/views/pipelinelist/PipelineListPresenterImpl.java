@@ -323,4 +323,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 		isInitialized = false;
 	}
 
+	@Override
+	public boolean isLayoutInitialized() {
+		return isInitialized;
+	}
+
 }

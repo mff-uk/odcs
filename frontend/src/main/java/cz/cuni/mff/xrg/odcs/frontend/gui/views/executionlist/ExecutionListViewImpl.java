@@ -85,8 +85,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
     private ExecutionListPresenter presenter;
     
-    private boolean isInitialized = false;
-
     @Autowired
     private Utils utils;
 
@@ -96,9 +94,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     public Object enter(final ExecutionListPresenter presenter) {
         // build page
     	this.presenter = presenter;
-    	if (!isInitialized) {
+    	if (!presenter.isLayoutInitialized()) {
     		buildPage(presenter);
-    		isInitialized = true;
 		}
         return this;
     }

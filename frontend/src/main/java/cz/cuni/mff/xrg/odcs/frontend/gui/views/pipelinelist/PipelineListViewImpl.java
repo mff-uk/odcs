@@ -55,8 +55,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     private Button btnImportPipeline;
     
-    private boolean isInitialized = false; 
-
     @Autowired
     private Utils utils;
 
@@ -229,9 +227,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     @Override
     public Object enter(PipelineListPresenter presenter) {
-    	if (!isInitialized) {
+    	if (!presenter.isLayoutInitialized()) {
     		buildPage(presenter);
-    		isInitialized = true;
 		}
 
         return this;

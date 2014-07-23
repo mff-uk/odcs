@@ -56,10 +56,10 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
-@Scope("prototype")
+@Scope("session")
 @VaadinView(Scheduler.NAME)
 @Address(url = "Scheduler")
-public class Scheduler extends ViewComponent {
+public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(
             Scheduler.class);
@@ -559,5 +559,10 @@ public class Scheduler extends ViewComponent {
                 return "Disabled";
             }
         }
-    };
+    }
+
+	@Override
+	public void doAfterLogout() {
+		isMainLayoutInitialized = false;
+	}
 }

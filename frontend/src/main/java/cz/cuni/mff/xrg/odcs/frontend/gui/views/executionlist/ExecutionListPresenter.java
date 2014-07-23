@@ -221,4 +221,10 @@ public interface ExecutionListPresenter extends Presenter {
         }
 
     }
+
+    /**
+     * 
+     * @return
+     */
+	public boolean isLayoutInitialized();
 }
