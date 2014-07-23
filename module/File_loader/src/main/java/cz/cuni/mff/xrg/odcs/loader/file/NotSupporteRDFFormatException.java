@@ -13,13 +13,6 @@ public class NotSupporteRDFFormatException extends DPUConfigException {
     private final String message = "This RDF format is not supported.";
 
     /**
-     * Create a new instance of {@link NotSupporteRDFFormatException} without
-     * detail message.
-     */
-    public NotSupporteRDFFormatException() {
-    }
-
-    /**
      * Create new instance of {@link NotSupporteRDFFormatException} with
      * specific message.
      * 

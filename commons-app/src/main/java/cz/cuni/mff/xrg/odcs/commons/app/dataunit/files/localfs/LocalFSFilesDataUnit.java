@@ -38,7 +38,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     private String workingDirectoryURI;
 
-    private Set<String> generatedFilenames = java.util.Collections.<String>synchronizedSet(new HashSet<String>());
+    private Set<String> generatedFilenames = java.util.Collections.<String> synchronizedSet(new HashSet<String>());
 
     private Thread ownerThread;
 
@@ -148,12 +148,12 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                     blankNodeId,
                     valueFactory.createURI(FilesDataUnit.PREDICATE_SYMBOLIC_NAME),
                     valueFactory.createLiteral(proposedSymbolicName)
-            );
+                    );
             Statement statement2 = valueFactory.createStatement(
                     blankNodeId,
                     valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
                     valueFactory.createLiteral(existingFile.toURI().toASCIIString())
-            );
+                    );
             connection.add(statement, backingStore.getWriteDataGraph());
             connection.add(statement2, backingStore.getWriteDataGraph());
             connection.commit();
@@ -255,7 +255,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
             if (sb.length() == 0) {
                 if (((codePoint >= 97) && (codePoint <= 122)) || // [a-z]
                         ((codePoint >= 65) && (codePoint <= 90)) //[A-Z]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             } else {
@@ -263,13 +263,18 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                         ((codePoint >= 65) && (codePoint <= 90)) || //[A-Z]
                         (codePoint == 95) || // _
                         ((codePoint >= 48) && (codePoint <= 57)) // [0-9]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             }
             index++;
         }
         return sb.toString();
+    }
+
+    @Override
+    public String addNewFile(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
     }
 
 }

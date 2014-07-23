@@ -372,9 +372,19 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             }
         }
     }
-    
+
     @Override
     public Iteration getIteration() throws DataUnitException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addExistingDataGraph(String symbolicName, URI existingDataGraphURI) throws DataUnitException {
+        throw new DataUnitException("Not supported");
+    }
+
+    @Override
+    public URI addNewDataGraph(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
     }
 }

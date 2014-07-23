@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory;
 
 import java.io.File;
 
+import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;

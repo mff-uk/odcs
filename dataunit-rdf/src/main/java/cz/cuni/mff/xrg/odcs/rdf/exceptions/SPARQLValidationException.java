@@ -12,13 +12,6 @@ public class SPARQLValidationException extends DPUConfigException {
     private int queryNumber = 1;
 
     /**
-     * Create a new instance of {@link SPARQLValidationException} with the
-     * default message.
-     */
-    public SPARQLValidationException() {
-    }
-
-    /**
      * Create new instance of {@link SPARQLValidationException} with the
      * specific message.
      * 

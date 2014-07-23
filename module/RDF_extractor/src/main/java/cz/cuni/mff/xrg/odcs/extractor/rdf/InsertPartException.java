@@ -11,14 +11,6 @@ import eu.unifiedviews.dpu.DPUException;
 public class InsertPartException extends DPUException {
 
     /**
-     * Create a new instance of {@link InsertPartException} without detail
-     * message.
-     */
-    public InsertPartException() {
-        super();
-    }
-
-    /**
      * Create new instance of {@link InsertPartException} with specific message.
      * 
      * @param message

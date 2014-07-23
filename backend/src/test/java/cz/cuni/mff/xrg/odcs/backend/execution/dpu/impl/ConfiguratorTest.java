@@ -148,7 +148,7 @@ public class ConfiguratorTest {
         DPUInstanceRecord dpu = mock(DPUInstanceRecord.class);
         Node node = new Node(dpu);
         DPUConfigurable dpuInstance = mock(DPUConfigurable.class);
-        doThrow(new DPUConfigException()).when(dpuInstance).configure(null);
+        doThrow(new DPUConfigException("dsfafds")).when(dpuInstance).configure(null);
         PipelineExecution execution = mock(PipelineExecution.class);
 
         // create Context with given DPUInstanceRecord
