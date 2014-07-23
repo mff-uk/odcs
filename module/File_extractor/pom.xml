@@ -32,6 +32,7 @@
 			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>module-test</artifactId>
 			<version>1.2.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

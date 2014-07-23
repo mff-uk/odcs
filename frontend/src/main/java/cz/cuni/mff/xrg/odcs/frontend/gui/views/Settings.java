@@ -97,6 +97,8 @@ public class Settings extends ViewComponent {
      * Currently logged in user.
      */
     private User loggedUser;
+    
+    private boolean isMainLayoutInitialized = false;
 
     /**
      * The constructor should first build the main layout, set the composition
@@ -130,7 +132,10 @@ public class Settings extends ViewComponent {
     @Override
     public void enter(ViewChangeEvent event) {
         loggedUser = authCtx.getUser();
-        buildMainLayout();
+        if (!isMainLayoutInitialized) {
+        	buildMainLayout();
+        	isMainLayoutInitialized = true;
+		}
         setCompositionRoot(mainLayout);
     }
 

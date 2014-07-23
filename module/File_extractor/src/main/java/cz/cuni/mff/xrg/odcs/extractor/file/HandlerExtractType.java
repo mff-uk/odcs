@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
-
 /**
  * Possibilies how to choose handler for data extraction and how to solve found
  * problems with no valid data.

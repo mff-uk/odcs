@@ -258,6 +258,16 @@ public interface PipelineFacade extends Facade {
     boolean hasModifiedExecutions(Date lastLoad);
 
     /**
+     * Tells whether there were any changes to pipelines since the
+     * last load.
+     * <p>
+     * 
+     * @param lastLoad
+     * @return
+     */
+    public boolean hasModifiedPipelines(Date lastLoad);
+    
+    /**
      * Persists new {@link PipelineExecution} or updates it if it was already
      * persisted before.
      * 

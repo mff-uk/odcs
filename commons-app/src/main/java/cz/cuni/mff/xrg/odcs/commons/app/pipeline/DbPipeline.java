@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.Date;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
@@ -37,4 +38,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      */
     public Pipeline getPipelineByName(String name);
 
+    /**
+     * Tells whether there were any changes to pipeline since the
+     * last load.
+     * <p>
+     * 
+     * @param since
+     * @return whether any pipeline was created / updated since given date
+     */
+    public boolean hasModified(Date since);
 }

@@ -9,6 +9,7 @@
 		<version>1.0.0</version>
 		<relativePath>../dpu-base-pom.xml</relativePath>
 	</parent>
+	
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>Silk_Linker_Extractor</artifactId>
 	<name>Silk_Linker_Extractor</name>
@@ -21,6 +22,11 @@
         DPU configuration may also specify thresholds for the two outputs created. Uses 2.5.3 version of Silk. Not
         supporting cancelation of DPU.
     </description>
+
+	<properties>
+		<dpu.package>cz.cuni.mff.xrg.odcs.extractor.silklinker</dpu.package>
+		<dpu.mainClass>SilkLinker</dpu.mainClass>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -50,10 +56,4 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-
-	<properties>
-		<dpu.package>cz.cuni.mff.xrg.odcs.extractor.silklinker</dpu.package>
-		<dpu.mainClass>SilkLinker</dpu.mainClass>
-	</properties>
-
 </project>

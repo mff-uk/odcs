@@ -341,7 +341,8 @@ public class UserCreate extends Window {
                         if (!passwordConfim.getValue().isEmpty()) {
                             userPassword = password.getValue();
                         } else {
-                            userPassword = createPassword();
+                            Notification.show("Password confirmation is wrong", "The pasword can't be empty", Notification.Type.ERROR_MESSAGE);
+                            return;
                         }
                     } else {
                         Notification.show("Password confirmation is wrong", "The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);
@@ -361,7 +362,8 @@ public class UserCreate extends Window {
                             if (!passwordConfim.getValue().isEmpty()) {
                                 user.setPassword(password.getValue());
                             } else {
-                                user.setPassword(createPassword());
+                            	Notification.show("Password confirmation is wrong", "The pasword can't be empty", Notification.Type.ERROR_MESSAGE);
+                            	return;
                             }
                         } else {
                             Notification.show("Password confirmation is wrong", "The typed pasword is different than the retyped password", Notification.Type.ERROR_MESSAGE);

@@ -119,6 +119,8 @@ public class Scheduler extends ViewComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
+    private boolean isMainLayoutInitialized = false;
+    
     /**
      * The constructor should first build the main layout, set the composition
      * root and then do any custom initialization.
@@ -136,7 +138,10 @@ public class Scheduler extends ViewComponent {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        buildMainLayout();
+    	if (!isMainLayoutInitialized) {
+    		buildMainLayout();
+    		isMainLayoutInitialized = true;
+		}
         setCompositionRoot(mainLayout);
 
         refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();

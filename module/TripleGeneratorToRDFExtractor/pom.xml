@@ -20,11 +20,13 @@
 		<dpu.package>cz.cuni.mff.xrg.odcs.dpu.triplegeneratortordfextractor</dpu.package>
 		<dpu.mainClass>TripleGeneratorToRDFExtractor</dpu.mainClass>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-sail-memory</artifactId>
 			<version>2.7.11</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
