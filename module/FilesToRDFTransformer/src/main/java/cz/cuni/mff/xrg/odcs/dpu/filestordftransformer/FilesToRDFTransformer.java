@@ -60,7 +60,7 @@ public class FilesToRDFTransformer extends ConfigurableBase<FilesToRDFTransforme
                 connection = rdfOutput.getConnection();
 
                 RDFInserter rdfInserter = new CancellableCommitSizeInserter(connection, config.getCommitSize(), dpuContext);
-                rdfInserter.enforceContext(rdfOutput.getWriteDataGraph());
+                rdfInserter.enforceContext(rdfOutput.getBaseDataGraphURI());
 
                 ParseErrorListenerEnabledRDFLoader loader = new ParseErrorListenerEnabledRDFLoader(connection.getParserConfig(), connection.getValueFactory());
 

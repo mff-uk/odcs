@@ -107,7 +107,7 @@ public class RepositoryDataValidator implements DataValidator {
                         final StatisticalHandler handler = new StatisticalHandler(
                                 goalConnection, true);
 
-                        handler.setGraphContext(goalRepo.getWriteDataGraph());
+                        handler.setGraphContext(goalRepo.getBaseDataGraphURI());
 
                         RDFParser parser = Rio.createParser(RDFFormat.N3);
                         parser.setRDFHandler(handler);

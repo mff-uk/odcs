@@ -242,7 +242,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection = outputConfirmed.getConnection();
             String baseURI = "";
-            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getWriteDataGraph());
+            connection.add(f, baseURI, RDFFormat.TURTLE, outputConfirmed.getBaseDataGraphURI());
 
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
@@ -277,7 +277,7 @@ public class SilkLinker extends ConfigurableBase<SilkLinkerConfig>
 
             connection2 = outputToVerify.getConnection();
             String baseURI = "";
-            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getWriteDataGraph());
+            connection2.add(f, baseURI, RDFFormat.TURTLE, outputToVerify.getBaseDataGraphURI());
         } catch (IOException | RepositoryException | RDFParseException ex) {
             log.error(ex.getLocalizedMessage());
             context.sendMessage(DPUContext.MessageType.ERROR, "RDFException: "

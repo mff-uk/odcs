@@ -65,7 +65,7 @@ public class SPARQLLoaderRequestSysTest {
 
             Value object = factory.createLiteral("C" + String.valueOf(i + 1));
 
-            connection.add(subject, predicate, object, repository.getWriteDataGraph());
+            connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
         }
         RDFLoaderConfig c = new RDFLoaderConfig();
         c.setEndpointParams(params);

@@ -50,17 +50,17 @@ public class DPUReplacementTest {
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://s"), factory.createURI(
-                    "http://p"), factory.createURI("http://o"), input.getWriteDataGraph());
+                    "http://p"), factory.createURI("http://o"), input.getBaseDataGraphURI());
             connection.add(factory.createURI("http://subject"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getWriteDataGraph());
+                    "http://predicate"), factory.createURI("http://object"), input.getBaseDataGraphURI());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
             connection2.add(factory2.createBNode("n25"), factory2
-                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getWriteDataGraph());
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getBaseDataGraphURI());
 
-            assertEquals(2L, connection.size(input.getWriteDataGraph()));
-            assertEquals(1L, connection2.size(optional.getWriteDataGraph()));
+            assertEquals(2L, connection.size(input.getBaseDataGraphURI()));
+            assertEquals(1L, connection2.size(optional.getBaseDataGraphURI()));
 
             WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
@@ -135,26 +135,26 @@ public class DPUReplacementTest {
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://person"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getWriteDataGraph());
+                    "http://predicate"), factory.createURI("http://object"), input.getBaseDataGraphURI());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
 
             connection2.add(factory2.createURI("http://person"), factory2
                     .createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
-                    .createLiteral("Bill"), optional.getWriteDataGraph());
+                    .createLiteral("Bill"), optional.getBaseDataGraphURI());
 
-            assertEquals(1L, connection.size(input.getWriteDataGraph()));
-            assertEquals(1L, connection2.size(optional.getWriteDataGraph()));
+            assertEquals(1L, connection.size(input.getBaseDataGraphURI()));
+            assertEquals(1L, connection2.size(optional.getBaseDataGraphURI()));
 
             WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
             env.run(transformer);
 
             connection3 = output.getConnection();
-            assertEquals("Count of triples are not same", 3L, connection3.size(output.getWriteDataGraph()));
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getBaseDataGraphURI()));
 
-            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getWriteDataGraph());
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getBaseDataGraphURI());
 
             boolean newInsertedTripleFound = false;
             while (outputTriples.hasNext()) {

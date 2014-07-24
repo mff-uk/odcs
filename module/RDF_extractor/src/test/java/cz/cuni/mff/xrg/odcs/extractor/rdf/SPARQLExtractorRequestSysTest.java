@@ -66,7 +66,7 @@ public class SPARQLExtractorRequestSysTest {
                     getTestContext(), params);
             extractor.extractFromSPARQLEndpoint(endpoint, query);
             connection = repository.getConnection();
-            assertEquals(connection.size(repository.getWriteDataGraph()), EXTRACTED_TRIPLES);
+            assertEquals(connection.size(repository.getBaseDataGraphURI()), EXTRACTED_TRIPLES);
         } catch (DPUException ex) {
             fail(ex.getMessage());
         } finally {

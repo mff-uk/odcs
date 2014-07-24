@@ -83,7 +83,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
             RepositoryConnection connection = null;
             try {
                 connection = dataOutput.getConnection();
-                connection.clear(dataOutput.getWriteDataGraph());
+                connection.clear(dataOutput.getBaseDataGraphURI());
             } catch (RepositoryException ex) {
                 LOG.warn("Error", ex);
             } finally {

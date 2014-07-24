@@ -106,7 +106,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 RepositoryConnection connection = null;
                 try {
                     connection = writableRdfDataUnit.getConnection();
-                    triplesCount = connection.size(writableRdfDataUnit.getWriteDataGraph());
+                    triplesCount = connection.size(writableRdfDataUnit.getBaseDataGraphURI());
                     LOG.info("Extracted {} triples", triplesCount);
                 } catch (DataUnitException ex) {
                     throw new DPUException(ex);
@@ -184,7 +184,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
             RDFFormat fileFormat,
             InputStreamReader is, String baseURI) throws DPUException, DataUnitException {
 
-        handler.setGraphContext(writableRdfDataUnit.getWriteDataGraph());
+        handler.setGraphContext(writableRdfDataUnit.getBaseDataGraphURI());
         RDFParser parser = getRDFParser(fileFormat, handler);
 
         try {
@@ -382,7 +382,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 connection.begin();
                 addFilesInDirectoryToRepository(format, files, baseURI,
                         handlerExtractType, skipFiles, connection,
-                        repo.getWriteDataGraph());
+                        repo.getBaseDataGraphURI());
 
                 connection.commit();
             } catch (RepositoryException | DataUnitException e) {
@@ -465,7 +465,7 @@ public class FileExtractor extends ConfigurableBase<FileExtractorConfig>
                 connection.begin();
                 addFileToRepository(format, dirFile, baseURI,
                         handlerExtractType,
-                        connection, repo.getWriteDataGraph());
+                        connection, repo.getBaseDataGraphURI());
                 connection.commit();
             } catch (RepositoryException | DataUnitException e) {
                 throw new DPUException(e.getMessage(), e);

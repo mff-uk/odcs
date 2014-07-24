@@ -80,7 +80,7 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getWriteDataGraph()));
+                    dataUnitName, dataGraph, connection.size(this.getBaseDataGraphURI()));
         } catch (RepositoryException | DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {

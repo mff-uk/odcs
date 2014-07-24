@@ -100,7 +100,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 
     //WritableFilesDataUnit interface
     @Override
-    public String getBaseURIString() {
+    public String getBaseFileURIString() {
         if (!ownerThread.equals(Thread.currentThread())) {
             throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
@@ -154,8 +154,8 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                     valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
                     valueFactory.createLiteral(existingFile.toURI().toASCIIString())
                     );
-            connection.add(statement, backingStore.getWriteDataGraph());
-            connection.add(statement2, backingStore.getWriteDataGraph());
+            connection.add(statement, backingStore.getBaseDataGraphURI());
+            connection.add(statement2, backingStore.getBaseDataGraphURI());
             connection.commit();
             generatedFilenames.remove(existingFileURI);
         } catch (RepositoryException ex) {

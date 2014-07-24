@@ -215,14 +215,14 @@ public class LocalRDFRepoSysTest {
         HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
         RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getWriteDataGraph());
+        long size = connection.size(rdfRepo.getBaseDataGraphURI());
 
         File dir = new File(testFileDir);
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getWriteDataGraph());
+                connection.add(file, baseURI, fileFormat, rdfRepo.getBaseDataGraphURI());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -230,7 +230,7 @@ public class LocalRDFRepoSysTest {
             }
         }
 
-        long newSize = connection.size(rdfRepo.getWriteDataGraph());
+        long newSize = connection.size(rdfRepo.getBaseDataGraphURI());
 
         connection.close();
         assertTrue(newSize > size);
@@ -249,13 +249,13 @@ public class LocalRDFRepoSysTest {
         HandlerExtractType handlerType = HandlerExtractType.ERROR_HANDLER_CONTINUE_WHEN_MISTAKE;
 
         RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getWriteDataGraph());
+        long size = connection.size(rdfRepo.getBaseDataGraphURI());
         File dir = new File(testFileDir);
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getWriteDataGraph());
+                connection.add(file, baseURI, fileFormat, rdfRepo.getBaseDataGraphURI());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -274,14 +274,14 @@ public class LocalRDFRepoSysTest {
         HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
         RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getWriteDataGraph());
+        long size = connection.size(rdfRepo.getBaseDataGraphURI());
 
         File dir = new File(testFileDir);
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getWriteDataGraph());
+                connection.add(file, baseURI, fileFormat, rdfRepo.getBaseDataGraphURI());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -289,7 +289,7 @@ public class LocalRDFRepoSysTest {
             }
         }
 
-        long newSize = connection.size(rdfRepo.getWriteDataGraph());
+        long newSize = connection.size(rdfRepo.getBaseDataGraphURI());
         connection.close();
         assertTrue(newSize > size);
     }
@@ -302,14 +302,14 @@ public class LocalRDFRepoSysTest {
         HandlerExtractType handlerType = HandlerExtractType.STANDARD_HANDLER;
 
         RepositoryConnection connection = rdfRepo.getConnection();
-        long size = connection.size(rdfRepo.getWriteDataGraph());
+        long size = connection.size(rdfRepo.getBaseDataGraphURI());
 
         File dir = new File(testFileDir);
         Collection<File> files = FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getWriteDataGraph());
+                connection.add(file, baseURI, fileFormat, rdfRepo.getBaseDataGraphURI());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {
@@ -317,7 +317,7 @@ public class LocalRDFRepoSysTest {
             }
         }
 
-        long newSize = connection.size(rdfRepo.getWriteDataGraph());
+        long newSize = connection.size(rdfRepo.getBaseDataGraphURI());
 
         boolean triplesAdded = newSize > size;
         connection.close();
@@ -334,7 +334,7 @@ public class LocalRDFRepoSysTest {
         TEDextractFile2ToRepository();
 
         RepositoryConnection connection = rdfRepo.getConnection();
-        long addedData = connection.size(rdfRepo.getWriteDataGraph());
+        long addedData = connection.size(rdfRepo.getBaseDataGraphURI());
         connection.close();
         assertTrue(addedData > 0);
     }
@@ -345,8 +345,8 @@ public class LocalRDFRepoSysTest {
     @Test
     public void isRepositoryEmpty() throws RepositoryException, DataUnitException {
         RepositoryConnection connection = rdfRepo.getConnection();
-        connection.clear(rdfRepo.getWriteDataGraph());
-        assertEquals(0, connection.size(rdfRepo.getWriteDataGraph()));
+        connection.clear(rdfRepo.getBaseDataGraphURI());
+        assertEquals(0, connection.size(rdfRepo.getBaseDataGraphURI()));
         connection.close();
     }
 
@@ -368,11 +368,11 @@ public class LocalRDFRepoSysTest {
         boolean isInRepository = false;
 
         RepositoryConnection connection = repository.getConnection();
-        long size = connection.size(repository.getWriteDataGraph());
-        connection.hasStatement(subject, predicate, object, true, repository.getWriteDataGraph());
-        connection.add(subject, predicate, object, repository.getWriteDataGraph());
+        long size = connection.size(repository.getBaseDataGraphURI());
+        connection.hasStatement(subject, predicate, object, true, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
 
-        long expectedSize = connection.size(repository.getWriteDataGraph());
+        long expectedSize = connection.size(repository.getBaseDataGraphURI());
 
         if (isInRepository) {
             assertEquals(expectedSize, size);
@@ -422,7 +422,7 @@ public class LocalRDFRepoSysTest {
         for (File file : files) {
             try {
                 RDFFormat fileFormat = RDFFormat.forFileName(file.getAbsolutePath(), RDFFormat.RDFXML);
-                connection.add(file, baseURI, fileFormat, rdfRepo.getWriteDataGraph());
+                connection.add(file, baseURI, fileFormat, rdfRepo.getBaseDataGraphURI());
             } catch (RDFParseException e) {
                 //in this case - just skip this file
             } catch (IOException e) {

@@ -33,7 +33,7 @@ public class AddQueryGraphsTest {
     public static void initialize() throws DataUnitException {
         testEnvironment = new TestEnvironment();
         writeRepository = testEnvironment.createRdfInput("LocalRepository", false);
-        GRAPH_NAME = writeRepository.getWriteDataGraph().stringValue();
+        GRAPH_NAME = writeRepository.getBaseDataGraphURI().stringValue();
         trans = new SPARQLTransformer();
     }
 
@@ -56,7 +56,7 @@ public class AddQueryGraphsTest {
                         + "{ GRAPH <%s> { <http://example/book1>  ns:price  42 } } ",
                 GRAPH_NAME);
 
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getBaseDataGraphURI());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
@@ -78,7 +78,7 @@ public class AddQueryGraphsTest {
                         + "dc:creator \"Edmund Wells\" . } }",
                 GRAPH_NAME);
 
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getBaseDataGraphURI());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
@@ -102,7 +102,7 @@ public class AddQueryGraphsTest {
                         + "WHERE\n"
                         + "{ ?person foaf:givenName 'Bill' }",
                 GRAPH_NAME);
-        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getWriteDataGraph());
+        String returnedQuery = trans.AddGraphToUpdateQuery(originalQuery, writeRepository.getBaseDataGraphURI());
         assertEquals(expectedQuery, returnedQuery);
         
         assertTrue("This update query can not be executed by transformer",
@@ -117,7 +117,7 @@ public class AddQueryGraphsTest {
             CleverDataset dataSet = new CleverDataset();
             dataSet.addDefaultGraphs(writeRepository.getDataGraphnames());
             dataSet.addNamedGraphs(writeRepository.getDataGraphnames());
-            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, writeRepository.getWriteDataGraph());
+            trans.executeSPARQLUpdateQuery(connection, updateQuery, dataSet, writeRepository.getBaseDataGraphURI());
             return true;
         } catch (DPUException e) {
             LOG.debug("Exception duering exectution query " + updateQuery + e

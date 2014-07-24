@@ -352,7 +352,7 @@ public class SPARQLExtractor {
                 break;
         }
 
-        handler.setGraphContext(outputDataUnit.getWriteDataGraph());
+        handler.setGraphContext(outputDataUnit.getBaseDataGraphURI());
 
         RDFParser parser = getRDFParser(format, handler);
 
@@ -383,7 +383,7 @@ public class SPARQLExtractor {
         } catch (RDFCancelException e) {
             logger.debug(e.getMessage());
             try {
-                connection.clear(outputDataUnit.getWriteDataGraph());
+                connection.clear(outputDataUnit.getBaseDataGraphURI());
             } catch (RepositoryException e1) {
                 logger.debug(e.getMessage());
                 throw new DPUException(e1.getMessage(), e1);

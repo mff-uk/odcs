@@ -46,7 +46,7 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
                         f.createURI("http://example.org/people/d" + String.valueOf(j++)),
                         f.createURI("http://example.org/ontology/e" + String.valueOf(j++)),
                         f.createLiteral("Alice" + String.valueOf(j++))
-                        ), rdfOutput.getWriteDataGraph());
+                        ), rdfOutput.getBaseDataGraphURI());
                 if ((i % 25000) == 0) {
                     connection.commit();
                     dpuContext.sendMessage(DPUContext.MessageType.DEBUG, "Number of triples " + String.valueOf(i));
@@ -58,7 +58,7 @@ public class TripleGeneratorToRDFExtractor extends ConfigurableBase<TripleGenera
             }
             connection.commit();
             dpuContext.sendMessage(DPUContext.MessageType.DEBUG,
-                    "Number of triples " + String.valueOf(connection.size(rdfOutput.getWriteDataGraph())));
+                    "Number of triples " + String.valueOf(connection.size(rdfOutput.getBaseDataGraphURI())));
         } catch (RepositoryException | DataUnitException ex) {
             dpuContext.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), ex
                     .fillInStackTrace().toString());

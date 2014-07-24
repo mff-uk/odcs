@@ -101,8 +101,8 @@ public class SPARQLLoaderTest1 {
         Value object2 = factory.createLiteral("Y");
         Value object3 = factory.createLiteral("ščřžýěéž");
 
-        connection.add(subject, predicate, object, repository.getWriteDataGraph());
-        connection.add(subject, predicate, object3, repository.getWriteDataGraph());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, object3, repository.getBaseDataGraphURI());
         connection.close();
         tryInsertToSPARQLEndpoint();
     }

@@ -93,17 +93,17 @@ public class ReportCreator {
             try {
                 connection = repository.getConnection();
                 connection.add(getSubject(count), new URIImpl("rdf:type"),
-                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getWriteDataGraph());
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("subject"),
-                        getObject(sub), repository.getWriteDataGraph());
+                        getObject(sub), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("predicate"),
-                        getObject(pred), repository.getWriteDataGraph());
+                        getObject(pred), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("object"),
-                        getObject(obj), repository.getWriteDataGraph());
+                        getObject(obj), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("reason"),
-                        getObject(message), repository.getWriteDataGraph());
+                        getObject(message), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("sourceLine"),
-                        getObject(line), repository.getWriteDataGraph());
+                        getObject(line), repository.getBaseDataGraphURI());
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
             } catch (DataUnitException e) {

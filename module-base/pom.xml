@@ -92,14 +92,6 @@
             <type>jar</type>
         </dependency>
 
-        <dependency> <!-- ontology -->
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>ontology</artifactId>
-            <!-- the version has to be specify -->
-            <version>${odcs.version}</version>
-            <type>jar</type>
-        </dependency>
-
         <dependency> <!-- JUnit dependency -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

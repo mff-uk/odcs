@@ -148,7 +148,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //WritableRDFDataUnit interface
     @Override
-    public URI getWriteDataGraph() {
+    public URI getBaseDataGraphURI() {
         return writeContext;
     }
 
@@ -164,7 +164,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         try {
             connection = getConnection();
 
-            String targetGraphName = getWriteDataGraph().stringValue();
+            String targetGraphName = getBaseDataGraphURI().stringValue();
             for (URI sourceGraph : otherRDFDataUnit.getDataGraphnames()) {
                 String sourceGraphName = sourceGraph.stringValue();
 
@@ -304,13 +304,13 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             ValueFactory valueFactory = connection.getValueFactory();
             for (URI context : this.getDataGraphnames()) {
                 connection.add(valueFactory.createStatement(
-                        this.getWriteDataGraph(),
+                        this.getBaseDataGraphURI(),
                         valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
                         context),
                         valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             }
             connection.add(valueFactory.createStatement(
-                    this.getWriteDataGraph(),
+                    this.getBaseDataGraphURI(),
                     valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
                     this.writeContext),
                     valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
@@ -335,7 +335,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             connection = getConnectionInternal();
 
             ValueFactory valueFactory = connection.getValueFactory();
-            RepositoryResult<Statement> result = connection.getStatements(this.getWriteDataGraph(),
+            RepositoryResult<Statement> result = connection.getStatements(this.getBaseDataGraphURI(),
                     valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
                     null,
                     false,
@@ -344,7 +344,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 Statement contextStatement = result.next();
                 this.readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
             }
-            RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getWriteDataGraph(),
+            RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getBaseDataGraphURI(),
                     valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
                     null,
                     false,

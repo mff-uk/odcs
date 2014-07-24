@@ -62,7 +62,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getWriteDataGraph()));
+                    dataUnitName, dataGraph, connection.size(this.getBaseDataGraphURI()));
         } catch (RepositoryException | DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -95,7 +95,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
 
-            String targetGraphName = getWriteDataGraph().stringValue();
+            String targetGraphName = getBaseDataGraphURI().stringValue();
             for (URI sourceGraph : otherRDFDataUnit.getDataGraphnames()) {
                 String sourceGraphName = sourceGraph.stringValue();
 
