@@ -1,8 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-
-import java.nio.channels.UnsupportedAddressTypeException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,12 +20,13 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.dataunit.DataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -374,7 +372,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     }
 
     @Override
-    public Iteration getIteration() throws DataUnitException {
+    public RDFDataUnit.Iteration getIteration() throws DataUnitException {
         throw new UnsupportedOperationException();
     }
 
@@ -385,6 +383,11 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     @Override
     public URI addNewDataGraph(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
+    }
+    
+    @Override
+    public void addEntry(String symbolicName) throws DataUnitException {
         throw new DataUnitException("Not supported");
     }
 }

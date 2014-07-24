@@ -277,4 +277,9 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
         throw new DataUnitException("Not supported");
     }
 
+    @Override
+    public void addEntry(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
+    }
+
 }
