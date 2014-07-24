@@ -11,11 +11,9 @@
 	<modules>
 		<!-- New DPUs -->
 		<module>FilesToFilesXSLT2Transformer</module>
-		<module>FilesToFileTransformer</module>
 		<module>FilesToRDFTransformer</module>
 		<module>FilesToSPARQLLoader</module>
 		<module>FilesToLocalDirectoryLoader</module>
-		<module>FileToFilesTransformer</module>
 		<module>HTTPToFilesExtractor</module>
 		<module>TripleGeneratorToRDFExtractor</module>
 		<module>FilesToFilesRenameTransformer</module>
