@@ -250,7 +250,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;
-        while ((sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH) || (index < proposedSymbolicName.length())) {
+        while ((sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH) && (index < proposedSymbolicName.length())) {
             int codePoint = proposedSymbolicName.codePointAt(index);
             if (sb.length() == 0) {
                 if (((codePoint >= 97) && (codePoint <= 122)) || // [a-z]
