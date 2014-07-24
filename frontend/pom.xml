@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.2.2</version>
+		<version>1.3.0</version>
 	</parent>
 	<artifactId>frontend</artifactId>
 	<packaging>war</packaging>
@@ -50,6 +50,21 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-api</artifactId>
+			<version>${uv-dpu-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-api-helpers</artifactId>
+			<version>${uv-dpu-api-helpers.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<version>${uv-dataunit-helpers.version}</version>
+		</dependency>
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -165,22 +180,7 @@
 			<artifactId>commons-validator</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-api</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-api-helpers</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dataunit-helpers</artifactId>
-			<version>1.0.0</version>
-		</dependency>		
+
 	</dependencies>
 
 	<!-- define license -->
