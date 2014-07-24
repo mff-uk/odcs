@@ -37,6 +37,7 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 
@@ -44,9 +45,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "DPURecord")
-public class DPUPresenterImpl implements DPUPresenter {
+public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Autowired
     private DPUView view;
@@ -84,6 +85,8 @@ public class DPUPresenterImpl implements DPUPresenter {
      * Cache for pipelines using currently selected DPU template.
      */
     private Map<Long, Pipeline> pipelinesWithDPU = new HashMap<>();
+
+	private boolean isLayoutInitialized = false;
 
     @Override
     public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
@@ -309,6 +312,7 @@ public class DPUPresenterImpl implements DPUPresenter {
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         selectedDpu = null;
         Object viewObject = view.enter(this);
+        isLayoutInitialized  = true;
 
         createDPUCloseListener = new Window.CloseListener() {
             private static final long serialVersionUID = 1L;
@@ -406,4 +410,14 @@ public class DPUPresenterImpl implements DPUPresenter {
         Pipeline pipe = getPipeline(pipelineId);
         return permissions.hasPermission(pipe, "view");
     }
+
+	@Override
+	public void doAfterLogout() {
+		isLayoutInitialized = false;
+	}
+
+	@Override
+	public boolean isLayoutInitialized() {
+		return isLayoutInitialized;
+	}
 }

@@ -38,9 +38,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "Administrator")
-public class Settings extends ViewComponent {
+public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private static final long serialVersionUID = 1L;
 
@@ -792,4 +792,9 @@ public class Settings extends ViewComponent {
         return errorText;
 
     }
+
+	@Override
+	public void doAfterLogout() {
+		isMainLayoutInitialized = false;
+	}
 }

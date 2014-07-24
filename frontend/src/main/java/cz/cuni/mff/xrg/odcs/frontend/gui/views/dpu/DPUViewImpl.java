@@ -117,8 +117,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private Panel dpuTreePanel;
     
-    private boolean isInitialized = false;
-
     /**
      * Constructor.
      */
@@ -130,9 +128,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        if (!isInitialized) {
+        if (!presenter.isLayoutInitialized()) {
         	buildMainLayout();
-        	isInitialized = true;
 		}
         
         setCompositionRoot(mainLayout);

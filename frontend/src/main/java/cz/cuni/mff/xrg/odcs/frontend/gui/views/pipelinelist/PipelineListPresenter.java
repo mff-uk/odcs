@@ -164,4 +164,10 @@ public interface PipelineListPresenter extends Presenter {
             this.container = container;
         }
     }
+
+    /**
+     * 
+     * @return
+     */
+	public boolean isLayoutInitialized();
 }

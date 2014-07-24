@@ -297,4 +297,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 	public void doAfterLogout() {
 		isInitialized = false;
 	}
+
+	@Override
+	public boolean isLayoutInitialized() {
+		return isInitialized;
+	}
 }
