@@ -2,16 +2,15 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -151,19 +150,7 @@ class OSGIModuleFacadeConfig {
         String list = "";
         String delimiter = ",";
         try {
-            Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-            Enumeration enumeration = properties.propertyNames();
-            while (enumeration.hasMoreElements()) {
-                String key = (String) enumeration.nextElement();
-                String value = properties.getProperty(key);
-
-                if(enumeration.hasMoreElements())
-                    list += key + "=" + value + delimiter;
-                else{
-                    list += key + "=" + value;
-                }
-            }
-
+            list = StringUtils.join(IOUtils.readLines(resource.getInputStream()), ",");
             LOG.debug("list of package to expose: ", list);
         } catch (IOException e) {
             LOG.error("Error", e);

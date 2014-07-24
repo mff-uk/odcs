@@ -42,7 +42,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -51,6 +50,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
 
 public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);

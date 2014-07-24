@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
 
 /**
  * Class provide one-place access to create/update/delete actions for DPUs. It
@@ -156,11 +156,11 @@ public class DPUModuleManipulator {
         }
 
         // is configurable
-        if (dpuObject instanceof Configurable) {
-            Configurable configurable = (Configurable) dpuObject;
+        if (dpuObject instanceof DPUConfigurable) {
+            DPUConfigurable configurable = (DPUConfigurable) dpuObject;
             try {
-                newTemplate.setRawConf(configurable.getConf());
-            } catch (ConfigException e) {
+                newTemplate.setRawConf(configurable.getDefaultConfiguration());
+            } catch (DPUConfigException e) {
                 // failed to load default configuration .. 
                 newDPUFile.delete();
                 try {

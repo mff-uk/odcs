@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.odcs.rdf.validator;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * RDF Data validator configuration.
  * 
  * @author Jiri Tomes
  */
-public class RDFDataValidatorConfig extends DPUConfigObjectBase {
+public class RDFDataValidatorConfig {
 
     private boolean stopExecution;
 
@@ -66,7 +65,6 @@ public class RDFDataValidatorConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return true;
     }

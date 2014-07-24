@@ -1,22 +1,23 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestosparqlloader;
 
+import java.util.Collections;
 import java.util.Set;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
-public class FilesToSPARQLLoaderConfig extends DPUConfigObjectBase {
+public class FilesToSPARQLLoaderConfig {
     /**
      * 
      */
     private static final long serialVersionUID = -3161162556703740405L;
 
-    private String queryEndpointUrl;
+    private String queryEndpointUrl = "";
 
-    private String updateEndpointUrl;
+    private String updateEndpointUrl = "";
 
     private int commitSize = 10000;
-    
-    private Set<String> targetContexts;
+
+    private Set<String> targetContexts = Collections.<String> emptySet();
+
+    private boolean skipOnError = false;
 
     // DPUTemplateConfig must provide public non-parametric constructor
     public FilesToSPARQLLoaderConfig() {
@@ -52,6 +53,14 @@ public class FilesToSPARQLLoaderConfig extends DPUConfigObjectBase {
 
     public void setTargetContexts(Set<String> targetContexts) {
         this.targetContexts = targetContexts;
+    }
+
+    public boolean isSkipOnError() {
+        return skipOnError;
+    }
+
+    public void setSkipOnError(boolean skipOnError) {
+        this.skipOnError = skipOnError;
     }
 
 }

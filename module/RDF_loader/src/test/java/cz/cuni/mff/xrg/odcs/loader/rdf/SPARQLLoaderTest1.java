@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 
 import static org.junit.Assert.assertTrue;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.logging.Level;
 
@@ -18,13 +16,11 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * Test funcionality loading to SPARQL endpoint.
@@ -81,7 +77,7 @@ public class SPARQLLoaderTest1 {
 ////        private static final String UPDATE_ENDPOINT = "http://localhost:8890/sparql-graph-crud-auth";
 
     @BeforeClass
-    public static void setRDFDataUnit() throws RDFException {
+    public static void setRDFDataUnit() throws DPUException {
 
 //		repository = new VirtuosoRDFDataUnit(URL, 
 //				USER, PASSWORD, "input", INPUT_GRAPH);
@@ -94,7 +90,7 @@ public class SPARQLLoaderTest1 {
     }
 
     //@Test
-    public void InsertingTripleToEndpointCRUD() throws RepositoryException {
+    public void InsertingTripleToEndpointCRUD() throws RepositoryException, DataUnitException {
         //repository.cleanAllData();
 
         RepositoryConnection connection = repository.getConnection();
@@ -105,8 +101,8 @@ public class SPARQLLoaderTest1 {
         Value object2 = factory.createLiteral("Y");
         Value object3 = factory.createLiteral("ščřžýěéž");
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(subject, predicate, object3, repository.getWriteContext());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, object3, repository.getBaseDataGraphURI());
         connection.close();
         tryInsertToSPARQLEndpoint();
     }

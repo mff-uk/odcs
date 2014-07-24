@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.silklinker;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
 
 /**
  * Configuration for SilkLinker
  * 
  * @author tomasknap
  */
-public class SilkLinkerConfig extends DPUConfigObjectBase {
+public class SilkLinkerConfig {
 
     /**
      * Path to the config file driving the execution of Silk.
@@ -81,7 +80,6 @@ public class SilkLinkerConfig extends DPUConfigObjectBase {
         return confFileLabel;
     }
 
-    @Override
     public boolean isValid() {
         return confFile != null;
     }

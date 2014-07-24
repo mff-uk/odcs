@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,6 +319,18 @@ public class AppEntry extends com.vaadin.ui.UI {
      */
     public <T extends Object> T getBean(Class<T> type) {
         return context.getBean(type);
+    }
+    
+    /**
+     * Fetches spring beans. For cases when auto-wiring is not a possibility.
+     * 
+     * @param <T>
+     * @param type
+     *            Class of the bean to fetch.
+     * @return bean
+     */
+    public <T extends Object> Map<String, T> getBeans(Class<T> type) {
+        return context.getBeansOfType(type);
     }
 
     /**

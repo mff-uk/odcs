@@ -3,10 +3,6 @@ package cz.cuni.mff.xrg.odcs.extractor.rdf;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
-import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
-
 /**
  * This class is responsible for the construct query extension using ORDER BY,
  * LIMIT and OFFSET clause. The extension is necessary for split construct query

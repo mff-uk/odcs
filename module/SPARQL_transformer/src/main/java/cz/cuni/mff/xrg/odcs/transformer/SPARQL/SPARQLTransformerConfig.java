@@ -3,15 +3,13 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
 /**
  * SPARQL transformer configuration.
  * 
  * @author Jiri Tomes
  * @author tknap
  */
-public class SPARQLTransformerConfig extends DPUConfigObjectBase {
+public class SPARQLTransformerConfig {
 
     private List<SPARQLQueryPair> queryPairs;
 
@@ -46,7 +44,6 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return queryPairs != null;
     }
@@ -74,11 +71,11 @@ public class SPARQLTransformerConfig extends DPUConfigObjectBase {
     /**
      * Fill missing configuration with default values.
      */
-    @Override
-    public void onDeserialize() {
-        if (SPARQL_Update_Query != null) {
-            queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
-                    isConstructType));
-        }
-    }
+//    @Override
+//    public void onDeserialize() {
+//        if (SPARQL_Update_Query != null) {
+//            queryPairs.add(new SPARQLQueryPair(SPARQL_Update_Query,
+//                    isConstructType));
+//        }
+//    }
 }

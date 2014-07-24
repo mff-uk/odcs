@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * This exception is thrown when target graph on the SPARQL endpoint where RDF

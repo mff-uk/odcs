@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * This exception is thrown, when selected data format is not supported by basic
@@ -8,16 +8,9 @@ import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
  * 
  * @author Jiri Tomes
  */
-public class NotSupporteRDFFormatException extends ConfigException {
+public class NotSupporteRDFFormatException extends DPUConfigException {
 
     private final String message = "This RDF format is not supported.";
-
-    /**
-     * Create a new instance of {@link NotSupporteRDFFormatException} without
-     * detail message.
-     */
-    public NotSupporteRDFFormatException() {
-    }
 
     /**
      * Create new instance of {@link NotSupporteRDFFormatException} with
@@ -45,6 +38,7 @@ public class NotSupporteRDFFormatException extends ConfigException {
      * Create new instance of {@link NotSupporteRDFFormatException} with cause
      * of throwing this exception.
      * 
+     * @param message
      * @param cause
      *            Cause of throwing exception
      */

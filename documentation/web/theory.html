@@ -4,7 +4,7 @@
 </head>
 <body>
 <h2 id="basicConcepts">Basic concepts of Data Processing Unit (DPU) creation </h2>
-This section describes basic knowledge needed to create your own data processing unit (DPU) for ODCleanStore.
+This section describes basic knowledge needed to create your own data processing unit (DPU) for UnifiedViews.
 
 <h3>DPU</h3>
 The data processing unit typically consists of three parts:
@@ -35,7 +35,7 @@ an appropriate preimplemented class from the package <code>cz.cuni.mff.xrg.odcs.
 </ul>
 In order to provide a configuration dialog, the DPU's main class also has to implement an interface
 <div class="code"> <pre> <code>
-    interface cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider &lt;C extends DPUConfigObject&gt; </code> </pre>
+    interface cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider &lt;C extends DPUConfig&gt; </code> </pre>
 </div>
 
 
@@ -69,7 +69,7 @@ In order to provide a configuration dialog, the DPU's main class also has to imp
 
     The configuration object must implement an interface
     <div class="code"> <pre> <code>
-        interface cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject </code> </pre>
+        interface cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfig </code> </pre>
     </div>
     which is located in the <code>commons</code> module. The interface requires implementation
     of one method - <code>isValid</code> - which checks whether the configuration is valid when the user's input is
@@ -80,7 +80,7 @@ the required attributes.
 <br/>Instead of implementing an interface the configuration class can extend
 the following pre-implemented configuration class.
 <div class="code"> <pre> <code>
-    class cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObject</code> </pre>
+    class cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfig</code> </pre>
 </div>
 This class provides default 'always true' implementation of the <code>isValid</code> method,
 this implementation can be optionally overridden by the programmer.
@@ -121,7 +121,7 @@ One pipeline may have more different DPU instances of the same DPU template.
 
     <div class="code"> <pre> <code>
         <span class="comment">// create output RDFDataUnit named "output"</span>
-        @OutputDataUnit(name="output")
+        @DataUnit.AsOutput(name="output")
         public RDFDataUnit outputDataUnit;
     </code> </pre>
     </div>
@@ -132,7 +132,7 @@ One pipeline may have more different DPU instances of the same DPU template.
 
     <div class="code"> <pre> <code>
         <span class="comment">// prepare new input data unit </span><!--DataUnitList&lt;RDFDataUnit&gt; dataUnitList = RDFDataUnitList.create(context);-->
-        @InputDataUnit
+        @DataUnit.AsInput
         public RDFDataUnit inputDataUnit;
     </code> </pre>
     </div>

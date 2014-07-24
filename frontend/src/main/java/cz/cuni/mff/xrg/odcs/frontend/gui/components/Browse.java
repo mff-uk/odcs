@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionChangedEvent;
 
 /**
@@ -80,7 +80,7 @@ public class Browse extends CustomComponent {
         if (info == null) {
             return;
         }
-        if (info.getType() == DataUnitType.FILE) {
+        if (info.getType() == ManagableDataUnit.Type.FILE) {
             if (queryView.getClass() == RDFQueryView.class) {
                 mainLayout.removeComponent(queryView);
                 queryView = new FileQueryView();

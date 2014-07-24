@@ -1,23 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.thoughtworks.xstream.XStream;
-
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -29,11 +13,29 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Service for importing pipelines exported by {@link ExportService}.
@@ -63,17 +65,17 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
-    public Pipeline importPipeline(File zipFile) throws ImportException {
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException {
         final File tempDir;
         try {
             tempDir = resourceManager.getNewImportTempDir();
         } catch (MissingResourceException ex) {
             throw new ImportException("Failed to get temp directory.", ex);
         }
-        return importPipeline(zipFile, tempDir);
+        return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
-    public Pipeline importPipeline(File zipFile, File tempDirectory)
+    public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException {
         // delete tempDirectory
         FileUtils.deleteQuietly(tempDirectory);
@@ -94,7 +96,7 @@ public class ImportService {
             pipe.setUser(user);
             pipe.setShareType(ShareType.PRIVATE);
 
-            // TODO Check for DPU versions here and warn in case of problems
+            // TODO skoda: Check for DPU versions here and warn in case of problems
 
             Map<DPUTemplateRecord, DPUTemplateRecord> importedTemplates = new HashMap<>();
             for (Node node : pipe.getGraph().getNodes()) {
@@ -117,7 +119,7 @@ public class ImportService {
                                     + template.getJarDirectory());
                     // import
                     templateToUse = importDPUTemplate(template, user, jarFile,
-                            userDataFile, globalDataFile);
+                            userDataFile, globalDataFile, importUserDataFile);
                     // add to cache
                     importedTemplates.put(template, templateToUse);
                 }
@@ -129,7 +131,7 @@ public class ImportService {
             // add schedules
             final File scheduleFile = new File(tempDirectory,
                     ArchiveStructure.SCHEDULE.getValue());
-            if (scheduleFile.exists()) {
+            if (scheduleFile.exists() && importScheduleFile) {
                 importSchedules(scheduleFile, pipe, user);
             }
 
@@ -150,15 +152,41 @@ public class ImportService {
      * @return
      * @throws ImportException
      */
-    private Pipeline loadPipeline(File baseDir) throws ImportException {
+    public Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline();
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
                 .getValue());
         try {
             return (Pipeline) xStream.fromXML(sourceFile);
         } catch (Throwable t) {
-            throw new ImportException("Failed to deserialize pipeline.", t);
+            String msg = "Missing or wrong pipeline file";
+            LOG.error(msg);
+            throw new ImportException(msg, t);
         }
+    }
+
+    public  List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
+        XStream xStream = new XStream(new DomDriver());
+        xStream.alias("dpus", List.class);
+        xStream.alias("dpu", DpuItem.class);
+
+        final File sourceFile = new File(baseDir, ArchiveStructure.USED_DPUS
+                .getValue());
+        if(!sourceFile.exists()) {
+            LOG.warn("file: {} is not exist", sourceFile.getName());
+            return null;
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            List<DpuItem> result = (List<DpuItem>) xStream.fromXML(sourceFile);
+            return  result;
+        } catch (Throwable t) {
+            String msg = "Missing or wrong used dpu file";
+            LOG.error(msg);
+            throw new ImportException(msg, t);
+        }
+
+
     }
 
     /**
@@ -176,7 +204,7 @@ public class ImportService {
      * @throws ImportException
      */
     private DPUTemplateRecord importDPUTemplate(DPUTemplateRecord template,
-            User user, File jarFile, File userDataDir, File globalDataDir)
+            User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
             throws ImportException {
         // try to detect if there already exist same DPU
         DPUTemplateRecord result = dpuFacade.getByDirectory(template
@@ -200,7 +228,7 @@ public class ImportService {
             // TODO add version check here
         }
         // copy user data
-        if (userDataDir.exists()) {
+        if (userDataDir.exists() && importUserDataFile) {
             try {
                 final File dest = resourceManager
                         .getDPUDataUserDir(result, user);
@@ -262,7 +290,7 @@ public class ImportService {
      * @param sourceZip
      * @param targetDir
      */
-    private void unpack(File sourceZip, File targetDir) throws ImportException {
+    public void unpack(File sourceZip, File targetDir) throws ImportException {
         byte[] buffer = new byte[4096];
         targetDir.mkdirs();
 
@@ -285,11 +313,80 @@ public class ImportService {
                 zipEntry = zipInput.getNextEntry();
             }
         } catch (FileNotFoundException ex) {
-            throw new ImportException("Failed to establish temp directory.", ex);
+            throw new ImportException("Wrong uploaded file.", ex);
         } catch (IOException ex) {
             throw new ImportException("Failed to unzip given zip file.", ex);
         }
 
+    }
+
+    public ImportedFileInformation getImportedInformation(File zipFile)
+            throws ImportException, MissingResourceException {
+        LOG.debug(">>> Entering getImportedInformation(zipFile={})", zipFile);
+
+        boolean isUserData = false;
+        boolean isScheduleFile = false;
+
+        File tempDirectory = resourceManager.getNewImportTempDir();
+        unpack(zipFile, tempDirectory);
+        Pipeline pipeline = loadPipeline(tempDirectory);
+
+        List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
+        TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+
+        if (pipeline != null) {
+            PipelineGraph graph = pipeline.getGraph();
+            if (graph != null) {
+                Set<Node> nodes = graph.getNodes();
+                if (nodes != null) {
+                    for (Node node : nodes) {
+                        DPUInstanceRecord dpu = node.getDpuInstance();
+                        if (dpu == null)
+                            continue;
+
+                        DPUTemplateRecord template = dpu.getTemplate();
+
+                        if (template == null)
+                            continue;
+
+                        // try to detect if dpus are installed
+                        DPUTemplateRecord dpuTemplateRecord = dpuFacade
+                                .getByJarName(template.getJarName());
+                        // TODO jmc add version
+                        String version = "unknown";
+                        DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
+                        if (dpuTemplateRecord == null) {
+                            // these dpus is missing
+                            if (!missingDpus.containsKey(dpu.getName())) {
+                                missingDpus.put(dpu.getName(), dpuItem);
+                            }
+                        }
+                        final File userDataFile = new File(tempDirectory,
+                                ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
+                                        + template.getJarDirectory());
+
+                        if (userDataFile.exists()) {
+                            isUserData = true;
+
+                        }
+                        LOG.debug("userDataFile: " + userDataFile.toString());
+                    }
+
+                    final File scheduleFile = new File(tempDirectory,
+                            ArchiveStructure.SCHEDULE.getValue());
+                    if (scheduleFile.exists()) {
+                        isScheduleFile = true;
+                    }
+                }
+            }
+        }
+
+        ImportedFileInformation result = new ImportedFileInformation(usedDpus,
+                missingDpus, isUserData, isScheduleFile);
+
+
+        LOG.debug("<<< Leaving getImportedInformation: {}", result);
+        return result;
     }
 
 }

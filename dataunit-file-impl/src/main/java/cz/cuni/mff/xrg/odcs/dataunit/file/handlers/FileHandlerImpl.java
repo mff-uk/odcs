@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitException;
 
 /**
@@ -87,7 +86,7 @@ public class FileHandlerImpl extends HandlerImpl implements ManageableHandler, F
     @Override
     public void setContent(String newContent) throws FileDataUnitException {
         if (isLink) {
-            throw new DataUnitAccessException("Can't modify 'linked' file!");
+            throw new FileDataUnitException("Can't modify 'linked' file!");
         }
         try {
             // create file if it does not exits

@@ -155,5 +155,8 @@ public class UploadInfoWindow extends Window implements StartedListener,
         textualProgress.setValue(
                 "Processed " + (readBytes / 1024) + " k bytes of "
                         + (contentLength / 1024) + " k");
+        if (progressBar.getValue() == 1.0 && progressBar.getUI() != null) {
+        	progressBar.getUI().setPollInterval(-1); // disabling
+        }
     }
 }

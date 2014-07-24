@@ -11,9 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitAccessException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Implementation of {@link ManageableDirectoryHandler}.
@@ -657,11 +657,11 @@ public class DirectoryHandlerImpl extends HandlerImpl implements ManageableHandl
 
     /**
      * Check if the modification are permitted on this directory. If not then
-     * throw {@link DataUnitAccessException}.
+     * throw {@link RuntimeException}.
      */
     private void accessCheck() {
         if (isLink) {
-            throw new DataUnitAccessException("Can't modify linked directory.");
+            throw new RuntimeException("Can't modify linked directory.");
         }
     }
 

@@ -476,6 +476,19 @@ class PipelineFacadeImpl implements PipelineFacade {
     public boolean hasModifiedExecutions(Date lastLoad) {
         return executionDao.hasModified(lastLoad);
     }
+    
+    /**
+     * Tells whether there were any changes to pipelines since the
+     * last load.
+     * <p>
+     * 
+     * @param lastLoad
+     * @return
+     */
+    @Override
+    public boolean hasModifiedPipelines(Date lastLoad) {
+    	return pipelineDao.hasModified(lastLoad);
+    }
 
     /**
      * Persists new {@link PipelineExecution} or updates it if it was already

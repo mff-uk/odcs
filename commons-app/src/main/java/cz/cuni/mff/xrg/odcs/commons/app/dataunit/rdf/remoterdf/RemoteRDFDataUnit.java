@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Implementation of Sesame http repository - RDF data and intermediate results are
@@ -42,7 +43,6 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
      * @param dataUnitName
      *            DataUnit's name. If not used in Pipeline can be
      *            empty String.
-     * @throws RepositoryException
      */
     public RemoteRDFDataUnit(String url, String user, String password,
             String pipelineId, 
@@ -80,8 +80,8 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
-        } catch (RepositoryException ex) {
+                    dataUnitName, dataGraph, connection.size(this.getBaseDataGraphURI()));
+        } catch (RepositoryException | DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
             if (connection != null) {

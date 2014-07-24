@@ -1,17 +1,12 @@
 package cz.cuni.mff.xrg.odcs.extractor.file;
 
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import org.openrdf.rio.RDFFormat;
-
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-
 /**
  * File extractor configuration.
  * 
  * @author Petyr
  * @author Jiri Tomes
  */
-public class FileExtractorConfig extends DPUConfigObjectBase {
+public class FileExtractorConfig {
 
     public void setPath(String path) {
         Path = path;
@@ -163,7 +158,6 @@ public class FileExtractorConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return Path != null
                 && FileSuffix != null

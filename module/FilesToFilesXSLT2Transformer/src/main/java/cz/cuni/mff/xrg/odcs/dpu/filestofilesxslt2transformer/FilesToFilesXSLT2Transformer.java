@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.filestofilesxslt2transformer;
 
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Date;
 
 import javax.xml.transform.stream.StreamSource;
@@ -16,30 +17,25 @@ import net.sf.saxon.s9api.XsltTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesDataUnitEntry;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit.FilesIteration;
-import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 
-@AsTransformer
+@DPU.AsTransformer
 public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesXSLT2TransformerConfig> implements ConfigDialogProvider<FilesToFilesXSLT2TransformerConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(FilesToFilesXSLT2Transformer.class);
 
-    @InputDataUnit(name = "filesInput")
+    @DataUnit.AsInput(name = "filesInput")
     public FilesDataUnit filesInput;
 
-    @OutputDataUnit(name = "filesOutput")
+    @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
 
     public FilesToFilesXSLT2Transformer() {
@@ -60,7 +56,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
 
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         String longMessage = String.valueOf(config);
-        dpuContext.sendMessage(MessageType.INFO, shortMessage, longMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage, longMessage);
 
         //try to compile XSLT
         Processor proc = new Processor(false);
@@ -73,30 +69,29 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
         }
         XsltTransformer trans = exp.load();
 
-        dpuContext.sendMessage(MessageType.INFO, "Stylesheet was compiled successully");
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, "Stylesheet was compiled successully");
 
-        FilesIteration filesIteration;
+        FilesDataUnit.Iteration filesIteration;
         try {
-            filesIteration = filesInput.getFiles();
+            filesIteration = filesInput.getIteration();
         } catch (DataUnitException ex) {
             throw new DPUException("Could not obtain filesInput", ex);
         }
         long filesSuccessfulCount = 0L;
         long index = 0L;
+        boolean shouldContinue = !dpuContext.canceled();
 
         try {
-            while (filesIteration.hasNext()) {
-                checkCancelled(dpuContext);
-
-                FilesDataUnitEntry entry;
+            while ((shouldContinue) && (filesIteration.hasNext())) {
+                FilesDataUnit.Entry entry;
                 try {
                     entry = filesIteration.next();
 
                     String inSymbolicName = entry.getSymbolicName();
 
                     String outputFilename = filesOutput.createFile(inSymbolicName);
-                    File outputFile = new File(outputFilename);
-                    File inputFile = new File(entry.getFilesystemURI());
+                    File outputFile = new File(URI.create(outputFilename));
+                    File inputFile = new File(URI.create(entry.getFileURIString()));
                     try {
                         index++;
 
@@ -128,18 +123,20 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
                         }
                     } catch (SaxonApiException | DataUnitException ex) {
                         dpuContext.sendMessage(
-                                config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                                config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                                 "Error processing " + appendNumber(index) + " file",
                                 String.valueOf(entry),
                                 ex);
                     }
                 } catch (DataUnitException ex) {
                     dpuContext.sendMessage(
-                            config.isSkipOnError() ? MessageType.WARNING : MessageType.ERROR,
+                            config.isSkipOnError() ? DPUContext.MessageType.WARNING : DPUContext.MessageType.ERROR,
                             "DataUnit exception.",
                             "",
                             ex);
                 }
+
+                shouldContinue = !dpuContext.canceled();
             }
         } catch (DataUnitException ex) {
             throw new DPUException("Error iterating filesInput.", ex);
@@ -151,13 +148,7 @@ public class FilesToFilesXSLT2Transformer extends ConfigurableBase<FilesToFilesX
             }
         }
         String message = String.format("Processed %d/%d", filesSuccessfulCount, index);
-        dpuContext.sendMessage(filesSuccessfulCount < index ? MessageType.WARNING : MessageType.INFO, message);
-    }
-
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
-        }
+        dpuContext.sendMessage(filesSuccessfulCount < index ? DPUContext.MessageType.WARNING : DPUContext.MessageType.INFO, message);
     }
 
     public static String appendNumber(long number) {

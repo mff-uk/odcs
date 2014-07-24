@@ -1,14 +1,12 @@
 package cz.cuni.mff.xrg.odcs.dpu.filestolocaldirectoryloader;
 
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -61,7 +59,7 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 
 	@Override
 	public void setConfiguration(FilesToLocalDirectoryLoaderConfig conf)
-			throws ConfigException {
+			throws DPUConfigException {
 		destination.setValue(conf.getDestination());
 		moveFiles.setValue(conf.isMoveFiles());
 		replaceExisting.setValue(conf.isReplaceExisting());
@@ -70,7 +68,7 @@ public class FilesToLocalDirectoryLoaderConfigDialog extends
 
 	@Override
 	public FilesToLocalDirectoryLoaderConfig getConfiguration()
-			throws ConfigException {
+			throws DPUConfigException {
 		FilesToLocalDirectoryLoaderConfig conf = new FilesToLocalDirectoryLoaderConfig();
 		conf.setDestination(destination.getValue());
 		conf.setMoveFiles(moveFiles.getValue());

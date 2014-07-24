@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
@@ -30,9 +32,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPU;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
@@ -234,10 +233,6 @@ public final class DPUExecutor implements Runnable {
                 // can not be executed
                 LOG.error("DPU do not implement execution interface.");
             }
-        } catch (DataUnitException e) {
-            eventPublisher.publishEvent(DPUEvent.createDataUnitFailed(context,
-                    this, e));
-            executionResult.failure();
         } catch (DPUException e) {
             LOG.error("Execution failed for DPUException.");
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,

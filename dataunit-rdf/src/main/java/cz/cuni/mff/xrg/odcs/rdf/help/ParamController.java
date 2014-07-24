@@ -3,7 +3,8 @@ package cz.cuni.mff.xrg.odcs.rdf.help;
 import java.net.URL;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 
@@ -14,7 +15,7 @@ import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
  */
 public class ParamController {
 
-    private static Logger logger = Logger.getLogger(ParamController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParamController.class);
 
     /**
      * Test if given param is null or not.

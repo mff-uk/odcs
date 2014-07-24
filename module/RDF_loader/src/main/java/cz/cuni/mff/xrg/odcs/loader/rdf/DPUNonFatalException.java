@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
+import eu.unifiedviews.dpu.DPUException;
+
 
 public class DPUNonFatalException extends DPUException {
 

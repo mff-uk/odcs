@@ -3,17 +3,13 @@ package cz.cuni.mff.xrg.odcs.loader.rdf;
 import java.util.LinkedList;
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.module.config.DPUConfigObjectBase;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-
 /**
  * SPARQL loader configuration.
  * 
  * @author Petyr
  * @author Jiri Tomes
  */
-public class RDFLoaderConfig extends DPUConfigObjectBase {
+public class RDFLoaderConfig {
 
     private String SPARQL_endpoint;
 
@@ -223,7 +219,6 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
      * 
      * @return true, if DPU configuration is valid, false otherwise.
      */
-    @Override
     public boolean isValid() {
         return SPARQL_endpoint != null
                 && Host_name != null
@@ -236,19 +231,6 @@ public class RDFLoaderConfig extends DPUConfigObjectBase {
                 && endpointParams != null;
     }
 
-    /**
-     * Fill missing configuration with default values.
-     */
-    @Override
-    public void onDeserialize() {
-        if (endpointParams == null) {
-            endpointParams = new LoaderEndpointParams();
-        }
-
-//                if (useSparqlGraphProtocol == null) {
-//                    seSparqlGraphProtocol = false;
-//                }
-    }
 
     public void setPassword(String password) {
         Password = password;

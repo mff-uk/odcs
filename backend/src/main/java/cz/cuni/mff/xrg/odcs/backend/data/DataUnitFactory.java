@@ -2,15 +2,12 @@ package cz.cuni.mff.xrg.odcs.backend.data;
 
 import java.io.File;
 
-import org.openrdf.repository.RepositoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.FilesDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
@@ -47,6 +44,7 @@ public class DataUnitFactory {
      * 
      * @param type
      *            Requested type of data unit.
+     * @param pipelineId
      * @param id
      *            DataUnit's id assigned by application, must be unique!
      * @param name
@@ -54,10 +52,8 @@ public class DataUnitFactory {
      * @param directory
      *            DataUnit's working directory.
      * @return DataUnit
-     * @throws DataUnitCreateException
-     * @throws RepositoryException
      */
-    public ManagableDataUnit create(DataUnitType type,
+    public ManagableDataUnit create(ManagableDataUnit.Type type,
             String pipelineId,
             String id,
             String name,

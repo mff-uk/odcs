@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Implementation of local RDF repository - RDF data are saved in files on hard
@@ -34,7 +35,7 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
      * @param repositoryPath
      *            String value of path to directory where will be repository
      *            stored.
-     * @param namedGraph
+     * @param dataGraph
      *            String value of URI graph that will be set to repository.
      * @param dataUnitName
      *            DataUnit's name. If not used in Pipeline can be empty String.
@@ -68,8 +69,8 @@ public class LocalRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Local RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
-        } catch (RepositoryException ex) {
+                    dataUnitName, dataGraph, connection.size(this.getBaseDataGraphURI()));
+        } catch (RepositoryException | DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
             if (connection != null) {

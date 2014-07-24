@@ -5,30 +5,24 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.CannotOverwriteFileException;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 
 /**
  * DPU for RDF data validation and save validation report in RDF TURTLE (TTL)
  * syntax to given file.
- * 
+ *
  * @author Jiri Tomes
  */
-@AsTransformer
+@DPU.AsTransformer
 public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
         implements ConfigDialogProvider<RDFDataValidatorConfig> {
 
@@ -38,19 +32,19 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
     /**
      * Input RDF data repository with data we want to validate.
      */
-    @InputDataUnit(name = "input")
+    @DataUnit.AsInput(name = "input")
     public RDFDataUnit dataInput;
 
     /**
      * Output RDF data repository with only validate triples get from input.
      */
-    @OutputDataUnit(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
+    @DataUnit.AsOutput(name = "Validated_Data", optional = true, description = "Output RDF data repository with only validated triples get from input.")
     public WritableRDFDataUnit dataOutput;
 
     /**
      * Output RDF repository report about invalid data describe as RDF triples.
      */
-    @OutputDataUnit(name = "Report", description = "Output RDF repository report about invalid data described as RDF triples.")
+    @DataUnit.AsOutput(name = "Report", description = "Output RDF repository report about invalid data described as RDF triples.")
     public WritableRDFDataUnit reportOutput;
 
     public RDFDataValidator() {
@@ -59,7 +53,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
     /**
      * Returns the configuration dialogue for RDF Data validator.
-     * 
+     *
      * @return the configuration dialogue for RDF Data validator.
      */
     @Override
@@ -68,9 +62,10 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
     }
 
     private void makeValidationReport(DataValidator validator,
-            String graphName, DPUContext context, boolean stopExecution) throws CannotOverwriteFileException, RDFException, RepositoryException {
+            String graphName, DPUContext context, boolean stopExecution)
+            throws DPUException, DataUnitException {
 
-        context.sendMessage(MessageType.INFO,
+        context.sendMessage(DPUContext.MessageType.INFO,
                 "Start creating VALIDATION REPORT", String.format(
                         "Start generating validation report output for graph <%s> .",
                         graphName));
@@ -79,7 +74,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
                 .getFindedProblems(), graphName);
         reporter.makeOutputReport(reportOutput);
 
-        context.sendMessage(MessageType.INFO,
+        context.sendMessage(DPUContext.MessageType.INFO,
                 "VALIDATION REPORT created SUCCESSFULLY", String.format(
                         "Validation report output for graph <%s> created successfully",
                         graphName));
@@ -88,7 +83,7 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
             RepositoryConnection connection = null;
             try {
                 connection = dataOutput.getConnection();
-                connection.clear(dataOutput.getWriteContext());
+                connection.clear(dataOutput.getBaseDataGraphURI());
             } catch (RepositoryException ex) {
                 LOG.warn("Error", ex);
             } finally {
@@ -101,25 +96,20 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
                     }
                 }
             }
-            throw new RDFException(
+            throw new DPUException(
                     "RDFDataValidator found some invalid data - pipeline execution is stopped");
         }
     }
 
     /**
      * Execute the RDF Data validator.
-     * 
-     * @param context
-     *            RDF Data validator context.
-     * @throws DataUnitException
-     *             if this DPU fails.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context RDF Data validator context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context)
-            throws DPUException,
-            DataUnitException {
+            throws DPUException {
 
         final boolean stopExecution = config.canStopExecution();
         final boolean sometimesOutput = config.hasSometimesOutput();
@@ -128,46 +118,41 @@ public class RDFDataValidator extends ConfigurableBase<RDFDataValidatorConfig>
 
             DataValidator validator = new RepositoryDataValidator(dataInput,
                     dataOutput);
-            String graphName = dataInput.getContexts().toString();
+            String graphName = dataInput.getDataGraphnames().toString();
 
             if (sometimesOutput) {
                 if (!validator.areDataValid()) {
-                    context.sendMessage(MessageType.WARNING,
+                    context.sendMessage(DPUContext.MessageType.WARNING,
                             "Validator found some INVALID DATA",
                             validator.getErrorMessage() + "\nIt will be created validation report.");
                     LOG.error(validator.getErrorMessage());
 
-                    makeValidationReport(validator, graphName, context,
-                            stopExecution);
+                    makeValidationReport(validator, graphName, context, stopExecution);
 
                 } else {
-                    context.sendMessage(MessageType.INFO,
+                    context.sendMessage(DPUContext.MessageType.INFO,
                             "Validation Sucessful - NO errors",
                             "All RDF data are valid. Validation report will be not created.");
                 }
             } else {
                 if (!validator.areDataValid()) {
-                    context.sendMessage(MessageType.WARNING,
+                    context.sendMessage(DPUContext.MessageType.WARNING,
                             "Validator found some INVALID DATA",
                             "Some RDF data are invalid:\n"
-                                    + validator.getErrorMessage()
-                                    + " It will be created validation report");
+                            + validator.getErrorMessage()
+                            + " It will be created validation report");
                 } else {
-                    context.sendMessage(MessageType.INFO,
+                    context.sendMessage(DPUContext.MessageType.INFO,
                             "Validation Sucessful - NO errors",
                             "All RDF data are valid. Validation report output will be empty");
                 }
 
-                makeValidationReport(validator, graphName, context,
-                        stopExecution);
+                makeValidationReport(validator, graphName, context, stopExecution);
 
             }
-        } catch (RDFException e) {
-            context.sendMessage(MessageType.ERROR, e.getMessage(), e
-                    .fillInStackTrace().toString());
-        } catch (RepositoryException e) {
-            context.sendMessage(MessageType.ERROR, e.getMessage(), e
-                    .fillInStackTrace().toString());
+        } catch ( DataUnitException e) {
+            context.sendMessage(DPUContext.MessageType.ERROR, e.getMessage(),
+                    e.fillInStackTrace().toString());
         }
 
     }

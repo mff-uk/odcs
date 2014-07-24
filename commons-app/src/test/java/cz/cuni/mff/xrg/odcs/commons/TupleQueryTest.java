@@ -26,6 +26,7 @@ import org.openrdf.repository.RepositoryException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * @author Jiri Tomes
@@ -63,9 +64,10 @@ public class TupleQueryTest {
 
     /**
      * Test executing ordered SELECT query for object.
+     * @throws org.openrdf.repository.RepositoryException
      */
     @Test
-    public void OrderTupleQueryResultTestForObject() throws RepositoryException {
+    public void OrderTupleQueryResultTestForObject() throws RepositoryException, DataUnitException {
         String orderSelectQuery = "SELECT ?x ?y ?z where {?x ?y ?z} ORDER BY ?x ?y ?z";
 
         String[] expectedNames = { "x", "y", "z" };
@@ -90,13 +92,13 @@ public class TupleQueryTest {
         Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(subjectBlank, predicate, object, repository.getWriteContext());
-        connection.add(subjectBlank, predicate, objectBlank, repository.getWriteContext());
-        connection.add(subject, predicate, objectLanguageLiteral, repository.getWriteContext());
-        connection.add(subject, predicate, objectTypedLiteral, repository.getWriteContext());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, predicate, objectBlank, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, objectLanguageLiteral, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, objectTypedLiteral, repository.getBaseDataGraphURI());
 
-        assertEquals(5L, connection.size(repository.getWriteContext()));
+        assertEquals(5L, connection.size(repository.getBaseDataGraphURI()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -124,9 +126,10 @@ public class TupleQueryTest {
 
     /**
      * Test executing ordered SELECT query for predicate.
+     * @throws org.openrdf.repository.RepositoryException
      */
     @Test
-    public void OrderTupleQueryResultTestForPredicate() throws RepositoryException {
+    public void OrderTupleQueryResultTestForPredicate() throws RepositoryException, DataUnitException {
         String orderSelectQuery = "SELECT ?b ?c where {?a ?b ?c} ORDER BY ?a ?b ?c";
         String[] expectedNames = { "b", "c" };
 
@@ -145,11 +148,11 @@ public class TupleQueryTest {
         Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(subjectBlank, p, object, repository.getWriteContext());
-        connection.add(subject, pred, objectBlank, repository.getWriteContext());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, p, object, repository.getBaseDataGraphURI());
+        connection.add(subject, pred, objectBlank, repository.getBaseDataGraphURI());
 
-        assertEquals(3L, connection.size(repository.getWriteContext()));
+        assertEquals(3L, connection.size(repository.getBaseDataGraphURI()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -177,9 +180,11 @@ public class TupleQueryTest {
 
     /**
      * Test executing ordered SELECT query for subject.
+     * @throws org.openrdf.repository.RepositoryException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     @Test
-    public void OrderTupleQueryResultTestForSubject() throws RepositoryException {
+    public void OrderTupleQueryResultTestForSubject() throws RepositoryException, DataUnitException {
         String orderSelectQuery = "SELECT ?x ?y WHERE {?x ?y ?z} ORDER BY ?x ?y ?z";
 
         String[] expectedNames = { "x", "y" };
@@ -195,9 +200,9 @@ public class TupleQueryTest {
         URI predicate = factory.createURI("http://predicate");
         Value object = factory.createLiteral("object");
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(s, predicate, object, repository.getWriteContext());
-        assertEquals(2L, connection.size(repository.getWriteContext()));
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(s, predicate, object, repository.getBaseDataGraphURI());
+        assertEquals(2L, connection.size(repository.getBaseDataGraphURI()));
 
         try {
             OrderTupleQueryResult result = repository
@@ -225,9 +230,11 @@ public class TupleQueryTest {
 
     /**
      * Test executing SELECT query for object.
+     * @throws org.openrdf.repository.RepositoryException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     @Test
-    public void TupleQueryResultTestForObject() throws RepositoryException {
+    public void TupleQueryResultTestForObject() throws RepositoryException, DataUnitException {
 
         String selectQuery = "SELECT ?x ?y ?z where {?x ?y ?z}";
         String[] expectedNames = { "x", "y", "z" };
@@ -254,21 +261,23 @@ public class TupleQueryTest {
         Value objectTypedLiteral = factory.createLiteral("25",
                 factory.createURI("http://www.w3.org/2001/XMLSchema#integer"));
 
-        connection.add(subject, predicate, objectLiteral, repository.getWriteContext());
-        connection.add(subjectBlank, predicate, object, repository.getWriteContext());
-        connection.add(subjectBlank, predicate, objectBlank, repository.getWriteContext());
-        connection.add(subject, predicate, objectLanguageLiteral, repository.getWriteContext());
-        connection.add(subject, predicate, objectTypedLiteral, repository.getWriteContext());
+        connection.add(subject, predicate, objectLiteral, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, predicate, objectBlank, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, objectLanguageLiteral, repository.getBaseDataGraphURI());
+        connection.add(subject, predicate, objectTypedLiteral, repository.getBaseDataGraphURI());
 
-        assertEquals(5L, connection.size(repository.getWriteContext()));
+        assertEquals(5L, connection.size(repository.getBaseDataGraphURI()));
         connection.close();
     }
 
     /**
      * Test executing SELECT query for predicate.
+     * @throws org.openrdf.repository.RepositoryException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     @Test
-    public void TupleQueryResultTestForPredicate() throws RepositoryException {
+    public void TupleQueryResultTestForPredicate() throws RepositoryException, DataUnitException {
 
         String selectQuery = "SELECT ?b ?c where {?a ?b ?c}";
         String[] expectedNames = { "b", "c" };
@@ -288,19 +297,21 @@ public class TupleQueryTest {
         Value object = factory.createLiteral("object");
         Value objectBlank = factory.createBNode("blank");
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(subjectBlank, p, object, repository.getWriteContext());
-        connection.add(subject, pred, objectBlank, repository.getWriteContext());
-        assertEquals(3L, connection.size(repository.getWriteContext()));
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(subjectBlank, p, object, repository.getBaseDataGraphURI());
+        connection.add(subject, pred, objectBlank, repository.getBaseDataGraphURI());
+        assertEquals(3L, connection.size(repository.getBaseDataGraphURI()));
         connection.close();
 
     }
 
     /**
      * Test executing SELECT query for subject.
+     * @throws org.openrdf.repository.RepositoryException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     @Test
-    public void TupleQueryResultTestForSubject() throws RepositoryException {
+    public void TupleQueryResultTestForSubject() throws RepositoryException, DataUnitException {
 
         String selectQuery = "SELECT ?x ?y where {?x ?y ?z}";
         String[] expectedNames = { "x", "y" };
@@ -316,10 +327,10 @@ public class TupleQueryTest {
         URI predicate = factory.createURI("http://predicate");
         Value object = factory.createLiteral("object");
 
-        connection.add(subject, predicate, object, repository.getWriteContext());
-        connection.add(s, predicate, object, repository.getWriteContext());
+        connection.add(subject, predicate, object, repository.getBaseDataGraphURI());
+        connection.add(s, predicate, object, repository.getBaseDataGraphURI());
 
-        assertEquals(2L, connection.size(repository.getWriteContext()));
+        assertEquals(2L, connection.size(repository.getBaseDataGraphURI()));
         connection.close();
 
     }

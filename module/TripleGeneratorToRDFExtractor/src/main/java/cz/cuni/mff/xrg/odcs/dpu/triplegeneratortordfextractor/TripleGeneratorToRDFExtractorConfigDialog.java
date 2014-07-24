@@ -4,8 +4,8 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.TextField;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -44,13 +44,13 @@ public class TripleGeneratorToRDFExtractorConfigDialog extends BaseConfigDialog<
     }
 
     @Override
-    public void setConfiguration(TripleGeneratorToRDFExtractorConfig conf) throws ConfigException {
+    public void setConfiguration(TripleGeneratorToRDFExtractorConfig conf) throws DPUConfigException {
         tripleCount.setValue(conf.getTripleCount());
         commitSize.setValue(conf.getCommitSize());
     }
 
     @Override
-    public TripleGeneratorToRDFExtractorConfig getConfiguration() throws ConfigException {
+    public TripleGeneratorToRDFExtractorConfig getConfiguration() throws DPUConfigException {
         TripleGeneratorToRDFExtractorConfig config = new TripleGeneratorToRDFExtractorConfig();
         config.setTripleCount(tripleCount.getValue());
         config.setCommitSize(commitSize.getValue());

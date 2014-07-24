@@ -1,10 +1,6 @@
 package cz.cuni.mff.xrg.odcs.loader.file;
 
-import java.util.Collection;
 import java.util.List;
-
-import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
-import org.openrdf.rio.RDFFormat;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -19,9 +15,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
 /**
  * Configuration dialog for DPU RDF File Loader.
@@ -154,7 +149,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
         //add checkbox for data validation
         validateDataBefore = new CheckBox(
-                "Validate data before loading - "
+                "(UNSUPPORTED) Validate data before loading - "
                         + "if validation fails, the loading fails immediately");
         validateDataBefore.setValue(false);
         validateDataBefore.setWidth("-1px");
@@ -255,18 +250,18 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
     /**
      * Set values from from dialog where the configuration object may be edited
-     * to configuration object implementing {@link DPUConfigObject} interface
+     * to configuration object  interface
      * and configuring DPU.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      *             Exception which might be thrown when the field {@link #textFieldFilePath} contains null value.
      * @return config Object holding configuration which is used in {@link #setConfiguration} to initialize fields in the
      *         configuration dialog.
      */
     @Override
-    public FileLoaderConfig getConfiguration() throws ConfigException {
+    public FileLoaderConfig getConfiguration() throws DPUConfigException {
         if (!textFieldFilePath.isValid()) {
-            throw new ConfigException(ex.getMessage(), ex);
+            throw new DPUConfigException(ex.getMessage(), ex);
         } else {
             boolean diffName = checkBoxDiffName.getValue();
             String filePath = textFieldFilePath.getValue().trim();
@@ -300,7 +295,7 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
      *            fields in the configuration dialog.
      */
     @Override
-    public void setConfiguration(FileLoaderConfig conf) throws ConfigException {
+    public void setConfiguration(FileLoaderConfig conf) throws DPUConfigException {
         try {
             checkBoxDiffName.setValue(conf.isDiffName());
             textFieldFilePath.setValue(conf.getFilePath().trim());
@@ -314,14 +309,14 @@ public class FileLoaderDialog extends BaseConfigDialog<FileLoaderConfig> {
 
         } catch (Property.ReadOnlyException | Converter.ConversionException e) {
             // throw setting exception
-            throw new ConfigException(e.getMessage(), e);
+            throw new DPUConfigException(e.getMessage(), e);
         }
     }
 
     /**
-     * Returns desription of file loader as string.
+     * Returns description of file loader as string.
      * 
-     * @return desription of file loader as string.
+     * @return description of file loader as string.
      */
     @Override
     public String getDescription() {

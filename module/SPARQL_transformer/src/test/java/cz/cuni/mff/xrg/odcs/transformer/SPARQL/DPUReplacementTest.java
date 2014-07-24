@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.transformer.SPARQL;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -11,8 +10,8 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 /**
  * @author Jiri Tomes
@@ -51,24 +50,24 @@ public class DPUReplacementTest {
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://s"), factory.createURI(
-                    "http://p"), factory.createURI("http://o"), input.getWriteContext());
+                    "http://p"), factory.createURI("http://o"), input.getBaseDataGraphURI());
             connection.add(factory.createURI("http://subject"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
+                    "http://predicate"), factory.createURI("http://object"), input.getBaseDataGraphURI());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
             connection2.add(factory2.createBNode("n25"), factory2
-                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getWriteContext());
+                    .createURI("http://hasName"), factory2.createLiteral("NAME"), optional.getBaseDataGraphURI());
 
-            assertEquals(2L, connection.size(input.getWriteContext()));
-            assertEquals(1L, connection2.size(optional.getWriteContext()));
+            assertEquals(2L, connection.size(input.getBaseDataGraphURI()));
+            assertEquals(1L, connection2.size(optional.getBaseDataGraphURI()));
 
             WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
             env.run(transformer);
 
             connection3 = output.getConnection();
-            assertEquals("Count of triples are not same", 3L, connection3.size(output.getContexts().toArray(new URI[0])));
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getDataGraphnames().toArray(new URI[0])));
             env.release();
 
         } catch (Exception e) {
@@ -136,26 +135,26 @@ public class DPUReplacementTest {
             connection = input.getConnection();
             ValueFactory factory = connection.getValueFactory();
             connection.add(factory.createURI("http://person"), factory.createURI(
-                    "http://predicate"), factory.createURI("http://object"), input.getWriteContext());
+                    "http://predicate"), factory.createURI("http://object"), input.getBaseDataGraphURI());
 
             connection2 = optional.getConnection();
             ValueFactory factory2 = connection2.getValueFactory();
 
             connection2.add(factory2.createURI("http://person"), factory2
                     .createURI("http://xmlns.com/foaf/0.1/givenName"), factory2
-                    .createLiteral("Bill"), optional.getWriteContext());
+                    .createLiteral("Bill"), optional.getBaseDataGraphURI());
 
-            assertEquals(1L, connection.size(input.getWriteContext()));
-            assertEquals(1L, connection2.size(optional.getWriteContext()));
+            assertEquals(1L, connection.size(input.getBaseDataGraphURI()));
+            assertEquals(1L, connection2.size(optional.getBaseDataGraphURI()));
 
             WritableRDFDataUnit output = env.createRdfOutput("output", false);
 
             env.run(transformer);
 
             connection3 = output.getConnection();
-            assertEquals("Count of triples are not same", 3L, connection3.size(output.getWriteContext()));
+            assertEquals("Count of triples are not same", 3L, connection3.size(output.getBaseDataGraphURI()));
 
-            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getWriteContext());
+            RepositoryResult<Statement> outputTriples = connection3.getStatements(null, null, null, true, output.getBaseDataGraphURI());
 
             boolean newInsertedTripleFound = false;
             while (outputTriples.hasNext()) {

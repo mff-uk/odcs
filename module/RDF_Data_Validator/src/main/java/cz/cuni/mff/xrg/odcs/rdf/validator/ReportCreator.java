@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.rdf.validator;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -11,12 +10,12 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
-import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Class responsible for creting RDF report message from given found out
@@ -26,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
  */
 public class ReportCreator {
 
-    private static final Logger LOG = Logger.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
             ReportCreator.class);
 
     private static final String ODCS_VAL = "http://linked.opendata.cz/ontology/odcs/validation/";
@@ -51,7 +50,7 @@ public class ReportCreator {
      * @throws RDFException
      *             if some problem during making report.
      */
-    public void makeOutputReport(WritableRDFDataUnit repository) throws RDFException {
+    public void makeOutputReport(WritableRDFDataUnit repository) throws DPUException {
 
         setNamespaces(repository);
         addReports(repository);
@@ -72,7 +71,7 @@ public class ReportCreator {
         return prefix + "/validation/error/";
     }
 
-    private void addReports(WritableRDFDataUnit repository) {
+    private void addReports(WritableRDFDataUnit repository) throws DPUException {
 
         int count = 0;
 
@@ -94,19 +93,21 @@ public class ReportCreator {
             try {
                 connection = repository.getConnection();
                 connection.add(getSubject(count), new URIImpl("rdf:type"),
-                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getWriteContext());
+                        new URIImpl(ODCS_VAL + conflictType.toString()), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("subject"),
-                        getObject(sub), repository.getWriteContext());
+                        getObject(sub), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("predicate"),
-                        getObject(pred), repository.getWriteContext());
+                        getObject(pred), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("object"),
-                        getObject(obj), repository.getWriteContext());
+                        getObject(obj), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("reason"),
-                        getObject(message), repository.getWriteContext());
+                        getObject(message), repository.getBaseDataGraphURI());
                 connection.add(getSubject(count), getPredicate("sourceLine"),
-                        getObject(line), repository.getWriteContext());
+                        getObject(line), repository.getBaseDataGraphURI());
             } catch (RepositoryException e) {
                 LOG.error("Error", e);
+            } catch (DataUnitException e) {
+                throw new DPUException(e);
             } finally {
                 if (connection != null) {
                     try {
@@ -121,7 +122,7 @@ public class ReportCreator {
         }
     }
 
-    private void setNamespaces(RDFDataUnit repository) throws RDFException {
+    private void setNamespaces(WritableRDFDataUnit repository) throws DPUException {
         RepositoryConnection connection = null;
         try {
 
@@ -134,11 +135,11 @@ public class ReportCreator {
             connection.setNamespace("odcs-val", ODCS_VAL);
             connection.setNamespace("exec-error", EXEC_ERROR);
 
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | DataUnitException e) {
             final String message = "Not possible to set namespace"
                     + e.getMessage();
             LOG.debug(message);
-            throw new RDFException(message);
+            throw new DPUException(message);
         } finally {
             if (connection != null) {
                 try {

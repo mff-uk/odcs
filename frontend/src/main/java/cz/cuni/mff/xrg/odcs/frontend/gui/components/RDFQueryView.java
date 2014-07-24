@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -22,6 +21,8 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -33,7 +34,6 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -422,7 +422,7 @@ public class RDFQueryView extends QueryView {
      * @throws InvalidQueryException
      *             If the query is badly formatted.
      */
-    private InputStream getDownloadData(RDFData repository, String query,
+    private InputStream getDownloadData(RDFDataUnit repository, String query,
             Object format, Collection<Filter> filters) {
         RepositoryConnection connection = null;
         try {
@@ -455,12 +455,12 @@ public class RDFQueryView extends QueryView {
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
-                        selectType, repository.getContexts());
+                        selectType, repository.getDataGraphnames());
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getContexts(), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getDataGraphnames(), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);
@@ -476,8 +476,8 @@ public class RDFQueryView extends QueryView {
                     "Query is not valid: "
                             + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
-        } catch (RepositoryException ex) {
-            Notification.show("Problem with connection",
+        } catch (DataUnitException ex) {
+            Notification.show("Problem with DataUnit",
                     ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } finally {

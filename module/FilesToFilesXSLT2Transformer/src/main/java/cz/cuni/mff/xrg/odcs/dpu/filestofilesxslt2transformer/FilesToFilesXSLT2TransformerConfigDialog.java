@@ -11,21 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.module.dialog.BaseConfigDialog;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.BaseConfigDialog;
 
 /**
  * DPU's configuration dialog. User can use this dialog to configure DPU
@@ -199,7 +188,7 @@ public class FilesToFilesXSLT2TransformerConfigDialog extends
 
     @Override
     public void setConfiguration(FilesToFilesXSLT2TransformerConfig conf)
-            throws ConfigException {
+            throws DPUConfigException {
         // get configuration from the CONFIG object to dialog
 
         if (!conf.getXslTemplate().isEmpty()) {
@@ -211,13 +200,13 @@ public class FilesToFilesXSLT2TransformerConfigDialog extends
 
     @Override
     public FilesToFilesXSLT2TransformerConfig getConfiguration()
-            throws ConfigException {
+            throws DPUConfigException {
         // get the conf from the dialog
 
         // check that certain xslt was uploaded
         if (taXSLTemplate.getValue().trim().isEmpty()) {
             // no config!
-            throw new ConfigException("No configuration file uploaded");
+            throw new DPUConfigException("No configuration file uploaded");
 
         }
 

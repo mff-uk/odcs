@@ -8,31 +8,25 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.ConfigurableBase;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.InsertType;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFDataUnitException;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
-import cz.cuni.mff.xrg.odcs.rdf.validators.RepositoryDataValidator;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.dpu.DPUContext.MessageType;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.helpers.dpu.config.ConfigurableBase;
 
 /**
  * Loads RDF data to SPARQL endpoint.
- * 
+ *
  * @author Jiri Tomes
  * @author Petyr
  */
-@AsLoader
+@DPU.AsLoader
 public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         implements ConfigDialogProvider<RDFLoaderConfig> {
 
@@ -41,13 +35,13 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
     /**
      * The repository for SPARQL loader.
      */
-    @InputDataUnit(name = "input")
-    public RDFDataUnit rdfDataUnit;
+    @DataUnit.AsInput(name = "input")
+    public RDFDataUnit inputDataUnit;
 
-    @OutputDataUnit(name = "input_redirection", optional = true)
+    @DataUnit.AsOutput(name = "input_redirection", optional = true)
     public WritableRDFDataUnit inputShadow;
 
-    @OutputDataUnit(name = "validationDataUnit", description = "Never connect any data to this unit please!")
+    @DataUnit.AsOutput(name = "validationDataUnit", description = "Never connect any data to this unit please!")
     public WritableRDFDataUnit validationDataUnit;
 
     public RDFLoader() {
@@ -56,18 +50,13 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
     /**
      * Execute the SPARQL loader.
-     * 
-     * @param context
-     *            SPARQL loader context.
-     * @throws DataUnitException
-     *             if this DPU fails.
-     * @throws DPUException
-     *             if this DPU fails.
+     *
+     * @param context SPARQL loader context.
+     * @throws DPUException if this DPU fails.
      */
     @Override
     public void execute(DPUContext context)
-            throws DPUException,
-            DataUnitException {
+            throws DPUException {
 
         final String endpointURL = config.getSPARQLEndpoint();
         final List<String> defaultGraphsURI = config.getGraphsUri();
@@ -88,7 +77,6 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
 
         ParamController.testPositiveParameter(chunkSize,
                 "Chunk size must be number greater than 0");
-        
 
         LoaderEndpointParams endpointParams = config.getEndpointParams();
 
@@ -110,43 +98,25 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         }
 
         if (validateDataBefore) {
-
-            context.sendMessage(MessageType.INFO,
-                    "Starting RDF data VALIDATION");
-
-            DataValidator dataValidator = new RepositoryDataValidator(
-                    rdfDataUnit, validationDataUnit);
-
-            if (!dataValidator.areDataValid()) {
-                final String message = "RDF Data are NOT VALID - LOADING to SPARQL FAIL";
-                LOG.error(dataValidator.getErrorMessage());
-
-                context.sendMessage(MessageType.INFO, message, dataValidator
-                        .getErrorMessage());
-
-                throw new DPUException(message);
-            } else {
-                context.sendMessage(MessageType.INFO,
-                        "RDF Data VALIDATION SUCCESFULL");
-                context.sendMessage(MessageType.INFO,
-                        "Loading data to SPARQL endpoint STARTS JUST NOW");
-            }
+            context.sendMessage(MessageType.ERROR, "Data validation is unsupported, use data validation DPU");
         }
 
         RepositoryConnection connection = null;
         long triplesCount = 0;
         try {
-            connection = rdfDataUnit.getConnection();
-            triplesCount = connection.size(rdfDataUnit.getContexts().toArray(new URI[0]));
+            connection = inputDataUnit.getConnection();
+            triplesCount = connection.size(inputDataUnit.getDataGraphnames().toArray(new URI[0]));
         } catch (RepositoryException e) {
-            context.sendMessage(MessageType.ERROR,
+            context.sendMessage(DPUContext.MessageType.ERROR,
                     "connection to repository broke down");
+        } catch (DataUnitException e) {
+            throw new DPUException(e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
+                    context.sendMessage(DPUContext.MessageType.WARNING, ex.getMessage(), ex.fillInStackTrace().toString());
                 }
             }
         }
@@ -154,27 +124,31 @@ public class RDFLoader extends ConfigurableBase<RDFLoaderConfig>
         String tripleInfoMessage = String.format(
                 "Prepare for loading %s triples to SPARQL endpoint %s",
                 triplesCount,
-                endpointURL.toString());
+                endpointURL);
 
-        context.sendMessage(MessageType.INFO, tripleInfoMessage);
+        context.sendMessage(DPUContext.MessageType.INFO, tripleInfoMessage);
 
         try {
-            SPARQLoader loader = new SPARQLoader(rdfDataUnit, context, config);
+            SPARQLoader loader = new SPARQLoader(inputDataUnit, context, config);
 
             loader.loadToSPARQLEndpoint();
 
         } catch (DPUException ex) {
-            context.sendMessage(MessageType.ERROR, ex.getMessage(), "", ex);
+            context.sendMessage(DPUContext.MessageType.ERROR, ex.getMessage(), "", ex);
         }
 
         if (config.isPenetrable()) {
-            inputShadow.addAll(rdfDataUnit);
+            try {
+                inputShadow.addAll(inputDataUnit);
+            } catch (DataUnitException e) {
+                throw new DPUException(e);
+            }
         }
     }
 
     /**
      * Returns the configuration dialogue for SPARQL loader.
-     * 
+     *
      * @return the configuration dialogue for SPARQL loader.
      */
     @Override

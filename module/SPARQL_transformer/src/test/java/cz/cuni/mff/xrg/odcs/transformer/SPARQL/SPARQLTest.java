@@ -10,8 +10,8 @@ import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 
 public class SPARQLTest {
     private static final Logger LOG = LoggerFactory.getLogger(SPARQLTest.class);
@@ -44,15 +44,15 @@ public class SPARQLTest {
         try {
             connection = input.getConnection();
             String baseURI = "";
-            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getWriteContext());
+            connection.add(inputStream, baseURI, RDFFormat.TURTLE, input.getBaseDataGraphURI());
 
             // some triples has been loaded
-            assertTrue(connection.size(input.getWriteContext()) > 0);
+            assertTrue(connection.size(input.getBaseDataGraphURI()) > 0);
             // run
             env.run(trans);
             connection2 = output.getConnection();
             // verify result
-            assertTrue(connection.size(input.getWriteContext()) == connection2.size(output.getWriteContext()));
+            assertTrue(connection.size(input.getBaseDataGraphURI()) == connection2.size(output.getBaseDataGraphURI()));
         } finally {
             if (connection != null) {
                 try {

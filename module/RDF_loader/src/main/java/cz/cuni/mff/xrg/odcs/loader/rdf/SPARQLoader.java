@@ -1,5 +1,11 @@
 package cz.cuni.mff.xrg.odcs.loader.rdf;
 
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,13 +46,6 @@ import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.enums.WriteGraphType;
-
 /**
  * Responsible to load RDF data to SPARQL endpoint. Need special for SPARQL
  * loader DPU - separed implementation from {@link BaseRDFRepo}.
@@ -62,7 +61,7 @@ public class SPARQLoader {
      */
     private static final String encode = "UTF-8";
 
-    private RDFDataUnit rdfDataUnit;
+    private RDFDataUnit inputRdfDataUnit;
 
     private RDFLoaderConfig config;
 
@@ -98,7 +97,7 @@ public class SPARQLoader {
      */
     public SPARQLoader(RDFDataUnit rdfDataUnit, DPUContext context,
             RDFLoaderConfig config) {
-        this.rdfDataUnit = rdfDataUnit;
+        this.inputRdfDataUnit = rdfDataUnit;
         this.context = context;
         this.config = config;
     }
@@ -172,7 +171,7 @@ public class SPARQLoader {
                         Long graphSizeBefore = getSPARQLEndpointGraphSize(
                                 graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Target graph <%s> contains %s RDF triples before loading to SPARQL endpoint %s",
                                 graph, graphSizeBefore, config.getSPARQL_endpoint()));
                         checkCancel();
@@ -217,13 +216,13 @@ public class SPARQLoader {
                         Long graphSizeAfter = getSPARQLEndpointGraphSize(
                                 graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Target graph <%s> contains %s RDF triples after loading to SPARQL endpoint %s",
                                 graph, graphSizeAfter, endpointURL.toString()));
 
                         long loadedTriples = getLoadedTripleCount(graph);
 
-                        context.sendMessage(MessageType.INFO, String.format(
+                        context.sendMessage(DPUContext.MessageType.INFO, String.format(
                                 "Loaded %s triples to SPARQL endpoint %s",
                                 loadedTriples, endpointURL.toString()));
                     }
@@ -235,7 +234,7 @@ public class SPARQLoader {
                     switch (config.getInsertOption()) {
                         case SKIP_BAD_PARTS:
                         case REPEAT_IF_BAD_PART:
-                            if (retryCount >= config.getRetrySize()) {
+                            if (retryCount == config.getRetrySize()) {
                                 final String errorMessage = String.format(
                                         "Count of retryConnection for Loading data to SPARQL endpoint is OVER (TOTAL %s ATTEMPTS). ",
                                         retryCount);
@@ -248,7 +247,7 @@ public class SPARQLoader {
                                         retryCount, ex.getMessage());
 
                                 logger.warn(errorMessage);
-                                context.sendMessage(MessageType.WARNING, errorMessage, "", ex);
+                                context.sendMessage(DPUContext.MessageType.WARNING, errorMessage, "", ex);
 
                                 try {
                                     //sleep and attempt to reconnect
@@ -273,7 +272,7 @@ public class SPARQLoader {
                     httpClient.close();
                 }
             } catch (IOException ex) {
-                context.sendMessage(MessageType.WARNING, "Error in close httpClient", "", ex);
+                context.sendMessage(DPUContext.MessageType.WARNING, "Error in close httpClient", "", ex);
             }
         }
     }
@@ -601,12 +600,12 @@ public class SPARQLoader {
         RepositoryConnection connection = null;
         try {
             logger.debug("Phase 1 Started: data is serialized to RDF/XML file");
-            connection = rdfDataUnit.getConnection();
+            connection = inputRdfDataUnit.getConnection();
 
             GraphQuery graphQuery = connection.prepareGraphQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o } WHERE {?s ?p ?o } ");
             CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(rdfDataUnit.getContexts());
-            dataSet.addNamedGraphs(rdfDataUnit.getContexts());
+            dataSet.addDefaultGraphs(inputRdfDataUnit.getDataGraphnames());
+            dataSet.addNamedGraphs(inputRdfDataUnit.getDataGraphnames());
             graphQuery.setDataset(dataSet);
             logger.debug("Dataset: {}", dataSet);
 
@@ -615,14 +614,14 @@ public class SPARQLoader {
 
             logger.debug("Phase 1 Finished: data is serialized to RDF/XML file");
 
-        } catch (RepositoryException | QueryEvaluationException | RDFHandlerException | MalformedQueryException ex) {
+        } catch (RepositoryException | DataUnitException | QueryEvaluationException | RDFHandlerException | MalformedQueryException ex) {
             throw new DPUNonFatalException(ex);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    context.sendMessage(MessageType.WARNING, "Error closing connection", ex.getMessage(), ex);
+                    context.sendMessage(DPUContext.MessageType.WARNING, "Error closing connection", ex.getMessage(), ex);
                 }
             }
             try {

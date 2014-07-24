@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -23,12 +22,14 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.WritableRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
  * Find out, if data in RDF repository are valid or not.
@@ -44,7 +45,7 @@ import cz.cuni.mff.xrg.odcs.rdf.interfaces.DataValidator;
  */
 public class RepositoryDataValidator implements DataValidator {
 
-    private static Logger logger = Logger.getLogger(
+    private static Logger logger = LoggerFactory.getLogger(
             RepositoryDataValidator.class);
 
     private RDFDataUnit input;
@@ -64,7 +65,7 @@ public class RepositoryDataValidator implements DataValidator {
      * @param input
      *            source from where are data checked if are valid.
      * @param output
-     *            target wher are valid data stored.
+     *            target where are valid data stored.
      */
     public RepositoryDataValidator(RDFDataUnit input, WritableRDFDataUnit output) {
         this.input = input;
@@ -87,7 +88,7 @@ public class RepositoryDataValidator implements DataValidator {
         RepositoryConnection connection = null;
         try {
             connection = input.getConnection();
-            tripleCount = connection.size(input.getContexts().toArray(new URI[0]));
+            tripleCount = connection.size(input.getDataGraphnames().toArray(new URI[0]));
 
             if (tripleCount == 0) {
                 isValid = true;
@@ -101,7 +102,7 @@ public class RepositoryDataValidator implements DataValidator {
                     FileOutputStream out = new FileOutputStream(tempFile.getAbsolutePath());
                     OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
                     RDFWriter rdfWriter = Rio.createWriter(RDFFormat.N3, os);
-                    connection.export(rdfWriter, input.getContexts().toArray(new URI[0]));
+                    connection.export(rdfWriter, input.getDataGraphnames().toArray(new URI[0]));
 
                     try (InputStreamReader fileStream = new InputStreamReader(
                             new FileInputStream(tempFile), Charset.forName("UTF-8"))) {
@@ -109,7 +110,7 @@ public class RepositoryDataValidator implements DataValidator {
                         final StatisticalHandler handler = new StatisticalHandler(
                                 goalConnection, true);
 
-                        handler.setGraphContext(goalRepo.getWriteContext());
+                        handler.setGraphContext(goalRepo.getBaseDataGraphURI());
 
                         RDFParser parser = Rio.createParser(RDFFormat.N3);
                         parser.setRDFHandler(handler);

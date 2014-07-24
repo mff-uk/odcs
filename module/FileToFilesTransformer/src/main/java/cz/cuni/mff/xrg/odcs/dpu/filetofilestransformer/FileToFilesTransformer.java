@@ -1,64 +1,54 @@
 package cz.cuni.mff.xrg.odcs.dpu.filetofilestransformer;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUCancelledException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
-import cz.cuni.mff.xrg.odcs.commons.module.dpu.NonConfigurableBase;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
-import cz.cuni.mff.xrg.odcs.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUContext;
+import eu.unifiedviews.dpu.DPUException;
+import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
 
-@AsTransformer
+@DPU.AsTransformer
 public class FileToFilesTransformer extends NonConfigurableBase {
     private static final Logger LOG = LoggerFactory.getLogger(FileToFilesTransformer.class);
 
-    @InputDataUnit(name = "fileInput")
+    @DataUnit.AsInput(name = "fileInput")
     public FileDataUnit fileInput;
 
-    @OutputDataUnit(name = "filesOutput")
+    @DataUnit.AsOutput(name = "filesOutput")
     public WritableFilesDataUnit filesOutput;
 
     public FileToFilesTransformer() {
     }
 
     @Override
-    public void execute(DPUContext dpuContext) throws DPUException, DataUnitException, InterruptedException {
+    public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
-        dpuContext.sendMessage(MessageType.INFO, shortMessage);
+        dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
 
         FileDataUnitOnlyFilesIterator fileInputIterator = new FileDataUnitOnlyFilesIterator(fileInput.getRootDir());
         long index = 0L;
-        while (fileInputIterator.hasNext()) {
+        boolean shouldContinue = !dpuContext.canceled();
+        while ((shouldContinue) && (fileInputIterator.hasNext())) {
             index++;
-            checkCancelled(dpuContext);
 
             FileHandler handlerItem = fileInputIterator.next();
             String canonicalPath;
+            canonicalPath = handlerItem.asFile().toURI().toASCIIString();
             try {
-                canonicalPath = handlerItem.asFile().getCanonicalPath();
                 filesOutput.addExistingFile(handlerItem.getRootedPath(), canonicalPath);
-                if (dpuContext.isDebugging()) {
-                    LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
-                }
-            } catch (IOException ex) {
-                dpuContext.sendMessage(MessageType.ERROR, "Error when adding.", "Handler item rooted path: " + handlerItem.getRootedPath(), ex);
+            } catch (DataUnitException ex) {
+                throw new DPUException(ex.getMessage(), ex.getCause());
             }
-        }
-    }
-
-    private void checkCancelled(DPUContext dpuContext) throws DPUCancelledException {
-        if (dpuContext.canceled()) {
-            throw new DPUCancelledException();
+            if (dpuContext.isDebugging()) {
+                LOG.trace("Added " + appendNumber(index) + " symbolic name " + handlerItem.getRootedPath() + " path URI " + canonicalPath + " to destination data unit.");
+            }
+            shouldContinue = !dpuContext.canceled();
         }
     }
 

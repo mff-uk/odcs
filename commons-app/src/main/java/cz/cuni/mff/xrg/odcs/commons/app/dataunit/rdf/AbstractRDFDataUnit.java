@@ -20,14 +20,13 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.FileRDFMetadataExtractor;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -35,6 +34,12 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.OrderTupleQueryResultImpl;
  * @author Jiri Tomes
  */
 public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
+
+    public static final String DATA_UNIT_STORE_GRAPH = "http://linked.opendata.cz/ontology/odcs/dataunit";
+
+    public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/containsGraph";
+
+    public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://linked.opendata.cz/ontology/odcs/dataunit/rdf/writeGraph";
 
     private FileRDFMetadataExtractor fileRDFMetadataExtractor;
 
@@ -52,7 +57,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     private List<RepositoryConnection> requestedConnections;
 
     private Thread ownerThread;
-    
+
     public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
 
     public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
@@ -72,58 +77,65 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //DataUnit interface
     @Override
-    public DataUnitType getType() {
-        return DataUnitType.RDF;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.RDF;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnitType dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 
     //DataUnit interface
     @Override
-    public String getDataUnitName() {
+    public String getName() {
         return dataUnitName;
     }
 
-    //RDFDataUnit interface
+    //MetadataDataUnit interface
     @Override
-    public RepositoryConnection getConnection() throws RepositoryException {
+    public RepositoryConnection getConnection() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             LOG.warn("Constraint violation, only one thread can access this data unit");
         }
 
-        RepositoryConnection connection = getConnectionInternal();
-        requestedConnections.add(connection);
-        return connection;
+        try {
+            RepositoryConnection connection = getConnectionInternal();
+            requestedConnections.add(connection);
+            return connection;
+        } catch (RepositoryException ex) {
+            throw new DataUnitException(ex);
+        }
+    }
+
+    //MetadataDataUnit interface
+    @Override
+    public Set<URI> getMetadataGraphnames() throws DataUnitException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     //RDFDataUnit interface
     @Override
-    public Set<URI> getContexts() {
+    public Set<URI> getDataGraphnames() {
         return readContexts;
     }
 
-    //RDFDataUnit interface
-    @Override
+    //RDFDataUnit interface old
     public Map<String, List<String>> getRDFMetadataForSubjectURI(
             String subjectURI, List<String> predicates) {
         return this.fileRDFMetadataExtractor.getMetadataForSubject(subjectURI,
                 predicates);
     }
 
-    //RDFDataUnit interface
-    @Override
+    //RDFDataUnit interface old
     public Map<String, List<String>> getRDFMetadataForFile(String filePath,
             List<String> predicates) {
         return this.fileRDFMetadataExtractor.getMetadataForFilePath(filePath,
                 predicates);
     }
 
-    //RDFDataUnit interface
-    @Override
+    //RDFDataUnit interface old
     public OrderTupleQueryResultImpl executeOrderSelectQueryAsTuples(
             String orderSelectQuery) throws InvalidQueryException {
 
@@ -134,13 +146,13 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //WritableRDFDataUnit interface
     @Override
-    public URI getWriteContext() {
+    public URI getBaseDataGraphURI() {
         return writeContext;
     }
 
     //WritableDataUnit interface
     @Override
-    public void addAll(RDFData otherRDFDataUnit) {
+    public void addAll(RDFDataUnit otherRDFDataUnit) {
         if (!this.getClass().equals(otherRDFDataUnit.getClass())) {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
                     + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherRDFDataUnit.getClass().getCanonicalName() + ".");
@@ -150,8 +162,8 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         try {
             connection = getConnection();
 
-            String targetGraphName = getWriteContext().stringValue();
-            for (URI sourceGraph : otherRDFDataUnit.getContexts()) {
+            String targetGraphName = getBaseDataGraphURI().stringValue();
+            for (URI sourceGraph : otherRDFDataUnit.getDataGraphnames()) {
                 String sourceGraphName = sourceGraph.stringValue();
 
                 LOG.info("Trying to merge {} triples from <{}> to <{}>.",
@@ -172,9 +184,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             }
         } catch (MalformedQueryException ex) {
             LOG.error("NOT VALID QUERY: {}", ex);
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-        } catch (UpdateExecutionException ex) {
+        } catch (RepositoryException | DataUnitException | UpdateExecutionException ex) {
             LOG.error(ex.getMessage(), ex);
         } finally {
             if (connection != null) {
@@ -208,7 +218,7 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         }
 
         if (count > 0) {
-            LOG.error("{} connections remained opened after DPU execution, dataUnitName '{}'.", count, this.getDataUnitName());
+            LOG.error("{} connections remained opened after DPU execution, dataUnitName '{}'.", count, this.getName());
         }
     }
 
@@ -216,9 +226,11 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
     //ManagableDataUnit interface
     public void clear() {
         /**
-         * Beware! Clean is called from different thread then all other operations (pipeline executor thread).
-         * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an Exception.
-         * This connection has to be obtained directly from repository and we take care to close it properly.
+         * Beware! Clean is called from different thread then all other
+         * operations (pipeline executor thread). That is the reason why we
+         * cannot obtain connection using this.getConnection(), it would throw
+         * an Exception. This connection has to be obtained directly from
+         * repository and we take care to close it properly.
          */
         RepositoryConnection connection = null;
         try {
@@ -272,14 +284,14 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
 
     //ManagableDataUnit interface
     @Override
-    public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
+    public void merge(DataUnit otherDataUnit) throws IllegalArgumentException, DataUnitException {
         if (!this.getClass().equals(otherDataUnit.getClass())) {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
                     + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
 
         final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
-        this.readContexts.addAll(otherRDFDataUnit.getContexts());
+        this.readContexts.addAll(otherRDFDataUnit.getDataGraphnames());
     }
 
     @Override
@@ -288,18 +300,18 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
         try {
             connection = getConnectionInternal();
             ValueFactory valueFactory = connection.getValueFactory();
-            for (URI context : this.getContexts()) {
+            for (URI context : this.getDataGraphnames()) {
                 connection.add(valueFactory.createStatement(
-                        this.getWriteContext(),
-                        valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
+                        this.getBaseDataGraphURI(),
+                        valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
                         context),
-                        valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                        valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             }
             connection.add(valueFactory.createStatement(
-                    this.getWriteContext(),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
+                    this.getBaseDataGraphURI(),
+                    valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
                     this.writeContext),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+                    valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
         } catch (RepositoryException ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -313,36 +325,36 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
             }
         }
     }
-    
+
     @Override
     public void load() {
         RepositoryConnection connection = null;
         try {
             connection = getConnectionInternal();
-            
+
             ValueFactory valueFactory = connection.getValueFactory();
-            RepositoryResult<Statement> result = connection.getStatements(this.getWriteContext(), 
-                            valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE), 
-                            null, 
-                            false, 
-                            valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
+            RepositoryResult<Statement> result = connection.getStatements(this.getBaseDataGraphURI(),
+                    valueFactory.createURI(DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE),
+                    null,
+                    false,
+                    valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
             while (result.hasNext()) {
                 Statement contextStatement = result.next();
-                this.readContexts.add( valueFactory.createURI(contextStatement.getObject().stringValue()));
+                this.readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
             }
-            RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getWriteContext(), 
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_RDF_WRITEGRAPH_PREDICATE), 
-                    null, 
-                    false, 
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_STORE_GRAPH));
-            
+            RepositoryResult<Statement> writeContextResult = connection.getStatements(this.getBaseDataGraphURI(),
+                    valueFactory.createURI(DATA_UNIT_RDF_WRITEGRAPH_PREDICATE),
+                    null,
+                    false,
+                    valueFactory.createURI(DATA_UNIT_STORE_GRAPH));
+
             int i = 0;
             while (writeContextResult.hasNext()) {
                 Statement writeContextStatement = writeContextResult.next();
                 this.writeContext = valueFactory.createURI(writeContextStatement.getObject().stringValue());
                 i++;
             }
-            if ((i != 1)||(!readContexts.contains(writeContext))) {
+            if ((i != 1) || (!readContexts.contains(writeContext))) {
                 throw new RuntimeException("impossible");
             }
         } catch (RepositoryException ex) {
@@ -357,5 +369,25 @@ public abstract class AbstractRDFDataUnit implements ManagableRdfDataUnit {
                 }
             }
         }
+    }
+
+    @Override
+    public RDFDataUnit.Iteration getIteration() throws DataUnitException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addExistingDataGraph(String symbolicName, URI existingDataGraphURI) throws DataUnitException {
+        throw new DataUnitException("Not supported");
+    }
+
+    @Override
+    public URI addNewDataGraph(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
+    }
+    
+    @Override
+    public void addEntry(String symbolicName) throws DataUnitException {
+        throw new DataUnitException("Not supported");
     }
 }
