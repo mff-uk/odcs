@@ -150,6 +150,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 }
             }
         });
+        refreshManager.triggerRefresh();
 	}
 
 	@Override
