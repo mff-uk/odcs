@@ -123,6 +123,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
                 }
             }
         });
+        refreshManager.triggerRefresh();
     }
 
     @Override

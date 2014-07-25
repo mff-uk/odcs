@@ -161,6 +161,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                 }
             }
         });
+        refreshManager.triggerRefresh();
     }
 
     /**

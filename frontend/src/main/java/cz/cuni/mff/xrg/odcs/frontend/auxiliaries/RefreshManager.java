@@ -160,4 +160,17 @@ public class RefreshManager {
             }
         };
     }
+    
+    /**
+     * Manualy triggering refresh event on all added listeners
+     */
+    public void triggerRefresh() {
+    	if (listeners == null || listeners.isEmpty()) {
+			return;
+		}
+    	
+    	for (RefreshListener listener : listeners.values()) {
+			listener.refresh(refresher);
+		}
+    }
 }
