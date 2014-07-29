@@ -147,32 +147,6 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
         return newFileURIString;
     }
 
-    //WritableFilesDataUnit interface
-    @Override
-    public String createFile() throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit");
-        }
-        return this.createFile("");
-    }
-
-    //WritableFilesDataUnit interface
-    @Override
-    public String createFile(String proposedSymbolicName) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit");
-        }
-
-        Path newFile = null;
-        String filteredProposedSymbolicName = filterProposedSymbolicName(proposedSymbolicName);
-        try {
-            newFile = Files.createTempFile(workingDirectory.toPath(), filteredProposedSymbolicName, "");
-        } catch (IOException ex) {
-            throw new DataUnitException("Error when generating filename.", ex);
-        }
-        return newFile.toUri().toASCIIString();
-    }
-
     //ManageableDataUnit interface
     @Override
     public void clear() {
