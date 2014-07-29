@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openrdf.model.BNode;
@@ -60,22 +58,6 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
         }
 
         return new RDFDataUnitIterationImpl(this);
-    }
-
-    // TODO move to helper
-    @Override
-    public Set<URI> getDataGraphnames() throws DataUnitException {
-        RDFDataUnit.Iteration iteration = this.getIteration();
-        Set<URI> resultSet = new LinkedHashSet<>();
-        try {
-            while (iteration.hasNext()) {
-                RDFDataUnit.Entry entry = iteration.next();
-                resultSet.add(entry.getDataGraphURI());
-            }
-        } finally {
-            iteration.close();
-        }
-        return resultSet;
     }
 
     @Override
