@@ -1,19 +1,19 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
+package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 
 import java.util.NoSuchElementException;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
-public class WritableFileIterationImpl implements FilesDataUnit.Iteration {
+public class RDFDataUnitIterationImpl implements RDFDataUnit.Iteration {
 
     private RepositoryConnection connection = null;
 
@@ -23,12 +23,12 @@ public class WritableFileIterationImpl implements FilesDataUnit.Iteration {
 
     private MetadataDataUnit backingStore = null;
 
-    public WritableFileIterationImpl(MetadataDataUnit backingStore) {
+    public RDFDataUnitIterationImpl(MetadataDataUnit backingStore) {
         this.backingStore = backingStore;
     }
 
     @Override
-    public FilesDataUnit.Entry next() throws DataUnitException {
+    public RDFDataUnit.Entry next() throws DataUnitException {
         if (result == null) {
             init();
         }
@@ -36,10 +36,10 @@ public class WritableFileIterationImpl implements FilesDataUnit.Iteration {
         try {
             Statement statement = result.next();
             result2 = connection2.getStatements(statement.getSubject(),
-                    connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                    connection.getValueFactory().createURI(RDFDataUnit.PREDICATE_DATAGRAPH_URI),
                     null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
-            Statement filesytemURIStatement = result2.next();
-            return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), filesytemURIStatement.getObject().stringValue());
+            Statement rdfDataGraphURIStatement = result2.next();
+            return new RDFDataUnitEntryImpl(statement.getObject().stringValue(), new URIImpl(rdfDataGraphURIStatement.getObject().stringValue()));
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error iterating underlying repository", ex);
         } catch (NoSuchElementException ex) {
@@ -101,11 +101,10 @@ public class WritableFileIterationImpl implements FilesDataUnit.Iteration {
                 connection2 = backingStore.getConnection();
             }
             try {
-                result = connection.getStatements(null, connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                result = connection.getStatements(null, connection.getValueFactory().createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
             } catch (RepositoryException ex) {
-                throw new DataUnitException("Error obtaining file list.", ex);
+                throw new DataUnitException("Error obtaining entry list.", ex);
             }
         }
     }
-
 }

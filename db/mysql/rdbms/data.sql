@@ -78,8 +78,6 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`odcs`@`localhost`*/ /*!50003 TRIGGER update_last_change BEFORE UPDATE ON `exec_pipeline`
- FOR EACH ROW SET NEW.t_last_change = NOW() */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
