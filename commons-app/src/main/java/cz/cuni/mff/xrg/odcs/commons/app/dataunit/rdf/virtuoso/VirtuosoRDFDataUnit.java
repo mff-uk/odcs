@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
 
 
@@ -96,7 +97,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
             connection = getConnection();
 
             String targetGraphName = getBaseDataGraphURI().stringValue();
-            for (URI sourceGraph : otherRDFDataUnit.getDataGraphnames()) {
+            for (URI sourceGraph :  RDFHelper.getGraphsArray(otherRDFDataUnit)) {
                 String sourceGraphName = sourceGraph.stringValue();
 
                 LOG.info("Trying to merge {} triples from <{}> to <{}>.",

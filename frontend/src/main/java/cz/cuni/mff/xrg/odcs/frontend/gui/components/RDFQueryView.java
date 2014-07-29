@@ -23,6 +23,7 @@ import com.vaadin.ui.Button.ClickEvent;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -455,12 +456,12 @@ public class RDFQueryView extends QueryView {
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
-                        selectType, repository.getDataGraphnames());
+                        selectType, RDFHelper.getGraphs(repository));
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getDataGraphnames(), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection,RDFHelper.getGraphs(repository), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);

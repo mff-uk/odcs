@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -148,7 +149,7 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
             connection = getConnection();
 
             String targetGraphName = getBaseDataGraphURI().stringValue();
-            for (URI sourceGraph : otherRDFDataUnit.getDataGraphnames()) {
+            for (URI sourceGraph : RDFHelper.getGraphsArray(otherRDFDataUnit)) {
                 String sourceGraphName = sourceGraph.stringValue();
 
                 LOG.info("Trying to merge {} triples from <{}> to <{}>.",
