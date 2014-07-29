@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.filestofilesmerger2transformer;
+package eu.unifiedviews.plugins.transformer.filesmerger;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;

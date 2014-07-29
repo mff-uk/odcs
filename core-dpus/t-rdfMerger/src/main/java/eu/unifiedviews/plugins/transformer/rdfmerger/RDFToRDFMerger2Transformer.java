@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.dpu.rdftordfmerger2transformer;
+package eu.unifiedviews.plugins.transformer.rdfmerger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
