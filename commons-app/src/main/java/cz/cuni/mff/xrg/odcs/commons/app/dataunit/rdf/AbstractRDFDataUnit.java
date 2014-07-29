@@ -7,10 +7,6 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -21,7 +17,6 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
@@ -117,52 +112,5 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
         URI generatedURI = new URIImpl(baseDataGraphURI.stringValue() + "/" + String.valueOf(atomicInteger.getAndIncrement()));
         this.addExistingDataGraph(symbolicName, generatedURI);
         return generatedURI;
-    }
-
-    @Override
-    public void addAll(RDFDataUnit otherRDFDataUnit) throws DataUnitException {
-        if (!this.getClass().equals(otherRDFDataUnit.getClass())) {
-            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
-                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherRDFDataUnit.getClass().getCanonicalName() + ".");
-        }
-
-        RepositoryConnection connection = null;
-        try {
-            connection = getConnection();
-
-            String targetGraphName = getBaseDataGraphURI().stringValue();
-            for (URI sourceGraph : RDFHelper.getGraphsArray(otherRDFDataUnit)) {
-                String sourceGraphName = sourceGraph.stringValue();
-
-                LOG.info("Trying to merge {} triples from <{}> to <{}>.",
-                        connection.size(sourceGraph), sourceGraphName,
-                        targetGraphName);
-
-                String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
-                        targetGraphName);
-
-                Update update = connection.prepareUpdate(
-                        QueryLanguage.SPARQL, mergeQuery);
-
-                update.execute();
-
-                LOG.info("Merged {} triples from <{}> to <{}>.",
-                        connection.size(sourceGraph), sourceGraphName,
-                        targetGraphName);
-            }
-        } catch (MalformedQueryException ex) {
-            LOG.error("NOT VALID QUERY: {}", ex);
-        } catch (RepositoryException | DataUnitException | UpdateExecutionException ex) {
-            LOG.error(ex.getMessage(), ex);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
-                }
-            }
-        }
     }
 }
