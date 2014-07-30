@@ -154,7 +154,7 @@ public class RDFQuery implements Query {
             connection = repository.getConnection();
             switch (type) {
                 case SELECT:
-                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, RDFHelper.getGraphs(repository));
+                    data = RepositoryFrontendHelper.executeSelectQueryAsTuples(connection, query, RDFHelper.getGraphsURISet(repository));
                     break;
                 case CONSTRUCT:
                     graph = RepositoryFrontendHelper.executeConstructQuery(connection, query, RDFHelper.getDatasetWithDefaultGraphs(repository));
@@ -164,7 +164,7 @@ public class RDFQuery implements Query {
                     String resource = query.substring(query.indexOf('<') + 1,
                             query.indexOf('>'));
                     URIImpl uri = new URIImpl(resource);
-                    graph = RepositoryFrontendHelper.describeURI(connection, RDFHelper.getGraphs(repository), uri);
+                    graph = RepositoryFrontendHelper.describeURI(connection, RDFHelper.getGraphsURISet(repository), uri);
                     data = getRDFTriplesData(graph);
                     break;
                 default:

@@ -456,12 +456,12 @@ public class RDFQueryView extends QueryView {
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
-                        selectType, RDFHelper.getGraphs(repository));
+                        selectType, RDFHelper.getGraphsURISet(repository));
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection,RDFHelper.getGraphs(repository), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection,RDFHelper.getGraphsURISet(repository), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);

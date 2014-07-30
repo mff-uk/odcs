@@ -44,7 +44,7 @@ public class GraphDeleter implements Runnable {
                     //					RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
                     rdfDataUnitFactory.create("", "", "");
             connection = repo.getConnection();
-            message = RepositoryFrontendHelper.deleteApplicationGraphs(connection,  RDFHelper.getGraphs(repo));
+            message = RepositoryFrontendHelper.deleteApplicationGraphs(connection,  RDFHelper.getGraphsURISet(repo));
 
         } catch (Throwable ex) {
             message = ex.toString();

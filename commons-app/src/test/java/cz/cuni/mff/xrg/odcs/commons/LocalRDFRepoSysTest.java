@@ -108,7 +108,7 @@ public class LocalRDFRepoSysTest {
         OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
         RDFWriter rdfWriter = Rio.createWriter(Rio.getWriterFormatForFileName(fileName), os);
         RepositoryConnection connection = rdfRepo.getConnection();
-        connection.export(rdfWriter, RDFHelper.getGraphsArray(rdfRepo));
+        connection.export(rdfWriter, RDFHelper.getGraphsURIArray(rdfRepo));
         connection.close();
 
     }
