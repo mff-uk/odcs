@@ -35,7 +35,6 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
