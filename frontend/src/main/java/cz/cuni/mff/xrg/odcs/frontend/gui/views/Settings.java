@@ -740,11 +740,27 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         if (record == null) {
             return true;
         }
-        Set<EmailAddress> aldEmails = record.getEmails();
+        Set<EmailAddress> oldEmails = record.getEmails();
         UserNotificationRecord newNotification = new UserNotificationRecord();
         email.setUserEmailNotification(newNotification);
         Set<EmailAddress> newEmails = newNotification.getEmails();
-        return !aldEmails.equals(newEmails) || rows.isModified();
+        return !hasTheSameEmails(oldEmails, newEmails) || rows.isModified();
+    }
+    
+    private boolean hasTheSameEmails(Set<EmailAddress> oldEmails, Set<EmailAddress> newEmails) {
+    	// i have to do it this way because the new mails dont have id set and the old have it set
+    	// so the oldEmails.equals(newEmails) method will always return false (dont want to change
+    	// hashCode and equals method of EmailAdress because they are correct but here it cant be used)
+    	if (oldEmails.size() != newEmails.size()) {
+			return false;
+		}
+    	for (EmailAddress emailAddress : oldEmails) {
+    		// both email dont have id set, so i can compare them with equals
+			if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
+				return false;
+			}
+		}
+    	return true;
     }
 
     private String emailValidationText() {
