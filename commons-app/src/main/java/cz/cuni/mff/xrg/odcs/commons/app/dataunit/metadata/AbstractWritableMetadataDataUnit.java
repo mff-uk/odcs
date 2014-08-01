@@ -21,6 +21,9 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 public abstract class AbstractWritableMetadataDataUnit implements WritableMetadataDataUnit, ManagableDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
@@ -39,6 +42,8 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     protected List<RepositoryConnection> requestedConnections;
 
+    protected Map<RepositoryConnection, String> requestedConnectionsSource;
+
     protected Thread ownerThread;
 
     public abstract RepositoryConnection getConnectionInternal() throws RepositoryException;
@@ -50,6 +55,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         this.readContexts.add(this.writeContext);
 
         this.requestedConnections = new ArrayList<>();
+        this.requestedConnectionsSource = new HashMap<>();
         this.ownerThread = Thread.currentThread();
     }    
     
@@ -60,14 +66,27 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             LOG.info("More than more thread is accessing this data unit");
         }
 
+
         try {
             RepositoryConnection connection = getConnectionInternal();
             requestedConnections.add(connection);
+
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            new Exception("Stack trace").printStackTrace(printWriter);
+
+            if (requestedConnectionsSource.containsKey(connection)) {
+                LOG.error("Duplicit connection !!!");
+            }
+            requestedConnectionsSource.put(
+                    connection, stringWriter.getBuffer().toString());
+
             return connection;
         } catch (RepositoryException ex) {
             throw new DataUnitException(ex);
         }
     }
+
 
     // MetadataDataUnit interface
     @Override
@@ -165,6 +184,9 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             try {
                 if (connection.isOpen()) {
                     count++;
+                    // is open
+                    LOG.error("Connection: is not closed connection opened on:\n{}",
+                            requestedConnectionsSource.get(connection));
                 }
             } catch (RepositoryException ex) {
                 try {
