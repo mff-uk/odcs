@@ -310,9 +310,9 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public Object enter() {
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        if (!isLayoutInitialized) {
-        	selectedDpu = null;
-		}
+//        if (!isLayoutInitialized) {
+//        	selectedDpu = null;
+//		}
         Object viewObject = view.enter(this);
         isLayoutInitialized  = true;
 
