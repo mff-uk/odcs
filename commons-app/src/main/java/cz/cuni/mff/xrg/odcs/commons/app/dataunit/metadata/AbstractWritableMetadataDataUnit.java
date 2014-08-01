@@ -63,7 +63,9 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     @Override
     public RepositoryConnection getConnection() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit");
+            LOG.info("More than more thread is accessing this data unit."
+                    + " owner: {} current: {}", ownerThread.getName(),
+                    Thread.currentThread().getName());
         }
 
 
