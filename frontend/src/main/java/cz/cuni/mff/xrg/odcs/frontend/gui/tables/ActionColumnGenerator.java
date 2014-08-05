@@ -7,6 +7,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * Generate column with action buttons. This class can be used just with one
@@ -121,6 +122,7 @@ public class ActionColumnGenerator implements CustomTable.ColumnGenerator {
                 } else {
                     button.setDescription(template.name);
                     button.setIcon(template.icon);
+                    button.addStyleName("small_button");
                 }
                 if (template.width != null) {
                     button.setWidth(template.width);

@@ -76,6 +76,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline.setCaption("Create pipeline");
         btnCreatePipeline.setHeight("25px");
         btnCreatePipeline.setWidth("120px");
+        btnCreatePipeline.addStyleName("v-button-primary");
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -89,6 +90,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline.setCaption("Import pipeline");
         btnImportPipeline.setHeight("25px");
         btnImportPipeline.setWidth("120px");
+        btnImportPipeline.addStyleName("v-button-primary");
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -102,6 +104,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         buttonDeleteFilters.setCaption("Clear Filters");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("120px");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.addClickListener(new ClickListener() {
 
             @Override
@@ -180,35 +183,35 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.runEventHandler(id, false);
             }
-        }, new ThemeResource("icons/running.png"));
+        }, new ThemeResource("icons/running.svg"));
 
         generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id, true);
             }
-        }, new ThemeResource("icons/debug.png"));
+        }, new ThemeResource("icons/debug.svg"));
 
         generator.addButton("Schedule", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.scheduleEventHandler(id);
             }
-        }, new ThemeResource("icons/scheduled.png"));
+        }, new ThemeResource("icons/scheduled.svg"));
 
         generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.copyEventHandler(id);
             }
-        }, new ThemeResource("img/copy.png"));
+        }, new ThemeResource("icons/copy.svg"));
 
         generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.navigateToEventHandler(PipelineEdit.class, id);
             }
-        }, new ThemeResource("icons/gear.png"));
+        }, new ThemeResource("icons/gear.svg"));
 
         generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
             @Override
@@ -220,7 +223,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             public boolean show(CustomTable source, long id) {
                 return presenter.canDeletePipeline(id);
             }
-        }, new ThemeResource("icons/trash.png"));
+        }, new ThemeResource("icons/trash.svg"));
 
         return generator;
     }

@@ -182,6 +182,7 @@ public class Scheduler extends ViewComponent {
 
         Button addRuleButton = new Button();
         addRuleButton.setCaption("Add new scheduling rule");
+        addRuleButton.addStyleName("v-button-primary");
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     @Override
@@ -195,6 +196,7 @@ public class Scheduler extends ViewComponent {
 
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("110px");
         buttonDeleteFilters
@@ -241,7 +243,7 @@ public class Scheduler extends ViewComponent {
             public Object generateCell(CustomTable source, Object itemId,
                     Object columnId) {
                 boolean isEnabled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-                ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.png" : "icons/error.png");
+                ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.svg" : "icons/error.svg");
                 String description = isEnabled ? "Enabled" : "Disabled";
                 Embedded emb = new Embedded(description, img);
                 emb.setDescription(description);
@@ -458,7 +460,7 @@ public class Scheduler extends ViewComponent {
                 if (!testStatus) {
                     Button enableButton = new Button();
                     enableButton.setDescription("Enable");
-                    enableButton.setIcon(new ThemeResource("icons/ok.png"));
+                    enableButton.setIcon(new ThemeResource("icons/ok.svg"));
                     enableButton.addClickListener(new ClickListener() {
                         @Override
                         public void buttonClick(ClickEvent event) {
@@ -473,7 +475,8 @@ public class Scheduler extends ViewComponent {
                 else {
                     Button disableButton = new Button();
                     disableButton.setDescription("Disable");
-                    disableButton.setIcon(new ThemeResource("icons/error.png"));
+                    disableButton.addStyleName("small_button");
+                    disableButton.setIcon(new ThemeResource("icons/error.svg"));
                     disableButton.addClickListener(new ClickListener() {
                         @Override
                         public void buttonClick(ClickEvent event) {
@@ -488,7 +491,8 @@ public class Scheduler extends ViewComponent {
             //Edit button. Opens the window for editing given scheduling rule.
             Button editButton = new Button();
             editButton.setDescription("Edit");
-            editButton.setIcon(new ThemeResource("icons/gear.png"));
+            editButton.addStyleName("small_button");
+            editButton.setIcon(new ThemeResource("icons/gear.svg"));
             editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -500,7 +504,8 @@ public class Scheduler extends ViewComponent {
             //Delete button. Delete scheduling rule from the table.
             Button deleteButton = new Button();
             deleteButton.setDescription("Delete");
-            deleteButton.setIcon(new ThemeResource("icons/trash.png"));
+            deleteButton.addStyleName("small_button");
+            deleteButton.setIcon(new ThemeResource("icons/trash.svg"));
             deleteButton.addClickListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -539,7 +544,7 @@ public class Scheduler extends ViewComponent {
         @Override
         public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
             if ("status".equals(propertyId)) {
-                ThemeResource img = new ThemeResource(value ? "icons/ok.png" : "icons/error.png");
+                ThemeResource img = new ThemeResource(value ? "icons/ok.svg" : "icons/error.svg");
                 return img;
             } else {
                 return super.getBooleanFilterIcon(propertyId, value);

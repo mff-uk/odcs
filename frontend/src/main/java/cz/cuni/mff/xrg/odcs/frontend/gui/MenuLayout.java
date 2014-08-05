@@ -58,6 +58,7 @@ public class MenuLayout extends CustomComponent {
      * Used layout.
      */
     private VerticalLayout mainLayout;
+    private HorizontalLayout headerLayout;
 
     /**
      * Menu bar.
@@ -74,6 +75,8 @@ public class MenuLayout extends CustomComponent {
     private Button logOutButton;
 
     private Embedded backendStatus;
+    
+    private Embedded Logo;
 
     private HashMap<String, MenuItem> menuItems = new HashMap<>();
 
@@ -93,6 +96,10 @@ public class MenuLayout extends CustomComponent {
         mainLayout.setMargin(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
+        
+        // Add Logo.
+        Logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));   
+        Logo.setStyleName("logo");
 
         // menuBar
         menuBar = new MenuBar();
@@ -107,14 +114,16 @@ public class MenuLayout extends CustomComponent {
         backendStatus.setStyleName("backendStatus");
 
         userName = new Label(authCtx.getUsername());
+        userName.setIcon(new ThemeResource("img/user.svg"));
         userName.setWidth("100px");
         userName.addStyleName("username");
 
         logOutButton = new Button();
-        logOutButton.setWidth("16px");
+        logOutButton.setCaption("Logout");
         logOutButton.setVisible(authCtx.isAuthenticated());
         logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
-        logOutButton.setIcon(new ThemeResource("icons/logout.png"), "Log out");
+        logOutButton.addStyleName("logout");
+        logOutButton.setIcon(new ThemeResource("img/logout.svg"), "Log out");
         logOutButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -124,16 +133,25 @@ public class MenuLayout extends CustomComponent {
                 navigator.navigateTo(Login.class);
             }
         });
+        
+        HorizontalLayout headerLine = new HorizontalLayout(Logo, backendStatus, logOutButton, userName);
+        headerLine.setSpacing(false);
+        headerLine.setHeight("30px");
+        headerLine.addStyleName("headerPanel");
+        headerLine.setComponentAlignment(Logo, Alignment.MIDDLE_LEFT);
+        headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
+        headerLine.setComponentAlignment(userName, Alignment.MIDDLE_RIGHT);
+        headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_RIGHT);
+        
+        mainLayout.addComponent(headerLine);
+        mainLayout.setExpandRatio(headerLine, 0.0f);
 
-        HorizontalLayout menuLine = new HorizontalLayout(menuBar, userName, logOutButton, backendStatus);
-        menuLine.setSpacing(true);
+        HorizontalLayout menuLine = new HorizontalLayout(menuBar);
+        menuLine.setSpacing(false);
         menuLine.setWidth("100%");
         menuLine.setHeight("45px");
         menuLine.addStyleName("loginPanel");
         menuLine.setComponentAlignment(menuBar, Alignment.MIDDLE_CENTER);
-        menuLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
-        menuLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
-        menuLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
         menuLine.setExpandRatio(menuBar, 1.0f);
 
         mainLayout.addComponent(menuLine);
@@ -176,7 +194,7 @@ public class MenuLayout extends CustomComponent {
      */
     public void refreshBackendStatus(boolean isRunning) {
         backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
-        backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.png" : "icons/offline.png"));
+        backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.svg" : "icons/offline.svg"));
     }
 
     /**
@@ -187,7 +205,7 @@ public class MenuLayout extends CustomComponent {
     public void setNavigation(ClassNavigatorHolder navigatorHolder) {
         this.navigator = navigatorHolder;
         // init menuBar
-        menuItems.put("", menuBar.addItem("UnifiedViews", new NavigateToCommand(Initial.class, navigator)));
+        menuItems.put("", menuBar.addItem("Home", new NavigateToCommand(Initial.class, navigator)));
         menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
         menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
         menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
