@@ -185,6 +185,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         btnRefresh.setWidth("120px");
+        btnRefresh.addStyleName("v-button-primary");
         topLine.addComponent(btnRefresh);
 
         //Clear Filters button. Clearing filters on the table with executions.
@@ -192,6 +193,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         btnClearFilters.setCaption("Clear Filters");
         btnClearFilters.setHeight("25px");
         btnClearFilters.setWidth("120px");
+        btnClearFilters.addStyleName("v-button-primary");
         btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -245,7 +247,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 // ...
                 return !isDebug && status != PipelineExecutionStatus.QUEUED;
             }
-        }, new ThemeResource("icons/show_log.png"));
+        }, new ThemeResource("icons/show_log.svg"));
 
         generator.addButton("Debug data", null, new Action() {
             @Override
@@ -262,7 +264,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 // ...
                 return isDebug && status != PipelineExecutionStatus.QUEUED;
             }
-        }, new ThemeResource("icons/debug_data.png"));
+        }, new ThemeResource("icons/debug_data.svg"));
 
         generator.addButton("Cancel", null, new Action() {
             @Override
@@ -282,7 +284,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
                 return stoppableStatus && userCanStop;
             }
-        }, new ThemeResource("icons/cancelled.png"));
+        }, new ThemeResource("icons/cancelled.svg"));
 
         generator.addButton("Run pipeline", null, new Action() {
             @Override
@@ -298,7 +300,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 return status != PipelineExecutionStatus.RUNNING
                         && status != PipelineExecutionStatus.CANCELLING;
             }
-        }, new ThemeResource("icons/running.png"));
+        }, new ThemeResource("icons/running.svg"));
 
         generator.addButton("Debug pipeline", null, new Action() {
             @Override
@@ -314,7 +316,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 return status != PipelineExecutionStatus.RUNNING
                         && status != PipelineExecutionStatus.CANCELLING;
             }
-        }, new ThemeResource("icons/debug.png"));
+        }, new ThemeResource("icons/debug.svg"));
 
         return generator;
     }
@@ -423,11 +425,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 if ("schedule".equals(propertyId)) {
                     ComboBox comboScheduled = new ComboBox();
                     comboScheduled.addItem(true);
-                    ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
+                    ThemeResource iconScheduled = new ThemeResource("icons/scheduled.svg");
                     comboScheduled.setItemIcon(true, iconScheduled);
                     comboScheduled.setItemCaption(true, "Scheduled");
                     comboScheduled.addItem(false);
-                    ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.png");
+                    ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.svg");
                     comboScheduled.setItemIcon(false, iconNotScheduled);
                     comboScheduled.setItemCaption(false, "Manual");
                     return comboScheduled;
@@ -499,7 +501,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                         presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
                     }
                 });
-                btnEdit.setIcon(new ThemeResource("icons/gear.png"));
+                btnEdit.addStyleName("small_button");
+                btnEdit.setIcon(new ThemeResource("icons/gear.svg"));
                 Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
                 lblPipelineName.setStyleName("clickable-table-cell");
                 HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
@@ -544,10 +547,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 boolean inDebug = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
                 Embedded emb;
                 if (inDebug) {
-                    emb = new Embedded("True", new ThemeResource("icons/debug.png"));
+                    emb = new Embedded("True", new ThemeResource("icons/debug.svg"));
                     emb.setDescription("TRUE");
                 } else {
-                    emb = new Embedded("False", new ThemeResource("icons/no_debug.png"));
+                    emb = new Embedded("False", new ThemeResource("icons/no_debug.svg"));
                     emb.setDescription("FALSE");
                 }
                 return emb;
@@ -643,25 +646,25 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 ThemeResource img = null;
                 switch (type) {
                     case FINISHED_SUCCESS:
-                        img = new ThemeResource("icons/ok.png");
+                        img = new ThemeResource("icons/ok.svg");
                         break;
                     case FINISHED_WARNING:
-                        img = new ThemeResource("icons/warning.png");
+                        img = new ThemeResource("icons/warning.svg");
                         break;
                     case FAILED:
-                        img = new ThemeResource("icons/error.png");
+                        img = new ThemeResource("icons/error.svg");
                         break;
                     case RUNNING:
-                        img = new ThemeResource("icons/running.png");
+                        img = new ThemeResource("icons/running.svg");
                         break;
                     case QUEUED:
-                        img = new ThemeResource("icons/queued.png");
+                        img = new ThemeResource("icons/queued.svg");
                         break;
                     case CANCELLED:
-                        img = new ThemeResource("icons/cancelled.png");
+                        img = new ThemeResource("icons/cancelled.svg");
                         break;
                     case CANCELLING:
-                        img = new ThemeResource("icons/cancelling.png");
+                        img = new ThemeResource("icons/cancelling.svg");
                         break;
                     default:
                         //no icon
@@ -688,9 +691,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
             if (propertyId.equals("isDebugging")) {
                 if (value) {
-                    return new ThemeResource("icons/debug.png");
+                    return new ThemeResource("icons/debug.svg");
                 } else {
-                    return new ThemeResource("icons/no_debug.png");
+                    return new ThemeResource("icons/no_debug.svg");
                 }
             }
             return super.getBooleanFilterIcon(propertyId, value);
