@@ -117,6 +117,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         // will just set the debug view content
         LOG.trace("showExecutionDetail() : buildDebugView");
         buildDebugView(execution);
+        if (execution.getStatus() == PipelineExecutionStatus.RUNNING
+                || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
+            presenter.startDebugRefreshEventHandler(debugView, execution);
+        }        
         // no DPU specified
         LOG.trace("showExecutionDetail() : setExecution");
         debugView.setExecution(execution, null);
@@ -372,10 +376,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 //		logLayout.addComponent(buttonBar);
 //		logLayout.setExpandRatio(buttonBar, 0);
 
-        if (execution.getStatus() == PipelineExecutionStatus.RUNNING
-                || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
-            presenter.startDebugRefreshEventHandler(debugView, execution);
-        }
     }
 
     /**

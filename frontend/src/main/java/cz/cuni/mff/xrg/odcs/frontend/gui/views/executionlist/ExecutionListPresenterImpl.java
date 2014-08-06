@@ -85,6 +85,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     @Override
     public Object enter() {
     	if (isInitialized) {
+    		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
     		addRefreshManager();
 			return view.enter(this);
 		}

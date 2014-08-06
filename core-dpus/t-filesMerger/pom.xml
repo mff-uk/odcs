@@ -19,7 +19,7 @@
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.filesmerger</dpu.package>
-		<dpu.mainClass>FilesToFilesMerger2Transformer</dpu.mainClass>
+		<dpu.mainClass>FilesMerger</dpu.mainClass>
 	</properties>
 
 	<dependencies>
