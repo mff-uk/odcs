@@ -1,37 +1,39 @@
-package eu.unifiedviews.plugins.transformer.filesmerger;
+package eu.unifiedviews.plugins.transformer.rdfmerger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
-import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.helpers.dpu.NonConfigurableBase;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 @DPU.AsTransformer
-public class FilesToFilesMerger2Transformer extends NonConfigurableBase {
+public class RdfMerger extends NonConfigurableBase {
+    private static final Logger LOG = LoggerFactory.getLogger(RdfMerger.class);
 
-    @DataUnit.AsInput(name = "filesInput")
-    public FilesDataUnit filesInput;
+    @DataUnit.AsInput(name = "rdfInput")
+    public RDFDataUnit rdfInput;
 
-    @DataUnit.AsOutput(name = "filesOutput")
-    public WritableFilesDataUnit filesOutput;
+    @DataUnit.AsOutput(name = "rdfOutput")
+    public WritableRDFDataUnit rdfOutput;
 
-    public FilesToFilesMerger2Transformer() {
+    public RdfMerger() {
     }
 
     @Override
     public void execute(DPUContext dpuContext) throws DPUException, InterruptedException {
         String shortMessage = this.getClass().getSimpleName() + " starting.";
         dpuContext.sendMessage(DPUContext.MessageType.INFO, shortMessage);
+        LOG.info(shortMessage);
         
         try {
-            ((ManagableDataUnit) filesOutput).merge(filesInput);
+            ((ManagableDataUnit) rdfOutput).merge(rdfInput);
         } catch (DataUnitException ex) {
             throw new DPUException(ex);
         }

@@ -19,7 +19,7 @@
 
 	<properties>
 		<dpu.package>eu.unifiedviews.plugins.transformer.rdfmerger</dpu.package>
-		<dpu.mainClass>RDFToRDFMerger2Transformer</dpu.mainClass>
+		<dpu.mainClass>RDFMerger</dpu.mainClass>
 	</properties>
 
 	<dependencies>
