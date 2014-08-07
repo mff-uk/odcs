@@ -71,6 +71,9 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
     
     @Override
     public boolean hasDeletedPipelines(List<Long> pipelinesIds) {
+    	if (pipelinesIds == null || pipelinesIds.isEmpty()) {
+			return false;
+		}
     	final String stringQuery = "SELECT COUNT(e) FROM Pipeline e"
     			+ " WHERE e.id IN :ids";
     	TypedQuery<Long> query = createCountTypedQuery(stringQuery);

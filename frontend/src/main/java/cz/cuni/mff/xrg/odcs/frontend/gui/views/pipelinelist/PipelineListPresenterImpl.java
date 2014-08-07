@@ -142,7 +142,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
                     boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad) 
                     		|| pipelineFacade.hasModifiedExecutions(lastLoad)
-                    		|| pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size()));
+                    		|| (cachedSource.size() > 0 &&
+                    		   pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
                     if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
