@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -179,7 +180,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public void refreshEventHandler() {
-        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
+        		|| (cachedSource.size() > 0 && 
+        		   pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();

@@ -478,6 +478,17 @@ class PipelineFacadeImpl implements PipelineFacade {
     }
     
     /**
+     * Checks if some of the executions were deleted
+     * <p>
+     * @param executionIds execution to check
+     * @return true if one or more execution were deleted
+     */
+    @Override
+    public boolean hasDeletedExecutions(List<Long> executionIds) {
+    	return executionDao.hasDeleted(executionIds);
+    }
+    
+    /**
      * Tells whether there were any changes to pipelines since the
      * last load.
      * <p>
