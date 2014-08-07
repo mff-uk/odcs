@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS `usr_user_role`;
 DROP TABLE IF EXISTS `usr_user`;
 DROP TABLE IF EXISTS `sch_email`;
 DROP TABLE IF EXISTS `rdf_ns_prefix`;
+DROP TABLE IF EXISTS `properties`;
 
 -- dev. note:
 -- when updating size of limits for fields update also the limitations
@@ -319,6 +320,13 @@ CREATE TABLE `ppl_open_event`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_OPEN_EVENT_pipeline_id` ON `ppl_open_event` (`pipeline_id`);
 CREATE INDEX `ix_PPL_OPEN_EVENT_user_id` ON `ppl_open_event` (`user_id`);
+
+CREATE TABLE `properties`
+(
+  `key` VARCHAR(200) NOT NULL,
+  `value` VARCHAR(200),
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- CONSTRAINTS #################################################################
 
