@@ -23,9 +23,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -37,6 +34,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 
 /**
  * @author Bogo
@@ -117,7 +116,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private Page.BrowserWindowResizeListener resizeListener = null;
 
     private Panel dpuTreePanel;
-
+    
     /**
      * Constructor.
      */
@@ -129,7 +128,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        buildMainLayout();
+        if (!presenter.isLayoutInitialized()) {
+        	buildMainLayout();
+		}
+        
         setCompositionRoot(mainLayout);
         return this;
     }
@@ -323,7 +325,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
         tabSheet.setSelectedTab(dataTab);
         if (selectedDpuWrap != null) {
-            AbstractConfigDialog<DPUConfigObject> configDialog = null;
+            AbstractConfigDialog<?> configDialog = null;
             //getting configuration dialog of selected DPU Template
             try {
                 configDialog = selectedDpuWrap.getDialog();
@@ -862,7 +864,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         // refresh configuration
         try {
             selectedDpuWrap.configuredDialog();
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show(
                     "Configuration problem",
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);

@@ -171,23 +171,23 @@ public class PipelineImport extends Window {
                 File zippedFile = fileUploadReceiver.getFile();
                 try {
                     ImportedFileInformation result = importService.getImportedInformation(zippedFile);
-					usedDpus = result.getUsedDpus();
-					missingDpus = result.getMissingDpus();
+                    usedDpus = result.getUsedDpus();
+                    missingDpus = result.getMissingDpus();
 
-					chbExportDPUData.setValue(false);
-					chbExportSchedule.setValue(false);
+                    chbExportDPUData.setValue(false);
+                    chbExportSchedule.setValue(false);
 
-					if (result.isUserDataFile()) {
-						chbExportDPUData.setEnabled(true);
-					} else {
-						chbExportDPUData.setEnabled(false);
-					}
+                    if (result.isUserDataFile()) {
+                        chbExportDPUData.setEnabled(true);
+                    } else {
+                        chbExportDPUData.setEnabled(false);
+                    }
 
-					if (result.isScheduleFile()) {
-						chbExportSchedule.setEnabled(true);
-					} else {
-						chbExportSchedule.setEnabled(false);
-					}
+                    if (result.isScheduleFile()) {
+                        chbExportSchedule.setEnabled(true);
+                    } else {
+                        chbExportSchedule.setEnabled(false);
+                    }
 
                     if (usedDpus == null) {
                         String msg = "It is not possible to read the file [used_dpu.xml]\nwhere used dpus are.";

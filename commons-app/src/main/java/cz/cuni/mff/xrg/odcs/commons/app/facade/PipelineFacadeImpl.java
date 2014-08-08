@@ -476,6 +476,42 @@ class PipelineFacadeImpl implements PipelineFacade {
     public boolean hasModifiedExecutions(Date lastLoad) {
         return executionDao.hasModified(lastLoad);
     }
+    
+    /**
+     * Checks if some of the executions were deleted
+     * <p>
+     * @param executionIds execution to check
+     * @return true if one or more execution were deleted
+     */
+    @Override
+    public boolean hasDeletedExecutions(List<Long> executionIds) {
+    	return executionDao.hasDeleted(executionIds);
+    }
+    
+    /**
+     * Tells whether there were any changes to pipelines since the
+     * last load.
+     * <p>
+     * 
+     * @param lastLoad
+     * @return
+     */
+    @Override
+    public boolean hasModifiedPipelines(Date lastLoad) {
+    	return pipelineDao.hasModified(lastLoad);
+    }
+    
+    /**
+     * Tells whether one of pipelines was deleted
+     * <p>
+     * 
+     * @param pipelinesIds
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     */
+    @Override
+    public boolean hasDeletedPipelines(List<Long> pipelineIds) {
+    	return pipelineDao.hasDeletedPipelines(pipelineIds);    	
+    }
 
     /**
      * Persists new {@link PipelineExecution} or updates it if it was already

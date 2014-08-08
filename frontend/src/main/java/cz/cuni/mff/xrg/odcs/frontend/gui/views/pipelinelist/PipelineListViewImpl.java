@@ -54,7 +54,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     private Button btnCreatePipeline;
 
     private Button btnImportPipeline;
-
+    
     @Autowired
     private Utils utils;
 
@@ -230,7 +230,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     @Override
     public Object enter(PipelineListPresenter presenter) {
-        buildPage(presenter);
+    	if (!presenter.isLayoutInitialized()) {
+    		buildPage(presenter);
+		}
 
         return this;
     }

@@ -84,7 +84,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     private HashMap<Date, Label> runTimeLabels = new HashMap<>();
 
     private ExecutionListPresenter presenter;
-
+    
     @Autowired
     private Utils utils;
 
@@ -93,8 +93,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     @Override
     public Object enter(final ExecutionListPresenter presenter) {
         // build page
-        buildPage(presenter);
-        this.presenter = presenter;
+    	this.presenter = presenter;
+    	if (!presenter.isLayoutInitialized()) {
+    		buildPage(presenter);
+		}
         return this;
     }
 
@@ -115,6 +117,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         // will just set the debug view content
         LOG.trace("showExecutionDetail() : buildDebugView");
         buildDebugView(execution);
+        if (execution.getStatus() == PipelineExecutionStatus.RUNNING
+                || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
+            presenter.startDebugRefreshEventHandler(debugView, execution);
+        }        
         // no DPU specified
         LOG.trace("showExecutionDetail() : setExecution");
         debugView.setExecution(execution, null);
@@ -372,10 +378,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 //		logLayout.addComponent(buttonBar);
 //		logLayout.setExpandRatio(buttonBar, 0);
 
-        if (execution.getStatus() == PipelineExecutionStatus.RUNNING
-                || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
-            presenter.startDebugRefreshEventHandler(debugView, execution);
-        }
     }
 
     /**

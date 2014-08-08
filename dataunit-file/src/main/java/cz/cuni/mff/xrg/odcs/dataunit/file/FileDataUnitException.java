@@ -5,7 +5,7 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
  * 
  * @author Petyr
  */
-public abstract class FileDataUnitException extends Exception {
+public class FileDataUnitException extends Exception {
 
     /**
      * @param cause
@@ -13,6 +13,10 @@ public abstract class FileDataUnitException extends Exception {
      */
     public FileDataUnitException(Throwable cause) {
         super(cause);
+    }
+
+    public FileDataUnitException(String string) {
+        super(string);
     }
 
 }

@@ -282,7 +282,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		writeMessage(messageLayer, 'initialized');
 
 
-		var basePath = "http://" + window.location.host + window.location.pathname;
+		var basePath = window.location.protocol + "//" + window.location.host + window.location.pathname;
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}

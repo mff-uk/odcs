@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.dataunit.file;
 
 import java.io.File;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.FileHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.Handler;

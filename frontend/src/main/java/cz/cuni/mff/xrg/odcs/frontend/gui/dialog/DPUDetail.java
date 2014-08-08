@@ -17,11 +17,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -203,7 +203,7 @@ public class DPUDetail extends Window {
         } catch (DPUWrapException e) {
             Notification.show("Failed to load DPU,", e.getMessage(),
                     Type.ERROR_MESSAGE);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show(
                     "Configuration problem",
                     e.getMessage(), Type.WARNING_MESSAGE);
@@ -234,7 +234,7 @@ public class DPUDetail extends Window {
                             + e.getMessage(),
                     Notification.Type.ERROR_MESSAGE);
             return false;
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show("Failed to save configuration. Reason:", e
                     .getMessage(), Type.ERROR_MESSAGE);
             return false;

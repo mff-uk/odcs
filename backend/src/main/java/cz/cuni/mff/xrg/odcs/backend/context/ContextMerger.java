@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
@@ -85,8 +83,8 @@ class ContextMerger {
 
         // add the rest from right
         while (iterSource.hasNext()) {
-            DataUnit source = iterSource.next();
-            String sourceName = source.getDataUnitName();
+            ManagableDataUnit source = iterSource.next();
+            String sourceName = source.getName();
             String targetName;
             // get command
             String cmd = this.findRule(sourceName, instruction);
@@ -120,7 +118,7 @@ class ContextMerger {
             ManagableDataUnit targetDataUnit = null;
             // first check for existing one
             for (ManagableDataUnit item : target.getDataUnits()) {
-                if (item.getDataUnitName().compareTo(targetName) == 0
+                if (item.getName().compareTo(targetName) == 0
                         && item.getType() == source.getType()) {
                     LOG.debug("merge into existing dataUnit: {}",
                             targetName);
@@ -142,7 +140,7 @@ class ContextMerger {
 
             // and copy the data
             try {
-                LOG.debug("Called {}.merge({})", targetDataUnit.getDataUnitName(), source.getDataUnitName());
+                LOG.debug("Called {}.merge({})", targetDataUnit.getName(), source.getName());
                 targetDataUnit.merge(source);
             } catch (IllegalArgumentException e) {
                 throw new ContextException(

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
@@ -42,9 +44,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Petyr
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "ExecutionList")
-public class ExecutionListPresenterImpl implements ExecutionListPresenter {
+public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
@@ -78,9 +80,17 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
     private Date lastLoad = new Date(0L);
 
     private ClassNavigator navigator;
+    
+    private boolean isInitialized = false;
 
     @Override
     public Object enter() {
+    	if (isInitialized) {
+    		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
+    		addRefreshManager();
+			return view.enter(this);
+		}
+    	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
         cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
@@ -90,8 +100,20 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
         dataObject = new ExecutionListData(c);
         // prepare view
         Object viewObject = view.enter(this);
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
-        refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+        addRefreshManager();
+
+        // set data object
+        view.setDisplay(dataObject);
+        
+        isInitialized = true;
+        
+        // return main component
+        return viewObject;
+    }
+    
+    private void addRefreshManager() {
+    	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+    	refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
             @Override
@@ -103,15 +125,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
                 }
             }
         });
-
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
-
-        // return main component
-        return viewObject;
+        refreshManager.triggerRefresh();
     }
 
     @Override
@@ -166,7 +180,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public void refreshEventHandler() {
-        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
+        		|| (cachedSource.size() > 0 && 
+        		   pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
@@ -281,4 +297,14 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
             navigator.navigateTo(where, param.toString());
         }
     }
+
+	@Override
+	public void doAfterLogout() {
+		isInitialized = false;
+	}
+
+	@Override
+	public boolean isLayoutInitialized() {
+		return isInitialized;
+	}
 }

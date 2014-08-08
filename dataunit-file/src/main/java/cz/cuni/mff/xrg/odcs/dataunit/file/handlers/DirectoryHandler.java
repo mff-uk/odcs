@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
 

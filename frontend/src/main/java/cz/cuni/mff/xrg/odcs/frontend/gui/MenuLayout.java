@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Scheduler;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
@@ -131,6 +134,7 @@ public class MenuLayout extends CustomComponent {
                 authCtx.clear();
                 refreshUserBar();
                 navigator.navigateTo(Login.class);
+                doAfterLogoutCleaning();
             }
         });
         
@@ -171,6 +175,20 @@ public class MenuLayout extends CustomComponent {
     }
 
     /**
+     * finds all classes that implement PostLogoutCleaner interface
+     * and calls doAfterLogout method. These classes need to have
+     * session scope
+     */
+    private void doAfterLogoutCleaning() {
+    	AppEntry appEntry = (AppEntry) getParent();
+    	Collection<PostLogoutCleaner> classesToDoCleaning = 
+    			appEntry.getBeans(PostLogoutCleaner.class).values();
+    	for (PostLogoutCleaner presenterClass : classesToDoCleaning) {
+    		presenterClass.doAfterLogout();
+		}
+	}
+
+	/**
      * Return layout for application views.
      * 
      * @return layout for application views

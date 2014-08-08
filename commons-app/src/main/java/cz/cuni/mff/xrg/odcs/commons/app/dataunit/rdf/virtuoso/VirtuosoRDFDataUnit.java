@@ -1,10 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso;
 
-import org.openrdf.model.URI;
-import org.openrdf.query.GraphQuery;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -13,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import virtuoso.sesame2.driver.VirtuosoRepository;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.AbstractRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+
 
 /**
  * Implementation of Virtuoso repository - RDF data and intermediate results are
@@ -46,7 +41,6 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
      * @param dataUnitName
      *            DataUnit's name. If not used in Pipeline can be
      *            empty String.
-     * @throws RepositoryException
      */
     public VirtuosoRDFDataUnit(String url, String user, String password,
             String dataUnitName, String dataGraph) {
@@ -62,8 +56,8 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         try {
             connection = getConnection();
             LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}> containing {} triples.",
-                    dataUnitName, dataGraph, connection.size(this.getWriteContext()));
-        } catch (RepositoryException ex) {
+                    dataUnitName, dataGraph, connection.size(writeContext));
+        } catch (RepositoryException | DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
             if (connection != null) {
@@ -80,62 +74,6 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
     @Override
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
         return repository.getConnection();
-    }
-
-    //WritableDataUnit interface
-    @Override
-    public void addAll(RDFData otherDataUnit) {
-        if (!this.getClass().equals(otherDataUnit.getClass())) {
-            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
-                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
-        }
-
-        final RDFDataUnit otherRDFDataUnit = (RDFDataUnit) otherDataUnit;
-        RepositoryConnection connection = null;
-        try {
-            connection = getConnection();
-
-            String targetGraphName = getWriteContext().stringValue();
-            for (URI sourceGraph : otherRDFDataUnit.getContexts()) {
-                String sourceGraphName = sourceGraph.stringValue();
-
-                LOG.info("Trying to merge {} triples from <{}> to <{}>.",
-                        connection.size(sourceGraph), sourceGraphName,
-                        targetGraphName);
-
-                // mergeQuery = String.format("DEFINE sql:log-enable %d \n"
-                // + "ADD <%s> TO <%s>",
-                // LOG_LEVEL,
-                // sourceGraphName,
-                // targetGraphName);
-                String mergeQuery = String.format("ADD <%s> TO <%s>", sourceGraphName,
-                        targetGraphName);
-
-                GraphQuery result = connection.prepareGraphQuery(
-                        QueryLanguage.SPARQL, mergeQuery);
-
-                result.evaluate();
-
-                LOG.info("Merged {} triples from <{}> to <{}>.",
-                        connection.size(sourceGraph), sourceGraphName,
-                        targetGraphName);
-            }
-        } catch (MalformedQueryException ex) {
-            LOG.error("NOT VALID QUERY: {}", ex);
-        } catch (QueryEvaluationException ex) {
-            LOG.error("MERGING STOPPED: {}", ex);
-        } catch (RepositoryException ex) {
-            LOG.error(ex.getMessage(), ex);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (RepositoryException ex) {
-                    LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
-                }
-            }
-        }
     }
 
     @Override

@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 
 /**
@@ -16,7 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 public class DummyDataUnitFactory extends DataUnitFactory {
 
     @Override
-    public ManagableDataUnit create(DataUnitType type,
+    public ManagableDataUnit create(ManagableDataUnit.Type type,
             String pipelineId,
             String id,
             String name,

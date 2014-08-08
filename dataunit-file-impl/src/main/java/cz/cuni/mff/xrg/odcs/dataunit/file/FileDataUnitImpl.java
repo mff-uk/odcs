@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import eu.unifiedviews.dataunit.DataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandler;
 import cz.cuni.mff.xrg.odcs.dataunit.file.handlers.DirectoryHandlerImpl;
 import cz.cuni.mff.xrg.odcs.dataunit.file.options.OptionsAdd;
@@ -51,17 +51,17 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
     }
 
     @Override
-    public DataUnitType getType() {
-        return DataUnitType.FILE;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.FILE;
     }
 
     @Override
-    public boolean isType(DataUnitType dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 
     @Override
-    public String getDataUnitName() {
+    public String getName() {
         return this.name;
     }
 
@@ -81,12 +81,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
     @Override
     public void release() {
-        final File dataDir = this.rootDirHandler.asFile();
-        try {
-            FileUtils.forceDelete(dataDir);
-        } catch (IOException ex) {
-            LOG.error("Failed to delete root directory.", ex);
-        }
+        // we are ready ..
     }
 
     @Override
@@ -139,19 +134,19 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
 
     @Override
     public void isReleaseReady() {
-        // TODO Auto-generated method stub
-
+        // this method has no meaning for FileDataUnit
     }
     
     @Override
     public void load() {
-        // TODO Auto-generated method stub
+        // TODO Recall load(directory)
         
     }
     
     @Override
     public void store() {
-        // TODO Auto-generated method stub
+        // TODO Recall save(directory)
         
     }
+    
 }
