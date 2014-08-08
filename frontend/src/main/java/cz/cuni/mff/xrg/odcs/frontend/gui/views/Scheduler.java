@@ -56,10 +56,10 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
-@Scope("prototype")
+@Scope("session")
 @VaadinView(Scheduler.NAME)
 @Address(url = "Scheduler")
-public class Scheduler extends ViewComponent {
+public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(
             Scheduler.class);
@@ -119,6 +119,8 @@ public class Scheduler extends ViewComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
+    private boolean isMainLayoutInitialized = false;
+    
     /**
      * The constructor should first build the main layout, set the composition
      * root and then do any custom initialization.
@@ -136,7 +138,10 @@ public class Scheduler extends ViewComponent {
 
     @Override
     public void enter(ViewChangeEvent event) {
-        buildMainLayout();
+    	if (!isMainLayoutInitialized) {
+    		buildMainLayout();
+    		isMainLayoutInitialized = true;
+		}
         setCompositionRoot(mainLayout);
 
         refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
@@ -156,6 +161,7 @@ public class Scheduler extends ViewComponent {
                 }
             }
         });
+        refreshManager.triggerRefresh();
     }
 
     /**
@@ -554,5 +560,10 @@ public class Scheduler extends ViewComponent {
                 return "Disabled";
             }
         }
-    };
+    }
+
+	@Override
+	public void doAfterLogout() {
+		isMainLayoutInitialized = false;
+	}
 }

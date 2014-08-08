@@ -15,13 +15,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.Configurable;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
 
 /**
  * Load configuration into DPU.
- * If the DPU does not implements {@link Configurable} interface immediately
+ * If the DPU does not implements {@link DPUConfigurable} interface immediately
  * return true.
  * Executed for every state.
  * 
@@ -55,7 +54,7 @@ class Configurator implements DPUPreExecutor {
         Context context = contexts.get(node);
         DPUInstanceRecord dpu = node.getDpuInstance();
 
-        if (dpuInstance instanceof Configurable<?>) {
+        if (dpuInstance instanceof DPUConfigurable) {
             // can be configured
         } else {
             // do not configure
@@ -63,12 +62,12 @@ class Configurator implements DPUPreExecutor {
             return true;
         }
         @SuppressWarnings("unchecked")
-        Configurable<DPUConfigObject> configurable = (Configurable<DPUConfigObject>) dpuInstance;
+        DPUConfigurable configurable = (DPUConfigurable) dpuInstance;
         try {
             configurable.configure(dpu.getRawConf());
 
             LOG.debug("DPU {} hes been configured.", dpu.getName());
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
                     context, this, "Failed to configure DPU.", e));
             // stop the execution

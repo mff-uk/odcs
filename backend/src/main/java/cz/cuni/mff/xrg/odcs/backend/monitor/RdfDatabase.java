@@ -30,8 +30,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Component for monitoring rdf storage availability.
@@ -133,7 +133,7 @@ class RdfDatabase {
             return;
         }
 
-        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(DataUnitType.RDF, "notarealname", "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
+        VirtuosoRDFDataUnit virtuosoRepository = (VirtuosoRDFDataUnit) (new DataUnitFactory()).create(ManagableDataUnit.Type.RDF, "notarealname", "reallyWeirdNametoAvoidNameClash", "monitoringOfVirtuoso", null);
         RepositoryConnection connection = null;
         try {
             // ok we have the repository
@@ -144,7 +144,7 @@ class RdfDatabase {
 
             LOG.trace("executeQuery:ends");
             queryEnd = new Date();
-        } catch (QueryEvaluationException | RepositoryException | MalformedQueryException e) {
+        } catch (QueryEvaluationException | RepositoryException | DataUnitException | MalformedQueryException e) {
             // this should not happen
             LOG.error("Failed to execute check query.", e);
         } finally {
@@ -161,10 +161,6 @@ class RdfDatabase {
     private void executeQuery(VirtuosoRDFDataUnit virtuosoRepository, RepositoryConnection connection) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
         String query = "select * where {?s ?p ?o} limit 1";
         TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, query);
-        CleverDataset dataSet = new CleverDataset();
-        dataSet.addDefaultGraphs(virtuosoRepository.getContexts());
-        dataSet.addNamedGraphs(virtuosoRepository.getContexts());
-        tupleQuery.setDataset(dataSet);
         tupleQuery.evaluate();
     }
 

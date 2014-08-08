@@ -15,12 +15,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
@@ -232,7 +230,7 @@ final class DataUnitManager {
     }
 
     /**
-     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitCreateException} is
+     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitException} is
      * thrown.
      * The DataUnit's name can be further changed. If the {@link DataUnit} witch given name and type alredy exist then is returned.
      * 
@@ -243,11 +241,11 @@ final class DataUnitManager {
      * @return Created DataUnit.
      * @throw DataUnitCreateException
      */
-    public ManagableDataUnit addDataUnit(DataUnitType type, String name) {
+    public ManagableDataUnit addDataUnit(ManagableDataUnit.Type type, String name) {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&
-                    du.getDataUnitName().compareTo(name) == 0) {
+                    du.getName().compareTo(name) == 0) {
                 // the DPU already exist .. 
                 LOG.trace("dataUnit with name: {} type: {} already exist", name, type.toString());
                 return du;

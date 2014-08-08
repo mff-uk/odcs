@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -220,7 +221,11 @@ public abstract class DPURecord implements DataObject {
      */
     public void setRawConf(String conf) {
         // workaround for null configurations
-        serializedConfiguration = StringUtils.defaultString(conf, NULL_CONFIG).getBytes();
+        try {
+            serializedConfiguration = StringUtils.defaultString(conf, NULL_CONFIG).getBytes("UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**

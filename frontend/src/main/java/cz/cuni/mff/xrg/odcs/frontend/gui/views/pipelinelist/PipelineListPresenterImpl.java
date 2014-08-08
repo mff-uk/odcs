@@ -38,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
@@ -51,9 +52,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "PipelineList")
-public class PipelineListPresenterImpl implements PipelineListPresenter {
+public class PipelineListPresenterImpl implements PipelineListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
 
@@ -99,9 +100,17 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
      */
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
+    
+    private boolean isInitialized = false;
 
     @Override
     public Object enter() {
+    	if (isInitialized) {
+    		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
+    		addRefreshManager();
+			return view.enter(this);
+		}
+    	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
         cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
@@ -109,16 +118,33 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
         // prepare view
         Object viewObject = view.enter(this);
+        addRefreshManager();
 
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+        // set data object
+        view.setDisplay(dataObject);
+
+        // add initial name filter
+        view.setFilter("owner.username", utils.getUserName());
+
+        isInitialized = true;
+        
+        // return main component
+        return viewObject;
+    }
+
+    private void addRefreshManager() {
+    	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    if (hasModifiedExecutions) {
+                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad) 
+                    		|| pipelineFacade.hasModifiedExecutions(lastLoad)
+                    		|| (cachedSource.size() > 0 &&
+                    		   pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                    if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -127,18 +153,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
                 }
             }
         });
+        refreshManager.triggerRefresh();
+	}
 
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
-
-        // return main component
-        return viewObject;
-    }
-
-    @Override
+	@Override
     public void setParameters(Object configuration) {
         if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
             int pageNumber = 0;
@@ -303,5 +321,15 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
         UI.getCurrent().addWindow(dialog);
         dialog.bringToFront();
     }
+
+	@Override
+	public void doAfterLogout() {
+		isInitialized = false;
+	}
+
+	@Override
+	public boolean isLayoutInitialized() {
+		return isInitialized;
+	}
 
 }

@@ -8,7 +8,8 @@ enum ArchiveStructure {
     SCHEDULE("schedule.xml"),
     DPU_JAR("dpu_jar"),
     DPU_DATA_GLOBAL("dpu_data_global"),
-    DPU_DATA_USER("dpu_data_user");
+    DPU_DATA_USER("dpu_data_user"),
+    USED_DPUS("used_dpu.xml");
 
     private final String value;
 

@@ -2,129 +2,87 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.query.BooleanQuery;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.ontology.OdcsTerms;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.metadata.AbstractWritableMetadataDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
-public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
+public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements ManageableWritableFilesDataUnit {
+
     private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);
-
-    private String dataUnitName;
-
-    private ManagableRdfDataUnit backingStore;
-
-    private File workingDirectory;
-
-    private String workingDirectoryCannonicalPath;
 
     private String workingDirectoryURI;
 
-    private Set<String> generatedFilenames = java.util.Collections.<String> synchronizedSet(new HashSet<String>());
-
-    private Thread ownerThread;
-
-    private static String FILE_EXISTS_ASK_QUERY = "ASK { ?pathUri <" + OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE + ">\"%s\" }";
+    private File workingDirectory;
+    
+    protected RDFDataUnit backingDataUnit;
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    public LocalFSFilesDataUnit(RDFDataUnitFactory rdfDataUnitFactory, String globalWorkingDirectory, String pipelineId, String dataUnitName) throws DataUnitCreateException {
-        try {
-            this.dataUnitName = dataUnitName;
-            this.workingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), "").toFile();
-            this.workingDirectoryCannonicalPath = workingDirectory.getCanonicalPath();
-            this.workingDirectoryURI = workingDirectory.toURI().toASCIIString();
-            this.backingStore = rdfDataUnitFactory.create(pipelineId, dataUnitName, workingDirectoryURI);
-            this.ownerThread = Thread.currentThread();
-        } catch (IOException ex) {
-            throw new DataUnitCreateException("Error creating data unit.", ex);
-        }
+    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit) throws DataUnitException {
+        super(dataUnitName, workingDirectoryURIString);
+        this.workingDirectoryURI = workingDirectoryURIString;
+        this.workingDirectory = new File(URI.create(workingDirectoryURI));
+        this.backingDataUnit = backingDataUnit;
     }
 
     //DataUnit interface
     @Override
-    public DataUnitType getType() {
-        return DataUnitType.FILES;
+    public ManagableDataUnit.Type getType() {
+        return ManagableDataUnit.Type.FILES;
     }
 
     //DataUnit interface
     @Override
-    public boolean isType(DataUnitType dataUnitType) {
+    public boolean isType(ManagableDataUnit.Type dataUnitType) {
         return this.getType().equals(dataUnitType);
     }
 
-    //DataUnit interface
-    @Override
-    public String getDataUnitName() {
-        return dataUnitName;
-    }
-
     //FilesDataUnit interface
     @Override
-    public RDFData getRDFData() {
+    public FilesDataUnit.Iteration getIteration() throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+            LOG.info("More than more thread is accessing this data unit");
         }
 
-        return backingStore;
-    }
-
-    //FilesDataUnit interface
-    @Override
-    public FilesIteration getFiles() throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-        }
-
-        return new FilesIterationImpl(backingStore, OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE);
+        return new WritableFileIterationImpl(this);
     }
 
     //WritableFilesDataUnit interface
     @Override
-    public String getBasePath() {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-        }
-
-        return workingDirectoryCannonicalPath;
+    public String getBaseFileURIString() {
+        return workingDirectoryURI;
     }
 
     //WritableFilesDataUnit interface
     @Override
-    public void addExistingFile(String proposedSymbolicName, String existingFileFullPath) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {                      
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
+    public void addExistingFile(String proposedSymbolicName, String existingFileURI) throws DataUnitException {
+        if (!ownerThread.equals(Thread.currentThread())) {
+            LOG.info("More than more thread is accessing this data unit");
         }
 
-        File existingFile = new File(existingFileFullPath);
+        File existingFile = new File(URI.create(existingFileURI));
         if (!existingFile.exists()) {
-            throw new IllegalArgumentException("File does not exist: " + existingFileFullPath + ". File must exists prior being added.");
+            throw new IllegalArgumentException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
         }
         if (!existingFile.isFile()) {
-            throw new IllegalArgumentException("Only files are permitted to be added. File " + existingFileFullPath + " is not a proper file.");
+            throw new IllegalArgumentException("Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
         }
 //        try {
 //            if (!FileSystems.getDefault().getPath(existingFile.getCanonicalPath()).startsWith(workingDirectoryCannonicalPath)) {
@@ -137,7 +95,7 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
         RepositoryConnection connection = null;
         try {
             // TODO michal.klempa think of not connecting everytime
-            connection = backingStore.getConnection();
+            connection = getConnectionInternal();
             connection.begin();
             // TODO michal.klempa - add one query at isReleaseReady instead of this
 //            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
@@ -147,14 +105,20 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
 //                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
 //            }
             ValueFactory valueFactory = connection.getValueFactory();
+            BNode blankNodeId = valueFactory.createBNode();
             Statement statement = valueFactory.createStatement(
-                    valueFactory.createURI(existingFile.toURI().toASCIIString()),
-                    valueFactory.createURI(OdcsTerms.DATA_UNIT_FILES_SYMBOLIC_NAME_PREDICATE),
+                    blankNodeId,
+                    valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),
                     valueFactory.createLiteral(proposedSymbolicName)
                     );
-            connection.add(statement, backingStore.getWriteContext());
+            Statement statement2 = valueFactory.createStatement(
+                    blankNodeId,
+                    valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                    valueFactory.createLiteral(existingFile.toURI().toASCIIString())
+                    );
+            connection.add(statement, getMetadataWriteGraphname());
+            connection.add(statement2, getMetadataWriteGraphname());
             connection.commit();
-            generatedFilenames.remove(existingFileFullPath);
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error when adding file.", ex);
         } finally {
@@ -166,84 +130,34 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
                     // eat close exception, we cannot do anything clever here
                 }
             }
-        }    }
-
-    //WritableFilesDataUnit interface
-    @Override
-    public String createFile() throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
         }
-
-        return this.createFile("");
     }
 
-    //WritableFilesDataUnit interface
     @Override
-    public String createFile(String proposedSymbolicName) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            throw new RuntimeException("Constraint violation, only one thread can access this data unit");
-        }
-
+    public String addNewFile(String symbolicName) throws DataUnitException {
         Path newFile = null;
-        String filteredProposedSymbolicName = filterProposedSymbolicName(proposedSymbolicName);
+        String filteredProposedSymbolicName = filterProposedSymbolicName(symbolicName);
         try {
             newFile = Files.createTempFile(workingDirectory.toPath(), filteredProposedSymbolicName, "");
-            generatedFilenames.add(newFile.toString());
         } catch (IOException ex) {
             throw new DataUnitException("Error when generating filename.", ex);
         }
-        return newFile.toString();
+        String newFileURIString = newFile.toUri().toASCIIString();
+        addExistingFile(symbolicName, newFileURIString);
+        return newFileURIString;
     }
 
     //ManageableDataUnit interface
     @Override
     public void clear() {
-        FileUtils.deleteQuietly(this.workingDirectory);
-        backingStore.clear();
+        FileUtils.deleteQuietly(new File(URI.create(this.workingDirectoryURI)));
+        super.clear();
     }
 
-    //ManageableDataUnit interface
-    @Override
-    public void isReleaseReady() {
-        if (generatedFilenames.size() > 0) {
-            LOG.error("{} file names have been generated but never added as existing files after DPU execution. dataUnitName '{}'.", generatedFilenames.size(), this.getDataUnitName());
-        }
-        backingStore.isReleaseReady();
-    }
-
-    //ManageableDataUnit interface
-    @Override
-    public void release() {
-        backingStore.release();
-    }
-
-    //ManageableDataUnit interface
-    @Override
-    public void merge(DataUnit otherDataUnit) throws IllegalArgumentException {
-        if (!this.getClass().equals(otherDataUnit.getClass())) {
-            throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class "
-                    + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
-        }
-
-        final LocalFSFilesDataUnit otherFilesDataUnit = (LocalFSFilesDataUnit) otherDataUnit;
-        backingStore.merge(otherFilesDataUnit.backingStore);
-    }
-
-    @Override
-    public void load() {
-        backingStore.load();
-    }
-    
-    @Override
-    public void store() {
-        backingStore.store();
-    }
-    
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;
-        while ((sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH) || (index < proposedSymbolicName.length())) {
+        while ((sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH) && (index < proposedSymbolicName.length())) {
             int codePoint = proposedSymbolicName.codePointAt(index);
             if (sb.length() == 0) {
                 if (((codePoint >= 97) && (codePoint <= 122)) || // [a-z]
@@ -263,5 +177,15 @@ public class LocalFSFilesDataUnit implements ManageableWritableFilesDataUnit {
             index++;
         }
         return sb.toString();
+    }
+
+    @Override
+    public RepositoryConnection getConnectionInternal() throws RepositoryException {
+        try {
+            return backingDataUnit.getConnection();
+        } catch (DataUnitException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

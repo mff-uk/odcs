@@ -7,13 +7,12 @@ import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -31,7 +30,7 @@ public class DPURecordWrap {
     /**
      * DPU's configuration dialog.
      */
-    private AbstractConfigDialog<DPUConfigObject> configDialog = null;
+    private AbstractConfigDialog<?> configDialog = null;
 
     /**
      * True if represents the template.
@@ -52,17 +51,17 @@ public class DPURecordWrap {
      * Try to save configuration from {@link #configDialog} into {@link #dpuRecord}. If the {@link #configDialog} is null nothing happen.
      * This function does not save data into database.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
-    public void saveConfig() throws ConfigException, DPUWrapException {
+    public void saveConfig() throws DPUConfigException, DPUWrapException {
         if (configDialog == null) {
             return;
         }
         try {
             final String config = configDialog.getConfig();
             dpuRecord.setRawConf(config);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
             throw new DPUWrapException("Failed to save configuration.", e);
@@ -77,7 +76,7 @@ public class DPURecordWrap {
      * @throws ModuleException
      * @throws FileNotFoundException
      */
-    public AbstractConfigDialog<DPUConfigObject> getDialog()
+    public AbstractConfigDialog<?> getDialog()
             throws ModuleException, FileNotFoundException, DPUWrapException {
         // load configuration dialog
         try {
@@ -94,15 +93,15 @@ public class DPURecordWrap {
      * If respective configuration dialog for wrapped DPU exist, then set it's
      * configuration. Otherwise do nothing.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
     public void configuredDialog()
-            throws ConfigException, DPUWrapException {
+            throws DPUConfigException, DPUWrapException {
         // set dialog configuration
         try {
             loadConfigIntoDialog();
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
             throw new DPUWrapException("Failed to configure dpu's dialog.", e);
@@ -169,9 +168,9 @@ public class DPURecordWrap {
         Object instance = dpuRecord.getInstance();
         // now try to load the dialog
         if (instance instanceof ConfigDialogProvider<?>) {
-            ConfigDialogProvider<DPUConfigObject> dialogProvider;
+            ConfigDialogProvider<?> dialogProvider;
             // 'unchecked casting' .. we check type in condition above
-            dialogProvider = (ConfigDialogProvider<DPUConfigObject>) instance;
+            dialogProvider = (ConfigDialogProvider<?>) instance;
             // get configuration dialog
             configDialog = dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
@@ -189,9 +188,9 @@ public class DPURecordWrap {
     /**
      * Try to load configuration from {@link #dpuRecord} into {@link #configDialog}. Can possibly emit runtime exception.
      * 
-     * @throws ConfigException
+     * @throws DPUConfigException
      */
-    private void loadConfigIntoDialog() throws ConfigException {
+    private void loadConfigIntoDialog() throws DPUConfigException {
         if (configDialog == null) {
             // no dialog .. nothing to do 
             return;

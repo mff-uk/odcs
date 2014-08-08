@@ -167,4 +167,9 @@ public interface DPUPresenter extends Presenter {
 
     }
 
+    /**
+     * 
+     * @return
+     */
+	public boolean isLayoutInitialized();
 }

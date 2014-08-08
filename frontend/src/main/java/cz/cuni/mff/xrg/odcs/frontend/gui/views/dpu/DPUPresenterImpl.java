@@ -20,6 +20,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -30,13 +31,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 
@@ -44,9 +45,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "DPURecord")
-public class DPUPresenterImpl implements DPUPresenter {
+public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Autowired
     private DPUView view;
@@ -85,13 +86,15 @@ public class DPUPresenterImpl implements DPUPresenter {
      */
     private Map<Long, Pipeline> pipelinesWithDPU = new HashMap<>();
 
+	private boolean isLayoutInitialized = false;
+
     @Override
     public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
         // saving configuration
         try {
             dpuWrap.saveConfig();
             Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show("The configuration have not been saved.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (DPUWrapException e) {
             Notification.show(
@@ -307,8 +310,11 @@ public class DPUPresenterImpl implements DPUPresenter {
     @Override
     public Object enter() {
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        selectedDpu = null;
+//        if (!isLayoutInitialized) {
+//        	selectedDpu = null;
+//		}
         Object viewObject = view.enter(this);
+        isLayoutInitialized  = true;
 
         createDPUCloseListener = new Window.CloseListener() {
             private static final long serialVersionUID = 1L;
@@ -406,4 +412,14 @@ public class DPUPresenterImpl implements DPUPresenter {
         Pipeline pipe = getPipeline(pipelineId);
         return permissions.hasPermission(pipe, "view");
     }
+
+	@Override
+	public void doAfterLogout() {
+		isLayoutInitialized = false;
+	}
+
+	@Override
+	public boolean isLayoutInitialized() {
+		return isLayoutInitialized;
+	}
 }

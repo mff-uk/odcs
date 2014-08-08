@@ -38,9 +38,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "Administrator")
-public class Settings extends ViewComponent {
+public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private static final long serialVersionUID = 1L;
 
@@ -97,6 +97,8 @@ public class Settings extends ViewComponent {
      * Currently logged in user.
      */
     private User loggedUser;
+    
+    private boolean isMainLayoutInitialized = false;
 
     /**
      * The constructor should first build the main layout, set the composition
@@ -130,7 +132,10 @@ public class Settings extends ViewComponent {
     @Override
     public void enter(ViewChangeEvent event) {
         loggedUser = authCtx.getUser();
-        buildMainLayout();
+        if (!isMainLayoutInitialized) {
+        	buildMainLayout();
+        	isMainLayoutInitialized = true;
+		}
         setCompositionRoot(mainLayout);
     }
 
@@ -735,11 +740,27 @@ public class Settings extends ViewComponent {
         if (record == null) {
             return true;
         }
-        Set<EmailAddress> aldEmails = record.getEmails();
+        Set<EmailAddress> oldEmails = record.getEmails();
         UserNotificationRecord newNotification = new UserNotificationRecord();
         email.setUserEmailNotification(newNotification);
         Set<EmailAddress> newEmails = newNotification.getEmails();
-        return !aldEmails.equals(newEmails) || rows.isModified();
+        return !hasTheSameEmails(oldEmails, newEmails) || rows.isModified();
+    }
+    
+    private boolean hasTheSameEmails(Set<EmailAddress> oldEmails, Set<EmailAddress> newEmails) {
+    	// i have to do it this way because the new mails dont have id set and the old have it set
+    	// so the oldEmails.equals(newEmails) method will always return false (dont want to change
+    	// hashCode and equals method of EmailAdress because they are correct but here it cant be used)
+    	if (oldEmails.size() != newEmails.size()) {
+			return false;
+		}
+    	for (EmailAddress emailAddress : oldEmails) {
+    		// both email dont have id set, so i can compare them with equals
+			if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
+				return false;
+			}
+		}
+    	return true;
     }
 
     private String emailValidationText() {
@@ -787,4 +808,9 @@ public class Settings extends ViewComponent {
         return errorText;
 
     }
+
+	@Override
+	public void doAfterLogout() {
+		isMainLayoutInitialized = false;
+	}
 }

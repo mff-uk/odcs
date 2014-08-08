@@ -38,7 +38,9 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
  */
 public class LogTable extends CustomComponent {
 
-    private VerticalLayout mainLayout;
+    private int iconHeight;
+
+	private VerticalLayout mainLayout;
 
     private IntlibPagedTable table;
 
@@ -71,10 +73,11 @@ public class LogTable extends CustomComponent {
      * @param logFacade
      * @param pageLenght
      */
-    public LogTable(DbCachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght) {
+    public LogTable(DbCachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght, int iconHeight) {
         this.dataSouce = dataSouce;
         this.container = new ReadOnlyContainer<>(dataSouce);
         this.logFacade = logFacade;
+        this.iconHeight = iconHeight;
 
         // build layout
         buildLayout(pageLenght);
@@ -131,6 +134,7 @@ public class LogTable extends CustomComponent {
                 ThemeResource img = getIconForLevel(level);
                 Embedded emb = new Embedded(level.levelStr, img);
                 emb.setDescription(level.levelStr);
+                emb.setHeight(iconHeight, Unit.PIXELS);
                 return emb;
             }
         });

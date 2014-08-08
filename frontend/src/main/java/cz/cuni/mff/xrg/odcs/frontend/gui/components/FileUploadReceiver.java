@@ -8,7 +8,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
@@ -21,7 +22,7 @@ import com.vaadin.ui.Upload.Receiver;
  */
 public class FileUploadReceiver implements Receiver {
 
-    private Logger logger = Logger.getLogger(FileUploadReceiver.class);
+    private Logger logger = LoggerFactory.getLogger(FileUploadReceiver.class);
 
     private File file;
 
@@ -40,7 +41,7 @@ public class FileUploadReceiver implements Receiver {
             //create template directory
             path = Files.createTempDirectory("jarDPU");
         } catch (IOException ex) {
-            logger.debug(ex);
+            logger.debug("", ex);
         }
 
         try {

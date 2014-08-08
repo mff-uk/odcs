@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.apache.log4j.Level;
+import ch.qos.logback.classic.Level;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
@@ -13,6 +13,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
+
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 
 /**
