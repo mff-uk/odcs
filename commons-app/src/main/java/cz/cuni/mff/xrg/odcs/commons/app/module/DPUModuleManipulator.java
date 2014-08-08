@@ -465,7 +465,7 @@ public class DPUModuleManipulator {
             throws DPUCreateException {
         // the name must be in format: NAME-.*.jar
         final Pattern pattern = Pattern
-                .compile("(.+?)-(.*)\\.jar");
+                .compile("(.+?)-([^-]*)\\.jar");
         final Matcher matcher = pattern.matcher(sourceFileName);
         if (matcher.matches()) {
             // 0 - original, 1 - name, 2 - version

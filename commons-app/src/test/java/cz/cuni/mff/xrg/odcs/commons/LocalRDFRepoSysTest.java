@@ -38,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.HandlerExtractType;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
  * @author Jiri Tomes
@@ -107,7 +108,7 @@ public class LocalRDFRepoSysTest {
         OutputStreamWriter os = new OutputStreamWriter(out, Charset.forName(encode));
         RDFWriter rdfWriter = Rio.createWriter(Rio.getWriterFormatForFileName(fileName), os);
         RepositoryConnection connection = rdfRepo.getConnection();
-        connection.export(rdfWriter, rdfRepo.getDataGraphnames().toArray(new URI[0]));
+        connection.export(rdfWriter, RDFHelper.getGraphsURIArray(rdfRepo));
         connection.close();
 
     }

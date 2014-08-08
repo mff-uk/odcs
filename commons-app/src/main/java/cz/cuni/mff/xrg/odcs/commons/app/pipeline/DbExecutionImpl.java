@@ -102,4 +102,16 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         return lastModified.after(since);
     }
 
+    @Override
+    public boolean hasDeleted(List<Long> ids) {
+    	if (ids == null || ids.isEmpty()) {
+			return false;
+		}
+    	final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
+    			+ " WHERE e.id IN :ids";
+    	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+    	query.setParameter("ids", ids);
+    	Long number = (Long) query.getSingleResult();
+    	return !number.equals(ids.size());
+    }
 }

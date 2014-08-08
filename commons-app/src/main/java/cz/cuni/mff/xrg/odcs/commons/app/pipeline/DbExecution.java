@@ -76,4 +76,12 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public boolean hasModified(Date since);
 
+    /**
+     * Checks if some of the executions were deleted
+     * <p>
+     * @param ids executions to check
+     * @return true if one or more execution were deleted
+     */
+	public boolean hasDeleted(List<Long> ids);
+
 }

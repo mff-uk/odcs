@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS `usr_user_role`;
 DROP TABLE IF EXISTS `usr_user`;
 DROP TABLE IF EXISTS `sch_email`;
 DROP TABLE IF EXISTS `rdf_ns_prefix`;
+DROP TABLE IF EXISTS `properties`;
 
 -- dev. note:
 -- when updating size of limits for fields update also the limitations
@@ -45,7 +46,7 @@ CREATE TABLE `dpu_instance`
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_DPU_INSTANCE_dpu_id` ON `dpu_instance` (`dpu_id`);
 
 CREATE TABLE `dpu_template`
@@ -66,7 +67,7 @@ CREATE TABLE `dpu_template`
   `jar_name` VARCHAR(255),
   `jar_description` VARCHAR(1024),  
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_DPU_TEMPLATE_jar_directory` ON `dpu_template` (`jar_directory`);
 CREATE INDEX `ix_DPU_TEMPLATE_parent_id` ON `dpu_template` (`parent_id`);
 CREATE INDEX `ix_DPU_TEMPLATE_user_id` ON `dpu_template` (`user_id`);
@@ -81,7 +82,7 @@ CREATE TABLE `exec_dataunit_info`
   `is_input` SMALLINT,
   `exec_context_dpu_id` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `exec_dataunit_info` (`exec_context_dpu_id`);
 
 CREATE TABLE `exec_context_pipeline`
@@ -89,7 +90,7 @@ CREATE TABLE `exec_context_pipeline`
   `id` INTEGER AUTO_INCREMENT,
   `dummy` SMALLINT,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exec_context_dpu`
 (
@@ -98,7 +99,7 @@ CREATE TABLE `exec_context_dpu`
   `dpu_instance_id` INTEGER,
   `state` SMALLINT,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_CONTEXT_DPU_exec_context_pipeline_id` ON `exec_context_dpu` (`exec_context_pipeline_id`);
 CREATE INDEX `ix_EXEC_CONTEXT_DPU_dpu_instance_id` ON `exec_context_dpu` (`dpu_instance_id`);
 
@@ -112,7 +113,7 @@ CREATE TABLE `exec_record`
   `short_message` VARCHAR(128),
   `full_message` TEXT,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_RECORD_r_time` ON `exec_record` (`r_time`);
 CREATE INDEX `ix_EXEC_RECORD_r_type` ON `exec_record` (`r_type`);
 CREATE INDEX `ix_EXEC_RECORD_dpu_id` ON `exec_record` (`dpu_id`);
@@ -134,7 +135,7 @@ CREATE TABLE `exec_pipeline`
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `exec_pipeline` (`status`);
 CREATE INDEX `ix_EXEC_PIPELINE_pipeline_id` ON `exec_pipeline` (`pipeline_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_debug_mode` ON `exec_pipeline` (`debug_mode`);
@@ -160,7 +161,7 @@ CREATE TABLE `exec_schedule`
   `strict_timing` SMALLINT,
   `strict_tolerance` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- composite index to optimize fetching schedules following pipeline
 CREATE INDEX `ix_EXEC_SCHEDULE_pipeline_id_type` ON `exec_schedule` (`pipeline_id`, `type`);
 CREATE INDEX `ix_EXEC_SCHEDULE_user_id` ON `exec_schedule` (`user_id`);
@@ -172,7 +173,7 @@ CREATE TABLE `exec_schedule_after`
   `schedule_id` INTEGER,
   `pipeline_id` INTEGER,
   PRIMARY KEY (`schedule_id`, `pipeline_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ppl_model`
 (
@@ -183,7 +184,7 @@ CREATE TABLE `ppl_model`
   `visibility` SMALLINT,
   `last_change` DATETIME,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_MODEL_user_id` ON `ppl_model` (`user_id`);
 
 CREATE TABLE `ppl_ppl_conflicts`
@@ -191,7 +192,7 @@ CREATE TABLE `ppl_ppl_conflicts`
   `pipeline_id` INTEGER AUTO_INCREMENT,
   `pipeline_conflict_id` INTEGER,
   PRIMARY KEY (`pipeline_id`, `pipeline_conflict_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_PPL_CONFLICTS_pipeline_id` ON `ppl_ppl_conflicts` (`pipeline_id`);
 
 CREATE TABLE `ppl_edge`
@@ -202,7 +203,7 @@ CREATE TABLE `ppl_edge`
   `node_to_id` INTEGER,
   `data_unit_name` VARCHAR(2048),
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_EDGE_graph_id` ON `ppl_edge` (`graph_id`);
 CREATE INDEX `ix_PPL_EDGE_node_from_id` ON `ppl_edge` (`node_from_id`);
 CREATE INDEX `ix_PPL_EDGE_node_to_id` ON `ppl_edge` (`node_to_id`);
@@ -214,7 +215,7 @@ CREATE TABLE `ppl_node`
   `instance_id` INTEGER,
   `position_id` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_NODE_graph_id` ON `ppl_node` (`graph_id`);
 CREATE INDEX `ix_PPL_NODE_instance_id` ON `ppl_node` (`instance_id`);
 
@@ -224,7 +225,7 @@ CREATE TABLE `ppl_graph`
   `pipeline_id` INTEGER,
   PRIMARY KEY (`id`),
   UNIQUE (pipeline_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_GRAPH_pipeline_id` ON `ppl_graph` (`pipeline_id`);
 
 CREATE TABLE `ppl_position`
@@ -233,7 +234,7 @@ CREATE TABLE `ppl_position`
   `pos_x` INTEGER,
   `pos_y` INTEGER,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sch_sch_notification`
 (
@@ -243,7 +244,7 @@ CREATE TABLE `sch_sch_notification`
   `type_error` SMALLINT,
   PRIMARY KEY (`id`),
   UNIQUE (schedule_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sch_usr_notification`
 (
@@ -253,7 +254,7 @@ CREATE TABLE `sch_usr_notification`
   `type_error` SMALLINT,
   PRIMARY KEY (`id`),
   UNIQUE (user_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_user_id` ON `sch_usr_notification` (`user_id`);
 
 CREATE TABLE `sch_email`
@@ -261,7 +262,7 @@ CREATE TABLE `sch_email`
   `id` INTEGER AUTO_INCREMENT,
   `email` VARCHAR(255),
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_SCH_EMAIL_email` ON `sch_email` (`email`);
 
 CREATE TABLE `sch_sch_notification_email`
@@ -269,14 +270,14 @@ CREATE TABLE `sch_sch_notification_email`
   `notification_id` INTEGER,
   `email_id` INTEGER,
   PRIMARY KEY (`notification_id`, `email_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sch_usr_notification_email`
 (
   `notification_id` INTEGER AUTO_INCREMENT,
   `email_id` INTEGER,
   PRIMARY KEY (`notification_id`, `email_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_EMAIL_email_id` ON `sch_usr_notification_email` (`email_id`);
 
 CREATE TABLE `usr_user`
@@ -289,7 +290,7 @@ CREATE TABLE `usr_user`
   `table_rows` INTEGER,
   PRIMARY KEY (`id`),
   UNIQUE (`username`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_USR_USER_email_id` ON `usr_user` (`email_id`);
 
 CREATE TABLE `usr_user_role`
@@ -297,7 +298,7 @@ CREATE TABLE `usr_user_role`
   `user_id` INTEGER NOT NULL,
   `role_id` INTEGER NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rdf_ns_prefix`
 (
@@ -306,7 +307,7 @@ CREATE TABLE `rdf_ns_prefix`
   `uri` VARCHAR(2048) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table with timestamps when was the last time users opened pipelines in canvas
 CREATE TABLE `ppl_open_event`
@@ -316,9 +317,16 @@ CREATE TABLE `ppl_open_event`
   `user_id` INTEGER NOT NULL,
   `opened` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_OPEN_EVENT_pipeline_id` ON `ppl_open_event` (`pipeline_id`);
 CREATE INDEX `ix_PPL_OPEN_EVENT_user_id` ON `ppl_open_event` (`user_id`);
+
+CREATE TABLE `properties`
+(
+  `key` VARCHAR(200) NOT NULL,
+  `value` VARCHAR(200),
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- CONSTRAINTS #################################################################
 
@@ -568,7 +576,7 @@ CREATE TABLE `logging`
   `relative_id` INTEGER,
   PRIMARY KEY (id)
 -- BEGIN MYSQL ONLY
-) ENGINE=MyISAM;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- END MYSQL ONLY
 
 CREATE INDEX `ix_LOGGING_dpu` ON `logging` (`dpu`);

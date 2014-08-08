@@ -57,6 +57,8 @@ public class DebuggingView extends CustomComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(DebuggingView.class);
 
+	private static final int ICON_HEIGHT = 16; // [pixels]
+
     private VerticalLayout mainLayout;
 
     private PipelineExecution pipelineExec;
@@ -148,8 +150,8 @@ public class DebuggingView extends CustomComponent {
                     msgCoreFilters, pageSize);
 
             // create tables
-            logTable = new LogTable(logSource, logFacade, pageSize);
-            msgTable = new RecordsTable(msgSource, pageSize);
+            logTable = new LogTable(logSource, logFacade, pageSize, ICON_HEIGHT);
+            msgTable = new RecordsTable(msgSource, pageSize, ICON_HEIGHT);
             LOG.debug("Created new Log and Record table");
         }
 

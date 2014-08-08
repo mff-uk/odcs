@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
  * Component for deleting the graphs for virtuoso.
@@ -43,7 +44,7 @@ public class GraphDeleter implements Runnable {
                     //					RDFDataUnitHelper.getVirtuosoRepository("http://Virtuoso");
                     rdfDataUnitFactory.create("", "", "");
             connection = repo.getConnection();
-            message = RepositoryFrontendHelper.deleteApplicationGraphs(connection, repo.getDataGraphnames());
+            message = RepositoryFrontendHelper.deleteApplicationGraphs(connection,  RDFHelper.getGraphsURISet(repo));
 
         } catch (Throwable ex) {
             message = ex.toString();

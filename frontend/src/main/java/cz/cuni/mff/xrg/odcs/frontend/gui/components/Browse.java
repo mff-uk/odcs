@@ -80,7 +80,8 @@ public class Browse extends CustomComponent {
         if (info == null) {
             return;
         }
-        if (info.getType() == ManagableDataUnit.Type.FILE) {
+        if (info.getType() == ManagableDataUnit.Type.FILE ||
+        		info.getType() == ManagableDataUnit.Type.FILES) {
             if (queryView.getClass() == RDFQueryView.class) {
                 mainLayout.removeComponent(queryView);
                 queryView = new FileQueryView();

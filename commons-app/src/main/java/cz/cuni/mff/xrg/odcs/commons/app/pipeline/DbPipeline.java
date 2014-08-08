@@ -47,4 +47,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @return whether any pipeline was created / updated since given date
      */
     public boolean hasModified(Date since);
+    
+    /**
+     * Tells whether one of pipelines was deleted
+     * <p>
+     * 
+     * @param pipelinesIds
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     */
+    public boolean hasDeletedPipelines(List<Long> pipelinesIds);
 }
