@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.37, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: odcs
+-- Host: localhost    Database: uvrelease
 -- ------------------------------------------------------
 -- Server version	5.5.37-0ubuntu0.13.10.1
 
@@ -183,6 +183,16 @@ LOCK TABLES `ppl_ppl_conflicts` WRITE;
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `properties`
+--
+
+LOCK TABLES `properties` WRITE;
+/*!40000 ALTER TABLE `properties` DISABLE KEYS */;
+INSERT INTO `properties` VALUES ('UV.Core.version','001.003.000'),('UV.Plugin-DevEnv.version','001.000.000'),('UV.Plugins.version','001.003.000');
+/*!40000 ALTER TABLE `properties` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `rdf_ns_prefix`
 --
 
@@ -268,4 +278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-24 11:25:50
+-- Dump completed on 2014-08-07 20:38:24

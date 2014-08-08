@@ -298,4 +298,11 @@ public interface PipelineFacade extends Facade {
      */
     void stopExecution(PipelineExecution execution);
 
+    /**
+     * Checks if some of the executions were deleted
+     * @param executionIds execution to check
+     * @return true if one or more execution were deleted
+     */
+	boolean hasDeletedExecutions(List<Long> executionIds);
+
 }
