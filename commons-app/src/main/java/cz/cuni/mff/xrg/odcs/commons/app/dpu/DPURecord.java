@@ -206,7 +206,12 @@ public abstract class DPURecord implements DataObject {
         }
         // workaround for null configurations
         // the null configuratino is not supported by virtuoso jdbc driver
-        final String configuration = new String(serializedConfiguration);
+        String configuration;
+        try {
+            configuration = new String(serializedConfiguration, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
         if (NULL_CONFIG.equals(configuration)) {
             return null;
         } else {
