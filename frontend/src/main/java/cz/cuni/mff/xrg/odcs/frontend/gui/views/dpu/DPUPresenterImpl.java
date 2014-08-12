@@ -380,7 +380,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Override
     public void pipelineDeleteEventHandler(Long id) {
-        Pipeline pipe = pipelineFacade.getPipeline(id);
+        final Pipeline pipe = pipelineFacade.getPipeline(id);
         List<PipelineExecution> executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.QUEUED);
         if (executions.isEmpty()) {
             executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.RUNNING);
@@ -389,8 +389,18 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
             return;
         }
-        pipelinesWithDPU.remove(pipe.getId());
-        pipelineFacade.delete(pipe);
+        
+        String message = "Would you really like to delete the \"" + pipe.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
+    	ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
+			@Override
+			public void onClose(ConfirmDialog cd) {
+				if (cd.isConfirmed()) {
+					pipelinesWithDPU.remove(pipe.getId());
+					pipelineFacade.delete(pipe);
+					view.removePipelineFromTable(pipe.getId());
+				}
+			}
+		});
     }
 
     @Override
