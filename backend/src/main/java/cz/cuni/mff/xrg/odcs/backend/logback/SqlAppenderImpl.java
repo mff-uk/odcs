@@ -37,7 +37,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
  * Implementation of log appender. The code is inspired by {@link ch.qos.logback.core.db.DBAppenderBase}.
  * The appender is designed to append into single table in Virtuoso.
  * 
- * @author Petyr
+ * @author Petr Škoda
  */
 public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
         implements SqlAppender {
@@ -244,18 +244,28 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
                     break;
                 } else {
                     // we have made it .. do we have next to save ?
-                    if (iterator.hasNext()) {
-                        // yes move and fetch
-                        toFetch = iterator.next();
-                    } else {
-                        // the last one\
-                        toFetch = null;
+                    try {
+                        if (iterator.hasNext()) {
+                            // yes move and fetch
+                            toFetch = iterator.next();
+                        } else {
+                            // the last one\
+                            toFetch = null;
+                        }
+                    } catch (Exception ex) {
+                        // just for sure .. 
+                        LOG.error("Iterator throws!!!", ex);
                     }
+
                 }
             }
 
             // at the end close the connection
-            DBHelper.closeConnection(connection);
+            try {
+                DBHelper.closeConnection(connection);
+            } catch (Throwable ex) {
+                LOG.error("Failed to close connection.", ex);
+            }
         }
         // the data has been saved, we can clear the buffer
         secondaryList.clear();

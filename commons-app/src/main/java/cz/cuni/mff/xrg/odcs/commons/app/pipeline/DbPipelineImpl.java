@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
  * 
  * @author Petyr
  * @author Jan Vojt
+ * @author Martin Virag
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
@@ -66,5 +67,18 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         }
 
         return lastModified.after(since);
+    }
+    
+    @Override
+    public boolean hasDeletedPipelines(List<Long> pipelinesIds) {
+    	if (pipelinesIds == null || pipelinesIds.isEmpty()) {
+			return false;
+		}
+    	final String stringQuery = "SELECT COUNT(e) FROM Pipeline e"
+    			+ " WHERE e.id IN :ids";
+    	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+    	query.setParameter("ids", pipelinesIds);
+    	Long number = (Long) query.getSingleResult();
+    	return !number.equals(pipelinesIds.size());
     }
 }

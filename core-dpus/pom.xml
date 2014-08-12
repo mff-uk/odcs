@@ -10,8 +10,8 @@
     <!-- list of core modules -->
     <modules>
 	<!-- New DPUs  -->
-        <module>RDFToRDFMerger2Transformer</module>
-        <module>FilesToFilesMerger2Transformer</module>
+        <module>t-rdfMerger</module>
+        <module>t-filesMerger</module>
     </modules>
 
     <properties>

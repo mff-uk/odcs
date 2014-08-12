@@ -106,6 +106,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     @Override
     public Object enter() {
     	if (isInitialized) {
+    		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
     		addRefreshManager();
 			return view.enter(this);
 		}
@@ -140,7 +141,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
                     boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad) 
-                    		|| pipelineFacade.hasModifiedExecutions(lastLoad);
+                    		|| pipelineFacade.hasModifiedExecutions(lastLoad)
+                    		|| (cachedSource.size() > 0 &&
+                    		   pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
                     if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();

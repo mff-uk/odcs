@@ -11,6 +11,7 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -37,6 +38,8 @@ public class RecordsTable extends CustomComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(RecordsTable.class);
 
+    private int iconHeight;
+    
     private boolean isInitialized = false;
 
     private VerticalLayout mainLayout;
@@ -59,9 +62,10 @@ public class RecordsTable extends CustomComponent {
      * @param dataSouce
      * @param pageLenght
      */
-    public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght) {
+    public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght, int iconHeight) {
         this.dataSouce = dataSouce;
         this.container = new ReadOnlyContainer<>(dataSouce);
+        this.iconHeight = iconHeight;
         //build layout
         buildLayout(pageLenght);
     }
@@ -163,6 +167,7 @@ public class RecordsTable extends CustomComponent {
                 }
                 Embedded emb = new Embedded(type.name(), img);
                 emb.setDescription(type.name());
+                emb.setHeight(iconHeight, Unit.PIXELS);
                 return emb;
             }
         });

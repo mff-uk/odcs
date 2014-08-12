@@ -268,6 +268,15 @@ public interface PipelineFacade extends Facade {
     public boolean hasModifiedPipelines(Date lastLoad);
     
     /**
+     * Tells whether one of pipelines was deleted
+     * <p>
+     * 
+     * @param pipelinesIds
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     */
+    public boolean hasDeletedPipelines(List<Long> pipelineIds);
+    
+    /**
      * Persists new {@link PipelineExecution} or updates it if it was already
      * persisted before.
      * 
@@ -288,5 +297,12 @@ public interface PipelineFacade extends Facade {
      * @param execution
      */
     void stopExecution(PipelineExecution execution);
+
+    /**
+     * Checks if some of the executions were deleted
+     * @param executionIds execution to check
+     * @return true if one or more execution were deleted
+     */
+	boolean hasDeletedExecutions(List<Long> executionIds);
 
 }

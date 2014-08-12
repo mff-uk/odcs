@@ -20,7 +20,20 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
+import org.openrdf.query.Binding;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.TupleQueryResultHandlerException;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
@@ -50,7 +63,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
-import eu.unifiedviews.helpers.dataunit.dataset.CleverDataset;
+import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
@@ -143,10 +156,7 @@ public class RepositoryFrontendHelper {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
                     QueryLanguage.SPARQL, selectQuery);
-            CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(dataGraph);
-            dataSet.addNamedGraphs(dataGraph);
-            tupleQuery.setDataset(dataSet);
+            tupleQuery.setDataset(new DatasetBuilder().withDefaultGraphs(dataGraph).withNamedGraphs(dataGraph).build());
 
             log.debug("Query {} is valid.", selectQuery);
 
@@ -289,10 +299,7 @@ public class RepositoryFrontendHelper {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
                     QueryLanguage.SPARQL, selectQuery);
-            CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(dataGraph);
-            dataSet.addNamedGraphs(dataGraph);
-            tupleQuery.setDataset(dataSet);
+            tupleQuery.setDataset(new DatasetBuilder().withDefaultGraphs(dataGraph).withNamedGraphs(dataGraph).build());
 
             log.debug("Query {} is valid.", selectQuery);
 
@@ -343,10 +350,7 @@ public class RepositoryFrontendHelper {
             String describeQuery = String.format("DESCRIBE <%s>", uriResource
                     .toString());
 
-            CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(dataGraph);
-            dataSet.addNamedGraphs(dataGraph);
-            return executeConstructQuery(connection, describeQuery, dataSet);
+            return executeConstructQuery(connection, describeQuery, new DatasetBuilder().withDefaultGraphs(dataGraph).withNamedGraphs(dataGraph).build());
         } else {
             throw new InvalidQueryException(
                     "Resource " + uriResource.toString() + "is not URI type");
@@ -429,10 +433,7 @@ public class RepositoryFrontendHelper {
             GraphQuery graphQuery = connection.prepareGraphQuery(
                     QueryLanguage.SPARQL,
                     constructQuery);
-            CleverDataset dataSet = new CleverDataset();
-            dataSet.addDefaultGraphs(dataGraph);
-            dataSet.addNamedGraphs(dataGraph);
-            graphQuery.setDataset(dataSet);
+            graphQuery.setDataset(new DatasetBuilder().withDefaultGraphs(dataGraph).withNamedGraphs(dataGraph).build());
 
             log.debug("Query {} is valid.", constructQuery);
 
