@@ -59,15 +59,15 @@ public class ImportTest {
     }
 
     @Test
-    public void ImportTest() throws IOException, ImportException, ExportException {
+    public void ImportTest() throws IOException, ImportException, ExportException, URISyntaxException {
         ImportService importService = new ImportService();
         Path tmpPath = Files.createTempDirectory("dir");
         File tmpDir = tmpPath.toFile();
 
-        String zipResource = ImportTest.class.getResource(
-                "/pipelineWithUsedDpus.zip").getPath();
+        URL zipResource = ImportTest.class.getResource(
+                "/pipelineWithUsedDpus.zip");
 
-        File zipFile = new File(zipResource);
+        File zipFile = new File(zipResource.toURI());
         importService.unpack(zipFile, tmpDir);
         List<DpuItem> result = importService.loadUsedDpus(tmpDir);
         Assert.assertEquals(result.size(), 2);
