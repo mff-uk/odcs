@@ -62,8 +62,6 @@
 		<module>lib</module>
 		<!-- test environment for modules -->
 		<module>module-test</module>
-		<!-- build modules/plugins/dpus -->
-		<module>module-base</module>
 		<module>plugins</module>
 		<module>core-dpus</module>
 	</modules>
