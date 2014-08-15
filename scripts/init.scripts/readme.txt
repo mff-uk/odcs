@@ -16,4 +16,5 @@ chmod +x /usr/sbin/run_unifiedviews_backend
 cp unifiedviews_backend /etc/init.d/
 mkdir /etc/unifiedviews/
 cp unifiedviews.conf /etc/unifiedviews
+mkdir /var/lock/subsys
 
