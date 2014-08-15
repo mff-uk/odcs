@@ -87,6 +87,12 @@
         <property name="key" value="${database.rdf.platform}"/>
         <property name="implementations">
             <map>
+                <entry key="inMemoryRDF">
+                    <bean id="inMemoryRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
+                        <property name="repositoryPath" value="${general.workingdir}"/>
+                    </bean>
+                </entry>
                 <entry key="localRDF">
                     <bean id="localRdfDataUnitFactory"
                           class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
