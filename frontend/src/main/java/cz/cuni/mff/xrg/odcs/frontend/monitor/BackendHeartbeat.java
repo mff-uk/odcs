@@ -56,8 +56,9 @@ public class BackendHeartbeat {
     
 
     public Boolean checkIsAlive() {
+    	boolean returnCode = alive || lastCheckAlive; 
     	lastCheckAlive = alive;
-        return alive || lastCheckAlive;
+        return returnCode;
     }
 
 }
