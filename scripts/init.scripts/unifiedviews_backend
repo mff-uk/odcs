@@ -180,7 +180,6 @@ function status()
          log_failure_msg "${NAME} lockfile exists but process is not running"
       else
          pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
-	echo "pid $pid"
         if [ -z "$pid" ]; then
              log_success_msg "${NAME} is stopped"
              RETVAL="3"
