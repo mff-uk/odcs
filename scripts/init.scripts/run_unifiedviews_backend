@@ -25,7 +25,6 @@ JVM_ROOT=/usr/lib/jvm
 JAVACMD_OPTS=
 
 
-
 # Set the java virtual machine
 set_jvm() {
   # use $JAVA_HOME if defined
