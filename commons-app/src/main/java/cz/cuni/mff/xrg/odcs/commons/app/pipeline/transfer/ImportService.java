@@ -207,8 +207,8 @@ public class ImportService {
             User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
             throws ImportException {
         // try to detect if there already exist same DPU
-        DPUTemplateRecord result = dpuFacade.getByDirectory(template
-                .getJarDirectory());
+        DPUTemplateRecord result = dpuFacade.getByName(template
+                .getName());
         if (result == null) {
             try {
                 // we have to import new DPU
@@ -351,7 +351,7 @@ public class ImportService {
 
                         // try to detect if dpus are installed
                         DPUTemplateRecord dpuTemplateRecord = dpuFacade
-                                .getByJarName(template.getJarName());
+                                .getByName(template.getName());
                         // TODO jmc add version
                         String version = "unknown";
                         DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);

@@ -129,11 +129,11 @@ public class ExportService {
                 } else {
                     savedTemplateId.add(template.getId());
                     // export jar file
-                    final String jarDirectory = template.getJarDirectory();
-                    if (savedTemplateDir.contains(jarDirectory)) {
+                    final String name = template.getName();
+                    if (savedTemplateDir.contains(name)) {
                         // jar already exported
                     } else {
-                        savedTemplateDir.add(jarDirectory);
+                        savedTemplateDir.add(name);
 
                         if (setting.isExportJars()) {
                             saveDPUJar(template, zipStream);
