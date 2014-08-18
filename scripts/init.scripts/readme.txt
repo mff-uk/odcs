@@ -5,7 +5,7 @@ The scripts were inspirited by tomcat6
 Please read the configuration files and set the variables according your environment.
 
 
-Install steps for unifiedviews_backend:
+Installation steps for unifiedviews_backend:
 unifiedviews_backend is needed to be placed into the /etc/init.d/
 We suggest to place run_unifiedviews_backend into the folder /usr/sbin/ and unifiedviews.conf into the /etc/unifiedviews/.
 
