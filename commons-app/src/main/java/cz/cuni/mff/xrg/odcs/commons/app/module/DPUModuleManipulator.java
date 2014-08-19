@@ -141,6 +141,8 @@ public class DPUModuleManipulator {
         }
 
         final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
+        final String dpuName = dpuExplorer.getBundleName(newTemplate);
+
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
@@ -177,6 +179,7 @@ public class DPUModuleManipulator {
         // set other DPUs variables
         newTemplate.setType(dpuType);
         newTemplate.setDescription("");
+        newTemplate.setName(dpuName);
         newTemplate.setJarDescription(jarDescription);
         newTemplate.setShareType(ShareType.PRIVATE);
 
