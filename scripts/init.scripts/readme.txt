@@ -21,3 +21,5 @@ cp unifiedviews.conf /etc/unifiedviews
 # if not exists then
 mkdir /var/lock/subsys
 
+
+When somenting goes wrong please have a look at log file: /var/log/unifiedviews_backend-initd.log
