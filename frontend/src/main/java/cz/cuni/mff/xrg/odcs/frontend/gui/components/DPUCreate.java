@@ -320,25 +320,22 @@ public class DPUCreate extends Window {
                 }
 
                 final File sourceFile = fileUploadReceiverZip.getFile();
-                Collection<File> dpus = null;
+                Collection<File> dpus;
                 try {
 
                     Path tmpPath = Files.createTempDirectory("dir");
                     File tmpFile = tmpPath.toFile();
-                    ZipCommons.unpack(sourceFile, tmpFile);
+                    ZipCommons.unpack2(sourceFile, tmpFile);
                     String[] extensions = { "jar" };
                     dpus = FileUtils.listFiles(tmpFile, extensions, true);
                 } catch (IOException e) {
-                    String msg = "Problem with loading file: " + sourceFile.toString();
+                    String msg = "Problem with loading file: " + sourceFile.getName();
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
-                } catch (ImportException e) {
-                    String msg = "Problem with unpacking file: " + sourceFile.toString();
-                    LOG.error(msg);
-                    Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
-
+                    return;
                 }
-                if (dpus.isEmpty()) {
+
+                if ((dpus == null) || dpus.isEmpty()) {
                     String msg = "There is no jars in file: " + sourceFile.getName();
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                     LOG.error(msg);
@@ -366,7 +363,7 @@ public class DPUCreate extends Window {
 	}
 	
 	private Button createSaveJarButton() {
-		Button saveButton = new Button("Save");
+        Button saveButton = new Button("Save");
         saveButton.setWidth("90px");
 
         saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
@@ -400,6 +397,7 @@ public class DPUCreate extends Window {
                     Notification.show("Failed to create DPU",
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
                 close();
             }
