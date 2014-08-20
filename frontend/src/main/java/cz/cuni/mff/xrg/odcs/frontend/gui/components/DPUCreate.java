@@ -330,7 +330,16 @@ public class DPUCreate extends Window {
                     Collection<File> dpus = FileUtils.listFiles(tmpFile, extensions, true);
 
                     for (final File fileEntry : dpus) {
-                        importDPU(fileEntry);
+                        try {
+                            importDPU(fileEntry);
+                        } catch (DPUCreateException e) {
+                            dpuGeneralSettingsLayout.removeComponent(1, 3);
+                            uploadFile = new TextField();
+                            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiverZip, uploadFile, "zip"), 1, 3);
+                            Notification.show("Failed to create DPU",
+                                    e.getMessage(),
+                                    Notification.Type.ERROR_MESSAGE);
+                        }
                     }
 
                     // and at the end we can close the dialog ..
@@ -377,7 +386,16 @@ public class DPUCreate extends Window {
                 }
 
                 final File sourceFile = fileUploadReceiver.getFile();
-                importDPU(sourceFile);
+                try {
+                    importDPU(sourceFile);
+                } catch (DPUCreateException e) {
+                    dpuGeneralSettingsLayout.removeComponent(1, 3);
+                    uploadFile = new TextField();
+                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar"), 1, 3);
+                    Notification.show("Failed to create DPU",
+                            e.getMessage(),
+                            Notification.Type.ERROR_MESSAGE);
+                }
                 close();
             }
         }));
@@ -402,21 +420,10 @@ public class DPUCreate extends Window {
 	}
 
 
-    private void importDPU(File fileEntry) {
+    private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
-        try {
             String name = dpuName.isValid() ? dpuName.getValue() : null;
-            dpuWrap = new DPUTemplateWrap(
-                    dpuManipulator.create(fileEntry, name));
-        } catch (DPUCreateException e) {
-            dpuGeneralSettingsLayout.removeComponent(1, 3);
-            uploadFile = new TextField();
-            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar"), 1, 3);
-            Notification.show("Failed to create DPU",
-                    e.getMessage(),
-                    Notification.Type.ERROR_MESSAGE);
-            return;
-        }
+            dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name));
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template

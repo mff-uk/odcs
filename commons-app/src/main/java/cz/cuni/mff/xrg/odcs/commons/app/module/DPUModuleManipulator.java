@@ -64,7 +64,7 @@ public class DPUModuleManipulator {
      * @param sourceFile
      *            File from which load the dpu.
      * @param name
-     *            DPU's name.
+     *            DPU's name. If name is null then name from MANIFEST is used
      * @return new instance of {@link DPUTemplateRecord}
      * @throws DPUCreateException
      */
