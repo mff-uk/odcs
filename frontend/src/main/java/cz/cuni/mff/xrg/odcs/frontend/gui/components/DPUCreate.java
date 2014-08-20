@@ -159,12 +159,11 @@ public class DPUCreate extends Window {
 
         uploadFileZip = new TextField();
         HorizontalLayout uploadFileLayout = buildUploadLayout(dpuGeneralSettingsLayoutZip,
-        		fileUploadReceiverZip, uploadFileZip, "zip");
+        		fileUploadReceiverZip, uploadFileZip, "zip", 2);
 
         dpuGeneralSettingsLayoutZip.addComponent(uploadFileLayout, 1, 2);
 
-        dpuGeneralSettingsLayoutZip.setMargin(new MarginInfo(false, false, true,
-                false));
+        dpuGeneralSettingsLayoutZip.setMargin(new MarginInfo(false, false, true, false));
         mainLayout.addComponent(dpuGeneralSettingsLayoutZip);
 
         //Layout with buttons Save and Cancel
@@ -254,7 +253,7 @@ public class DPUCreate extends Window {
         fileUploadReceiver = new FileUploadReceiver();
 
         uploadFile = new TextField();
-        HorizontalLayout uploadFileLayout = buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar");
+        HorizontalLayout uploadFileLayout = buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar", 3);
 
         dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
 
@@ -331,11 +330,11 @@ public class DPUCreate extends Window {
 
                     for (final File fileEntry : dpus) {
                         try {
-                            importDPU(fileEntry);
+                            importDPUZip(fileEntry);
                         } catch (DPUCreateException e) {
-                            dpuGeneralSettingsLayoutZip.removeComponent(1, 3);
+                            dpuGeneralSettingsLayoutZip.removeComponent(1, 2);
                             uploadFileZip = new TextField();
-                            dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip"), 1, 3);
+                            dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip", 2), 1, 2);
                             Notification.show("Failed to create DPU",
                                     e.getMessage(),
                                     Notification.Type.ERROR_MESSAGE);
@@ -391,7 +390,7 @@ public class DPUCreate extends Window {
                 } catch (DPUCreateException e) {
                     dpuGeneralSettingsLayout.removeComponent(1, 3);
                     uploadFile = new TextField();
-                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar"), 1, 3);
+                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar", 3), 1, 3);
                     Notification.show("Failed to create DPU",
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
@@ -418,6 +417,16 @@ public class DPUCreate extends Window {
         cancelButton.setWidth("90px");
         return cancelButton;
 	}
+	
+	private void importDPUZip(File fileEntry) throws DPUCreateException {
+        DPUTemplateWrap dpuWrap;
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, null));
+        // set additional variables
+        dpuTemplate = dpuWrap.getDPUTemplateRecord();
+        // now we know all, we can update the DPU template
+        dpuTemplate.setShareType((ShareType) groupVisibilityZip.getValue());
+        dpuFacade.save(dpuTemplate);
+    }
 
 
     private void importDPU(File fileEntry) throws DPUCreateException {
@@ -436,7 +445,8 @@ public class DPUCreate extends Window {
     private HorizontalLayout buildUploadLayout(final GridLayout layout,
     		final FileUploadReceiver fileUploadReceiver,
     		final TextField uploadFile,
-    		final String fileExtension) {
+    		final String fileExtension,
+    		final int row) {
 
 
         HorizontalLayout uploadFileLayout = new HorizontalLayout();
@@ -486,8 +496,8 @@ public class DPUCreate extends Window {
 
                 getUploadInfoWindow().setClosable(true);
                 getUploadInfoWindow().close();
-                layout.removeComponent(1, 3);
-                layout.addComponent(buildUploadLayout(layout, fileUploadReceiver, uploadFile, fileExtension), 1, 3);
+                layout.removeComponent(1, row);
+                layout.addComponent(buildUploadLayout(layout, fileUploadReceiver, uploadFile, fileExtension, row), 1, row);
 
             }
         });
