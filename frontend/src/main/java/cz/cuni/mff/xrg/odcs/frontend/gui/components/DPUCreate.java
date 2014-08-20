@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -73,18 +75,20 @@ public class DPUCreate extends Window {
     private TextArea dpuDescription;
 
     private OptionGroup groupVisibility;
-
-    private Upload selectFile;
+    private OptionGroup groupVisibilityZip;
 
     private FileUploadReceiver fileUploadReceiver;
+    private FileUploadReceiver fileUploadReceiverZip;
 
     private static UploadInfoWindow uploadInfoWindow;
 
     private GridLayout dpuGeneralSettingsLayout;
+    private GridLayout dpuGeneralSettingsLayoutZip;
 
     private DPUTemplateRecord dpuTemplate;
 
     private TextField uploadFile;
+    private TextField uploadFileZip;
 
     private static int fl = 0;
 
@@ -106,24 +110,83 @@ public class DPUCreate extends Window {
         this.setResizable(false);
         this.setModal(true);
         this.setCaption("DPU Template Creation");
+        
+        TabSheet tabs = new TabSheet();
+        tabs.addTab(createJarTab(), "jar");
+        tabs.addTab(createZipTab(), "zip");
 
-        VerticalLayout mainLayout = new VerticalLayout();
+        this.setContent(tabs);
+        setSizeUndefined();
+        setWidth("500px");
+    }
+    
+    private com.vaadin.ui.Component createZipTab() {
+    	VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("dpuDetailMainLayout");
         mainLayout.setMargin(true);
 
-        dpuGeneralSettingsLayout = new GridLayout(2, 4);
-        dpuGeneralSettingsLayout.setSpacing(true);
-        dpuGeneralSettingsLayout.setWidth("400px");
-        dpuGeneralSettingsLayout.setHeight("200px");
+        dpuGeneralSettingsLayoutZip = new GridLayout(2, 4);
+        dpuGeneralSettingsLayoutZip.setSpacing(true);
+        dpuGeneralSettingsLayoutZip.setWidth("400px");
+        dpuGeneralSettingsLayoutZip.setHeight("200px");
 
-        //Name of DPU Template: label & TextField
-        Label nameLabel = new Label("Name");
-        nameLabel.setImmediate(false);
-        nameLabel.setWidth("-1px");
-        nameLabel.setHeight("-1px");
-        dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
+        Label help = new Label("TODO select text"); // TODO add label for som info
+        help.setWidth("310px");
+        help.setHeight("60px"); // TODO ?
+        dpuGeneralSettingsLayoutZip.addComponent(help, 1, 0);
+        
+        //Visibility of DPU Template: label & OptionGroup
+        groupVisibilityZip = createVisibilityOption(dpuGeneralSettingsLayoutZip, 1);
 
-        dpuName = new TextField();
+        Label selectLabel = new Label("Select .zip file");
+        selectLabel.setImmediate(false);
+        selectLabel.setWidth("-1px");
+        selectLabel.setHeight("-1px");
+        dpuGeneralSettingsLayoutZip.addComponent(selectLabel, 0, 2);
+
+        fileUploadReceiverZip = new FileUploadReceiver();
+
+        uploadFileZip = new TextField();
+        HorizontalLayout uploadFileLayout = buildUploadLayout(dpuGeneralSettingsLayoutZip,
+        		fileUploadReceiverZip, uploadFileZip, "zip");
+
+        dpuGeneralSettingsLayoutZip.addComponent(uploadFileLayout, 1, 2);
+
+        dpuGeneralSettingsLayoutZip.setMargin(new MarginInfo(false, false, true,
+                false));
+        mainLayout.addComponent(dpuGeneralSettingsLayoutZip);
+
+        //Layout with buttons Save and Cancel
+        HorizontalLayout buttonBar = new HorizontalLayout();
+        buttonBar.setStyleName("dpuDetailButtonBar");
+        buttonBar.setMargin(new MarginInfo(true, false, false, false));
+
+        buttonBar.addComponent(createSaveZipButton());
+
+        buttonBar.addComponent(createCancelButton());
+
+        mainLayout.addComponent(buttonBar);
+
+        return mainLayout;
+	}
+
+	private TextArea createDpuDescription(GridLayout layout, int row) {
+		Label descriptionLabel = new Label("Description");
+        descriptionLabel.setImmediate(false);
+        descriptionLabel.setWidth("-1px");
+        descriptionLabel.setHeight("-1px");
+        layout.addComponent(descriptionLabel, 0, row);
+
+        TextArea dpuDescription = new TextArea();
+        dpuDescription.setImmediate(false);
+        dpuDescription.setWidth("310px");
+        dpuDescription.setHeight("60px");
+        layout.addComponent(dpuDescription, 1, row);
+		return dpuDescription;
+	}
+
+	private TextField createDpuName() {
+		TextField dpuName = new TextField();
         dpuName.setImmediate(true);
         dpuName.setWidth("310px");
         dpuName.setHeight("-1px");
@@ -140,37 +203,36 @@ public class DPUCreate extends Window {
             }
         });
         dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
+		return dpuName;
+	}
+
+	public com.vaadin.ui.Component createJarTab() {
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setStyleName("dpuDetailMainLayout");
+        mainLayout.setMargin(true);
+
+        dpuGeneralSettingsLayout = new GridLayout(2, 4);
+        dpuGeneralSettingsLayout.setSpacing(true);
+        dpuGeneralSettingsLayout.setWidth("400px");
+        dpuGeneralSettingsLayout.setHeight("200px");
+
+        //Name of DPU Template: label & TextField
+        Label nameLabel = new Label("Name");
+        nameLabel.setImmediate(false);
+        nameLabel.setWidth("-1px");
+        nameLabel.setHeight("-1px");
+        dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
+
+        dpuName = createDpuName();
+        dpuName.setInputPrompt("<If not selected, one from jar will be used.>");
         dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
         //Description of DPU Template: label & TextArea
-        Label descriptionLabel = new Label("Description");
-        descriptionLabel.setImmediate(false);
-        descriptionLabel.setWidth("-1px");
-        descriptionLabel.setHeight("-1px");
-        dpuGeneralSettingsLayout.addComponent(descriptionLabel, 0, 1);
-
-        dpuDescription = new TextArea();
-        dpuDescription.setImmediate(false);
-        dpuDescription.setWidth("310px");
-        dpuDescription.setHeight("60px");
-        dpuGeneralSettingsLayout.addComponent(dpuDescription, 1, 1);
+        dpuDescription = createDpuDescription(dpuGeneralSettingsLayout, 1);
+        dpuDescription.setInputPrompt("<If not selected, one from jar will be used.>");
 
         //Visibility of DPU Template: label & OptionGroup
-        Label visibilityLabel = new Label("Visibility");
-        descriptionLabel.setImmediate(false);
-        descriptionLabel.setWidth("-1px");
-        descriptionLabel.setHeight("-1px");
-        dpuGeneralSettingsLayout.addComponent(visibilityLabel, 0, 2);
-
-        groupVisibility = new OptionGroup();
-        groupVisibility.addStyleName("horizontalgroup");
-        groupVisibility.addItem(ShareType.PRIVATE);
-        groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
-        groupVisibility.addItem(ShareType.PUBLIC_RO);
-        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
-        groupVisibility.setValue(ShareType.PUBLIC_RO);
-
-        dpuGeneralSettingsLayout.addComponent(groupVisibility, 1, 2);
+        groupVisibility = createVisibilityOption(dpuGeneralSettingsLayout, 2);
 
         Label selectLabel = new Label("Select .jar file");
         selectLabel.setImmediate(false);
@@ -180,7 +242,8 @@ public class DPUCreate extends Window {
 
         fileUploadReceiver = new FileUploadReceiver();
 
-        HorizontalLayout uploadFileLayout = buildUploadLayout();
+        uploadFile = new TextField();
+        HorizontalLayout uploadFileLayout = buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar");
 
         dpuGeneralSettingsLayout.addComponent(uploadFileLayout, 1, 3);
 
@@ -193,7 +256,36 @@ public class DPUCreate extends Window {
         buttonBar.setStyleName("dpuDetailButtonBar");
         buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
-        Button saveButton = new Button("Save");
+        buttonBar.addComponent(createSaveJarButton());
+
+        buttonBar.addComponent(createCancelButton());
+
+        mainLayout.addComponent(buttonBar);
+
+        return mainLayout;
+    }
+	
+	private OptionGroup createVisibilityOption(GridLayout layout, int row) {
+		Label visibilityLabel = new Label("Visibility");
+		visibilityLabel.setImmediate(false);
+		visibilityLabel.setWidth("-1px");
+		visibilityLabel.setHeight("-1px");
+        layout.addComponent(visibilityLabel, 0, row);
+
+        OptionGroup grVis = new OptionGroup();
+        grVis.addStyleName("horizontalgroup");
+        grVis.addItem(ShareType.PRIVATE);
+        grVis.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        grVis.addItem(ShareType.PUBLIC_RO);
+        grVis.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        grVis.setValue(ShareType.PUBLIC_RO);
+
+        layout.addComponent(grVis, 1, row);
+		return grVis;
+	}
+	
+	private Button createSaveZipButton() {
+		Button saveButton = new Button("Save");
         saveButton.setWidth("90px");
 
         saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
@@ -210,7 +302,40 @@ public class DPUCreate extends Window {
             @Override
             public void buttonClick(ClickEvent event) {
                 // checking validation of the mandatory fields
-                if (!dpuName.isValid() || (!uploadFile.isValid())) {
+                if ((!uploadFileZip.isValid())) {
+                    Notification.show("Failed to save DPURecord",
+                            "Mandatory fields should be filled",
+                            Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+
+                final File sourceFile = fileUploadReceiverZip.getFile();
+                
+                // TODO [jano] create new representation
+            }
+        }));
+        return saveButton;
+	}
+	
+	private Button createSaveJarButton() {
+		Button saveButton = new Button("Save");
+        saveButton.setWidth("90px");
+
+        saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
+            /**
+             * After pushing the button Save will be checked validation of the
+             * mandatory fields: Name, Description and uploadFile. JAR file will
+             * be copied from template folder to the /target/dpu/ folder if
+             * there no conflicts. After getting all information from JAR file
+             * needed to store new DPUTemplateRecord, the record in Database
+             * will be created
+             */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                // checking validation of the mandatory fields
+                if (!uploadFile.isValid()) {
                     Notification.show("Failed to save DPURecord",
                             "Mandatory fields should be filled",
                             Notification.Type.ERROR_MESSAGE);
@@ -221,12 +346,14 @@ public class DPUCreate extends Window {
                 // create new representation
                 DPUTemplateWrap dpuWrap;
                 try {
+                	String name = dpuName.isValid() ? dpuName.getValue() : null;
                     dpuWrap = new DPUTemplateWrap(
-                            dpuManipulator.create(sourceFile, dpuName.getValue()));
+                            dpuManipulator.create(sourceFile, name));
                 } catch (DPUCreateException e) {
 
                     dpuGeneralSettingsLayout.removeComponent(1, 3);
-                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+                    uploadFile = new TextField();
+                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar"), 1, 3);
                     Notification.show("Failed to create DPU",
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
@@ -242,9 +369,11 @@ public class DPUCreate extends Window {
                 close();
             }
         }));
-        buttonBar.addComponent(saveButton);
-
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        return saveButton;
+	}
+	
+	private Button createCancelButton() {
+		Button cancelButton = new Button("Cancel", new Button.ClickListener() {
             /**
              * Closes DPU Template creation window
              */
@@ -257,21 +386,19 @@ public class DPUCreate extends Window {
             }
         });
         cancelButton.setWidth("90px");
-        buttonBar.addComponent(cancelButton);
+        return cancelButton;
+	}
 
-        mainLayout.addComponent(buttonBar);
-
-        this.setContent(mainLayout);
-        setSizeUndefined();
-    }
-
-    private HorizontalLayout buildUploadLayout() {
+    private HorizontalLayout buildUploadLayout(final GridLayout layout,
+    		final FileUploadReceiver fileUploadReceiver,
+    		final TextField uploadFile,
+    		final String fileExtension) {
 
         HorizontalLayout uploadFileLayout = new HorizontalLayout();
         uploadFileLayout.setSpacing(true);
 
         //JAR file uploader
-        selectFile = new Upload(null, fileUploadReceiver);
+        final Upload selectFile = new Upload(null, fileUploadReceiver);
         selectFile.setImmediate(true);
         selectFile.setButtonCaption("Choose file");
         selectFile.addStyleName("horizontalgroup");
@@ -290,12 +417,12 @@ public class DPUCreate extends Window {
             public void uploadStarted(final StartedEvent event) {
                 String filename = event.getFilename();
                 String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
-                String jar = "jar";
 
-                if (!jar.equals(extension)) {
+                if (!fileExtension.equals(extension)) {
                     selectFile.interruptUpload();
                     Notification.show(
-                            "Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
+                            "Selected file is not ." + fileExtension + " file",
+                            Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (getUploadInfoWindow().getParent() == null) {
@@ -314,8 +441,8 @@ public class DPUCreate extends Window {
 
                 getUploadInfoWindow().setClosable(true);
                 getUploadInfoWindow().close();
-                dpuGeneralSettingsLayout.removeComponent(1, 3);
-                dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+                layout.removeComponent(1, 3);
+                layout.addComponent(buildUploadLayout(layout, fileUploadReceiver, uploadFile, fileExtension), 1, 3);
 
             }
         });
@@ -341,7 +468,6 @@ public class DPUCreate extends Window {
 
         uploadFileLayout.addComponent(selectFile);
 
-        uploadFile = new TextField();
         uploadFile.setWidth("210px");
         uploadFile.setReadOnly(true);
         //set mandatory to uploadFile text field.
@@ -373,5 +499,10 @@ public class DPUCreate extends Window {
         uploadFile.setReadOnly(false);
         uploadFile.setValue("");
         uploadFile.setReadOnly(true);
+        // clean zip version
+        groupVisibilityZip.setValue(ShareType.PUBLIC_RO);
+        uploadFileZip.setReadOnly(false);
+        uploadFileZip.setValue("");
+        uploadFileZip.setReadOnly(true);
     }
 }
