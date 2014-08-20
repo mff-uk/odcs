@@ -1,9 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -218,28 +224,43 @@ public class DPUCreate extends Window {
                 }
 
                 final File sourceFile = fileUploadReceiver.getFile();
-                // create new representation
-                DPUTemplateWrap dpuWrap;
                 try {
-                    dpuWrap = new DPUTemplateWrap(
-                            dpuManipulator.create(sourceFile, dpuName.getValue()));
-                } catch (DPUCreateException e) {
+                    Path tmpPath = Files.createTempDirectory("dir");
+                    File tmpFile = tmpPath.toFile();
+                    ZipCommons.unpack(sourceFile, tmpFile);
+                    String[] extensions = { "jar" };
+                    Collection<File> dpus = FileUtils.listFiles(tmpFile, extensions, true);
+                    for (final File fileEntry : dpus) {
+                        // create new representation
+                        DPUTemplateWrap dpuWrap;
+                        try {
+                            dpuWrap = new DPUTemplateWrap(
+                                    dpuManipulator.create(fileEntry, dpuName.getValue()));
+                        } catch (DPUCreateException e) {
 
-                    dpuGeneralSettingsLayout.removeComponent(1, 3);
-                    dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
-                    Notification.show("Failed to create DPU",
-                            e.getMessage(),
-                            Notification.Type.ERROR_MESSAGE);
-                    return;
+                            dpuGeneralSettingsLayout.removeComponent(1, 3);
+                            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+                            Notification.show("Failed to create DPU",
+                                    e.getMessage(),
+                                    Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        // set additional variables
+                        dpuTemplate = dpuWrap.getDPUTemplateRecord();
+                        // now we know all, we can update the DPU template
+                        dpuTemplate.setDescription(dpuDescription.getValue());
+                        dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
+                        dpuFacade.save(dpuTemplate);
+//                        // and at the end we can close the dialog ..
+//                        close();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ImportException e) {
+                    e.printStackTrace();
                 }
-                // set additional variables
-                dpuTemplate = dpuWrap.getDPUTemplateRecord();
-                // now we know all, we can update the DPU template
-                dpuTemplate.setDescription(dpuDescription.getValue());
-                dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
-                dpuFacade.save(dpuTemplate);
-                // and at the end we can close the dialog .. 
-                close();
+
             }
         }));
         buttonBar.addComponent(saveButton);
@@ -292,12 +313,12 @@ public class DPUCreate extends Window {
                 String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
                 String jar = "jar";
 
-                if (!jar.equals(extension)) {
+              /*  if (!jar.equals(extension)) {
                     selectFile.interruptUpload();
                     Notification.show(
                             "Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
                     return;
-                }
+                }*/
                 if (getUploadInfoWindow().getParent() == null) {
                     UI.getCurrent().addWindow(getUploadInfoWindow());
                 }
