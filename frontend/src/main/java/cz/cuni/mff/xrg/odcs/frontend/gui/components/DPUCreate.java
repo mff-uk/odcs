@@ -333,9 +333,9 @@ public class DPUCreate extends Window {
                         try {
                             importDPU(fileEntry);
                         } catch (DPUCreateException e) {
-                            dpuGeneralSettingsLayout.removeComponent(1, 3);
-                            uploadFile = new TextField();
-                            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiverZip, uploadFile, "zip"), 1, 3);
+                            dpuGeneralSettingsLayoutZip.removeComponent(1, 3);
+                            uploadFileZip = new TextField();
+                            dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip"), 1, 3);
                             Notification.show("Failed to create DPU",
                                     e.getMessage(),
                                     Notification.Type.ERROR_MESSAGE);
