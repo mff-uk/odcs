@@ -7,9 +7,12 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
+import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -43,6 +46,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 @Component
 @Scope("prototype")
 public class DPUCreate extends Window {
+    private static final Logger LOG = LoggerFactory.getLogger(DPUCreate.class);
 
     /**
      * @return the uploadInfoWindow
@@ -225,40 +229,28 @@ public class DPUCreate extends Window {
 
                 final File sourceFile = fileUploadReceiver.getFile();
                 try {
+
                     Path tmpPath = Files.createTempDirectory("dir");
                     File tmpFile = tmpPath.toFile();
                     ZipCommons.unpack(sourceFile, tmpFile);
                     String[] extensions = { "jar" };
                     Collection<File> dpus = FileUtils.listFiles(tmpFile, extensions, true);
+                    
                     for (final File fileEntry : dpus) {
-                        // create new representation
-                        DPUTemplateWrap dpuWrap;
-                        try {
-                            dpuWrap = new DPUTemplateWrap(
-                                    dpuManipulator.create(fileEntry, dpuName.getValue()));
-                        } catch (DPUCreateException e) {
+                        importDPU(fileEntry);
 
-                            dpuGeneralSettingsLayout.removeComponent(1, 3);
-                            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
-                            Notification.show("Failed to create DPU",
-                                    e.getMessage(),
-                                    Notification.Type.ERROR_MESSAGE);
-                            return;
-                        }
-                        // set additional variables
-                        dpuTemplate = dpuWrap.getDPUTemplateRecord();
-                        // now we know all, we can update the DPU template
-                        dpuTemplate.setDescription(dpuDescription.getValue());
-                        dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
-                        dpuFacade.save(dpuTemplate);
 //                        // and at the end we can close the dialog ..
 //                        close();
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    String msg = "Problem with loading file: " + sourceFile.toString();
+                    LOG.error(msg);
+                    Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
                 } catch (ImportException e) {
-                    e.printStackTrace();
+                    String msg = "Problem with unpacking file: " + sourceFile.toString();
+                    LOG.error(msg);
+                    Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
                 }
 
             }
@@ -284,6 +276,24 @@ public class DPUCreate extends Window {
 
         this.setContent(mainLayout);
         setSizeUndefined();
+    }
+
+    private void importDPU(File fileEntry) {
+        // create new representation
+        DPUTemplateWrap dpuWrap = null;
+        try {
+            dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, dpuName.getValue()));
+        } catch (DPUCreateException e) {
+            dpuGeneralSettingsLayout.removeComponent(1, 3);
+            dpuGeneralSettingsLayout.addComponent(buildUploadLayout(), 1, 3);
+            Notification.show("Failed to create DPU", e.getMessage(),  Notification.Type.ERROR_MESSAGE);
+        }
+        // set additional variables
+        dpuTemplate = dpuWrap.getDPUTemplateRecord();
+        // now we know all, we can update the DPU template
+        dpuTemplate.setDescription(dpuDescription.getValue());
+        dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
+        dpuFacade.save(dpuTemplate);
     }
 
     private HorizontalLayout buildUploadLayout() {
