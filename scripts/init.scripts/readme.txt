@@ -23,3 +23,4 @@ mkdir /var/lock/subsys
 
 
 When somenting goes wrong please have a look at log file: /var/log/unifiedviews_backend-initd.log
+Usage: service unifiedviews_backend start|stop|restart|status

@@ -90,7 +90,7 @@ public interface ModuleFacade {
      *            DPU.
      * @return jar-properties for given {@link DPUTemplateRecord}'s bundle.
      */
-    Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu);
+    Dictionary<String, String> getManifestHeaders(DPUTemplateRecord dpu);
 
     /**
      * Pre-load bundles for all DPUs persisted in database into memory. Do not
