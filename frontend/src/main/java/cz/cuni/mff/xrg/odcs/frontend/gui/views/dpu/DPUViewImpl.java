@@ -728,7 +728,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         if (!dpuName.getValue().equals(selectedDpu.getName())) {
             return true;
-        } else if (!dpuDescription.getValue().equals(selectedDpu.getDescription())) {
+        } else if (
+                // we are not in dpuDescriptionMode
+                !(dpuDescription.getValue().isEmpty() && selectedDpu.isUseDPUDescription())
+                &&               
+                !dpuDescription.getValue().equals(selectedDpu.getDescription())) {
             return true;
         } else if (!groupVisibility.getValue().equals(selectedDpu.getShareType())) {
             return true;
