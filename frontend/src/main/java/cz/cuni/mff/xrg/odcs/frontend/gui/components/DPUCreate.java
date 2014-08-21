@@ -141,9 +141,11 @@ public class DPUCreate extends Window {
         dpuGeneralSettingsLayoutZip.setWidth("400px");
         dpuGeneralSettingsLayoutZip.setHeight("200px");
 
-        Label help = new Label("TODO select text"); // TODO add label for som info
+        Label help = new Label("It creates DPU templates from DPUs inside ZIP"
+        		+ " file using DPU template name from DPU defined by DPU developer."
+        		+ " DPU template name can be later changed.");
         help.setWidth("310px");
-        help.setHeight("60px"); // TODO ?
+        help.setHeight("60px");
         dpuGeneralSettingsLayoutZip.addComponent(help, 1, 0);
         
         //Visibility of DPU Template: label & OptionGroup
@@ -239,7 +241,6 @@ public class DPUCreate extends Window {
 
         //Description of DPU Template: label & TextArea
         dpuDescription = createDpuDescription(dpuGeneralSettingsLayout, 1);
-        dpuDescription.setInputPrompt("<If not selected, one from jar will be used.>");
 
         //Visibility of DPU Template: label & OptionGroup
         groupVisibility = createVisibilityOption(dpuGeneralSettingsLayout, 2);
