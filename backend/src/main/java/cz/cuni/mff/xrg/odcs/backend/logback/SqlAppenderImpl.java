@@ -136,7 +136,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
      * @param logs
      * @return True only if all logs has been saved into database.
      */
-    private synchronized boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
+    private boolean flushIntoDatabase(Connection connection, List<ILoggingEvent> logs) {
         LOG.trace("flushIntoDatabase called for {} logs", logs.size());
         try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
             // append all logs
@@ -175,7 +175,6 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
      * spring periodically.
      */
     @Override
-    @Async
     @Scheduled(fixedDelay = 4300)
     public synchronized void flush() {
 
