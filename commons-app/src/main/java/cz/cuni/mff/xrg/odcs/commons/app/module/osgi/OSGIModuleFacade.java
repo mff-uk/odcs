@@ -279,7 +279,7 @@ class OSGIModuleFacade implements ModuleFacade {
     }
 
     @Override
-    public Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu) {
+    public Dictionary<String, String> getManifestHeaders(DPUTemplateRecord dpu) {
         try {
             BundleContainer container = install(dpu);
             return container.getHeaders();

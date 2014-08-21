@@ -29,6 +29,8 @@ public class DPUExplorer {
      * Name of property that stores jar-file's description.
      */
     private static final String DPU_JAR_DESCRIPTION_NAME = "Bundle-Description";
+    private static final String DPU_NAME = "Bundle-Name";
+
 
     /**
      * Module facade used to access the DPU instances.
@@ -72,7 +74,7 @@ public class DPUExplorer {
     public String getJarDescription(DPUTemplateRecord dpu) {
         // we try to use pom.xml information
         Dictionary<String, String> attributes = moduleFacade
-                .getJarProperties(dpu);
+                .getManifestHeaders(dpu);
         if (attributes == null) {
             // can't load information .. we run out of options
             return "";
@@ -81,6 +83,21 @@ public class DPUExplorer {
         // check for length
 
         return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_JAR_DESCRIPTION);
+    }
+
+
+    public String getBundleName(DPUTemplateRecord dpu) {
+        // we try to use pom.xml information
+        Dictionary<String, String> attributes = moduleFacade
+                .getManifestHeaders(dpu);
+        if (attributes == null) {
+            // can't load information .. we run out of options
+            return "";
+        }
+        String jarDescription = attributes.get(DPU_NAME);
+        // check for length
+
+        return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_NAME);
     }
 
     /**
