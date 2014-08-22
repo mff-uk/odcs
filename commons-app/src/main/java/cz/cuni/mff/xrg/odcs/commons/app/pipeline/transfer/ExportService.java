@@ -1,25 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,9 +13,31 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+
 /**
  * Export given pipeline into file.
- * 
+ *
  * @author Škoda Petr
  */
 public class ExportService {
@@ -77,7 +79,6 @@ public class ExportService {
         return targetFile;
     }
 
-
     public AuthenticationContext getAuthCtx() {
         return authCtx;
     }
@@ -117,7 +118,7 @@ public class ExportService {
             }
             // save jar and dpu files
             HashSet<Long> savedTemplateId = new HashSet<>();
-			HashSet<String> savedTemplateDir = new HashSet<>();
+            HashSet<String> savedTemplateDir = new HashSet<>();
 
             TreeSet<DpuItem> dpusInformation = new TreeSet<>();
 
@@ -174,7 +175,7 @@ public class ExportService {
      */
     private void savePipeline(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForPipeline();
+        final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.PIPELINE.getValue());
             zipStream.putNextEntry(ze);
@@ -195,7 +196,7 @@ public class ExportService {
      */
     private void saveSchedule(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForSchedule();
+        final XStream xStream = JPAXStream.createForSchedule(new DomDriver("UTF-8"));
         final List<Schedule> schedules = scheduleFacade
                 .getSchedulesFor(pipeline);
         try {
@@ -244,7 +245,7 @@ public class ExportService {
 
     /**
      * Export DPU's user-based data into given zip stream.
-     * 
+     *
      * @param template
      * @param user
      * @param zipStream
@@ -258,8 +259,7 @@ public class ExportService {
         } catch (MissingResourceException ex) {
             throw new ExportException("Failed to get path to jar file.");
         }
-        
-        
+
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
                 + ZipCommons.uniteSeparator + template.getJarDirectory();
 
@@ -268,7 +268,7 @@ public class ExportService {
 
     /**
      * Export DPU's global data into given zip stream.
-     * 
+     *
      * @param template
      * @param zipStream
      * @throws ExportException
@@ -283,7 +283,7 @@ public class ExportService {
         }
 
         final String zipPrefix = ArchiveStructure.DPU_DATA_GLOBAL.getValue()
-                + ZipCommons.uniteSeparator  + template.getJarDirectory();
+                + ZipCommons.uniteSeparator + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }
@@ -291,7 +291,7 @@ public class ExportService {
     /**
      * Add files and directories from given directory into a zip. Relative path
      * from the given directory is used to identify the relative path in zip.
-     * 
+     *
      * @param source
      * @param targetPrefix
      *            Path prefix in output zip, it should not end with
@@ -308,7 +308,7 @@ public class ExportService {
         }
         LOG.trace("Copy '{}' under '{}'.", source.toString(), targetPrefix);
 
-        // no we add files into the 
+        // no we add files into the
         byte[] buffer = new byte[4096];
         final int sourceLenght;
         try {
@@ -394,14 +394,16 @@ public class ExportService {
                 if (nodes != null) {
                     for (Node node : nodes) {
                         DPUInstanceRecord dpu = node.getDpuInstance();
-                        if (dpu == null)
+                        if (dpu == null) {
                             continue;
+                        }
 
                         DPUTemplateRecord template = dpu.getTemplate();
                         String instanceName = dpu.getName();
 
-                        if (template == null)
+                        if (template == null) {
                             continue;
+                        }
 
                         String jarName = template.getJarName();
                         String version = "unknown";
