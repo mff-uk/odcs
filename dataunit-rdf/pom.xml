@@ -13,7 +13,7 @@
 
 	<properties>
 		<!--<sesame.version>2.8.0-beta1</sesame.version> -->
-		<sesame.version>2.7.11</sesame.version>
+		<sesame.version>2.7.12</sesame.version>
 		<!--<bigdata.version>1.3.0</bigdata.version> -->
 	</properties>
 
