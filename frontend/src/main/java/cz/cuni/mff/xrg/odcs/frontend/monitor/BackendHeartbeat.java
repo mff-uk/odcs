@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 
@@ -26,12 +28,15 @@ public class BackendHeartbeat {
      * True if backend is alive.
      */
     private Boolean alive = false;
+    private boolean lastCheckAlive = false;
 
     /**
      * Time of last check.
      */
     private long lastCheckTime = 0l;
 
+    @Async
+    @Scheduled(fixedDelay = 5 * 1000)
     private void check() {
         final long now = (new Date()).getTime();
         if (now - lastCheckTime < 5000) {
@@ -48,10 +53,12 @@ public class BackendHeartbeat {
             log.info("Possible reason: Backend is offline");
         }
     }
+    
 
     public Boolean checkIsAlive() {
-        check();
-        return alive;
+    	boolean returnCode = alive || lastCheckAlive; 
+    	lastCheckAlive = alive;
+        return returnCode;
     }
 
 }

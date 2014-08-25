@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
@@ -12,7 +13,7 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
  * stored in database.
  * Usage of this class require all getters and setters to respect basic
  * conventions.
- * 
+ *
  * @author Škoda Petr
  */
 public class JPAXStream extends XStream {
@@ -21,6 +22,10 @@ public class JPAXStream extends XStream {
 
     protected JPAXStream() {
         super();
+    }
+
+    protected JPAXStream(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        super(hierarchicalStreamDriver);
     }
 
     @Override
@@ -42,8 +47,13 @@ public class JPAXStream extends XStream {
         };
     }
 
-    public static JPAXStream createForPipeline() {
-        JPAXStream stream = new JPAXStream();
+    public static JPAXStream createForPipeline(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
         // setup
         ClassFilter classFilter = new ClassFilter();
         classFilter.add("org.eclipse.persistence");
@@ -60,8 +70,13 @@ public class JPAXStream extends XStream {
         return stream;
     }
 
-    public static JPAXStream createForSchedule() {
-        JPAXStream stream = new JPAXStream();
+    public static JPAXStream createForSchedule(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
         // setup
         ClassFilter classFilter = new ClassFilter();
         classFilter.add("org.eclipse.persistence");

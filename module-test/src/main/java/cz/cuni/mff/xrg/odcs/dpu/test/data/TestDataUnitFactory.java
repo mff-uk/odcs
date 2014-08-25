@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
  * in {@link cz.cuni.mff.xrg.odcs.dpu.test.TestEnvironment}.
- * 
+ *
  * @author Petyr
  */
 public class TestDataUnitFactory {
@@ -31,7 +31,7 @@ public class TestDataUnitFactory {
     /**
      * Create a {@link TestDataUnitFactory} that use given directory as working
      * directory.
-     * 
+     *
      * @param workingDirectory
      *            Directory where to create working subdirectories
      *            for {@link cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit} that use local storage as RDF repository.
@@ -42,7 +42,7 @@ public class TestDataUnitFactory {
 
     /**
      * Create RDF data unit.
-     * 
+     *
      * @param name
      *            Name of the DataUnit.
      * @param useVirtuoso
@@ -55,7 +55,7 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
 
-            return new LocalRDFDataUnit(workingDirectory.toString(), name, "test_env_" + String.valueOf(this.hashCode()),
+            return new LocalRDFDataUnit(workingDirectory.toString(), "test_env_" + String.valueOf(this.hashCode()), name,
                     namedGraph);
         }
     }

@@ -199,6 +199,10 @@ a:hover{
 	margin: 10px 0 3px;
 }
 
+input.v-textfield-prompt, textarea.v-textarea-prompt{
+	color: grey;
+}
+
 .v-tabsheet-spacertd, 
 .v-tabsheet-spacertd div,
 .v-tabsheet-tabitemcell-selected,

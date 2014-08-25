@@ -64,7 +64,7 @@ public class DPUModuleManipulator {
      * @param sourceFile
      *            File from which load the dpu.
      * @param name
-     *            DPU's name.
+     *            DPU's name. If name is null then name from MANIFEST is used
      * @return new instance of {@link DPUTemplateRecord}
      * @throws DPUCreateException
      */
@@ -141,6 +141,15 @@ public class DPUModuleManipulator {
         }
 
         final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
+        String dpuName;
+        if (name == null) {
+            dpuName = dpuExplorer.getBundleName(newTemplate);
+
+        } else {
+            dpuName = name;
+
+        }
+
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
@@ -177,6 +186,7 @@ public class DPUModuleManipulator {
         // set other DPUs variables
         newTemplate.setType(dpuType);
         newTemplate.setDescription("");
+        newTemplate.setName(dpuName);
         newTemplate.setJarDescription(jarDescription);
         newTemplate.setShareType(ShareType.PRIVATE);
 

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.AccessDeniedException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.github.wolfie.refresher.Refresher;
@@ -34,6 +35,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -235,7 +237,7 @@ public class PipelineEdit extends ViewComponent {
         // or use this.entity.getEntity();
 
         if (this.pipeline == null) {
-            label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
+        	return;
         } else {
             setMode(hasPermission("save"));
             label.setValue("<h3>Pipeline detail<h3>");
@@ -1136,7 +1138,18 @@ public class PipelineEdit extends ViewComponent {
      */
     protected Pipeline loadPipeline(String id) {
         // get data from DB ..
-        this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+    	try {
+    		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+		} catch (AccessDeniedException e) {
+			Notification.show("Error opening pipeline detail.", "You don't have permission to view this pipeline", Type.ERROR_MESSAGE);
+			closeView();
+			return null;
+		}
+        if (this.pipeline == null) {
+        	Notification.show("Error opening pipeline detail.", "Pipeline doesn't exist.", Type.ERROR_MESSAGE);
+        	closeView();
+			return null;
+		}
         setIdLabel(pipeline.getId());
         author.setValue(pipeline.getOwner().getUsername());
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));

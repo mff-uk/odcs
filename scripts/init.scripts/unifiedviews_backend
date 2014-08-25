@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# odcs backend
-# This file was inspirated by odcs init script
+# unifiedviews backend
+# This file was inspirated by tomcat6 init script
 #
 
 ## Source function library.
@@ -29,10 +29,10 @@ else
     SU="/bin/su -s /bin/sh"
 fi
 
-# Get the odcs config (use this for environment specific settings)
-ODCS_CFG="/etc/odcs/odcs.conf"
-if [ -r "$ODCS_CFG" ]; then
-    . $ODCS_CFG
+# Get the unifiedviews config (use this for environment specific settings)
+UNIFIEDVIEWS_CFG="/etc/unifiedviews/unifiedviews.conf"
+if [ -r "$UNIFIEDVIEWS_CFG" ]; then
+    . $UNIFIEDVIEWS_CFG
 fi
 
 
@@ -44,24 +44,24 @@ fi
 # Define which connector port to use
 CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
 
-# Path to the odcs launch script
-ODCS_SCRIPT="/usr/sbin/run_odcs_backend"
+# Path to the unifiedviews launch script
+UNIFIEDVIEWS_SCRIPT="/usr/sbin/run_unifiedviews_backend"
 
-# odcs program name
-ODCS_PROG="${NAME}"
+# unifiedviews program name
+UNIFIEDVIEWS_PROG="${NAME}"
         
-# Define the odcs username
-ODCS_USER="${ODCS_USER:-tomcat}"
+# Define the unifiedviews username
+UNIFIEDVIEWS_USER="${UNIFIEDVIEWS_USER:-uv}"
 
-# Define the odcs group
-ODCS_GROUP="${ODCS_GROUP:-`id -gn $ODCS_USER`}"
+# Define the unifiedviews group
+UNIFIEDVIEWS_GROUP="${UNIFIEDVIEWS_GROUP:-`id -gn $UNIFIEDVIEWS_USER`}"
 
-# Define the odcs log file
-ODCS_LOG="${ODCS_LOG:-/var/log/${NAME}-initd.log}"
+# Define the unifiedviews log file
+UNIFIEDVIEWS_LOG="${UNIFIEDVIEWS_LOG:-/var/log/${NAME}-initd.log}"
 
 # Define the pid file name
 # If change is needed, use sysconfig instead of here
-export ODCS_PID="${ODCS_PID:-/var/run/${NAME}.pid}"
+export UNIFIEDVIEWS_PID="${UNIFIEDVIEWS_PID:-/var/run/${NAME}.pid}"
 
 RETVAL="0"
 
@@ -75,25 +75,25 @@ function parseOptions() {
                      /etc/sysconfig/${NAME}
                  )"
     fi
-    ODCS_SCRIPT="$options ${ODCS_SCRIPT}"
+    UNIFIEDVIEWS_SCRIPT="$options ${UNIFIEDVIEWS_SCRIPT}"
 }
 
 # rhbz 757632
 function version() {
 	parseOptions
-	$SU - $ODCS_USER -c "${ODCS_SCRIPT} version" >> ${ODCS_LOG} 2>&1 || RETVAL="4"
+	$SU - $UNIFIEDVIEWS_USER -c "${UNIFIEDVIEWS_SCRIPT} version" >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
 }
 
 # See how we were called.
 function start() {
-   echo -n "Starting ${ODCS_PROG}: "
+   echo -n "Starting ${UNIFIEDVIEWS_PROG}: "
    if [ "$RETVAL" != "0" ]; then 
      log_failure_msg
      return
    fi
    if [ -f "/var/lock/subsys/${NAME}" ]; then
-        if [ -f "${ODCS_PID}" ]; then
-            read kpid < ${ODCS_PID}
+        if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+            read kpid < ${UNIFIEDVIEWS_PID}
 #           if checkpid $kpid 2>&1; then
             if [ -d "/proc/${kpid}" ]; then
                 log_success_msg
@@ -106,15 +106,15 @@ function start() {
         fi
     fi
     # fix permissions on the log and pid files
-    touch $ODCS_PID 2>&1 || RETVAL="4"
+    touch $UNIFIEDVIEWS_PID 2>&1 || RETVAL="4"
     if [ "$RETVAL" -eq "0" -a "$?" -eq "0" ]; then 
-      chown ${ODCS_USER}:${ODCS_GROUP} $ODCS_PID
+      chown ${UNIFIEDVIEWS_USER}:${UNIFIEDVIEWS_GROUP} $UNIFIEDVIEWS_PID
     fi
     if [ "$?" != "0" ]; then
 	RETVAL="4"
     fi
     parseOptions
-    [ "$RETVAL" -eq "0" ] && $SU - $ODCS_USER -c "${ODCS_SCRIPT} start" >> ${ODCS_LOG} 2>&1 || RETVAL="4"
+    [ "$RETVAL" -eq "0" ] && $SU - $UNIFIEDVIEWS_USER -c "${UNIFIEDVIEWS_SCRIPT} start" >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
     if [ "$RETVAL" -eq "0" ]; then 
         log_success_msg
         touch /var/lock/subsys/${NAME}
@@ -126,18 +126,18 @@ function start() {
     fi
 }
 function stop() {
-    echo -n "Stopping ${ODCS_PROG}: "
+    echo -n "Stopping ${UNIFIEDVIEWS_PROG}: "
     if [ -f "/var/lock/subsys/${NAME}" ]; then
       parseOptions
       if [ "$RETVAL" -eq "0" ]; then
          touch /var/lock/subsys/${NAME} 2>&1 || RETVAL="4"
-		  read kpid < ${ODCS_PID}
-         [ "$RETVAL" -eq "0" ] && ${ODCS_SCRIPT} stop >> ${ODCS_LOG} 2>&1 || RETVAL="4"
+		  read kpid < ${UNIFIEDVIEWS_PID}
+         [ "$RETVAL" -eq "0" ] && ${UNIFIEDVIEWS_SCRIPT} stop >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
       fi
       if [ "$RETVAL" -eq "0" ]; then
          count="0"
-         if [ -f "${ODCS_PID}" ]; then
-            read kpid < ${ODCS_PID}
+         if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+            read kpid < ${UNIFIEDVIEWS_PID}
             until [ "$(ps --pid $kpid | grep -c $kpid)" -eq "0" ] || \
                       [ "$count" -gt "$SHUTDOWN_WAIT" ]; do
                     if [ "$SHUTDOWN_VERBOSE" = "true" ]; then
@@ -154,7 +154,7 @@ function stop() {
                 fi
                 log_success_msg
             fi
-            rm -f /var/lock/subsys/${NAME} ${ODCS_PID}
+            rm -f /var/lock/subsys/${NAME} ${UNIFIEDVIEWS_PID}
         else
             log_failure_msg
             RETVAL="4"
@@ -179,7 +179,7 @@ function status()
       if [ "$RETVAL" -eq "2" ]; then
          log_failure_msg "${NAME} lockfile exists but process is not running"
       else
-         pid="$(/usr/bin/pgrep -f -d , -u ${ODCS_USER} -G ${ODCS_GROUP} backend)"
+         pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
         if [ -z "$pid" ]; then
              log_success_msg "${NAME} is stopped"
              RETVAL="3"
@@ -195,7 +195,7 @@ function status()
 function checklockfile()
 {
    if [ -f /var/lock/subsys/${NAME} ]; then
-      pid="$(/usr/bin/pgrep -f -d , -u ${ODCS_USER} -G ${ODCS_GROUP} backend)"
+      pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
 # The lockfile exists but the process is not running
       if [ -z "$pid" ]; then
          RETVAL="2"
@@ -205,8 +205,8 @@ function checklockfile()
 
 function checkpidfile()
 {
-   if [ -f "${ODCS_PID}" ]; then
-      read kpid < ${ODCS_PID}
+   if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+      read kpid < ${UNIFIEDVIEWS_PID}
       if [ -d "/proc/${kpid}" ]; then
 # The pid file exists and the process is running
           RETVAL="0"
@@ -247,7 +247,7 @@ case "$1" in
         ;;
     version)
 	 	version
-#        ${ODCS_SCRIPT} version
+#        ${UNIFIEDVIEWS_SCRIPT} version
         ;;
     *)
       usage

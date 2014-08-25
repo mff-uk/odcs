@@ -904,8 +904,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         ActionColumnGenerator.Action deleteAction = new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
-                presenter.pipelineDeleteEventHandler(id);
-                tableData.removeItem(id);
+            	presenter.pipelineDeleteEventHandler(id);
             }
         };
         ActionColumnGenerator.ButtonShowCondition deleteShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
@@ -926,6 +925,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         }, new ThemeResource("icons/log.svg"));
 
         return generator;
+    }
+    
+    @Override
+    public void removePipelineFromTable(long id) {
+    	tableData.removeItem(id);
     }
 
     private void setupResizeListener() {
