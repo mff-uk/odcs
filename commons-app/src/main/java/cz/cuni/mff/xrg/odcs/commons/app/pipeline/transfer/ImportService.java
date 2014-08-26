@@ -62,7 +62,7 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
-    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException {
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
         final File tempDir;
         try {
             tempDir = resourceManager.getNewImportTempDir();
@@ -73,7 +73,7 @@ public class ImportService {
     }
 
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
-            throws ImportException {
+            throws ImportException, IOException {
         // delete tempDirectory
         FileUtils.deleteQuietly(tempDirectory);
 
@@ -281,7 +281,7 @@ public class ImportService {
     }
 
     public ImportedFileInformation getImportedInformation(File zipFile)
-            throws ImportException, MissingResourceException {
+            throws ImportException, MissingResourceException, IOException {
         LOG.debug(">>> Entering getImportedInformation(zipFile={})", zipFile);
 
         boolean isUserData = false;

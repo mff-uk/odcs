@@ -7,8 +7,6 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -17,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -326,7 +322,7 @@ public class DPUCreate extends Window {
 
                     Path tmpPath = Files.createTempDirectory("dir");
                     File tmpFile = tmpPath.toFile();
-                    ZipCommons.unpack2(sourceFile, tmpFile);
+                    ZipCommons.unpack(sourceFile, tmpFile);
                     String[] extensions = { "jar" };
                     dpus = FileUtils.listFiles(tmpFile, extensions, true);
                 } catch (IOException e) {

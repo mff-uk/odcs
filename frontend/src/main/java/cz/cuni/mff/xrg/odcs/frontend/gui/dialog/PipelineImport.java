@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -289,7 +290,7 @@ public class PipelineImport extends Window {
                     try {
                         importedPipeline = importService.importPipeline(zipFile, chbExportDPUData.getValue(), chbExportSchedule.getValue());
                         close();
-                    } catch (ImportException ex) {
+                    } catch (ImportException | IOException ex) {
                         LOG.error("Import failed.", ex);
                         Notification.show("Import failed. " + ex.getMessage(),
                                 Notification.Type.ERROR_MESSAGE);
