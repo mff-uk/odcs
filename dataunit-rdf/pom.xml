@@ -11,12 +11,6 @@
 	<name>dataunit-rdf</name>
 	<description>Definition of RDFDataUnit.</description>
 
-	<properties>
-		<!--<sesame.version>2.8.0-beta1</sesame.version> -->
-		<sesame.version>2.7.12</sesame.version>
-		<!--<bigdata.version>1.3.0</bigdata.version> -->
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
