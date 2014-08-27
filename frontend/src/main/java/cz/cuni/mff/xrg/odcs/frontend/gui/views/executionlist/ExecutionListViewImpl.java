@@ -102,6 +102,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     	if (!presenter.isLayoutInitialized()) {
     		buildPage(presenter);
 		}
+    	debugView.restore();
         return this;
     }
 
