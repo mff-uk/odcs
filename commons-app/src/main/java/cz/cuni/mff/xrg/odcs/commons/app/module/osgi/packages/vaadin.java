@@ -113,5 +113,6 @@ public final class vaadin {
                     "com.vaadin.sass.internal.tree;version=\"" + VERSION + "\"," +
                     "com.vaadin.sass.internal.tree.controldirective;version=\"" + VERSION + "\"," +
                     "com.vaadin.sass.internal.util;version=\"" + VERSION + "\"," +
-                    "com.vaadin.sass.internal.visitor;version=\"" + VERSION + "\"";
+                    "com.vaadin.sass.internal.visitor;version=\"" + VERSION + "\"," +
+                    "com.wcs.wcslib.vaadin.widget.multifileupload.ui;version=\"1.7.1\"";
 }

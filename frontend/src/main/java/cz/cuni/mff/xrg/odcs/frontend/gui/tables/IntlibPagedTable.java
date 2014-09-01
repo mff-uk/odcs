@@ -127,6 +127,11 @@ public class IntlibPagedTable extends PagedFilterTable {
         previous.setStyleName(Reindeer.BUTTON_LINK);
         next.setStyleName(Reindeer.BUTTON_LINK);
         last.setStyleName(Reindeer.BUTTON_LINK);
+        
+        first.setWidth("15px");
+        last.setWidth("15px");
+        previous.setWidth("8px");
+        next.setWidth("8px");
 
         pageLabel.addStyleName("pagedtable-pagecaption");
         currentPageTextField.addStyleName("pagedtable-pagefield");

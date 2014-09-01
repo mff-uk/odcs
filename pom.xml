@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>odcs</artifactId>
-	<version>1.3.0</version>
+	<version>1.3.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ODCleanStore</name>
 	<description />
@@ -14,13 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<uv-dpu-api.version>1.0.0</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.0.0</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>1.0.0</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>1.0.0</uv-dataunit-files.version>
-		<uv-dataunit-helpers.version>1.0.0</uv-dataunit-helpers.version>
-		<dataunit.version>1.3.0</dataunit.version>
-		
+		<uv-dpu-api.version>1.0.1-SNAPSHOT</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>1.0.1-SNAPSHOT</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>1.0.1-SNAPSHOT</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>1.0.1-SNAPSHOT</uv-dataunit-files.version>
+		<uv-dataunit-helpers.version>1.0.1-SNAPSHOT</uv-dataunit-helpers.version>
+		<dataunit.version>1.3.1-SNAPSHOT</dataunit.version>
+
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
 		<vaadin.version>7.1.8</vaadin.version>
@@ -37,11 +37,12 @@
 		<project.output.dpu>target/dpu/</project.output.dpu>
 		<skipTests>false</skipTests>
 		<!-- spring version -->
-		<org.springframework.version>3.1.2.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
 		<!-- other third party libraries versions -->
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.0.13</logback.version>
+		<sesame.version>2.7.13</sesame.version>
 	</properties>
 
 	<modules>
@@ -63,8 +64,6 @@
 		<!-- test environment for modules -->
 		<module>module-test</module>
 		<!-- build modules/plugins/dpus -->
-		<module>module-base</module>
-		<module>plugins</module>
 		<module>core-dpus</module>
 	</modules>
 
@@ -96,6 +95,13 @@
 			<id>cz.cuni.mff.ms.xrg.odcl</id>
 			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/groups/public/</url>
 		</repository>
+
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+
 		<repository>
 			<id>cz.cuni.mff.ms.xrg.odcl.thirdparty</id>
 			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty/</url>
@@ -139,6 +145,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
 				<configuration>
 					<excludes>
 						<exclude>**/*SysTest.java</exclude>
@@ -168,6 +175,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -180,6 +214,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
 						<configuration>
 							<excludes>
 								<exclude>none</exclude>
@@ -199,6 +234,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
 						<configuration>
 							<excludes>
 								<exclude>none</exclude>

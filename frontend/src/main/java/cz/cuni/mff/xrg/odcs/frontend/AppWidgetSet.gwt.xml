@@ -49,4 +49,6 @@
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset"/>
 
 
+
+    <inherits name="com.wcs.wcslib.vaadin.widget.multifileupload.MultiFileUploadWidgetSet" />
 </module>

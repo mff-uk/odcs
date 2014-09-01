@@ -66,6 +66,8 @@ public class TestContext implements DPUContext {
      */
     private File userDirectory = null;
 
+    private File dpuInstanceDirectory = null;
+
     public TestContext(File rootDirectory) {
         this.rootDirectory = rootDirectory;
         globalDirectory = new File(rootDirectory, "global");
@@ -83,6 +85,10 @@ public class TestContext implements DPUContext {
         workingDirectory = new File(rootDirectory, "working");
         if (!workingDirectory.exists()) {
             workingDirectory.mkdirs();
+        }
+        dpuInstanceDirectory = new File(rootDirectory, "dpuInstance");
+        if (!dpuInstanceDirectory.exists()) {
+            dpuInstanceDirectory.mkdirs();
         }
     }
 
@@ -226,5 +232,10 @@ public class TestContext implements DPUContext {
     @Override
     public File getUserDirectory() {
         return userDirectory;
+    }
+
+    @Override
+    public String getDpuInstanceDirectory() {
+        return dpuInstanceDirectory.toURI().toASCIIString();
     }
 }

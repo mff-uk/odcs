@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -22,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dpu.DPUContext;
 
 public class Context implements DPUContext {
 
@@ -171,7 +171,7 @@ public class Context implements DPUContext {
      * Create required {@link ManagableDataUnit} and add it to the context if
      * not exist, if the {@link ManagableDataUnit} with given type is already in
      * context then the existing instance is returned.
-     * 
+     *
      * @param type
      *            Type of {@link ManagableDataUnit} to create.
      * @param name
@@ -179,7 +179,7 @@ public class Context implements DPUContext {
      * @return Created DataUni.
      */
     public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name)
-             {
+    {
         return outputsManager.addDataUnit(type, name);
     }
 
@@ -243,7 +243,7 @@ public class Context implements DPUContext {
     /**
      * Return identification of single DPU template shared by all templates with
      * same name.
-     * 
+     *
      * @return DPU template identification.
      */
     private String getTemplateIdentification() {
@@ -279,7 +279,7 @@ public class Context implements DPUContext {
 
         eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
                 type, this, this));
-        // set warningMessage and errorMessage 
+        // set warningMessage and errorMessage
         switch (type) {
             case WARNING:
                 this.warningMessage = true;
@@ -354,4 +354,10 @@ public class Context implements DPUContext {
         return result;
     }
 
+    @Override
+    public String getDpuInstanceDirectory() {
+        File result = new File(getGeneralWorkingDir(), "dpu_instance_" + String.valueOf(dpuInstance.getId()));
+        result.mkdirs();
+        return result.toURI().toASCIIString();
+    }
 }
