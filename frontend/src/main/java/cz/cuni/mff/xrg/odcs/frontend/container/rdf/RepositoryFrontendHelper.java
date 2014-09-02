@@ -75,14 +75,14 @@ public class RepositoryFrontendHelper {
      *            The pipelineExecution context.
      * @param dpuInstance
      *            Owner of DataUnit.
-     * @param info
+     * @param dataUnitInfo
      * @return Repository or null if there is no browser for given type.
      */
     public static ManagableRdfDataUnit getRepository(ExecutionInfo executionInfo,
-            DPUInstanceRecord dpuInstance, DataUnitInfo info) {
+            DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
 
         // get type and directory
-        if (info == null) {
+        if (dataUnitInfo == null) {
             // the context doesn't exist
             return null;
         }
@@ -98,9 +98,9 @@ public class RepositoryFrontendHelper {
             log.error("DPU info is null!");
             return null;
         }
-        String dataUnitId = dpuInfo.createId(info.getIndex());
+        String dataUnitId = dpuInfo.createId(dataUnitInfo.getIndex());
 
-        switch (info.getType()) {
+        switch (dataUnitInfo.getType()) {
             case RDF:
                 try {
                     RDFDataUnitFactory rdfDataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(
@@ -109,7 +109,7 @@ public class RepositoryFrontendHelper {
                     String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
                     ManagableRdfDataUnit repository =
-                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), info.getName(), namedGraph);
+                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
 
                     return repository;
 
