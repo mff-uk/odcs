@@ -396,6 +396,21 @@ public class DPUCreate extends Window {
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
+
+                // now we know all, we can update the DPU template
+                if (dpuDescription.getValue() == null || 
+                        dpuDescription.getValue().isEmpty()) {
+                    dpuTemplate.setDescription("");
+                    dpuTemplate.setUseDPUDescription(true);
+                } else {
+                    dpuTemplate.setDescription(dpuDescription.getValue());
+                    dpuTemplate.setUseDPUDescription(false);
+                }
+
+                dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
+                dpuFacade.save(dpuTemplate);
+                // and at the end we can close the dialog .. 
+
                 close();
             }
         }));
