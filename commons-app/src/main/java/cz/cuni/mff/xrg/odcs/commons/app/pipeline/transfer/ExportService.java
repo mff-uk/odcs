@@ -6,8 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
@@ -44,6 +46,8 @@ public class ExportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(
             ExportService.class);
+
+	private static final String XML_ENCODING = "UTF-8";
 
     @Autowired
     private ScheduleFacade scheduleFacade;
@@ -117,18 +121,18 @@ public class ExportService {
                 saveSchedule(pipeline, zipStream);
             }
             // save jar and dpu files
-            HashSet<Long> savedTemplateId = new HashSet<>();
-            HashSet<String> savedTemplateDir = new HashSet<>();
+            Map<Long, DPUTemplateRecord> savedTemplates = new HashMap<Long, DPUTemplateRecord>();
+            Set<String> savedTemplateDir = new HashSet<String>();
 
             TreeSet<DpuItem> dpusInformation = new TreeSet<>();
 
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
-                if (savedTemplateId.contains(template.getId())) {
+                if (savedTemplates.containsKey(template.getId())) {
                     // template already saved
                 } else {
-                    savedTemplateId.add(template.getId());
+                    savedTemplates.put(template.getId(), template);
                     // export jar file
                     final String jarDirectory = template.getJarDirectory();
                     if (savedTemplateDir.contains(jarDirectory)) {
@@ -155,6 +159,7 @@ public class ExportService {
 
             }
             saveDpusInfo(dpusInformation, zipStream);
+            saveTemplateInfo(new ArrayList<DPUTemplateRecord>(savedTemplates.values()), zipStream);
 
         } catch (IOException ex) {
             targetFile.delete();
@@ -166,7 +171,18 @@ public class ExportService {
         }
     }
 
-    /**
+    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException{
+    	final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
+    	try {
+			final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
+			zipStream.putNextEntry(ze);
+			xStream.toXML(savedTemplates, zipStream);
+		} catch (IOException e) {
+			throw new ExportException("Failed to serialize dpu template information.", e);
+		}
+	}
+
+	/**
      * Serialise pipeline into zip stream.
      *
      * @param pipeline
@@ -175,7 +191,7 @@ public class ExportService {
      */
     private void savePipeline(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
+        final XStream xStream = JPAXStream.createForPipeline(new DomDriver(XML_ENCODING));
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.PIPELINE.getValue());
             zipStream.putNextEntry(ze);
@@ -196,7 +212,7 @@ public class ExportService {
      */
     private void saveSchedule(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForSchedule(new DomDriver("UTF-8"));
+        final XStream xStream = JPAXStream.createForSchedule(new DomDriver(XML_ENCODING));
         final List<Schedule> schedules = scheduleFacade
                 .getSchedulesFor(pipeline);
         try {

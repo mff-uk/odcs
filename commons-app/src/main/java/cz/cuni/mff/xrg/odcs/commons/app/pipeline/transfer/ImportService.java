@@ -163,7 +163,7 @@ public class ImportService {
     }
 
     public List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
-        XStream xStream = new XStream(new DomDriver());
+        XStream xStream = new XStream(new DomDriver("UTF-8"));
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", DpuItem.class);
 
