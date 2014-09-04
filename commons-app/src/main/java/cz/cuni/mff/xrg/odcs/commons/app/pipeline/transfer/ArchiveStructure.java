@@ -6,7 +6,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 public enum ArchiveStructure {
     PIPELINE("pipeline.xml"),
     SCHEDULE("schedule.xml"),
-    DPU_TEMPLATE("DPUTemplate.lst"),
+    DPU_TEMPLATE("dpu.xml"),
     DPU_JAR("dpu_jar"),
     DPU_DATA_GLOBAL("dpu_data_global"),
     DPU_DATA_USER("dpu_data_user"),

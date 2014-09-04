@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
 
@@ -51,8 +52,6 @@ public class DPUCreate extends Window {
     private static final long serialVersionUID = 5345488404880242019L;
 
     private static final Logger LOG = LoggerFactory.getLogger(DPUCreate.class);
-
-    private static final String LST_FILE_NAME = "DPUTemplate.lst";
 
     /**
      * @return the uploadInfoWindow
@@ -403,7 +402,7 @@ public class DPUCreate extends Window {
     }
 
     protected List<DPUTemplateRecord> importFromLstFile(File parentDir) throws ImportException {
-        File lstFile = new File(parentDir, LST_FILE_NAME);
+        File lstFile = new File(parentDir, ArchiveStructure.DPU_TEMPLATE.getValue());
         if (lstFile.exists()) {
             return dpuImportService.importDPUs(lstFile);
     }
