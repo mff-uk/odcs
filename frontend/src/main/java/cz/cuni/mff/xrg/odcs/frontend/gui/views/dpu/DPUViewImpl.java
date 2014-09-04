@@ -489,7 +489,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     public void setGeneralTabValues() {
 
         String selectedDpuName = selectedDpuWrap.getDPUTemplateRecord().getName();
-        String selecteDpuDescription = selectedDpuWrap.getDPUTemplateRecord().getDescription();
+        String selecteDpuDescription =
+                selectedDpuWrap.getDPUTemplateRecord().isUseDPUDescription() ? "" :
+                selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
         dpuName.setReadOnly(!presenter.hasPermission("save"));
@@ -729,7 +731,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         if (!dpuName.getValue().equals(selectedDpu.getName())) {
             return true;
-        } else if (!dpuDescription.getValue().equals(selectedDpu.getDescription())) {
+        } else if (
+                // we are not in dpuDescriptionMode
+                !(dpuDescription.getValue().isEmpty() && selectedDpu.isUseDPUDescription())
+                &&               
+                !dpuDescription.getValue().equals(selectedDpu.getDescription())) {
             return true;
         } else if (!groupVisibility.getValue().equals(selectedDpu.getShareType())) {
             return true;
@@ -756,8 +762,23 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if ((selectedDpuWrap != null)
                 && (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
-            selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
-                    .getValue().trim());
+
+            if (dpuDescription.getValue() == null ||
+                    dpuDescription.getValue().isEmpty()) {
+                selectedDpuWrap.getDPUTemplateRecord().setUseDPUDescription(true);
+                try {
+                    selectedDpuWrap.getDPUTemplateRecord().setDescription(
+                        selectedDpuWrap.getDialog().getDescription());
+                } catch (ModuleException | DPUWrapException | FileNotFoundException ex) {
+                    LOG.error("Can't get DPU description. Empty used as default.", ex);
+                    selectedDpuWrap.getDPUTemplateRecord().setDescription("");
+                }
+            } else {
+                selectedDpuWrap.getDPUTemplateRecord().setUseDPUDescription(false);
+                selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
+                        .getValue().trim());
+            }
+
             selectedDpuWrap.getDPUTemplateRecord()
                     .setShareType((ShareType) groupVisibility
                             .getValue());

@@ -22,28 +22,28 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api-helpers</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

@@ -331,7 +331,7 @@ public class Executor implements Runnable {
             while (executorThread.isAlive()) {
                 try {
                     // sleep for five seconds
-                    Thread.sleep(5000);
+                    executorThread.join(5000);
                 } catch (InterruptedException e) {
                     // request stop
                     stopExecution(executorThread, dpuExecutor);
@@ -369,7 +369,7 @@ public class Executor implements Runnable {
             ExecutionResult dpuResults = dpuExecutor.getExecResult();
             // check for corrent ending
             if (dpuResults.executionEndsProperly()) {
-                // ok eecution ends properly 
+                // ok execution ends properly
             } else {
                 // this mean that we end in non standart way ...
                 // and this is equal to the failure
@@ -386,6 +386,14 @@ public class Executor implements Runnable {
         if (!executePostExecutors(dependencyGraph)) {
             // failed ..
             execResult.failure();
+        }
+
+        // make sure all logs are in database as we use them to determine
+        // pipeline state
+        try {
+            logAppender.flush();
+        } catch (Throwable e) {
+            LOG.error("logAppender.flush() throws!!!", e);
         }
 
         // all done, resolve the way of ending .. 
@@ -425,14 +433,6 @@ public class Executor implements Runnable {
         // publish information for the rest of the application
         // that the execution finished ..
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
-
-        // the logs are fulshed every 4300 ms, so we wait for
-        // 5 seconds before ending
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            // ok stop waiting and end 
-        }
 
         LOG.trace("Saving pipeline chanegs into SQL ..");
 

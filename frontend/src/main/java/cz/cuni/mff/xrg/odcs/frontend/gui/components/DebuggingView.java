@@ -378,6 +378,20 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("setExecution({}) -> done", execution.getId());
     }
+    
+    public void restore() {
+    	if (pipelineExec == null) {
+			return;
+		}
+    	if (!isRunFinished()) {
+            // add us to the refresh manager, so we got some refresh events
+            ((AppEntry) UI.getCurrent()).getRefreshManager().addListener(
+                    RefreshManager.DEBUGGINGVIEW,
+                    RefreshManager.getDebugRefresher(this, pipelineExec, pipelineFacade));
+        } else {
+        	refresh();
+        }
+    }
 
     /**
      * Returns whether given execution is finished.

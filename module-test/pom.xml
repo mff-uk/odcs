@@ -50,13 +50,6 @@
 		</dependency>
 
 
-		<dependency> <!-- File data unit project -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dataunit-file-impl</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
-		</dependency>
-
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

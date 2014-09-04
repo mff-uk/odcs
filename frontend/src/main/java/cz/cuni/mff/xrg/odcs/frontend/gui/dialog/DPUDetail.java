@@ -235,10 +235,13 @@ public class DPUDetail extends Window {
                     Notification.Type.ERROR_MESSAGE);
             return false;
         } catch (DPUConfigException e) {
+            LOG.error("saveDPUInstance",e);
             Notification.show("Failed to save configuration. Reason:", e
                     .getMessage(), Type.ERROR_MESSAGE);
             return false;
         } catch (Exception e) {
+            LOG.error("saveDPUInstance",e);
+
             Throwable rootCause = DecorationHelper.findFinalCause(e);
             String text = String.format("Exception: %s, Message: %s",
                     rootCause.getClass().getName(), rootCause.getMessage());
