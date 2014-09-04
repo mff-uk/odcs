@@ -240,7 +240,7 @@ public class PipelineEdit extends ViewComponent {
         	return;
         } else {
             setMode(hasPermission("save"));
-            label.setValue("<h3>Pipeline detail<h3>");
+            label.setValue("<h3>Pipeline detail for: '" + this.pipeline.getName() + "' <h3>");
         }
 
         refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
@@ -354,7 +354,7 @@ public class PipelineEdit extends ViewComponent {
             @Override
             protected String getCss(Component c) {
                 if (c instanceof TabSheet) {
-                    return "margin-left: 0px; margin-top: 20px;";
+                    return "margin-left: 0px; margin-top: 5px;";
                 } else if (c instanceof Panel) {
                     return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
                 } else if (c instanceof HorizontalLayout) {
@@ -1175,6 +1175,8 @@ public class PipelineEdit extends ViewComponent {
         if (isInteger(pipeIdstr)) {
             // use pipeIdstr as id
             this.pipeline = loadPipeline(pipeIdstr);
+            // hide details
+            setDetailState(false);
         } else {
             // create empty, for new record
             this.pipeline = pipelineFacade.createPipeline();

@@ -53,7 +53,7 @@ public class RDFQuery implements Query {
 
     private int batchSize;
 
-    private RDFQueryDefinition qd;
+    private RDFQueryDefinition queryDefinition;
 
     private ArrayList<Item> cachedItems;
 
@@ -62,14 +62,14 @@ public class RDFQuery implements Query {
     /**
      * Constructor.
      *
-     * @param qd Query definition.
+     * @param queryDefinition Query definition.
      */
-    public RDFQuery(RDFQueryDefinition qd) {
-        this.baseQuery = qd.getBaseQuery();
-        this.batchSize = qd.getBatchSize();
-        this.qd = qd;
+    public RDFQuery(RDFQueryDefinition queryDefinition) {
+        this.baseQuery = queryDefinition.getBaseQuery();
+        this.batchSize = queryDefinition.getBatchSize();
+        this.queryDefinition = queryDefinition;
         this.repository = RepositoryFrontendHelper
-                .getRepository(qd.getInfo(), qd.getDpu(), qd.getDataUnit());
+                .getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         this.repository.load();
 
     }
@@ -237,12 +237,12 @@ public class RDFQuery implements Query {
     }
 
     private String setWhereCriteria(String query) {
-        List<Filter> filters = qd.getFilters();
+        List<Filter> filters = queryDefinition.getFilters();
         return RepositoryFrontendHelper.filterRDFQuery(query, filters);
     }
 
     private Item toItem(RDFTriple triple) {
-        return new NestingBeanItem(triple, qd.getMaxNestedPropertyDepth(), qd
+        return new NestingBeanItem(triple, queryDefinition.getMaxNestedPropertyDepth(), queryDefinition
                 .getPropertyIds());
     }
 
