@@ -385,9 +385,6 @@ public class DPUCreate extends Window {
         return saveButton;
     }
 
-    private Button createSaveJarButton() {
-    }
-
     /**
      * 
      * Find corresponding dpu template from lst file for dpuJarFileName
@@ -472,14 +469,11 @@ public class DPUCreate extends Window {
         cancelButton.setWidth("90px");
         return cancelButton;
     }
-    
-    private void importDPUZip(File fileEntry) throws DPUCreateException {
-    }
 
     private void importDPUZip(File fileEntry, DPUTemplateRecord templateFromLstFile) throws DPUCreateException {
         String name = null;
         
-        if (templateFromLstFile != null) {
+        if (templateFromLstFile != null && templateFromLstFile.getName() != null) {
             name = templateFromLstFile.getName();
         }
 
@@ -490,12 +484,15 @@ public class DPUCreate extends Window {
         // now we know all, we can update the DPU template
         dpuTemplate.setShareType((ShareType) groupVisibilityZip.getValue());
         
-        // TODO checks not null, zadanie
-        // TODO parent ???
         if (templateFromLstFile != null) {
-            dpuTemplate.setName(templateFromLstFile.getName());
-            dpuTemplate.setDescription(templateFromLstFile.getDescription());
-            dpuTemplate.setRawConf(templateFromLstFile.getRawConf());
+            String value = templateFromLstFile.getDescription();
+        	if (value != null && !value.isEmpty()) {
+        		dpuTemplate.setDescription(value);
+			}
+        	value = templateFromLstFile.getRawConf();
+        	if (value != null && !value.isEmpty()) {
+        		dpuTemplate.setRawConf(value);
+			}
         }
         
         dpuFacade.save(dpuTemplate);
