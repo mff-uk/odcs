@@ -57,6 +57,10 @@
     <!-- service for pipeline import-export -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService"/>
+    
+    <!-- service for dpu impor- export -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService"/>
 
     <!-- bean that provide functionality for manipulating with DPUs -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator"/>

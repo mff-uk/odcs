@@ -8,6 +8,9 @@ import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+
 /**
  * Customised version of {@link XStream} for working with objects that are
  * stored in database.
@@ -58,11 +61,18 @@ public class JPAXStream extends XStream {
         ClassFilter classFilter = new ClassFilter();
         classFilter.add("org.eclipse.persistence");
         stream.filters.add(classFilter);
+        
         NameFilter skipName = new NameFilter();
         skipName.add("id");
         skipName.add("_persistence_");
         skipName.add("owner");
         stream.filters.add(skipName);
+        
+        AllowedFieldsFilter allowedfieldFilter = new AllowedFieldsFilter();
+        allowedfieldFilter.add(DPUTemplateRecord.class, "jarName");
+        allowedfieldFilter.add(DPUTemplateRecord.class, "name");
+        stream.filters.add(allowedfieldFilter);
+        
         // this will use getters and setters for ono plain objects
         // usage of get/set will invoke jpa to load the data
         stream.registerConverter(new JavaBeanConverter(stream.getMapper()),
@@ -94,4 +104,29 @@ public class JPAXStream extends XStream {
         return stream;
     }
 
+    public static JPAXStream createForDPUTemplate(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
+        
+        stream.alias("template", DPUTemplateRecord.class);
+        
+        // setup
+        ClassFilter classFilter = new ClassFilter();
+        classFilter.add("org.eclipse.persistence");
+        stream.filters.add(classFilter);
+        NameFilter skipName = new NameFilter();
+        skipName.add("id");
+        skipName.add("_persistence_");
+        skipName.add("owner");
+        stream.filters.add(skipName);
+        // this will use getters and setters for ono plain objects
+        // usage of get/set will invoke jpa to load the data
+        stream.registerConverter(new JavaBeanConverter(stream.getMapper()),
+                PRIORITY_VERY_LOW);
+        return stream;
+    }
 }

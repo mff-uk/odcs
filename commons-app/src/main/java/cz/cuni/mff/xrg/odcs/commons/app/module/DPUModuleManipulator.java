@@ -86,25 +86,43 @@ public class DPUModuleManipulator {
         // prepare directory secure that this method
         // will not continue for same jar-file twice .. use synchronisation
         // over file system.
-        final File newDPUDir = prepareDirectory(newDpuDirName);
+        File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
-        // copy
-        try {
-            FileUtils.copyFile(sourceFile, newDPUFile);
-        } catch (IOException e) {
-            LOG.error("Failed to copy file, when creating new DPU.", e);
-            // release
-            try {
-                FileUtils.deleteDirectory(newDPUDir);
-            } catch (IOException ex) {
-                LOG.error("Failed to delete directory after DPU.", ex);
-            }
-            // failed to copy file
-            throw new DPUCreateException("Failed to create DPU file.");
-        }
+        
+        DPUTemplateRecord newTemplate;
+        boolean isChild = false;
+        if (newDPUDir.exists()) {
+        	DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
+        	
+        	if (parent.getName().equals(name)) { // the same jarFileName and name
+				throw new DPUCreateException("DPU already exists.");
+			}
+        	
+        	newTemplate = dpuFacade.createTemplate(name, null);
+        	newTemplate.setParent(parent);
+        	isChild = true;
+		} else {
+			prepareDirectory(newDPUDir);
+			
+			// copy
+			try {
+				FileUtils.copyFile(sourceFile, newDPUFile);
+			} catch (IOException e) {
+				LOG.error("Failed to copy file, when creating new DPU.", e);
+				// release
+				try {
+					FileUtils.deleteDirectory(newDPUDir);
+				} catch (IOException ex) {
+					LOG.error("Failed to delete directory after DPU.", ex);
+				}
+				// failed to copy file
+				throw new DPUCreateException("Failed to create DPU file.");
+			}
+			
+			// we need dpu template to work wit DPUs
+			newTemplate = dpuFacade.createTemplate(name, null);
+		}
 
-        // we need dpu template to work wit DPUs
-        DPUTemplateRecord newTemplate = dpuFacade.createTemplate(name, null);
         newTemplate.setJarDirectory(newDpuDirName);
         newTemplate.setJarName(newDpuFileName);
 
@@ -116,52 +134,26 @@ public class DPUModuleManipulator {
             dpuObject = moduleFacade.getInstance(newTemplate);
         } catch (ModuleException e) {
             LOG.error("Failed to load new DPU bundle.", e);
-            // release
-            newDPUFile.delete();
-            try {
-                FileUtils.deleteDirectory(newDPUDir);
-            } catch (IOException ex) {
-                LOG.error("Failed to delete directory after DPU.", ex);
-            }
-            moduleFacade.unLoad(newTemplate);
-            throw new DPUCreateException(
-                    "Failed to load DPU bacause of exception:" + e.getMessage());
+            String msg = "Failed to load DPU bacause of exception:" + e.getMessage();
+            release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         } catch (Throwable t) {
-            LOG.error("Failed to load new DPU bundle for unexpected exception.", t);
-            // release
-            newDPUFile.delete();
-            try {
-                FileUtils.deleteDirectory(newDPUDir);
-            } catch (IOException ex) {
-                LOG.error("Failed to delete directory after DPU.", ex);
-            }
-            moduleFacade.unLoad(newTemplate);
-            throw new DPUCreateException(
-                    "Failed to load DPU bacause of !unexpected! exception:" + t.getMessage());
+        	String msg = "Failed to load DPU bacause of !unexpected! exception:" + t.getMessage();
+            LOG.error(msg, t);
+            release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         }
 
         final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
         String dpuName;
         if (name == null) {
             dpuName = dpuExplorer.getBundleName(newTemplate);
-
         } else {
             dpuName = name;
-
         }
 
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
-            // release
-            newDPUFile.delete();
-            try {
-                FileUtils.deleteDirectory(newDPUDir);
-            } catch (IOException e) {
-                LOG.error("Failed to delete directory after DPU.", e);
-            }
-            moduleFacade.unLoad(newTemplate);
-            throw new DPUCreateException("DPU has unspecified type.");
+            release(newDPUFile, newDPUDir, newTemplate, "DPU has unspecified type.", isChild);
         }
 
         // is configurable
@@ -171,15 +163,8 @@ public class DPUModuleManipulator {
                 newTemplate.setRawConf(configurable.getDefaultConfiguration());
             } catch (DPUConfigException e) {
                 // failed to load default configuration .. 
-                newDPUFile.delete();
-                try {
-                    FileUtils.deleteDirectory(newDPUDir);
-                } catch (IOException ex) {
-                    LOG.error("Failed to delete directory after DPU.", ex);
-                }
-                moduleFacade.unLoad(newTemplate);
-                //
-                throw new DPUCreateException("Failed to obtain DPU's default configuration.");
+                String msg = "Failed to obtain DPU's default configuration.";
+                release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
             }
         }
 
@@ -196,26 +181,8 @@ public class DPUModuleManipulator {
                 for (DPUValidator item : validators) {
                     item.validate(newTemplate, dpuObject);
                 }
-            } catch (DPUValidatorException e) {
-                // release
-                newDPUFile.delete();
-                try {
-                    FileUtils.deleteDirectory(newDPUDir);
-                } catch (IOException ex) {
-                    LOG.error("Failed to delete directory after DPU.", ex);
-                }
-                moduleFacade.unLoad(newTemplate);
-                throw new DPUCreateException(e.getMessage());
-            } catch (Throwable t) {
-                // release
-                newDPUFile.delete();
-                try {
-                    FileUtils.deleteDirectory(newDPUDir);
-                } catch (IOException ex) {
-                    LOG.error("Failed to delete directory after DPU.", ex);
-                }
-                moduleFacade.unLoad(newTemplate);
-                throw new DPUCreateException(t.getMessage());
+            } catch (Throwable e) {
+                release(newDPUFile, newDPUDir, newTemplate, e.getMessage(), isChild);
             }
         }
 
@@ -223,18 +190,8 @@ public class DPUModuleManipulator {
         try {
             dpuFacade.save(newTemplate);
         } catch (Throwable e) {
-            // release
-            newDPUFile.delete();
-            try {
-                FileUtils.deleteDirectory(newDPUDir);
-            } catch (IOException ex) {
-                LOG.error("Failed to delete directory after DPU.", ex);
-            }
-            moduleFacade.unLoad(newTemplate);
-            //
-            LOG.error("Failed to save new DPU record", e);
-            throw new DPUCreateException("Failed to save new DPU: "
-                    + e.getMessage());
+            String msg = "Failed to save new DPU: " + e.getMessage();
+            release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         }
 
         // notify the rest of the application
@@ -243,8 +200,33 @@ public class DPUModuleManipulator {
         // return new DPUTempateRecord
         return newTemplate;
     }
-
+    
     /**
+     * Cleaning up after failed dpu creation
+     * 
+     * @param newDPUFile
+     * @param newDPUDir
+     * @param newTemplate
+     * @param msg
+     * @param isChild
+     * @throws DPUCreateException
+     */
+    private void release(File newDPUFile, File newDPUDir, DPUTemplateRecord newTemplate, String msg, boolean isChild)
+    		throws DPUCreateException {
+    	// release
+        if (!isChild) { // child is pointing to the same jar, so no deleting if its not a parent
+        	newDPUFile.delete();
+        	try {
+        		FileUtils.deleteDirectory(newDPUDir);
+        	} catch (IOException ex) {
+        		LOG.error("Failed to delete directory after DPU.", ex);
+        	}
+		}
+        moduleFacade.unLoad(newTemplate);
+        throw new DPUCreateException(msg);
+	}
+
+	/**
      * Try to replace jar-file for given DPU with given file. During the replace
      * the given DPU is inaccessible through the {@link ModuleFacade}. If the
      * new jar file can not be used, the old jar file is preserved and the {@link DPUReplaceException} is thrown.
@@ -434,32 +416,23 @@ public class DPUModuleManipulator {
 
     /**
      * Prepare directory with given name in DPU's directory. In case of failure
-     * or if the directory is already used throw exception.
+     * throws exception.
      * 
-     * @param newDpuDirName
+     * @param newDpuDir
      *            Name of directory that should be created.
-     * @return Existing directory.
      * @throws DPUCreateException
      */
-    protected File prepareDirectory(String newDpuDirName)
+    protected void prepareDirectory(File newDpuDir)
             throws DPUCreateException {
-        final File newDPUDir = new File(moduleFacade.getDPUDirectory(),
-                newDpuDirName);
-        if (newDPUDir.exists()) {
-            // directory name already used
-            throw new DPUCreateException(String.format(
-                    "DPU's directory with name '%s' already exists.",
-                    newDpuDirName));
-        }
+        
         // create directory
-        if (newDPUDir.mkdir()) {
+        if (newDpuDir.mkdir()) {
             // ok, directory has been created
         } else {
             // failed
             throw new DPUCreateException(String.format(
-                    "Failed to create DPU's directory: '%s'", newDpuDirName));
+                    "Failed to create DPU's directory: '%s'", newDpuDir.getName()));
         }
-        return newDPUDir;
     }
 
     /**
