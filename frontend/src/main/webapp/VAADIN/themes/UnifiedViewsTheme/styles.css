@@ -81,11 +81,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .v-verticallayout-margin-top, 
 .v-layout.v-margin-top, 
 .v-gridlayout-margin-top {
-<<<<<<< HEAD
-    padding-top: 20px;
-=======
     padding-top: 10px;
->>>>>>> develop
 }
 
 .v-tabsheet-content .v-orderedlayout-margin-top, 
