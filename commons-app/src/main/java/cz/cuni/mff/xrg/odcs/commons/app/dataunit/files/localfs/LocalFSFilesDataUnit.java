@@ -30,7 +30,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
     private String workingDirectoryURI;
 
     private File workingDirectory;
-    
+
     protected RDFDataUnit backingDataUnit;
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
@@ -97,13 +97,6 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             // TODO michal.klempa think of not connecting everytime
             connection = getConnectionInternal();
             connection.begin();
-            // TODO michal.klempa - add one query at isReleaseReady instead of this
-//            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
-//            if (fileExistsQuery.evaluate()) {
-//                connection.rollback();
-//                throw new IllegalArgumentException("File with symbolic name "
-//                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
-//            }
             ValueFactory valueFactory = connection.getValueFactory();
             BNode blankNodeId = valueFactory.createBNode();
             Statement statement = valueFactory.createStatement(
@@ -157,20 +150,20 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;
-        while ((sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH) && (index < proposedSymbolicName.length())) {
+        while (sb.length() < PROPOSED_FILENAME_PART_MAX_LENGTH && index < proposedSymbolicName.length()) {
             int codePoint = proposedSymbolicName.codePointAt(index);
             if (sb.length() == 0) {
-                if (((codePoint >= 97) && (codePoint <= 122)) || // [a-z]
-                        ((codePoint >= 65) && (codePoint <= 90)) //[A-Z]
-                ) {
+                if (codePoint >= 97 && codePoint <= 122 || // [a-z]
+                        codePoint >= 65 && codePoint <= 90 //[A-Z]
+                        ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             } else {
-                if (((codePoint >= 97) && (codePoint <= 122)) || // [a-z]
-                        ((codePoint >= 65) && (codePoint <= 90)) || //[A-Z]
-                        (codePoint == 95) || // _
-                        ((codePoint >= 48) && (codePoint <= 57)) // [0-9]
-                ) {
+                if (codePoint >= 97 && codePoint <= 122 || // [a-z]
+                        codePoint >= 65 && codePoint <= 90 || //[A-Z]
+                        codePoint == 95 || // _
+                        codePoint >= 48 && codePoint <= 57 // [0-9]
+                        ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             }

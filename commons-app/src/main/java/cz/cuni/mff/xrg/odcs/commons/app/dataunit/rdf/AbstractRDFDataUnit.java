@@ -20,7 +20,7 @@ import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnit implementation.
- * 
+ *
  * @author Jiri Tomes
  */
 public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUnit implements ManagableRdfDataUnit {
@@ -71,13 +71,6 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
             // TODO michal.klempa think of not connecting everytime
             connection = getConnectionInternal();
             connection.begin();
-            // TODO michal.klempa - add one query at isReleaseReady instead of this
-//            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
-//            if (fileExistsQuery.evaluate()) {
-//                connection.rollback();
-//                throw new IllegalArgumentException("File with symbolic name "
-//                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
-//            }
             ValueFactory valueFactory = connection.getValueFactory();
             BNode blankNodeId = valueFactory.createBNode();
             Statement statement = valueFactory.createStatement(

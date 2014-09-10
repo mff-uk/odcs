@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import eu.unifiedviews.dpu.DPU;
 
 /**
  * Hold environment used to test DPU.
- * 
+ *
  * @author Petyr
  */
 public class TestEnvironment {
@@ -70,7 +71,7 @@ public class TestEnvironment {
 
     /**
      * Create test environment. As working directory is used temp file.
-     * 
+     *
      */
     public TestEnvironment() {
         try {
@@ -92,7 +93,7 @@ public class TestEnvironment {
     /**
      * Set path that is used like jar-path during execution. This value will
      * be used during test execution if DPU asks for it.
-     * 
+     *
      * @param jarPath
      *            path to the jar file.
      */
@@ -103,7 +104,7 @@ public class TestEnvironment {
     /**
      * Set time for last execution. This value will be used during test
      * execution if DPU asks for it.
-     * 
+     *
      * @param lastExecution
      *            Time of last execution.
      */
@@ -114,7 +115,7 @@ public class TestEnvironment {
     /**
      * Set given {@link ManagableDataUnit} as an input. If there already is
      * another value for given name it is overridden. The old {@link ManagableDataUnit} is not released.
-     * 
+     *
      * @param name
      *            Name of dataUnit.
      * @param dataUnit
@@ -132,7 +133,7 @@ public class TestEnvironment {
      * call of {@link #release()}.
      * If there already is another value for given name it is overridden. The
      * old {@link ManagableDataUnit} is not released.
-     * 
+     *
      * @param name
      *            Name of dataUnit.
      * @param dataUnit
@@ -144,12 +145,13 @@ public class TestEnvironment {
 
     /**
      * Create {@link RDFDataUnit} which is just returned to test developer for use.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @return Created {@link RDFDataUnit}.
+     * @throws RepositoryException
      */
-    public WritableRDFDataUnit createRdfFDataUnit(String name) {
+    public WritableRDFDataUnit createRdfFDataUnit(String name) throws RepositoryException {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         customDataUnits.put(name, rdf);
         return rdf;
@@ -168,7 +170,7 @@ public class TestEnvironment {
 //
 //			server.getHost().attach("/sparql", new SparqlResource());
 //			server.start();
-//			
+//
 //			return "http://localhost:8182/sparql";
 //		} catch (Exception ex) {
 //			throw new RuntimeException(ex);
@@ -177,14 +179,15 @@ public class TestEnvironment {
 
     /**
      * Create input {@link RDFDataUnit} that is used in test environment.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @param useVirtuoso
      *            If true then Virtuoso is used as a storage.
      * @return Created input {@link RDFDataUnit}.
+     * @throws RepositoryException
      */
-    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) {
+    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) throws RepositoryException {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addInput(name, rdf);
         return rdf;
@@ -193,16 +196,17 @@ public class TestEnvironment {
     /**
      * Create output {@link RDFDataUnit}, add it to the test environment and
      * return it.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @param useVirtuoso
      *            If true then Virtuoso is used as a storage.
      * @return Created output {@link RDFDataUnit}.
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
+     * @throws RepositoryException
      */
     public WritableRDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
-            throws RDFException {
+            throws RDFException, RepositoryException {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addOutput(name, rdf);
         return rdf;
@@ -210,7 +214,7 @@ public class TestEnvironment {
 
     /**
      * Create file data unit, add it as an input and return reference to it.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @param dir
@@ -227,7 +231,7 @@ public class TestEnvironment {
      * Create file data unit, add it as an input and return reference to it. The
      * file data unit is created in temp directory and data from given resource
      * path are added to the root.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @param resourceName
@@ -237,7 +241,7 @@ public class TestEnvironment {
      */
     public FileDataUnit createFileInputFromResource(String name,
             String resourceName)
-            throws DataUnitException {
+                    throws DataUnitException {
         File dir = new File(FileUtils.getTempDirectory(),
                 "odcs-file-test-" + Long.toString(System.nanoTime()));
         dir.mkdirs();
@@ -256,7 +260,7 @@ public class TestEnvironment {
         DirectoryHandler dh = file.getRootDir();
         File resourceRoot = new File(url.getPath());
 
-        //if the resource is a directory: 
+        //if the resource is a directory:
         if (resourceRoot.isDirectory()) {
             for (File toAdd : resourceRoot.listFiles()) {
                 dh.addExistingDirectory(toAdd, new OptionsAdd(true));
@@ -272,7 +276,7 @@ public class TestEnvironment {
 
     /**
      * Create file data unit, add it as an input and return reference to it.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @param dir
@@ -288,7 +292,7 @@ public class TestEnvironment {
     /**
      * Create file data unit, add it as an input and return reference to it. As
      * a directory use temp director.
-     * 
+     *
      * @param name
      *            Name of DataUnit.
      * @return Created output {@link FileDataUnit}.
@@ -310,7 +314,7 @@ public class TestEnvironment {
      * before or after the test. If the test working directory should be deleted
      * then is deleted at the end of this method same as all the {@link DataUnit}s
      * Any thrown exception is passed. In every case the {@link #release()} method must be called in order to release test data.
-     * 
+     *
      * @param dpuInstance
      *            Instance of DPU to run.
      * @return False if the execution failed by sending error message
@@ -361,7 +365,7 @@ public class TestEnvironment {
     // - - - - - - - - - methods for examining the results - - - - - - - - - //
     /**
      * Return context used during tests. Return null before call of {@link #run(cz.cuni.mff.xrg.odcs.commons.dpu.DPU)} method.
-     * 
+     *
      * @return Context used during testing.
      */
     public TestContext getContext() {
@@ -405,7 +409,7 @@ public class TestEnvironment {
 
     /**
      * Connect data units from {@link #inputDataUnits} and {@link #outputDataUnits} to the given DPU instance.
-     * 
+     *
      * @param dpuInstance
      *            DPU instance object.
      * @throws Exception
