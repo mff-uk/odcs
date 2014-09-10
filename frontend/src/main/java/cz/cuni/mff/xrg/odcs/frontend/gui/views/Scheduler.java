@@ -249,7 +249,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             public Object generateCell(CustomTable source, Object itemId,
                     Object columnId) {
                 boolean isEnabled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
-                ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.svg" : "icons/error.svg");
+                ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.png" : "icons/error.png");
                 String description = isEnabled ? "Enabled" : "Disabled";
                 Embedded emb = new Embedded(description, img);
                 emb.setDescription(description);
@@ -466,7 +466,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                 if (!testStatus) {
                     Button enableButton = new Button();
                     enableButton.setDescription("Enable");
-                    enableButton.setIcon(new ThemeResource("icons/ok.svg"));
+                    enableButton.setIcon(new ThemeResource("icons/ok.png"));
                     enableButton.addClickListener(new ClickListener() {
                         @Override
                         public void buttonClick(ClickEvent event) {
@@ -482,7 +482,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     Button disableButton = new Button();
                     disableButton.setDescription("Disable");
                     disableButton.addStyleName("small_button");
-                    disableButton.setIcon(new ThemeResource("icons/error.svg"));
+                    disableButton.setIcon(new ThemeResource("icons/error.png"));
                     disableButton.addClickListener(new ClickListener() {
                         @Override
                         public void buttonClick(ClickEvent event) {
@@ -498,7 +498,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             Button editButton = new Button();
             editButton.setDescription("Edit");
             editButton.addStyleName("small_button");
-            editButton.setIcon(new ThemeResource("icons/gear.svg"));
+            editButton.setIcon(new ThemeResource("icons/gear.png"));
             editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -511,7 +511,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             Button deleteButton = new Button();
             deleteButton.setDescription("Delete");
             deleteButton.addStyleName("small_button");
-            deleteButton.setIcon(new ThemeResource("icons/trash.svg"));
+            deleteButton.setIcon(new ThemeResource("icons/trash.png"));
             deleteButton.addClickListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -550,7 +550,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         @Override
         public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
             if ("status".equals(propertyId)) {
-                ThemeResource img = new ThemeResource(value ? "icons/ok.svg" : "icons/error.svg");
+                ThemeResource img = new ThemeResource(value ? "icons/ok.png" : "icons/error.png");
                 return img;
             } else {
                 return super.getBooleanFilterIcon(propertyId, value);

@@ -259,7 +259,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 // ...
                 return !isDebug && status != PipelineExecutionStatus.QUEUED;
             }
-        }, new ThemeResource("icons/show_log.svg"));
+        }, new ThemeResource("icons/show_log.png"));
 
         generator.addButton("Debug data", null, new Action() {
             @Override
@@ -276,7 +276,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 // ...
                 return isDebug && status != PipelineExecutionStatus.QUEUED;
             }
-        }, new ThemeResource("icons/debug_data.svg"));
+        }, new ThemeResource("icons/debug_data.png"));
 
         generator.addButton("Cancel", null, new Action() {
             @Override
@@ -296,7 +296,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
                 return stoppableStatus && userCanStop;
             }
-        }, new ThemeResource("icons/cancelled.svg"));
+        }, new ThemeResource("icons/cancelled.png"));
 
         generator.addButton("Run pipeline", null, new Action() {
             @Override
@@ -312,7 +312,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 return status != PipelineExecutionStatus.RUNNING
                         && status != PipelineExecutionStatus.CANCELLING;
             }
-        }, new ThemeResource("icons/running.svg"));
+        }, new ThemeResource("icons/running.png"));
 
         generator.addButton("Debug pipeline", null, new Action() {
             @Override
@@ -328,7 +328,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 return status != PipelineExecutionStatus.RUNNING
                         && status != PipelineExecutionStatus.CANCELLING;
             }
-        }, new ThemeResource("icons/debug.svg"));
+        }, new ThemeResource("icons/debug.png"));
 
         return generator;
     }
@@ -433,11 +433,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 if ("schedule".equals(propertyId)) {
                     ComboBox comboScheduled = new ComboBox();
                     comboScheduled.addItem(true);
-                    ThemeResource iconScheduled = new ThemeResource("icons/scheduled.svg");
+                    ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
                     comboScheduled.setItemIcon(true, iconScheduled);
                     comboScheduled.setItemCaption(true, "Scheduled");
                     comboScheduled.addItem(false);
-                    ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.svg");
+                    ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.png");
                     comboScheduled.setItemIcon(false, iconNotScheduled);
                     comboScheduled.setItemCaption(false, "Manual");
                     return comboScheduled;
@@ -518,7 +518,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     }
                 });
                 btnEdit.addStyleName("small_button");
-                btnEdit.setIcon(new ThemeResource("icons/gear.svg"));
+                btnEdit.setIcon(new ThemeResource("icons/gear.png"));
                 Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
                 lblPipelineName.setStyleName("clickable-table-cell");
                 HorizontalLayout colLayout = new HorizontalLayout(btnEdit, lblPipelineName);
@@ -563,10 +563,10 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 boolean inDebug = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
                 Embedded emb;
                 if (inDebug) {
-                    emb = new Embedded("True", new ThemeResource("icons/debug.svg"));
+                    emb = new Embedded("True", new ThemeResource("icons/debug.png"));
                     emb.setDescription("TRUE");
                 } else {
-                    emb = new Embedded("False", new ThemeResource("icons/no_debug.svg"));
+                    emb = new Embedded("False", new ThemeResource("icons/no_debug.png"));
                     emb.setDescription("FALSE");
                 }
                 return emb;
@@ -662,25 +662,25 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 ThemeResource img = null;
                 switch (type) {
                     case FINISHED_SUCCESS:
-                        img = new ThemeResource("icons/ok.svg");
+                        img = new ThemeResource("icons/ok.png");
                         break;
                     case FINISHED_WARNING:
-                        img = new ThemeResource("icons/warning.svg");
+                        img = new ThemeResource("icons/warning.png");
                         break;
                     case FAILED:
-                        img = new ThemeResource("icons/error.svg");
+                        img = new ThemeResource("icons/error.png");
                         break;
                     case RUNNING:
-                        img = new ThemeResource("icons/running.svg");
+                        img = new ThemeResource("icons/running.png");
                         break;
                     case QUEUED:
-                        img = new ThemeResource("icons/queued.svg");
+                        img = new ThemeResource("icons/queued.png");
                         break;
                     case CANCELLED:
-                        img = new ThemeResource("icons/cancelled.svg");
+                        img = new ThemeResource("icons/cancelled.png");
                         break;
                     case CANCELLING:
-                        img = new ThemeResource("icons/cancelling.svg");
+                        img = new ThemeResource("icons/cancelling.png");
                         break;
                     default:
                         //no icon
@@ -707,9 +707,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
             if (propertyId.equals("isDebugging")) {
                 if (value) {
-                    return new ThemeResource("icons/debug.svg");
+                    return new ThemeResource("icons/debug.png");
                 } else {
-                    return new ThemeResource("icons/no_debug.svg");
+                    return new ThemeResource("icons/no_debug.png");
                 }
             }
             return super.getBooleanFilterIcon(propertyId, value);

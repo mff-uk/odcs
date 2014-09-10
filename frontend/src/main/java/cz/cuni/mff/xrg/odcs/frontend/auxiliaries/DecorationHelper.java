@@ -24,25 +24,25 @@ public class DecorationHelper {
         ThemeResource img = null;
         switch (status) {
             case FINISHED_SUCCESS:
-                img = new ThemeResource("icons/ok.svg");
+                img = new ThemeResource("icons/ok.png");
                 break;
             case FINISHED_WARNING:
-                img = new ThemeResource("icons/warning.svg");
+                img = new ThemeResource("icons/warning.png");
                 break;
             case FAILED:
-                img = new ThemeResource("icons/error.svg");
+                img = new ThemeResource("icons/error.png");
                 break;
             case RUNNING:
-                img = new ThemeResource("icons/running.svg");
+                img = new ThemeResource("icons/running.png");
                 break;
             case QUEUED:
-                img = new ThemeResource("icons/queued.svg");
+                img = new ThemeResource("icons/queued.png");
                 break;
             case CANCELLED:
-                img = new ThemeResource("icons/cancelled.svg");
+                img = new ThemeResource("icons/cancelled.png");
                 break;
             case CANCELLING:
-                img = new ThemeResource("icons/cancelling.svg");
+                img = new ThemeResource("icons/cancelling.png");
                 break;
             default:
                 //no icon
@@ -116,7 +116,7 @@ public class DecorationHelper {
      * @return Icon for scheduled column.
      */
     public static Embedded getIconForScheduled(boolean isScheduled) {
-        ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.svg" : "icons/not_scheduled.svg");
+        ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.png" : "icons/not_scheduled.png");
         String description = isScheduled ? "Scheduled" : "Manual";
         Embedded emb = new Embedded(description, img);
         emb.setDescription(description);

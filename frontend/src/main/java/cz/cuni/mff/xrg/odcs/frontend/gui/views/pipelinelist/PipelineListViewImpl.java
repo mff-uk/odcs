@@ -183,35 +183,35 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.runEventHandler(id, false);
             }
-        }, new ThemeResource("icons/running.svg"));
+        }, new ThemeResource("icons/running.png"));
 
         generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id, true);
             }
-        }, new ThemeResource("icons/debug.svg"));
+        }, new ThemeResource("icons/debug.png"));
 
         generator.addButton("Schedule", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.scheduleEventHandler(id);
             }
-        }, new ThemeResource("icons/scheduled.svg"));
+        }, new ThemeResource("icons/scheduled.png"));
 
         generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.copyEventHandler(id);
             }
-        }, new ThemeResource("icons/copy.svg"));
+        }, new ThemeResource("icons/copy.png"));
 
         generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.navigateToEventHandler(PipelineEdit.class, id);
             }
-        }, new ThemeResource("icons/gear.svg"));
+        }, new ThemeResource("icons/gear.png"));
 
         generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
             @Override
@@ -223,7 +223,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             public boolean show(CustomTable source, long id) {
                 return presenter.canDeletePipeline(id);
             }
-        }, new ThemeResource("icons/trash.svg"));
+        }, new ThemeResource("icons/trash.png"));
 
         return generator;
     }
