@@ -167,6 +167,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCreateDPU.setCaption("Create DPU template");
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
+        buttonCreateDPU.addStyleName("v-button-primary");
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -181,6 +182,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonImportDPU.setCaption("Import DPU template");
         buttonImportDPU.setHeight("25px");
         buttonImportDPU.setWidth("150px");
+        buttonImportDPU.addStyleName("v-button-primary");
         buttonImportDPU.setEnabled(false);
         buttonImportDPU.addClickListener(new Button.ClickListener() {
 
@@ -196,6 +198,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportAll.setCaption("Export All");
         buttonExportAll.setHeight("25px");
         buttonExportAll.setWidth("150px");
+        buttonExportAll.addStyleName("v-button-primary");
         buttonExportAll.setEnabled(false);
         buttonExportAll
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -936,14 +939,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         };
 
         // add buttons to column generator
-        generator.addButton("Detail", null, detailAction, detailShowCondition, new ThemeResource("icons/gear.png"));
-        generator.addButton("Delete", null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.png"));
+        generator.addButton("Detail", null, detailAction, detailShowCondition, new ThemeResource("icons/gear.svg"));
+        generator.addButton("Delete", null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.svg"));
         generator.addButton("Status", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.pipelineStatusEventHandler(id);
             }
-        }, new ThemeResource("icons/log.png"));
+        }, new ThemeResource("icons/log.svg"));
 
         return generator;
     }

@@ -149,17 +149,17 @@ public class RecordsTable extends CustomComponent {
                     case DPU_INFO:
                     case PIPELINE_INFO:
                     case DPU_TERMINATION_REQUEST:
-                        img = new ThemeResource("icons/log.png");
+                        img = new ThemeResource("icons/log.svg");
                         break;
                     case DPU_DEBUG:
-                        img = new ThemeResource("icons/debug.png");
+                        img = new ThemeResource("icons/debug.svg");
                         break;
                     case DPU_WARNING:
-                        img = new ThemeResource("icons/warning.png");
+                        img = new ThemeResource("icons/warning.svg");
                         break;
                     case DPU_ERROR:
                     case PIPELINE_ERROR:
-                        img = new ThemeResource("icons/error.png");
+                        img = new ThemeResource("icons/error.svg");
                         break;
                     default:
                         //no img
@@ -273,17 +273,17 @@ public class RecordsTable extends CustomComponent {
                 case DPU_INFO:
                 case PIPELINE_INFO:
                 case DPU_TERMINATION_REQUEST:
-                    img = new ThemeResource("icons/log.png");
+                    img = new ThemeResource("icons/log.svg");
                     break;
                 case DPU_DEBUG:
-                    img = new ThemeResource("icons/debug.png");
+                    img = new ThemeResource("icons/debug.svg");
                     break;
                 case DPU_WARNING:
-                    img = new ThemeResource("icons/warning.png");
+                    img = new ThemeResource("icons/warning.svg");
                     break;
                 case DPU_ERROR:
                 case PIPELINE_ERROR:
-                    img = new ThemeResource("icons/error.png");
+                    img = new ThemeResource("icons/error.svg");
                     break;
                 default:
                     //no img

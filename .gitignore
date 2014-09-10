@@ -18,7 +18,6 @@ nbactions.xml
 nb-configuration.xml
 
 # Frontend generated sources
-frontend/src/main/webapp/VAADIN/
 
 # Build Directories #
 target/
@@ -28,3 +27,6 @@ bin/
 *.war
 *.jar
 *.ear
+!/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/icons/arrow_bottom.svg
+/frontend/src/main/webapp/VAADIN/
+!/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/

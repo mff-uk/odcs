@@ -188,6 +188,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         Button addRuleButton = new Button();
         addRuleButton.setCaption("Add new scheduling rule");
+        addRuleButton.addStyleName("v-button-primary");
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     @Override
@@ -201,6 +202,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("110px");
         buttonDeleteFilters
@@ -479,6 +481,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                 else {
                     Button disableButton = new Button();
                     disableButton.setDescription("Disable");
+                    disableButton.addStyleName("small_button");
                     disableButton.setIcon(new ThemeResource("icons/error.png"));
                     disableButton.addClickListener(new ClickListener() {
                         @Override
@@ -494,6 +497,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             //Edit button. Opens the window for editing given scheduling rule.
             Button editButton = new Button();
             editButton.setDescription("Edit");
+            editButton.addStyleName("small_button");
             editButton.setIcon(new ThemeResource("icons/gear.png"));
             editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
@@ -506,6 +510,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             //Delete button. Delete scheduling rule from the table.
             Button deleteButton = new Button();
             deleteButton.setDescription("Delete");
+            deleteButton.addStyleName("small_button");
             deleteButton.setIcon(new ThemeResource("icons/trash.png"));
             deleteButton.addClickListener(new ClickListener() {
                 @Override

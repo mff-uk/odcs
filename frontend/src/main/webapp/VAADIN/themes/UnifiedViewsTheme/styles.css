@@ -23,6 +23,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	color:#323232;
 }
 
+.v-slot-headerPanel{
+	padding:30px 30px 15px 30px;
+}
+
 .v-slot-loginPanel{
 	padding:5px 30px 0 30px;
 }
@@ -122,7 +126,7 @@ a:hover{
 }
 
 .v-spacing{
-	//height:10px;
+	height:20px;
 }
 
 .dpuTreeLayout {
@@ -140,6 +144,27 @@ a:hover{
 .v-tree-node-expanded {
     background-position: -7px 5px;
 }
+
+.v-tree-node > .v-tree-node-caption{
+	background: url("img/tree_item.svg") no-repeat scroll 0 0 transparent;
+	padding-left:16px;
+}
+
+.v-tree-node > .v-tree-node-caption.v-tree-node-selected{
+	background: url("img/tree_item_selected.svg") no-repeat scroll 0 0 transparent;
+	padding-left:16px;
+}
+
+.v-tree-node-root > .v-tree-node-caption{
+	background: url("img/tree_collapsed.svg") no-repeat scroll 0 0 transparent;
+	padding-left:16px;
+}
+
+.v-tree-node-root.v-tree-node-expanded > .v-tree-node-caption{
+	background: url("img/tree_expanded.svg") no-repeat scroll 0 0 transparent;
+	padding-left:16px;
+}
+
 .v-tree-node {
     background: url("img/tree_arrow.svg") no-repeat scroll 7px 4px transparent;
 }
@@ -243,6 +268,19 @@ bottom:-1px;
 	box-shadow:   0px 1px 2px 0px #93D8E7 inset;
 }
 
+.headerPanel{
+    width:100%;
+}
+
+.v-slot-logo{
+    float:left
+}
+
+.v-slot-username, .v-slot-logout,.v-slot-backendStatus{
+    float:right;
+    margin-left:10px;
+}
+
 /* Menubar */
 .v-menubar {
 	background: #0095b7;
@@ -331,7 +369,7 @@ border-radius:3px;
     width: 16px;
 }
 
-.v-button, .v-disabled.v-button{
+.v-button, .v-disabled.v-button, .v-button.v-button-pagedtable-button, .v-button.v-disabled.v-button-pagedtable-button{
 background: #d9d9d9;
 background: -moz-linear-gradient(top, #ffffff 25%, #d9d9d9 75%);
 background: -webkit-gradient(linear, left top, left bottom, color-stop(25%,#ffffff), color-stop(75%,#d9d9d9));
@@ -349,7 +387,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	border:1px solid #999999;
 }
 
-.v-button:hover{
+.v-button:hover,.v-button.v-button-pagedtable-button:hover{
 cursor:pointer;
 background: #f2f2f2;
 background: -moz-linear-gradient(top, #ffffff 25%, #f2f2f2 75%);
@@ -362,7 +400,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	border:1px solid #999999;
 }
 
-.v-button:focus{
+
+.v-button:focus, .v-button.v-button-pagedtable-button:focus{
 background: #d9d9d9;
 background: -moz-linear-gradient(top, #d9d9d9 70%, #ffffff 92%);
 background: -webkit-gradient(linear, left top, left bottom, color-stop(70%,#d9d9d9), color-stop(92%,#ffffff));
@@ -423,6 +462,10 @@ border: 1px solid #024A5B;
     background-image: none;
 }
 
+.small_button .v-button-wrap{
+    padding:4px 3px 0 0;
+}
+
 .v-button-caption {
     color: #4c4c4c;
     font-size: 12px;
@@ -438,9 +481,22 @@ border: 1px solid #024A5B;
 	border:none;
 }
 
+.v-button-link .v-button-caption {
+    color: #1b96b7;
+}
+
+.v-button-link:hover{
+    cursor:pointer;
+    border:none;
+    background: transparent none;
+}
+
+.v-button-pagedtable-button{
+    
+}
+
 .backendStatus {
-	padding-right: 5.5em;
-	padding-left: 1em;
+	margin-left:5px;
 }
 
 .pipelineSettingsLayout {
@@ -1070,7 +1126,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', end
 
 .username{
 	color:#1B96B7;
-	background: url("img/user.svg") no-repeat scroll 36px 0 transparent;
+        width:auto !important;
+        padding-left:5px;
+}
+.v-caption-on-top > .v-caption-username{
+    display:inline-block;
 }
 
 /* error messages */

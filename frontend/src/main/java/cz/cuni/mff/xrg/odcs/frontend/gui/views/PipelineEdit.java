@@ -322,7 +322,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
-        btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
+        btnMinimize.setIcon(new ThemeResource("icons/collapse.svg"));
         btnMinimize.setDescription("Minimize pipeline detail");
         btnMinimize.setVisible(isExpanded);
         topLine.addComponent(btnMinimize);
@@ -336,7 +336,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
-        btnExpand.setIcon(new ThemeResource("icons/expand.png"));
+        btnExpand.setIcon(new ThemeResource("icons/expand.svg"));
         btnExpand.setDescription("Expand pipeline detail");
         btnExpand.setVisible(false);
         topLine.addComponent(btnExpand);
@@ -551,7 +551,7 @@ public class PipelineEdit extends ViewComponent {
                 calculateCanvasDimensions(bounds.getX(), bounds.getY());
             }
         });
-        zoomIn.setIcon(new ThemeResource("icons/zoom_in.png"), "Zoom in");
+        zoomIn.setIcon(new ThemeResource("icons/zoom_in.svg"), "Zoom in");
         //zoomIn.setWidth("110px");
         Button zoomOut = new Button();
         zoomOut.addClickListener(new Button.ClickListener() {
@@ -562,7 +562,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         zoomOut.setDescription("Zoom out");
-        zoomOut.setIcon(new ThemeResource("icons/zoom_out.png"), "Zoom out");
+        zoomOut.setIcon(new ThemeResource("icons/zoom_out.svg"), "Zoom out");
         //zoomOut.setWidth("110px");
         undo = new Button();
         undo.addClickListener(new Button.ClickListener() {
@@ -576,7 +576,7 @@ public class PipelineEdit extends ViewComponent {
         undo.setEnabled(false);
         undo.setImmediate(true);
         undo.setDescription("Undo");
-        undo.setIcon(new ThemeResource("icons/undo.png"), "Undo");
+        undo.setIcon(new ThemeResource("icons/undo.svg"), "Undo");
         //undo.setWidth("110px");
         HorizontalLayout topActions = new HorizontalLayout(zoomIn, zoomOut, undo);
 
@@ -1376,42 +1376,42 @@ public class PipelineEdit extends ViewComponent {
         Button topAlign = new Button();
         topAlign.setData("align_top");
         topAlign.setDescription("Align top");
-        topAlign.setIcon(new ThemeResource("icons/arrow_top.png"), "Align top");
+        topAlign.setIcon(new ThemeResource("icons/arrow_top.svg"), "Align top");
         topAlign.addClickListener(listener);
         bar.addComponent(topAlign, 1, 0);
 
         Button bottomAlign = new Button();
         bottomAlign.setData("align_bottom");
         bottomAlign.setDescription("Align bottom");
-        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.png"), "Align bottom");
+        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.svg"), "Align bottom");
         bottomAlign.addClickListener(listener);
         bar.addComponent(bottomAlign, 1, 2);
 
         Button leftAlign = new Button();
         leftAlign.setData("align_left");
         leftAlign.setDescription("Align left");
-        leftAlign.setIcon(new ThemeResource("icons/arrow_left.png"), "Align left");
+        leftAlign.setIcon(new ThemeResource("icons/arrow_left.svg"), "Align left");
         leftAlign.addClickListener(listener);
         bar.addComponent(leftAlign, 0, 1);
 
         Button rightAlign = new Button();
         rightAlign.setData("align_right");
         rightAlign.setDescription("Align right");
-        rightAlign.setIcon(new ThemeResource("icons/arrow_right.png"), "Align right");
+        rightAlign.setIcon(new ThemeResource("icons/arrow_right.svg"), "Align right");
         rightAlign.addClickListener(listener);
         bar.addComponent(rightAlign, 2, 1);
 
         Button distributeHorizontal = new Button();
         distributeHorizontal.setData("distribute_horizontal");
         distributeHorizontal.setDescription("Distribute horizontally");
-        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.png"), "Distribute horizontally");
+        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.svg"), "Distribute horizontally");
         distributeHorizontal.addClickListener(listener);
         bar.addComponent(distributeHorizontal, 2, 0);
 
         Button distributeVertical = new Button();
         distributeVertical.setData("distribute_vertical");
         distributeVertical.setDescription("Distribute vertically");
-        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.png"), "Distribute vertically");
+        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.svg"), "Distribute vertically");
         distributeVertical.addClickListener(listener);
         bar.addComponent(distributeVertical, 2, 2);
 

@@ -20,6 +20,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -79,6 +80,7 @@ public class UsersList {
         Button addUserButton = new Button();
         addUserButton.setCaption("Create new user");
         addUserButton.setWidth("120px");
+        addUserButton.addStyleName("v-button-primary");
         addUserButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -106,6 +108,7 @@ public class UsersList {
         buttonDeleteFilters.setCaption("Clear Filters");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("120px");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -269,7 +272,8 @@ public class UsersList {
             //Edit button. Open dialog for edit user's details.
             Button changeButton = new Button();
             changeButton.setDescription("Edit");
-            changeButton.setIcon(new ThemeResource("icons/gear.png"));
+            changeButton.addStyleName("small_button");
+            changeButton.setIcon(new ThemeResource("icons/gear.svg"));
             //changeButton.setWidth("80px");
             changeButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
@@ -289,7 +293,8 @@ public class UsersList {
             //Delete button. Delete user's record from Database.
             Button deleteButton = new Button();
             deleteButton.setDescription("Delete");
-            deleteButton.setIcon(new ThemeResource("icons/trash.png"));
+            deleteButton.addStyleName("small_button");
+            deleteButton.setIcon(new ThemeResource("icons/trash.svg"));
             //deleteButton.setWidth("80px");
             deleteButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
