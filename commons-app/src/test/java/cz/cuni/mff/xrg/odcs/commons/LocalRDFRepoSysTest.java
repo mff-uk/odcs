@@ -26,11 +26,13 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.openrdf.sail.nativerdf.NativeStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +93,7 @@ public class LocalRDFRepoSysTest {
             throw new RuntimeException(e.getMessage());
         }
 
-        rdfRepo = new LocalRDFDataUnit(pathRepo.toString(), "testtt",
+        rdfRepo = new LocalRDFDataUnit(new SailRepository(new NativeStore(new File(pathRepo.toFile(), "testtt"))),
                 "myTestName", "http://default");
     }
 
@@ -266,7 +268,7 @@ public class LocalRDFRepoSysTest {
         connection.close();
 
     }
-    
+
     private void TEDextractFile1ToRepository() throws RepositoryException, DataUnitException {
 
         String suffix = "ted4.ttl";
@@ -385,7 +387,7 @@ public class LocalRDFRepoSysTest {
 
     /**
      * Recursively deletes a directory, follows symbolic links
-     * 
+     *
      * @param directory
      *            directory you can delete.
      */
@@ -405,7 +407,7 @@ public class LocalRDFRepoSysTest {
 
     /**
      * Test extracting RDF data from given repository instance.
-     * 
+     *
      * @param repository
      *            repository used for extracting
      */
@@ -437,7 +439,7 @@ public class LocalRDFRepoSysTest {
 
     /**
      * Test loading to file based on give repository instance.
-     * 
+     *
      * @param repository
      *            repository used for loading
      */

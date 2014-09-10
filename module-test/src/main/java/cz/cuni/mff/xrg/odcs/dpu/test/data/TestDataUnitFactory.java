@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.dpu.test.data;
 import java.io.File;
 
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.nativerdf.NativeStore;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
@@ -55,7 +57,9 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
 
-            return new LocalRDFDataUnit(workingDirectory.toString(), "test_env_" + String.valueOf(this.hashCode()), name,
+            return new LocalRDFDataUnit(
+                    new SailRepository(new NativeStore(new File(workingDirectory, "test_env_" + String.valueOf(this.hashCode())))),
+                    name,
                     namedGraph);
         }
     }
