@@ -112,6 +112,6 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
     	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
     	query.setParameter("ids", ids);
     	Long number = (Long) query.getSingleResult();
-    	return !number.equals(ids.size());
+    	return !number.equals((long)ids.size());
     }
 }

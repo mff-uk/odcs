@@ -30,11 +30,6 @@
 			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
 		</repository>
 
-		<repository> <!-- Virtuoso JDBC -->
-			<id>odcs-thirdparty</id>
-			<url>http://gd.projekty.ms.mff.cuni.cz:9123/nexus/content/repositories/thirdparty</url>
-		</repository>
-
 		<repository> <!-- spring repository -->
 			<id>com.springsource.repository.bundles.release</id>
 			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>

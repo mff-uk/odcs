@@ -1,8 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.metadata;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openrdf.model.BNode;
@@ -10,6 +14,13 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.Dataset;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -21,18 +32,23 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
+import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public abstract class AbstractWritableMetadataDataUnit implements WritableMetadataDataUnit, ManagableDataUnit {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
 
-
     public static final String DATA_UNIT_STORE_GRAPH = "http://unifiedviews.eu/AbstractWritableMetadataDataUnit/storeGraph";
+
     public static final String DATA_UNIT_RDF_CONTAINSGRAPH_PREDICATE = "http://unifiedviews.eu/AbstractWritableMetadataDataUnit/containsGraph";
 
     public static final String DATA_UNIT_RDF_WRITEGRAPH_PREDICATE = "http://unifiedviews.eu/AbstractWritableMetadataDataUnit/writeGraph";
+
+    protected static final String SYMBOLIC_NAME_BINDING = "symbolicName";
+
+    protected static final String DUPLICATE_ENTRIES_QUERY = "SELECT DISTINCT ?" + SYMBOLIC_NAME_BINDING + " WHERE { "
+            + "?subject1 <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+            + "?subject2 <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+            + "FILTER ( ?subject1 != ?subject2 ) }";
 
     protected String dataUnitName;
 
@@ -57,8 +73,8 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         this.requestedConnections = new ArrayList<>();
         this.requestedConnectionsSource = new HashMap<>();
         this.ownerThread = Thread.currentThread();
-    }    
-    
+    }
+
     // MetadataDataUnit interface
     @Override
     public RepositoryConnection getConnection() throws DataUnitException {
@@ -67,7 +83,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                     + " owner: {} current: {}", ownerThread.getName(),
                     Thread.currentThread().getName());
         }
-
 
         try {
             RepositoryConnection connection = getConnectionInternal();
@@ -89,7 +104,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
     }
 
-
     // MetadataDataUnit interface
     @Override
     public Set<URI> getMetadataGraphnames() throws DataUnitException {
@@ -108,19 +122,12 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         if (!ownerThread.equals(Thread.currentThread())) {
             LOG.info("More than more thread is accessing this data unit");
         }
-        
+
         RepositoryConnection connection = null;
         try {
             // TODO michal.klempa think of not connecting everytime
             connection = getConnectionInternal();
             connection.begin();
-            // TODO michal.klempa - add one query at isReleaseReady instead of this
-//            BooleanQuery fileExistsQuery = connection.prepareBooleanQuery(QueryLanguage.SPARQL, String.format(FILE_EXISTS_ASK_QUERY, proposedSymbolicName));
-//            if (fileExistsQuery.evaluate()) {
-//                connection.rollback();
-//                throw new IllegalArgumentException("File with symbolic name "
-//                        + proposedSymbolicName + " already exists in scope of this data unit. Symbolic name must be unique.");
-//            }
             ValueFactory valueFactory = connection.getValueFactory();
             BNode blankNodeId = valueFactory.createBNode();
             Statement statement = valueFactory.createStatement(
@@ -181,18 +188,24 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     //ManagableDataUnit interface
     @Override
     public void isReleaseReady() {
+        List<String> duplicateSymbolicNames = checkDuplicateEntries(new DatasetBuilder().withDefaultGraphs(readContexts).withNamedGraphs(readContexts).build());
+        for (String duplicateSymbolicName : duplicateSymbolicNames) {
+            LOG.error("Symbolic name " + duplicateSymbolicName
+                    + " appears to be multiple times in RDF dataunit " + this.getName());
+        }
+
         int count = 0;
-        for (RepositoryConnection connection : requestedConnections) {
+        for (RepositoryConnection connection1 : requestedConnections) {
             try {
-                if (connection.isOpen()) {
+                if (connection1.isOpen()) {
                     count++;
                     // is open
                     LOG.error("Connection: is not closed connection opened on:\n{}",
-                            requestedConnectionsSource.get(connection));
+                            requestedConnectionsSource.get(connection1));
                 }
             } catch (RepositoryException ex) {
                 try {
-                    connection.close();
+                    connection1.close();
                 } catch (RepositoryException ex1) {
                     LOG.warn("Error when closing connection", ex1);
                     // eat close exception, we cannot do anything clever here
@@ -246,6 +259,21 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
 
         final AbstractWritableMetadataDataUnit otherRDFDataUnit = (AbstractWritableMetadataDataUnit) otherDataUnit;
+        List<String> duplicateSymbolicNames = checkDuplicateEntries(new DatasetBuilder()
+        .withDefaultGraphs(readContexts)
+        .withNamedGraphs(readContexts)
+        .withDefaultGraphs(otherRDFDataUnit.getMetadataGraphnames())
+        .withNamedGraphs(otherRDFDataUnit.getMetadataGraphnames())
+        .build());
+
+        for (String duplicateSymbolicName : duplicateSymbolicNames) {
+            LOG.error("Symbolic name " + duplicateSymbolicName
+                    + " appears to be in " + this.getType() + " dataunit " + this.getName()
+                    + " and also in merging " + this.getType() + " dataunit " + otherRDFDataUnit.getName());
+        }
+        if (!duplicateSymbolicNames.isEmpty()) {
+            throw new DataUnitException("Duplicate symbolic names found when automerging data units, execution stop to prevent data lost");
+        }
         this.readContexts.addAll(otherRDFDataUnit.getMetadataGraphnames());
     }
 
@@ -311,7 +339,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                 this.writeContext = valueFactory.createURI(writeContextStatement.getObject().stringValue());
                 i++;
             }
-            if ((i != 1) || (!readContexts.contains(writeContext))) {
+            if (i != 1 || !readContexts.contains(writeContext)) {
                 throw new RuntimeException("impossible");
             }
         } catch (DataUnitException | RepositoryException ex) {
@@ -326,5 +354,50 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                 }
             }
         }
+    }
+
+    private List<String> checkDuplicateEntries(Dataset dataset) {
+        RepositoryConnection connection = null;
+        List<String> resultList = new ArrayList<>();
+        try {
+            connection = getConnectionInternal();
+            connection.begin();
+            TupleQuery duplicateEntries = connection.prepareTupleQuery(QueryLanguage.SPARQL, DUPLICATE_ENTRIES_QUERY);
+            duplicateEntries.setDataset(dataset);
+
+            TupleQueryResult result = null;
+            try {
+                result = duplicateEntries.evaluate();
+                if (result.hasNext()) {
+                    while (result.hasNext()) {
+                        BindingSet bindingSet = result.next();
+                        String symbolicName = bindingSet.getValue(SYMBOLIC_NAME_BINDING).stringValue();
+                        resultList.add(symbolicName);
+                    }
+                }
+            } catch (QueryEvaluationException ex) {
+                LOG.error("Error when checking duplicates.", ex);
+            } finally {
+                if (result != null) {
+                    try {
+                        result.close();
+                    } catch (QueryEvaluationException ex) {
+                        LOG.warn("Error in close", ex);
+                    }
+                }
+            }
+            connection.commit();
+        } catch (RepositoryException | MalformedQueryException ex) {
+            LOG.error("Error when checking duplicates.", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                }
+            }
+        }
+        return resultList;
     }
 }

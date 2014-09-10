@@ -33,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
@@ -116,6 +117,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private Page.BrowserWindowResizeListener resizeListener = null;
 
     private Panel dpuTreePanel;
+    
+    @Autowired
+    private Utils utils;
     
     /**
      * Constructor.
@@ -840,7 +844,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         instancesTable.setSortContainerPropertyId(property);
         instancesTable.setSortAscending(true);
         instancesTable.sort();
-        instancesTable.setPageLength(10);
+        instancesTable.setPageLength(utils.getPageLength());
         instancesTable.setWidth("100%");
         instancesTable.setImmediate(true);
 //		instancesTable.setVisibleColumns((Object[]) visibleCols);
@@ -856,7 +860,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         verticalLayoutInstances.addComponent(instancesTable);
         verticalLayoutInstances.addComponent(instancesTable.createControls());
         instancesTable.setFilterFieldVisible("actions", false);
-        instancesTable.setPageLength(6);
 
         return verticalLayoutInstances;
     }

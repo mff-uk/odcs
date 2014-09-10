@@ -1,8 +1,13 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.nativerdf.NativeStore;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
@@ -28,6 +33,8 @@ public class TestDataUnitFactory {
      */
     private final File workingDirectory;
 
+    private final Map<String, Repository> initializedRepositories = new HashMap<String, Repository>();
+
     /**
      * Create a {@link TestDataUnitFactory} that use given directory as working
      * directory.
@@ -50,12 +57,21 @@ public class TestDataUnitFactory {
      * @return New {@link ManagableRdfDataUnit}.
      * @throws RepositoryException
      */
-    public ManagableRdfDataUnit createRDFDataUnit(String name) {
+    public ManagableRdfDataUnit createRDFDataUnit(String name) throws RepositoryException {
         synchronized (counterLock) {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
+            String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+            Repository repository = initializedRepositories.get(pipelineId);
+            if (repository == null) {
+                repository = new SailRepository(new NativeStore(new File(workingDirectory, pipelineId)));
+                repository.initialize();
+                initializedRepositories.put(pipelineId, repository);
+            }
 
-            return new LocalRDFDataUnit(workingDirectory.toString(), "test_env_" + String.valueOf(this.hashCode()), name,
+            return new LocalRDFDataUnit(
+                    repository,
+                    name,
                     namedGraph);
         }
     }

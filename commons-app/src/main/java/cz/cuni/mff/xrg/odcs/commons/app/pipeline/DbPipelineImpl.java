@@ -79,6 +79,6 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
     	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
     	query.setParameter("ids", pipelinesIds);
     	Long number = (Long) query.getSingleResult();
-    	return !number.equals(pipelinesIds.size());
+    	return !number.equals((long)pipelinesIds.size());
     }
 }

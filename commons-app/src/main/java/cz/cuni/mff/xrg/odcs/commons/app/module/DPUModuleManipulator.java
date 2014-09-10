@@ -94,8 +94,12 @@ public class DPUModuleManipulator {
         if (newDPUDir.exists()) {
         	DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
         	
-        	if (parent.getName().equals(name)) { // the same jarFileName and name
-				throw new DPUCreateException("DPU already exists.");
+        	if (parent == null) {
+				throw new DPUCreateException("DPU " + newDpuFileName + " already exists but with different version.");
+			}
+        	
+        	if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
+				throw new DPUCreateException("DPU " + newDpuFileName + " already exists.");
 			}
         	
         	newTemplate = dpuFacade.createTemplate(name, null);
