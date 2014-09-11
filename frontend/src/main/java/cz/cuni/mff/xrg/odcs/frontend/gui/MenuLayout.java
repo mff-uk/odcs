@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -140,7 +141,8 @@ public class MenuLayout extends CustomComponent {
         
         HorizontalLayout headerLine = new HorizontalLayout(Logo, backendStatus, logOutButton, userName);
         headerLine.setSpacing(false);
-        headerLine.setHeight("30px");
+        headerLine.setMargin(new MarginInfo(false, true, false, true));
+        headerLine.setHeight("75px");
         headerLine.addStyleName("headerPanel");
         headerLine.setComponentAlignment(Logo, Alignment.MIDDLE_LEFT);
         headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
