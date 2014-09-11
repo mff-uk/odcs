@@ -21,10 +21,8 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
-import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
@@ -41,13 +39,16 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
  * Simple query view for browsing and querying debug data. User selects DPU and
  * then specifies DataUnit. User can simply browse the data, or query them. Both
  * SELECT and CONSTRUCT query can be used to show data in table and also to
  * download them. User can select format of data.
- * 
+ *
  * @author Bogo
  */
 public class RDFQueryView extends QueryView {
@@ -114,7 +115,7 @@ public class RDFQueryView extends QueryView {
                     Notification.show("Query Validator",
                             "Query is not valid: "
                                     + e.getCause().getMessage(),
-                            Notification.Type.ERROR_MESSAGE);
+                                    Notification.Type.ERROR_MESSAGE);
                 }
             }
         });
@@ -331,7 +332,7 @@ public class RDFQueryView extends QueryView {
 
     /**
      * Execute query on selected graph.
-     * 
+     *
      * @param isBrowse
      *            Is it browse query?
      * @throws InvalidQueryException
@@ -348,7 +349,7 @@ public class RDFQueryView extends QueryView {
             Notification.show("Query Validator",
                     "Query is not valid: "
                             + validator.getErrorMessage(),
-                    Notification.Type.ERROR_MESSAGE);
+                            Notification.Type.ERROR_MESSAGE);
             return;
         }
 
@@ -394,7 +395,7 @@ public class RDFQueryView extends QueryView {
 
     @Override
     public void browseDataUnit() {
-        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}");
+        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o} LIMIT 1000");
         try {
             runQuery();
         } catch (InvalidQueryException ex) {
@@ -415,7 +416,7 @@ public class RDFQueryView extends QueryView {
 
     /**
      * Prepare data file for download after SELECT or CONSTRUCT query.
-     * 
+     *
      * @param repository
      *            {@link LocalRDFDataUnit} of selected graph.
      * @param query
@@ -461,7 +462,7 @@ public class RDFQueryView extends QueryView {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection,RDFHelper.getGraphsURISet(repository), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, RDFHelper.getGraphsURISet(repository), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);
@@ -476,7 +477,7 @@ public class RDFQueryView extends QueryView {
             Notification.show("Query Validator",
                     "Query is not valid: "
                             + ex.getCause().getMessage(),
-                    Notification.Type.ERROR_MESSAGE);
+                            Notification.Type.ERROR_MESSAGE);
         } catch (DataUnitException ex) {
             Notification.show("Problem with DataUnit",
                     ex.getCause().getMessage(),
