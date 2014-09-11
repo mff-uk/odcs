@@ -181,15 +181,15 @@ public class LogTable extends CustomComponent {
     private ThemeResource getIconForLevel(Level level) {
         ThemeResource img = null;
         if (level == Level.INFO) {
-            img = new ThemeResource("icons/log.png");
+            img = new ThemeResource("icons/log.svg");
         } else if (level == Level.DEBUG) {
-            img = new ThemeResource("icons/debug.png");
+            img = new ThemeResource("icons/debug.svg");
         } else if (level == Level.WARN) {
-            img = new ThemeResource("icons/warning.png");
+            img = new ThemeResource("icons/warning.svg");
         } else if (level == Level.ERROR) {
-            img = new ThemeResource("icons/error.png");
+            img = new ThemeResource("icons/error.svg");
         } else if (level == Level.TRACE) {
-            img = new ThemeResource("icons/trace.png");
+            img = new ThemeResource("icons/trace.svg");
         }
         return img;
     }

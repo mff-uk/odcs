@@ -160,7 +160,7 @@ public class DPUTree extends CustomComponent {
             }
         });
         btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
-        btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
+        btnMinimize.setIcon(new ThemeResource("icons/collapse.svg"));
         btnMinimize.setDescription("Minimize DPU tree");
         topLine.addComponent(btnMinimize);
         topLine.setExpandRatio(btnMinimize, 1.0f);
@@ -174,7 +174,7 @@ public class DPUTree extends CustomComponent {
             }
         });
         btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
-        btnExpand.setIcon(new ThemeResource("icons/expand.png"));
+        btnExpand.setIcon(new ThemeResource("icons/expand.svg"));
         btnExpand.setDescription("Expand DPU tree");
         btnExpand.setVisible(false);
         topLine.addComponent(btnExpand);

@@ -76,6 +76,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline.setCaption("Create pipeline");
         btnCreatePipeline.setHeight("25px");
         btnCreatePipeline.setWidth("120px");
+        btnCreatePipeline.addStyleName("v-button-primary");
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -89,6 +90,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline.setCaption("Import pipeline");
         btnImportPipeline.setHeight("25px");
         btnImportPipeline.setWidth("120px");
+        btnImportPipeline.addStyleName("v-button-primary");
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -102,6 +104,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         buttonDeleteFilters.setCaption("Clear Filters");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("120px");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.addClickListener(new ClickListener() {
 
             @Override
@@ -201,7 +204,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.copyEventHandler(id);
             }
-        }, new ThemeResource("img/copy.png"));
+        }, new ThemeResource("icons/copy.png"));
 
         generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
             @Override

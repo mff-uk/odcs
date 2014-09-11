@@ -197,6 +197,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         btnRefresh.setWidth("120px");
+        btnRefresh.addStyleName("v-button-primary");
         topLine.addComponent(btnRefresh);
 
         //Clear Filters button. Clearing filters on the table with executions.
@@ -204,6 +205,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         btnClearFilters.setCaption("Clear Filters");
         btnClearFilters.setHeight("25px");
         btnClearFilters.setWidth("120px");
+        btnClearFilters.addStyleName("v-button-primary");
         btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -515,6 +517,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                         presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
                     }
                 });
+                btnEdit.addStyleName("small_button");
                 btnEdit.setIcon(new ThemeResource("icons/gear.png"));
                 Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
                 lblPipelineName.setStyleName("clickable-table-cell");
