@@ -322,6 +322,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
+        btnMinimize.addStyleName("expand-minimize");
         btnMinimize.setIcon(new ThemeResource("icons/collapse.svg"));
         btnMinimize.setDescription("Minimize pipeline detail");
         btnMinimize.setVisible(isExpanded);
@@ -336,6 +337,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
+        btnExpand.addStyleName("expand-minimize");
         btnExpand.setIcon(new ThemeResource("icons/expand.svg"));
         btnExpand.setDescription("Expand pipeline detail");
         btnExpand.setVisible(false);
