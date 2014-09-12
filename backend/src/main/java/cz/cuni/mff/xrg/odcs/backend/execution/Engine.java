@@ -116,7 +116,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     @Async
     @Scheduled(fixedDelay = 20000)
-    protected  void checkJobs() {
+    protected void checkJobs() {
         synchronized (Lock) {
             LOG.debug(">>> Entering checkJobs()");
             if (!startUpDone) {
