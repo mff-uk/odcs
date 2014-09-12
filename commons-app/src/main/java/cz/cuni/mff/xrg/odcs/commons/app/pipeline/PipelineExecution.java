@@ -57,6 +57,12 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @Column(name = "debug_mode")
     private boolean isDebugging;
 
+
+    @Column(name = "order_number")
+    private Long order;
+
+    @Column(name = "created_epoch")
+    private Long created;
     /**
      * Timestamp when this execution started, or null.
      */
@@ -133,6 +139,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
         this.schedule = null;
         this.silentMode = true;
         this.stop = false;
+        this.created = (long) System.currentTimeMillis();
 
         // Execution context is obligatory, so that we do not need to check for
         // nulls everywhere. A new execution has an empty context.
@@ -389,6 +396,22 @@ public class PipelineExecution implements OwnedEntity, DataObject {
             return -1;
         }
         return end.getTime() - start.getTime();
+    }
+
+    public Long getOrderPosition() {
+        return order;
+    }
+
+    public void setOrder(Long order) {
+        this.order = order;
+    }
+
+    public Long getCreated() {
+        return created;
+    }
+
+    public void setCreated(Long created) {
+        this.created = created;
     }
 
     /**

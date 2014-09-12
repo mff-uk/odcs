@@ -660,6 +660,8 @@ public class SchedulePipeline extends Window {
                         scheduleFacade.deleteNotification(schedule.getNotification());
                     } else {
                         // store scheduling rule record to DB
+                        // TODO read priority from gui
+                        schedule.setPriority((long)2);
                         scheduleFacade.save(schedule);
                         Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 

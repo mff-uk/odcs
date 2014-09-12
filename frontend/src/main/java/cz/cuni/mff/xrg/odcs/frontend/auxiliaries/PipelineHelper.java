@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -57,6 +58,8 @@ public class PipelineHelper {
         }
 
         try {
+            // run immediately - set the highest priority
+            pipelineExec.setOrder((long) JobsTypes.UNLIMITED);
             pipelineFacade.save(pipelineExec);
             checkDatabaseService.checkDatabase();
         } catch (RemoteAccessException e) {
