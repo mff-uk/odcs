@@ -2,7 +2,7 @@ UnifiedViews License
 ====================
 
 UnifiedViews is meant to be an free and open source for all now and in future.
-We encourage continuous, self sustainable development supported by both the open source community and commercial stake holders. This way both parties (community and commercial users) profit from each other by code and financial resources for core development. Therefore we adopted a dual licensing approach for UnifiedViews. All contributor need to agree and sign the CLA (Contribution Agreement), if they want to push in the master repository of UnifiedViews.
+We encourage continuous, self sustainable development supported by both the open source community and commercial stake holders. This way both parties (community and commercial users) profit from each other by code and financial resources for core development. Therefore we adopted a dual licensing approach for UnifiedViews. All contributor need to agree and sign the CLA (https://github.com/UnifiedViews/Core/blob/master/ContributorAgreement_UnifiedViews.pdf), if they want to push in the master repository of UnifiedViews.
 
 Open source Software License
 ====================
