@@ -59,7 +59,7 @@ public class PipelineHelper {
 
         try {
             // run immediately - set the highest priority
-            pipelineExec.setOrder((long) JobsTypes.UNLIMITED);
+            pipelineExec.setOrder(JobsTypes.UNLIMITED);
             pipelineFacade.save(pipelineExec);
             checkDatabaseService.checkDatabase();
         } catch (RemoteAccessException e) {
