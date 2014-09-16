@@ -234,7 +234,7 @@ public class ExportService {
      */
     private void saveDPUJar(DPUTemplateRecord template,
             ZipOutputStream zipStream)
-            throws ExportException {
+                    throws ExportException {
         // we copy the structure in dpu directory
         final File source;
         try {
@@ -375,14 +375,20 @@ public class ExportService {
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", DpuItem.class);
 
-        String serializedDpuItem = xStream.toXML(dpus);
-        LOG.debug("used dpus:\n{}", serializedDpuItem);
+        File serializedTarget;
+        try {
+            serializedTarget = File.createTempFile("temp", ".tmp");
+        } catch (IOException ex2) {
+            throw new ExportException("Error", ex2);
+        }
+        try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
+            xStream.toXML(dpus, foutStream);
+        } catch (IOException ex1) {
+            throw new ExportException("Error", ex1);
+        }
 
         byte[] buffer = new byte[4096];
         try {
-            File serializedTarget = File.createTempFile("temp", ".tmp");
-            FileUtils.writeStringToFile(serializedTarget, serializedDpuItem);
-
             final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
             zipStream.putNextEntry(ze);
 
