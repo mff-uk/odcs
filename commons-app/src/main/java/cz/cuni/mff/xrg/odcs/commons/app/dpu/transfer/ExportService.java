@@ -27,98 +27,98 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
- * Exporting DPU info file 
- * 
+ * Exporting DPU info file
+ *
  * @author mvi
  *
  */
 public class ExportService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ExportService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExportService.class);
 
-	@Autowired
+    @Autowired
     private ResourceManager resourceManager;
-	
-	@Autowired(required = false)
+
+    @Autowired(required = false)
     private AuthenticationContext authCtx;
-	
-	public File exportDPUs(List<DPUTemplateRecord> dpusToExport) throws ExportException {
-		
-		checkAuth(getAuthCtx());
-		
-		final File tempDir = createTempDir();
+
+    public File exportDPUs(List<DPUTemplateRecord> dpusToExport) throws ExportException {
+
+        checkAuth(getAuthCtx());
+
+        final File tempDir = createTempDir();
         File targetFile = new File(tempDir, "dpu_export.zip");
-        
+
         ZipOutputStream zipStream = null;
         try {
             zipStream = new ZipOutputStream(new FileOutputStream(targetFile));
 
             Set<String> savedTemplateDir = new HashSet<String>();
-            
+
             // export dpu jars
             for (DPUTemplateRecord dpuTemplateRecord : dpusToExport) {
-            	if (savedTemplateDir.contains(dpuTemplateRecord.getJarDirectory())) {
-					continue; // already saved jar
-				} else {
-					savedTemplateDir.add(dpuTemplateRecord.getJarDirectory());
-				}
-            	exportDPUJar(dpuTemplateRecord, zipStream);
+                if (savedTemplateDir.contains(dpuTemplateRecord.getJarDirectory())) {
+                    continue; // already saved jar
+                } else {
+                    savedTemplateDir.add(dpuTemplateRecord.getJarDirectory());
+                }
+                exportDPUJar(dpuTemplateRecord, zipStream);
             }
-            
+
             // create .lst file with description
             exportTemplates(dpusToExport, zipStream);
-		} catch (IOException ex) {
-			LOG.error("Failed to prepare file with exported pipeline", ex);
+        } catch (IOException ex) {
+            LOG.error("Failed to prepare file with exported pipeline", ex);
             targetFile.delete();
             throw new ExportException(
                     "Failed to prepare file with exported pipeline", ex);
         } finally {
-        	if (zipStream != null) {
-				try {
-					zipStream.close();
-				} catch (IOException e) {
-					targetFile.delete();
-					throw new ExportException(
-		                    "Failed to close zip stream.", e);
-				}
-			}
+            if (zipStream != null) {
+                try {
+                    zipStream.close();
+                } catch (IOException e) {
+                    targetFile.delete();
+                    throw new ExportException(
+                            "Failed to close zip stream.", e);
+                }
+            }
         }
-        
-		return targetFile;
-	}
 
-	/**
-	 * Serialise dpu list into zip stream.
-	 * 
-	 * @param dpusToExport
-	 * @param zipStream
-	 * @throws ExportException
-	 */
-	private void exportTemplates(List<DPUTemplateRecord> dpusToExport,
-			ZipOutputStream zipStream) throws ExportException {
+        return targetFile;
+    }
+
+    /**
+     * Serialise dpu list into zip stream.
+     *
+     * @param dpusToExport
+     * @param zipStream
+     * @throws ExportException
+     */
+    private void exportTemplates(List<DPUTemplateRecord> dpusToExport,
+            ZipOutputStream zipStream) throws ExportException {
         final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver("UTF-8"));
-        
+
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
             zipStream.putNextEntry(ze);
             // write into entry
             xStream.toXML(dpusToExport, zipStream);
         } catch (IOException ex) {
-        	LOG.error("Failed to serialize dpu list.", ex);
+            LOG.error("Failed to serialize dpu list.", ex);
             throw new ExportException("Failed to serialize dpu list.", ex);
         }
     }
 
-	/**
+    /**
      * Save jar file for given DPU into given directory.
      *
      * @param template
      * @param zipStream
      * @throws ExportException
      */
-	private void exportDPUJar(DPUTemplateRecord dpuTemplateRecord,
-			ZipOutputStream zipStream) throws ExportException {
-		// we copy the structure in dpu directory
+    private void exportDPUJar(DPUTemplateRecord dpuTemplateRecord,
+            ZipOutputStream zipStream) throws ExportException {
+        // we copy the structure in dpu directory
         final File source;
         try {
             source = resourceManager.getDPUJarFile(dpuTemplateRecord);
@@ -137,31 +137,31 @@ public class ExportService {
                 }
             }
         } catch (IOException ex) {
-        	LOG.error("Failed to copy jar for dpu " + dpuTemplateRecord.getName(), ex);
+            LOG.error("Failed to copy jar for dpu " + dpuTemplateRecord.getName(), ex);
             throw new ExportException("Failed to copy jar file.", ex);
         }
-	}
+    }
 
-	private File createTempDir() throws ExportException {
-		try {
+    private File createTempDir() throws ExportException {
+        try {
             return resourceManager.getNewExportTempDir();
         } catch (MissingResourceException ex) {
             throw new ExportException("Failed to get temp directory.", ex);
         }
-	}
+    }
 
-	private void checkAuth(AuthenticationContext authCtx) throws ExportException {
-		if (authCtx == null) {
+    private void checkAuth(AuthenticationContext authCtx) throws ExportException {
+        if (authCtx == null) {
             throw new ExportException("AuthenticationContext is null.");
         }
         final User user = authCtx.getUser();
         if (user == null) {
             throw new ExportException("Unknown user.");
         }
-	}
+    }
 
-	public AuthenticationContext getAuthCtx() {
-		return authCtx;
-	}
-	
+    public AuthenticationContext getAuthCtx() {
+        return authCtx;
+    }
+
 }

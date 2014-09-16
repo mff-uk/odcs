@@ -47,7 +47,7 @@ public class ExportService {
     private static final Logger LOG = LoggerFactory.getLogger(
             ExportService.class);
 
-	private static final String XML_ENCODING = "UTF-8";
+    private static final String XML_ENCODING = "UTF-8";
 
     @Autowired
     private ScheduleFacade scheduleFacade;
@@ -171,18 +171,18 @@ public class ExportService {
         }
     }
 
-    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException{
-    	final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
-    	try {
-			final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
-			zipStream.putNextEntry(ze);
-			xStream.toXML(savedTemplates, zipStream);
-		} catch (IOException e) {
-			throw new ExportException("Failed to serialize dpu template information.", e);
-		}
-	}
+    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException {
+        final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
+        try {
+            final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
+            zipStream.putNextEntry(ze);
+            xStream.toXML(savedTemplates, zipStream);
+        } catch (IOException e) {
+            throw new ExportException("Failed to serialize dpu template information.", e);
+        }
+    }
 
-	/**
+    /**
      * Serialise pipeline into zip stream.
      *
      * @param pipeline
@@ -234,7 +234,7 @@ public class ExportService {
      */
     private void saveDPUJar(DPUTemplateRecord template,
             ZipOutputStream zipStream)
-            throws ExportException {
+                    throws ExportException {
         // we copy the structure in dpu directory
         final File source;
         try {
