@@ -15,7 +15,7 @@ public enum ConfigProperty {
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
-    BACKEND_NUMBER_OF_RUNNING_PIPELINES("backend.limitOfRunningPipelines"),
+    BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
 
 
     EXECUTION_LOG_HISTORY("exec.log.history"),

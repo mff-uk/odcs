@@ -38,7 +38,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 public class Engine implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
-    public Integer limitOfRunningJob = 2 ;
+    public Integer limitOfScheduledPipelines = 2 ;
     public Integer numberOfRunningJobs = 0;
     private final Integer LockRunningJobs = new Integer(numberOfRunningJobs);
 
@@ -88,7 +88,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         workingDirectory = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-        limitOfRunningJob = appConfig.getInteger(ConfigProperty.BACKEND_NUMBER_OF_RUNNING_PIPELINES);
+        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
         LOG.info("Working dir: {}", workingDirectory.toString());
         // make sure that our working directory exist
         if (workingDirectory.isDirectory()) {
@@ -129,14 +129,14 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
-                //TODO blba podmienka! and  (numberOfRunningJobs < limitOfRunningJob) rozbija constrains tohto systemu -> sveto
+                //TODO blba podmienka! and  (numberOfRunningJobs < limitOfScheduledPipelines) rozbija constrains tohto systemu -> sveto
                 if (job.getOrderPosition() == JobsTypes.UNLIMITED) {
                     run(job);
                     numberOfRunningJobs++;
                     continue;
                 }
 
-                if (numberOfRunningJobs < limitOfRunningJob) {
+                if (numberOfRunningJobs < limitOfScheduledPipelines) {
                     run(job);
                     numberOfRunningJobs++;
                 } else {

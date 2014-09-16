@@ -70,7 +70,7 @@ public class SchedulerTest {
         scheduler.timeBasedCheck();
 
         EngineMock engine = new EngineMock();
-        engine.limitOfRunningJob = 2;
+        engine.limitOfScheduledPipelines = 2;
         engine.setPipelineFacade(pipelineFacade);
 
         engine.doCheck();
@@ -107,7 +107,7 @@ public class SchedulerTest {
         scheduler.timeBasedCheck();
 
         EngineMock engine = new EngineMock();
-        engine.limitOfRunningJob = 2;
+        engine.limitOfScheduledPipelines = 2;
         engine.setPipelineFacade(pipelineFacade);
 
         System.out.println("id: {} " + schedule.getId());
@@ -159,7 +159,7 @@ public class SchedulerTest {
         scheduler.timeBasedCheck();
 
         EngineMock engine = new EngineMock();
-        engine.limitOfRunningJob = 2;
+        engine.limitOfScheduledPipelines = 2;
         engine.setPipelineFacade(pipelineFacade);
 
         engine.doCheck();
