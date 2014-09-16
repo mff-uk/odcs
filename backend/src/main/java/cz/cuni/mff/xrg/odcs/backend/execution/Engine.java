@@ -41,7 +41,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     // TODO from config
     public Integer limitOfRunningJob = 2 ;
     public Integer numberOfRunningJobs = 0;
-    private final Integer Lock = new Integer(numberOfRunningJobs);
+    private final Integer LockRunningJobs = new Integer(numberOfRunningJobs);
 
     /**
      * Publisher instance.
@@ -117,7 +117,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     @Async
     @Scheduled(fixedDelay = 20000)
     protected void checkJobs() {
-        synchronized (Lock) {
+        synchronized (LockRunningJobs) {
             LOG.debug(">>> Entering checkJobs()");
             if (!startUpDone) {
                 // we does not start any execution
@@ -201,7 +201,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof PipelineFinished) {
-            synchronized (Lock) {
+            synchronized (LockRunningJobs) {
                 if (numberOfRunningJobs >= 0)
                     numberOfRunningJobs--;
             }
