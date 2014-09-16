@@ -169,9 +169,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         Long priority = schedule.getPriority();
         Long orderPosition;
         if (priority == JobsTypes.UNLIMITED) {
-            orderPosition = (long) JobsTypes.UNLIMITED;
+            orderPosition = JobsTypes.UNLIMITED;
         } else {
-            orderPosition = (long) epoch / priority;
+            // because divided by zero
+            if (priority == JobsTypes.MAX_PRIORITY) {
+                orderPosition = epoch;
+            } else {
+                orderPosition = (epoch / priority);
+            }
         }
 
         pipelineExec.setOrder(orderPosition);
