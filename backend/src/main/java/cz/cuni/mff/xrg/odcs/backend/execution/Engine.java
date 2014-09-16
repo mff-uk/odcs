@@ -38,7 +38,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 public class Engine implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
-    // TODO from config
     public Integer limitOfRunningJob = 2 ;
     public Integer numberOfRunningJobs = 0;
     private final Integer LockRunningJobs = new Integer(numberOfRunningJobs);
@@ -89,6 +88,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         workingDirectory = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
+        limitOfRunningJob = appConfig.getInteger(ConfigProperty.BACKEND_NUMBER_OF_RUNNING_PIPELINES);
         LOG.info("Working dir: {}", workingDirectory.toString());
         // make sure that our working directory exist
         if (workingDirectory.isDirectory()) {
