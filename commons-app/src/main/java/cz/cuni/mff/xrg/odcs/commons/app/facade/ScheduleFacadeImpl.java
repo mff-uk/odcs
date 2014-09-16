@@ -179,7 +179,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
             }
         }
 
-        pipelineExec.setOrder(orderPosition);
+        pipelineExec.setOrderPosition(orderPosition);
 
         // save data into DB -> in next DB check Engine start the execution
         pipelineFacade.save(pipelineExec);

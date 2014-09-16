@@ -402,7 +402,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
         return order;
     }
 
-    public void setOrder(Long order) {
+    public void setOrderPosition(Long order) {
         this.order = order;
     }
 
