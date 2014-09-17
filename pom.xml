@@ -46,8 +46,6 @@
 	</properties>
 
 	<modules>
-		<!-- commons -->
-		<module>plugin_devenv</module>
 		<!-- dataunits -->
 		<module>dataunit</module>
 		<module>dataunit-file</module>
