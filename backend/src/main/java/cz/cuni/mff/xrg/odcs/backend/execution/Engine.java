@@ -129,8 +129,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
-                //TODO blba podmienka! and  (numberOfRunningJobs < limitOfScheduledPipelines) rozbija constrains tohto systemu -> sveto
-                if (job.getOrderPosition() == JobsTypes.UNLIMITED) {
+                if (job.getOrderPosition() == JobsTypes.UNSCHEDULED) {
                     run(job);
                     numberOfRunningJobs++;
                     continue;

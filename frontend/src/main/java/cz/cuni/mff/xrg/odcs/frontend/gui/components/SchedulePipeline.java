@@ -1,11 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +69,11 @@ public class SchedulePipeline extends Window {
 
     private ComboBox comboEvery;
 
+    private ComboBox priorityComboBox;
+
     private HorizontalLayout toleranceLayout;
+
+    private VerticalLayout priorityLayout;
 
     private TextField tfTolerance;
 
@@ -660,8 +661,9 @@ public class SchedulePipeline extends Window {
                         scheduleFacade.deleteNotification(schedule.getNotification());
                     } else {
                         // store scheduling rule record to DB
-                        // TODO read priority from gui
-                        schedule.setPriority((long)2);
+                        ScheduledJobsPriority job = (ScheduledJobsPriority) priorityComboBox.getValue();
+                        Long priority = job.getValue();
+                        schedule.setPriority(priority);
                         scheduleFacade.save(schedule);
                         Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
@@ -1030,6 +1032,8 @@ public class SchedulePipeline extends Window {
 
         strictlyTimedLayout.addComponent(strictlyTimed);
 
+        priorityLayout = new VerticalLayout();
+        
         toleranceLayout = new HorizontalLayout();
         toleranceLayout.setSpacing(true);
         toleranceLayout.setEnabled(false);
@@ -1053,12 +1057,42 @@ public class SchedulePipeline extends Window {
             }
         });
 
+
         toleranceLayout.addComponent(tfTolerance);
 
         toleranceLayout.addComponent(new Label("minutes"));
 
+        priorityComboBox = new ComboBox();
+        priorityComboBox.setNullSelectionAllowed(false);
+        priorityComboBox.setTextInputAllowed(false);
+        priorityComboBox.setImmediate(true);
+        // Add some items
+        for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+            priorityComboBox.addItem(job);
+        }
+
+        priorityComboBox.setValue(ScheduledJobsPriority.A);
+        HorizontalLayout priorityComboBoxLayout = new HorizontalLayout();
+
+        Label priorityLabel = new Label("Priority");
+        priorityComboBoxLayout.addComponent(priorityLabel);
+        
+        Label priorityDescription = new Label(ScheduledJobsPriority.A.name() + " - The highest priority, " + ScheduledJobsPriority.J.name() +" - the lowest priority");
+        priorityComboBoxLayout.addComponent(priorityComboBox);
+        priorityComboBoxLayout.setComponentAlignment(priorityComboBox, Alignment.BOTTOM_RIGHT);
+
+        priorityLayout.addComponent(priorityComboBoxLayout);
+       
+        HorizontalLayout priorityDescLayout = new HorizontalLayout();
+
+        priorityDescLayout.addComponent(priorityDescription);
+        priorityLayout.addComponent(priorityDescription);
+
         strictlyTimedLayout.addComponent(toleranceLayout);
         dateIntervalLayout.addComponent(strictlyTimedLayout);
+        dateIntervalLayout.addComponent(priorityLayout);
+        
+
 
         autoLayout.addComponent(firstExecutionLayout);
         autoLayout.addComponent(new Label(" "));

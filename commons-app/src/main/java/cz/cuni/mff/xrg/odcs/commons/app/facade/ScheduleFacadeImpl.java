@@ -168,10 +168,10 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         Long epoch = pipelineExec.getCreated();
         Long priority = schedule.getPriority();
         Long orderPosition;
-        if (priority == JobsTypes.UNLIMITED) {
-            orderPosition = JobsTypes.UNLIMITED;
+        if (priority == JobsTypes.UNSCHEDULED) {
+            orderPosition = JobsTypes.UNSCHEDULED;
         } else {
-            // because divided by zero
+            // because we divide by zero
             if (priority == JobsTypes.MAX_PRIORITY) {
                 orderPosition = epoch;
             } else {
