@@ -3,12 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.*;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 import org.junit.Assert;
@@ -41,7 +36,7 @@ public class ImportTest {
                 "/pipeline.zip");
 
         File zipFile = new File(zipResource.toURI());
-        importService.unpack(zipFile, tmpDir);
+        ZipCommons.unpack(zipFile, tmpDir);
         Pipeline pipeline = importService.loadPipeline(tmpDir);
         ExportService exportService = new ExportService();
         ExportService exportServiceMock = spy(exportService);
@@ -68,7 +63,7 @@ public class ImportTest {
                 "/pipelineWithUsedDpus.zip");
 
         File zipFile = new File(zipResource.toURI());
-        importService.unpack(zipFile, tmpDir);
+        ZipCommons.unpack(zipFile, tmpDir);
         List<DpuItem> result = importService.loadUsedDpus(tmpDir);
         Assert.assertEquals(result.size(), 2);
     }

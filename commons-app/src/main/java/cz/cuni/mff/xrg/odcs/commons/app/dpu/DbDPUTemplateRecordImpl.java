@@ -63,4 +63,16 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 		
 	}
 
+    @Override
+    public DPUTemplateRecord getByName(String name) {
+        final String stringQuery = "SELECT e FROM DPUTemplateRecord e"
+                + " WHERE e.name = :name";
+
+        TypedQuery<DPUTemplateRecord> query = createTypedQuery(stringQuery);
+        query.setParameter("name", name);
+
+        return execute(query);
+
+    }
+
 }

@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>eu.unifiedviews</groupId>
-		<artifactId>dpu-core-base-pom</artifactId>
-		<version>1.0.0</version>
-		<relativePath>../dpu-core-base-pom.xml</relativePath>
-	</parent>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.unifiedviews</groupId>
+        <artifactId>dpu-core-base-pom</artifactId>
+        <version>1.3.1</version>
+        <relativePath>../dpu-core-base-pom.xml</relativePath>
+    </parent>
 
-	<groupId>eu.unifiedviews</groupId>
-	<artifactId>uv-t-filesMerger</artifactId>
+    <groupId>eu.unifiedviews</groupId>
+    <artifactId>uv-t-filesMerger</artifactId>
     <name>T-FilesMerger</name>
-	<description>Merges Files inputs in no time.</description>
-	<version>1.3.0</version>
-	<packaging>bundle</packaging>
+    <description>Merges Files inputs in no time.</description>
+    <version>1.3.1</version>
+    <packaging>bundle</packaging>
 
-	<properties>
-		<dpu.package>eu.unifiedviews.plugins.transformer.filesmerger</dpu.package>
-		<dpu.mainClass>FilesMerger</dpu.mainClass>
-	</properties>
+    <properties>
+        <dpu.package>eu.unifiedviews.plugins.transformer.filesmerger</dpu.package>
+        <dpu.mainClass>FilesMerger</dpu.mainClass>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
-			<artifactId>dataunit</artifactId>
-			<version>1.3.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>dataunit</artifactId>
+            <version>1.3.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

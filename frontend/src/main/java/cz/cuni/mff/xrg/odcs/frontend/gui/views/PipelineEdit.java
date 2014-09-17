@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.access.AccessDeniedException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.github.wolfie.refresher.Refresher;
@@ -34,6 +35,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
@@ -235,10 +237,10 @@ public class PipelineEdit extends ViewComponent {
         // or use this.entity.getEntity();
 
         if (this.pipeline == null) {
-            label.setValue("<h3>Pipeline '" + event.getParameters() + "' doesn't exist.</h3>");
+        	return;
         } else {
             setMode(hasPermission("save"));
-            label.setValue("<h3>Pipeline detail<h3>");
+            label.setValue("<h3>Pipeline detail for: '" + this.pipeline.getName() + "' <h3>");
         }
 
         refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
@@ -320,7 +322,8 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
-        btnMinimize.setIcon(new ThemeResource("icons/collapse.png"));
+        btnMinimize.addStyleName("expand-minimize");
+        btnMinimize.setIcon(new ThemeResource("icons/collapse.svg"));
         btnMinimize.setDescription("Minimize pipeline detail");
         btnMinimize.setVisible(isExpanded);
         topLine.addComponent(btnMinimize);
@@ -334,7 +337,8 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
-        btnExpand.setIcon(new ThemeResource("icons/expand.png"));
+        btnExpand.addStyleName("expand-minimize");
+        btnExpand.setIcon(new ThemeResource("icons/expand.svg"));
         btnExpand.setDescription("Expand pipeline detail");
         btnExpand.setVisible(false);
         topLine.addComponent(btnExpand);
@@ -352,7 +356,7 @@ public class PipelineEdit extends ViewComponent {
             @Override
             protected String getCss(Component c) {
                 if (c instanceof TabSheet) {
-                    return "margin-left: 0px; margin-top: 20px;";
+                    return "margin-left: 0px; margin-top: 5px;";
                 } else if (c instanceof Panel) {
                     return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
                 } else if (c instanceof HorizontalLayout) {
@@ -549,7 +553,7 @@ public class PipelineEdit extends ViewComponent {
                 calculateCanvasDimensions(bounds.getX(), bounds.getY());
             }
         });
-        zoomIn.setIcon(new ThemeResource("icons/zoom_in.png"), "Zoom in");
+        zoomIn.setIcon(new ThemeResource("icons/zoom_in.svg"), "Zoom in");
         //zoomIn.setWidth("110px");
         Button zoomOut = new Button();
         zoomOut.addClickListener(new Button.ClickListener() {
@@ -560,7 +564,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         zoomOut.setDescription("Zoom out");
-        zoomOut.setIcon(new ThemeResource("icons/zoom_out.png"), "Zoom out");
+        zoomOut.setIcon(new ThemeResource("icons/zoom_out.svg"), "Zoom out");
         //zoomOut.setWidth("110px");
         undo = new Button();
         undo.addClickListener(new Button.ClickListener() {
@@ -574,7 +578,7 @@ public class PipelineEdit extends ViewComponent {
         undo.setEnabled(false);
         undo.setImmediate(true);
         undo.setDescription("Undo");
-        undo.setIcon(new ThemeResource("icons/undo.png"), "Undo");
+        undo.setIcon(new ThemeResource("icons/undo.svg"), "Undo");
         //undo.setWidth("110px");
         HorizontalLayout topActions = new HorizontalLayout(zoomIn, zoomOut, undo);
 
@@ -1136,7 +1140,18 @@ public class PipelineEdit extends ViewComponent {
      */
     protected Pipeline loadPipeline(String id) {
         // get data from DB ..
-        this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+    	try {
+    		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+		} catch (AccessDeniedException e) {
+			Notification.show("Error opening pipeline detail.", "You don't have permission to view this pipeline", Type.ERROR_MESSAGE);
+			closeView();
+			return null;
+		}
+        if (this.pipeline == null) {
+        	Notification.show("Error opening pipeline detail.", "Pipeline doesn't exist.", Type.ERROR_MESSAGE);
+        	closeView();
+			return null;
+		}
         setIdLabel(pipeline.getId());
         author.setValue(pipeline.getOwner().getUsername());
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
@@ -1162,6 +1177,8 @@ public class PipelineEdit extends ViewComponent {
         if (isInteger(pipeIdstr)) {
             // use pipeIdstr as id
             this.pipeline = loadPipeline(pipeIdstr);
+            // hide details
+            setDetailState(false);
         } else {
             // create empty, for new record
             this.pipeline = pipelineFacade.createPipeline();
@@ -1361,42 +1378,42 @@ public class PipelineEdit extends ViewComponent {
         Button topAlign = new Button();
         topAlign.setData("align_top");
         topAlign.setDescription("Align top");
-        topAlign.setIcon(new ThemeResource("icons/arrow_top.png"), "Align top");
+        topAlign.setIcon(new ThemeResource("icons/arrow_top.svg"), "Align top");
         topAlign.addClickListener(listener);
         bar.addComponent(topAlign, 1, 0);
 
         Button bottomAlign = new Button();
         bottomAlign.setData("align_bottom");
         bottomAlign.setDescription("Align bottom");
-        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.png"), "Align bottom");
+        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.svg"), "Align bottom");
         bottomAlign.addClickListener(listener);
         bar.addComponent(bottomAlign, 1, 2);
 
         Button leftAlign = new Button();
         leftAlign.setData("align_left");
         leftAlign.setDescription("Align left");
-        leftAlign.setIcon(new ThemeResource("icons/arrow_left.png"), "Align left");
+        leftAlign.setIcon(new ThemeResource("icons/arrow_left.svg"), "Align left");
         leftAlign.addClickListener(listener);
         bar.addComponent(leftAlign, 0, 1);
 
         Button rightAlign = new Button();
         rightAlign.setData("align_right");
         rightAlign.setDescription("Align right");
-        rightAlign.setIcon(new ThemeResource("icons/arrow_right.png"), "Align right");
+        rightAlign.setIcon(new ThemeResource("icons/arrow_right.svg"), "Align right");
         rightAlign.addClickListener(listener);
         bar.addComponent(rightAlign, 2, 1);
 
         Button distributeHorizontal = new Button();
         distributeHorizontal.setData("distribute_horizontal");
         distributeHorizontal.setDescription("Distribute horizontally");
-        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.png"), "Distribute horizontally");
+        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.svg"), "Distribute horizontally");
         distributeHorizontal.addClickListener(listener);
         bar.addComponent(distributeHorizontal, 2, 0);
 
         Button distributeVertical = new Button();
         distributeVertical.setData("distribute_vertical");
         distributeVertical.setDescription("Distribute vertically");
-        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.png"), "Distribute vertically");
+        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.svg"), "Distribute vertically");
         distributeVertical.addClickListener(listener);
         bar.addComponent(distributeVertical, 2, 2);
 

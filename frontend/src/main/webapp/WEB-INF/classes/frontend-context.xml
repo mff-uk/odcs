@@ -2,8 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+							http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
     
     <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -17,6 +19,13 @@
     </bean>
     
     <import resource="classpath:commons-app-context.xml"/>
+    
+    <!-- we use annotations to run tasks -->
+    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
+    <!-- Used for asynch calls even for scheduled functions. -->
+    <task:executor id="taskExecutor" pool-size="8"/>
+    <!-- Used for Scheduled tasks.-->
+    <task:scheduler id="taskScheduler" pool-size="8"/>
 
     <!-- Scan Views for bean definitions. -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
@@ -48,6 +57,10 @@
     <!-- service for pipeline import-export -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService"/>
+    
+    <!-- service for dpu impor- export -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService"/>
 
     <!-- bean that provide functionality for manipulating with DPUs -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator"/>
@@ -87,6 +100,12 @@
         <property name="key" value="${database.rdf.platform}"/>
         <property name="implementations">
             <map>
+                <entry key="inMemoryRDF">
+                    <bean id="inMemoryRdfDataUnitFactory"
+                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
+                        <property name="repositoryPath" value="${general.workingdir}"/>
+                    </bean>
+                </entry>
                 <entry key="localRDF">
                     <bean id="localRdfDataUnitFactory"
                           class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">

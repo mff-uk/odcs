@@ -290,28 +290,28 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		basePath = basePath + imgPath;
 
 		addConnectionIcon = new Image();
-		addConnectionIcon.src = basePath + "arrow_right.png";
+		addConnectionIcon.src = basePath + "arrow_right.svg";
 
 		removeConnectionIcon = new Image();
-		removeConnectionIcon.src = basePath + "TrashFull.png";
+		removeConnectionIcon.src = basePath + "TrashFull.svg";
 
 		debugIcon = new Image();
-		debugIcon.src = basePath + "debug.png";
+		debugIcon.src = basePath + "debug.svg";
 
 		detailIcon = new Image();
-		detailIcon.src = basePath + "Gear.png";
+		detailIcon.src = basePath + "Gear.svg";
 
 		formatIcon = new Image();
-		formatIcon.src = basePath + "format.png";
+		formatIcon.src = basePath + "format.svg";
 
 		copyIcon = new Image();
-		copyIcon.src = basePath + "copy.png";
+		copyIcon.src = basePath + "copy.svg";
 
 		distributeIcon = new Image();
-		distributeIcon.src = basePath + "distribute.png";
+		distributeIcon.src = basePath + "distribute.svg";
 
 		invalidIcon = new Image();
-		invalidIcon.src = basePath + "exclamation.png";
+		invalidIcon.src = basePath + "exclamation.svg";
 
 		tooltip = createTooltip('Tooltip');
 		dpuLayer.add(tooltip);
@@ -2149,6 +2149,17 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpu.setDraggable(draggable);
 		}
 	}
+	
+	function changeTreePosition() {
+		var tree = $(".changingposition");
+		if (tree.length === 0) {
+			return;
+		}
+		var tabSheet = $("#container").parent().parent();
+		var offset = tabSheet.offset().top;
+		tree.css("top", Math.max(0, offset));
+		tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
+	}
 
 	jQuery(document).ready(function() {
 		$(".changingposition").css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
@@ -2167,14 +2178,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 //		});
 
 		$(window).mousemove(function() {
-			var tree = $(".changingposition");
-			if (tree.length === 0) {
-				return;
+			changeTreePosition();
+		});
+		
+		$(document).click(function(e) {
+			if (e.button == 0 && $(".expand-minimize:hover").length != 0) {
+				setTimeout(function(){changeTreePosition()}, 100);
 			}
-			var tabSheet = $("#container").parent().parent();
-			var offset = tabSheet.offset().top;
-			tree.css("top", Math.max(0, offset));
-			tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
 		});
 
 		$(window).resize(function() {
@@ -2184,6 +2194,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			}
 			tree.css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
 		});
+		
+		setTimeout(function(){changeTreePosition()}, 100);
 	});
 
 }

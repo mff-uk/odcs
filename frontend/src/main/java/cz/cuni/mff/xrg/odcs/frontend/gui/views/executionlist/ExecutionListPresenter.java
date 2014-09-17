@@ -162,6 +162,22 @@ public interface ExecutionListPresenter extends Presenter {
          *            Page to select.
          */
         public void setPage(int pageNumber);
+
+        /**
+         * Finds on which page is the selected execution
+         * 
+         * @param execId
+         * @return
+         */
+		public int getExecPage(Long execId);
+
+		/**
+		 * Checks if there is execution with selected executionId in the table
+		 * 
+		 * @param executionId
+		 * @return
+		 */
+		public boolean hasExecution(long executionId);
     }
 
     /**

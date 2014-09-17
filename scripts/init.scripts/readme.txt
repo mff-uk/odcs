@@ -1,10 +1,26 @@
-The files: odcs_backend, run_odcs_backend, odcs.conf	are connected with odcleanstore.
-There are init.d service for linux.
-These scripts was inspirited by tomcat6 
+The files: unifiedviews_backend, run_unifiedviews_backend, unifiedviews.conf are init.d script for linux.
+virtuoso is init.d script for linux. It's just a light version.
+The scripts were inspirited by tomcat6 
 
-odcs_backend is needed to be placed into the /etc/init.d/
-I suggest to place run_odcs_backend into the folder /usr/sbin/ and odcs.conf into the /etc/odcs/.
+Please read the configuration files and set the variables according your environment.
 
-Please read the configuration file and set the variables according your environment.
 
-virtuoso is init.d service for linux. It's just a light version.
+Installation steps for unifiedviews_backend:
+unifiedviews_backend is needed to be placed into the /etc/init.d/
+We suggest to place run_unifiedviews_backend into the folder /usr/sbin/ and unifiedviews.conf into the /etc/unifiedviews/.
+
+
+cp run_unifiedviews_backend /usr/sbin/
+# allow execution
+chmod +x /usr/sbin/run_unifiedviews_backend
+cp unifiedviews_backend /etc/init.d/
+# allow execution
+chmod +x /etc/init.d/unifiedviews_backend
+mkdir /etc/unifiedviews/
+cp unifiedviews.conf /etc/unifiedviews
+# if not exists then
+mkdir /var/lock/subsys
+
+
+When somenting goes wrong please have a look at log file: /var/log/unifiedviews_backend-initd.log
+Usage: service unifiedviews_backend start|stop|restart|status

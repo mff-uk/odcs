@@ -1,6 +1,0 @@
-[submodule "plugin_devenv"]
-	path = plugin_devenv
-	url = https://github.com/UnifiedViews/Plugin-DevEnv.git
-[submodule "plugins"]
-	path = plugins
-	url = https://skrchnavy@github.com/UnifiedViews/Plugins.git

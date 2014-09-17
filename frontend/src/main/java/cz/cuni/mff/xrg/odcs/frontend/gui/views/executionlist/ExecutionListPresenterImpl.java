@@ -133,10 +133,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
             int pageNumber = 0;
             Map<String, String> config = (Map<String, String>) configuration;
+            Long execId = null;
             for (Map.Entry<String, String> entry : config.entrySet()) {
                 switch (entry.getKey()) {
                     case "exec":
-                        Long execId = Long.parseLong(entry.getValue());
+                        execId = Long.parseLong(entry.getValue());
                         view.setSelectedRow(execId);
                         showDebugEventHandler(execId);
                         break;
@@ -161,24 +162,15 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
                         break;
                 }
             }
+            pageNumber = execId == null ? pageNumber : view.getExecPage(execId);
             if (pageNumber != 0) {
                 //Page number is set as last, because filtering automatically moves table to first page.
                 view.setPage(pageNumber);
             }
         }
-//		if (configuration != null && configuration.getClass() == String.class) {
-//			String strExecId = (String) configuration;
-//			try {
-//				Long execId = Long.parseLong(strExecId);
-//				view.setSelectedRow(execId);
-//				showDebugEventHandler(execId);
-//			} catch (NumberFormatException e) {
-//				//LOG.warn("Invalid parameter for execution monitor.", e);
-//			}
-//		}
     }
 
-    @Override
+	@Override
     public void refreshEventHandler() {
         boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
         		|| (cachedSource.size() > 0 && 
@@ -205,6 +197,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public void showDebugEventHandler(long executionId) {
+    	if (!view.hasExecution(executionId)) {
+			return;
+		}
         PipelineExecution exec = getLightExecution(executionId);
         if (exec == null) {
             Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);

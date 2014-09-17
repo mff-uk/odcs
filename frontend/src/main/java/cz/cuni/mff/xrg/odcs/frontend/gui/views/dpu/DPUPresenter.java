@@ -165,6 +165,12 @@ public interface DPUPresenter extends Presenter {
          */
         public void saveDPUTemplate();
 
+        /**
+         * Removes pipeline form *DPU instances* table (doesn't delete from db)
+         * @param id
+         */
+		void removePipelineFromTable(long id);
+
     }
 
     /**

@@ -91,6 +91,10 @@ public interface DPUFacade extends Facade {
     
     DPUTemplateRecord getByJarName(String jarName);
 
+    DPUTemplateRecord getByName(String name);
+
+
+
     /* **************** Methods for DPUInstanceRecord Instance management ***************** */
 
     /**

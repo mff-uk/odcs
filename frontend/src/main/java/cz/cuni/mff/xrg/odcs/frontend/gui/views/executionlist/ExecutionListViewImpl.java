@@ -2,8 +2,10 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import com.vaadin.data.util.filter.IsNull;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -29,6 +32,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
@@ -38,6 +42,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 
 /**
  * Implementation of view for {@link ExecutionListPresenter}.
@@ -97,6 +102,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     	if (!presenter.isLayoutInitialized()) {
     		buildPage(presenter);
 		}
+    	debugView.restore();
         return this;
     }
 
@@ -191,6 +197,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         btnRefresh.setWidth("120px");
+        btnRefresh.addStyleName("v-button-primary");
         topLine.addComponent(btnRefresh);
 
         //Clear Filters button. Clearing filters on the table with executions.
@@ -198,6 +205,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         btnClearFilters.setCaption("Clear Filters");
         btnClearFilters.setHeight("25px");
         btnClearFilters.setWidth("120px");
+        btnClearFilters.addStyleName("v-button-primary");
         btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -482,10 +490,18 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         executionTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
-                    @Override
+					private static final long serialVersionUID = 9095300568169526085L;
+
+					@Override
                     public void itemClick(ItemClickEvent event) {
                         ValueItem item = (ValueItem) event.getItem();
                         final long executionId = item.getId();
+                        // add id to uri
+                        String uriFragment = Page.getCurrent().getUriFragment();
+                        ParametersHandler handler = new ParametersHandler(uriFragment);
+                        handler.addParameter("exec", ""+executionId);
+                        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+                        // set debug
                         presenter.showDebugEventHandler(executionId);
                     }
                 });
@@ -501,6 +517,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                         presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
                     }
                 });
+                btnEdit.addStyleName("small_button");
                 btnEdit.setIcon(new ThemeResource("icons/gear.png"));
                 Label lblPipelineName = new Label((String) source.getItem(itemId).getItemProperty(columnId).getValue());
                 lblPipelineName.setStyleName("clickable-table-cell");
@@ -697,5 +714,24 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
             return super.getBooleanFilterIcon(propertyId, value);
         }
-    };
+    }
+
+	@Override
+	public int getExecPage(Long execId) {
+		Iterator<?> it = monitorTable.getItemIds().iterator();
+		int index = 0;
+		while (it.hasNext()) {
+			Long id = (Long) it.next();
+			if (id == execId) {
+				return (index / monitorTable.getPageLength()) + 1; // pages are from 1
+			}
+			index++;
+		}
+		return 0;
+	}
+
+	@Override
+	public boolean hasExecution(long executionId) {
+		return monitorTable.getItemIds().contains(executionId);
+	};
 }
