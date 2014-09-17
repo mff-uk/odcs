@@ -173,6 +173,10 @@ public interface PipelineFacade extends Facade {
      */
     List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status);
 
+
+    List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
+
+
     /**
      * Find pipeline execution in database by ID and return it.
      * 

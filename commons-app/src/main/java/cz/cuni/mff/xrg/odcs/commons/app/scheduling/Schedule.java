@@ -129,6 +129,9 @@ public class Schedule implements OwnedEntity, DataObject {
     @Column(name = "strict_tolerance")
     private Integer strictToleranceMinutes;
 
+    @Column(name = "priority")
+    private Long priority;
+
     /**
      * Empty constructor. Used by JPA. Do not use otherwise.
      */
@@ -401,6 +404,14 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public Date getNextExecutionTimeInfo() {
         return ScheduleNextRun.calculateNextRun(this);
+    }
+
+    public Long getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Long priority) {
+        this.priority = priority;
     }
 
     /**

@@ -59,7 +59,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
     @Override
     public List<Schedule> getAllTimeBased() {
         final String stringQuery = "SELECT s FROM Schedule s"
-                + " WHERE s.type = :type";
+                + " WHERE s.type = :type order by s.id Asc";
         TypedQuery<Schedule> query = createTypedQuery(stringQuery);
         query.setParameter("type", ScheduleType.PERIODICALLY);
         return executeList(query);

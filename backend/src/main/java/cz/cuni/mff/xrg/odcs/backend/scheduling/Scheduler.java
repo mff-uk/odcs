@@ -5,10 +5,14 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,11 +30,17 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     /**
      * Schedule facade.
      */
     @Autowired
     private ScheduleFacade scheduleFacade;
+
+    @Autowired
+    private PipelineFacade pipelineFacade;
 
     @PostConstruct
     private void initialCheck() {
@@ -68,7 +78,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
      */
     @Async
     @Scheduled(fixedDelay = 30000)
-    private synchronized void timeBasedCheck() {
+    protected synchronized void timeBasedCheck() {
         LOG.trace("onTimeCheck started");
         // check DB for pipelines based on time scheduling
         Date now = new Date();
@@ -95,9 +105,9 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         if (event instanceof PipelineFinished) {
             PipelineFinished pipelineFinishedEvent = (PipelineFinished) event;
             // ...
-            LOG.trace("Recieved PipelineFinished event");
+            LOG.trace("Received PipelineFinished event");
             onPipelineFinished(pipelineFinishedEvent);
         }
-    }
 
+    }
 }
