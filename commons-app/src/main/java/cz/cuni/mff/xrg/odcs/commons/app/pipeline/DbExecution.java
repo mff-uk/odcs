@@ -33,6 +33,8 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
+
     /**
      * @param pipeline
      * @param status

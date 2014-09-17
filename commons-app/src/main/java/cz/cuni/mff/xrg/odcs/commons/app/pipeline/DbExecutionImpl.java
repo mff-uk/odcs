@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.TypedQuery;
 
+import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,17 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         query.setParameter("status", status);
         return executeList(query);
     }
+
+    @Override
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status) {
+        final String stringQuery = "SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status and e.order >= :limited_priority order by e.order ASC , e.id ASC";
+        TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
+        query.setParameter("limited_priority", JobsTypes.MAX_PRIORITY);
+        query.setParameter("status", status);
+        return executeList(query);
+    }
+
 
     @Override
     public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status) {

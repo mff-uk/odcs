@@ -365,6 +365,13 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
+
+    @Override
+    public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
+        return executionDao.getAllByPriorityLimited(status);
+    }
+
+
     /**
      * Find pipeline execution in database by ID and return it.
      * 

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +164,22 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         pipelineExec.setSilentMode(false);
         // set user .. copy owner of schedule
         pipelineExec.setOwner(schedule.getOwner());
+
+        Long epoch = pipelineExec.getCreated();
+        Long priority = schedule.getPriority();
+        Long orderPosition;
+        if (priority == JobsTypes.UNSCHEDULED) {
+            orderPosition = JobsTypes.UNSCHEDULED;
+        } else {
+            // because we divide by zero
+            if (priority == JobsTypes.MAX_PRIORITY) {
+                orderPosition = epoch;
+            } else {
+                orderPosition = (epoch / priority);
+            }
+        }
+
+        pipelineExec.setOrderPosition(orderPosition);
 
         // save data into DB -> in next DB check Engine start the execution
         pipelineFacade.save(pipelineExec);
