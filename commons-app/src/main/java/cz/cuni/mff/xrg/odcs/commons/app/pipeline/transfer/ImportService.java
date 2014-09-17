@@ -150,7 +150,7 @@ public class ImportService {
      * @throws ImportException
      */
     public Pipeline loadPipeline(File baseDir) throws ImportException {
-        final XStream xStream = JPAXStream.createForPipeline(null);
+        final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
                 .getValue());
         try {
@@ -263,7 +263,7 @@ public class ImportService {
      */
     private void importSchedules(File scheduleFile, Pipeline pipeline, User user)
             throws ImportException {
-        final XStream xStream = JPAXStream.createForPipeline(null);
+        final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final List<Schedule> schedules;
         try {
             schedules = (List<Schedule>) xStream.fromXML(scheduleFile);
