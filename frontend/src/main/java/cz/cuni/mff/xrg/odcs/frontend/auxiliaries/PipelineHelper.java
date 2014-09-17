@@ -5,12 +5,14 @@ import org.springframework.remoting.RemoteAccessException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
@@ -63,6 +65,11 @@ public class PipelineHelper {
             ConfirmDialog.show(UI.getCurrent(), "Pipeline execution", "Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?", "Schedule", "Cancel", new ConfirmDialog.Listener() {
                 @Override
                 public void onClose(ConfirmDialog cd) {
+                    PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
+                    if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
+                        Notification.show("Execution not sheduled / canceled", "Execution state changed in the meantime. Check and try again.", Type.WARNING_MESSAGE);
+                        return; // already running
+                    }
                     if (cd.isConfirmed()) {
                         pipelineFacade.save(pipelineExec);
                     } else {
