@@ -10,7 +10,7 @@
         <relativePath>../dpu-core-base-pom.xml</relativePath>
     </parent>
 
-    <groupId>eu.unifiedviews</groupId>
+    <groupId>eu.unifiedviews.plugins</groupId>
     <artifactId>uv-t-filesMerger</artifactId>
     <name>T-FilesMerger</name>
     <description>Merges Files inputs in no time.</description>
