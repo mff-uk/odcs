@@ -2149,6 +2149,17 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpu.setDraggable(draggable);
 		}
 	}
+	
+	function changeTreePosition() {
+		var tree = $(".changingposition");
+		if (tree.length === 0) {
+			return;
+		}
+		var tabSheet = $("#container").parent().parent();
+		var offset = tabSheet.offset().top;
+		tree.css("top", Math.max(0, offset));
+		tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
+	}
 
 	jQuery(document).ready(function() {
 		$(".changingposition").css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
@@ -2167,14 +2178,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 //		});
 
 		$(window).mousemove(function() {
-			var tree = $(".changingposition");
-			if (tree.length === 0) {
-				return;
+			changeTreePosition();
+		});
+		
+		$(document).click(function(e) {
+			if (e.button == 0 && $(".expand-minimize:hover").length != 0) {
+				setTimeout(function(){changeTreePosition()}, 100);
 			}
-			var tabSheet = $("#container").parent().parent();
-			var offset = tabSheet.offset().top;
-			tree.css("top", Math.max(0, offset));
-			tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
 		});
 
 		$(window).resize(function() {
@@ -2184,6 +2194,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			}
 			tree.css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
 		});
+		
+		setTimeout(function(){changeTreePosition()}, 100);
 	});
 
 }

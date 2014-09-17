@@ -23,10 +23,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 	color:#323232;
 }
 
-.v-slot-headerPanel{
-	padding:30px 30px 15px 30px;
-}
-
 .v-slot-loginPanel{
 	padding:5px 30px 0 30px;
 }
