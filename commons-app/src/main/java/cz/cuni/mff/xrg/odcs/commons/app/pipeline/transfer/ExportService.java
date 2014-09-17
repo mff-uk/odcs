@@ -368,7 +368,7 @@ public class ExportService {
     public void saveDpusInfo(TreeSet<DpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
         LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
 
-        XStream xStream = new XStream(new DomDriver("UTF-8"));
+        XStream xStream = new XStream(new DomDriver(XML_ENCODING));
         // treeSet is not possible to aliasing
         List<DpuItem> dpus = new ArrayList<DpuItem>();
         dpus.addAll(dpusInformation);
