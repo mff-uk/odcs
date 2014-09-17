@@ -47,7 +47,7 @@ public class ExportService {
     private static final Logger LOG = LoggerFactory.getLogger(
             ExportService.class);
 
-	private static final String XML_ENCODING = "UTF-8";
+    private static final String XML_ENCODING = "UTF-8";
 
     @Autowired
     private ScheduleFacade scheduleFacade;
@@ -171,18 +171,18 @@ public class ExportService {
         }
     }
 
-    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException{
-    	final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
-    	try {
-			final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
-			zipStream.putNextEntry(ze);
-			xStream.toXML(savedTemplates, zipStream);
-		} catch (IOException e) {
-			throw new ExportException("Failed to serialize dpu template information.", e);
-		}
-	}
+    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException {
+        final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
+        try {
+            final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
+            zipStream.putNextEntry(ze);
+            xStream.toXML(savedTemplates, zipStream);
+        } catch (IOException e) {
+            throw new ExportException("Failed to serialize dpu template information.", e);
+        }
+    }
 
-	/**
+    /**
      * Serialise pipeline into zip stream.
      *
      * @param pipeline
@@ -234,7 +234,7 @@ public class ExportService {
      */
     private void saveDPUJar(DPUTemplateRecord template,
             ZipOutputStream zipStream)
-            throws ExportException {
+                    throws ExportException {
         // we copy the structure in dpu directory
         final File source;
         try {
@@ -368,21 +368,27 @@ public class ExportService {
     public void saveDpusInfo(TreeSet<DpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
         LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
 
-        XStream xStream = new XStream(new DomDriver());
+        XStream xStream = new XStream(new DomDriver("UTF-8"));
         // treeSet is not possible to aliasing
         List<DpuItem> dpus = new ArrayList<DpuItem>();
         dpus.addAll(dpusInformation);
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", DpuItem.class);
 
-        String serializedDpuItem = xStream.toXML(dpus);
-        LOG.debug("used dpus:\n{}", serializedDpuItem);
+        File serializedTarget;
+        try {
+            serializedTarget = File.createTempFile("temp", ".tmp");
+        } catch (IOException ex2) {
+            throw new ExportException("Error", ex2);
+        }
+        try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
+            xStream.toXML(dpus, foutStream);
+        } catch (IOException ex1) {
+            throw new ExportException("Error", ex1);
+        }
 
         byte[] buffer = new byte[4096];
         try {
-            File serializedTarget = File.createTempFile("temp", ".tmp");
-            FileUtils.writeStringToFile(serializedTarget, serializedDpuItem);
-
             final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
             zipStream.putNextEntry(ze);
 
