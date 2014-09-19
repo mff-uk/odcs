@@ -1,6 +1,7 @@
 # Local configurations
 frontend/src/main/webapp/WEB-INF/config.properties
 *.local.xml
+.attach*
 
 *.class
 
