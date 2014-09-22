@@ -11,6 +11,7 @@ import javax.persistence.EntityNotFoundException;
 import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -27,8 +28,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 
 /**
  * Responsible for running and supervision queue of PipelineExecution tasks.
@@ -38,7 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 public class Engine implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
-    public Integer limitOfScheduledPipelines = 2 ;
+    private static final Integer DEFAULT_LIMIT_SHEDULED_PPL = 2;
     public Integer numberOfRunningJobs = 0;
     private final Integer LockRunningJobs = new Integer(numberOfRunningJobs);
 
@@ -65,6 +68,12 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
      */
     @Autowired
     protected PipelineFacade pipelineFacade;
+    
+    /**
+     * Runtime properties facade.
+     */
+    @Autowired
+    protected RuntimePropertiesFacade runtimePropertiesFacade;
 
     /**
      * Thread pool.
@@ -88,7 +97,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         workingDirectory = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
+//        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
         LOG.info("Working dir: {}", workingDirectory.toString());
         // make sure that our working directory exist
         if (workingDirectory.isDirectory()) {
@@ -126,6 +135,9 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
                 return;
             }
 
+            Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
+            LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
+            
             List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
@@ -147,6 +159,26 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
         }
     }
 
+    /**
+     * Gets runtime property for number of parallel running pipelines from database. If
+     * not set or its set wrongly gets default limit.
+     * 
+     * @return limit for number of parallel running pipelines
+     */
+    protected Integer getLimitOfScheduledPipelines() {
+        RuntimeProperty limit = runtimePropertiesFacade.getByName(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES.toString());
+        if (limit == null) {
+            return DEFAULT_LIMIT_SHEDULED_PPL;
+        }
+        try {
+            return Integer.parseInt(limit.getValue());  
+        } catch (NumberFormatException e) {
+            LOG.error("Value not a number of RuntimeProperty: " + ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES.toString()
+                    + ", error: " + e.getMessage());
+            LOG.warn("Setting limit of scheduled pipelines to default value: " + DEFAULT_LIMIT_SHEDULED_PPL);
+            return DEFAULT_LIMIT_SHEDULED_PPL;
+        }
+    }
 
     /**
      * Check database for hanging running pipelines. Should be run just once
