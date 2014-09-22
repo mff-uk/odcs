@@ -59,7 +59,7 @@ public class SchedulerTest {
         schedule.setPriority((long) 1);
         scheduleFacade.save(schedule);
         scheduler.timeBasedCheck();
-        EngineMock engine = new EngineMock();
+        EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
         engine.doCheck();
 
