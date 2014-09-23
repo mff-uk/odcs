@@ -529,6 +529,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Transactional
     @Override
     public void save(PipelineExecution exec) {
+        exec.setLastChange(new Date());
         executionDao.save(exec);
     }
 
@@ -555,7 +556,10 @@ class PipelineFacadeImpl implements PipelineFacade {
     public void stopExecution(PipelineExecution execution) {
         PipelineExecution currentExec = getExecution(execution.getId());
 
-        if (currentExec.getStatus() == PipelineExecutionStatus.RUNNING) {
+        if (currentExec.getStatus() == PipelineExecutionStatus.QUEUED) {
+            // not started yet
+            delete(execution);
+        } else if (currentExec.getStatus() == PipelineExecutionStatus.RUNNING) {
             execution.stop();
             save(execution);
         } else {
