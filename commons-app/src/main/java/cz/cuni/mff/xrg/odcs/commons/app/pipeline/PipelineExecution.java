@@ -384,6 +384,15 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     public Date getLastChange() {
         return lastChange;
     }
+    
+    /**
+     * Sets new value for last change date
+     * 
+     * @param lastChange
+     */
+    public void setLastChange(Date lastChange) {
+        this.lastChange = lastChange;
+    }
 
     /**
      * Returns duration of execution. Returns -1 for unfinished/not started
