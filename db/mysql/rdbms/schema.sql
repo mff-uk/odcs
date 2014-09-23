@@ -134,6 +134,8 @@ CREATE TABLE `exec_pipeline`
   `stop` SMALLINT,
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
+  `order_number` BIGINT NOT NULL,
+  `created_epoch` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `exec_pipeline` (`status`);
@@ -160,6 +162,7 @@ CREATE TABLE `exec_schedule`
   `period_unit` SMALLINT,
   `strict_timing` SMALLINT,
   `strict_tolerance` INTEGER,
+  `priority` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- composite index to optimize fetching schedules following pipeline
@@ -233,6 +236,14 @@ CREATE TABLE `ppl_position`
   `id` INTEGER AUTO_INCREMENT,
   `pos_x` INTEGER,
   `pos_y` INTEGER,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `runtime_properties`
+(
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NULL,
+  `value` VARCHAR(100) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
