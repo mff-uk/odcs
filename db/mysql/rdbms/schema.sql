@@ -244,7 +244,8 @@ CREATE TABLE `runtime_properties`
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NULL,
   `value` VARCHAR(100) NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sch_sch_notification`
