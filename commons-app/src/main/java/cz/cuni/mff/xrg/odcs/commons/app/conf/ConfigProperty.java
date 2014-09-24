@@ -25,6 +25,8 @@ public enum ConfigProperty {
      * Used to generate url for pipeline execution in emails.
      */
     FRONTEND_URL("frontend.url"),
+    
+    FRONTEND_RUN_NOW_PIPELINE_PRIORITY("run.now.pipeline.priority"),
 
     // namespaces for virtuoso configuration
     RDBMS("database.sql"),
