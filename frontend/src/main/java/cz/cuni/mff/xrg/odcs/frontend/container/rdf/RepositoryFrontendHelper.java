@@ -84,7 +84,6 @@ public class RepositoryFrontendHelper {
         // get type and directory
         if (dataUnitInfo == null) {
             // the context doesn't exist
-            log.error("dataUnitInfo is null!");
             return null;
         }
 
@@ -94,19 +93,12 @@ public class RepositoryFrontendHelper {
             return null;
         }
 
-        String dataUnitId;
         DpuContextInfo dpuInfo = executionInfo.dpu(dpuInstance);
         if (dpuInfo == null) {
-            log.error("DPU info is null for dpu.id= {}. Using workaround.", dpuInstance.getId());
-            // work around ...
-            dataUnitId = "exec_" + executionInfo.getExecutionContext().getExecution().getId()+
-                    "_dpu_" + dpuInstance.getId().toString() + "_du_" + dataUnitInfo.getIndex();
-
-            AppEntry.getCurrent().showNotification("DPU info is null!");
-
-        } else {
-            dataUnitId = dpuInfo.createId(dataUnitInfo.getIndex());
+            log.error("DPU info is null!");
+            return null;
         }
+        String dataUnitId = dpuInfo.createId(dataUnitInfo.getIndex());
 
         switch (dataUnitInfo.getType()) {
             case RDF:
@@ -116,7 +108,6 @@ public class RepositoryFrontendHelper {
 
                     String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
 
-                    log.info("ManagableRdfDataUnit.create({}, {}, {})", executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
                     ManagableRdfDataUnit repository =
                             rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
 
