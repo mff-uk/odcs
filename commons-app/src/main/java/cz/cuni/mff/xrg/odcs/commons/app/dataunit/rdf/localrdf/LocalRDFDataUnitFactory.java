@@ -56,36 +56,44 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
 
     @Override
     public void clean(String pipelineId) {
+        Repository repository = null;
         synchronized (initializedRepositories) {
-            File managerDir = new File(repositoryPath);
-            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-                throw new RuntimeException("Could not create repository manager directory.");
-            }
+            repository = initializedRepositories.get(pipelineId);
+            if (repository != null) {
+                File managerDir = new File(repositoryPath);
+                if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                    throw new RuntimeException("Could not create repository manager directory.");
+                }
 
-            try {
-                initializedRepositories.get(pipelineId).shutDown();
-            } catch (RepositoryException ex) {
-                throw new RuntimeException("Could not shutdown repository.");
+                try {
+                    repository.shutDown();
+                } catch (RepositoryException ex) {
+                    throw new RuntimeException("Could not shutdown repository.");
+                }
+                File repositoryDirectory = new File(managerDir, pipelineId);
+                initializedRepositories.remove(pipelineId);
+                FileUtils.deleteQuietly(repositoryDirectory);
             }
-            File repositoryDirectory = new File(managerDir, pipelineId);
-            initializedRepositories.remove(pipelineId);
-            FileUtils.deleteQuietly(repositoryDirectory);
         }
     }
 
     @Override
     public void release(String pipelineId) {
+        Repository repository = null;
         synchronized (initializedRepositories) {
-            File managerDir = new File(repositoryPath);
-            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-                throw new RuntimeException("Could not create repository manager directory.");
+            repository = initializedRepositories.get(pipelineId);
+            if (repository != null) {
+                File managerDir = new File(repositoryPath);
+                if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                    throw new RuntimeException("Could not create repository manager directory.");
+                }
+                try {
+                    repository.shutDown();
+                } catch (RepositoryException ex) {
+                    throw new RuntimeException("Could not shutdown repository.");
+                }
+                initializedRepositories.remove(pipelineId);
             }
-            try {
-                initializedRepositories.get(pipelineId).shutDown();
-            } catch (RepositoryException ex) {
-                throw new RuntimeException("Could not shutdown repository.");
-            }
-            initializedRepositories.remove(pipelineId);
         }
     }
 }
