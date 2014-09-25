@@ -22,7 +22,7 @@ public class Browse extends CustomComponent {
 
     private final DataUnitSelector selector;
 
-    private final PipelineExecution execution;
+    private PipelineExecution execution;
 
     private QueryView queryView;
 
@@ -71,6 +71,7 @@ public class Browse extends CustomComponent {
     }
 
     void refreshDPUs(PipelineExecution pipelineExec) {
+        execution = pipelineExec;
         selector.refresh(pipelineExec);
         queryView.setExecutionInfo(getExecutionInfo(pipelineExec));
         queryView.reset();
