@@ -1125,6 +1125,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', end
         width:auto !important;
         padding-left:5px;
 }
+
+.installationName{
+	font-size: 25px;
+	padding-left: 20px;
+}
+
 .v-caption-on-top > .v-caption-username{
     display:inline-block;
 }

@@ -25,6 +25,11 @@ public enum ConfigProperty {
      * Used to generate url for pipeline execution in emails.
      */
     FRONTEND_URL("frontend.url"),
+    
+    /**
+     * string diplayed next to the UV logo in GUI
+     */
+    INSTALLATION_NAME("installation.name"),
 
     // namespaces for virtuoso configuration
     RDBMS("database.sql"),

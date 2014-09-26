@@ -21,6 +21,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -57,6 +59,12 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     private AuthenticationService authService;
+    
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
 
     /**
      * Used layout.
@@ -139,12 +147,16 @@ public class MenuLayout extends CustomComponent {
             }
         });
         
-        HorizontalLayout headerLine = new HorizontalLayout(Logo, backendStatus, logOutButton, userName);
+        Label installationName = new Label(appConfig.getString(ConfigProperty.INSTALLATION_NAME));
+        installationName.setStyleName("installationName");
+        
+        HorizontalLayout headerLine = new HorizontalLayout(Logo, installationName, backendStatus, logOutButton, userName);
         headerLine.setSpacing(false);
         headerLine.setMargin(new MarginInfo(false, true, false, true));
         headerLine.setHeight("75px");
         headerLine.addStyleName("headerPanel");
         headerLine.setComponentAlignment(Logo, Alignment.MIDDLE_LEFT);
+        headerLine.setComponentAlignment(installationName, Alignment.MIDDLE_LEFT);
         headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
         headerLine.setComponentAlignment(userName, Alignment.MIDDLE_RIGHT);
         headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_RIGHT);
