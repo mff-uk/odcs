@@ -1,8 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app;
 
 public enum ScheduledJobsPriority {
-    // from the highest to the lowest priority
-    A(1), B(2), C(3), D(4), E(5), F(6), G(7), H(8), I(9), J(10);
+    IGNORE(0), HIGHEST(3), MEDIUM(2), LOWEST(1);
 
     private final long priority;
 

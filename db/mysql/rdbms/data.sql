@@ -282,7 +282,6 @@ UNLOCK TABLES;
 
 -- 1.3.2 changes
 UPDATE exec_pipeline SET order_number = 1 ;
-UPDATE exec_pipeline SET created_epoch = UNIX_TIMESTAMP(NOW());
 UPDATE exec_schedule SET priority = 1 ;
 
 INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');

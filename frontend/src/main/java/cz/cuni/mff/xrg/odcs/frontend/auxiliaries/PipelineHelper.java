@@ -1,7 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
-import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -29,7 +28,7 @@ public class PipelineHelper {
     
     private static final Logger LOG = LoggerFactory.getLogger(PipelineHelper.class);
 
-    private static final Long DEFAULT_ORDER_POSITION = JobsTypes.UNSCHEDULED;
+    private static final Long DEFAULT_ORDER_POSITION = ScheduledJobsPriority.IGNORE.getValue();
 
     @Autowired
     private PipelineFacade pipelineFacade;
@@ -73,13 +72,15 @@ public class PipelineHelper {
         }
 
         try {
-            Long orderPosition = getOrderPosition(pipelineExec.getCreated());
+            Long orderPosition = getOrderPosition();
             // run immediately - set higher priority
-            pipelineExec.setOrderPosition(orderPosition);
+            pipelineExec.setOrderNumber(orderPosition);
             pipelineFacade.save(pipelineExec);
             checkDatabaseService.checkDatabase();
         } catch (RemoteAccessException e) {
             ConfirmDialog.show(UI.getCurrent(), "Pipeline execution", "Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?", "Schedule", "Cancel", new ConfirmDialog.Listener() {
+                private static final long serialVersionUID = 1L;
+
                 @Override
                 public void onClose(ConfirmDialog cd) {
                     PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
@@ -106,7 +107,8 @@ public class PipelineHelper {
      * @param epoch
      * @return
      */
-    private Long getOrderPosition(Long epoch) {
+    private Long getOrderPosition() {
+        Long epoch = (long) System.currentTimeMillis();
         Long priority = DEFAULT_ORDER_POSITION;
         
         // checking format of value
@@ -121,26 +123,18 @@ public class PipelineHelper {
             }
         }
         
-        // schould be in range 1 - 10
-        if (priority < 1L) {
-            priority = 1L;
-        } else if (priority > 10L) {
-            priority = 10L;
+        // schould be in range IGNORE (0) - HIGHEST (3)
+        if (priority < ScheduledJobsPriority.IGNORE.getValue()) {
+            priority = ScheduledJobsPriority.IGNORE.getValue();
+        } else if (priority > ScheduledJobsPriority.HIGHEST.getValue()) {
+            priority = ScheduledJobsPriority.HIGHEST.getValue();
         }
         
-        // Should be almost identical to ScheduleFacadeImpl.execute
-        Long orderPosition;
-        if (priority == JobsTypes.UNSCHEDULED) {
-            orderPosition = JobsTypes.UNSCHEDULED;
-        } else {
-            // because we divide by zero
-            if (priority == JobsTypes.MAX_PRIORITY) {
-                orderPosition = epoch;
-            } else {
-                orderPosition = (epoch / priority);
-            }
+        Long orderNumber = priority;
+        if (priority != ScheduledJobsPriority.IGNORE.getValue()) {
+            orderNumber = (epoch / priority);
         }
-        return orderPosition;
+        return orderNumber;
     }
 
 }

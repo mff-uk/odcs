@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.event.FieldEvents;
@@ -23,6 +24,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
@@ -32,6 +34,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.GraphDeleter;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
@@ -449,7 +452,10 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         layout.setSizeFull();
         layout.setSpacing(true);
         layout.setMargin(false);
-       
+
+        HorizontalLayout buttonBar = new HorizontalLayout();
+        buttonBar.setWidth(380, Unit.PIXELS);
+        buttonBar.setMargin(new MarginInfo(true, false, false, false));
         final Button saveButton = new Button("Save");
         saveButton.setEnabled(false);
         saveButton.addClickListener(new ClickListener() {
@@ -462,36 +468,42 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 // prepare props toSave
                 Map<String, RuntimeProperty> toSave = new HashMap<String, RuntimeProperty>();
                 Set<String> notChanged = new HashSet<String>();
-                for (Component property : componentList) {
-                    String name = getValue(property, 0);
-                    String value = getValue(property, 1);
-
-                    if (name.isEmpty()) {
-                        Notification.show("Save failed.", "There is a property with name not set", Notification.Type.ERROR_MESSAGE);
-                        return;
+                
+                try {
+                    for (Component property : componentList) {
+                        String name = validateAndGetValue(property, 0);
+                        String value = validateAndGetValue(property, 1);
+                        
+                        if (name.isEmpty()) {
+                            Notification.show("Save failed.", "There is a property with name not set", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (value.isEmpty()) {
+                            Notification.show("Save failed.", "There is a property with value not set", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (toSave.containsKey(name) || notChanged.contains(name)) {
+                            Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        
+                        RuntimeProperty prop = getRuntimePropertyByName(name);
+                        
+                        if (prop == null) { // doesnt exist, have to make new one
+                            prop = new RuntimeProperty();
+                            prop.setName(name);
+                            prop.setValue(value);
+                            toSave.put(name, prop);
+                        } else if (!prop.getValue().equals(value)) { // value changed 
+                            prop.setValue(value);
+                            toSave.put(name, prop);
+                        } else { // else value didnt change
+                            notChanged.add(name);
+                        }
                     }
-                    if (value.isEmpty()) {
-                        Notification.show("Save failed.", "There is a property with value not set", Notification.Type.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (toSave.containsKey(name) || notChanged.contains(name)) {
-                        Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
-                        return;
-                    }
-                    
-                    RuntimeProperty prop = getRuntimePropertyByName(name);
-                    
-                    if (prop == null) { // doesnt exist, have to make new one
-                        prop = new RuntimeProperty();
-                        prop.setName(name);
-                        prop.setValue(value);
-                        toSave.put(name, prop);
-                    } else if (!prop.getValue().equals(value)) { // value changed 
-                        prop.setValue(value);
-                        toSave.put(name, prop);
-                    } else { // else value didnt change
-                        notChanged.add(name);
-                    }
+                } catch (InvalidValueException e) {
+                    Notification.show("Save failed.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
                 
                 // remove missing, user removed props
@@ -511,9 +523,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 refreshRuntimeProperties();
             }
         });
-        layout.addComponent(saveButton);
-        layout.setComponentAlignment(saveButton,
-                Alignment.TOP_LEFT);
+        buttonBar.addComponent(saveButton);
+        buttonBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
         
         runtimePropsManager = new ManipulableListManager(new ManipulableListComponentProvider() {
             
@@ -539,6 +550,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 text.setValue(name);
                 text.setInputPrompt("name");
                 text.setWidth(250, Unit.PIXELS);
+                text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 0, 0);
                 
                 text = new TextField();
@@ -547,6 +559,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 text.setValue(value);
                 text.setInputPrompt("value");
                 text.setWidth(250, Unit.PIXELS);
+                text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 1, 0);
                 
                 return oneLine;
@@ -571,6 +584,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         refreshRuntimeProperties();
         layout.addComponent(runtimePropsList);
         layout.setExpandRatio(runtimePropsList, 1);
+        
+        layout.addComponent(buttonBar);
         
         return layout;
     }
@@ -604,8 +619,18 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         return (TextField) gridLayout.getComponent(column, 0);      
     }
     
-    private String getValue(Component layout, int column) {
-        return getTextField(layout, column).getValue().trim();
+    /**
+     * Validates and return the TextField.value
+     * 
+     * @param layout GridLayout
+     * @param column column number of TextField in grid layout to return value
+     * @return
+     * @throws InvalidValueException
+     */
+    private String validateAndGetValue(Component layout, int column) throws InvalidValueException {
+        TextField field = getTextField(layout, column);
+        field.validate();
+        return field.getValue().trim();
     }
 
     /**

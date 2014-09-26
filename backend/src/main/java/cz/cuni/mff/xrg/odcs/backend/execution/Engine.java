@@ -8,10 +8,6 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 
-import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
-import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -23,7 +19,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -43,7 +42,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
     private static final Integer DEFAULT_LIMIT_SHEDULED_PPL = 2;
     public Integer numberOfRunningJobs = 0;
-    private final Integer LockRunningJobs = new Integer(numberOfRunningJobs);
+    private final Object LockRunningJobs = new Object();
 
     /**
      * Publisher instance.
@@ -141,7 +140,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
-                if (job.getOrderPosition() == JobsTypes.UNSCHEDULED) {
+                if (job.getOrderNumber() == ScheduledJobsPriority.IGNORE.getValue()) {
                     run(job);
                     numberOfRunningJobs++;
                     continue;

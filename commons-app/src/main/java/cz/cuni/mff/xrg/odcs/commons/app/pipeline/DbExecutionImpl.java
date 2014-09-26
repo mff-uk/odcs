@@ -6,10 +6,10 @@ import java.util.Set;
 
 import javax.persistence.TypedQuery;
 
-import cz.cuni.mff.xrg.odcs.commons.app.JobsTypes;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
@@ -52,9 +52,9 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
     @Override
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status) {
         final String stringQuery = "SELECT e FROM PipelineExecution e"
-                + " WHERE e.status = :status and e.order >= :limited_priority order by e.order ASC , e.id ASC";
+                + " WHERE e.status = :status and e.orderNumber >= :limited_priority order by e.orderNumber ASC , e.id ASC";
         TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
-        query.setParameter("limited_priority", JobsTypes.MAX_PRIORITY);
+        query.setParameter("limited_priority", ScheduledJobsPriority.IGNORE.getValue());
         query.setParameter("status", status);
         return executeList(query);
     }

@@ -135,7 +135,6 @@ CREATE TABLE `exec_pipeline`
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
   `order_number` BIGINT NOT NULL,
-  `created_epoch` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `exec_pipeline` (`status`);

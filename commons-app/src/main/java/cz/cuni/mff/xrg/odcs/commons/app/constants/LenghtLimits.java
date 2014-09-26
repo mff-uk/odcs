@@ -69,4 +69,6 @@ public class LenghtLimits {
     public static int SCHEDULE_NAME = 1024;
 
     public static int LOGGER_NAME = 254;
+    
+    public static int RUNTIME_PROPERTY_NAME_AND_VALUE = 100;
 }

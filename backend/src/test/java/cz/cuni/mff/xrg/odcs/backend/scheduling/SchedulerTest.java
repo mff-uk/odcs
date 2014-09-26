@@ -125,7 +125,7 @@ public class SchedulerTest {
         engine.doCheck();
 
         for (PipelineExecution sch : engine.historyOfExecution) {
-            System.out.println("id: " + sch.getId().toString() + " position: " + sch.getOrderPosition() + "created: " + sch.getCreated());
+            System.out.println("id: " + sch.getId().toString() + " position: " + sch.getOrderNumber());
         }
         assertEquals(3, engine.historyOfExecution.size());
         assertEquals(schedule.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
