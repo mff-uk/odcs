@@ -46,11 +46,12 @@ public interface DbSchedule extends DbAccess<Schedule> {
 
     /**
      * Fetches all {@link Schedule}s which are activated in
-     * certain time.
+     * certain time and the execution for the scheduled pipeline
+     * isn't already running.
      * 
      * @return list of schedules
      */
-    public List<Schedule> getAllTimeBased();
+    public List<Schedule> getAllTimeBasedNotRunning();
 
     /**
      * Fetches active (enabled) {@link Schedule}s which are activated based on

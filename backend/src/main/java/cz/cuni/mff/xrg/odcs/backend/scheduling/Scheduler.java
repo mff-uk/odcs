@@ -5,9 +5,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
@@ -83,7 +81,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         // check DB for pipelines based on time scheduling
         Date now = new Date();
         // get all pipelines that are time based
-        List<Schedule> candidates = scheduleFacade.getAllTimeBased();
+        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotRunning();
         // check ..
         for (Schedule schedule : candidates) {
             // we use information about next execution

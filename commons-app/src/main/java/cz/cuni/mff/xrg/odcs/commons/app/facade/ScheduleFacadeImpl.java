@@ -84,13 +84,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 
     /**
      * Fetches all {@link Schedule}s which are activated in
-     * certain time.
+     * certain time and the execution for the scheduled pipeline
+     * isn't already running.
      * 
      * @return
      */
     @Override
-    public List<Schedule> getAllTimeBased() {
-        return scheduleDao.getAllTimeBased();
+    public List<Schedule> getAllTimeBasedNotRunning() {
+        return scheduleDao.getAllTimeBasedNotRunning();
     }
 
     /**

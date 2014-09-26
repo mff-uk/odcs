@@ -57,11 +57,16 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
     }
 
     @Override
-    public List<Schedule> getAllTimeBased() {
+    public List<Schedule> getAllTimeBasedNotRunning() {
         final String stringQuery = "SELECT s FROM Schedule s"
-                + " WHERE s.type = :type order by s.id Asc";
+                + " WHERE s.type = :type AND s.id NOT IN ("
+                    + " SELECT s1.id FROM Schedule s1"
+                    + " LEFT JOIN PipelineExecution e"
+                    + " WHERE e.pipeline = s1.pipeline and e.status = :running)"
+                + " order by s.id Asc";
         TypedQuery<Schedule> query = createTypedQuery(stringQuery);
         query.setParameter("type", ScheduleType.PERIODICALLY);
+        query.setParameter("running", PipelineExecutionStatus.RUNNING);
         return executeList(query);
     }
 

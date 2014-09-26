@@ -40,11 +40,12 @@ public interface ScheduleFacade extends Facade {
     List<Schedule> getSchedulesFor(Pipeline pipeline);
 
     /**
-     * Fetches all {@link Schedule}s which are activated in certain time.
+     * Fetches all {@link Schedule}s which are activated in certain time
+     * and the execution for the scheduled pipeline isn't already running.
      * 
      * @return list of all schedules planned to launch on time
      */
-    List<Schedule> getAllTimeBased();
+    List<Schedule> getAllTimeBasedNotRunning();
 
     /**
      * Find Schedule in database by ID and return it.
