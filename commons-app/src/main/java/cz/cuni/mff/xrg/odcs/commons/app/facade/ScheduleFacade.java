@@ -45,7 +45,7 @@ public interface ScheduleFacade extends Facade {
      * 
      * @return list of all schedules planned to launch on time
      */
-    List<Schedule> getAllTimeBasedNotRunning();
+    List<Schedule> getAllTimeBasedNotQueuedRunning();
 
     /**
      * Find Schedule in database by ID and return it.

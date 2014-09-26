@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,13 @@ public class PipelineHelper {
      * @return {@link PipelineExecution} of given {@link Pipeline}.
      */
     public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
+        final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline, 
+                Arrays.asList(PipelineExecutionStatus.QUEUED, PipelineExecutionStatus.RUNNING));
+        if (hasQueuedOrRunning) {
+            Notification.show("Failed to start execution.", "Pipeline execution already queued or running.", Type.WARNING_MESSAGE);
+            return null;
+        }
+        
         final PipelineExecution pipelineExec = pipelineFacade.createExecution(pipeline);
         pipelineExec.setDebugging(inDebugMode);
         if (inDebugMode && debugNode != null) {

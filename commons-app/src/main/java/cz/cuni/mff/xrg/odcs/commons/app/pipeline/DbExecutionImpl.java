@@ -126,4 +126,16 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
     	Long number = (Long) query.getSingleResult();
     	return !number.equals((long)ids.size());
     }
+    
+    @Override
+    public boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
+        final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
+                + " WHERE e.pipeline = :pipeline"
+                + " AND e.status IN :statuses ";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("pipeline", pipeline);
+        query.setParameter("statuses", statuses);
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
+    }
 }

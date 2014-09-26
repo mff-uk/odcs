@@ -81,7 +81,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         // check DB for pipelines based on time scheduling
         Date now = new Date();
         // get all pipelines that are time based
-        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotRunning();
+        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotQueuedRunning();
         // check ..
         for (Schedule schedule : candidates) {
             // we use information about next execution
