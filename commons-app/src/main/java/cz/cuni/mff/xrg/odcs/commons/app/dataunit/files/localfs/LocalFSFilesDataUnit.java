@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.openrdf.model.BNode;
@@ -35,11 +37,17 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
+    private Object threadLock;
+
+    private Map<Thread, RepositoryConnection> threadMap;
+
     public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit) throws DataUnitException {
         super(dataUnitName, workingDirectoryURIString);
         this.workingDirectoryURI = workingDirectoryURIString;
         this.workingDirectory = new File(URI.create(workingDirectoryURI));
         this.backingDataUnit = backingDataUnit;
+        this.threadLock = new Object();
+        this.threadMap = new HashMap<>();
     }
 
     //DataUnit interface
@@ -61,7 +69,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             LOG.info("More than more thread is accessing this data unit");
         }
 
-        return new WritableFileIterationImpl(this);
+        return new SetFileIteration(this);
     }
 
     //WritableFilesDataUnit interface
@@ -155,7 +163,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             if (sb.length() == 0) {
                 if (codePoint >= 97 && codePoint <= 122 || // [a-z]
                         codePoint >= 65 && codePoint <= 90 //[A-Z]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             } else {
@@ -163,7 +171,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                         codePoint >= 65 && codePoint <= 90 || //[A-Z]
                         codePoint == 95 || // _
                         codePoint >= 48 && codePoint <= 57 // [0-9]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             }
@@ -174,11 +182,31 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     @Override
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
+//        synchronized (threadLock) {
+//            RepositoryConnection connection = threadMap.get(Thread.currentThread());
+//            if (connection == null) {
         try {
-            return backingDataUnit.getConnection();
+            RepositoryConnection connection = backingDataUnit.getConnection();
+            return connection;
         } catch (DataUnitException ex) {
-            ex.printStackTrace();
+            throw (RepositoryException) ex.getCause();
         }
-        return null;
+//                threadMap.put(Thread.currentThread(), connection);
+//            }
+//      }
+    }
+
+    @Override
+    public void isReleaseReady() {
+//        synchronized (threadLock) {
+//            for (RepositoryConnection connection : threadMap.values()) {
+//                try {
+//                    connection.close();
+//                } catch (RepositoryException ex) {
+//                    LOG.warn("Error in close", ex);
+//                }
+//            }
+//        }
+        super.isReleaseReady();
     }
 }
