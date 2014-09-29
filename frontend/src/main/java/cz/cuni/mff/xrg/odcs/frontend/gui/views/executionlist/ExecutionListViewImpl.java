@@ -191,6 +191,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         // Refresh button. Refreshing the table
         Button btnRefresh = new Button("Refresh", new Button.ClickListener() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 presenter.refreshEventHandler();
@@ -207,6 +209,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         btnClearFilters.setWidth("120px");
         btnClearFilters.addStyleName("v-button-primary");
         btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 // TODO move this to the monitorTable
@@ -214,6 +218,23 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         topLine.addComponent(btnClearFilters);
+        
+        // clear table sorting
+        Button btnClearSort = new Button("Clear Sort");
+        btnClearSort.setHeight("25px");
+        btnClearSort.setWidth("120px");
+        btnClearSort.addStyleName("v-button-primary");
+        btnClearSort.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                monitorTable.setSortContainerPropertyId(null);; // deselect column
+                monitorTable.sort(new Object[] { "id" }, new boolean[] { false });
+            }
+        });
+        topLine.addComponent(btnClearSort);
+        
         // Table with pipeline execution records
         monitorTable = initializeExecutionTable(presenter);
         monitorTableLayout.addComponent(monitorTable);
