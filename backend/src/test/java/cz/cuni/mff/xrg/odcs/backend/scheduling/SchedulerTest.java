@@ -108,10 +108,10 @@ public class SchedulerTest {
         Pipeline ppl = pipelineFacade.createPipeline();
         pipelineFacade.save(ppl);
 
-        Schedule schedule = createSchedule(1, ppl);
-        Schedule schedule2 = createSchedule(1, ppl);
-        Schedule schedule3 = createSchedule(1, ppl);
-        Schedule schedule4 = createSchedule(2, ppl);
+        Schedule schedule = createSchedule(0, ppl);
+        Schedule schedule2 = createSchedule(0, ppl);
+        Schedule schedule3 = createSchedule(0, ppl);
+        Schedule schedule4 = createSchedule(3, ppl);
         scheduler.timeBasedCheck();
 
         EngineMock engine = new EngineMockWithLimit();
