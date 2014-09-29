@@ -743,7 +743,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 		int index = 0;
 		while (it.hasNext()) {
 			Long id = (Long) it.next();
-			if (id == execId) {
+			if (id.equals(execId)) {
 				return (index / monitorTable.getPageLength()) + 1; // pages are from 1
 			}
 			index++;
@@ -755,4 +755,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 	public boolean hasExecution(long executionId) {
 		return monitorTable.getItemIds().contains(executionId);
 	};
+	
+	@Override
+	public void resetFilters() {
+	    monitorTable.resetFilters();
+	}
 }
