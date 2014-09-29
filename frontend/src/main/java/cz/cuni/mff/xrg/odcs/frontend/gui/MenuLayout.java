@@ -9,22 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -42,11 +35,11 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 /**
  * Class represent main application component. The component contains menu bar
  * and a place where to place application view.
- * 
+ *
  * @author Petyr
  */
 public class MenuLayout extends CustomComponent {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(MenuLayout.class);
 
     private ClassNavigator navigator;
@@ -63,7 +56,7 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     private AuthenticationService authService;
-    
+
     /**
      * Application's configuration.
      */
@@ -90,7 +83,7 @@ public class MenuLayout extends CustomComponent {
     private Button logOutButton;
 
     private Embedded backendStatus;
-    
+
     private Embedded Logo;
 
     private HashMap<String, MenuItem> menuItems = new HashMap<>();
@@ -111,9 +104,9 @@ public class MenuLayout extends CustomComponent {
         mainLayout.setMargin(false);
         mainLayout.setWidth("100%");
         mainLayout.setHeight("100%");
-        
+
         // Add Logo.
-        Logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));   
+        Logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));
         Logo.setStyleName("logo");
 
         // menuBar
@@ -149,17 +142,17 @@ public class MenuLayout extends CustomComponent {
                 doAfterLogoutCleaning();
             }
         });
-        
+
         String instalName = "";
         try {
             instalName = appConfig.getString(ConfigProperty.INSTALLATION_NAME);
-        } catch (Exception e) {
+        } catch (MissingConfigPropertyException ex) {
             // using default value ""
-            LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, e.getMessage());
+            LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, ex.getMessage());
         }
         Label installationName = new Label(instalName);
         installationName.setStyleName("installationName");
-        
+
         HorizontalLayout headerLine = new HorizontalLayout(Logo, installationName, backendStatus, logOutButton, userName);
         headerLine.setSpacing(false);
         headerLine.setMargin(new MarginInfo(false, true, false, true));
@@ -170,7 +163,7 @@ public class MenuLayout extends CustomComponent {
         headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
         headerLine.setComponentAlignment(userName, Alignment.MIDDLE_RIGHT);
         headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_RIGHT);
-        
+
         mainLayout.addComponent(headerLine);
         mainLayout.setExpandRatio(headerLine, 0.0f);
 
@@ -204,17 +197,17 @@ public class MenuLayout extends CustomComponent {
      * session scope
      */
     private void doAfterLogoutCleaning() {
-    	AppEntry appEntry = (AppEntry) getParent();
-    	Collection<PostLogoutCleaner> classesToDoCleaning = 
-    			appEntry.getBeans(PostLogoutCleaner.class).values();
-    	for (PostLogoutCleaner presenterClass : classesToDoCleaning) {
-    		presenterClass.doAfterLogout();
-		}
-	}
+        AppEntry appEntry = (AppEntry) getParent();
+        Collection<PostLogoutCleaner> classesToDoCleaning =
+                appEntry.getBeans(PostLogoutCleaner.class).values();
+        for (PostLogoutCleaner presenterClass : classesToDoCleaning) {
+            presenterClass.doAfterLogout();
+        }
+    }
 
-	/**
+    /**
      * Return layout for application views.
-     * 
+     *
      * @return layout for application views
      */
     public Panel getViewLayout() {
@@ -231,7 +224,7 @@ public class MenuLayout extends CustomComponent {
 
     /**
      * Refreshes the status of backend. Green/red icon in header.
-     * 
+     *
      * @param isRunning
      */
     public void refreshBackendStatus(boolean isRunning) {
@@ -241,7 +234,7 @@ public class MenuLayout extends CustomComponent {
 
     /**
      * Setup navigation and menu.
-     * 
+     *
      * @param navigatorHolder
      */
     public void setNavigation(ClassNavigatorHolder navigatorHolder) {
@@ -257,7 +250,7 @@ public class MenuLayout extends CustomComponent {
 
     /**
      * Sets active menu item.
-     * 
+     *
      * @param viewName
      *            Item to set as active.
      */
@@ -274,7 +267,7 @@ public class MenuLayout extends CustomComponent {
 
     /**
      * Class use as command to change sub-pages.
-     * 
+     *
      * @author Petyr
      */
     private class NavigateToCommand implements Command {
