@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend.gui;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.ThemeResource;
@@ -44,6 +46,8 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
  * @author Petyr
  */
 public class MenuLayout extends CustomComponent {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(MenuLayout.class);
 
     private ClassNavigator navigator;
 
@@ -70,7 +74,6 @@ public class MenuLayout extends CustomComponent {
      * Used layout.
      */
     private VerticalLayout mainLayout;
-    private HorizontalLayout headerLayout;
 
     /**
      * Menu bar.
@@ -147,7 +150,14 @@ public class MenuLayout extends CustomComponent {
             }
         });
         
-        Label installationName = new Label(appConfig.getString(ConfigProperty.INSTALLATION_NAME));
+        String instalName = "";
+        try {
+            instalName = appConfig.getString(ConfigProperty.INSTALLATION_NAME);
+        } catch (Exception e) {
+            // using default value ""
+            LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, e.getMessage());
+        }
+        Label installationName = new Label(instalName);
         installationName.setStyleName("installationName");
         
         HorizontalLayout headerLine = new HorizontalLayout(Logo, installationName, backendStatus, logOutButton, userName);
