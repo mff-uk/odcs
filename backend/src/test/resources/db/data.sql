@@ -109,4 +109,8 @@ INSERT INTO RDF_NS_PREFIX(id, name, uri)
 
 INSERT INTO RDF_NS_PREFIX(id, name, uri)
  VALUES (2, 'ex2', 'http://example.com/2');
+ 
+INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
+INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
+
 

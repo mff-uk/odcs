@@ -279,3 +279,10 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2014-08-07 20:38:24
+
+-- 1.3.2 changes
+UPDATE exec_pipeline SET order_number = 1 ;
+UPDATE exec_schedule SET priority = 1 ;
+
+INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
+INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');

@@ -578,4 +578,8 @@ class PipelineFacadeImpl implements PipelineFacade {
         this.authCtx = authCtx;
     }
 
+    @Override
+    public boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
+        return executionDao.hasWithStatus(pipeline, statuses);
+    }
 }

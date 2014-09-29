@@ -62,6 +62,9 @@
 
     <!-- Facade for managing RDF namespace prefixes -->
     <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacadeImpl"/>
+    
+    <!-- Facade for managing runtime properties -->
+    <bean id="runtimePropertiesFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacadeImpl"/>
 
     <!-- Service or exploring DPUs -->
     <bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer"/>
@@ -79,6 +82,7 @@
     <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl"/>
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
+    <bean id="dbRuntimeProperties" class="cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimePropertiesImpl"/>
 
     <!-- authorizator required by dao -->
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizatorImpl"/>

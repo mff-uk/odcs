@@ -26,6 +26,8 @@ public enum ConfigProperty {
      */
     FRONTEND_URL("frontend.url"),
     
+    FRONTEND_RUN_NOW_PIPELINE_PRIORITY("run.now.pipeline.priority"),
+    
     /**
      * string diplayed next to the UV logo in GUI
      */

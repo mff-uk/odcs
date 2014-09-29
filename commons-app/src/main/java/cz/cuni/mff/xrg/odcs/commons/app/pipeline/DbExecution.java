@@ -86,4 +86,13 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
 	public boolean hasDeleted(List<Long> ids);
 
+	/**
+	 * Checks if there are executions for selected pipeline with selected statuses
+	 * 
+	 * @param pipeline for which executions we are checking
+	 * @param statuses of executions we are checking
+	 * @return true if there is at least one execution with selected statuses, false otherwise
+	 */
+    boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
+
 }

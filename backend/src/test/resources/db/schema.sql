@@ -583,9 +583,16 @@ CREATE INDEX `ix_LOGGIN_relative_id` ON `LOGGING` (`relative_id`);
 
 ALTER TABLE exec_pipeline ADD order_number Long not null;
 
-ALTER TABLE exec_pipeline ADD created_epoch Long not null;
-
 ALTER TABLE exec_schedule ADD priority Long not null;
+
+CREATE TABLE `runtime_properties`
+(
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NULL,
+  `value` VARCHAR(100) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE (`name`)
+);
 
 -- File must end with empty line, so last query is followed by enter.
 

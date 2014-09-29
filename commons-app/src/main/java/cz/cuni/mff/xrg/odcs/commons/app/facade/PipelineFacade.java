@@ -309,4 +309,13 @@ public interface PipelineFacade extends Facade {
      */
 	boolean hasDeletedExecutions(List<Long> executionIds);
 
+	/**
+     * Checks if there are executions for selected pipeline with selected statuses
+     * 
+     * @param pipeline for which executions we are checking
+     * @param statuses of executions we are checking
+     * @return true if there is at least one execution with selected statuses, false otherwise
+     */
+    boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
+
 }

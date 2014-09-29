@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
@@ -25,6 +25,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 @TransactionConfiguration(defaultRollback = true)
 public class SchedulerTest {
 
+    public static final Integer RUNNIG_PPL_LIMIT = 2;
+
     @Autowired
     private Scheduler scheduler;
 
@@ -33,7 +35,14 @@ public class SchedulerTest {
 
     @Autowired
     private ScheduleFacade scheduleFacade;
-
+    
+    private class EngineMockWithLimit extends EngineMock {
+        @Override
+        protected Integer getLimitOfScheduledPipelines() {
+            return RUNNIG_PPL_LIMIT;
+        }
+    }
+    
     @Test
     @Transactional
     public void test() {
@@ -50,7 +59,7 @@ public class SchedulerTest {
         schedule.setPriority((long) 1);
         scheduleFacade.save(schedule);
         scheduler.timeBasedCheck();
-        EngineMock engine = new EngineMock();
+        EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
         engine.doCheck();
 
@@ -69,8 +78,7 @@ public class SchedulerTest {
 
         scheduler.timeBasedCheck();
 
-        EngineMock engine = new EngineMock();
-        engine.limitOfScheduledPipelines = 2;
+        EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
 
         engine.doCheck();
@@ -100,14 +108,13 @@ public class SchedulerTest {
         Pipeline ppl = pipelineFacade.createPipeline();
         pipelineFacade.save(ppl);
 
-        Schedule schedule = createSchedule(1, ppl);
-        Schedule schedule2 = createSchedule(1, ppl);
-        Schedule schedule3 = createSchedule(1, ppl);
-        Schedule schedule4 = createSchedule(2, ppl);
+        Schedule schedule = createSchedule(0, ppl);
+        Schedule schedule2 = createSchedule(0, ppl);
+        Schedule schedule3 = createSchedule(0, ppl);
+        Schedule schedule4 = createSchedule(3, ppl);
         scheduler.timeBasedCheck();
 
-        EngineMock engine = new EngineMock();
-        engine.limitOfScheduledPipelines = 2;
+        EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
 
         System.out.println("id: {} " + schedule.getId());
@@ -118,7 +125,7 @@ public class SchedulerTest {
         engine.doCheck();
 
         for (PipelineExecution sch : engine.historyOfExecution) {
-            System.out.println("id: " + sch.getId().toString() + " position: " + sch.getOrderPosition() + "created: " + sch.getCreated());
+            System.out.println("id: " + sch.getId().toString() + " position: " + sch.getOrderNumber());
         }
         assertEquals(3, engine.historyOfExecution.size());
         assertEquals(schedule.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
@@ -158,8 +165,7 @@ public class SchedulerTest {
 
         scheduler.timeBasedCheck();
 
-        EngineMock engine = new EngineMock();
-        engine.limitOfScheduledPipelines = 2;
+        EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
 
         engine.doCheck();
