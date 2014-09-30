@@ -268,6 +268,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Show log", null, new Action() {
             @Override
             protected void action(long id) {
+                changeURI(id);
                 presenter.showDebugEventHandler(id);
                 monitorTable.select(id);
             }
@@ -285,6 +286,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         generator.addButton("Debug data", null, new Action() {
             @Override
             protected void action(long id) {
+                changeURI(id);
                 presenter.showDebugEventHandler(id);
                 monitorTable.select(id);
             }
@@ -517,11 +519,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     public void itemClick(ItemClickEvent event) {
                         ValueItem item = (ValueItem) event.getItem();
                         final long executionId = item.getId();
-                        // add id to uri
-                        String uriFragment = Page.getCurrent().getUriFragment();
-                        ParametersHandler handler = new ParametersHandler(uriFragment);
-                        handler.addParameter("exec", ""+executionId);
-                        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+                        changeURI(executionId);
                         // set debug
                         presenter.showDebugEventHandler(executionId);
                     }
@@ -550,6 +548,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                         if (event.getClickedComponent() == btnEdit) {
                             return;
                         }
+                        changeURI((Long) itemId);
                         presenter.showDebugEventHandler((Long) itemId);
                         monitorTable.select(itemId);
                     }
@@ -646,9 +645,17 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         return executionTable;
     }
 
+    private void changeURI(long executionId) {
+        String uriFragment = Page.getCurrent().getUriFragment();
+        ParametersHandler handler = new ParametersHandler(uriFragment);
+        handler.addParameter("exec", ""+executionId);
+        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+    }
+
     @Override
     public void setSelectedRow(Long execId) {
         monitorTable.select(execId);
+        changeURI(execId);
     }
 
     @Override
