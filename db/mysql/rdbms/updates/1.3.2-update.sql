@@ -15,3 +15,5 @@ CREATE TABLE `runtime_properties`
 
 INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
 INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
+
+ALTER TABLE `dpu_instance` ADD COLUMN `use_template_config` SMALLINT NOT NULL DEFAULT 0;

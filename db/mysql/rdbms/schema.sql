@@ -45,6 +45,7 @@ CREATE TABLE `dpu_instance`
   `config_valid` SMALLINT,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
+  `use_template_config` SMALLINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_DPU_INSTANCE_dpu_id` ON `dpu_instance` (`dpu_id`);

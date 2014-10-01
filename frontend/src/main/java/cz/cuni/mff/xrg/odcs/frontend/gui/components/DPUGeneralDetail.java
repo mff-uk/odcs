@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.MarginInfo;
@@ -42,6 +43,10 @@ public class DPUGeneralDetail extends CustomComponent {
 
     private final CheckBox useUserDescription;
 
+    private final CheckBox useTemplateConfiguration;
+    
+    private final Label useTemplateConfigurationLabel;
+    
     /**
      * True if the dialog content is read only.
      */
@@ -52,11 +57,11 @@ public class DPUGeneralDetail extends CustomComponent {
      */
     private ValueChangeListener valueChangeListener = null;
 
-    public DPUGeneralDetail() {
+    public DPUGeneralDetail(final DPUConfigHolder instanceConfig) {
         setWidth("100%");
         setHeight("-1px");
         // create subcomponents
-        GridLayout mainLayout = new GridLayout(2, 4);
+        GridLayout mainLayout = new GridLayout(2, 5);
         mainLayout.setWidth("100%");
         mainLayout.setSpacing(true);
         mainLayout.setMargin(new MarginInfo(false, false, true, false));
@@ -94,6 +99,8 @@ public class DPUGeneralDetail extends CustomComponent {
         mainLayout.addComponent(new Label("Use custom description"), 0, 3);
         useUserDescription = new CheckBox();
         useUserDescription.addValueChangeListener(new ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 final boolean useUserDesc = useUserDescription.getValue();
@@ -101,6 +108,20 @@ public class DPUGeneralDetail extends CustomComponent {
             }
         });
         mainLayout.addComponent(useUserDescription, 1, 3);
+        
+        useTemplateConfigurationLabel = new Label("Use template configuration"); 
+        mainLayout.addComponent(useTemplateConfigurationLabel, 0, 4);
+        useTemplateConfiguration = new CheckBox();
+        useTemplateConfiguration.addValueChangeListener(new ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                boolean isUseTemplConf = (boolean) event.getProperty().getValue();
+                instanceConfig.setEnabled(!isUseTemplConf);
+            }
+        });
+        mainLayout.addComponent(useTemplateConfiguration, 1, 4);
 
         // expand column with the text boxes
         mainLayout.setColumnExpandRatio(1, 1.0f);
@@ -156,10 +177,17 @@ public class DPUGeneralDetail extends CustomComponent {
 
             dpuTemplateName.setVisible(true);
             dpuTemplateNameLabel.setVisible(true);
+            
+            useTemplateConfiguration.setValue(instance.isUseTemplateConfig());
+            useTemplateConfiguration.setVisible(true);
+            useTemplateConfigurationLabel.setVisible(true);
 
         } else {
             dpuTemplateName.setVisible(false);
             dpuTemplateNameLabel.setVisible(false);
+            
+            useTemplateConfiguration.setVisible(false);
+            useTemplateConfigurationLabel.setVisible(false);
         }
 
         if (dpu.isUseDPUDescription()) {
@@ -198,6 +226,11 @@ public class DPUGeneralDetail extends CustomComponent {
                 dpu.setDescription(generateDescription);
             }
             dpu.setUseDPUDescription(true);
+        }
+        
+        if (dpu instanceof DPUInstanceRecord) {
+            DPUInstanceRecord instance = (DPUInstanceRecord) dpu;
+            instance.setUseTemplateConfig(useTemplateConfiguration.getValue());
         }
 
 //		if (userDescription.isEmpty()) {
