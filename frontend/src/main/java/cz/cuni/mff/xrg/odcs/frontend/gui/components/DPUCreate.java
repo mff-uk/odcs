@@ -40,6 +40,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
 
 /**
  * Dialog for the DPU template creation. Allows to upload a JAR file and on base
@@ -358,7 +359,7 @@ public class DPUCreate extends Window {
                 }
 
                 List<DPUTemplateRecord> templates;
-                StringBuilder caughtExceptions = new StringBuilder();
+                List<DPUCreateException> caughtExceptions = new ArrayList<DPUCreateException>();
                 
                 for (final File fileEntry : dpus) {
                     templates = null;
@@ -370,23 +371,18 @@ public class DPUCreate extends Window {
                                 continue; // there is xml file but there is no record for dpu
                             }
                         } // else there is no xml file and we import jar files without additional info
-                        importDPUsFromZip(fileEntry, templates);
+                        importDPUsFromZip(fileEntry, templates, caughtExceptions);
                     } catch (DPUCreateException e) {
-                        if (caughtExceptions.length() != 0) {
-                            caughtExceptions.append("\n");
-                        }
-                        caughtExceptions.append(e.getMessage());
+                        caughtExceptions.add(e);
                     }
                 }
                 
                 // exception that we caught will be shown in one notification
-                if (caughtExceptions.length() != 0) {
+                if (caughtExceptions.size() != 0) {
                     dpuGeneralSettingsLayoutZip.removeComponent(1, 2);
                     uploadFileZip = new TextField();
                     dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip", 2), 1, 2);
-                    Notification.show("Failed to create DPU",
-                            caughtExceptions.toString(),
-                            Notification.Type.ERROR_MESSAGE);
+                    showResultExecptions(caughtExceptions);
                 }
 
                 // and at the end we can close the dialog ..
@@ -394,6 +390,42 @@ public class DPUCreate extends Window {
             }
         }));
         return saveButton;
+    }
+
+    private void showResultExecptions(List<DPUCreateException> caughtExceptions) {
+        VerticalLayout content = new VerticalLayout();
+        content.setHeight(99, Unit.PERCENTAGE); // get rid of scrollbar
+        content.setWidth(100, Unit.PERCENTAGE);
+        StringBuilder builder = new StringBuilder();
+        for (DPUCreateException exc : caughtExceptions) {
+            if (builder.length() != 0) {
+                builder.append("\n");
+            }
+            builder.append("* ").append(exc.getMessage());
+        }
+        
+        TextArea text = new TextArea(null, builder.toString());
+        text.setSizeFull();
+        content.addComponent(text);
+        Button btnClose = new Button("Close");
+        content.addComponent(btnClose);
+        content.setComponentAlignment(btnClose, Alignment.BOTTOM_CENTER);
+        content.setExpandRatio(text, 1.0f);
+        
+        final Window resultDialog = new SimpleDialog(content);
+        resultDialog.setCaption("Result log");
+        if (!UI.getCurrent().getWindows().contains(resultDialog)) {
+            UI.getCurrent().addWindow(resultDialog);
+        }
+        
+        btnClose.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                resultDialog.close();
+            }
+        });
     }
 
     /**
@@ -482,7 +514,7 @@ public class DPUCreate extends Window {
         return cancelButton;
     }
     
-    private void importDPUsFromZip(File fileEntry, List<DPUTemplateRecord> templates) throws DPUCreateException {
+    private void importDPUsFromZip(File fileEntry, List<DPUTemplateRecord> templates, List<DPUCreateException> caughtExceptions) throws DPUCreateException {
         if (templates == null) { // there was no xml file with templates
             importDPU(fileEntry, null);
             return;
@@ -500,19 +532,12 @@ public class DPUCreate extends Window {
         }
         
         // now children
-        StringBuilder caughtExceptions = new StringBuilder();
         for (DPUTemplateRecord dpuTemplateRecord : templates) {
             try {
                 importDPU(fileEntry, dpuTemplateRecord);
             } catch (DPUCreateException e) {
-                if (caughtExceptions.length() != 0) {
-                    caughtExceptions.append("\n");
-                }
-                caughtExceptions.append(e.getMessage());
+                caughtExceptions.add(e);
             }
-        }
-        if (caughtExceptions.length() != 0) {
-            throw new DPUCreateException(caughtExceptions.toString());
         }
     }
 
