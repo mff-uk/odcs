@@ -26,8 +26,8 @@
 
 |Name         |Type           |DataUnit     |Description             |
 |-------------|---------------|-------------|------------------------|
-|rdfInput     |i              |RDFDataUnit  |RDF data. |  
-|rdfOutput    |o              |RDFDataUnit  |RDF data. |
+|rdfInput     |i              |RDFDataUnit  |RDF graphs to be merged.. |  
+|rdfOutput    |o              |RDFDataUnit  |Merged RDF graph. |
 
 ***
 
