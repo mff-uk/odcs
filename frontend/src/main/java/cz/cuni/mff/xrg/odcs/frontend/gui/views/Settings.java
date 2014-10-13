@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -23,7 +25,9 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
@@ -474,14 +478,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         String name = validateAndGetValue(property, 0);
                         String value = validateAndGetValue(property, 1);
                         
-                        if (name.isEmpty()) {
-                            Notification.show("Save failed.", "There is a property with name not set", Notification.Type.ERROR_MESSAGE);
-                            return;
-                        }
-                        if (value.isEmpty()) {
-                            Notification.show("Save failed.", "There is a property with value not set", Notification.Type.ERROR_MESSAGE);
-                            return;
-                        }
                         if (toSave.containsKey(name) || notChanged.contains(name)) {
                             Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
                             return;
@@ -547,20 +543,52 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 TextField text = new TextField();
                 text.addTextChangeListener(changeListener);
                 text.setRequired(true);
+                text.setRequiredError("Name is Required");
                 text.setValue(name);
                 text.setInputPrompt("name");
                 text.setWidth(250, Unit.PIXELS);
                 text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 0, 0);
                 
-                text = new TextField();
-                text.addTextChangeListener(changeListener);
-                text.setRequired(true);
-                text.setValue(value);
-                text.setInputPrompt("value");
-                text.setWidth(250, Unit.PIXELS);
-                text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
-                oneLine.addComponent(text, 1, 0);
+                if (name.equals(ConfigProperty.FRONTEND_RUN_NOW_PIPELINE_PRIORITY.toString())) {
+                    ComboBox priorityComboBox = new ComboBox();
+                    priorityComboBox.setNullSelectionAllowed(false);
+                    priorityComboBox.setTextInputAllowed(false);
+                    priorityComboBox.setImmediate(true);
+                    priorityComboBox.setWidth(250, Unit.PIXELS);
+                    // Add some items
+                    for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+                        priorityComboBox.addItem(job);
+                    }
+                    
+                    long val = ScheduledJobsPriority.HIGHEST.getValue();
+                    try {
+                        val = Long.parseLong(value);
+                    } catch (NumberFormatException e) {
+                        // leaving the default value
+                    }
+
+                    priorityComboBox.setValue(ScheduledJobsPriority.getForValue(val));
+                    
+                    priorityComboBox.addValueChangeListener(new ValueChangeListener() {
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void valueChange(ValueChangeEvent event) {
+                            saveButton.setEnabled(true);
+                        }
+                    });
+                    
+                    oneLine.addComponent(priorityComboBox, 1, 0);
+                } else {
+                    text = new TextField();
+                    text.addTextChangeListener(changeListener);
+                    text.setValue(value);
+                    text.setInputPrompt("value");
+                    text.setWidth(250, Unit.PIXELS);
+                    text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
+                    oneLine.addComponent(text, 1, 0);
+                }
                 
                 return oneLine;
             }
@@ -613,11 +641,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         }
         runtimePropsManager.refreshData();
     }
-
-    private TextField getTextField(Component layout, int column) {
-        GridLayout gridLayout = (GridLayout) layout;
-        return (TextField) gridLayout.getComponent(column, 0);      
-    }
     
     /**
      * Validates and return the TextField.value
@@ -628,9 +651,19 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * @throws InvalidValueException
      */
     private String validateAndGetValue(Component layout, int column) throws InvalidValueException {
-        TextField field = getTextField(layout, column);
-        field.validate();
-        return field.getValue().trim();
+        
+        Component field = ((GridLayout) layout).getComponent(column, 0);
+        if (field instanceof TextField) {
+            TextField textField = (TextField) field;
+            textField.validate();
+            return textField.getValue().trim();
+        } else if (field instanceof ComboBox) {
+            ComboBox runNowProperty = (ComboBox) field;
+            ScheduledJobsPriority job = (ScheduledJobsPriority) runNowProperty.getValue();
+            // doesnt need to be validated
+            return String.valueOf(job.getValue());
+        }
+        return "";
     }
 
     /**
