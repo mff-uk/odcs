@@ -23,6 +23,7 @@
         <property name="url" value="${database.sql.url}"/>
         <property name="username" value="${database.sql.user}"/>
         <property name="password" value="${database.sql.password}"/>
+        <property name="maxActive" value="16" />
     </bean>
 
 
