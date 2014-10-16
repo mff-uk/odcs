@@ -1,0 +1,1 @@
+ALTER TABLE `ppl_open_event` MODIFY `opened` DATETIME;
