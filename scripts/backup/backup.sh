@@ -21,12 +21,11 @@ mysqldump $MYSQL_NAME  -u $MYSQL_USER --password=$MYSQL_PASS --ignore-table=$MYS
 BACKUP_NAME=uv_backup_$timestamp.zip
 zip $BACKUP_NAME  backend.zip frontend.zip plugins.zip $DB_DUMP_NAME
 
-TARGET_DIRECTORY=$OUT_DIRECTORY/$HOSTNAME/
-if [ ! -d $TARGET_DIRECTORY ]; then
-    mkdir -p $TARGET_DIRECTORY
+if [ ! -d $OUT_DIRECTORY ]; then
+    mkdir -p $OUT_DIRECTORY
 fi
 
-mv $BACKUP_NAME $TARGET_DIRECTORY
+mv $BACKUP_NAME $OUT_DIRECTORY
 
 rm  backend.zip frontend.zip plugins.zip  $DB_DUMP_NAME 
 
