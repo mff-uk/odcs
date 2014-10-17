@@ -26,8 +26,8 @@
 
 |Name         |Type           |DataUnit     |Description             |
 |-------------|---------------|-------------|------------------------|
-|rdfInput     |i              |RDFDataUnit  |RDF graphs to be merged.. |  
-|rdfOutput    |o              |RDFDataUnit  |Merged RDF graph. |
+|rdfInput     |i              |RDFDataUnit  |DataUnit to which user connects all inputs which has to be merged. |  
+|rdfOutput    |o              |RDFDataUnit  |DataUnit which outputs all input graphs. |
 
 ***
 
