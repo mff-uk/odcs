@@ -26,8 +26,8 @@
 
 |Name         |Type           |DataUnit     |Description             |
 |-------------|---------------|-------------|------------------------|
-|filesInput     |i              |FilesDataUnit  |TODO: provide description. |  
-|filesOutput    |o              |FilesDataUnit  |TODO: provide description. |
+|filesInput     |i              |FilesDataUnit  |DataUnit to which user connects all inputs which has to be merged.  |  
+|filesOutput    |o              |FilesDataUnit  |DataUnit which outputs all files from input. |
 
 ***
 
