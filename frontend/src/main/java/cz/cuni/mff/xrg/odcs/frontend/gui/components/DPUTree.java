@@ -376,6 +376,9 @@ public class DPUTree extends CustomComponent {
         tree.addItem(rootTransformer);
         DPURecord rootLoader = new DPUTemplateRecord("Loaders", null);
         tree.addItem(rootLoader);
+        DPURecord rootQuality = new DPUTemplateRecord("Quality", null);
+        tree.addItem(rootQuality);
+
 
         List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
         for (DPUTemplateRecord dpu : dpus) {
@@ -402,8 +405,11 @@ public class DPUTree extends CustomComponent {
                         case LOADER:
                             tree.setParent(dpu, rootLoader);
                             break;
+                        case QUALITY:
+                            tree.setParent(dpu, rootQuality);
+                            break;
                         default:
-                            throw new IllegalArgumentException();
+                            throw new IllegalArgumentException("Unknown type: " + dpu.getType());
                     }
                 }
             }
