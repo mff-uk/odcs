@@ -7,6 +7,7 @@
 		<artifactId>odcs</artifactId>
 		<version>1.3.2-SNAPSHOT</version>
 	</parent>
+	<packaging>war</packaging>
 	<artifactId>master</artifactId>
 	<name>master</name>
 	<description></description>
