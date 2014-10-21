@@ -31,3 +31,5 @@ bin/
 !/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/icons/arrow_bottom.svg
 /frontend/src/main/webapp/VAADIN/
 !/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/
+build.bat
+eclipse.bat
