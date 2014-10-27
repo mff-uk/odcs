@@ -1,9 +1,10 @@
-package sk.eea.xxx.domain;
+package eu.unifiedviews.master.converter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import eu.unifiedviews.master.model.PipelineDTO;
 
 public class PipelineToDTOConverter {
 

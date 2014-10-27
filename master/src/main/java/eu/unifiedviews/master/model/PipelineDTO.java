@@ -1,4 +1,4 @@
-package sk.eea.xxx.domain;
+package eu.unifiedviews.master.model;
 
 
 public class PipelineDTO {
