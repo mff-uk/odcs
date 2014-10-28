@@ -332,8 +332,11 @@ public class RDFQuery implements Query {
             try {
                 GraphQueryResult result = graphQuery.evaluate();
 
-                Model model = QueryResults.asModel(result);
-                size = model.size();
+                // its quicker to iterate through result, than init model and ask model the size 
+                while (result.hasNext()) {
+                    ++size;
+                    result.next();
+                }
                 result.close();
 
             } catch (QueryEvaluationException ex) {
