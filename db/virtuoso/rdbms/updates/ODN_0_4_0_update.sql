@@ -1,2 +1,0 @@
-UPDATE "DB"."ODCS"."EXEC_DATAUNIT_INFO" SET type = 0 WHERE type = 1 OR type = 2
-UPDATE "DB"."ODCS"."EXEC_DATAUNIT_INFO" SET type = 1 WHERE type = 3
