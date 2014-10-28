@@ -21,4 +21,4 @@ ALTER TABLE logging ENGINE = innodb;
 
 UPDATE `properties` SET `value` = '001.004.000' WHERE `key` = 'UV.Core.version';
 UPDATE `properties` SET `value` = '001.000.001' WHERE `key` = 'UV.Plugin-DevEnv.version';
-UPDATE `properties` SET `value` = '001.004.000' WHERE `key` = 'UV.Plugins.version';
+--UPDATE `properties` SET `value` = '001.004.000' WHERE `key` = 'UV.Plugins.version';
