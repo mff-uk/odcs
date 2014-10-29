@@ -3,9 +3,9 @@
     "description": "Runs after other pipelines",
     "justOnce": false,
     "enabled": true,
-    "firstExecution": "20140808T15:15:15.555Z",
+    "firstExecution": "20140808T15:15:20.555+0000",
     "lastExecution": null,
-    "afterPipelines": [15, 54],
+    "afterPipelines": null,
     "period": null,
     "periodUnit": null
 }

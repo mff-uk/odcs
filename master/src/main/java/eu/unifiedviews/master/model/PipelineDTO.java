@@ -1,6 +1,5 @@
 package eu.unifiedviews.master.model;
 
-
 public class PipelineDTO {
 
     private Long id;
@@ -8,21 +7,6 @@ public class PipelineDTO {
     private String name;
 
     private String description;
-
-//    private User owner;
-
-//    private ShareType shareType;
-//
-//    private Date lastChange;
-//
-//    public PipelineDTO(Pipeline pip) {
-//        id = pip.getId();
-//        name = pip.getName();
-//        description = pip.getDescription();
-//        owner = pip.getOwner();
-//        shareType = pip.getShareType();
-//        lastChange = pip.getLastChange();
-//    }
 
     public Long getId() {
         return id;
@@ -47,30 +31,6 @@ public class PipelineDTO {
     public void setDescription(String description) {
         this.description = description;
     }
-
-//    public User getOwner() {
-//        return owner;
-//    }
-//
-//    public void setOwner(User owner) {
-//        this.owner = owner;
-//    }
-//
-//    public ShareType getShareType() {
-//        return shareType;
-//    }
-//
-//    public void setShareType(ShareType shareType) {
-//        this.shareType = shareType;
-//    }
-//
-//    public Date getLastChange() {
-//        return lastChange;
-//    }
-//
-//    public void setLastChange(Date lastChange) {
-//        this.lastChange = lastChange;
-//    }
 
     @Override
     public String toString() {

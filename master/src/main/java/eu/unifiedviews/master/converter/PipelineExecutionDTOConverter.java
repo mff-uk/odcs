@@ -3,10 +3,11 @@ package eu.unifiedviews.master.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import eu.unifiedviews.master.model.PipelineExecutionDTO;
 
-public class PipelineExecutionToDTOConverter {
+public class PipelineExecutionDTOConverter {
 
     public static PipelineExecutionDTO convert(PipelineExecution execution) {
         PipelineExecutionDTO dto = null;
@@ -23,7 +24,6 @@ public class PipelineExecutionToDTOConverter {
             } else {
                 dto.setSchedule(null);
             }
-            dto.setSilentMode(execution.getSilentMode());
             dto.setStop(execution.getStop());
             dto.setLastChange(ConvertUtils.dateToString(execution.getLastChange()));
         }
@@ -44,4 +44,12 @@ public class PipelineExecutionToDTOConverter {
         }
         return dtos;
     }
+
+    public static PipelineExecution createPipelineExecution(PipelineExecutionDTO dto, Pipeline pipeline) {
+        PipelineExecution execution = new PipelineExecution(pipeline);
+        execution.setDebugging(dto.isDebugging());
+        execution.setOrderNumber(1L);
+        return execution;
+    }
+
 }

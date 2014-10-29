@@ -17,8 +17,6 @@ public class PipelineExecutionDTO {
 
     private Long schedule;
 
-    private boolean silentMode;
-
     private boolean stop;
 
     private String lastChange;
@@ -77,14 +75,6 @@ public class PipelineExecutionDTO {
 
     public void setSchedule(Long schedule) {
         this.schedule = schedule;
-    }
-
-    public boolean isSilentMode() {
-        return silentMode;
-    }
-
-    public void setSilentMode(boolean silentMode) {
-        this.silentMode = silentMode;
     }
 
     public boolean isStop() {

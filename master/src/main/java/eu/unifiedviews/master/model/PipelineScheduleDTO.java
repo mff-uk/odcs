@@ -2,7 +2,6 @@ package eu.unifiedviews.master.model;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 public class PipelineScheduleDTO {
@@ -24,7 +23,7 @@ public class PipelineScheduleDTO {
 
     private Integer period;
 
-    private PeriodUnit periodUnit;
+    private String periodUnit;
 
     public Long getId() {
         return id;
@@ -98,11 +97,11 @@ public class PipelineScheduleDTO {
         this.period = period;
     }
 
-    public PeriodUnit getPeriodUnit() {
+    public String getPeriodUnit() {
         return periodUnit;
     }
 
-    public void setPeriodUnit(PeriodUnit periodUnit) {
+    public void setPeriodUnit(String periodUnit) {
         this.periodUnit = periodUnit;
     }
 

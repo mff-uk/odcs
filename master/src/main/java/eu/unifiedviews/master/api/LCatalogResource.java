@@ -28,7 +28,7 @@ public class LCatalogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public List<LCatalogDTO> postLCatalog(@PathParam("datasetId") String datasetId, LCatalogDTO lCatalogDTO) {
-        CkanRepository ckanRepository = new CkanRepository("http://localhost:5000/api/3/action/", "c0b9f02a-6aff-4329-83c3-6686e14b4b5d");
+        CkanRepository ckanRepository = new CkanRepository("http://192.168.3.131:5000/api/3/action/", "c0b9f02a-6aff-4329-83c3-6686e14b4b5d");
 //      Resource resource = ckanRepository.getResourceDAO().read("2337edaf-56ca-40f1-bbce-59518dd88ce4");
 
         Resource resource1 = new Resource();

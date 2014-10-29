@@ -1,20 +1,15 @@
 package eu.unifiedviews.master.converter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import eu.unifiedviews.master.model.PipelineScheduleDTO;
 
 public class ScheduleDTOConverter {
-    private static final String DATE_FORMAT = "yyyyMMdd'T'HH:mm:ss.SSSZ";
-
-    private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-
     public static PipelineScheduleDTO convertToDTO(Schedule schedule) {
         PipelineScheduleDTO dto = null;
         if (schedule != null) {
@@ -23,22 +18,27 @@ public class ScheduleDTOConverter {
             dto.setDescription(schedule.getDescription());
             dto.setEnabled(schedule.isEnabled());
             if (schedule.getFirstExecution() != null) {
-                dto.setFirstExecution(df.format(schedule.getFirstExecution()));
+                dto.setFirstExecution(ConvertUtils.dateToString(schedule.getFirstExecution()));
             } else {
                 dto.setFirstExecution("");
             }
             dto.setJustOnce(schedule.isJustOnce());
             if (schedule.getLastExecution() != null) {
-                dto.setLastExecution(df.format(schedule.getLastExecution()));
+                dto.setLastExecution(ConvertUtils.dateToString(schedule.getLastExecution()));
             } else {
                 dto.setLastExecution("");
             }
             dto.setPeriod(schedule.getPeriod());
-            dto.setPeriodUnit(schedule.getPeriodUnit());
+            if (schedule.getPeriodUnit() != null) {
+                dto.setPeriodUnit(schedule.getPeriodUnit().toString());
+            } else {
+                dto.setPeriodUnit(null);
+            }
             dto.setScheduleType(schedule.getType());
             Set<Pipeline> pipelines = schedule.getAfterPipelines();
-            List<Long> pipelineIds = new ArrayList<Long>();
+            List<Long> pipelineIds = null;
             if (pipelines != null && pipelines.size() > 0) {
+                pipelineIds = new ArrayList<Long>();
                 for (Pipeline pipeline : pipelines) {
                     pipelineIds.add(pipeline.getId());
                 }
@@ -63,8 +63,27 @@ public class ScheduleDTOConverter {
         return dtos;
     }
 
-    public static Schedule convertFromDTO(PipelineScheduleDTO dto, Schedule schedule) {
+    public static Schedule convertFromDTO(PipelineScheduleDTO dto, List<Pipeline> pipelines, Schedule schedule) {
+        schedule.setDescription(dto.getDescription());
+        schedule.setJustOnce(dto.isJustOnce());
         schedule.setEnabled(dto.isEnabled());
+        schedule.setFirstExecution(ConvertUtils.stringToDate(dto.getFirstExecution()));
+        schedule.setLastExecution(ConvertUtils.stringToDate(dto.getLastExecution()));
+        Set<Pipeline> originalSet = schedule.getAfterPipelines();
+        originalSet.clear();
+        if (pipelines != null) {
+            originalSet.addAll(pipelines);
+            schedule.setAfterPipelines(originalSet);
+        } else {
+            schedule.setAfterPipelines(null);
+        }
+
+        schedule.setPeriod(dto.getPeriod());
+        if (dto.getPeriodUnit() != null) {
+            schedule.setPeriodUnit(PeriodUnit.valueOf(dto.getPeriodUnit()));
+        } else {
+            schedule.setPeriodUnit(null);
+        }
         return schedule;
     }
 }
