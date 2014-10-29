@@ -24,6 +24,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Master</servlet-name>
-		<url-pattern>/api/*</url-pattern>
+		<url-pattern>/api/1/*</url-pattern>
 	</servlet-mapping>
 </web-app>
