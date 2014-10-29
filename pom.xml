@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>odcs</artifactId>
-	<version>1.3.2-SNAPSHOT</version>
+	<version>1.4.0</version>
 	<packaging>pom</packaging>
 	<name>ODCleanStore</name>
 	<description />
@@ -19,7 +19,7 @@
 		<uv-dataunit-rdf.version>1.0.1</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>1.0.1</uv-dataunit-files.version>
 		<uv-dataunit-helpers.version>1.0.1</uv-dataunit-helpers.version>
-		<dataunit.version>1.3.1</dataunit.version>
+		<dataunit.version>1.4.0</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
