@@ -10,12 +10,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import eu.unifiedviews.master.model.PipelineScheduleDTO;
 
-public class ScheduleToDTOConverter {
+public class ScheduleDTOConverter {
     private static final String DATE_FORMAT = "yyyyMMdd'T'HH:mm:ss.SSSZ";
 
     private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
-    public static PipelineScheduleDTO convert(Schedule schedule) {
+    public static PipelineScheduleDTO convertToDTO(Schedule schedule) {
         PipelineScheduleDTO dto = null;
         if (schedule != null) {
             dto = new PipelineScheduleDTO();
@@ -48,12 +48,12 @@ public class ScheduleToDTOConverter {
         return dto;
     }
 
-    public static List<PipelineScheduleDTO> convert(List<Schedule> schedules) {
+    public static List<PipelineScheduleDTO> convertToDTOs(List<Schedule> schedules) {
         List<PipelineScheduleDTO> dtos = null;
         if (schedules != null) {
             dtos = new ArrayList<PipelineScheduleDTO>();
             for (Schedule schedule : schedules) {
-                PipelineScheduleDTO dto = convert(schedule);
+                PipelineScheduleDTO dto = convertToDTO(schedule);
                 if (dto != null) {
                     dtos.add(dto);
                 }
@@ -61,5 +61,10 @@ public class ScheduleToDTOConverter {
             }
         }
         return dtos;
+    }
+
+    public static Schedule convertFromDTO(PipelineScheduleDTO dto, Schedule schedule) {
+        schedule.setEnabled(dto.isEnabled());
+        return schedule;
     }
 }

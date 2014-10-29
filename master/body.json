@@ -1,0 +1,11 @@
+{
+    "id": 2,
+    "description": "Runs after other pipelines",
+    "justOnce": false,
+    "enabled": true,
+    "firstExecution": "20140808T15:15:15.555Z",
+    "lastExecution": null,
+    "afterPipelines": [15, 54],
+    "period": null,
+    "periodUnit": null
+}
