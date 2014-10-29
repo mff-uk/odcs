@@ -571,6 +571,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			return '#CED8F6';
 		} else if (type === "LOADER") {
 			return '#CEF6D8';
+        } else if (type === "QUALITY") {
+            return '#FFFFCC';
 		} else {
 			return '#FFFFFF';
 		}
