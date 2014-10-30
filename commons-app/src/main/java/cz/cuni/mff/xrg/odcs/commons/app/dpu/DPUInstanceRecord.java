@@ -26,7 +26,10 @@ public class DPUInstanceRecord extends DPURecord {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "dpu_id")
     private DPUTemplateRecord template;
-    
+
+    /**
+     * If true then this instance use owner template configuration.
+     */
     @Column(name = "use_template_config")
     private boolean useTemplateConfig;
 
@@ -47,7 +50,7 @@ public class DPUInstanceRecord extends DPURecord {
     public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
         super(dpuInstance);
         template = dpuInstance.getTemplate();
-        this.useTemplateConfig = false;
+        this.useTemplateConfig = dpuInstance.useTemplateConfig;
     }
 
     /**
@@ -87,9 +90,8 @@ public class DPUInstanceRecord extends DPURecord {
     public void setTemplate(DPUTemplateRecord template) {
         this.template = template;
     }
-    
+
     /**
-     * 
      * @return true if dpu should use template configuration, false if dpu should use instance configuration
      */
     public boolean isUseTemplateConfig() {
@@ -97,8 +99,8 @@ public class DPUInstanceRecord extends DPURecord {
     }
 
     /**
-     * 
-     * @param useTemplateConfig true if dpu should use template configuration, false if dpu should use instance configuration
+     * @param useTemplateConfig
+     *            true if dpu should use template configuration, false if dpu should use instance configuration
      */
     public void setUseTemplateConfig(boolean useTemplateConfig) {
         this.useTemplateConfig = useTemplateConfig;
