@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -77,8 +76,8 @@ public class DPUDetail extends Window {
         setModal(true);
         setResizable(true);
         // set initial size
-        setWidth("640px");
-        setHeight("640px");
+        setWidth("800px");
+        setHeight("600px");
     }
 
     /**
@@ -96,6 +95,7 @@ public class DPUDetail extends Window {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("dpuDetailMainLayout");
         mainLayout.setMargin(true);
+        mainLayout.setSpacing(true);
         mainLayout.setHeight("100%");
         mainLayout.setWidth("100%");
 
@@ -119,7 +119,6 @@ public class DPUDetail extends Window {
     public HorizontalLayout buildFooter() {
         HorizontalLayout buttonBar = new HorizontalLayout();
         buttonBar.setStyleName("dpuDetailButtonBar");
-        buttonBar.setMargin(new MarginInfo(true, false, false, false));
         buttonBar.setSpacing(true);
         buttonBar.setWidth("100%");
 
