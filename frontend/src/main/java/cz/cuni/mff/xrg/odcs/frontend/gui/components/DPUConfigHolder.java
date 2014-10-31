@@ -4,7 +4,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -16,15 +15,24 @@ import com.vaadin.ui.VerticalLayout;
 public class DPUConfigHolder extends CustomComponent {
 
     /**
-     * Holder for dialog, will provide scroll bars if needed.
+     * Layout for no-configuration dialog.
      */
-    private final Panel dialogHolder;
+    private VerticalLayout noConfigLayout;
 
     public DPUConfigHolder() {
+        buildLayout();
+    }
+
+    private void buildLayout() {
         setSizeFull();
-        // create holder
-        dialogHolder = new Panel();
-        dialogHolder.setSizeFull();
+        // Build layout for no configuration.
+        final Label infoLabel = new Label();
+        infoLabel.setSizeUndefined();
+        infoLabel.setValue("This DPU doesn't provide configuration component.");
+        noConfigLayout = new VerticalLayout();
+        noConfigLayout.setSizeFull();
+        noConfigLayout.addComponent(infoLabel);
+        noConfigLayout.setComponentAlignment(infoLabel, Alignment.MIDDLE_CENTER);
     }
 
     /**
@@ -34,24 +42,10 @@ public class DPUConfigHolder extends CustomComponent {
      *            Can be null.
      */
     public void setConfigComponent(Component confDialog) {
-        dialogHolder.setContent(confDialog);
-
         if (confDialog == null) {
-            // Create label.
-            final Label infoLabel = new Label();
-            infoLabel.setSizeUndefined();
-            infoLabel.setValue("This DPU doesn't provide configuration component.");
-
-            final VerticalLayout layout = new VerticalLayout();
-            layout.setSizeFull();
-            layout.addComponent(infoLabel);
-            layout.setComponentAlignment(infoLabel, Alignment.MIDDLE_CENTER);
-
-            dialogHolder.setContent(null);
-            setCompositionRoot(layout);
+            setCompositionRoot(noConfigLayout);
         } else {
-            dialogHolder.setContent(confDialog);
-            setCompositionRoot(dialogHolder);
+            setCompositionRoot(confDialog);
         }
     }
 
