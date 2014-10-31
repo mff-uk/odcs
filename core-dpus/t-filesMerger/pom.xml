@@ -6,7 +6,7 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>dpu-core-base-pom</artifactId>
-        <version>1.3.1</version>
+        <version>1.4.1-SNAPSHOT</version>
         <relativePath>../dpu-core-base-pom.xml</relativePath>
     </parent>
 
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>dataunit</artifactId>
-            <version>1.3.1</version>
+            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
