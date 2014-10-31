@@ -365,6 +365,13 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
+
+    @Override
+    public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
+        return executionDao.getAllByPriorityLimited(status);
+    }
+
+
     /**
      * Find pipeline execution in database by ID and return it.
      * 
@@ -522,6 +529,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Transactional
     @Override
     public void save(PipelineExecution exec) {
+        exec.setLastChange(new Date());
         executionDao.save(exec);
     }
 
@@ -548,7 +556,10 @@ class PipelineFacadeImpl implements PipelineFacade {
     public void stopExecution(PipelineExecution execution) {
         PipelineExecution currentExec = getExecution(execution.getId());
 
-        if (currentExec.getStatus() == PipelineExecutionStatus.RUNNING) {
+        if (currentExec.getStatus() == PipelineExecutionStatus.QUEUED) {
+            // not started yet
+            delete(execution);
+        } else if (currentExec.getStatus() == PipelineExecutionStatus.RUNNING) {
             execution.stop();
             save(execution);
         } else {
@@ -567,4 +578,8 @@ class PipelineFacadeImpl implements PipelineFacade {
         this.authCtx = authCtx;
     }
 
+    @Override
+    public boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
+        return executionDao.hasWithStatus(pipeline, statuses);
+    }
 }

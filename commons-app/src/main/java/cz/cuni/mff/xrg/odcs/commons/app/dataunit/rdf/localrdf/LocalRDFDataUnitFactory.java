@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,12 +17,23 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
     private String repositoryPath;
 
-    private final Map<String, Repository> initializedRepositories = new HashMap<String, Repository>();
+    private final Map<String, Repository> initializedRepositories = Collections.synchronizedMap(new HashMap<String, Repository>());
+
+    private final Map<String, Object> locks = new HashMap<String, Object>();
+
+    private synchronized Object getLock(String id) {
+        if (locks.containsKey(id)) {
+            return locks.get(id);
+        }
+        Object lock = new Object();
+        locks.put(id, lock);
+        return lock;
+    }
 
     @Override
     public ManagableRdfDataUnit create(String pipelineId, String dataUnitName, String dataGraph) {
         Repository repository = null;
-        synchronized (initializedRepositories) {
+        synchronized (getLock(pipelineId)) {
             repository = initializedRepositories.get(pipelineId);
             if (repository == null) {
                 File managerDir = new File(repositoryPath);
@@ -56,36 +68,44 @@ public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
 
     @Override
     public void clean(String pipelineId) {
-        synchronized (initializedRepositories) {
-            File managerDir = new File(repositoryPath);
-            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-                throw new RuntimeException("Could not create repository manager directory.");
-            }
+        Repository repository = null;
+        synchronized (getLock(pipelineId)) {
+            repository = initializedRepositories.get(pipelineId);
+            if (repository != null) {
+                File managerDir = new File(repositoryPath);
+                if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                    throw new RuntimeException("Could not create repository manager directory.");
+                }
 
-            try {
-                initializedRepositories.get(pipelineId).shutDown();
-            } catch (RepositoryException ex) {
-                throw new RuntimeException("Could not shutdown repository.");
+                try {
+                    repository.shutDown();
+                } catch (RepositoryException ex) {
+                    throw new RuntimeException("Could not shutdown repository.");
+                }
+                File repositoryDirectory = new File(managerDir, pipelineId);
+                initializedRepositories.remove(pipelineId);
+                FileUtils.deleteQuietly(repositoryDirectory);
             }
-            File repositoryDirectory = new File(managerDir, pipelineId);
-            initializedRepositories.remove(pipelineId);
-            FileUtils.deleteQuietly(repositoryDirectory);
         }
     }
 
     @Override
     public void release(String pipelineId) {
-        synchronized (initializedRepositories) {
-            File managerDir = new File(repositoryPath);
-            if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-                throw new RuntimeException("Could not create repository manager directory.");
+        Repository repository = null;
+        synchronized (getLock(pipelineId)) {
+            repository = initializedRepositories.get(pipelineId);
+            if (repository != null) {
+                File managerDir = new File(repositoryPath);
+                if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
+                    throw new RuntimeException("Could not create repository manager directory.");
+                }
+                try {
+                    repository.shutDown();
+                } catch (RepositoryException ex) {
+                    throw new RuntimeException("Could not shutdown repository.");
+                }
+                initializedRepositories.remove(pipelineId);
             }
-            try {
-                initializedRepositories.get(pipelineId).shutDown();
-            } catch (RepositoryException ex) {
-                throw new RuntimeException("Could not shutdown repository.");
-            }
-            initializedRepositories.remove(pipelineId);
         }
     }
 }

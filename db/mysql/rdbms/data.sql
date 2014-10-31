@@ -188,7 +188,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `properties` WRITE;
 /*!40000 ALTER TABLE `properties` DISABLE KEYS */;
-INSERT INTO `properties` VALUES ('UV.Core.version','001.003.000'),('UV.Plugin-DevEnv.version','001.000.000'),('UV.Plugins.version','001.003.000');
+INSERT INTO `properties` VALUES ('UV.Core.version','001.004.000'),('UV.Plugin-DevEnv.version','001.000.001'),('UV.Plugins.version','001.004.000');
 /*!40000 ALTER TABLE `properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -279,3 +279,6 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2014-08-07 20:38:24
+
+INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
+INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');

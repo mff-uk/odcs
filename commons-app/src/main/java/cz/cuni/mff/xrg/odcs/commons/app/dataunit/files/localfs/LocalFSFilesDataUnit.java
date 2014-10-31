@@ -61,7 +61,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             LOG.info("More than more thread is accessing this data unit");
         }
 
-        return new WritableFileIterationImpl(this);
+        return new SetFileIteration(this);
     }
 
     //WritableFilesDataUnit interface
@@ -155,7 +155,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             if (sb.length() == 0) {
                 if (codePoint >= 97 && codePoint <= 122 || // [a-z]
                         codePoint >= 65 && codePoint <= 90 //[A-Z]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             } else {
@@ -163,7 +163,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                         codePoint >= 65 && codePoint <= 90 || //[A-Z]
                         codePoint == 95 || // _
                         codePoint >= 48 && codePoint <= 57 // [0-9]
-                        ) {
+                ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             }
@@ -175,10 +175,10 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
     @Override
     public RepositoryConnection getConnectionInternal() throws RepositoryException {
         try {
-            return backingDataUnit.getConnection();
+            RepositoryConnection connection = backingDataUnit.getConnection();
+            return connection;
         } catch (DataUnitException ex) {
-            ex.printStackTrace();
+            throw (RepositoryException) ex.getCause();
         }
-        return null;
     }
 }

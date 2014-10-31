@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -83,13 +84,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 
     /**
      * Fetches all {@link Schedule}s which are activated in
-     * certain time.
+     * certain time and the execution for the scheduled pipeline
+     * isn't already queued or running.
      * 
      * @return
      */
     @Override
-    public List<Schedule> getAllTimeBased() {
-        return scheduleDao.getAllTimeBased();
+    public List<Schedule> getAllTimeBasedNotQueuedRunning() {
+        return scheduleDao.getAllTimeBasedNotQueuedRunning();
     }
 
     /**
@@ -163,6 +165,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         pipelineExec.setSilentMode(false);
         // set user .. copy owner of schedule
         pipelineExec.setOwner(schedule.getOwner());
+
+        Long epoch = (long) System.currentTimeMillis();
+        Long orderNumber = schedule.getPriority();
+        if (orderNumber != ScheduledJobsPriority.IGNORE.getValue()) { // no dividing by 0
+            orderNumber = (epoch / orderNumber);
+        }
+
+        pipelineExec.setOrderNumber(orderNumber);
 
         // save data into DB -> in next DB check Engine start the execution
         pipelineFacade.save(pipelineExec);

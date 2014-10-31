@@ -154,6 +154,11 @@ public interface ExecutionListPresenter extends Presenter {
          *            Value of filter.
          */
         public void setFilter(String name, Object value);
+        
+        /**
+         * Resets selected filters.
+         */
+        void resetFilters();
 
         /**
          * Navigates table to given page.

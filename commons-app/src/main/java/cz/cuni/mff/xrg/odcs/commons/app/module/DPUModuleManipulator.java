@@ -92,19 +92,24 @@ public class DPUModuleManipulator {
         DPUTemplateRecord newTemplate;
         boolean isChild = false;
         if (newDPUDir.exists()) {
-        	DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
-        	
-        	if (parent == null) {
-				throw new DPUCreateException("DPU " + newDpuFileName + " already exists but with different version.");
-			}
-        	
-        	if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
-				throw new DPUCreateException("DPU " + newDpuFileName + " already exists.");
-			}
-        	
-        	newTemplate = dpuFacade.createTemplate(name, null);
-        	newTemplate.setParent(parent);
-        	isChild = true;
+            DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
+
+            if (parent == null) {
+                throw new DPUCreateException("DPU " + newDpuFileName + " already exists but with different version.");
+            }
+
+            if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
+                throw new DPUCreateException("DPU " + newDpuFileName + " with name " + name + " already exists.");
+            }
+            
+            DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(name);
+            if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
+                throw new DPUCreateException("Child DPU " + newDpuFileName + " with name " + name + " already exists.");
+            }
+
+            newTemplate = dpuFacade.createTemplate(name, null);
+            newTemplate.setParent(parent);
+            isChild = true;
 		} else {
 			prepareDirectory(newDPUDir);
 			
@@ -452,14 +457,14 @@ public class DPUModuleManipulator {
             throws DPUCreateException {
         // the name must be in format: NAME-.*.jar
         final Pattern pattern = Pattern
-                .compile("(.+?)-([^-]*)\\.jar");
+                .compile("(.+)-(\\d(\\.\\d+)+).*\\.jar");
         final Matcher matcher = pattern.matcher(sourceFileName);
         if (matcher.matches()) {
             // 0 - original, 1 - name, 2 - version
             return matcher.group(1);
         } else {
             throw new DPUCreateException(
-                    "DPU's name must be in format NAME-.*.jar");
+                    "DPU's name must be in format NAME-VERSION.*.jar");
         }
     }
 

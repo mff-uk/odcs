@@ -173,6 +173,10 @@ public interface PipelineFacade extends Facade {
      */
     List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status);
 
+
+    List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
+
+
     /**
      * Find pipeline execution in database by ID and return it.
      * 
@@ -304,5 +308,14 @@ public interface PipelineFacade extends Facade {
      * @return true if one or more execution were deleted
      */
 	boolean hasDeletedExecutions(List<Long> executionIds);
+
+	/**
+     * Checks if there are executions for selected pipeline with selected statuses
+     * 
+     * @param pipeline for which executions we are checking
+     * @param statuses of executions we are checking
+     * @return true if there is at least one execution with selected statuses, false otherwise
+     */
+    boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
 }

@@ -35,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
  * 
  * @author Petyr
  */
-@ContextConfiguration(locations = { "file:src/test/resource/backend-test-context.xml" })
+@ContextConfiguration(locations = { "classpath:backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ConfiguratorTest {
 

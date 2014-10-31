@@ -57,6 +57,10 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @Column(name = "debug_mode")
     private boolean isDebugging;
 
+
+    @Column(name = "order_number")
+    private Long orderNumber;
+
     /**
      * Timestamp when this execution started, or null.
      */
@@ -377,6 +381,15 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     public Date getLastChange() {
         return lastChange;
     }
+    
+    /**
+     * Sets new value for last change date
+     * 
+     * @param lastChange
+     */
+    public void setLastChange(Date lastChange) {
+        this.lastChange = lastChange;
+    }
 
     /**
      * Returns duration of execution. Returns -1 for unfinished/not started
@@ -389,6 +402,14 @@ public class PipelineExecution implements OwnedEntity, DataObject {
             return -1;
         }
         return end.getTime() - start.getTime();
+    }
+
+    public Long getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(Long order) {
+        this.orderNumber = order;
     }
 
     /**

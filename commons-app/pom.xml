@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.3.1</version>
+		<version>1.4.0</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>

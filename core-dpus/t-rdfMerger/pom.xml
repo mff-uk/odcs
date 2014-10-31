@@ -6,27 +6,27 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>dpu-core-base-pom</artifactId>
-        <version>1.3.1</version>
+        <version>1.4.0</version>
         <relativePath>../dpu-core-base-pom.xml</relativePath>
     </parent>
 
     <groupId>eu.unifiedviews.plugins</groupId>
     <artifactId>uv-t-rdfMerger</artifactId>
-    <name>T-RDFMerger</name>
-    <version>1.3.1</version>
+    <name>T-RdfMerger</name>
+    <version>1.4.0</version>
     <description>Merges RDF data in no time.</description>
     <packaging>bundle</packaging>
 
     <properties>
         <dpu.package>eu.unifiedviews.plugins.transformer.rdfmerger</dpu.package>
-        <dpu.mainClass>RDFMerger</dpu.mainClass>
+        <dpu.mainClass>RdfMerger</dpu.mainClass>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cz.cuni.mff.xrg.odcs</groupId>
             <artifactId>dataunit</artifactId>
-            <version>1.3.1</version>
+            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

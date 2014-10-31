@@ -1,32 +1,49 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.GraphDeleter;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListComponentProvider;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
@@ -55,6 +72,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private VerticalLayout pipelinesLayout;
 
     private VerticalLayout tabsLayout;
+    
+    private VerticalLayout runtimePropsLayout;
 
     private Button notificationsButton;
 
@@ -63,6 +82,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button usersButton;
 
     private Button pipelinesButton;
+    
+    private Button runtimePropsButton;
 
     private Button shownTab = null;
 
@@ -92,6 +113,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private UserFacade userFacade;
+    
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     /**
      * Currently logged in user.
@@ -99,6 +123,10 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private User loggedUser;
     
     private boolean isMainLayoutInitialized = false;
+
+    private ManipulableListManager runtimePropsManager;
+
+    private List<RuntimeProperty> runtimeProperties;
 
     /**
      * The constructor should first build the main layout, set the composition
@@ -380,9 +408,39 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 //				}
 //			}
 //		});
-
+        
         //tabsLayout.addComponent(prefixesButton);
         //tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
+        
+        // runtime limits
+        runtimePropsLayout = createRuntimePropsLayout();
+        
+        runtimePropsButton = new NativeButton("Runtime properties");
+        runtimePropsButton.setHeight("40px");
+        runtimePropsButton.setWidth("170px");
+        runtimePropsButton.setStyleName("multiline");
+        runtimePropsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        runtimePropsButton.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if (shownTab.equals(accountButton)) {
+                    myAccountSaveConfirmation(runtimePropsButton, runtimePropsLayout);
+                } else {
+                    //if before click was pushed Schedule notification tab
+                    if (shownTab.equals(notificationsButton)) {
+                        notificationSaveConfirmation(runtimePropsButton,
+                                runtimePropsLayout);
+                    } else {
+                        buttonPush(runtimePropsButton, runtimePropsLayout);
+                    }
+                    refreshRuntimeProperties();
+                }
+            }
+        });
+        tabsLayout.addComponent(runtimePropsButton);
+        tabsLayout.setComponentAlignment(runtimePropsButton, Alignment.TOP_RIGHT);
 
         shownTab = accountButton;
         mainLayout.addComponent(tabsLayout, 0, 0);
@@ -391,6 +449,221 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         mainLayout.setColumnExpandRatio(1, 1f);
 
         return mainLayout;
+    }
+
+    private VerticalLayout createRuntimePropsLayout() {
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setSpacing(true);
+        layout.setMargin(false);
+
+        HorizontalLayout buttonBar = new HorizontalLayout();
+        buttonBar.setWidth(380, Unit.PIXELS);
+        buttonBar.setMargin(new MarginInfo(true, false, false, false));
+        final Button saveButton = new Button("Save");
+        saveButton.setEnabled(false);
+        saveButton.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+            
+            @Override
+            public void buttonClick(ClickEvent event) {
+                List<Component> componentList = runtimePropsManager.getComponentList();
+                
+                // prepare props toSave
+                Map<String, RuntimeProperty> toSave = new HashMap<String, RuntimeProperty>();
+                Set<String> notChanged = new HashSet<String>();
+                
+                try {
+                    for (Component property : componentList) {
+                        String name = validateAndGetValue(property, 0);
+                        String value = validateAndGetValue(property, 1);
+                        
+                        if (toSave.containsKey(name) || notChanged.contains(name)) {
+                            Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        
+                        RuntimeProperty prop = getRuntimePropertyByName(name);
+                        
+                        if (prop == null) { // doesnt exist, have to make new one
+                            prop = new RuntimeProperty();
+                            prop.setName(name);
+                            prop.setValue(value);
+                            toSave.put(name, prop);
+                        } else if (!prop.getValue().equals(value)) { // value changed 
+                            prop.setValue(value);
+                            toSave.put(name, prop);
+                        } else { // else value didnt change
+                            notChanged.add(name);
+                        }
+                    }
+                } catch (InvalidValueException e) {
+                    Notification.show("Save failed.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // remove missing, user removed props
+                for (RuntimeProperty prop : runtimeProperties) {
+                    if (!notChanged.contains(prop.getName())
+                            && !toSave.containsKey(prop.getName())) {
+                        runtimePropertiesFacade.delete(prop);
+                    }                    
+                }
+                
+                for (RuntimeProperty runtimeProperty : toSave.values()) {
+                    runtimePropertiesFacade.save(runtimeProperty);
+                }
+                
+                Notification.show("Save succesfull.", "Runtime properties were saved succesfully.", Notification.Type.HUMANIZED_MESSAGE);
+                saveButton.setEnabled(false);
+                refreshRuntimeProperties();
+            }
+        });
+        buttonBar.addComponent(saveButton);
+        buttonBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
+        
+        runtimePropsManager = new ManipulableListManager(new ManipulableListComponentProvider() {
+            
+            @Override
+            public Component createNewComponent(String[] values) {
+                String name = values[0] == null ? "" : values[0].trim();
+                String value = values[1] == null ? "" : values[1].trim();
+                
+                GridLayout oneLine = new GridLayout(2, 1);
+                
+                TextChangeListener changeListener = new TextChangeListener() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void textChange(TextChangeEvent event) {
+                        saveButton.setEnabled(true);
+                    }
+                };
+                
+                TextField text = new TextField();
+                text.addTextChangeListener(changeListener);
+                text.setRequired(true);
+                text.setRequiredError("Name is Required");
+                text.setValue(name);
+                text.setInputPrompt("name");
+                text.setWidth(250, Unit.PIXELS);
+                text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
+                oneLine.addComponent(text, 0, 0);
+                
+                if (name.equals(ConfigProperty.FRONTEND_RUN_NOW_PIPELINE_PRIORITY.toString())) {
+                    ComboBox priorityComboBox = new ComboBox();
+                    priorityComboBox.setNullSelectionAllowed(false);
+                    priorityComboBox.setTextInputAllowed(false);
+                    priorityComboBox.setImmediate(true);
+                    priorityComboBox.setWidth(250, Unit.PIXELS);
+                    // Add some items
+                    for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+                        priorityComboBox.addItem(job);
+                    }
+                    
+                    long val = ScheduledJobsPriority.HIGHEST.getValue();
+                    try {
+                        val = Long.parseLong(value);
+                    } catch (NumberFormatException e) {
+                        // leaving the default value
+                    }
+
+                    priorityComboBox.setValue(ScheduledJobsPriority.getForValue(val));
+                    
+                    priorityComboBox.addValueChangeListener(new ValueChangeListener() {
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void valueChange(ValueChangeEvent event) {
+                            saveButton.setEnabled(true);
+                        }
+                    });
+                    
+                    oneLine.addComponent(priorityComboBox, 1, 0);
+                } else {
+                    text = new TextField();
+                    text.addTextChangeListener(changeListener);
+                    text.setValue(value);
+                    text.setInputPrompt("value");
+                    text.setWidth(250, Unit.PIXELS);
+                    text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
+                    oneLine.addComponent(text, 1, 0);
+                }
+                
+                return oneLine;
+            }
+            
+            @Override
+            public Component createNewComponent() {
+                return createNewComponent(new String[] {"", ""});
+            }
+        });
+        runtimePropsManager.setChangeListener(new Listener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void componentEvent(Event event) {
+                saveButton.setEnabled(true);
+            }
+        });
+        Layout runtimePropsList = runtimePropsManager.initList(null);
+        
+        // fill data
+        refreshRuntimeProperties();
+        layout.addComponent(runtimePropsList);
+        layout.setExpandRatio(runtimePropsList, 1);
+        
+        layout.addComponent(buttonBar);
+        
+        return layout;
+    }
+    
+    private RuntimeProperty getRuntimePropertyByName(String name) {
+        for (RuntimeProperty prop : runtimeProperties) {
+            if (prop.getName().equals(name)) {
+                return prop;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets data for runtime properties, at the same time brings changes
+     * made by other users with admin role
+     */
+    private void refreshRuntimeProperties() {
+        runtimeProperties = runtimePropertiesFacade.getAllRuntimeProperties();
+        runtimePropsManager.clearComponents();
+        for (RuntimeProperty runtimeProperty : runtimeProperties) {
+            runtimePropsManager.addComponent(new String[] {
+                    runtimeProperty.getName(),
+                    runtimeProperty.getValue()});
+        }
+        runtimePropsManager.refreshData();
+    }
+    
+    /**
+     * Validates and return the TextField.value
+     * 
+     * @param layout GridLayout
+     * @param column column number of TextField in grid layout to return value
+     * @return
+     * @throws InvalidValueException
+     */
+    private String validateAndGetValue(Component layout, int column) throws InvalidValueException {
+        
+        Component field = ((GridLayout) layout).getComponent(column, 0);
+        if (field instanceof TextField) {
+            TextField textField = (TextField) field;
+            textField.validate();
+            return textField.getValue().trim();
+        } else if (field instanceof ComboBox) {
+            ComboBox runNowProperty = (ComboBox) field;
+            ScheduledJobsPriority job = (ScheduledJobsPriority) runNowProperty.getValue();
+            // doesnt need to be validated
+            return String.valueOf(job.getValue());
+        }
+        return "";
     }
 
     /**
@@ -564,6 +837,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         pipelinesButton.setStyleName("multiline");
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
+        runtimePropsButton.setStyleName("multiline");
+        
         shownTab = pressedButton;
         shownTab.setStyleName("selectedtab");
 

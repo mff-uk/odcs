@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
 
 /**
  * Dialog for the DPU template creation. Allows to upload a JAR file and on base
@@ -327,7 +329,7 @@ public class DPUCreate extends Window {
 
                 final File sourceFile = fileUploadReceiverZip.getFile();
                 Collection<File> dpus;
-                List<DPUTemplateRecord> dpusFromLst;
+                List<DPUTemplateRecord> dpusFromXmlFile;
                 try {
 
                     Path tmpPath = Files.createTempDirectory("dir");
@@ -336,7 +338,7 @@ public class DPUCreate extends Window {
                     String[] extensions = {"jar"};
                     dpus = FileUtils.listFiles(tmpFile, extensions, true);
                     
-                    dpusFromLst = importFromLstFile(tmpFile);
+                    dpusFromXmlFile = importFromLstFile(tmpFile);
                 } catch (IOException e) {
                     String msg = "Problem with loading file: " + sourceFile.getName();
                     LOG.error(msg);
@@ -356,25 +358,31 @@ public class DPUCreate extends Window {
                     return;
                 }
 
-                DPUTemplateRecord templateFromLstFile;
+                List<DPUTemplateRecord> templates;
+                List<DPUCreateException> caughtExceptions = new ArrayList<DPUCreateException>();
+                
                 for (final File fileEntry : dpus) {
-                    templateFromLstFile = null;
+                    templates = null;
                     try {
-                        if (dpusFromLst != null) {
-                            templateFromLstFile = getTemplateForJar(fileEntry.getName(), dpusFromLst);
-                            if (templateFromLstFile == null) {
-                                continue; // there is lst file but there is no record for dpu
+                        if (dpusFromXmlFile != null) {
+                            // get only dpu template and children for jar file
+                            templates = getTemplatesForJar(fileEntry.getName(), dpusFromXmlFile);
+                            if (templates.size() == 0) {
+                                continue; // there is xml file but there is no record for dpu
                             }
-                        }
-                        importDPUZip(fileEntry, templateFromLstFile);
+                        } // else there is no xml file and we import jar files without additional info
+                        importDPUsFromZip(fileEntry, templates, caughtExceptions);
                     } catch (DPUCreateException e) {
-                        dpuGeneralSettingsLayoutZip.removeComponent(1, 2);
-                        uploadFileZip = new TextField();
-                        dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip", 2), 1, 2);
-                        Notification.show("Failed to create DPU",
-                                e.getMessage(),
-                                Notification.Type.ERROR_MESSAGE);
+                        caughtExceptions.add(e);
                     }
+                }
+                
+                // exception that we caught will be shown in one notification
+                if (caughtExceptions.size() != 0) {
+                    dpuGeneralSettingsLayoutZip.removeComponent(1, 2);
+                    uploadFileZip = new TextField();
+                    dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip", 2), 1, 2);
+                    showResultExecptions(caughtExceptions);
                 }
 
                 // and at the end we can close the dialog ..
@@ -384,21 +392,58 @@ public class DPUCreate extends Window {
         return saveButton;
     }
 
+    private void showResultExecptions(List<DPUCreateException> caughtExceptions) {
+        VerticalLayout content = new VerticalLayout();
+        content.setHeight(99, Unit.PERCENTAGE); // get rid of scrollbar
+        content.setWidth(100, Unit.PERCENTAGE);
+        StringBuilder builder = new StringBuilder();
+        for (DPUCreateException exc : caughtExceptions) {
+            if (builder.length() != 0) {
+                builder.append("\n");
+            }
+            builder.append("* ").append(exc.getMessage());
+        }
+        
+        TextArea text = new TextArea(null, builder.toString());
+        text.setSizeFull();
+        content.addComponent(text);
+        Button btnClose = new Button("Close");
+        content.addComponent(btnClose);
+        content.setComponentAlignment(btnClose, Alignment.BOTTOM_CENTER);
+        content.setExpandRatio(text, 1.0f);
+        
+        final Window resultDialog = new SimpleDialog(content);
+        resultDialog.setCaption("Result log");
+        if (!UI.getCurrent().getWindows().contains(resultDialog)) {
+            UI.getCurrent().addWindow(resultDialog);
+        }
+        
+        btnClose.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                resultDialog.close();
+            }
+        });
+    }
+
     /**
      * 
      * Find corresponding dpu template from lst file for dpuJarFileName
      * 
      * @param dpuJarFileName
-     * @param dpusFromLst
+     * @param dpusFromXML
      * @return dpu template, null if there is not one
      */
-    protected DPUTemplateRecord getTemplateForJar(String dpuJarFileName, List<DPUTemplateRecord> dpusFromLst) {
-        for (DPUTemplateRecord dpuTemplateRecord : dpusFromLst) {
+    protected List<DPUTemplateRecord> getTemplatesForJar(String dpuJarFileName, List<DPUTemplateRecord> dpusFromXML) {
+        List<DPUTemplateRecord> returnList = new ArrayList<DPUTemplateRecord>();
+        for (DPUTemplateRecord dpuTemplateRecord : dpusFromXML) {
             if (dpuJarFileName.equals(dpuTemplateRecord.getJarName())) {
-                return dpuTemplateRecord;
+                returnList.add(dpuTemplateRecord);
             }
         }
-        return null;
+        return returnList;
     }
 
     protected List<DPUTemplateRecord> importFromLstFile(File parentDir) throws ImportException {
@@ -468,27 +513,54 @@ public class DPUCreate extends Window {
         cancelButton.setWidth("90px");
         return cancelButton;
     }
+    
+    private void importDPUsFromZip(File fileEntry, List<DPUTemplateRecord> templates, List<DPUCreateException> caughtExceptions) throws DPUCreateException {
+        if (templates == null) { // there was no xml file with templates
+            importDPU(fileEntry, null);
+            return;
+        }
+        
+        // at first the parent if exists
+        for (DPUTemplateRecord dpuTemplateRecord : templates) {
+            if (dpuTemplateRecord.getParent() == null) { // dpu is parent (in imported)
+                if (dpuFacade.getByJarName(fileEntry.getName()) == null) { // parent doesnt exist in system 
+                    importDPU(fileEntry, dpuTemplateRecord);
+                    templates.remove(dpuTemplateRecord);
+                }
+                break;
+            }
+        }
+        
+        // now children
+        for (DPUTemplateRecord dpuTemplateRecord : templates) {
+            try {
+                importDPU(fileEntry, dpuTemplateRecord);
+            } catch (DPUCreateException e) {
+                caughtExceptions.add(e);
+            }
+        }
+    }
 
-    private void importDPUZip(File fileEntry, DPUTemplateRecord templateFromLstFile) throws DPUCreateException {
+    private void importDPU(File jarFile, DPUTemplateRecord template) throws DPUCreateException {
         String name = null;
         
-        if (templateFromLstFile != null && templateFromLstFile.getName() != null) {
-            name = templateFromLstFile.getName();
+        if (template != null && template.getName() != null) {
+            name = template.getName();
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name));
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name));
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
         dpuTemplate.setShareType((ShareType) groupVisibilityZip.getValue());
         
-        if (templateFromLstFile != null) {
-            String value = templateFromLstFile.getDescription();
+        if (template != null) {
+            String value = template.getDescription();
         	if (value != null && !value.isEmpty()) {
         		dpuTemplate.setDescription(value);
 			}
-        	value = templateFromLstFile.getRawConf();
+        	value = template.getRawConf();
         	if (value != null && !value.isEmpty()) {
         		dpuTemplate.setRawConf(value);
 			}

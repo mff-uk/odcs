@@ -15,6 +15,8 @@ public enum ConfigProperty {
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
+    BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
+
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
@@ -23,6 +25,13 @@ public enum ConfigProperty {
      * Used to generate url for pipeline execution in emails.
      */
     FRONTEND_URL("frontend.url"),
+    
+    FRONTEND_RUN_NOW_PIPELINE_PRIORITY("run.now.pipeline.priority"),
+    
+    /**
+     * string diplayed next to the UV logo in GUI
+     */
+    INSTALLATION_NAME("installation.name"),
 
     // namespaces for virtuoso configuration
     RDBMS("database.sql"),

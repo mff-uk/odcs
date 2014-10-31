@@ -131,6 +131,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     @Override
     public void setParameters(Object configuration) {
         if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
+            view.resetFilters();
             int pageNumber = 0;
             Map<String, String> config = (Map<String, String>) configuration;
             Long execId = null;
