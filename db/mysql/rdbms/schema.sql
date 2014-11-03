@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS `usr_user`;
 DROP TABLE IF EXISTS `sch_email`;
 DROP TABLE IF EXISTS `rdf_ns_prefix`;
 DROP TABLE IF EXISTS `properties`;
+DROP TABLE IF EXISTS `runtime_properties`;
 
 -- dev. note:
 -- when updating size of limits for fields update also the limitations

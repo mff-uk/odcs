@@ -18,3 +18,8 @@ INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priorit
 
 -- make sure that logging table use proper engine, this operation may take some time
 ALTER TABLE logging ENGINE = innodb;
+
+DELETE FROM `properties` WHERE `key` = 'UV.Core.version';
+INSERT INTO `properties` SET `value` = '001.004.000', `key` = 'UV.Core.version';
+DELETE FROM `properties` WHERE `key` = 'UV.Plugin-DevEnv.version';
+INSERT INTO `properties` SET `value` = '001.000.001', `key` = 'UV.Plugin-DevEnv.version';
