@@ -67,7 +67,7 @@ public class LCatalogResource {
         try {
             existingResources = ckanRepository.getResourceDAO().list(datasetId);
         } catch (CkanException ex) {
-            ckanRepository.closeClient();
+            ckanRepository.close();
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "");
         }
 
@@ -111,7 +111,7 @@ public class LCatalogResource {
                 result.add(new LCatalogResponseDTO(crtRes.getName(), crtRes.getUrl(), false, false, false, cke.getMessage()));
             }
         }
-        ckanRepository.closeClient();
+        ckanRepository.close();
         return result;
     }
 }
