@@ -265,11 +265,6 @@
 			<version>3.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virtjdbc</artifactId>
-			<version>4.1</version>
-		</dependency>
 
 		<dependency>
 			<groupId>mysql</groupId>
@@ -343,43 +338,6 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- copy common resource files -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<!-- here the phase you need -->
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}/src/main/resources/sql</outputDirectory>
-							<resources>
-								<resource>
-									<!-- we need queries for fixing sequences in DB at runtime -->
-									<directory>../db/virtuoso/rdbms</directory>
-									<filtering>false</filtering>
-									<includes>
-										<include>sequences.sql</include>
-									</includes>
-								</resource>
-								<resource>
-									<directory>${basedir}</directory>
-									<!-- this is default dir -->
-									<includes>
-										<include>LICENSE.md</include>
-									</includes>
-								</resource>
-							</resources>
-							<!-- add license from LICENSE.md to the generated JAR file -->
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
