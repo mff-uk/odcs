@@ -66,7 +66,7 @@ class Configurator implements DPUPreExecutor {
         try {
             configurable.configure(dpu.getRawConf());
 
-            LOG.debug("DPU {} hes been configured.", dpu.getName());
+            LOG.debug("DPU {} has been configured.", dpu.getName());
         } catch (DPUConfigException e) {
             eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
                     context, this, "Failed to configure DPU.", e));

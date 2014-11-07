@@ -198,17 +198,24 @@ public final class EdgeCompiler {
      */
     public void createDefaultMapping(DPUExplorer dpuExplorer, Edge edge,
             DPUInstanceRecord from, DPUInstanceRecord to) {
-        List<DataUnitDescription> source = dpuExplorer.getOutputs(from);
-        List<DataUnitDescription> target = dpuExplorer.getInputs(to);
+        final List<DataUnitDescription> sourceList = dpuExplorer.getOutputs(from);
+        final List<DataUnitDescription> targetList = dpuExplorer.getInputs(to);
 
-        if (source.size() == 1 && target.size() == 1) {
-            final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
-            mapping.add(new MutablePair<>(0, 0));
-            edge.setScript(translate(mapping, source, target, null));
-        } else if (source.isEmpty() || target.isEmpty()) {
+        if (sourceList.size() == 1 && targetList.size() == 1) {
+            final DataUnitDescription source = sourceList.get(0);
+            final DataUnitDescription target = targetList.get(0);
+            // Check for type.
+            if (source.getTypeName().compareTo(target.getTypeName()) == 0) {
+                final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
+                mapping.add(new MutablePair<>(0, 0));
+                edge.setScript(translate(mapping, sourceList, targetList, null));
+            } else {
+                edge.setScript("");
+            }
+        } else if (sourceList.isEmpty() || targetList.isEmpty()) {
             // no mapping
             final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
-            edge.setScript(translate(mapping, source, target, null));
+            edge.setScript(translate(mapping, sourceList, targetList, null));
         } else {
             edge.setScript("");
         }

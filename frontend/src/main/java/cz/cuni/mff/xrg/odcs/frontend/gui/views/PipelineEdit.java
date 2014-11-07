@@ -91,7 +91,7 @@ public class PipelineEdit extends ViewComponent {
 
     private GridLayout formattingBar;
 
-    private Label label;
+    private Label lblPipelineName;
 
     private Label readOnlyLabel;
 
@@ -240,7 +240,7 @@ public class PipelineEdit extends ViewComponent {
         	return;
         } else {
             setMode(hasPermission("save"));
-            label.setValue("<h3>Pipeline detail for: '" + this.pipeline.getName() + "' <h3>");
+            updateLblPipelineName();
         }
 
         refreshManager.addListener(RefreshManager.PIPELINE_EDIT, new Refresher.RefreshListener() {
@@ -302,17 +302,17 @@ public class PipelineEdit extends ViewComponent {
         // top-level component properties
         //setSizeUndefined();
         // label
-        label = new Label();
-        label.setImmediate(false);
-        label.setWidth("-1px");
-        label.setHeight("-1px");
-        label.setContentMode(ContentMode.HTML);
+        lblPipelineName = new Label();
+        lblPipelineName.setImmediate(false);
+        lblPipelineName.setWidth("-1px");
+        lblPipelineName.setHeight("-1px");
+        lblPipelineName.setContentMode(ContentMode.HTML);
 
         readOnlyLabel = new Label("Pipeline is open in read-only mode");
         readOnlyLabel.setStyleName("readOnlyLabel");
         readOnlyLabel.setVisible(false);
 
-        HorizontalLayout topLine = new HorizontalLayout(label, readOnlyLabel);
+        HorizontalLayout topLine = new HorizontalLayout(lblPipelineName, readOnlyLabel);
         topLine.setComponentAlignment(readOnlyLabel, Alignment.MIDDLE_CENTER);
         btnMinimize = new Button();
         btnMinimize.addClickListener(new Button.ClickListener() {
@@ -930,51 +930,6 @@ public class PipelineEdit extends ViewComponent {
         author = new Label();
         pipelineSettingsLayout.addComponent(author, 1, 3);
 
-//		Label permissionLabel = new Label("Permissions");
-//		permissionLabel.setImmediate(false);
-//		permissionLabel.setWidth("-1px");
-//		permissionLabel.setHeight("-1px");
-//		pipelineSettingsLayout.addComponent(permissionLabel, 0, 2);
-//
-//		Table permissionsTable = new Table();
-//
-//		class actionColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
-//
-//			@Override
-//			public Object generateCell(final Table source, final Object itemId, Object columnId) {
-//				HorizontalLayout layout = new HorizontalLayout();
-//
-//				// get item
-//				final BeanItem<Pipeline> item = (BeanItem<Pipeline>) source.getItem(itemId);
-//
-//				Button daleteButton = new Button();
-//				daleteButton.setCaption("delete");
-//				daleteButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-//
-//					@Override
-//					public void buttonClick(ClickEvent event) {
-//						//TODO: Delete permission record
-//					}
-//				});
-//				layout.addComponent(daleteButton);
-//
-//				return layout;
-//			}
-//		}
-//		TODO: Have some object for representing permissions for pipeline by user
-//		permissionsTable = new Table();
-//		permissionsTable.setWidth("400px");
-//		permissionsTable.setHeight("100px");
-//		//TODO: assign data source
-//		Container container = ContainerFactory.CreatePipelines(App.getApp().getPipelines().getAllPipelines());
-//		//permissionsTable.setContainerDataSource(container);
-//
-//		// set columns
-//		permissionsTable.setVisibleColumns(new String[] {"User", "Read (Copy, Run)", "Developer"});
-//
-//		// add column
-//		permissionsTable.addGeneratedColumn("Actions", new actionColumnGenerator() );
-//		pipelineSettingsLayout.addComponent(permissionsTable, 1, 2);
         pipelineSettingsLayout.setStyleName("pipelineSettingsLayout");
         pipelineSettingsLayout.setMargin(true);
         pipelineSettingsLayout.setSpacing(true);
@@ -1261,6 +1216,9 @@ public class PipelineEdit extends ViewComponent {
         Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
         setupButtons();
 
+        // Update pipeline name.
+        updateLblPipelineName();
+
         switch (successAction) {
             case "debug":
                 refreshPipeline();
@@ -1434,4 +1392,12 @@ public class PipelineEdit extends ViewComponent {
         boolean publicRoAvalilable = visibility != ShareType.PUBLIC_RW || authCtx.getUser().equals(this.pipeline.getOwner()) || authCtx.getUser().getRoles().contains(Role.ROLE_ADMIN);
         pipelineVisibility.setItemEnabled(ShareType.PUBLIC_RO, publicRoAvalilable);
     }
+
+    private void updateLblPipelineName() {
+        if (this.pipeline == null) {
+        } else {
+            lblPipelineName.setValue("<h3>Pipeline detail for: '" + this.pipeline.getName() + "' <h3>");
+        }
+    }
+
 }
