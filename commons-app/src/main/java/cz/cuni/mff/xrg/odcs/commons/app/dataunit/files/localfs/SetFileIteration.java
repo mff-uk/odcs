@@ -33,7 +33,7 @@ public class SetFileIteration implements FilesDataUnit.Iteration {
 
     protected static final String FILE_URI_BINDING = "fileUri";
 
-    protected static final String SELECT = "SELECT ?" + SYMBOLIC_NAME_BINDING + " ?" + FILE_URI_BINDING + " WHERE { "
+    protected static final String SELECT = "SELECT ?" + SYMBOLIC_NAME_BINDING + " ?" + FILE_URI_BINDING + " %s WHERE { "
             + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + ";"
             + "<" + FilesDataUnit.PREDICATE_FILE_URI + "> ?" + FILE_URI_BINDING + ". "
             + "}";
@@ -42,13 +42,24 @@ public class SetFileIteration implements FilesDataUnit.Iteration {
         Set<FilesDataUnit.Entry> internalSet = new LinkedHashSet<>();
         RepositoryConnection connection = null;
         try {
-            connection = metadataDataUnit.getConnection();
-            TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, SELECT);
-            DatasetImpl dataset = new DatasetImpl();
-            for (URI metadataGraphName : metadataDataUnit.getMetadataGraphnames()) {
-                dataset.addDefaultGraph(metadataGraphName);
+            // In this case we can select from multiple graphs.
+            final StringBuilder fromPart = new StringBuilder();
+            for (URI graph : metadataDataUnit.getMetadataGraphnames()) {
+                fromPart.append("FROM <");
+                fromPart.append(graph.stringValue());
+                fromPart.append("> ");
             }
-            query.setDataset(dataset);
+
+            final String selectQuery = String.format(SELECT, fromPart.toString());
+            LOG.debug("SetFileIteration -> {}", selectQuery);
+
+            connection = metadataDataUnit.getConnection();
+            TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
+//            DatasetImpl dataset = new DatasetImpl();
+//            for (URI metadataGraphName : metadataDataUnit.getMetadataGraphnames()) {
+//                dataset.addDefaultGraph(metadataGraphName);
+//            }
+//            query.setDataset(dataset);
             TupleQueryResult queryResult = null;
             try {
                 queryResult = query.evaluate();

@@ -90,7 +90,7 @@ public class TestDataUnitFactory {
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
             String workingDirectoryURIString = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile().toURI().toASCIIString();
             RDFDataUnit backingDataUnit = this.createRDFDataUnit(name);
-            return new LocalFSFilesDataUnit(name, workingDirectoryURIString, backingDataUnit);
+            return new LocalFSFilesDataUnit(name, workingDirectoryURIString, backingDataUnit, workingDirectoryURIString);
         }
     }
 }

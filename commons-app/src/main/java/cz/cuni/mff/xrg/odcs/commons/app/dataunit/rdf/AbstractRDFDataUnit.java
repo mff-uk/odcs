@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openrdf.model.BNode;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -30,6 +31,9 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
     protected URI baseDataGraphURI;
 
     protected AtomicInteger atomicInteger = new AtomicInteger();
+
+    // This is not nice, but .. 
+    private static AtomicInteger fileIndexCounter = new AtomicInteger(0);
 
     public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
         super(dataUnitName, writeContextString);
@@ -72,7 +76,10 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
             connection = getConnectionInternal();
             connection.begin();
             ValueFactory valueFactory = connection.getValueFactory();
-            BNode blankNodeId = valueFactory.createBNode();
+            //BNode blankNodeId = valueFactory.createBNode();
+
+            Resource blankNodeId = valueFactory.createURI("http://unifiedviews.eu/resource/dataunit/rdf/" + Integer.toString(fileIndexCounter.incrementAndGet()));
+
             Statement statement = valueFactory.createStatement(
                     blankNodeId,
                     valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),

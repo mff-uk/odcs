@@ -5,9 +5,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.openrdf.model.BNode;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
@@ -35,8 +36,11 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit) throws DataUnitException {
-        super(dataUnitName, workingDirectoryURIString);
+    // This is not nice, but .. 
+    private static AtomicInteger fileIndexCounter = new AtomicInteger(0);
+
+    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit, String dataGraph) throws DataUnitException {
+        super(dataUnitName, dataGraph);
         this.workingDirectoryURI = workingDirectoryURIString;
         this.workingDirectory = new File(URI.create(workingDirectoryURI));
         this.backingDataUnit = backingDataUnit;
@@ -92,13 +96,18 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 //            throw new IllegalArgumentException("Only files under the " + workingDirectoryCannonicalPath + " are permitted to be added. File " + existingFileFullPath + " is not located there.", ex);
 //        }
 
+        LOG.info("addExistingFile({}, {}) -> {}", proposedSymbolicName, existingFileURI, getMetadataWriteGraphname().stringValue());
+
         RepositoryConnection connection = null;
         try {
             // TODO michal.klempa think of not connecting everytime
             connection = getConnectionInternal();
             connection.begin();
             ValueFactory valueFactory = connection.getValueFactory();
-            BNode blankNodeId = valueFactory.createBNode();
+            // We must not use blacnk node here, or we should use sparql INSERT!
+            //BNode blankNodeId = valueFactory.createBNode();
+            Resource blankNodeId = valueFactory.createURI("http://unifiedviews.eu/resource/dataunit/file/" + Integer.toString(fileIndexCounter.incrementAndGet()));
+
             Statement statement = valueFactory.createStatement(
                     blankNodeId,
                     valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),

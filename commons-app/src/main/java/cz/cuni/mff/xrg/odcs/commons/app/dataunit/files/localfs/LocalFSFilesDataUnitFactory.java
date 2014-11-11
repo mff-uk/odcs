@@ -1,9 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -16,6 +16,8 @@ import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 public class LocalFSFilesDataUnitFactory implements FilesDataUnitFactory {
 
+    private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnitFactory.class);
+
     @Value(ConfigProperties.GENERAL_WORKINGDIR)
     private String globalWorkingDirectory;
 
@@ -23,15 +25,15 @@ public class LocalFSFilesDataUnitFactory implements FilesDataUnitFactory {
     private RDFDataUnitFactory rdfDataUnitFactory;
 
     @Override
-    public ManageableWritableFilesDataUnit createManageableWritable(String pipelineId, String dataUnitName) {
+    public ManageableWritableFilesDataUnit createManageableWritable(String pipelineId, String dataUnitName, String dataGraph, String dataUnitId) {
         try {
-            String workingDirectoryURIString = Files.createTempDirectory(FileSystems.getDefault().getPath(globalWorkingDirectory), pipelineId).toFile().toURI().toASCIIString();
-            RDFDataUnit backingDataUnit = rdfDataUnitFactory.create(pipelineId, dataUnitName, workingDirectoryURIString);
-            return new LocalFSFilesDataUnit(dataUnitName, workingDirectoryURIString, backingDataUnit);
+            File workingFile = new File(globalWorkingDirectory, dataUnitId);
+            workingFile.mkdirs();
+            String workingDirectoryURIString = workingFile.toURI().toASCIIString();
+            RDFDataUnit backingDataUnit = rdfDataUnitFactory.create(pipelineId, dataUnitName, dataGraph);
+            return new LocalFSFilesDataUnit(dataUnitName, workingDirectoryURIString, backingDataUnit, dataGraph);
         } catch (DataUnitException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            LOG.error("Can't create file data unit.", ex);
         }
         return null;
     }

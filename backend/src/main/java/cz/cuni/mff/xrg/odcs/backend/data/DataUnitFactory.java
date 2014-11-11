@@ -60,7 +60,7 @@ public class DataUnitFactory {
             File directory) {
         switch (type) {
             case FILES:
-                return filesDataUnitFactory.createManageableWritable(pipelineId, name);
+                return filesDataUnitFactory.createManageableWritable(pipelineId, name, GraphUrl.translateDataUnitId(id), id);
             case RDF:
                 return rdfDataUnitFactory.create(pipelineId, name, GraphUrl.translateDataUnitId(id));
             case FILE:
