@@ -56,6 +56,8 @@ public class DPUExplorer {
             return DPUType.TRANSFORMER;
         } else if (objectClass.getAnnotation(DPU.AsLoader.class) != null) {
             return DPUType.LOADER;
+        } else if (objectClass.getAnnotation(DPU.AsQuality.class) != null) {
+            return DPUType.QUALITY;
         }
 
         // we do not know
