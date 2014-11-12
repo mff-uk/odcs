@@ -104,9 +104,11 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             connection = getConnectionInternal();
             connection.begin();
             ValueFactory valueFactory = connection.getValueFactory();
-            // We must not use blacnk node here, or we should use sparql INSERT!
-            //BNode blankNodeId = valueFactory.createBNode();
-            Resource blankNodeId = valueFactory.createURI("http://unifiedviews.eu/resource/dataunit/file/" + Integer.toString(fileIndexCounter.incrementAndGet()));
+            // Use well defined URI.
+            Resource blankNodeId = valueFactory.createURI(
+                    getMetadataWriteGraphname().stringValue()
+                    + "/file/"
+                    + Integer.toString(fileIndexCounter.incrementAndGet()));
 
             Statement statement = valueFactory.createStatement(
                     blankNodeId,

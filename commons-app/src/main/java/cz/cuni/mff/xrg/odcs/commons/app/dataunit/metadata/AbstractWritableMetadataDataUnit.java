@@ -35,6 +35,7 @@ import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public abstract class AbstractWritableMetadataDataUnit implements WritableMetadataDataUnit, ManagableDataUnit {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
 
     public static final String DATA_UNIT_STORE_GRAPH = "http://unifiedviews.eu/AbstractWritableMetadataDataUnit/storeGraph";
@@ -45,6 +46,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     protected static final String SYMBOLIC_NAME_BINDING = "symbolicName";
 
+    // TODO Update this query for virtuoso.
     protected static final String DUPLICATE_ENTRIES_QUERY = "SELECT DISTINCT ?" + SYMBOLIC_NAME_BINDING + " WHERE { "
             + "?subject1 <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
             + "?subject2 <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "

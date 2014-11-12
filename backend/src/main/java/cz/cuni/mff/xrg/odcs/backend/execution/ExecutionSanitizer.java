@@ -26,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
  * Delete context of given execution that has been interrupted by backend
@@ -173,13 +174,14 @@ class ExecutionSanitizer {
             int index = dataUnitInfo.getIndex();
             final ManagableDataUnit.Type type = dataUnitInfo.getType();
             final String id = context.generateDataUnitId(dpuInstance, index);
+            final String dataUnitUri = GraphUrl.translateDataUnitId(id);
             final String name = dataUnitInfo.getName();
 
             final File rootDir = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
             final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
             // create instance
+            ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), dataUnitUri, name, directory);
 
-            ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), id, name, directory);
             // delete data .. 
             dataUnit.clear();
             dataUnit.release();

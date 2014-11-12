@@ -14,9 +14,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 
@@ -204,13 +206,15 @@ final class DataUnitManager {
 
                 // create new DataUnit
                 Integer index = info.getIndex();
-                String id =
-                        context.generateDataUnitId(dpuInstance, index);
-                File directory = new File(workingDir,
-                        context.getDataUnitTmpPath(dpuInstance, index));
-                ManagableDataUnit dataUnit = dataUnitFactory.create(info.getType(),
+                String id = context.generateDataUnitId(dpuInstance, index);
+                File directory = new File(workingDir, context.getDataUnitTmpPath(dpuInstance, index));
+                
+                ManagableDataUnit dataUnit = dataUnitFactory.create(
+                        info.getType(),
                         context.generatePipelineId(),
-                        id, info.getName(), directory);
+                        GraphUrl.translateDataUnitId(id),
+                        info.getName(),
+                        directory);
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
                 indexes.put(dataUnit, index);
@@ -264,7 +268,11 @@ final class DataUnitManager {
                 dpuInstance, index));
         // create instance
         ManagableDataUnit dataUnit;
-        dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), id, name, directory);
+        dataUnit = dataUnitFactory.create(type, 
+                context.generatePipelineId(),
+                GraphUrl.translateDataUnitId(id),
+                name,
+                directory);
         // add to storage
         dataUnits.add(dataUnit);
         indexes.put(dataUnit, index);

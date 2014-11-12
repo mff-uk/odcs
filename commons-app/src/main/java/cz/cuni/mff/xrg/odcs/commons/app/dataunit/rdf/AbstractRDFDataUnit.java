@@ -33,7 +33,7 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
     protected AtomicInteger atomicInteger = new AtomicInteger();
 
     // This is not nice, but .. 
-    private static AtomicInteger fileIndexCounter = new AtomicInteger(0);
+    private static AtomicInteger graphIndexCounter = new AtomicInteger(0);
 
     public AbstractRDFDataUnit(String dataUnitName, String writeContextString) {
         super(dataUnitName, writeContextString);
@@ -76,9 +76,11 @@ public abstract class AbstractRDFDataUnit extends AbstractWritableMetadataDataUn
             connection = getConnectionInternal();
             connection.begin();
             ValueFactory valueFactory = connection.getValueFactory();
-            //BNode blankNodeId = valueFactory.createBNode();
 
-            Resource blankNodeId = valueFactory.createURI("http://unifiedviews.eu/resource/dataunit/rdf/" + Integer.toString(fileIndexCounter.incrementAndGet()));
+            Resource blankNodeId = valueFactory.createURI(
+                    getMetadataWriteGraphname().stringValue()
+                    + "/rdf/"
+                    + Integer.toString(graphIndexCounter.incrementAndGet()));
 
             Statement statement = valueFactory.createStatement(
                     blankNodeId,

@@ -17,9 +17,9 @@ public class DummyDataUnitFactory extends DataUnitFactory {
     @Override
     public ManagableDataUnit create(ManagableDataUnit.Type type,
             String pipelineId,
-            String id,
-            String name,
-            File directory) {
+            String dataUnitUri,
+            String dataUnitName,
+            File dataUnitDirectory) {
         // just return mocked object
         return mock(ManagableDataUnit.class);
     }
