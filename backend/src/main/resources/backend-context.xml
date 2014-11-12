@@ -149,9 +149,6 @@
     <!-- autodiscovery for pipeline's pre/post executors -->
     <context:component-scan
             base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl"/>
-    <!-- autodiscovery for monitors -->
-    <context:component-scan
-            base-package="cz.cuni.mff.xrg.odcs.backend.monitor"/>
     <!-- components for sending reports -->
     <context:component-scan
             base-package="cz.cuni.mff.xrg.odcs.backend.report"/>
