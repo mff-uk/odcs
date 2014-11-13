@@ -12,6 +12,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -57,6 +58,8 @@ public class DPUDetail extends Window {
     private Button btnSaveAndCommit;
 
     private Button btnCancel;
+    
+    private Button btnCopyFromTemplate;
 
     private boolean result;
 
@@ -82,11 +85,11 @@ public class DPUDetail extends Window {
      * Construct page layout.
      */
     private void build() {
-        // the DPU general info
-        generalDetail = new DPUGeneralDetail();
-
         // panel for DPU detail dialog
         configHolder = new DPUConfigHolder();
+
+        // the DPU general info
+        generalDetail = new DPUGeneralDetail(configHolder);
 
         HorizontalLayout buttonBar = buildFooter();
 
@@ -127,14 +130,37 @@ public class DPUDetail extends Window {
         btnCancel = new Button("Cancel");
         btnCancel.setWidth("90px");
         buttonBar.addComponent(btnCancel);
+        
+        btnCopyFromTemplate = new Button("Copy from template");
+        btnCopyFromTemplate.setWidth("160px");
+        buttonBar.addComponent(btnCopyFromTemplate);
+        buttonBar.setExpandRatio(btnCopyFromTemplate, 1.0f);
+        buttonBar.setComponentAlignment(btnCopyFromTemplate, Alignment.MIDDLE_RIGHT);
+        
+        btnCopyFromTemplate.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 1L;
 
+            @Override
+            public void buttonClick(ClickEvent event) {
+                DPUInstanceRecord instance = dpuInstance.getDPUInstanceRecord();
+                String oldConf = instance.getRawConf();
+                // set template conf to reload gui
+                instance.setRawConf(instance.getTemplate().getRawConf());
+                reloadConfDialog();
+                // change it back
+                instance.setRawConf(oldConf);
+            }
+        });
+        
         btnSaveAsNew = new Button("Save as DPU template");
         btnSaveAsNew.setWidth("160px");
         buttonBar.addComponent(btnSaveAsNew);
-        buttonBar.setExpandRatio(btnSaveAsNew, 1.0f);
+//        buttonBar.setExpandRatio(btnSaveAsNew, 1.0f);
         buttonBar.setComponentAlignment(btnSaveAsNew, Alignment.MIDDLE_RIGHT);
 
         btnSaveAndCommit.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (saveDPUInstance()) {
@@ -188,6 +214,10 @@ public class DPUDetail extends Window {
         btnSaveAndCommit.setEnabled(!readOnly);
         btnSaveAsNew.setEnabled(!readOnly);
 
+        reloadConfDialog();
+    }
+
+    private void reloadConfDialog() {
         Component confDialog = null;
         try {
             confDialog = dpuInstance.getDialog();
