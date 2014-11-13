@@ -17,5 +17,9 @@ public enum DPUType {
     /**
      * Represents a loader.
      */
-    LOADER
+    LOADER,
+    /**
+     * Represents a quality verifier.
+     */
+    QUALITY
 }
