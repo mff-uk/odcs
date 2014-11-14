@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.Graph;
-import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
@@ -13,7 +12,6 @@ import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.QueryResults;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
@@ -70,8 +68,13 @@ public class RDFQuery implements Query {
         this.queryDefinition = queryDefinition;
         this.repository = RepositoryFrontendHelper
                 .getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
-        this.repository.load();
-
+        try {
+            this.repository.load();
+        } catch (DataUnitException ex) {
+            // set to the Vaadin
+            // TODO use better handling here
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -103,7 +106,11 @@ public class RDFQuery implements Query {
                     Notification.Type.ERROR_MESSAGE);
             LOG.debug("Size query exception", ex);
         } finally {
-            repository.release();
+            try {
+                repository.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Faild to release repository.", ex);
+            }
         }
         return 0;
     }
@@ -231,7 +238,11 @@ public class RDFQuery implements Query {
                 }
             }
             // close reporistory
-            repository.release();
+            try {
+                repository.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Faild to release repository.", ex);
+            }
         }
         return null;
     }
