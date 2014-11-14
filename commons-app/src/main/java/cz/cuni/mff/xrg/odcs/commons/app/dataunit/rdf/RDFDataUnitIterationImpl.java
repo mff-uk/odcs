@@ -8,6 +8,8 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
@@ -35,9 +37,7 @@ public class RDFDataUnitIterationImpl implements RDFDataUnit.Iteration {
         RepositoryResult<Statement> result2 = null;
         try {
             Statement statement = result.next();
-            result2 = connection2.getStatements(statement.getSubject(),
-                    connection.getValueFactory().createURI(RDFDataUnit.PREDICATE_DATAGRAPH_URI),
-                    null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+            result2 = connection2.getStatements(statement.getSubject(), connection.getValueFactory().createURI(RDFDataUnit.PREDICATE_DATAGRAPH_URI), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
             Statement rdfDataGraphURIStatement = result2.next();
             return new RDFDataUnitEntryImpl(statement.getObject().stringValue(), new URIImpl(rdfDataGraphURIStatement.getObject().stringValue()));
         } catch (RepositoryException ex) {

@@ -2,14 +2,11 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -20,7 +17,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDa
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.metadata.AbstractWritableMetadataDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
@@ -28,21 +24,23 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     private static final Logger LOG = LoggerFactory.getLogger(LocalFSFilesDataUnit.class);
 
-    private String workingDirectoryURI;
+    private static final int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
 
-    private File workingDirectory;
+    private final File workingDirectory;
 
+    private final String workingDirectoryURI;
+
+    /**
+     * RDF data unit with metadata. This is only use to get a connection to the rdf storage!
+     *
+     * TODO Petr Škoda: remove and replace with some connection source.
+     */
     protected RDFDataUnit backingDataUnit;
-
-    private static int PROPOSED_FILENAME_PART_MAX_LENGTH = 10;
-
-    // This is not nice, but .. 
-    private static AtomicInteger fileIndexCounter = new AtomicInteger(0);
 
     public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit, String dataGraph) throws DataUnitException {
         super(dataUnitName, dataGraph);
         this.workingDirectoryURI = workingDirectoryURIString;
-        this.workingDirectory = new File(URI.create(workingDirectoryURI));
+        this.workingDirectory = new File(java.net.URI.create(workingDirectoryURI));
         this.backingDataUnit = backingDataUnit;
     }
 
@@ -61,10 +59,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
     //FilesDataUnit interface
     @Override
     public FilesDataUnit.Iteration getIteration() throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit");
-        }
-
+        checkForMultithreadAccess();
         return new SetFileIteration(this);
     }
 
@@ -76,52 +71,30 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     //WritableFilesDataUnit interface
     @Override
-    public void addExistingFile(String proposedSymbolicName, String existingFileURI) throws DataUnitException {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit");
-        }
+    public void addExistingFile(String symbolicName, String existingFileURI) throws DataUnitException {
+        checkForMultithreadAccess();
 
-        File existingFile = new File(URI.create(existingFileURI));
+        final File existingFile = new File(java.net.URI.create(existingFileURI));
         if (!existingFile.exists()) {
-            throw new IllegalArgumentException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
+            throw new DataUnitException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
         }
         if (!existingFile.isFile()) {
-            throw new IllegalArgumentException("Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
+            throw new DataUnitException("Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
         }
-//        try {
-//            if (!FileSystems.getDefault().getPath(existingFile.getCanonicalPath()).startsWith(workingDirectoryCannonicalPath)) {
-//                throw new IllegalArgumentException("Only files under the " + workingDirectoryCannonicalPath + " are permitted to be added. File " + existingFileFullPath + " is not located there.");
-//            }
-//        } catch (IOException ex) {
-//            throw new IllegalArgumentException("Only files under the " + workingDirectoryCannonicalPath + " are permitted to be added. File " + existingFileFullPath + " is not located there.", ex);
-//        }
-
-        LOG.info("addExistingFile({}, {}) -> {}", proposedSymbolicName, existingFileURI, getMetadataWriteGraphname().stringValue());
-
         RepositoryConnection connection = null;
         try {
             // TODO michal.klempa think of not connecting everytime
             connection = getConnectionInternal();
             connection.begin();
-            ValueFactory valueFactory = connection.getValueFactory();
-            // Use well defined URI.
-            Resource blankNodeId = valueFactory.createURI(
-                    getMetadataWriteGraphname().stringValue()
-                    + "/file/"
-                    + Integer.toString(fileIndexCounter.incrementAndGet()));
-
-            Statement statement = valueFactory.createStatement(
-                    blankNodeId,
-                    valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),
-                    valueFactory.createLiteral(proposedSymbolicName)
-                    );
-            Statement statement2 = valueFactory.createStatement(
-                    blankNodeId,
+            final ValueFactory valueFactory = connection.getValueFactory();
+            final URI subject = addEntry(symbolicName, connection);
+            // Add file uri.
+            connection.add(
+                    subject,
                     valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
-                    valueFactory.createLiteral(existingFile.toURI().toASCIIString())
+                    valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
+                    getMetadataWriteGraphname()
                     );
-            connection.add(statement, getMetadataWriteGraphname());
-            connection.add(statement2, getMetadataWriteGraphname());
             connection.commit();
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error when adding file.", ex);
@@ -131,7 +104,6 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                     connection.close();
                 } catch (RepositoryException ex) {
                     LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
                 }
             }
         }
@@ -139,6 +111,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     @Override
     public String addNewFile(String symbolicName) throws DataUnitException {
+        // Create a new file.
         Path newFile = null;
         String filteredProposedSymbolicName = filterProposedSymbolicName(symbolicName);
         try {
@@ -146,18 +119,36 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
         } catch (IOException ex) {
             throw new DataUnitException("Error when generating filename.", ex);
         }
-        String newFileURIString = newFile.toUri().toASCIIString();
+        // And now add it as existing file.
+        final String newFileURIString = newFile.toUri().toASCIIString();
         addExistingFile(symbolicName, newFileURIString);
         return newFileURIString;
     }
 
     //ManageableDataUnit interface
     @Override
-    public void clear() {
-        FileUtils.deleteQuietly(new File(URI.create(this.workingDirectoryURI)));
+    public void clear() throws DataUnitException {
+        // We also delte data under
+        FileUtils.deleteQuietly(new File(java.net.URI.create(this.workingDirectoryURI)));
+        // Then rdf.
         super.clear();
     }
 
+    @Override
+    public RepositoryConnection getConnectionInternal() throws RepositoryException {
+        try {
+            RepositoryConnection connection = backingDataUnit.getConnection();
+            return connection;
+        } catch (DataUnitException ex) {
+            throw (RepositoryException) ex.getCause();
+        }
+    }
+
+    /**
+     *
+     * @param proposedSymbolicName
+     * @return Suitable (save) symbolic name.
+     */
     private String filterProposedSymbolicName(String proposedSymbolicName) {
         StringBuilder sb = new StringBuilder();
         int index = 0;
@@ -183,13 +174,4 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
         return sb.toString();
     }
 
-    @Override
-    public RepositoryConnection getConnectionInternal() throws RepositoryException {
-        try {
-            RepositoryConnection connection = backingDataUnit.getConnection();
-            return connection;
-        } catch (DataUnitException ex) {
-            throw (RepositoryException) ex.getCause();
-        }
-    }
 }

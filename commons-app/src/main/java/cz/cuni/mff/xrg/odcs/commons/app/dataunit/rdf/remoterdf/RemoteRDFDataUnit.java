@@ -44,9 +44,7 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
      *            DataUnit's name. If not used in Pipeline can be
      *            empty String.
      */
-    public RemoteRDFDataUnit(String url, String user, String password,
-            String pipelineId, 
-            String dataUnitName, String dataGraph) {
+    public RemoteRDFDataUnit(String url, String user, String password, String pipelineId, String dataUnitName, String dataGraph) {
         super(dataUnitName, dataGraph);
 
         try {
@@ -56,12 +54,9 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
                     ((RemoteRepositoryManager) repositoryManager).setUsernameAndPassword(user, password);
                 }
             }
-            repository = repositoryManager
-                    .getRepository(pipelineId);
+            repository = repositoryManager.getRepository(pipelineId);
             if (repository == null) {
-                repositoryManager.addRepositoryConfig(
-                        new RepositoryConfig(pipelineId, new SailRepositoryConfig(new NativeStoreConfig()))
-                        );
+                repositoryManager.addRepositoryConfig(new RepositoryConfig(pipelineId, new SailRepositoryConfig(new NativeStoreConfig())));
                 repository = repositoryManager.getRepository(pipelineId);
             }
             if (repository == null) {
@@ -79,8 +74,7 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
         RepositoryConnection connection = null;
         try {
             connection = getConnection();
-            LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}>",
-                    dataUnitName, dataGraph);
+            LOG.info("Initialized Sesame RDF DataUnit named '{}' with data graph <{}>", dataUnitName, dataGraph);
         } catch (DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -89,7 +83,6 @@ public final class RemoteRDFDataUnit extends AbstractRDFDataUnit {
                     connection.close();
                 } catch (RepositoryException ex) {
                     LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
                 }
             }
         }

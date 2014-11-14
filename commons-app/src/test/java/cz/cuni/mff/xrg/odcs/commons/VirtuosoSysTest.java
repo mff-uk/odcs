@@ -68,7 +68,7 @@ public class VirtuosoSysTest extends LocalRDFRepoSysTest {
      * Cleaning after ending test class.
      */
     @AfterClass
-    public static void cleaning() {
+    public static void cleaning() throws DataUnitException {
         rdfRepo.clear();
         rdfRepo.release();
     }

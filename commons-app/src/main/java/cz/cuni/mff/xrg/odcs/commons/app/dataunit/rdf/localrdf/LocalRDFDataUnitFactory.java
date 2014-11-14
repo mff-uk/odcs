@@ -15,11 +15,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class LocalRDFDataUnitFactory implements RDFDataUnitFactory {
+
     private String repositoryPath;
 
     private final Map<String, Repository> initializedRepositories = Collections.synchronizedMap(new HashMap<String, Repository>());
 
-    private final Map<String, Object> locks = new HashMap<String, Object>();
+    private final Map<String, Object> locks = new HashMap<>();
 
     private synchronized Object getLock(String id) {
         if (locks.containsKey(id)) {

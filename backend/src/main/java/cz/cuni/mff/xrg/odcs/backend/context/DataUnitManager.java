@@ -144,7 +144,11 @@ final class DataUnitManager {
                     LOG.error("Can't save DataUnit.", e);
                 }
             } else {
-                item.store();
+                try {
+                    item.store();
+                } catch (DataUnitException ex) {
+                    LOG.error("Failed to save content of data unit.", ex);
+                }
             }
 
         }
@@ -156,7 +160,12 @@ final class DataUnitManager {
      */
     public void clear() {
         for (ManagableDataUnit item : dataUnits) {
-            item.clear();
+            try {
+                item.clear();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't clear data unit.", ex);
+            }
+
         }
     }
 
@@ -166,7 +175,11 @@ final class DataUnitManager {
      */
     public void release() {
         for (ManagableDataUnit item : dataUnits) {
-            item.release();
+            try {
+                item.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't realease data unit.", ex);
+            }
         }
         dataUnits.clear();
     }

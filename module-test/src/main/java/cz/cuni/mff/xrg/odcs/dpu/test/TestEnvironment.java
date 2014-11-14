@@ -318,23 +318,27 @@ public class TestEnvironment {
      */
     public void release() {
         // release all DataUnits ..
-        for (ManagableDataUnit item : inputDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+        try {
+            for (ManagableDataUnit item : inputDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
-        }
-        for (ManagableDataUnit item : outputDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+            for (ManagableDataUnit item : outputDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
-        }
-        for (ManagableDataUnit item : customDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+            for (ManagableDataUnit item : customDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
+        } catch (DataUnitException ex) {
+            throw new RuntimeException(ex);
         }
 
         // delete working directory ..

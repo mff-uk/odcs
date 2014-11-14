@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Reset the DPU state from {@link DPUExecutionState#RUNNING} to {@link DPUExecutionState#PREPROCESSING}.
@@ -56,7 +57,11 @@ public class Restarter extends DPUPreExecutorBase {
         Context context = contexts.get(node);
         // we delete data from output dataUnits
         for (ManagableDataUnit dataUnit : context.getOutputs()) {
-            dataUnit.clear();
+            try {
+                dataUnit.clear();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't clear data unit.", ex);
+            }
         }
         // we also have to delete DPU's temporary directory
         File rootDir = new File(

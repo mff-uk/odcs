@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Provide functionality to merge (add) one {@link Context} into another.
@@ -135,7 +136,11 @@ class ContextMerger {
                         targetName);
                 // and clear it .. for sure that there is 
                 // not data from previous executions
-                targetDataUnit.clear();
+                try {
+                    targetDataUnit.clear();
+                } catch (DataUnitException ex) {
+                    throw new ContextException("Can't clear new data unit.", ex);
+                }
             }
 
             // and copy the data

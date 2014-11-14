@@ -4,10 +4,8 @@ import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 
 /**
- * Interface provides managable methods for working with RDF data repository.
+ * Interface provides manageable methods for working with RDF data.
  * 
- * @author Petyr
- * @author Jiri Tomes
  */
 public interface ManagableRdfDataUnit extends WritableRDFDataUnit, ManagableDataUnit {
 }

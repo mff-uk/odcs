@@ -6,9 +6,10 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
 public class RDFDataUnitEntryImpl implements RDFDataUnit.Entry {
-    private String symbolicName;
+    
+    private final String symbolicName;
 
-    private URI dataGraphURI;
+    private final URI dataGraphURI;
 
     public RDFDataUnitEntryImpl(String symbolicName, URI dataGraphURI) {
         this.symbolicName = symbolicName;

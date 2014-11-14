@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory;
 
 import java.io.File;
 
-import org.openrdf.model.URI;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -26,7 +25,7 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
 
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryRDFDataUnit.class);
 
-    public static final String GLOBAL_REPOSITORY_ID = "odcs_internal_repository_memory";
+    public static final String GLOBAL_REPOSITORY_ID = "uv_internal_repository_memory";
 
     private Repository repository;
 
@@ -50,12 +49,9 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
                 throw new RuntimeException("Could not create repository manager directory.");
             }
             LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
-            repository = localRepositoryManager
-                    .getRepository(GLOBAL_REPOSITORY_ID);
+            repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
             if (repository == null) {
-                localRepositoryManager.addRepositoryConfig(
-                        new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new MemoryStoreConfig()))
-                );
+                localRepositoryManager.addRepositoryConfig(new RepositoryConfig(GLOBAL_REPOSITORY_ID, new SailRepositoryConfig(new MemoryStoreConfig())));
                 repository = localRepositoryManager.getRepository(GLOBAL_REPOSITORY_ID);
             }
             if (repository == null) {
@@ -68,8 +64,7 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
         RepositoryConnection connection = null;
         try {
             connection = getConnection();
-            LOG.info("Initialized MemoryStore RDF DataUnit named '{}' with data graph <{}>.",
-                    dataUnitName, dataGraph);
+            LOG.info("Initialized MemoryStore RDF DataUnit named '{}' with data graph <{}>.", dataUnitName, dataGraph);
         } catch (DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -78,7 +73,6 @@ public class InMemoryRDFDataUnit extends AbstractRDFDataUnit {
                     connection.close();
                 } catch (RepositoryException ex) {
                     LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
                 }
             }
         }

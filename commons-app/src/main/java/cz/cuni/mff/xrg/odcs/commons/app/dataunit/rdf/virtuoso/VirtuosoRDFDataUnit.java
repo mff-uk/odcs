@@ -21,7 +21,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
 
     private static final Logger LOG = LoggerFactory.getLogger(VirtuosoRDFDataUnit.class);
 
-    private Repository repository;
+    private final Repository repository;
 
     /**
      * Construct a VirtuosoRepository with a specified parameters.
@@ -42,8 +42,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
      *            DataUnit's name. If not used in Pipeline can be
      *            empty String.
      */
-    public VirtuosoRDFDataUnit(String url, String user, String password,
-            String dataUnitName, String dataGraph) {
+    public VirtuosoRDFDataUnit(String url, String user, String password, String dataUnitName, String dataGraph) {
         super(dataUnitName, dataGraph);
 
         this.repository = new VirtuosoRepository(url, user, password);
@@ -55,8 +54,7 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
         RepositoryConnection connection = null;
         try {
             connection = getConnection();
-            LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}>.",
-                    dataUnitName, dataGraph);
+            LOG.info("Initialized Virtuoso RDF DataUnit named '{}' with data graph <{}>.", dataUnitName, dataGraph);
         } catch (DataUnitException ex) {
             throw new RuntimeException("Could not test initial connect to repository", ex);
         } finally {
@@ -65,7 +63,6 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
                     connection.close();
                 } catch (RepositoryException ex) {
                     LOG.warn("Error when closing connection", ex);
-                    // eat close exception, we cannot do anything clever here
                 }
             }
         }
@@ -83,7 +80,6 @@ public final class VirtuosoRDFDataUnit extends AbstractRDFDataUnit {
             repository.shutDown();
         } catch (RepositoryException ex) {
             LOG.warn("Error in shutdown", ex);
-            // eat close exception, we cannot do anything clever here;
         }
     }
 }

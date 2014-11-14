@@ -133,7 +133,7 @@ class FileDataUnitImpl implements ManageableFileDataUnit {
     }
 
     @Override
-    public void isReleaseReady() {
+    public void checkConsistency() {
         // this method has no meaning for FileDataUnit
     }
     

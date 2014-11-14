@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class RemoteRDFDataUnitFactory implements RDFDataUnitFactory {
+
     private String url;
 
     private String user;

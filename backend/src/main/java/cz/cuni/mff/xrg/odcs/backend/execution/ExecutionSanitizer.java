@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Delete context of given execution that has been interrupted by backend
@@ -182,9 +183,13 @@ class ExecutionSanitizer {
             // create instance
             ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), dataUnitUri, name, directory);
 
-            // delete data .. 
-            dataUnit.clear();
-            dataUnit.release();
+            // delete data ..
+            try {
+                dataUnit.clear();
+                dataUnit.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't clear and release data unit.", ex);
+            }
         }
     }
 

@@ -357,7 +357,7 @@ public class LocalRDFRepoSysTest {
      * Delete used repository files for testing.
      */
     @After
-    public void cleanUp() {
+    public void cleanUp() throws DataUnitException {
         rdfRepo.clear();
         rdfRepo.release();
         deleteDirectory(pathRepo.toFile());

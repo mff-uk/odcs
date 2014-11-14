@@ -4,6 +4,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 
 public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
+
     private String repositoryPath;
 
     @Override
@@ -26,7 +27,7 @@ public class InMemoryRDFDataUnitFactory implements RDFDataUnitFactory {
 
     @Override
     public void release(String pipelineId) {
-        // TODO Auto-generated method stub
-        
+        // no-op
     }
+    
 }
