@@ -46,6 +46,25 @@ public class PipelineResource {
     @Autowired
     private DPUFacade dpuFacade;
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PipelineDTO createPipeline() {
+        Pipeline pipeline = null;
+        try {
+            pipeline = pipelineFacade.createPipeline();
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
+            }
+            pipelineFacade.save(pipeline);
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (RuntimeException exception) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+        return PipelineToDTOConverter.convert(pipeline);
+    }
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     public List<PipelineDTO> getPipelines() {
