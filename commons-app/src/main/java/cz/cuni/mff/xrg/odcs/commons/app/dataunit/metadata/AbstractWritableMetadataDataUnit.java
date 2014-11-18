@@ -75,10 +75,9 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     protected Set<URI> readContexts;
 
     /**
-     * List of all requested connection together with information from where the connection have been
-     * requested.
+     * List of all requested connection.
      */
-    protected Map<RepositoryConnection, String> requestedConnections;
+    protected Set<RepositoryConnection> requestedConnections;
 
     /**
      * Thread that creates this data unit.
@@ -97,7 +96,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         this.writeContext = new URIImpl(writeContextString);
         this.readContexts = new HashSet<>();
         this.readContexts.add(this.writeContext);
-        this.requestedConnections = new HashMap<>();
+        this.requestedConnections = new HashSet<>();
         this.ownerThread = Thread.currentThread();
     }
 
@@ -115,10 +114,11 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             new Exception("Stack trace").printStackTrace(printWriter);
             // Same connection has been returned twice. This can be alright if some pooling
             // will be used. But such functionality is not used right now.
-            if (requestedConnections.containsKey(connection)) {
+            if (requestedConnections.contains(connection)) {
                 LOG.warn("Same connection returned twice!!!");
             }
-            requestedConnections.put(connection, stringWriter.getBuffer().toString());
+            // TODO: In debug mode we should add this here to wath if the connection has been properly closed.
+            //requestedConnections.add(connection);
             return connection;
         } catch (RepositoryException ex) {
             throw new DataUnitException(ex);
@@ -373,11 +373,11 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      */
     private void closeOpenedConnection() {
         int count = 0;
-        for (RepositoryConnection connection : requestedConnections.keySet()) {
+        for (RepositoryConnection connection : requestedConnections) {
             try {
                 if (connection.isOpen()) {
                     count++;
-                    LOG.error("Connection: is not closed connection opened on:\n{}", requestedConnections.get(connection));
+                    //LOG.error("Connection: is not closed connection opened on:\n{}", requestedConnections.get(connection));
                 }
             } catch (RepositoryException ex) {
                 try {
