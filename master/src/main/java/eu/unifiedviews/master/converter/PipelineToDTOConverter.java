@@ -33,4 +33,10 @@ public class PipelineToDTOConverter {
         }
         return dtos;
     }
+
+    public static Pipeline convertFromDTO(PipelineDTO dto, Pipeline pipeline) {
+        pipeline.setName(dto.getName());
+        pipeline.setDescription(dto.getDescription());
+        return pipeline;
+    }
 }

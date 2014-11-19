@@ -49,13 +49,14 @@ public class PipelineResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PipelineDTO createPipeline() {
+    public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
         Pipeline pipeline = null;
         try {
             pipeline = pipelineFacade.createPipeline();
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
+            pipeline = PipelineToDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
             throw ex;
