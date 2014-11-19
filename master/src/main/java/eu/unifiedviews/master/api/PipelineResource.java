@@ -210,7 +210,46 @@ public class PipelineResource {
         } catch (RuntimeException exception) {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
+    }
 
+    @POST
+    @Path("/{pipelineid}/schedules")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PipelineScheduleDTO createPipelineSchedule(@PathParam("pipelineid") String pipelineId, PipelineScheduleDTO scheduleToUpdate) {
+        if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
+            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+        }
+        try {
+            Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+            }
+            Schedule schedule = scheduleFacade.createSchedule();
+            if (schedule == null) {
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
+            }
+            schedule.setPipeline(pipeline);
+            List<Pipeline> afterPipelines = null;
+            if (scheduleToUpdate.getAfterPipelines() != null) {
+                afterPipelines = new ArrayList<Pipeline>();
+                for (Long pipId : scheduleToUpdate.getAfterPipelines()) {
+                    Pipeline loadedPip = pipelineFacade.getPipeline(pipId.longValue());
+                    if (loadedPip != null) {
+                        afterPipelines.add(loadedPip);
+                    } else {
+                        throw new ApiException(Response.Status.BAD_REQUEST, String.format("Pipeline with id=%d doesn't exist!", pipId));
+                    }
+                }
+            }
+            ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
+            scheduleFacade.save(schedule);
+            return ScheduleDTOConverter.convertToDTO(schedule);
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (RuntimeException exception) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
     }
 
     @GET
