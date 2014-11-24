@@ -63,6 +63,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public class RepositoryFrontendHelper {
@@ -112,7 +113,12 @@ public class RepositoryFrontendHelper {
                             rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
 
                     // load data
-                    repository.load();
+                    try {
+                        repository.load();
+                    } catch (DataUnitException ex) {
+                        // TODO use some defined exception here!
+                        throw new RuntimeException("Failed to load data unit.", ex);
+                    }
 
                     return repository;
 

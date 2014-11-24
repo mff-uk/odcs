@@ -66,19 +66,7 @@ public class RDFQuery implements Query {
         this.baseQuery = queryDefinition.getBaseQuery();
         this.batchSize = queryDefinition.getBatchSize();
         this.queryDefinition = queryDefinition;
-        this.repository = RepositoryFrontendHelper
-                .getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
-<<<<<<< HEAD
-        try {
-            this.repository.load();
-        } catch (DataUnitException ex) {
-            // set to the Vaadin
-            // TODO use better handling here
-            throw new RuntimeException(ex);
-        }
-=======
-
->>>>>>> feature/246_downloadRdf
+        this.repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
     }
 
     /**
