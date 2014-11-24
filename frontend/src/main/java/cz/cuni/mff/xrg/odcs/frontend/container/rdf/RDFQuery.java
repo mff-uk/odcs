@@ -68,6 +68,7 @@ public class RDFQuery implements Query {
         this.queryDefinition = queryDefinition;
         this.repository = RepositoryFrontendHelper
                 .getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
+<<<<<<< HEAD
         try {
             this.repository.load();
         } catch (DataUnitException ex) {
@@ -75,6 +76,9 @@ public class RDFQuery implements Query {
             // TODO use better handling here
             throw new RuntimeException(ex);
         }
+=======
+
+>>>>>>> feature/246_downloadRdf
     }
 
     /**
