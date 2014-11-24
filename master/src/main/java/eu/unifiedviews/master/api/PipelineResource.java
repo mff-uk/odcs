@@ -277,6 +277,37 @@ public class PipelineResource {
     }
 
     @GET
+    @Path("/{pipelineid}/executions/last")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public PipelineExecutionDTO getLastPipelineExecution(@PathParam("pipelineid") String pipelineId) {
+        Pipeline pipeline = null;
+        PipelineExecution execution = null;
+        if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
+            throw new ApiException(Response.Status.BAD_REQUEST, String.format("ID=%s is not valid pipeline ID", pipelineId));
+        }
+        try {
+            pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+            }
+            execution = pipelineFacade.getLastExec(pipeline);
+            if (execution == null) {
+                return PipelineExecutionDTOConverter.convert(execution);// throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline execution doesn't exist!"));
+            }
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (RuntimeException exception) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+
+        if (execution.getPipeline().getId().equals(pipeline.getId())) {
+            return PipelineExecutionDTOConverter.convert(execution);
+        } else {
+            throw new ApiException(Response.Status.BAD_REQUEST, String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", execution.getId(), pipelineId));
+        }
+    }
+
+    @GET
     @Path("/{pipelineid}/executions/{executionid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public PipelineExecutionDTO getPipelineExecution(@PathParam("pipelineid") String pipelineId, @PathParam("executionid") String executionId) {
