@@ -63,7 +63,7 @@
 		<module>module-test</module>
 		<!-- build modules/plugins/dpus -->
 		<module>core-dpus</module>
-		<!--<module>master</module>-->
+		<module>master</module>
 	</modules>
 
 	<scm>
