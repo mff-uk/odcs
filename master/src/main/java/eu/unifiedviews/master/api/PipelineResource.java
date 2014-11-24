@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -46,6 +47,9 @@ public class PipelineResource {
     @Autowired
     private DPUFacade dpuFacade;
 
+    @Autowired
+    private UserFacade userFacade;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +60,7 @@ public class PipelineResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
+            pipeline.setUser(userFacade.getUser(1L));
             pipeline = PipelineToDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
@@ -229,6 +234,7 @@ public class PipelineResource {
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
             }
+            schedule.setOwner(userFacade.getUser(1L));
             schedule.setPipeline(pipeline);
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
@@ -356,7 +362,13 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
 
-            execution = PipelineExecutionDTOConverter.createPipelineExecution(newExecution, pipeline);
+            execution = pipelineFacade.createExecution(pipeline);
+            execution.setOwner(userFacade.getUser(1L));
+
+            execution.setDebugging(newExecution.isDebugging());
+            execution.setOrderNumber(1L);
+//            PipelineExecutionDTOConverter.createPipelineExecution(newExecution, pipeline);
+
             pipelineFacade.save(execution);
         } catch (ApiException ex) {
             throw ex;
