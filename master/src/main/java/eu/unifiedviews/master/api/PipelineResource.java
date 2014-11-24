@@ -292,7 +292,7 @@ public class PipelineResource {
             }
             execution = pipelineFacade.getLastExec(pipeline);
             if (execution == null) {
-                return PipelineExecutionDTOConverter.convert(execution);// throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline execution doesn't exist!"));
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline execution doesn't exist!"));
             }
         } catch (ApiException ex) {
             throw ex;
