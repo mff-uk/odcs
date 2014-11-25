@@ -1,6 +1,7 @@
 package eu.unifiedviews.master.converter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,12 @@ public class ScheduleDTOConverter {
                 dto.setLastExecution(ConvertUtils.dateToString(schedule.getLastExecution()));
             } else {
                 dto.setLastExecution("");
+            }
+            Date nextExecution = schedule.getNextExecutionTimeInfo();
+            if (nextExecution != null) {
+                dto.setNextExecution(ConvertUtils.dateToString(nextExecution));
+            } else {
+                dto.setNextExecution("");
             }
             dto.setPeriod(schedule.getPeriod());
             if (schedule.getPeriodUnit() != null) {
