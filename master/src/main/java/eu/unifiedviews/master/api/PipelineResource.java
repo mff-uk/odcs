@@ -24,7 +24,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
 import eu.unifiedviews.master.converter.PipelineExecutionEventToDTOConverter;
@@ -62,7 +61,6 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
             pipeline.setUser(userFacade.getUser(1L));
-            pipeline.setGraph(new PipelineGraph());
             pipeline = PipelineToDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
