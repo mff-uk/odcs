@@ -19,7 +19,7 @@ public class ConvertUtils {
         if (date != null) {
             return df.format(date);
         } else {
-            return "";
+            return null;
         }
     }
 

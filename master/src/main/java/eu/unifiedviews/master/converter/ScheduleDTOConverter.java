@@ -18,23 +18,11 @@ public class ScheduleDTOConverter {
             dto.setId(schedule.getId());
             dto.setDescription(schedule.getDescription());
             dto.setEnabled(schedule.isEnabled());
-            if (schedule.getFirstExecution() != null) {
-                dto.setFirstExecution(ConvertUtils.dateToString(schedule.getFirstExecution()));
-            } else {
-                dto.setFirstExecution("");
-            }
+            dto.setFirstExecution(ConvertUtils.dateToString(schedule.getFirstExecution()));
             dto.setJustOnce(schedule.isJustOnce());
-            if (schedule.getLastExecution() != null) {
-                dto.setLastExecution(ConvertUtils.dateToString(schedule.getLastExecution()));
-            } else {
-                dto.setLastExecution("");
-            }
+            dto.setLastExecution(ConvertUtils.dateToString(schedule.getLastExecution()));
             Date nextExecution = schedule.getNextExecutionTimeInfo();
-            if (nextExecution != null) {
-                dto.setNextExecution(ConvertUtils.dateToString(nextExecution));
-            } else {
-                dto.setNextExecution("");
-            }
+            dto.setNextExecution(ConvertUtils.dateToString(nextExecution));
             dto.setPeriod(schedule.getPeriod());
             if (schedule.getPeriodUnit() != null) {
                 dto.setPeriodUnit(schedule.getPeriodUnit().toString());
