@@ -1,6 +1,7 @@
 package eu.unifiedviews.master.api;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -24,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
 import eu.unifiedviews.master.converter.PipelineExecutionEventToDTOConverter;
@@ -296,7 +298,12 @@ public class PipelineResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
-            execution = pipelineFacade.getLastExec(pipeline);
+            HashSet<PipelineExecutionStatus> set = new HashSet<>();
+            set.add(PipelineExecutionStatus.CANCELLED);
+            set.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+            set.add(PipelineExecutionStatus.FINISHED_WARNING);
+            set.add(PipelineExecutionStatus.FAILED);
+            execution = pipelineFacade.getLastExec(pipeline, set);
             if (execution == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline execution doesn't exist!"));
             }
