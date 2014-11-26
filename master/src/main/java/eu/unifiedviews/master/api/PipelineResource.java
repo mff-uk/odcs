@@ -20,7 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import eu.unifiedviews.master.converter.PipelineToDTOConverter;
+import eu.unifiedviews.master.converter.PipelineDTOConverter;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineDTO;
 
@@ -50,14 +50,14 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
             pipeline.setUser(userFacade.getUser(1L));
-            pipeline = PipelineToDTOConverter.convertFromDTO(pipelineDTO, pipeline);
+            pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
             throw ex;
         } catch (RuntimeException exception) {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
-        return PipelineToDTOConverter.convert(pipeline);
+        return PipelineDTOConverter.convert(pipeline);
     }
 
     @GET
@@ -75,7 +75,7 @@ public class PipelineResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
 
-        return PipelineToDTOConverter.convert(pipelines);
+        return PipelineDTOConverter.convert(pipelines);
     }
 
     @GET
@@ -97,7 +97,7 @@ public class PipelineResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
 
-        return PipelineToDTOConverter.convert(pipeline);
+        return PipelineDTOConverter.convert(pipeline);
     }
 
 }

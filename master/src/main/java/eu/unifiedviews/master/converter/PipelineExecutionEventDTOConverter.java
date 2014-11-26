@@ -7,7 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import eu.unifiedviews.master.model.DPUInstanceDTO;
 import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
 
-public class PipelineExecutionEventToDTOConverter {
+public class PipelineExecutionEventDTOConverter {
 
     public static PipelineExecutionEventDTO convert(MessageRecord event) {
         PipelineExecutionEventDTO dto = null;
