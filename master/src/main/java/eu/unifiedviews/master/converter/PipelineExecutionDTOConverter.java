@@ -31,7 +31,7 @@ public class PipelineExecutionDTOConverter {
     }
 
     public static List<PipelineExecutionDTO> convert(List<PipelineExecution> executions) {
-        List<PipelineExecutionDTO> dtos = null;
+        List<PipelineExecutionDTO> dtos = new ArrayList<>();
         if (executions != null) {
             dtos = new ArrayList<PipelineExecutionDTO>();
             for (PipelineExecution execution : executions) {

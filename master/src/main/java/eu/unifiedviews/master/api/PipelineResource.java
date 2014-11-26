@@ -321,6 +321,32 @@ public class PipelineResource {
     }
 
     @GET
+    @Path("/{pipelineid}/executions/pending")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<PipelineExecutionDTO> getPendingPipelineExecution(@PathParam("pipelineid") String pipelineId) {
+        Pipeline pipeline = null;
+        List<PipelineExecution> executions = new ArrayList<>();
+        if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
+            throw new ApiException(Response.Status.BAD_REQUEST, String.format("ID=%s is not valid pipeline ID", pipelineId));
+        }
+        try {
+            pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+            }
+            executions.addAll(pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.CANCELLING));
+            executions.addAll(pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.RUNNING));
+            executions.addAll(pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.QUEUED));
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (RuntimeException exception) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+
+        return PipelineExecutionDTOConverter.convert(executions);
+    }
+
+    @GET
     @Path("/{pipelineid}/executions/{executionid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public PipelineExecutionDTO getPipelineExecution(@PathParam("pipelineid") String pipelineId, @PathParam("executionid") String executionId) {
