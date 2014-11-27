@@ -153,7 +153,7 @@ public class ScheduleResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
-//            List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
+            List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
             Collections.sort(schedules, new Comparator<Schedule>() {
 
                 @Override
