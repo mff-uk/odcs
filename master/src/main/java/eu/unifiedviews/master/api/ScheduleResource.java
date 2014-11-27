@@ -2,6 +2,8 @@ package eu.unifiedviews.master.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -106,7 +108,7 @@ public class ScheduleResource {
     }
 
     @GET
-    @Path("/{pipelineid}/schedules/{scheduleid}/scheduledexecutions")
+    @Path("/{pipelineid}/schedules/{scheduleid: [1-9][0-9]*}/scheduledexecutions")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<ScheduledExecutionDTO> getScheduleScheduledExecutions(@PathParam("pipelineid") String pipelineId, @PathParam("scheduleid") String scheduleId) {
         Pipeline pipeline = null;
@@ -151,9 +153,14 @@ public class ScheduleResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
-            List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
-//            Collections.sort(schedules, new Comparator<Schedule>() {
-//            });
+//            List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
+            Collections.sort(schedules, new Comparator<Schedule>() {
+
+                @Override
+                public int compare(Schedule o1, Schedule o2) {
+                    return o1.getNextExecutionTimeInfo().compareTo(o2.getNextExecutionTimeInfo());
+                }
+            });
             return ScheduledExecutionDTOConverter.convert(schedules);
         } catch (ApiException ex) {
             throw ex;
