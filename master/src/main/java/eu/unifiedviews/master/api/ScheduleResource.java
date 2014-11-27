@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -158,7 +159,18 @@ public class ScheduleResource {
 
                 @Override
                 public int compare(Schedule o1, Schedule o2) {
-                    return o1.getNextExecutionTimeInfo().compareTo(o2.getNextExecutionTimeInfo());
+                    Date o1time = o1.getNextExecutionTimeInfo();
+                    Date o2time = o2.getNextExecutionTimeInfo();
+                    if ((o1time == null) && (o2time == null)) {
+                        return 0;
+                    }
+                    if ((o1time == null) && (o2time != null)) {
+                        return 1;
+                    }
+                    if ((o1time != null) && (o2time == null)) {
+                        return -1;
+                    }
+                    return o1time.compareTo(o2time);
                 }
             });
             return ScheduledExecutionDTOConverter.convert(schedules);
