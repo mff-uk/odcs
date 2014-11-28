@@ -1,4 +1,4 @@
-package eu.unifiedviews.commons.data;
+package eu.unifiedviews.commons.dataunit;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package eu.unifiedviews.commons.data;
+package eu.unifiedviews.commons.dataunit;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

@@ -1,4 +1,4 @@
-package eu.unifiedviews.commons.data;
+package eu.unifiedviews.commons.dataunit;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
