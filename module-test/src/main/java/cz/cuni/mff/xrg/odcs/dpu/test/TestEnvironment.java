@@ -23,7 +23,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -186,7 +185,7 @@ public class TestEnvironment {
      * @throws RepositoryException
      */
     public WritableRDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
-            throws RDFException, RepositoryException {
+            throws RepositoryException {
         ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addOutput(name, rdf);
         return rdf;
@@ -272,7 +271,7 @@ public class TestEnvironment {
 
         // check ..
         if (url == null) {
-            throw new RDFException("Missing input file in resource for: "
+            throw new DataUnitException("Missing input file in resource for: "
                     + resourceName);
         }
 
