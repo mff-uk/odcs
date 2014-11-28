@@ -8,17 +8,23 @@
 		<version>1.4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<description>base project for new DataUnit's implementations</description>
+	<description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
 			<version>${uv-dpu-api.version}</version>
 		</dependency>
-		
-		<dependency> <!-- JUnit dependency -->
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
