@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.FilesDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**

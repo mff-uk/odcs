@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 
 import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Dummy {@link DataUnitFactory}. Does not create any real data unit.
