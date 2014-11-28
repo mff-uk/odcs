@@ -40,9 +40,9 @@ import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
  * @author Michal Klempa
  * @author Škoda Petr
  */
-public abstract class WritableMetadataDataUnitImpl implements WritableMetadataDataUnit, ManagableDataUnit {
+public abstract class AbstractWritableMetadataDataUnit implements WritableMetadataDataUnit, ManagableDataUnit {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WritableMetadataDataUnitImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
 
     protected static final String SYMBOLIC_NAME_BINDING = "symbolicName";
 
@@ -108,7 +108,7 @@ public abstract class WritableMetadataDataUnitImpl implements WritableMetadataDa
      */
     protected ConnectionSource connectionSource;
 
-    public WritableMetadataDataUnitImpl(String dataUnitName, String writeContextString,
+    public AbstractWritableMetadataDataUnit(String dataUnitName, String writeContextString,
             ConnectionSource connectionSource) {
         this.dataUnitName = dataUnitName;
         this.writeContext = new URIImpl(writeContextString);
@@ -242,7 +242,7 @@ public abstract class WritableMetadataDataUnitImpl implements WritableMetadataDa
         if (!this.getClass().equals(otherDataUnit.getClass())) {
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class " + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
-        final WritableMetadataDataUnitImpl otherMetadata = (WritableMetadataDataUnitImpl) otherDataUnit;
+        final AbstractWritableMetadataDataUnit otherMetadata = (AbstractWritableMetadataDataUnit) otherDataUnit;
         // What we need to do is just co replicate all symbolic names.
         final Set<URI> newReadSet = new HashSet<>(this.readContexts.size() + otherMetadata.readContexts.size());
         newReadSet.addAll(this.readContexts);

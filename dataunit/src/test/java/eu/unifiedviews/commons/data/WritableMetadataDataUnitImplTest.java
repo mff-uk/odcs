@@ -27,7 +27,7 @@ public class WritableMetadataDataUnitImplTest {
     /**
      * Dummy version for test purpose.
      */
-    class TestWritableMetadataDataUnit extends WritableMetadataDataUnitImpl {
+    class TestWritableMetadataDataUnit extends AbstractWritableMetadataDataUnit {
 
         public TestWritableMetadataDataUnit(String dataUnitName, String writeContextString,
                 ConnectionSource connectionSource) {
