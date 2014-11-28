@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.metadata.AbstractWritableMetadataDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.rdf.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -37,7 +38,8 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
      */
     protected RDFDataUnit backingDataUnit;
 
-    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString, RDFDataUnit backingDataUnit, String dataGraph) throws DataUnitException {
+    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURIString,
+            RDFDataUnit backingDataUnit, String dataGraph) throws DataUnitException {
         super(dataUnitName, dataGraph);
         this.workingDirectoryURI = workingDirectoryURIString;
         this.workingDirectory = new File(java.net.URI.create(workingDirectoryURI));
@@ -71,16 +73,18 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
 
     //WritableFilesDataUnit interface
     @Override
-    public void addExistingFile(String symbolicName, String existingFileURI) throws DataUnitException {
+    public void addExistingFile(final String symbolicName, final String existingFileURI) throws DataUnitException {
         checkForMultithreadAccess();
-
         final File existingFile = new File(java.net.URI.create(existingFileURI));
         if (!existingFile.exists()) {
-            throw new DataUnitException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
+            throw new DataUnitException(
+                    "File does not exist: " + existingFileURI + ". File must exists prior being added.");
         }
         if (!existingFile.isFile()) {
-            throw new DataUnitException("Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
+            throw new DataUnitException(
+                    "Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
         }
+        ConnectionSource cs = null;
         RepositoryConnection connection = null;
         try {
             // TODO michal.klempa think of not connecting everytime
@@ -94,7 +98,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                     valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
                     valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
                     getMetadataWriteGraphname()
-                    );
+            );
             connection.commit();
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error when adding file.", ex);
@@ -107,6 +111,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                 }
             }
         }
+        // --------------------------------------------------------------------------------------------------
     }
 
     @Override
@@ -157,7 +162,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
             if (sb.length() == 0) {
                 if (codePoint >= 97 && codePoint <= 122 || // [a-z]
                         codePoint >= 65 && codePoint <= 90 //[A-Z]
-                ) {
+                        ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             } else {
@@ -165,7 +170,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
                         codePoint >= 65 && codePoint <= 90 || //[A-Z]
                         codePoint == 95 || // _
                         codePoint >= 48 && codePoint <= 57 // [0-9]
-                ) {
+                        ) {
                     sb.append(proposedSymbolicName.charAt(index));
                 }
             }

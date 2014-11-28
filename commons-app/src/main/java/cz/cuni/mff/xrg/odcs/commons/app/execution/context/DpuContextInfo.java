@@ -5,7 +5,7 @@ import java.util.List;
 
 import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Class used to work with context for single DPU, or global context if no DPU
