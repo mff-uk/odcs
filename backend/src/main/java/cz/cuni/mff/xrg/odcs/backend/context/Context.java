@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -64,12 +63,6 @@ public class Context implements DPUContext {
      * Manager for output DataUnits.
      */
     private DataUnitManager outputsManager;
-
-    /**
-     * Used DataUnit factory.
-     */
-    @Autowired
-    protected DataUnitFactory dataUnitFactory;
 
     /**
      * Application configuration.
