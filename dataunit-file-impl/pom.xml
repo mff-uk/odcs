@@ -17,6 +17,11 @@
 			<artifactId>uv-dpu-api</artifactId>
 			<version>${uv-dpu-api.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-files</artifactId>
+			<version>${uv-dataunit-files.version}</version>
+		</dependency>
 		<dependency> <!-- dataunit project -->
 			<groupId>cz.cuni.mff.xrg.odcs</groupId>
 			<artifactId>dataunit</artifactId>
