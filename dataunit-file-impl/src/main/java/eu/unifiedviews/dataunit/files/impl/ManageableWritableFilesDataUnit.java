@@ -5,8 +5,8 @@ import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
 
 /**
  * Interface for {@link WritableFilesDataUnit} used by Unifiedviews core.
- *
- * @author Petr Škoda
+ * 
+ * @author Škoda Petr
  */
 public interface ManageableWritableFilesDataUnit extends WritableFilesDataUnit, ManagableDataUnit {
 
