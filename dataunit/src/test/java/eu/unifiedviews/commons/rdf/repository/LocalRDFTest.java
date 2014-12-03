@@ -17,7 +17,7 @@ import junit.framework.Assert;
 public class LocalRDFTest {
 
     @Test
-    public void createAndDestroy() throws IOException, DataUnitException {
+    public void createAndDestroy() throws IOException, DataUnitException, RDFException {
         final RepositoryFactory factory = new RepositoryFactory();
         final Path rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-dataUnit-");
         // Make sure that the directory is empty.

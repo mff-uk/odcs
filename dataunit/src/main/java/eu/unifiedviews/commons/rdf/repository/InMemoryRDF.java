@@ -28,10 +28,10 @@ class InMemoryRDF implements ManagableRepository {
      * @param repositoryPath Path for manager, should be the same for different pipelines.
      * @throws DataUnitException
      */
-    public InMemoryRDF(String repositoryPath) throws DataUnitException {
+    public InMemoryRDF(String repositoryPath) throws RDFException {
         final File managerDir = new File(repositoryPath);
         if (!managerDir.isDirectory() && !managerDir.mkdirs()) {
-            throw new DataUnitException("Could not create repository manager directory.");
+            throw new RDFException("Could not create repository manager directory.");
         }
         try {
             final LocalRepositoryManager localRepositoryManager = RepositoryProvider.getRepositoryManager(managerDir);
@@ -44,10 +44,10 @@ class InMemoryRDF implements ManagableRepository {
                 repository = newRepository;
             }
         } catch (RepositoryConfigException | RepositoryException ex) {
-            throw new DataUnitException("Could not initialize repository", ex);
+            throw new RDFException("Could not initialize repository", ex);
         }
         if (repository == null) {
-            throw new DataUnitException("Could not initialize repository");
+            throw new RDFException("Could not initialize repository");
         }
     }
 
@@ -57,12 +57,12 @@ class InMemoryRDF implements ManagableRepository {
     }
 
     @Override
-    public void release() throws DataUnitException {
+    public void release() throws RDFException {
         // Do nothing here.
     }
 
     @Override
-    public void delete() throws DataUnitException {
+    public void delete() throws RDFException {
         // Do nothing here.
     }
 

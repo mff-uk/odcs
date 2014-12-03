@@ -15,7 +15,7 @@ import eu.unifiedviews.dataunit.DataUnitException;
  *
  * @author Škoda Petr
  */
-class LocalRDF implements ManagableRepository{
+class LocalRDF implements ManagableRepository {
 
     private final Repository repository;
 
@@ -26,16 +26,16 @@ class LocalRDF implements ManagableRepository{
      * @param repositoryPath Unique path for each pipeline's repository.
      * @throws DataUnitException
      */
-    public LocalRDF(String repositoryPath) throws DataUnitException {
+    public LocalRDF(String repositoryPath) throws RDFException {
         repositoryDirectory = new File(repositoryPath);
         if (!repositoryDirectory.isDirectory() && !repositoryDirectory.mkdirs()) {
-            throw new DataUnitException("Could not create repository directory.");
+            throw new RDFException("Could not create repository directory.");
         }
         repository = new SailRepository(new NativeStore(repositoryDirectory));
         try {
             repository.initialize();
         } catch (RepositoryException ex) {
-            throw new RuntimeException("Could not initialize repository.", ex);
+            throw new RDFException("Could not initialize repository.", ex);
         }        
     }
 
@@ -45,16 +45,16 @@ class LocalRDF implements ManagableRepository{
     }
 
     @Override
-    public void release() throws DataUnitException {
+    public void release() throws RDFException {
         try {
             repository.shutDown();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Could not shutdown repository.", ex);
+            throw new RDFException("Could not shutdown repository.", ex);
         }
     }
 
     @Override
-    public void delete() throws DataUnitException {
+    public void delete() throws RDFException {
         release();
         // Delete storage data directory.
         FileUtils.deleteQuietly(repositoryDirectory);

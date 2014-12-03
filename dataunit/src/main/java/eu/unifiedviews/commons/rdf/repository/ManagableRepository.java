@@ -28,15 +28,15 @@ public interface ManagableRepository {
     /**
      * Called on repository release. Can not be called after {@link #delete()}
      *
-     * @throws eu.unifiedviews.dataunit.DataUnitException
+     * @throws eu.unifiedviews.commons.rdf.repository.RDFException
      */
-    public void release() throws DataUnitException;
+    public void release() throws RDFException;
 
     /**
      * Delete repository. Can not be called after {@link #release()}
      * 
-     * @throws eu.unifiedviews.dataunit.DataUnitException
+     * @throws eu.unifiedviews.commons.rdf.repository.RDFException
      */
-    public void delete() throws DataUnitException;
+    public void delete() throws RDFException;
 
 }

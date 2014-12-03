@@ -44,7 +44,7 @@ public class RepositoryFactory {
         this.rootDirectory = rootDirectory;
     }
 
-    public ManagableRepository create(String pipelineId, ManagableRepository.Type type) throws DataUnitException {
+    public ManagableRepository create(String pipelineId, ManagableRepository.Type type) throws RDFException {
         // Prepare parameters.
         final String directory = rootDirectory + File.separator + pipelineId;
         // Create repository.
@@ -63,14 +63,14 @@ public class RepositoryFactory {
                 repository = new Virtuoso(uri, user, password);
                 break;
             default:
-                throw new DataUnitException("Unknown repository type: " + type.toString());
+                throw new RDFException("Unknown repository type: " + type.toString());
         }
         // Test connection.
         RepositoryConnection connection = null;
         try {
             connection = repository.getConnectionSource().getConnection();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Could not test initial connect to repository", ex);
+            throw new RDFException("Could not test initial connect to repository", ex);
         } finally {
             if (connection != null) {
                 try {

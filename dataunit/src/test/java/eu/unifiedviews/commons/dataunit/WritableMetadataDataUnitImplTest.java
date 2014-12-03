@@ -14,6 +14,7 @@ import org.openrdf.model.ValueFactory;
 
 import eu.unifiedviews.commons.rdf.ConnectionSource;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
@@ -70,13 +71,22 @@ public class WritableMetadataDataUnitImplTest {
         factory = new RepositoryFactory();
         rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-dataUnit-");
         factory.setLocalParameters(rootDir.toAbsolutePath().toString());
-        repository = factory.create("1", ManagableRepository.Type.LOCAL_RDF);
+        try {
+            repository = factory.create("1", ManagableRepository.Type.LOCAL_RDF);
+        } catch (RDFException ex) {
+            throw new DataUnitException(ex);
+        }
     }
 
     @After
     public void cleanUp() throws IOException, DataUnitException {
-        repository.delete();
-        Files.deleteIfExists(rootDir);
+        try {
+            repository.delete();
+        } catch (RDFException ex) {
+            throw new DataUnitException(ex);
+        } finally {
+            Files.deleteIfExists(rootDir);
+        }
     }
 
     @Test

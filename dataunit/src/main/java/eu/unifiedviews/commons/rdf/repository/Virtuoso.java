@@ -15,12 +15,12 @@ class Virtuoso implements ManagableRepository {
 
     private final Repository repository;
 
-    public Virtuoso(String url, String user, String password) throws DataUnitException {
+    public Virtuoso(String url, String user, String password) throws RDFException {
         repository = new VirtuosoRepository(url, user, password);
         try {
             repository.initialize();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Could not initialize repository", ex);
+            throw new RDFException("Could not initialize repository", ex);
         }
     }
 
@@ -30,16 +30,16 @@ class Virtuoso implements ManagableRepository {
     }
 
     @Override
-    public void release() throws DataUnitException {
+    public void release() throws RDFException {
         try {
             repository.shutDown();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Can't shutDown repository.", ex);
+            throw new RDFException("Can't shutDown repository.", ex);
         }
     }
 
     @Override
-    public void delete() throws DataUnitException {
+    public void delete() throws RDFException {
         // Do nothing here.
     }
 

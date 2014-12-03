@@ -41,7 +41,7 @@ class RemoteRDF implements ManagableRepository{
      */
     private final String pipelineId;
 
-    public RemoteRDF(String url, String user, String password, String pipelineId) throws DataUnitException {
+    public RemoteRDF(String url, String user, String password, String pipelineId) throws RDFException {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -60,15 +60,15 @@ class RemoteRDF implements ManagableRepository{
                 repository = newRepository;
             }
         } catch (RepositoryConfigException | RepositoryException ex) {
-            throw new DataUnitException("Could not initialize repository", ex);
+            throw new RDFException("Could not initialize repository", ex);
         }
         if (repository == null) {
-            throw new DataUnitException("Could not initialize repository");
+            throw new RDFException("Could not initialize repository");
         }
         try {
             repository.initialize();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Could not initialize repository", ex);
+            throw new RDFException("Could not initialize repository", ex);
         }
     }
 
@@ -78,20 +78,20 @@ class RemoteRDF implements ManagableRepository{
     }
 
     @Override
-    public void release() throws DataUnitException {
+    public void release() throws RDFException {
         try {
             getRepositoryManager().getRepository(pipelineId).shutDown();
         } catch (RepositoryConfigException | RepositoryException ex) {
-            throw new DataUnitException("Can't delete repository", ex);
+            throw new RDFException("Can't delete repository", ex);
         }
     }
 
     @Override
-    public void delete() throws DataUnitException {
+    public void delete() throws RDFException {
         try {
             getRepositoryManager().removeRepository(pipelineId);
         } catch (RepositoryConfigException | RepositoryException ex) {
-            throw new DataUnitException("Can't delete repository", ex);
+            throw new RDFException("Can't delete repository", ex);
         }
     }
 
@@ -100,7 +100,7 @@ class RemoteRDF implements ManagableRepository{
      * @return Repository provider.
      * @throws DataUnitException
      */
-    private RepositoryManager getRepositoryManager() throws DataUnitException {
+    private RepositoryManager getRepositoryManager() throws RDFException {
         try {
             final RepositoryManager repositoryManager = RepositoryProvider.getRepositoryManager(url);
             if (repositoryManager instanceof RemoteRepositoryManager) {
@@ -110,7 +110,7 @@ class RemoteRDF implements ManagableRepository{
             }
             return repositoryManager;
         } catch (RepositoryConfigException | RepositoryException ex) {
-            throw new DataUnitException("Can't get repository provider.", ex);
+            throw new RDFException("Can't get repository provider.", ex);
         }
     }
 
