@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -29,7 +30,7 @@ public class LocalFSFilesDataUnitTest {
     private ManagableRepository repository;
 
     @Before
-    public void prepare() throws IOException, DataUnitException {
+    public void prepare() throws IOException, DataUnitException, RDFException {
         RepositoryFactory factory = new RepositoryFactory();
         rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-filesDataUnit-");
         rootDirFile = (new File(rootDir.toFile(), "storage")).toPath();
@@ -38,7 +39,7 @@ public class LocalFSFilesDataUnitTest {
     }
 
     @After
-    public void cleanUp() throws IOException, DataUnitException {
+    public void cleanUp() throws IOException, DataUnitException, RDFException {
         repository.delete();
         Files.deleteIfExists(rootDirFile);
         // There should be no data as we called clear.
