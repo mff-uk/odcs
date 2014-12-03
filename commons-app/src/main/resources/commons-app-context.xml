@@ -92,4 +92,8 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator"/>
 
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager"/>
+
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
+    
 </beans>

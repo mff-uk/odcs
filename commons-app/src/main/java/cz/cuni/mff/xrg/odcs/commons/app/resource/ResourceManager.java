@@ -46,6 +46,11 @@ public class ResourceManager {
      */
     private static final String EXPORT_DIR = "temp" + File.separator + "export";
 
+    /**
+     * Name of sub-directory where RDF repositories could store their data.
+     */
+    private static final String REPOSITORY_DIRECTORY = "repositories";
+
     @Autowired
     private AppConfig appConfig;
 
@@ -145,6 +150,15 @@ public class ResourceManager {
     public File getNewExportTempDir() throws MissingResourceException {
         final File root = getExportTempDir();
         return getNewUniqueDir(root);
+    }
+
+    /**
+     *
+     * @return Directory where RDF repositories should be stored.
+     * @throws MissingResourceException
+     */
+    public File getRootRepositoriesDir() throws MissingResourceException {
+        return new File(getWorkingDir(), REPOSITORY_DIRECTORY);
     }
 
     /**
