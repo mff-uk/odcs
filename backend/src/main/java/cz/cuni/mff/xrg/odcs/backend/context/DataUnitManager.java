@@ -9,8 +9,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
+
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
@@ -19,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 
@@ -222,12 +224,17 @@ final class DataUnitManager {
                 String id = context.generateDataUnitId(dpuInstance, index);
                 File directory = new File(workingDir, context.getDataUnitTmpPath(dpuInstance, index));
                 
-                ManagableDataUnit dataUnit = dataUnitFactory.create(
-                        info.getType(),
-                        context.generatePipelineId(),
-                        GraphUrl.translateDataUnitId(id),
-                        info.getName(),
-                        directory);
+                ManagableDataUnit dataUnit;
+                try {
+                    dataUnit = dataUnitFactory.create(
+                            info.getType(),
+                            context.generatePipelineId(),
+                            GraphUrl.translateDataUnitId(id),
+                            info.getName(),
+                            directory);
+                } catch (RDFException ex) {
+                    throw new DataUnitException(ex);
+                }
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
                 indexes.put(dataUnit, index);
@@ -258,7 +265,7 @@ final class DataUnitManager {
      * @return Created DataUnit.
      * @throw DataUnitCreateException
      */
-    public ManagableDataUnit addDataUnit(ManagableDataUnit.Type type, String name) {
+    public ManagableDataUnit addDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException {
         // check if we do not already have such DataUnit
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&
@@ -281,11 +288,15 @@ final class DataUnitManager {
                 dpuInstance, index));
         // create instance
         ManagableDataUnit dataUnit;
-        dataUnit = dataUnitFactory.create(type, 
-                context.generatePipelineId(),
-                GraphUrl.translateDataUnitId(id),
-                name,
-                directory);
+        try {
+            dataUnit = dataUnitFactory.create(type,
+                    context.generatePipelineId(),
+                    GraphUrl.translateDataUnitId(id),
+                    name,
+                    directory);
+        } catch (RDFException ex) {
+            throw new DataUnitException(ex);
+        }
         // add to storage
         dataUnits.add(dataUnit);
         indexes.put(dataUnit, index);

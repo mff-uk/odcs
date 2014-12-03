@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPUContext;
 
 public class Context implements DPUContext {
@@ -170,8 +171,9 @@ public class Context implements DPUContext {
      * @param name
      *            DataUnit name.
      * @return Created DataUni.
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name)
+    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException
     {
         return outputsManager.addDataUnit(type, name);
     }

@@ -6,9 +6,9 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 

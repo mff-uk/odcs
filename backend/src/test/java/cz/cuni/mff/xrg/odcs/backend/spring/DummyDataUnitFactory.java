@@ -4,7 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**

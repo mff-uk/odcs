@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Examine the given DPU instance for annotations. If there is {@link OutputDataUnit} annotation on field then create or assign suitable
@@ -143,7 +144,12 @@ public class AnnotationsOutput implements DPUPreExecutor {
         ManagableDataUnit dataUnit;
         // if the data unit with such name and type already
         // exist then is returned and reused
-        dataUnit = context.addOutputDataUnit(type, annotation.name());
+        try {
+            dataUnit = context.addOutputDataUnit(type, annotation.name());
+        } catch (DataUnitException ex) {
+            LOG.error("Failed to add output DataUnit", ex);
+            return false;
+        }
 
         LOG.debug("out: {}.{} = {}", context.getDPU().getName(), field.getName(),
                 dataUnit.getName());

@@ -21,6 +21,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
 
 /**
  * CleanUp data after execution.
@@ -40,7 +42,10 @@ class CleanUp implements PostExecutor {
 
     @Autowired
     private RDFDataUnitFactory rdfDataUnitFactory;
-    
+
+    @Autowired
+    private RepositoryManager repositoryManager;
+
     @Override
     public int getOrder() {
         return Ordered.LOWEST_PRECEDENCE;
@@ -67,8 +72,20 @@ class CleanUp implements PostExecutor {
         }
         if (execution.isDebugging()) {
             rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
+            
+            try {
+                repositoryManager.release(execution.getContext().generatePipelineId());
+            } catch (RDFException ex) {
+                LOG.error("Can't release repository.", ex);
+            }
         } else {
             rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
+
+            try {
+                repositoryManager.delete(execution.getContext().generatePipelineId());
+            } catch (RDFException ex) {
+                LOG.error("Can't delete repository.", ex);
+            }
         }     
         // prepare execution root
         File rootDir = new File(
