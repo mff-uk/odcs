@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionChangedEvent;
 
 /**
