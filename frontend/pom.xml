@@ -248,7 +248,7 @@
 			</plugin>
 			<!-- As we are doing "inplace" GWT compilation, ensure the widgetset -->
 			<!-- directory is cleaned properly -->
-			<plugin>
+<!--			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
@@ -258,7 +258,7 @@
 						</fileset>
 					</filesets>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
