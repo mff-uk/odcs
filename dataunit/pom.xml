@@ -257,12 +257,12 @@
 		<dependency>
 			<groupId>eu.comsode</groupId>
 			<artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
-			<version>1.0.0</version> <!-- 1.18-7-develop-SNAPSHOT -->
+			<version>1.18-7-develop-SNAPSHOT</version> <!-- 1.18-7-develop-SNAPSHOT -->
 		</dependency>
 		<dependency>
 			<groupId>eu.comsode</groupId>
 			<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
-			<version>1.0.0</version> <!-- 3.74-7-develop-SNAPSHOT -->
+			<version>3.74-7-develop-SNAPSHOT</version> <!-- 3.74-7-develop-SNAPSHOT -->
 		</dependency>
 	</dependencies>
 </project>
