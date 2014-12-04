@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -21,16 +20,15 @@ public class RuntimeProperty implements Serializable, DataObject {
      * Unique ID for each property
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_runtime_properties")
-    @SequenceGenerator(name = "seq_runtime_properties", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     /**
      * Human-readable property name
      */
     @Column
     private String name;
-    
+
     /**
      * Human-readable property value
      */
@@ -45,16 +43,17 @@ public class RuntimeProperty implements Serializable, DataObject {
 
     /**
      * Returns the set ID of this runtime property as {@link Long} value
-     * 
+     *
      * @return the set ID of this runtime property as {@link Long} value
      */
+    @Override
     public Long getId() {
         return id;
     }
 
     /**
      * Returns name of the property
-     * 
+     *
      * @return name of the property
      */
     public String getName() {
@@ -63,7 +62,7 @@ public class RuntimeProperty implements Serializable, DataObject {
 
     /**
      * Sets new value to the property
-     * 
+     *
      * @param name
      */
     public void setName(String name) {
@@ -71,8 +70,8 @@ public class RuntimeProperty implements Serializable, DataObject {
     }
 
     /**
-     * Returns value of the property 
-     * 
+     * Returns value of the property
+     *
      * @return value of the property
      */
     public String getValue() {
@@ -81,7 +80,7 @@ public class RuntimeProperty implements Serializable, DataObject {
 
     /**
      * Sets new value for the property
-     * 
+     *
      * @param value
      */
     public void setValue(String value) {
@@ -90,7 +89,7 @@ public class RuntimeProperty implements Serializable, DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override
@@ -104,24 +103,29 @@ public class RuntimeProperty implements Serializable, DataObject {
     /**
      * Returns true if two objects represent the same property. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RuntimeProperty other = (RuntimeProperty) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 

@@ -10,7 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 /**
  * Node represents DPURecord on the pipeline and holds information about its
  * position on the Pipeline canvas.
- * 
+ *
  * @author Jiri Tomes
  * @author Bogo
  * @author Jan Vojt
@@ -23,8 +23,7 @@ public class Node implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
-    @SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SuppressWarnings("unused")
     private Long id;
 
@@ -52,7 +51,7 @@ public class Node implements DataObject {
     /**
      * Copy constructor. Creates a deep copy of given <code>Node</code>. Primary key {@link #id} and {@link #graph} of newly
      * created object are both <code>null</code>.
-     * 
+     *
      * @param node
      *            node value to copy
      */
@@ -65,7 +64,7 @@ public class Node implements DataObject {
 
     /**
      * Constructor with corresponding DPUInstance
-     * 
+     *
      * @param dpuInstance
      *            Value of DPU instance.
      */
@@ -75,7 +74,7 @@ public class Node implements DataObject {
 
     /**
      * Returns the DPU instance for this node.
-     * 
+     *
      * @return the DPU instance for this node.
      */
     public DPUInstanceRecord getDpuInstance() {
@@ -84,7 +83,7 @@ public class Node implements DataObject {
 
     /**
      * Returns position for this node.
-     * 
+     *
      * @return the instance of {@link Position} for this node.
      */
     public Position getPosition() {
@@ -93,7 +92,7 @@ public class Node implements DataObject {
 
     /**
      * Set the new value of DPU instance for this node.
-     * 
+     *
      * @param dpuInstance
      *            New value of DPU instance for this node.
      */
@@ -103,7 +102,7 @@ public class Node implements DataObject {
 
     /**
      * Set the new value of position of this node.
-     * 
+     *
      * @param position
      *            new value of position as instance of {@link Position}.
      */
@@ -113,7 +112,7 @@ public class Node implements DataObject {
 
     /**
      * Returns the value of pipeline graph set to this node.
-     * 
+     *
      * @return the value of pipeline graph set to this node.
      */
     public PipelineGraph getGraph() {
@@ -122,7 +121,7 @@ public class Node implements DataObject {
 
     /**
      * Set the new value of pipeline graph to this node.
-     * 
+     *
      * @param graph
      *            new value of pipeline graph to this node.
      */
@@ -132,7 +131,7 @@ public class Node implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return hashcode value of hashCode as integer.
      */
     @Override
@@ -148,7 +147,7 @@ public class Node implements DataObject {
     /**
      * Returns true if two objects represent the same node. This holds if and
      * only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param o
      *            value of object.
      * @return true if both objects represent the same node
@@ -173,7 +172,7 @@ public class Node implements DataObject {
 
     /**
      * Returns the set ID of this node as {@link Long} value.
-     * 
+     *
      * @return the set ID of this node as {@link Long} value.
      */
     @Override
