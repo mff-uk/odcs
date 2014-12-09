@@ -17,8 +17,6 @@ import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
 /**
  * Can be used to build data units.
  *
- * TODO: Remove required = false from properties
- *
  * @author Škoda Petr
  */
 public class DataUnitFactory {
