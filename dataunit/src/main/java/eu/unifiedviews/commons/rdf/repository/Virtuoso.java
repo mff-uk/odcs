@@ -4,7 +4,6 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 
 import eu.unifiedviews.commons.rdf.ConnectionSource;
-import eu.unifiedviews.dataunit.DataUnitException;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
@@ -26,7 +25,7 @@ class Virtuoso implements ManagableRepository {
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSource(repository, false);
+        return new ConnectionSource(repository, true);
     }
 
     @Override
