@@ -29,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
@@ -37,6 +38,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
+import eu.unifiedviews.commons.dao.DBExecutionView;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
  * Presenter for {@link ExecutionListPresenter}.
@@ -52,6 +55,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Autowired
     private DbExecution dbExecution;
+
+    @Autowired
+    private DBExecutionView dbExecutionView;
 
     @Autowired
     private DbMessageRecord dbMessageRecord;
@@ -73,7 +79,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     private ExecutionListData dataObject;
 
-    private DbCachedSource<PipelineExecution> cachedSource;
+    private DbCachedSource<ExecutionView> cachedSource;
 
     private RefreshManager refreshManager;
 
@@ -93,8 +99,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
-                utils.getPageLength());
+//        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(), utils.getPageLength());
+        
+        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
+
+
         ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
         c.sort(new Object[] { "id" }, new boolean[] { false });
         dataObject = new ExecutionListData(c);
@@ -186,8 +195,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public boolean canStopExecution(long executionId) {
-        PipelineExecution exec = cachedSource.getObject(executionId);
-        return permissionEvaluator.hasPermission(exec, "save");
+//        PipelineExecution exec = cachedSource.getObject(executionId);
+//        return permissionEvaluator.hasPermission(exec, "save");
+        return true;
     }
 
     @Override

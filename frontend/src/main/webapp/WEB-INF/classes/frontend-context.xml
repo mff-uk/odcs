@@ -67,7 +67,9 @@
 
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor"/>
+    <bean id="pipelineViewAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor"/>
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor"/>
+    <bean id="executionViewAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor"/>
     <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor"/>
 
     <!-- tranlator for vaadin's filters -->

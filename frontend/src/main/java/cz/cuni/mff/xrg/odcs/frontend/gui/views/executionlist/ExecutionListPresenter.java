@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -190,14 +191,14 @@ public interface ExecutionListPresenter extends Presenter {
      */
     public final class ExecutionListData {
 
-        private final ReadOnlyContainer<PipelineExecution> container;
+        private final ReadOnlyContainer<ExecutionView> container;
 
         /**
-         * Gets container with {@link PipelineExecution}s.
+         * Gets container with {@link ExecutionView}s.
          * 
          * @return Container.
          */
-        public ReadOnlyContainer<PipelineExecution> getContainer() {
+        public ReadOnlyContainer<ExecutionView> getContainer() {
             return container;
         }
 
@@ -207,7 +208,7 @@ public interface ExecutionListPresenter extends Presenter {
          * @param container
          *            Container to hold.
          */
-        public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
+        public ExecutionListData(ReadOnlyContainer<ExecutionView> container) {
             this.container = container;
         }
     }
