@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +77,13 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         }
 
         // Do the business.
+        Date start = new Date();
+        LOG.info("> service");
+
         super.service(request, response);
+
+        Date end = new Date();
+        LOG.info("< service in: {} ms", end.getTime() - start.getTime());
 
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
