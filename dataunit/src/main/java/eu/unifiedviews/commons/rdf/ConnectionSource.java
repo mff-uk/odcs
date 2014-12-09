@@ -27,6 +27,7 @@ public class ConnectionSource {
      * Used repository.
      *
      * @param repository
+     * @param retryOnFailure
      */
     public ConnectionSource(Repository repository, boolean retryOnFailure) {
         this.repository = repository;
