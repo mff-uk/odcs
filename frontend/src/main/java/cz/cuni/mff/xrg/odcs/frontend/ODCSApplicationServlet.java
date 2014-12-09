@@ -35,6 +35,8 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
 
+    private int serviceCounter = 0;
+
     /**
      * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
      * 
@@ -78,12 +80,13 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 
         // Do the business.
         Date start = new Date();
-        LOG.info("> service");
+        int serviceId = serviceCounter++;
+        LOG.info("> service ({})", serviceId);
 
         super.service(request, response);
 
         Date end = new Date();
-        LOG.info("< service in: {} ms", end.getTime() - start.getTime());
+        LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
 
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
