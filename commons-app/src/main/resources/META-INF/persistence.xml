@@ -25,6 +25,10 @@
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.User</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord</class>
+        <!-- View classes. -->
+        <class>eu.unifiedviews.commons.dao.view.PipelineView</class>
+        <class>eu.unifiedviews.commons.dao.view.ExecutionView</class>
+
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <!-- Database connection parameters are loaded at runtime from AppConfiguration -->

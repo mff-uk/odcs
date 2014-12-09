@@ -96,4 +96,7 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
     
+    <!-- DAO layer. -->
+    <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
+
 </beans>
