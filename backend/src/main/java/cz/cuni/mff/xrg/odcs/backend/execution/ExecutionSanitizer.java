@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
@@ -180,14 +181,15 @@ class ExecutionSanitizer {
 
             final File rootDir = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
             final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
-            // create instance
-            ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), dataUnitUri, name, directory);
 
             // delete data ..
             try {
+                final ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), dataUnitUri, name, directory);
                 dataUnit.clear();
                 dataUnit.release();
             } catch (DataUnitException ex) {
+                LOG.error("Can't clear and release data unit.", ex);
+            } catch (RDFException ex) {
                 LOG.error("Can't clear and release data unit.", ex);
             }
         }

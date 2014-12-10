@@ -40,8 +40,8 @@ class CleanUp implements PostExecutor {
     @Autowired
     private ContextFacade contextFacade;
 
-    @Autowired
-    private RDFDataUnitFactory rdfDataUnitFactory;
+//    @Autowired
+//    private RDFDataUnitFactory rdfDataUnitFactory;
 
     @Autowired
     private RepositoryManager repositoryManager;
@@ -71,7 +71,7 @@ class CleanUp implements PostExecutor {
             }
         }
         if (execution.isDebugging()) {
-            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
+//            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
             
             try {
                 repositoryManager.release(execution.getContext().generatePipelineId());
@@ -79,7 +79,7 @@ class CleanUp implements PostExecutor {
                 LOG.error("Can't release repository.", ex);
             }
         } else {
-            rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
+//            rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
 
             try {
                 repositoryManager.delete(execution.getContext().generatePipelineId());
