@@ -14,12 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<uv-dpu-api.version>1.1.0-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.0.1</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>1.0.1</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>1.0.1</uv-dataunit-files.version>
-		<uv-dataunit-helpers.version>1.1.0-SNAPSHOT</uv-dataunit-helpers.version>
-		<dataunit.version>1.4.1-SNAPSHOT</dataunit.version>
+        <!-- When removing -V also update OSGIModuleFacadeConfig -->
+		<uv-dpu-api.version>1.1.0-V-SNAPSHOT</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>1.0.1-V</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>1.0.1-V</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>1.0.1-V</uv-dataunit-files.version>
+		<uv-dataunit-helpers.version>1.1.0-V-SNAPSHOT</uv-dataunit-helpers.version>
+		<dataunit.version>1.4.1-V-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
@@ -102,7 +103,7 @@
 			<url>http://repository.springsource.com/maven/bundles/release</url>
 		</repository>
 
-                <repository>
+        <repository>
 			<id>com.springsource.repository.bundles.external</id>
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
