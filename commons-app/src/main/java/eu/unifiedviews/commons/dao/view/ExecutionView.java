@@ -175,9 +175,9 @@ public class ExecutionView implements DataObject {
      *
      * @return Duration of last pipeline execution, -1 if no such execution exists.
      */
-    public Long getDuration() {
+    public long getDuration() {
         if (start == null || end == null) {
-            return null;
+            return -1l;
         } else {
             return end.getTime() - start.getTime();
         }
