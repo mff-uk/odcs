@@ -12,7 +12,7 @@ import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
  * 
  * @author Petyr
  */
-public class DummyDataUnitFactory extends DataUnitFactory {
+public class DummyDataUnitFactory implements DataUnitFactory {
 
     @Override
     public ManagableDataUnit create(ManagableDataUnit.Type type,
