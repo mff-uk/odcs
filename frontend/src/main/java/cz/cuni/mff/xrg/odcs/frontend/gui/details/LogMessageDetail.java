@@ -71,6 +71,7 @@ public class LogMessageDetail extends Window {
         fullMessageContent.setSizeFull();
         fullMessageContent.setWordwrap(true);
         mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
+        mainLayout.setRowExpandRatio(5, 1.0f);
         mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
 
         Button closeButton = new Button("Close", new Button.ClickListener() {
