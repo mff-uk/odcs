@@ -15,9 +15,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<uv-dpu-api.version>1.1.0-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.0.1</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>1.0.1</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>1.0.1</uv-dataunit-files.version>
+		<uv-dpu-api-helpers.version>1.1.0-SNAPSHOT</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>1.1.0-SNAPSHOT</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>1.1.0-SNAPSHOT</uv-dataunit-files.version>
 		<uv-dataunit-helpers.version>1.1.0-SNAPSHOT</uv-dataunit-helpers.version>
 		<dataunit.version>1.4.1-SNAPSHOT</dataunit.version>
 
