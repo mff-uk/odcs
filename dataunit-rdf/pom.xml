@@ -248,7 +248,7 @@
 		<dependency>
 			<groupId>eu.comsode</groupId>
 			<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
-			<version>3.74-7-develop-SNAPSHOT</version>
+			<version>3.76-7-develop-SNAPSHOT</version>
 		</dependency>
 
 		<dependency> <!-- JUnit dependency -->
