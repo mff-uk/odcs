@@ -68,11 +68,6 @@
 			<artifactId>spring-web</artifactId>
 			<version>3.0.7.RELEASE</version>
 		</dependency>
-		<dependency>
-			<groupId>eu.comsode.libraries.jckan</groupId>
-			<artifactId>jckan</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
