@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core-dpus</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>1.5.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-rdfMerger</artifactId>
 	<name>T-RdfMerger</name>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.5.0</version>
 	<description>Merges RDF data in no time.</description>
 	<packaging>bundle</packaging>
 

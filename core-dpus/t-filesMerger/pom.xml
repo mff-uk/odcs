@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core-dpus</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>1.5.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -14,7 +14,7 @@
 	<artifactId>uv-t-filesMerger</artifactId>
 	<name>T-FilesMerger</name>
 	<description>Merges Files inputs in no time.</description>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.5.0</version>
 	<packaging>bundle</packaging>
 
 	<properties>
