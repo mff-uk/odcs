@@ -18,7 +18,7 @@
 		<uv-dpu-api-helpers.version>1.1.0-SNAPSHOT</uv-dpu-api-helpers.version>
 		<uv-dataunit-rdf.version>1.1.0-SNAPSHOT</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>1.1.0-SNAPSHOT</uv-dataunit-files.version>
-		<uv-dataunit-helpers.version>1.1.0-SNAPSHOT</uv-dataunit-helpers.version>
+		<uv-dataunit-helpers.version>1.1.1-SNAPSHOT</uv-dataunit-helpers.version>
 		<dataunit.version>1.5.1-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
