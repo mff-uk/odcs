@@ -90,6 +90,9 @@
 					<include>LICENSE.md</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
 		</resources>
 
 		<pluginManagement>
