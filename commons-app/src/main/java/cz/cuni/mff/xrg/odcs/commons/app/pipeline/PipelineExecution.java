@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Information about executed pipeline and its states.
- * 
+ *
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Petyr
@@ -27,8 +27,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      * Unique id of pipeline execution.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
-    @SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -56,7 +55,6 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     @Column(name = "debug_mode")
     private boolean isDebugging;
-
 
     @Column(name = "order_number")
     private Long orderNumber;
@@ -126,7 +124,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      * Constructor. Create pipeline which will be run as soon as possible in
      * non-debug mode. The pipeline execution will not run other pipelines based
      * on scheduling rules.
-     * 
+     *
      * @param pipeline
      *            the pipeline for pipeline execution.
      */
@@ -145,7 +143,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the set ID of this pipeline execution as {@link Long} value.
-     * 
+     *
      * @return the set ID of this pipeline execution as {@link Long} value.
      */
     @Override
@@ -155,7 +153,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the actual status for executed pipeline.
-     * 
+     *
      * @return The actual status for executed pipeline.
      */
     public PipelineExecutionStatus getStatus() {
@@ -164,7 +162,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set new status for executed pipeline.
-     * 
+     *
      * @param newStatus
      *            new value of {@link PipelineExecutionStatus}
      */
@@ -174,7 +172,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the executed pipeline.
-     * 
+     *
      * @return the executed pipeline
      */
     public Pipeline getPipeline() {
@@ -183,7 +181,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set new value of executed pipeline.
-     * 
+     *
      * @param pipeline
      *            the new executed pipeline
      */
@@ -193,7 +191,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns true, if pipeline run in debug mode, false otherwise.
-     * 
+     *
      * @return true, if pipeline run in debug mode, false otherwise.
      */
     public boolean isDebugging() {
@@ -202,7 +200,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set if pipeline will be run in debug mode or not.
-     * 
+     *
      * @param isDebugging
      *            boolean value to set debug mode fot the pipeline
      *            execution.
@@ -213,7 +211,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the timestamp when this execution started, or null.
-     * 
+     *
      * @return The timestamp when this execution started, or null.
      */
     public Date getStart() {
@@ -223,7 +221,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Set the instance of {@link Date} as the value when the pipeline execution
      * started.
-     * 
+     *
      * @param start
      *            the timestamp as value when the pipeline execution started.
      */
@@ -233,7 +231,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the timestamp when this execution ends, or null.
-     * 
+     *
      * @return The timestamp when this execution ends, or null.
      */
     public Date getEnd() {
@@ -243,7 +241,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Set the instance of {@link Date} as the value when the pipeline execution
      * ends.
-     * 
+     *
      * @param end
      *            the timestamp as value when the pipeline execution ends.
      */
@@ -253,7 +251,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Use to gain read only access to the context.
-     * 
+     *
      * @return Context or null.
      */
     public ExecutionContextInfo getContextReadOnly() {
@@ -262,7 +260,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the execution context or null.
-     * 
+     *
      * @return the execution context or null.
      */
     public ExecutionContextInfo getContext() {
@@ -272,7 +270,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Returns schedule that planned this execution. Null for execution created
      * by user.
-     * 
+     *
      * @return Schedule that planned this execution. Null for execution created
      *         by user.
      */
@@ -283,7 +281,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Set the schedule that planned this execution. Null for execution created
      * by user.
-     * 
+     *
      * @param schedule
      *            new instance of {@link Schedule} for planned this
      *            pipeline execution, null for execution created by user.
@@ -295,7 +293,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Returns true if pipeline run in silent mode and the end of the execution
      * can't be used to fire schedule, false otherwise.
-     * 
+     *
      * @return true if pipeline run in silent mode and the end of the execution
      *         can't be used to fire schedule, false otherwise.
      */
@@ -305,7 +303,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set new boolean value for pipeline execution silent mode.
-     * 
+     *
      * @param silentMode
      *            true if pipeline run in silent mode and the end of the
      *            execution can't be used to fire schedule, false
@@ -317,7 +315,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the node where execution should end. Only for debug mode.
-     * 
+     *
      * @return The node where execution should end. Only for debug mode.
      */
     public Node getDebugNode() {
@@ -326,7 +324,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set the node where execution should end. Only for debug mode.
-     * 
+     *
      * @param debugNode
      *            instance of {@link Node} to set execution end node.
      */
@@ -337,7 +335,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Returns true if pipeline should or has been stopped on user request,
      * false otherwise.
-     * 
+     *
      * @return true if pipeline should or has been stopped on user request,
      *         false otherwise.
      */
@@ -347,7 +345,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Set new value of this pipeline owner.
-     * 
+     *
      * @param owner
      *            instance of {@link User} as new pipeline owner.
      */
@@ -357,7 +355,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Return the instance of {@link User} as owner of this executablepipeline.
-     * 
+     *
      * @return the owner of this executable pipeline.
      */
     @Override
@@ -375,16 +373,16 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Returns the {@link Date} instance where the pipeline was last changed.
-     * 
+     *
      * @return {@link Date} where the pipeline was last changed.
      */
     public Date getLastChange() {
         return lastChange;
     }
-    
+
     /**
      * Sets new value for last change date
-     * 
+     *
      * @param lastChange
      */
     public void setLastChange(Date lastChange) {
@@ -394,7 +392,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Returns duration of execution. Returns -1 for unfinished/not started
      * executions.
-     * 
+     *
      * @return duration of pipeline execution
      */
     public long getDuration() {
@@ -414,7 +412,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return hashcode
      */
     @Override
@@ -430,7 +428,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Returns true if two objects represent the same pipeline execution. This
      * holds if and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param o
      *            value of object
      * @return true if both objects represent the same pipeline execution

@@ -15,7 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Represent a single message created during DPURecord execution.
- * 
+ *
  * @author Petyr
  * @author Bogo
  */
@@ -27,8 +27,7 @@ public class MessageRecord implements DataObject {
      * Unique id.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_record")
-    @SequenceGenerator(name = "seq_exec_record", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -79,7 +78,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Constructor.
-     * 
+     *
      * @param time
      *            Time of creation.
      * @param type
@@ -164,7 +163,7 @@ public class MessageRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -188,7 +187,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

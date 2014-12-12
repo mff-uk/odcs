@@ -36,8 +36,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * Unique ID for each pipeline
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
-    @SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
