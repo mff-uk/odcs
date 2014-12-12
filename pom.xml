@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>odcs</artifactId>
-	<version>1.4.1-SNAPSHOT</version>
+	<version>1.5.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ODCleanStore</name>
 	<description />
@@ -15,11 +15,11 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<uv-dpu-api.version>1.1.0-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.0.1</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>1.0.1</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>1.0.1</uv-dataunit-files.version>
+		<uv-dpu-api-helpers.version>1.1.0-SNAPSHOT</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>1.1.0-SNAPSHOT</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>1.1.0-SNAPSHOT</uv-dataunit-files.version>
 		<uv-dataunit-helpers.version>1.1.0-SNAPSHOT</uv-dataunit-helpers.version>
-		<dataunit.version>1.4.1-SNAPSHOT</dataunit.version>
+		<dataunit.version>1.5.1-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
@@ -42,7 +42,7 @@
 		<!-- other third party libraries versions -->
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.0.13</logback.version>
-		<sesame.version>2.7.13</sesame.version>
+		<sesame.version>2.7.14</sesame.version>
 	</properties>
 
 	<modules>

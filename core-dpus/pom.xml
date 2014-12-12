@@ -1,72 +1,203 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.unifiedviews</groupId>
-    <artifactId>uv-core-dpus</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <description>Maven parent project for core modules-DPU implementations.</description>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cz.cuni.mff.xrg.odcs</groupId>
+		<artifactId>odcs</artifactId>
+		<version>1.5.1-SNAPSHOT</version>
+	</parent>
+	<groupId>eu.unifiedviews</groupId>
+	<artifactId>uv-core-dpus</artifactId>
+	<packaging>pom</packaging>
+	<description>Maven parent project for core modules-DPU implementations.</description>
 
-    <!-- list of core modules -->
-    <modules>
-        <!-- New DPUs  -->
-        <module>t-rdfMerger</module>
-        <module>t-filesMerger</module>
-    </modules>
+	<!-- list of core modules -->
+	<modules>
+		<!-- New DPUs -->
+		<module>t-rdfMerger</module>
+		<module>t-filesMerger</module>
+	</modules>
 
-    <properties>
-    </properties>
+	<properties>
+		<project.java.version>1.7</project.java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <profiles>
-        <profile> <!-- copy the plugin to the DPU's directory by default -->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
-                            <execution>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>target/</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.build.directory}</directory>
-                                            <includes>
-                                                <!-- copy just output jar file -->
-                                                <include>${project.artifactId}-${project.version}.jar</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.8.1</version>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+		<embed.transitive>false</embed.transitive>
+		<dpu.package></dpu.package>
+		<dpu.mainClass></dpu.mainClass>
+		<module-test.version>1.3.1</module-test.version>
+	</properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-            </plugin>
-        </plugins>
-    </build>
+	<dependencies>
+		<!-- Core DPUs special dependency -->
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>dataunit</artifactId>
+			<version>${dataunit.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-api</artifactId>
+			<version>${uv-dpu-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-api-helpers</artifactId>
+			<version>${uv-dpu-api-helpers.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-rdf</artifactId>
+			<version>${uv-dataunit-rdf.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-files</artifactId>
+			<version>${uv-dataunit-files.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-helpers</artifactId>
+			<version>${uv-dataunit-helpers.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<!-- add license from LICENSE.md to the generated JAR file -->
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+				<!-- this is default dir -->
+				<includes>
+					<include>LICENSE.md</include>
+				</includes>
+			</resource>
+		</resources>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${project.java.version}</source>
+						<target>${project.java.version}</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*SysTest.java</exclude>
+						<exclude>**/*DoesntPassTest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin> <!-- main build plugin for modules -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<!-- use provided for dependencies that are provided by application -->
+						<Embed-Transitive>${embed.transitive}</Embed-Transitive>
+						<!-- using true cause adding new imports for new packages !! -->
+						<!-- dependencies location in output file -->
+						<Embed-Directory>dependency</Embed-Directory>
+						<Embed-StripGroup>false</Embed-StripGroup>
+						<!-- information for ODCleanStore -->
+						<DPU-Package>${dpu.package}</DPU-Package>
+						<DPU-MainClass>${dpu.mainClass}</DPU-MainClass>
+						<Build-Time>${maven.build.timestamp}</Build-Time>
+					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.1</version>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<!-- define license -->
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<!-- https://maven.apache.org/pom.html#Licenses -->
+		</license>
+	</licenses>
+
+	<profiles>
+		<profile> <!-- copy the plugin to the DPU's directory by default -->
+			<id>extract-jar</id>
+			<activation>
+				<property>
+					<name>profile</name>
+					<value>extract-jar</value>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/../../target/dpu/${project.artifactId}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.build.directory}</directory>
+											<includes>
+												<!-- copy just output jar file -->
+												<include>${project.artifactId}-${project.version}.jar</include>
+											</includes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 
 </project>

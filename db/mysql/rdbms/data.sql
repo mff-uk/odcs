@@ -188,7 +188,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `properties` WRITE;
 /*!40000 ALTER TABLE `properties` DISABLE KEYS */;
-INSERT INTO `properties` VALUES ('UV.Core.version','001.004.000'),('UV.Plugin-DevEnv.version','001.000.001'),('UV.Plugins.version','001.004.000');
+INSERT INTO `properties` VALUES ('UV.Core.version','001.005.000'),('UV.Plugin-DevEnv.version','001.001.000');
 /*!40000 ALTER TABLE `properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
