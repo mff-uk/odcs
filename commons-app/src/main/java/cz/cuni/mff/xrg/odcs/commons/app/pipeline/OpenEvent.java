@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 /**
  * Represents a single event of opening pipeline detail in canvas by given owner
  * at given time.
- * 
+ *
  * @author Jan Vojt
  */
 @Entity
@@ -19,8 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 public class OpenEvent implements DataObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_open_event")
-    @SequenceGenerator(name = "seq_ppl_open_event", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -77,7 +76,7 @@ public class OpenEvent implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return hashcode
      */
     @Override
@@ -95,7 +94,7 @@ public class OpenEvent implements DataObject {
     /**
      * Returns true if two objects represent the same event. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param o
      * @return true if both objects represent the same event
      */

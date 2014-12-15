@@ -7,14 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Entity representing RDF namespace prefix.
- * 
+ *
  * @author Jan Vojt
  */
 @Entity
@@ -25,8 +24,7 @@ public class NamespacePrefix implements DataObject {
      * Primary key of entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
-    @SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -49,7 +47,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Constructs new prefix with given name for given URI.
-     * 
+     *
      * @param name
      *            prefix
      * @param prefixURI
@@ -88,7 +86,7 @@ public class NamespacePrefix implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -112,7 +110,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

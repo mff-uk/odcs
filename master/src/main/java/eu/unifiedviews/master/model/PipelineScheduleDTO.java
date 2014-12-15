@@ -17,6 +17,8 @@ public class PipelineScheduleDTO {
 
     private String lastExecution;
 
+    private String nextExecution;
+
     private List<Long> afterPipelines;
 
     private boolean justOnce;
@@ -71,6 +73,14 @@ public class PipelineScheduleDTO {
 
     public void setLastExecution(String lastExecution) {
         this.lastExecution = lastExecution;
+    }
+
+    public String getNextExecution() {
+        return nextExecution;
+    }
+
+    public void setNextExecution(String nextExecution) {
+        this.nextExecution = nextExecution;
     }
 
     public List<Long> getAfterPipelines() {

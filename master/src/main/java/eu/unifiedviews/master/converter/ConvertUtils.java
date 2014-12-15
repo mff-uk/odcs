@@ -12,14 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import eu.unifiedviews.master.model.ApiException;
 
 public class ConvertUtils {
-    private static final String DATE_FORMAT = "yyyyMMdd'T'HH:mm:ss.SSSZ";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     public static String dateToString(Date date) {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         if (date != null) {
             return df.format(date);
         } else {
-            return "";
+            return null;
         }
     }
 

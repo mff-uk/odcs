@@ -6,7 +6,7 @@ import java.util.List;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import eu.unifiedviews.master.model.PipelineDTO;
 
-public class PipelineToDTOConverter {
+public class PipelineDTOConverter {
 
     public static PipelineDTO convert(Pipeline pipeline) {
         PipelineDTO dto = null;
@@ -32,5 +32,11 @@ public class PipelineToDTOConverter {
             }
         }
         return dtos;
+    }
+
+    public static Pipeline convertFromDTO(PipelineDTO dto, Pipeline pipeline) {
+        pipeline.setName(dto.getName());
+        pipeline.setDescription(dto.getDescription());
+        return pipeline;
     }
 }
