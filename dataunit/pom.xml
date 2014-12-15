@@ -8,6 +8,7 @@
 		<version>1.5.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>dataunit</artifactId>
+    <version>1.5.1-V-SNAPSHOT</version>
 	<description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>
 

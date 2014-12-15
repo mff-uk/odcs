@@ -20,7 +20,7 @@
 		<uv-dataunit-rdf.version>1.0.1-V</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>1.0.1-V</uv-dataunit-files.version>
 		<uv-dataunit-helpers.version>1.1.0-V-SNAPSHOT</uv-dataunit-helpers.version>
-		<dataunit.version>1.4.1-V-SNAPSHOT</dataunit.version>
+		<dataunit.version>1.5.1-V-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
