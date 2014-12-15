@@ -4,8 +4,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
@@ -24,6 +26,8 @@ public class Initial extends ViewComponent {
     private AbsoluteLayout mainLayout;
 
     private Label label;
+
+    private Embedded logo;
 
     /**
      * Constructor.
@@ -44,15 +48,10 @@ public class Initial extends ViewComponent {
     }
 
     private AbsoluteLayout buildMainLayout() {
+        setSizeFull();
         // common part: create layout
         mainLayout = new AbsoluteLayout();
-        mainLayout.setImmediate(false);
-        mainLayout.setWidth("1024px");
-        mainLayout.setHeight("768px");
-
-        // top-level component properties
-        this.setWidth("100.0%");
-        this.setHeight("100.0%");
+        mainLayout.setSizeFull();
 
         // label
         label = new Label();
@@ -67,7 +66,10 @@ public class Initial extends ViewComponent {
                 + "<p>For more information, please visit the <a href=\"https://grips.semantic-web.at/display/UDDOC/Introduction\"> UnifiedViews</a> documentation.</p>");
 
         label.setContentMode(ContentMode.HTML);
-        mainLayout.addComponent(label, "top:30.0px;left:30px;");
+        mainLayout.addComponent(label, "top:100.0px;left:30px;");
+
+        logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));
+        mainLayout.addComponent(logo, "top:30.0px; left:100px;");
 
         return mainLayout;
     }
