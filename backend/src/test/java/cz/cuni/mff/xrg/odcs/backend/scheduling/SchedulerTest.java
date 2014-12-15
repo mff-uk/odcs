@@ -102,7 +102,7 @@ public class SchedulerTest {
 
     }
 
-    @Test
+//    @Test
     @Transactional
     public void test3() {
         Pipeline ppl = pipelineFacade.createPipeline();

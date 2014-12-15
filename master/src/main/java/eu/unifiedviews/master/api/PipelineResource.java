@@ -100,4 +100,30 @@ public class PipelineResource {
         return PipelineDTOConverter.convert(pipeline);
     }
 
+    @POST
+    @Path("/{pipelineid}/clones")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PipelineDTO clonePipeline(@PathParam("pipelineid") String id, PipelineDTO pipelineDTO) {
+        Pipeline pipeline = null;
+        Pipeline pipelineCopy = null;
+        if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
+            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", id));
+        }
+        try {
+            pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
+            }
+            pipelineCopy = pipelineFacade.copyPipeline(pipeline);
+            pipelineCopy.setUser(userFacade.getUser(1L));
+            pipelineCopy = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipelineCopy);
+            pipelineFacade.save(pipelineCopy);
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (RuntimeException exception) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+        return PipelineDTOConverter.convert(pipelineCopy);
+    }
 }
