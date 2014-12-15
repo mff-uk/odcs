@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -23,7 +24,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 public class EmailAddress implements Comparable<Object>, DataObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
+    @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
     private Long id;
 
     /**

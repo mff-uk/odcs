@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -20,7 +21,8 @@ public class RuntimeProperty implements Serializable, DataObject {
      * Unique ID for each property
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_runtime_properties")
+    @SequenceGenerator(name = "seq_runtime_properties", allocationSize = 1)
     private Long id;
 
     /**
