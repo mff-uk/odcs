@@ -12,6 +12,7 @@
 		<property name="locations">
 			<list>
 				<value>file:${configFileLocation}</value>
+                <value>/WEB-INF/config.properties</value>
 			</list>
 		</property>
 	</bean>
