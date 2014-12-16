@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -27,7 +28,8 @@ public class DataUnitInfo implements DataObject {
      * Primary key.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_dataunit_info")
+    @SequenceGenerator(name = "seq_exec_dataunit_info", allocationSize = 1)
     private Long id;
 
     /**

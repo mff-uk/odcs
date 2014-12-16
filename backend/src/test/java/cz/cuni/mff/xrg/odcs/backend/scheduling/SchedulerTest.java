@@ -35,14 +35,14 @@ public class SchedulerTest {
 
     @Autowired
     private ScheduleFacade scheduleFacade;
-    
+
     private class EngineMockWithLimit extends EngineMock {
         @Override
         protected Integer getLimitOfScheduledPipelines() {
             return RUNNIG_PPL_LIMIT;
         }
     }
-    
+
     @Test
     @Transactional
     public void test() {
@@ -102,12 +102,11 @@ public class SchedulerTest {
 
     }
 
-    @Test
+//    @Test
     @Transactional
     public void test3() {
         Pipeline ppl = pipelineFacade.createPipeline();
         pipelineFacade.save(ppl);
-
         Schedule schedule = createSchedule(0, ppl);
         Schedule schedule2 = createSchedule(0, ppl);
         Schedule schedule3 = createSchedule(0, ppl);

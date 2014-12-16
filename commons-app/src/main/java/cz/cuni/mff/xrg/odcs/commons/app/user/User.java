@@ -32,7 +32,8 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      * Primary key for entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
+    @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
     private Long id;
 
     /**

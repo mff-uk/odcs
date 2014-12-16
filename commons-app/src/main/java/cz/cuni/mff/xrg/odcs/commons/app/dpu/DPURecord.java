@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,8 @@ public abstract class DPURecord implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
+    @SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
     private Long id;
 
     /**

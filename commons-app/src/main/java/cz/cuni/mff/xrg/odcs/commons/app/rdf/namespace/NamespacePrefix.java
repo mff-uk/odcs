@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -24,7 +25,8 @@ public class NamespacePrefix implements DataObject {
      * Primary key of entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
+    @SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
     private Long id;
 
     /**

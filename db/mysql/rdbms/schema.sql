@@ -40,13 +40,13 @@ CREATE TABLE `dpu_instance`
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(1024),
-  `use_dpu_description` SMALLINT,
+  `use_dpu_description` boolean,
   `description` TEXT,
   `configuration` LONGBLOB,
-  `config_valid` SMALLINT,
+  `config_valid` boolean,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
-  `use_template_config` SMALLINT NOT NULL DEFAULT 0,
+  `use_template_config` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_DPU_INSTANCE_dpu_id` ON `dpu_instance` (`dpu_id`);
@@ -56,11 +56,11 @@ CREATE TABLE `dpu_template`
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(1024),
-  `use_dpu_description` SMALLINT,
+  `use_dpu_description` boolean,
   `description` TEXT,  
   `configuration` LONGBLOB,
   `parent_id` INTEGER,
-  `config_valid` SMALLINT NOT NULL,
+  `config_valid` boolean NOT NULL,
 -- DPUTemplateRecord
   `user_id` INTEGER,
   `visibility` SMALLINT,
@@ -81,7 +81,7 @@ CREATE TABLE `exec_dataunit_info`
   `name` VARCHAR(2048),
   `idx` INTEGER,
   `type` SMALLINT,
-  `is_input` SMALLINT,
+  `is_input` boolean,
   `exec_context_dpu_id` INTEGER,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -90,7 +90,7 @@ CREATE INDEX `ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id` ON `exec_dataunit_info`
 CREATE TABLE `exec_context_pipeline`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `dummy` SMALLINT,
+  `dummy` boolean,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -126,14 +126,14 @@ CREATE TABLE `exec_pipeline`
   `id` INTEGER AUTO_INCREMENT,
   `status` INTEGER,
   `pipeline_id` INTEGER,
-  `debug_mode` SMALLINT,
+  `debug_mode` boolean,
   `t_start` DATETIME,
   `t_end` DATETIME,
   `context_id` INTEGER,
   `schedule_id` INTEGER,
-  `silent_mode` SMALLINT,
+  `silent_mode` boolean,
   `debugnode_id` INTEGER,
-  `stop` SMALLINT,
+  `stop` boolean,
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
   `order_number` BIGINT NOT NULL,
@@ -154,14 +154,14 @@ CREATE TABLE `exec_schedule`
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
-  `just_once` SMALLINT,
-  `enabled` SMALLINT,
+  `just_once` boolean,
+  `enabled` boolean,
   `type` SMALLINT,
   `first_exec` DATETIME,
   `last_exec` DATETIME,
   `time_period` INTEGER,
   `period_unit` SMALLINT,
-  `strict_timing` SMALLINT,
+  `strict_timing` boolean,
   `strict_tolerance` INTEGER,
   `priority` BIGINT NOT NULL,
   PRIMARY KEY (`id`)

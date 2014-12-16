@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
  * Implementation providing access to {@link Schedule} data objects.
- * 
+ *
  * @author Jan Vojt
  * @author Petyr
  */
@@ -62,12 +62,12 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
         final List<PipelineExecutionStatus> status = Arrays.asList(
                 PipelineExecutionStatus.QUEUED,
                 PipelineExecutionStatus.RUNNING);
-        
+
         final String stringQuery = "SELECT s FROM Schedule s"
                 + " WHERE s.type = :type AND s.id NOT IN ("
-                    + " SELECT s1.id FROM Schedule s1"
-                    + " LEFT JOIN PipelineExecution e"
-                    + " WHERE e.pipeline = s1.pipeline AND e.status IN :status)"
+                + " SELECT s1.id FROM Schedule s1"
+                + " LEFT JOIN PipelineExecution e"
+                + " WHERE e.pipeline = s1.pipeline AND e.status IN :status)"
                 + " order by s.id Asc";
         TypedQuery<Schedule> query = createTypedQuery(stringQuery);
         query.setParameter("type", ScheduleType.PERIODICALLY);
