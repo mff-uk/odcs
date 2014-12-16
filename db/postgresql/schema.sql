@@ -25,9 +25,10 @@ DROP TABLE IF EXISTS rdf_ns_prefix;
 DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS runtime_properties;
 
+CREATE SEQUENCE seq_dpu_record START 1;
 CREATE TABLE dpu_instance
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(1024),
   use_dpu_description boolean,
   description TEXT,
@@ -41,7 +42,7 @@ CREATE INDEX ix_DPU_INSTANCE_dpu_id ON dpu_instance (dpu_id);
 
 CREATE TABLE dpu_template
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(1024),
   use_dpu_description boolean,
   description TEXT,  
@@ -61,9 +62,10 @@ CREATE INDEX ix_DPU_TEMPLATE_parent_id ON dpu_template (parent_id);
 CREATE INDEX ix_DPU_TEMPLATE_user_id ON dpu_template (user_id);
 CREATE INDEX ix_DPU_TEMPLATE_visibility ON dpu_template (visibility);
 
+CREATE SEQUENCE seq_exec_dataunit_info START 1;
 CREATE TABLE exec_dataunit_info
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(2048),
   idx INTEGER,
   type SMALLINT,
@@ -73,16 +75,18 @@ CREATE TABLE exec_dataunit_info
 );
 CREATE INDEX ix_EXEC_DATAUNIT_INFO_exec_context_dpu_id ON exec_dataunit_info (exec_context_dpu_id);
 
+CREATE SEQUENCE seq_exec_context_pipeline START 1;
 CREATE TABLE exec_context_pipeline
 (
-  id SERIAL,
+  id INTEGER,
   dummy boolean,
   PRIMARY KEY (id)
 );
 
+CREATE SEQUENCE seq_exec_context_dpu START 1;
 CREATE TABLE exec_context_dpu
 (
-  id SERIAL,
+  id INTEGER,
   exec_context_pipeline_id INTEGER,
   dpu_instance_id INTEGER,
   state SMALLINT,
@@ -91,9 +95,10 @@ CREATE TABLE exec_context_dpu
 CREATE INDEX ix_EXEC_CONTEXT_DPU_exec_context_pipeline_id ON exec_context_dpu (exec_context_pipeline_id);
 CREATE INDEX ix_EXEC_CONTEXT_DPU_dpu_instance_id ON exec_context_dpu (dpu_instance_id);
 
+CREATE SEQUENCE seq_exec_record START 1;
 CREATE TABLE exec_record
 (
-  id SERIAL,
+  id INTEGER,
   r_time TIMESTAMP,
   r_type SMALLINT,
   dpu_id INTEGER,
@@ -107,9 +112,10 @@ CREATE INDEX ix_EXEC_RECORD_r_type ON exec_record (r_type);
 CREATE INDEX ix_EXEC_RECORD_dpu_id ON exec_record (dpu_id);
 CREATE INDEX ix_EXEC_RECORD_execution_id ON exec_record (execution_id);
 
+CREATE SEQUENCE seq_exec_pipeline START 1;
 CREATE TABLE exec_pipeline
 (
-  id SERIAL,
+  id INTEGER,
   status INTEGER,
   pipeline_id INTEGER,
   debug_mode boolean,
@@ -132,9 +138,10 @@ CREATE INDEX ix_EXEC_PIPELINE_context_id ON exec_pipeline (context_id);
 CREATE INDEX ix_EXEC_PIPELINE_schedule_id ON exec_pipeline (schedule_id);
 CREATE INDEX ix_EXEC_PIPELINE_owner_id ON exec_pipeline (owner_id);
 
+CREATE SEQUENCE seq_exec_schedule START 1;
 CREATE TABLE exec_schedule
 (
-  id SERIAL,
+  id INTEGER,
   description TEXT,
   pipeline_id INTEGER NOT NULL,
   user_id INTEGER,
@@ -162,9 +169,10 @@ CREATE TABLE exec_schedule_after
   PRIMARY KEY (schedule_id, pipeline_id)
 );
 
+CREATE SEQUENCE seq_ppl_model START 1;
 CREATE TABLE ppl_model
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(1024),
   description TEXT,
   user_id INTEGER,
@@ -176,15 +184,16 @@ CREATE INDEX ix_PPL_MODEL_user_id ON ppl_model (user_id);
 
 CREATE TABLE ppl_ppl_conflicts
 (
-  pipeline_id SERIAL,
+  pipeline_id INTEGER,
   pipeline_conflict_id INTEGER,
   PRIMARY KEY (pipeline_id, pipeline_conflict_id)
 );
 CREATE INDEX ix_PPL_PPL_CONFLICTS_pipeline_id ON ppl_ppl_conflicts (pipeline_id);
 
+CREATE SEQUENCE seq_ppl_edge START 1;
 CREATE TABLE ppl_edge
 (
-  id SERIAL,
+  id INTEGER,
   graph_id INTEGER,
   node_from_id INTEGER,
   node_to_id INTEGER,
@@ -195,9 +204,10 @@ CREATE INDEX ix_PPL_EDGE_graph_id ON ppl_edge (graph_id);
 CREATE INDEX ix_PPL_EDGE_node_from_id ON ppl_edge (node_from_id);
 CREATE INDEX ix_PPL_EDGE_node_to_id ON ppl_edge (node_to_id);
 
+CREATE SEQUENCE seq_ppl_node START 1;
 CREATE TABLE ppl_node
 (
-  id SERIAL,
+  id INTEGER,
   graph_id INTEGER,
   instance_id INTEGER,
   position_id INTEGER,
@@ -206,35 +216,39 @@ CREATE TABLE ppl_node
 CREATE INDEX ix_PPL_NODE_graph_id ON ppl_node (graph_id);
 CREATE INDEX ix_PPL_NODE_instance_id ON ppl_node (instance_id);
 
+CREATE SEQUENCE seq_ppl_graph START 1;
 CREATE TABLE ppl_graph
 (
-  id SERIAL,
+  id INTEGER,
   pipeline_id INTEGER,
   PRIMARY KEY (id),
   UNIQUE (pipeline_id)
 );
 CREATE INDEX ix_PPL_GRAPH_pipeline_id ON ppl_graph (pipeline_id);
 
+CREATE SEQUENCE seq_ppl_position START 1;
 CREATE TABLE ppl_position
 (
-  id SERIAL,
+  id INTEGER,
   pos_x INTEGER,
   pos_y INTEGER,
   PRIMARY KEY (id)
 );
 
+CREATE SEQUENCE seq_runtime_properties START 1;
 CREATE TABLE runtime_properties
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(100) NULL,
   value VARCHAR(100) NULL,
   PRIMARY KEY (id),
   UNIQUE (name)
 );
 
+CREATE SEQUENCE seq_sch_notification START 1;
 CREATE TABLE sch_sch_notification
 (
-  id SERIAL,
+  id INTEGER,
   schedule_id INTEGER NOT NULL,
   type_success SMALLINT,
   type_error SMALLINT,
@@ -244,7 +258,7 @@ CREATE TABLE sch_sch_notification
 
 CREATE TABLE sch_usr_notification
 (
-  id SERIAL,
+  id INTEGER,
   user_id INTEGER NOT NULL,
   type_success SMALLINT,
   type_error SMALLINT,
@@ -253,9 +267,10 @@ CREATE TABLE sch_usr_notification
 );
 CREATE INDEX ix_SCH_USR_NOTIFICATION_user_id ON sch_usr_notification (user_id);
 
+CREATE SEQUENCE seq_sch_email START 1;
 CREATE TABLE sch_email
 (
-  id SERIAL,
+  id INTEGER,
   email VARCHAR(255),
   PRIMARY KEY (id)
 );
@@ -270,15 +285,16 @@ CREATE TABLE sch_sch_notification_email
 
 CREATE TABLE sch_usr_notification_email
 (
-  notification_id SERIAL,
+  notification_id INTEGER,
   email_id INTEGER,
   PRIMARY KEY (notification_id, email_id)
 );
 CREATE INDEX ix_SCH_USR_NOTIFICATION_EMAIL_email_id ON sch_usr_notification_email (email_id);
 
+CREATE SEQUENCE seq_usr_user START 1;
 CREATE TABLE usr_user
 (
-  id SERIAL,
+  id INTEGER,
   username VARCHAR(25) NOT NULL,
   email_id INTEGER,
   u_password CHAR(142) NOT NULL,
@@ -296,18 +312,20 @@ CREATE TABLE usr_user_role
   PRIMARY KEY (user_id, role_id)
 );
 
+CREATE SEQUENCE seq_rdf_ns_prefix START 1;
 CREATE TABLE rdf_ns_prefix
 (
-  id SERIAL,
+  id INTEGER,
   name VARCHAR(255) NOT NULL,
   uri VARCHAR(2048) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (name)
 );
 
+CREATE SEQUENCE seq_ppl_open_event START 1;
 CREATE TABLE ppl_open_event
 (
-  id SERIAL,
+  id INTEGER,
   pipeline_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   opened TIMESTAMP NOT NULL,
@@ -552,7 +570,7 @@ DROP TABLE IF EXISTS logging;
 
 CREATE TABLE logging
 (
-  id SERIAL,
+  id INTEGER,
   logLevel INTEGER NOT NULL,
   timestmp BIGINT NOT NULL,
   logger VARCHAR(254) NOT NULL,

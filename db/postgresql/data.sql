@@ -4,5 +4,5 @@ INSERT INTO usr_user VALUES (1,'admin',1,'100000:3069f2086098a66ec0a859ec7872b09
 INSERT INTO sch_usr_notification VALUES (1,1,1,1),(2,2,1,1);
 INSERT INTO sch_usr_notification_email VALUES (1,1),(2,2);
 INSERT INTO usr_user_role VALUES (1,0),(1,1),(2,0);
-INSERT INTO runtime_properties (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
-INSERT INTO runtime_properties (name, value) VALUES ('run.now.pipeline.priority', '1');
+INSERT INTO runtime_properties (id, name, value) VALUES (nextval('seq_runtime_properties'), 'backend.scheduledPipelines.limit', '5');
+INSERT INTO runtime_properties (id, name, value) VALUES (nextval('seq_runtime_properties'), 'run.now.pipeline.priority', '1');
