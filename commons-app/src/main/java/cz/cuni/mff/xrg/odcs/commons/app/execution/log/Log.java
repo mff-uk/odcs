@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Represents log message loaded from database.
- * 
+ *
  * @author Petyr
  */
 @Entity
@@ -43,7 +43,7 @@ public class Log implements DataObject {
     /**
      * Level as string, so it can be persisted in DB.
      */
-    @Column(name = "logLevel")
+    @Column(name = "log_level")
     private Integer logLevel;
 
     /**
@@ -146,7 +146,7 @@ public class Log implements DataObject {
 
     /**
      * Stack trace for given log if exist.
-     * 
+     *
      * @return Empty string or stack trace. Never return null!
      */
     public String getStackTrace() {
@@ -163,7 +163,7 @@ public class Log implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -187,7 +187,7 @@ public class Log implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

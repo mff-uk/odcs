@@ -569,7 +569,7 @@ CREATE TABLE `logging`
 -- BEGIN MYSQL ONLY
  `id` INTEGER unsigned NOT NULL AUTO_INCREMENT,
 -- END MYSQL ONLY
-  `logLevel` INTEGER NOT NULL,
+  `log_level` INTEGER NOT NULL,
   `timestmp` BIGINT NOT NULL,
   `logger` VARCHAR(254) NOT NULL,
   `message` TEXT,
