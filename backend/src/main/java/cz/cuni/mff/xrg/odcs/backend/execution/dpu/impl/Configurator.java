@@ -64,9 +64,10 @@ class Configurator implements DPUPreExecutor {
         @SuppressWarnings("unchecked")
         DPUConfigurable configurable = (DPUConfigurable) dpuInstance;
         try {
-            configurable.configure(dpu.getRawConf());
+            String conf = dpu.isUseTemplateConfig() ? dpu.getTemplate().getRawConf() : dpu.getRawConf();
+            configurable.configure(conf);
 
-            LOG.debug("DPU {} hes been configured.", dpu.getName());
+            LOG.debug("DPU {} has been configured.", dpu.getName());
         } catch (DPUConfigException e) {
             eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
                     context, this, "Failed to configure DPU.", e));

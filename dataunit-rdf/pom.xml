@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.4.0</version>
+		<version>1.5.0</version>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
 	<name>dataunit-rdf</name>
@@ -240,28 +240,16 @@
 			<type>jar</type>
 		</dependency>
 
-		<!-- Virtuoso dependency sesame provider from http://virtuoso.openlinksw.com/dataspace/doc/dav/wiki/Main/VOSDownload 
-			Supporting openRDF 2.7.x -->
-
 		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virt_sesame2</artifactId>
-			<version>2.7</version>
+			<groupId>eu.comsode</groupId>
+			<artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
+			<version>1.18-7-develop-SNAPSHOT</version>
 		</dependency>
-
-		<!-- Virtuoso dependency sesame provider from SWC (does not support openRDF 
-			2.7.x <dependency> <groupId>at.semantic-web</groupId> <artifactId>virtuoso-sesame</artifactId> 
-			<version>7.0.1</version> </dependency> -->
-
-		<!-- Virtuoso JDBC drive 4.1 obtained from https://github.com/openlink/virtuoso-opensource/blob/f9bd01cdd79e68c33348aeca4e85087f297cf97c/libsrc/JDBCDriverType4/virtjdbc4_1.jar -->
-
 		<dependency>
-			<groupId>com.openlinksw</groupId>
-			<artifactId>virtjdbc</artifactId>
-			<version>4.1</version>
+			<groupId>eu.comsode</groupId>
+			<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
+			<version>3.76-7-develop-SNAPSHOT</version>
 		</dependency>
-
-
 
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>

@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>eu.unifiedviews</groupId>
-        <artifactId>dpu-core-base-pom</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../dpu-core-base-pom.xml</relativePath>
-    </parent>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-core-dpus</artifactId>
+		<version>1.5.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 
-    <groupId>eu.unifiedviews.plugins</groupId>
-    <artifactId>uv-t-rdfMerger</artifactId>
-    <name>T-RdfMerger</name>
-    <version>1.4.0</version>
-    <description>Merges RDF data in no time.</description>
-    <packaging>bundle</packaging>
+	<groupId>eu.unifiedviews.plugins</groupId>
+	<artifactId>uv-t-rdfMerger</artifactId>
+	<name>T-RdfMerger</name>
+	<version>1.5.0</version>
+	<description>Merges RDF data in no time.</description>
+	<packaging>bundle</packaging>
 
-    <properties>
-        <dpu.package>eu.unifiedviews.plugins.transformer.rdfmerger</dpu.package>
-        <dpu.mainClass>RdfMerger</dpu.mainClass>
-    </properties>
+	<properties>
+		<dpu.package>eu.unifiedviews.plugins.transformer.rdfmerger</dpu.package>
+		<dpu.mainClass>RdfMerger</dpu.mainClass>
+	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>cz.cuni.mff.xrg.odcs</groupId>
-            <artifactId>dataunit</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>cz.cuni.mff.xrg.odcs</groupId>
+			<artifactId>dataunit</artifactId>
+			<version>1.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>

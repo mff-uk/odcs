@@ -69,7 +69,7 @@ public class RepositoryFrontendHelper {
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
 
     /**
-     * Return repository for specified RDF DataUnit.
+     * Return repository for specified RDF DataUnit. Also load the repository.
      * 
      * @param executionInfo
      *            The pipelineExecution context.
@@ -110,6 +110,9 @@ public class RepositoryFrontendHelper {
 
                     ManagableRdfDataUnit repository =
                             rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
+
+                    // load data
+                    repository.load();
 
                     return repository;
 

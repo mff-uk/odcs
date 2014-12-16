@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
 /**
  * Recognized configuration properties.
- * 
+ *
  * @author Jan Vojt
  */
 public enum ConfigProperty {
@@ -17,7 +17,6 @@ public enum ConfigProperty {
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
 
-
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
 
@@ -25,9 +24,9 @@ public enum ConfigProperty {
      * Used to generate url for pipeline execution in emails.
      */
     FRONTEND_URL("frontend.url"),
-    
+
     FRONTEND_RUN_NOW_PIPELINE_PRIORITY("run.now.pipeline.priority"),
-    
+
     /**
      * string diplayed next to the UV logo in GUI
      */
@@ -65,14 +64,18 @@ public enum ConfigProperty {
     EMAIL_AUTHORIZATION("email.authorization"),
     EMAIL_USERNAME("email.username"),
     EMAIL_PASSWORD("email.password"),
-    EMAIL_ADMIN("email.admin");
+    EMAIL_ADMIN("email.admin"),
+
+    CKAN_LOCATION("ckan.location"),
+    CKAN_API_KEY("ckan.api.key");
 
     private final String property;
+
     public final String springValue;
-    
+
     private ConfigProperty(final String property) {
         this.property = property;
-        this.springValue ="${" + property + "}";
+        this.springValue = "${" + property + "}";
     }
 
     @Override
