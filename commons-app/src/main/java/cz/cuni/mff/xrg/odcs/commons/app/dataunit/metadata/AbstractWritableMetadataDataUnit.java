@@ -2,9 +2,7 @@
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -298,9 +296,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                     valueFactory.createURI(Ontology.GRAPH_METADATA));
             if (writeContextValue instanceof URI) {
                 this.writeContext = (URI)writeContextValue;
-                if (readContexts.contains(writeContext)) {
-                    throw new DataUnitException("Write context is alse a read context!");
-                }
             } else {
                 throw new DataUnitException("Write context must be a URI!");
             }

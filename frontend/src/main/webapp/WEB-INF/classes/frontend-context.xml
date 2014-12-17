@@ -105,13 +105,13 @@
                 <entry key="inMemoryRDF">
                     <bean id="inMemoryRdfDataUnitFactory"
                           class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
+                        <property name="repositoryPath" value="${general.workingdir}/repositories"/>
                     </bean>
                 </entry>
                 <entry key="localRDF">
                     <bean id="localRdfDataUnitFactory"
                           class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
+                        <property name="repositoryPath" value="${general.workingdir}/repositories"/>
                     </bean>
                 </entry>
                 <entry key="virtuoso">
