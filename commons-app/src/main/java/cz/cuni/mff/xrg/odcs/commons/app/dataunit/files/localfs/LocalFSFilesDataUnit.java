@@ -209,7 +209,7 @@ public class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit imple
     }
 
     @Override
-    public void updateExistingFile(String symbolicName, String newFileURIString) throws DataUnitException {
+    public void updateExistingFileURIString(String symbolicName, String newFileURIString) throws DataUnitException {
         if (!ownerThread.equals(Thread.currentThread())) {
             LOG.info("More than more thread is accessing this data unit");
         }
