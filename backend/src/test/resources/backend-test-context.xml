@@ -25,24 +25,14 @@
         <property name="ignoreResourceNotFound" value="true"/>
     </bean>
     
-    <!-- context, prototype, facade and related stuff -->
+    <!-- context, prototype -->
     <bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
           scope="prototype" lazy-init="true"/>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade"/>
-    <!-- we do not use component-scan as we need lookup method  -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser"/>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator">
-        <lookup-method name="createPureContext" bean="dpuContext"/>
-    </bean>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter"/>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger"/>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer"/>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver"/>
+
 
     <bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler"/>
     <!-- Facade for managing shedules -->
     <bean id="scheduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacadeImpl"/>
-
 
     <!-- EntityManager factory -->
     <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -82,7 +72,7 @@
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
     <!-- scan for pre/post executors -->
-    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl"/>
+<!--    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl"/>-->
 
     <context:annotation-config/>
 
