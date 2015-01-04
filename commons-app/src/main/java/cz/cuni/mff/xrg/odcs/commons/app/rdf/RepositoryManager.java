@@ -133,6 +133,8 @@ public class RepositoryManager {
             if (repository != null) {
                 repository.release();
             }
+            // Remove from list.
+            repositories.remove(executionId);
         }
     }
 
@@ -148,6 +150,8 @@ public class RepositoryManager {
             if (repository != null) {
                 repository.delete();
             }
+            // Remove from list.
+            repositories.remove(executionId);
         }
     }
 
