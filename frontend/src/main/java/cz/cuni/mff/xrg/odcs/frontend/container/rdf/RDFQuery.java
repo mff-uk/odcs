@@ -25,7 +25,6 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
@@ -33,6 +32,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
@@ -47,15 +47,15 @@ public class RDFQuery implements Query {
 
     private static final String ALL_STATEMENT_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
 
-    private String baseQuery;
+    private final String baseQuery;
 
-    private int batchSize;
+    private final int batchSize;
 
-    private RDFQueryDefinition queryDefinition;
+    private final RDFQueryDefinition queryDefinition;
 
     private ArrayList<Item> cachedItems;
 
-    private ManagableRdfDataUnit repository;
+    private final ManageableWritableRDFDataUnit repository;
 
     /**
      * Constructor.

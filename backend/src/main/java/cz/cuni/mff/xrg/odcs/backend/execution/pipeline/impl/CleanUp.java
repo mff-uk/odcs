@@ -16,12 +16,13 @@ import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 
 /**
@@ -40,8 +41,8 @@ class CleanUp implements PostExecutor {
     @Autowired
     private ContextFacade contextFacade;
 
-//    @Autowired
-//    private RDFDataUnitFactory rdfDataUnitFactory;
+    @Autowired
+    private ResourceManager resourceManager;
 
     @Autowired
     private RepositoryManager repositoryManager;
@@ -74,7 +75,7 @@ class CleanUp implements PostExecutor {
 //            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
             
             try {
-                repositoryManager.release(execution.getContext().generatePipelineId());
+                repositoryManager.release(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
                 LOG.error("Can't release repository.", ex);
             }
@@ -82,7 +83,7 @@ class CleanUp implements PostExecutor {
 //            rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
 
             try {
-                repositoryManager.delete(execution.getContext().generatePipelineId());
+                repositoryManager.delete(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
                 LOG.error("Can't delete repository.", ex);
             }
@@ -95,17 +96,30 @@ class CleanUp implements PostExecutor {
         ExecutionInfo info = new ExecutionInfo(execution.getContext());
 
         if (!execution.isDebugging()) {
-            // delete working directory
-            // the sub directories should be already deleted by DPU's
-            delete(rootDir, info.getWorkingPath());
+            // delete working directory the sub directories should be already deleted by DPU's.
+            try {
+                delete(resourceManager.getExecutionWorkingDir(execution));
+            } catch (MissingResourceException ex ){
+                LOG.warn("Can't delete directory.", ex);
+            }
         }
 
         // delete result, storage if empty
-
-        deleteIfEmpty(rootDir, info.getResultPath());
-        deleteIfEmpty(rootDir, info.getStoragePath());
-        // we delete the execution directory if it is empty
-        deleteIfEmpty(rootDir, info.getRootPath());
+        try {
+            deleteIfEmpty(resourceManager.getExecutionWorkingDir(execution));
+        } catch (MissingResourceException ex ){
+            LOG.warn("Can't delete directory.", ex);
+        }
+        try {
+            deleteIfEmpty(resourceManager.getExecutionStorageDir(execution));
+        } catch (MissingResourceException ex ){
+            LOG.warn("Can't delete directory.", ex);
+        }
+        try {
+            deleteIfEmpty(resourceManager.getExecutionDir(execution));
+        } catch (MissingResourceException ex ){
+            LOG.warn("Can't delete directory.", ex);
+        }
 
         LOG.debug("CleanUp has been finished .. ");
         return true;
@@ -115,14 +129,9 @@ class CleanUp implements PostExecutor {
      * Try to delete directory in execution directory. If error occur then is
      * logged but otherwise ignored.
      * 
-     * @param executionRoot
-     *            Path to the execution root.
-     * @param relativePath
-     *            Relative sub-path from absolute path.
+     * @param toDelete
      */
-    private void delete(File executionRoot, String relativePath) {
-        File toDelete = new File(executionRoot, relativePath);
-
+    private void delete(File toDelete) {
         LOG.debug("Deleting: {}", toDelete.toString());
 
         try {
@@ -135,13 +144,9 @@ class CleanUp implements PostExecutor {
     /**
      * Delete directory if it's empty.
      * 
-     * @param executionRoot
-     *            Path to the execution root.
-     * @param relativePath
-     *            Relative sub-path from absolute path.
+     * @param toDelete
      */
-    private void deleteIfEmpty(File executionRoot, String relativePath) {
-        File toDelete = new File(executionRoot, relativePath);
+    private void deleteIfEmpty(File toDelete) {
         if (!toDelete.exists()) {
             // file does not exist
             return;

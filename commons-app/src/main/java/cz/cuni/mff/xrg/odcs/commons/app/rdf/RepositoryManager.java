@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +30,12 @@ public class RepositoryManager {
     /**
      * Locks used to synchronise access to {@link Repository}.
      */
-    private final Map<String, Object> locks = new HashMap<>();
+    private final Map<Long, Object> locks = new HashMap<>();
     
     /**
      * Repositories.
      */
-    private final Map<String, ManagableRepository> repositories = Collections.synchronizedMap(new HashMap<String, ManagableRepository>());
+    private final Map<Long, ManagableRepository> repositories = Collections.synchronizedMap(new HashMap<Long, ManagableRepository>());
 
     /**
      * Repository factory.
@@ -72,12 +73,6 @@ public class RepositoryManager {
 
     @PostConstruct
     protected void init() {
-        // Setup factory.
-        try {
-            factory.setLocalParameters(resourceManager.getRootRepositoriesDir().toString());
-        } catch (MissingResourceException ex){
-            throw new RuntimeException(ex);
-        }
         factory.setRemoteParameters(url, user, password);
         switch (repositoryTypeString) {
             case "inMemoryRDF":
@@ -100,21 +95,28 @@ public class RepositoryManager {
     /**
      * Return repository for given execution, if repository doesn't exists then it's created.
      *
-     * @param pipelineId
+     * @param executionId
      * @return
      * @throws eu.unifiedviews.commons.rdf.repository.RDFException
      */
-    public ManagableRepository get(String pipelineId) throws RDFException {
-        synchronized (getLock(pipelineId)) {
-            ManagableRepository repository = repositories.get(pipelineId);
+    public ManagableRepository get(Long executionId) throws RDFException {
+        synchronized (getLock(executionId)) {
+            ManagableRepository repository = repositories.get(executionId);
             if (repository != null) {
                 // Return existing repository.
                 return repository;
             }
+            // Prepare directory.
+            final String directory;
+            try {
+                directory = resourceManager.getExecutionRepositoryDir(executionId).toString() + File.separator + "rdf";
+            } catch (MissingResourceException ex) {
+                throw new RDFException("Can't initialize repository.", ex);
+            }
             // We need to create a new repository.
-            repository = factory.create(pipelineId, repositoryType);
+            repository = factory.create(executionId, repositoryType, directory);
             // Add to list and return it.
-            repositories.put(pipelineId, repository);
+            repositories.put(executionId, repository);
             return repository;
         }
     }
@@ -122,12 +124,12 @@ public class RepositoryManager {
     /**
      * Release repository for given pipeline, if that repository is loaded.
      *
-     * @param pipelineId
+     * @param executionId
      * @throws RDFException
      */
-    public void release(String pipelineId) throws RDFException {
-        synchronized (getLock(pipelineId)) {
-            final ManagableRepository repository = repositories.get(pipelineId);
+    public void release(Long executionId) throws RDFException {
+        synchronized (getLock(executionId)) {
+            final ManagableRepository repository = repositories.get(executionId);
             if (repository != null) {
                 repository.release();
             }
@@ -137,12 +139,12 @@ public class RepositoryManager {
     /**
      * Delete repository for given pipeline if the repository is already loaded.
      * 
-     * @param pipelineId
+     * @param executionId
      * @throws RDFException
      */
-    public void delete(String pipelineId) throws RDFException {
-        synchronized (getLock(pipelineId)) {
-            final ManagableRepository repository = repositories.get(pipelineId);
+    public void delete(Long executionId) throws RDFException {
+        synchronized (getLock(executionId)) {
+            final ManagableRepository repository = repositories.get(executionId);
             if (repository != null) {
                 repository.delete();
             }
@@ -151,15 +153,15 @@ public class RepositoryManager {
 
     /**
      *
-     * @param id
+     * @param executionId
      * @return Lock object for given pipeline.
      */
-    private synchronized Object getLock(String pipelineId) {
-        if (locks.containsKey(pipelineId)) {
-            return locks.get(pipelineId);
+    private synchronized Object getLock(Long executionId) {
+        if (locks.containsKey(executionId)) {
+            return locks.get(executionId);
         }
         final Object lock = new Object();
-        locks.put(pipelineId, lock);
+        locks.put(executionId, lock);
         return lock;
     }
 

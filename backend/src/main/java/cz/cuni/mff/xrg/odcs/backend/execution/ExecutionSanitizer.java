@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -25,6 +21,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
@@ -40,27 +38,14 @@ class ExecutionSanitizer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionSanitizer.class);
 
-    /**
-     * Application's configuration.
-     */
-    @Autowired
-    protected AppConfig appConfig;
-
     @Autowired
     private DataUnitFactory dataUnitFactory;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    /**
-     * Executions root directory.
-     */
-    private File rootDirectory;
-
-    @PostConstruct
-    private void propertySetter() {
-        this.rootDirectory = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-    }
+    @Autowired
+    private ResourceManager resourceManager;
 
     /**
      * Fix possible problems with given execution. Logs of this method are
@@ -102,7 +87,7 @@ class ExecutionSanitizer {
     }
 
     /**
-     * Complete the canceling process on given {@link PipelineExecution} and set {@link PipelineExecutionStatus#CANCELLED} state.
+     * Complete the cancelling process on given {@link PipelineExecution} and set {@link PipelineExecutionStatus#CANCELLED} state.
      * 
      * @param execution
      */
@@ -116,11 +101,11 @@ class ExecutionSanitizer {
             // delete execution data
             deleteContext(execution);
             // and directory
-            File toDelete = new File(rootDirectory, execution.getContext()
-                    .getRootPath());
             try {
+                final File toDelete = resourceManager.getExecutionDir(execution);
+
                 FileUtils.deleteDirectory(toDelete);
-            } catch (IOException e) {
+            } catch (IOException | MissingResourceException e) {
                 LOG.warn("Can't delete directory after execution", e);
             }
         }
@@ -178,18 +163,14 @@ class ExecutionSanitizer {
             final String id = context.generateDataUnitId(dpuInstance, index);
             final String dataUnitUri = GraphUrl.translateDataUnitId(id);
             final String name = dataUnitInfo.getName();
-
-            final File rootDir = new File(appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-            final File directory = new File(rootDir, context.getDataUnitTmpPath(dpuInstance, index));
-
             // delete data ..
             try {
-                final ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.generatePipelineId(), dataUnitUri, name, directory);
+                final File directory = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpuInstance, index);
+
+                final ManagableDataUnit dataUnit = dataUnitFactory.create(type, context.getExecutionId(), dataUnitUri, name, directory);
                 dataUnit.clear();
                 dataUnit.release();
-            } catch (DataUnitException ex) {
-                LOG.error("Can't clear and release data unit.", ex);
-            } catch (RDFException ex) {
+            } catch (DataUnitException | MissingResourceException | RDFException ex) {
                 LOG.error("Can't clear and release data unit.", ex);
             }
         }

@@ -1,5 +1,6 @@
 package eu.unifiedviews.commons.rdf.repository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,10 +24,9 @@ public class LocalRDFTest {
         // Make sure that the directory is empty.
         Files.deleteIfExists(rootDir);
         rootDir.toFile().mkdirs();
-        // Setup factory.
-        factory.setLocalParameters(rootDir.toAbsolutePath().toString());
         // Create.
-        ManagableRepository repository = factory.create("1", ManagableRepository.Type.LOCAL_RDF);
+        final String directory = rootDir.toAbsolutePath().toString() + File.separator + "1";
+        ManagableRepository repository = factory.create(1l, ManagableRepository.Type.LOCAL_RDF, directory);
         // Check that tere is a directory with data.
         Assert.assertTrue(rootDir.toFile().list().length > 0);
         // Delete.

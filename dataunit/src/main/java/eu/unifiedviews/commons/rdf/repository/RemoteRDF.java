@@ -37,24 +37,24 @@ class RemoteRDF implements ManagableRepository{
     private final String password;
 
     /**
-     * Unique pipeline identification.
+     * Unique execution identification.
      */
-    private final String pipelineId;
+    private final String executionIdStr;
 
-    public RemoteRDF(String url, String user, String password, String pipelineId) throws RDFException {
+    public RemoteRDF(String url, String user, String password, Long executionId) throws RDFException {
         this.url = url;
         this.user = user;
         this.password = password;
-        this.pipelineId = pipelineId;
+        this.executionIdStr = executionId.toString();
         try {
             // Connect to remote repository.
             final RepositoryManager repositoryManager = getRepositoryManager();
             // Get repository if exists.
-            final Repository newRepository = repositoryManager.getRepository(pipelineId);
+            final Repository newRepository = repositoryManager.getRepository(executionIdStr);
             if (newRepository == null) {
                 // Create new repository.
-                repositoryManager.addRepositoryConfig(new RepositoryConfig(pipelineId, new SailRepositoryConfig(new NativeStoreConfig())));
-                repository = repositoryManager.getRepository(pipelineId);
+                repositoryManager.addRepositoryConfig(new RepositoryConfig(executionIdStr, new SailRepositoryConfig(new NativeStoreConfig())));
+                repository = repositoryManager.getRepository(executionIdStr);
             } else {
                 // Use existing one.
                 repository = newRepository;
@@ -80,7 +80,7 @@ class RemoteRDF implements ManagableRepository{
     @Override
     public void release() throws RDFException {
         try {
-            getRepositoryManager().getRepository(pipelineId).shutDown();
+            getRepositoryManager().getRepository(executionIdStr).shutDown();
         } catch (RepositoryConfigException | RepositoryException ex) {
             throw new RDFException("Can't delete repository", ex);
         }
@@ -89,7 +89,7 @@ class RemoteRDF implements ManagableRepository{
     @Override
     public void delete() throws RDFException {
         try {
-            getRepositoryManager().removeRepository(pipelineId);
+            getRepositoryManager().removeRepository(executionIdStr);
         } catch (RepositoryConfigException | RepositoryException ex) {
             throw new RDFException("Can't delete repository", ex);
         }

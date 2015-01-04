@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
@@ -148,8 +149,7 @@ public class RDFQueryView extends QueryView {
 
                     @Override
                     public InputStream getStream() {
-                        ManagableRdfDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(),
-                                getDataUnitInfo());
+                        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(), getDataUnitInfo());
                         String query = getQuery();
                         if (repository == null || query == null) {
                             return null;
@@ -280,9 +280,8 @@ public class RDFQueryView extends QueryView {
                             }
                         }
 
-                        ManagableRdfDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu, tableDataUnit);
-                        return getDownloadData(tableRepo, tableQuery,
-                                downloadFormatSelect.getValue(), filters);
+                        ManageableWritableRDFDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu, tableDataUnit);
+                        return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue(), filters);
                     }
                 });
         tableFileDownloader.extend(tableDownload);

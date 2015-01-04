@@ -13,12 +13,12 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 
@@ -36,7 +36,7 @@ public class Restarter extends DPUPreExecutorBase {
     private static final Logger LOG = LoggerFactory.getLogger(Restarter.class);
 
     @Autowired
-    private AppConfig appConfig;
+    private ResourceManager resourceManager;
 
     public Restarter() {
         super(Arrays.asList(DPUExecutionState.RUNNING));
@@ -64,16 +64,11 @@ public class Restarter extends DPUPreExecutorBase {
             }
         }
         // we also have to delete DPU's temporary directory
-        File rootDir = new File(
-                appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-
-        File dpuTmpDir = new File(rootDir, context.getContextInfo()
-                .getDPUTmpPath(node.getDpuInstance()));
-
-        LOG.debug("Deleting: {}", dpuTmpDir.toString());
         try {
+            final File dpuTmpDir = resourceManager.getDPUWorkingDir(execution, node.getDpuInstance());
+            LOG.debug("Deleting: {}", dpuTmpDir.toString());
             FileUtils.deleteDirectory(dpuTmpDir);
-        } catch (IOException e) {
+        } catch (IOException | MissingResourceException e) {
             LOG.warn("Can't delete directory after execution", e);
         }
 

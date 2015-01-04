@@ -16,7 +16,7 @@ public interface DataUnitFactory {
     /**
      *
      * @param type Type of data unit to create.
-     * @param pipelineId Pipeline id.
+     * @param executionId Unique execution id.
      * @param dataUnitUri URI of given DataUnit.
      * @param dataUnitName Name of dataUnit (given by DPU's DataUnit annotation).
      * @param dataUnitDirectory DataUnit's working directory.
@@ -24,6 +24,6 @@ public interface DataUnitFactory {
      * @throws RDFException
      * @throws DataUnitException
      */
-    ManagableDataUnit create(ManagableDataUnit.Type type, String pipelineId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException;
+    ManagableDataUnit create(ManagableDataUnit.Type type, Long executionId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException;
 
 }

@@ -96,44 +96,7 @@
     <!-- dialogs -->
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype"/>
-    <!-- TODO: we can use special package and factory class -->
-
-    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
-        <property name="key" value="${database.rdf.platform}"/>
-        <property name="implementations">
-            <map>
-                <entry key="inMemoryRDF">
-                    <bean id="inMemoryRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}/repositories"/>
-                    </bean>
-                </entry>
-                <entry key="localRDF">
-                    <bean id="localRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}/repositories"/>
-                    </bean>
-                </entry>
-                <entry key="virtuoso">
-                    <bean id="virtuosoRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-                <entry key="remoteRDF">
-                    <bean id="remoteRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf.RemoteRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-            </map>
-        </property>
-    </bean>
-
+   
     <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
         <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>

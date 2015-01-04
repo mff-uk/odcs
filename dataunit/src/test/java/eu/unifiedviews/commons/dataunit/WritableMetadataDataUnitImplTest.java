@@ -1,5 +1,6 @@
 package eu.unifiedviews.commons.dataunit;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,9 +71,9 @@ public class WritableMetadataDataUnitImplTest {
     public void prepare() throws IOException, DataUnitException {
         factory = new RepositoryFactory();
         rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-dataUnit-");
-        factory.setLocalParameters(rootDir.toAbsolutePath().toString());
+        final String directory = rootDir.toAbsolutePath().toString() + File.separator + "1";
         try {
-            repository = factory.create("1", ManagableRepository.Type.LOCAL_RDF);
+            repository = factory.create(1l, ManagableRepository.Type.LOCAL_RDF, directory);
         } catch (RDFException ex) {
             throw new DataUnitException(ex);
         }

@@ -48,12 +48,13 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -63,10 +64,13 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public class RepositoryFrontendHelper {
+
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
 
     /**
@@ -79,8 +83,10 @@ public class RepositoryFrontendHelper {
      * @param dataUnitInfo
      * @return Repository or null if there is no browser for given type.
      */
-    public static ManagableRdfDataUnit getRepository(ExecutionInfo executionInfo,
+    public static ManageableWritableRDFDataUnit getRepository(ExecutionInfo executionInfo,
             DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
+
+        // TODO Petr: We need to close the repository somewhere!
 
         // get type and directory
         if (dataUnitInfo == null) {
@@ -99,38 +105,31 @@ public class RepositoryFrontendHelper {
             log.error("DPU info is null!");
             return null;
         }
-        String dataUnitId = dpuInfo.createId(dataUnitInfo.getIndex());
 
+        // Get DataUnit factory.
+        final DataUnitFactory dataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(DataUnitFactory.class);
+        final ResourceManager resourceManager = ((AppEntry) UI.getCurrent()).getBean(ResourceManager.class);
         switch (dataUnitInfo.getType()) {
             case RDF:
                 try {
-                    RDFDataUnitFactory rdfDataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(
-                            RDFDataUnitFactory.class);
-
-                    String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
-
-                    ManagableRdfDataUnit repository =
-                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
-
-                    // load data
-                    try {
-                        repository.load();
-                    } catch (DataUnitException ex) {
-                        // TODO use some defined exception here!
-                        throw new RuntimeException("Failed to load data unit.", ex);
-                    }
-
-                    return repository;
-
-                } catch (RuntimeException e) {
-                    log.error("Error", e);
-                    return null;
+                    final String dataUnitId = executionInfo.getExecutionContext().generateDataUnitId(dpuInstance, dataUnitInfo.getIndex());
+                    final File directory = resourceManager.getDataUnitWorkingDir(executionInfo.getExecutionContext().getExecution(), dpuInstance, dataUnitInfo.getIndex());
+                    // Get ManagableDataUnit ~ ManagableRdfDataUnit.
+                    final ManagableDataUnit dataUnit = dataUnitFactory.create(ManagableDataUnit.Type.RDF,
+                            executionInfo.getExecutionContext().getExecutionId(),
+                            GraphUrl.translateDataUnitId(dataUnitId),
+                            dataUnitInfo.getName(),
+                            directory);
+                    // Load data.
+                    dataUnit.load();
+                    // Return ready DataUnit.
+                    return (ManageableWritableRDFDataUnit)dataUnit;
+                } catch (DataUnitException | eu.unifiedviews.commons.rdf.repository.RDFException | MissingResourceException ex) {
+                    throw new RuntimeException("Failed to load data unit.", ex);
                 }
-
-            default:
+            default: // No support for other DataUnits.
                 return null;
         }
-
     }
 
     /**

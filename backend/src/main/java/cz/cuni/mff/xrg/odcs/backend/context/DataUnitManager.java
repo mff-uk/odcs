@@ -17,6 +17,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
@@ -59,19 +61,11 @@ final class DataUnitManager {
     private final ExecutionContextInfo context;
 
     /**
-     * Execution working directory.
-     */
-    private final File workingDir;
-
-    /**
-     * Application configuration.
-     */
-    private final AppConfig appConfig;
-
-    /**
      * True if used for inputs.
      */
     private final boolean isInput;
+
+    private final ResourceManager resourceManager;
 
     /**
      * Create manager for input {@link DataUnit}s.
@@ -79,18 +73,14 @@ final class DataUnitManager {
      * @param dpuInstance
      * @param dataUnitFactory
      * @param context
-     * @param workingDir
-     *            General working directory.
      * @param appConfig
-     * @return
+     * @return resourceManager
      */
     public static DataUnitManager createInputManager(DPUInstanceRecord dpuInstance,
             DataUnitFactory dataUnitFactory,
             ExecutionContextInfo context,
-            File workingDir,
-            AppConfig appConfig) {
-        return new DataUnitManager(dpuInstance, dataUnitFactory, context,
-                workingDir, appConfig, true);
+            ResourceManager resourceManager) {
+        return new DataUnitManager(dpuInstance, dataUnitFactory, context, true, resourceManager);
     }
 
     /**
@@ -99,34 +89,28 @@ final class DataUnitManager {
      * @param dpuInstance
      * @param dataUnitFactory
      * @param context
-     * @param workingDir
-     *            General working directory.
-     * @param appConfig
+     * @param resourceManager
      * @return
      */
     public static DataUnitManager createOutputManager(DPUInstanceRecord dpuInstance,
             DataUnitFactory dataUnitFactory,
             ExecutionContextInfo context,
-            File workingDir,
-            AppConfig appConfig) {
-        return new DataUnitManager(dpuInstance, dataUnitFactory, context,
-                workingDir, appConfig, false);
+            ResourceManager resourceManager) {
+        return new DataUnitManager(dpuInstance, dataUnitFactory, context, false, resourceManager);
     }
 
     private DataUnitManager(DPUInstanceRecord dpuInstance,
             DataUnitFactory dataUnitFactory,
             ExecutionContextInfo context,
-            File workingDir,
-            AppConfig appConfig,
-            boolean isInput) {
+            boolean isInput,
+            ResourceManager resourceManager) {
         this.dataUnits = new LinkedList<>();
         this.indexes = new HashMap<>();
         this.dpuInstance = dpuInstance;
         this.dataUnitFactory = dataUnitFactory;
         this.context = context;
-        this.workingDir = workingDir;
-        this.appConfig = appConfig;
         this.isInput = isInput;
+        this.resourceManager = resourceManager;
     }
 
     /**
@@ -137,9 +121,7 @@ final class DataUnitManager {
             if (item instanceof FileDataUnit) {
                 try {
                     // get directory
-                    File directory = new File(workingDir,
-                            context.getDataUnitStoragePath(dpuInstance,
-                                    indexes.get(item)));
+                    final File directory = resourceManager.getDataUnitStorageDir(context.getExecution(), dpuInstance, indexes.get(item));
                     // and save into directory
                     ((FileDataUnit) item).save(directory);
                 } catch (Exception e) {
@@ -222,32 +204,34 @@ final class DataUnitManager {
                 // create new DataUnit
                 Integer index = info.getIndex();
                 String id = context.generateDataUnitId(dpuInstance, index);
-                File directory = new File(workingDir, context.getDataUnitTmpPath(dpuInstance, index));
-                
                 ManagableDataUnit dataUnit;
                 try {
+                    final File directory = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpuInstance, index);
                     dataUnit = dataUnitFactory.create(
                             info.getType(),
-                            context.generatePipelineId(),
+                            context.getExecutionId(),
                             GraphUrl.translateDataUnitId(id),
                             info.getName(),
                             directory);
-                } catch (RDFException ex) {
+                } catch (RDFException | MissingResourceException ex) {
                     throw new DataUnitException(ex);
                 }
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
                 indexes.put(dataUnit, index);
                 // check for existence of result directory, if exist load
-                File storageDirectory = new File(workingDir,
-                        context.getDataUnitStoragePath(dpuInstance, index));
-                if (storageDirectory.exists() && (dataUnit instanceof FileDataUnit)) {
-                    // load data from directory
-                    try {
-                        ((FileDataUnit) dataUnit).load(storageDirectory);
-                    } catch (RuntimeException e) {
-                        LOG.error("Failed to load data for DataUnit", e);
+                try {
+                    final File storageDirectory = resourceManager.getDataUnitStorageDir(context.getExecution(), dpuInstance, index);
+                    if (storageDirectory.exists() && (dataUnit instanceof FileDataUnit)) {
+                        // load data from directory
+                        try {
+                            ((FileDataUnit) dataUnit).load(storageDirectory);
+                        } catch (RuntimeException e) {
+                            LOG.error("Failed to load data for DataUnit", e);
+                        }
                     }
+                } catch (MissingResourceException ex) {
+                    // ignore
                 }
             }
         }
@@ -284,17 +268,16 @@ final class DataUnitManager {
             index = context.createOutput(dpuInstance, name, type);
         }
         String id = context.generateDataUnitId(dpuInstance, index);
-        File directory = new File(workingDir, context.getDataUnitTmpPath(
-                dpuInstance, index));
         // create instance
         ManagableDataUnit dataUnit;
         try {
+            final File directory = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpuInstance, index);
             dataUnit = dataUnitFactory.create(type,
-                    context.generatePipelineId(),
+                    context.getExecutionId(),
                     GraphUrl.translateDataUnitId(id),
                     name,
                     directory);
-        } catch (RDFException ex) {
+        } catch (RDFException | MissingResourceException ex) {
             throw new DataUnitException(ex);
         }
         // add to storage

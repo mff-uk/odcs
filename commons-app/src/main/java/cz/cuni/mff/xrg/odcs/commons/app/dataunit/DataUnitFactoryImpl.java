@@ -30,10 +30,11 @@ class DataUnitFactoryImpl implements DataUnitFactory {
 
     private final FilesDataUnitFactory filesDataUnitFactory = new FilesDataUnitFactory();
 
-    public ManagableDataUnit create(ManagableDataUnit.Type type, String pipelineId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException {
-        LOG.info("create({}, {}, {}, {}, {})", type, pipelineId, dataUnitUri, dataUnitName, dataUnitDirectory);
+    @Override
+    public ManagableDataUnit create(ManagableDataUnit.Type type, Long executionId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException {
+        LOG.info("create({}, {}, {}, {}, {})", type, executionId, dataUnitUri, dataUnitName, dataUnitDirectory);
         // Get repository.
-        final ManagableRepository repository = repositoryManager.get(pipelineId);
+        final ManagableRepository repository = repositoryManager.get(executionId);
         // Create DataUnit.
         switch (type) {
             case FILES:

@@ -1,12 +1,9 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import java.io.File;
-
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  *
@@ -15,8 +12,6 @@ import eu.unifiedviews.dataunit.DataUnitException;
 public class RepositoryFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(RepositoryFactory.class);
-
-    private String rootDirectory;
 
     private String uri;
     
@@ -38,15 +33,13 @@ public class RepositoryFactory {
 
     /**
      *
-     * @param rootDirectory Root directory where repositories data can be stored.
+     * @param executionId
+     * @param type
+     * @param directory DataUnit's directory.
+     * @return
+     * @throws RDFException
      */
-    public void setLocalParameters(String rootDirectory) {
-        this.rootDirectory = rootDirectory;
-    }
-
-    public ManagableRepository create(String pipelineId, ManagableRepository.Type type) throws RDFException {
-        // Prepare parameters.
-        final String directory = rootDirectory + File.separator + pipelineId;
+    public ManagableRepository create(Long executionId, ManagableRepository.Type type, String directory) throws RDFException {
         // Create repository.
         final ManagableRepository repository;
         switch (type) {
@@ -57,7 +50,7 @@ public class RepositoryFactory {
                 repository = new LocalRDF(directory);
                 break;
             case REMOTE_RDF:
-                repository = new RemoteRDF(uri, user, password, pipelineId);
+                repository = new RemoteRDF(uri, user, password, executionId);
                 break;
             case VIRTUOSO:
                 repository = new Virtuoso(uri, user, password);

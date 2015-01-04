@@ -31,11 +31,11 @@ public class LocalFSFilesDataUnitTest {
 
     @Before
     public void prepare() throws IOException, DataUnitException, RDFException {
-        RepositoryFactory factory = new RepositoryFactory();
+        final RepositoryFactory factory = new RepositoryFactory();
         rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-filesDataUnit-");
         rootDirFile = (new File(rootDir.toFile(), "storage")).toPath();
-        factory.setLocalParameters(rootDir.toAbsolutePath().toString());
-        repository = factory.create("1", ManagableRepository.Type.LOCAL_RDF);
+        final String directory = rootDir.toAbsolutePath().toString() + File.separator + "1";
+        repository = factory.create(1l, ManagableRepository.Type.LOCAL_RDF, directory);
     }
 
     @After

@@ -200,6 +200,10 @@ public class ExecutionContextInfo implements DataObject {
         return "exec_" + String.valueOf(execution.getId());
     }
 
+    public Long getExecutionId() {
+        return execution.getId();
+    }
+
     /**
      * Return context information class {@link ProcessingUnitInfo} for given
      * DPU. If the context does not exist, then create new.
@@ -229,100 +233,6 @@ public class ExecutionContextInfo implements DataObject {
     }
 
     /**
-     * Return relative path from execution directory to the DPU's tmp directory.
-     * This directory will be deleted after the execution ends if not in debug
-     * mode. Does not create a directory!
-     *
-     * @param dpuInstance
-     *            The
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getDPUTmpPath(DPUInstanceRecord dpuInstance) {
-        // secure DPU record existence
-        getContext(dpuInstance);
-        // ..
-        return getWorkingPath() + File.separatorChar
-                + getDpuDirectoryName(dpuInstance) + File.separatorChar
-                + WORKING_TMP_DIR;
-    }
-
-    /**
-     * Return relative path from execution directory to the DPU DataUnit's root
-     * tmp directory. This directory will be deleted after execution ends if not
-     * in debug mode. Does not create a directory!
-     *
-     * @param dpuInstance
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getDataUnitRootTmpPath(DPUInstanceRecord dpuInstance) {
-        // secure DPU record existence
-        getContext(dpuInstance);
-        // ..
-        return getWorkingPath() + File.separatorChar
-                + getDpuDirectoryName(dpuInstance);
-    }
-
-    /**
-     * Return relative path from execution directory to the DPU DataUnit's tmp
-     * directory. This directory will be deleted after execution ends if not in
-     * debug mode. Does not create a directory!
-     *
-     * @param dpuInstance
-     * @param index
-     *            DataUnitInfo index.
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getDataUnitTmpPath(DPUInstanceRecord dpuInstance,
-            Integer index) {
-        return getDataUnitRootStoragePath(dpuInstance) + File.separatorChar
-                + index.toString();
-    }
-
-    /**
-     * Return relative path from execution directory to the DPU DataUnit's root
-     * storage directory. The storage directory can be used to store DataUnits
-     * results. This directory will be deleted after execution ends if not in
-     * debug mode. Does not create a directory!
-     *
-     * @param dpuInstance
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getDataUnitRootStoragePath(DPUInstanceRecord dpuInstance) {
-        // secure DPU record existence
-        getContext(dpuInstance);
-        // ..
-        return getStoragePath() + File.separatorChar
-                + getDpuDirectoryName(dpuInstance);
-    }
-
-    /**
-     * Return relative path from execution directory to the DPU DataUnit's
-     * storage directory. The storage directory can be used to store DataUnits
-     * results. This directory will be deleted after execution ends if not in
-     * debug mode. Does not create a directory!
-     *
-     * @param dpuInstance
-     * @param index
-     *            DataUnitInfo index.
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getDataUnitStoragePath(DPUInstanceRecord dpuInstance,
-            Integer index) {
-        return getDataUnitRootStoragePath(dpuInstance) + File.separatorChar
-                + index.toString();
-    }
-
-    /**
      * Return context information class {@link ProcessingUnitInfo} for given
      * DPU.
      *
@@ -342,72 +252,11 @@ public class ExecutionContextInfo implements DataObject {
     }
 
     /**
-     * Return relative path from execution directory to the execution working
-     * directory.
      *
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getWorkingPath() {
-        return getRootPath() + File.separatorChar + WORKING_DIR;
-    }
-
-    /**
-     * Return relative path from execution directory to the execution result
-     * directory. This directory can be used to store result data.
-     *
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getResultPath() {
-        return getRootPath() + File.separatorChar + RESULT_DIR;
-    }
-
-    /**
-     * Return relative path from execution directory to the execution storage
-     * directory or data units.
-     *
-     * @return Relative path, start but not end with separator (/, \\)
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getStoragePath() {
-        return getRootPath() + File.separatorChar + STORAGE_DIR;
-    }
-
-    /**
-     * Return relative path from execution directory to the execution root
-     * directory.
-     *
-     * @return Relative path start but not end with separator separator (/, \\).
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    public String getRootPath() {
-        return File.separatorChar + execution.getId().toString();
-    }
-
-    /**
      * @return respective pipeline execution.
-     * @deprecated use {@link ExecutionInfo} instead
      */
-    @Deprecated
     public PipelineExecution getExecution() {
         return this.execution;
-    }
-
-    /**
-     * @return string that should be used as a name for DPU's directory.
-     * @deprecated use {@link ExecutionInfo} instead
-     */
-    @Deprecated
-    private String getDpuDirectoryName(DPUInstanceRecord dpuInstance) {
-        StringBuilder dirName = new StringBuilder();
-        dirName.append(DPU_ID_PREFIX);
-        dirName.append(dpuInstance.getId().toString());
-        return dirName.toString();
     }
 
     Map<DPUInstanceRecord, ProcessingUnitInfo> getContexts() {
@@ -442,7 +291,7 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
      *
-     * @return The value of hashcode.
+     * @return The value of hash code.
      */
     @Override
     public int hashCode() {
