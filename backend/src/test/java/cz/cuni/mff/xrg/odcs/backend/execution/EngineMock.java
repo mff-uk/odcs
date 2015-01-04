@@ -16,8 +16,6 @@ public class EngineMock extends Engine {
 
     @Override
     public synchronized void run(PipelineExecution execution) {
-        //mockit
-        System.out.println("everything is ok");
         historyOfExecution.add(execution);
         execution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
         this.pipelineFacade.save(execution);
