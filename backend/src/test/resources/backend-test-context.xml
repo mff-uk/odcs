@@ -13,7 +13,7 @@
     <bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener"/>
 
     <!-- dummy DataUnit factory -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.spring.DataUnitFactoryMock"/>
 
 	<bean id="filesDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnitFactory"/>
     <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory"/>

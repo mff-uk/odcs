@@ -12,11 +12,11 @@ import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
  * 
  * @author Petyr
  */
-public class DummyDataUnitFactory implements DataUnitFactory {
+public class DataUnitFactoryMock implements DataUnitFactory {
 
     @Override
     public ManagableDataUnit create(ManagableDataUnit.Type type,
-            String pipelineId,
+            Long executionId,
             String dataUnitUri,
             String dataUnitName,
             File dataUnitDirectory) {
