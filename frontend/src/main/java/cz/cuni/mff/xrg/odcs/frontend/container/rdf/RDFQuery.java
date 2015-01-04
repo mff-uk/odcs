@@ -55,8 +55,6 @@ public class RDFQuery implements Query {
 
     private ArrayList<Item> cachedItems;
 
-    private final ManageableWritableRDFDataUnit repository;
-
     /**
      * Constructor.
      *
@@ -66,7 +64,6 @@ public class RDFQuery implements Query {
         this.baseQuery = queryDefinition.getBaseQuery();
         this.batchSize = queryDefinition.getBatchSize();
         this.queryDefinition = queryDefinition;
-        this.repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
     }
 
     /**
@@ -76,7 +73,7 @@ public class RDFQuery implements Query {
      */
     @Override
     public int size() {
-
+        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             throw new RuntimeException("Unable to load RDFDataUnit.");
         }
@@ -127,6 +124,7 @@ public class RDFQuery implements Query {
             return cachedItems.subList(startIndex, startIndex + count);
         }
 
+        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             LOG.debug("Unable to load RDFDataUnit.");
             throw new RuntimeException("Unable to load RDFDataUnit.");
@@ -143,12 +141,11 @@ public class RDFQuery implements Query {
             restriction.setOffset(offset * batchSize);
         }
         String query = restriction.getRestrictedQuery();
-        SPARQLQueryType type;
-        Object data = null;
         RepositoryConnection connection = null;
         try {
-            type = getQueryType(query);
-            Graph graph = null;
+            SPARQLQueryType type = getQueryType(query);
+            Object data;
+            Graph graph;
             connection = repository.getConnection();
             switch (type) {
                 case SELECT:
@@ -223,17 +220,8 @@ public class RDFQuery implements Query {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    Notification.show("Connection problem",
-                            "Could close connection to frontend repository: "
-                            + ex.getCause().getMessage(),
-                            Notification.Type.ERROR_MESSAGE);
+                    LOG.warn("Can't close connection.", ex);
                 }
-            }
-            // close reporistory
-            try {
-                repository.release();
-            } catch (DataUnitException ex) {
-                LOG.error("Faild to release repository.", ex);
             }
         }
         return null;

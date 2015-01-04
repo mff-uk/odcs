@@ -149,7 +149,7 @@ public class RDFQueryView extends QueryView {
 
                     @Override
                     public InputStream getStream() {
-                        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(), getDataUnitInfo());
+                        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), getSelectedDpu(), getDataUnitInfo());
                         String query = getQuery();
                         if (repository == null || query == null) {
                             return null;
@@ -280,7 +280,7 @@ public class RDFQueryView extends QueryView {
                             }
                         }
 
-                        ManageableWritableRDFDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu, tableDataUnit);
+                        ManageableWritableRDFDataUnit tableRepo = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), tableDpu, tableDataUnit);
                         return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue(), filters);
                     }
                 });

@@ -23,9 +23,9 @@
     <!-- we use annotations to run tasks -->
     <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
     <!-- Used for asynch calls even for scheduled functions. -->
-    <task:executor id="taskExecutor" pool-size="8"/>
+    <task:executor id="taskExecutor" pool-size="4"/>
     <!-- Used for Scheduled tasks.-->
-    <task:scheduler id="taskScheduler" pool-size="8"/>
+    <task:scheduler id="taskScheduler" pool-size="4"/>
 
     <!-- Scan Views for bean definitions. -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
@@ -118,5 +118,7 @@
     </bean>
 
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
+
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager"/>
 
 </beans>

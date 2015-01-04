@@ -48,14 +48,11 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -64,8 +61,6 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
@@ -85,51 +80,22 @@ public class RepositoryFrontendHelper {
      */
     public static ManageableWritableRDFDataUnit getRepository(ExecutionInfo executionInfo,
             DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
+        final FrontendDataUnitManager dataUnitManager = ((AppEntry) UI.getCurrent()).getBean(FrontendDataUnitManager.class);
+        return dataUnitManager.getRDFDataUnit(executionInfo, dpuInstance, dataUnitInfo, FrontendDataUnitManager.CLOSE_TIME_SHORT);
+    }
 
-        // TODO Petr: We need to close the repository somewhere!
-
-        // get type and directory
-        if (dataUnitInfo == null) {
-            // the context doesn't exist
-            return null;
-        }
-
-        //
-        if (executionInfo == null) {
-            log.error("executionInfo is null!");
-            return null;
-        }
-
-        DpuContextInfo dpuInfo = executionInfo.dpu(dpuInstance);
-        if (dpuInfo == null) {
-            log.error("DPU info is null!");
-            return null;
-        }
-
-        // Get DataUnit factory.
-        final DataUnitFactory dataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(DataUnitFactory.class);
-        final ResourceManager resourceManager = ((AppEntry) UI.getCurrent()).getBean(ResourceManager.class);
-        switch (dataUnitInfo.getType()) {
-            case RDF:
-                try {
-                    final String dataUnitId = executionInfo.getExecutionContext().generateDataUnitId(dpuInstance, dataUnitInfo.getIndex());
-                    final File directory = resourceManager.getDataUnitWorkingDir(executionInfo.getExecutionContext().getExecution(), dpuInstance, dataUnitInfo.getIndex());
-                    // Get ManagableDataUnit ~ ManagableRdfDataUnit.
-                    final ManagableDataUnit dataUnit = dataUnitFactory.create(ManagableDataUnit.Type.RDF,
-                            executionInfo.getExecutionContext().getExecutionId(),
-                            GraphUrl.translateDataUnitId(dataUnitId),
-                            dataUnitInfo.getName(),
-                            directory);
-                    // Load data.
-                    dataUnit.load();
-                    // Return ready DataUnit.
-                    return (ManageableWritableRDFDataUnit)dataUnit;
-                } catch (DataUnitException | eu.unifiedviews.commons.rdf.repository.RDFException | MissingResourceException ex) {
-                    throw new RuntimeException("Failed to load data unit.", ex);
-                }
-            default: // No support for other DataUnits.
-                return null;
-        }
+    /**
+     * Longer time before close then getRepository.
+     *
+     * @param executionInfo
+     * @param dpuInstance
+     * @param dataUnitInfo
+     * @return
+     */
+    public static ManageableWritableRDFDataUnit getRepositoryForDownload(ExecutionInfo executionInfo,
+            DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
+        final FrontendDataUnitManager dataUnitManager = ((AppEntry) UI.getCurrent()).getBean(FrontendDataUnitManager.class);
+        return dataUnitManager.getRDFDataUnit(executionInfo, dpuInstance, dataUnitInfo, FrontendDataUnitManager.CLOSE_TIME_LONG);
     }
 
     /**
