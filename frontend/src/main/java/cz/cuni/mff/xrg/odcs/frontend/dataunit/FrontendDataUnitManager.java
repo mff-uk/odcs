@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,37 @@ public class FrontendDataUnitManager {
         dataUnits.put(directoryStr, holder);
         incRepoCounter(holder);
         return (ManageableWritableRDFDataUnit) dataUnit;
+    }
+
+    /**
+     * Release and close all opened repositories. Should be called when application is closing.
+     */
+    @PreDestroy
+    private void closeAll() {
+        LOG.info("Releasing all opened repositories...");
+        synchronized (dataUnits) {
+            // Release dataUnits.
+            for (String directoryStr : dataUnits.keySet()) {
+                final DataUnitHolder holder = dataUnits.get(directoryStr);
+                try {
+                    holder.getDataUnit().release();
+                } catch (DataUnitException ex) {
+                    LOG.warn("Can't release DataUnit.", ex);
+                }
+            }
+            // Release all repositories.
+            for (Long executionId : openedForExecution.keySet()) {
+                try {
+                    repositoryManager.release(executionId);
+                } catch (RDFException ex) {
+                    LOG.warn("Can't release repository for execution: {}", executionId, ex);
+                }
+            }
+            // Empty lists.
+            dataUnits.clear();
+            openedForExecution.clear();
+        }
+        LOG.info("Releasing all opened repositories...done");
     }
 
     private void incRepoCounter(DataUnitHolder holder) {
