@@ -15,9 +15,6 @@
     <!-- dummy DataUnit factory -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.spring.DataUnitFactoryMock"/>
 
-	<bean id="filesDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnitFactory"/>
-    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory"/>
-
     <!-- we use configuration that load from our resource -->
     <!-- application configuration -->
     <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">

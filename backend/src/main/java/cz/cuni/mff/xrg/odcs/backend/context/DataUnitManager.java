@@ -9,18 +9,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.dataunit.DataUnit;
@@ -118,23 +114,11 @@ final class DataUnitManager {
      */
     public void save() {
         for (ManagableDataUnit item : dataUnits) {
-            if (item instanceof FileDataUnit) {
-                try {
-                    // get directory
-                    final File directory = resourceManager.getDataUnitStorageDir(context.getExecution(), dpuInstance, indexes.get(item));
-                    // and save into directory
-                    ((FileDataUnit) item).save(directory);
-                } catch (Exception e) {
-                    LOG.error("Can't save DataUnit.", e);
-                }
-            } else {
-                try {
-                    item.store();
-                } catch (DataUnitException ex) {
-                    LOG.error("Failed to save content of data unit.", ex);
-                }
+            try {
+                item.store();
+            } catch (DataUnitException ex) {
+                LOG.error("Failed to save content of data unit.", ex);
             }
-
         }
     }
 
@@ -219,20 +203,8 @@ final class DataUnitManager {
                 // add into DataUnitManager
                 dataUnits.add(dataUnit);
                 indexes.put(dataUnit, index);
-                // check for existence of result directory, if exist load
-                try {
-                    final File storageDirectory = resourceManager.getDataUnitStorageDir(context.getExecution(), dpuInstance, index);
-                    if (storageDirectory.exists() && (dataUnit instanceof FileDataUnit)) {
-                        // load data from directory
-                        try {
-                            ((FileDataUnit) dataUnit).load(storageDirectory);
-                        } catch (RuntimeException e) {
-                            LOG.error("Failed to load data for DataUnit", e);
-                        }
-                    }
-                } catch (MissingResourceException ex) {
-                    // ignore
-                }
+                // reload
+                dataUnit.load();
             }
         }
     }
