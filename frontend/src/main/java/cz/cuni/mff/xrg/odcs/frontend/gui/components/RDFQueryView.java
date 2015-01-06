@@ -224,27 +224,6 @@ public class RDFQueryView extends QueryView {
                 }
             }
         });
-        resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                Object oValue = event.getItem().getItemProperty(event.getPropertyId()).getValue();
-                String uri;
-                if (oValue.getClass() == URIImpl.class) {
-                    uri = ((URIImpl) oValue).stringValue();
-                } else {
-                    uri = oValue.getClass() == String.class ? (String) oValue : oValue.toString();
-                    if (!uri.startsWith("http://")) {
-                        return;
-                    }
-                }
-                queryText.setValue(String.format("DESCRIBE <%s>", uri));
-                try {
-                    runQuery();
-                } catch (InvalidQueryException ex) {
-                    //Should not happen
-                }
-            }
-        });
         mainLayout.addComponent(resultTable);
         resultTableControls = resultTable.createControls();
         resultTableControls.setImmediate(true);
