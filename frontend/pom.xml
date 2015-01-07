@@ -27,10 +27,12 @@
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
+
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
+        </repository>
+
 		<repository>
 			<id>vaadin-snapshots</id>
 			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
@@ -98,12 +100,11 @@
 			<version>2.0.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>filteringtable</artifactId>
-			<version>0.9.4.v7</version>
-			<type>jar</type>
-		</dependency>
+        <dependency>
+           <groupId>org.vaadin.addons</groupId>
+           <artifactId>filteringtable</artifactId>
+           <version>0.9.11.v7</version>
+        </dependency>
 
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -134,11 +135,11 @@
 			<version>2.0.1</version>
 		</dependency>
 		
-		<dependency>
+<!--		<dependency>
 		   <groupId>com.wcs.wcslib</groupId>
 		   <artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
 		   <version>1.7.1</version>
-		</dependency>
+		</dependency>-->
 
 		<!-- Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory). 
 			For widgetset compilation, vaadin-client-compiler is automatically added 
