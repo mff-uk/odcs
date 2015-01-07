@@ -92,7 +92,8 @@ public class ResourceManager {
     }
 
     public File getExecutionRepositoryDir(Long executionId) throws MissingResourceException {
-        return new File(getRootWorkingDir(), EXEC_DIR_PREFIX + executionId.toString() + File.separator + REPOSITORY_DIR);
+        return new File(getRootWorkingDir(), EXEC_DIR_PREFIX + executionId.toString() +
+                File.separator + REPOSITORY_DIR);
     }
 
     public File getExecutionWorkingDir(PipelineExecution execution) throws MissingResourceException {
@@ -103,20 +104,24 @@ public class ResourceManager {
         return new File(getExecutionDir(execution), EXEC_STORAGE_DIR);
     }
 
-    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index) throws MissingResourceException {
+    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index)
+            throws MissingResourceException {
         return new File(getDataUnitStorageDir(execution, dpu), DATA_UNIT_PREFIX + index.toString());
     }
 
-    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index) throws MissingResourceException {
+    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index)
+            throws MissingResourceException {
         return new File(getDataUnitStorageDir(execution, dpu), DATA_UNIT_PREFIX + index.toString());
     }
 
-    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu) throws MissingResourceException {
+    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
         return new File(getExecutionDir(execution), EXEC_STORAGE_DIR + File.separatorChar +
                 getDpuDirectoryName(dpu));
     }
 
-    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu) throws MissingResourceException {
+    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
         return new File(getExecutionDir(execution), EXEC_WORKING_DIR + File.separatorChar +
                 getDpuDirectoryName(dpu));
     }
@@ -159,9 +164,10 @@ public class ResourceManager {
      * @return Path to the DPU working directory.
      * @throws MissingResourceException 
      */
-    public File getDPUWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu) throws MissingResourceException {
+    public File getDPUWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
         // TODO Petr: we may utilize getDataUnitWorkingDir in some form
-        return new File(getExecutionWorkingDir(execution), EXEC_WORKING_DIR + File.separatorChar +
+        return new File(getExecutionWorkingDir(execution), 
                 getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
     }
 
@@ -172,9 +178,10 @@ public class ResourceManager {
      * @return Path to the DPU working directory.
      * @throws MissingResourceException
      */
-    public File getDPUStorageDir(PipelineExecution execution, DPUInstanceRecord dpu) throws MissingResourceException {
+    public File getDPUStorageDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
         // TODO Petr: we may utilize getDataUnitStorageDir in some form
-        return new File(getExecutionWorkingDir(execution), EXEC_STORAGE_DIR + File.separatorChar +
+        return new File(getExecutionStorageDir(execution),
                 getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
     }
     
@@ -193,8 +200,8 @@ public class ResourceManager {
         final DPUTemplateRecord template = getDPUTemplate(dpu);
 
         // prepare relative part of the path
-        final String relativePath = DPU_DATE_USER_DIR + File.separator + user
-                .getUsername() + File.separator + template.getJarDirectory();
+        final String relativePath = DPU_DATE_USER_DIR + File.separator + user.getUsername() +
+                File.separator + template.getJarDirectory();
 
         return new File(workingPath, relativePath);
     }
