@@ -347,7 +347,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.5</version>
+				<version>1.7</version>
 				<configuration>
 					<source>${project.java.version}</source>
 					<target>${project.java.version}</target>
@@ -382,8 +382,19 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-				</dependencies>
+                    <dependencies>
+                        <!-- Support for Java 8 -->
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjtools</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies>
 			</plugin>
 		</plugins>
 		<resources>
