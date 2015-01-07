@@ -297,7 +297,9 @@ public class Context implements DPUContext {
     @Override
     public File getWorkingDir() {
         try {
-            return resourceManager.getDPUWorkingDir(contextInfo.getExecution(), dpuInstance);
+            final File dir = resourceManager.getDPUWorkingDir(contextInfo.getExecution(), dpuInstance);
+            dir.mkdirs();
+            return dir;
         } catch (MissingResourceException ex) {
             throw new RuntimeException(ex);
         }
@@ -306,7 +308,9 @@ public class Context implements DPUContext {
     @Override
     public File getResultDir() {
         try {
-            return resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
+            final File dir =  resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
+            dir.mkdirs();
+            return dir;
         } catch (MissingResourceException ex) {
             throw new RuntimeException(ex);
         }
@@ -325,6 +329,7 @@ public class Context implements DPUContext {
 
     @Override
     public File getGlobalDirectory() {
+        // TODO Petr: Move into ResourceManager
         File result = new File(getGeneralWorkingDir(), DPU_DIR + File.separator
                 + getTemplateIdentification());
         result.mkdirs();
@@ -333,6 +338,7 @@ public class Context implements DPUContext {
 
     @Override
     public File getUserDirectory() {
+        // TODO Petr: Move into ResourceManager
         User owner = getExecution().getOwner();
         String userId;
         if (owner == null) {
@@ -350,6 +356,7 @@ public class Context implements DPUContext {
 
     @Override
     public String getDpuInstanceDirectory() {
+        // TODO Petr: Move into ResourceManager and change format
         File result = new File(getGeneralWorkingDir(), "dpu_instance_" + String.valueOf(dpuInstance.getId()));
         result.mkdirs();
         return result.toURI().toASCIIString();
