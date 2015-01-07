@@ -44,7 +44,7 @@
 		<!-- other third party libraries versions -->
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.0.13</logback.version>
-		<sesame.version>2.7.14</sesame.version>
+		<sesame.version>2.7.13</sesame.version>
 	</properties>
 
 	<modules>
