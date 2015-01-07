@@ -112,7 +112,7 @@
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.5</version>
+			<version>1.4.7</version>
 		</dependency>
 
 		<dependency> <!-- OSGI impelemention -->
