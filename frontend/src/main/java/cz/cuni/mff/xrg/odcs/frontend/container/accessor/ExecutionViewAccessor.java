@@ -18,13 +18,13 @@ import eu.unifiedviews.commons.dao.view.ExecutionView;
  */
 public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
 
-    private final List<String> all = Arrays.asList("id", "start", "pipeline.name", "duration", "status", "isDebugging", "schedule", "pipeline.id", "owner.username");
+    private final List<String> all = Arrays.asList("id", "start", "pipelineName", "duration", "status", "isDebugging", "schedule", "pipelineId", "ownerName");
 
-    private final List<String> visible = Arrays.asList("status", "pipeline.name", "start", "duration", "isDebugging", "schedule", "owner.username");
+    private final List<String> visible = Arrays.asList("status", "pipelineName", "start", "duration", "isDebugging", "schedule", "ownerName");
 
-    private final List<String> sortable = Arrays.asList("pipeline.name", "status", "start", "isDebugging", "schedule", "owner.username");
+    private final List<String> sortable = Arrays.asList("pipelineName", "status", "start", "isDebugging", "schedule", "ownerName");
 
-    private final List<String> filterable = Arrays.asList("pipeline.name", "status", "start", "isDebugging", "schedule", "owner.username");
+    private final List<String> filterable = Arrays.asList("pipelineName", "status", "start", "isDebugging", "schedule", "ownerName");
 
     private final List<String> toFetch = new LinkedList<>();
 
@@ -65,11 +65,11 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
                 return "Id";
             case "start":
                 return "Started";
-            case "pipeline.name":
+            case "pipelineName":
                 return "Pipeline";
             case "duration":
                 return "Duration";
-            case "owner.username":
+            case "ownerName":
                 return "Executed by";
             case "status":
                 return "Status";
@@ -91,12 +91,12 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
                 return object.getId();
             case "start":
                 return object.getStart();
-            case "pipeline.id":
+            case "pipelineId":
                 return object.getPipelineId();
-            case "pipeline.name":
+            case "pipelineName":
                 String name = object.getPipelineName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
-            case "owner.username":
+            case "ownerName":
                 return object.getOwnerName();
             case "duration":
                 return object.getDuration();
@@ -118,11 +118,11 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     public Class<?> getType(String id) {
         switch (id) {
             case "id":
-            case "pipeline.id":
+            case "pipelineId":
                 return Long.class;
             case "start":
                 return Timestamp.class;
-            case "pipeline.name":
+            case "pipelineName":
                 return String.class;
             case "duration":
                 return Long.class;
@@ -134,7 +134,7 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
                 return Timestamp.class;
             case "schedule":
                 return Boolean.class;
-            case "owner.username":
+            case "ownerName":
                 return String.class;
             default:
                 return null;
