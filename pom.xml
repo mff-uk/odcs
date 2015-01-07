@@ -25,10 +25,10 @@
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
-		<vaadin.version>7.1.8</vaadin.version>
+		<vaadin.version>7.3.7</vaadin.version>
 		<!-- the minimal required vaadin version The lowest Vaadin version accepted 
 			by DPUs. -->
-		<vaadin.version.min>7.1.8</vaadin.version.min>
+		<vaadin.version.min>7.3.7</vaadin.version.min>
 		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted 
 			by DPUs. -->
 		<vaadin.version.max>8.0.0</vaadin.version.max>
@@ -189,7 +189,7 @@
 							<goal>jar</goal>
 						</goals>
                         <configuration>
-                            <!-- Do not fail compulation on Java doc errors -->
+                            <!-- Do not fail compulation on Java doc errors (Java 8). -->
                             <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>                        
 					</execution>
