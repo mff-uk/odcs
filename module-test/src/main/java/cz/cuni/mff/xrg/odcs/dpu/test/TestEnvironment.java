@@ -149,8 +149,10 @@ public class TestEnvironment {
      *            Name of DataUnit.
      * @return Created {@link RDFDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public WritableRDFDataUnit createRdfFDataUnit(String name) throws RepositoryException {
+    public WritableRDFDataUnit createRdfFDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         customDataUnits.put(name, rdf);
         return rdf;
@@ -165,8 +167,10 @@ public class TestEnvironment {
      *            If true then Virtuoso is used as a storage.
      * @return Created input {@link RDFDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) throws RepositoryException {
+    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addInput(name, rdf);
         return rdf;
@@ -182,9 +186,11 @@ public class TestEnvironment {
      *            If true then Virtuoso is used as a storage.
      * @return Created output {@link RDFDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     public WritableRDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
-            throws RepositoryException {
+            throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addOutput(name, rdf);
         return rdf;
