@@ -22,12 +22,4 @@
 		<dpu.mainClass>RdfMerger</dpu.mainClass>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
-			<artifactId>dataunit</artifactId>
-			<version>1.4.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

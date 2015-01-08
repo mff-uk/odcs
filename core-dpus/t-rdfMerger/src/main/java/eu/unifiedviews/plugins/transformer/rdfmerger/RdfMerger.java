@@ -3,11 +3,11 @@ package eu.unifiedviews.plugins.transformer.rdfmerger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUContext;
 import eu.unifiedviews.dpu.DPUException;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
