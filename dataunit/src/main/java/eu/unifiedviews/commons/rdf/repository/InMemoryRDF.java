@@ -10,7 +10,7 @@ import org.openrdf.repository.manager.RepositoryProvider;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.sail.memory.config.MemoryStoreConfig;
 
-import eu.unifiedviews.commons.rdf.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
@@ -53,7 +53,7 @@ class InMemoryRDF implements ManagableRepository {
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSource(repository, false);
+        return new ConnectionSourceImpl(repository, false);
     }
 
     @Override

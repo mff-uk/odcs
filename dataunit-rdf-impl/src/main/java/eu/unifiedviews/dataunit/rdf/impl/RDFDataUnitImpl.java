@@ -3,13 +3,11 @@ package eu.unifiedviews.dataunit.rdf.impl;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import eu.unifiedviews.commons.rdf.ConnectionSource;
-import eu.unifiedviews.commons.rdf.FaultTolerantHelper;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 
@@ -24,8 +22,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
      */
     private final URI baseDataGraphURI;
 
-    public RDFDataUnitImpl(String dataUnitName, String writeContextString, ConnectionSource connectionSource) {
-        super(dataUnitName, writeContextString, connectionSource);
+    public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
+            String writeContextString, CoreServiceBus coreServices) {
+        super(dataUnitName, writeContextString, coreServices);
+
         baseDataGraphURI = new URIImpl(writeContextString + "/user/");
     }
 
@@ -44,7 +44,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
         checkForMultithreadAccess();
 
         if (connectionSource.isRetryOnFailure()) {
-            return new RDFDataUnitIterationEager(this, connectionSource);
+            return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         } else {
             return new RDFDataUnitIterationLazy(this);
         }
@@ -61,20 +61,16 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
         final URI entrySubject = this.creatEntitySubject();
         try {
-            // TODO michal.klempa think of not connecting everytime
-            FaultTolerantHelper.execute(connectionSource, new FaultTolerantHelper.Code() {
-                @Override
-                public void execute(RepositoryConnection connection) throws DataUnitException, RepositoryException {
-                    addEntry(entrySubject, symbolicName, connection);
-                    final ValueFactory valueFactory = connection.getValueFactory();
-                    // Add file uri.
-                    connection.add(
-                            entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
-                            existingDataGraphURI,
-                            getMetadataWriteGraphname()
-                    );
-                }
+            faultTolerant.execute((connection) -> {
+                addEntry(entrySubject, symbolicName, connection);
+                final ValueFactory valueFactory = connection.getValueFactory();
+                // Add file uri.
+                connection.add(
+                        entrySubject,
+                        valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                        existingDataGraphURI,
+                        getMetadataWriteGraphname()
+                );
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);
@@ -87,20 +83,16 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
         final URI entrySubject = this.creatEntitySubject();
         try {
-            // TODO michal.klempa think of not connecting everytime
-            FaultTolerantHelper.execute(connectionSource, new FaultTolerantHelper.Code() {
-                @Override
-                public void execute(RepositoryConnection connection) throws DataUnitException, RepositoryException {
-                    addEntry(entrySubject, symbolicName, connection);
-                    final ValueFactory valueFactory = connection.getValueFactory();
-                    // Add file uri.
-                    connection.add(
-                            entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
-                            entrySubject,
-                            getMetadataWriteGraphname()
-                    );
-                }
+            faultTolerant.execute((connection) -> {
+                addEntry(entrySubject, symbolicName, connection);
+                final ValueFactory valueFactory = connection.getValueFactory();
+                // Add file uri.
+                connection.add(
+                        entrySubject,
+                        valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                        entrySubject,
+                        getMetadataWriteGraphname()
+                );
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);

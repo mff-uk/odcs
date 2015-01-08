@@ -30,7 +30,7 @@ import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 
-import eu.unifiedviews.commons.rdf.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import info.aduna.iteration.Iteration;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
@@ -302,7 +302,7 @@ class Virtuoso implements ManagableRepository {
     
     }
 
-    private class ConnectionSourceWrap extends ConnectionSource {
+    private class ConnectionSourceWrap extends ConnectionSourceImpl {
 
         public ConnectionSourceWrap(Repository repository) {
             super(repository, true);

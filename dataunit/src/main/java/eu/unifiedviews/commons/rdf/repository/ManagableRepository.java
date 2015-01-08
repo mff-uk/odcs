@@ -1,7 +1,6 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import eu.unifiedviews.commons.rdf.ConnectionSource;
-import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 
 /**
  *

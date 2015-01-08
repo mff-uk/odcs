@@ -9,15 +9,13 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
-import eu.unifiedviews.commons.rdf.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import eu.unifiedviews.commons.rdf.FaultTolerantHelper;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
@@ -40,10 +38,13 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
 
     private final String workingDirectoryURI;
 
-    public LocalFSFilesDataUnit(String dataUnitName, File workingDirectoryURIString, String dataGraph, ConnectionSource connectionSource) throws DataUnitException {
-        super(dataUnitName, dataGraph, connectionSource);
-        this.workingDirectoryURI = workingDirectoryURIString.toURI().toASCIIString();
-        this.workingDirectory = workingDirectoryURIString;
+    public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURI,
+            String writeContextString, CoreServiceBus coreServices) {
+        super(dataUnitName, writeContextString, coreServices);
+
+        this.workingDirectory = new File(java.net.URI.create(workingDirectoryURI));
+        workingDirectory.mkdirs();
+        this.workingDirectoryURI = workingDirectoryURI;
     }
 
     //DataUnit interface
@@ -64,7 +65,7 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
         checkForMultithreadAccess();
         if (connectionSource.isRetryOnFailure()) {
             // Is not safe.
-            return new WritableFileIterationEager(this, connectionSource);
+            return new WritableFileIterationEager(this, connectionSource, faultTolerant);
         } else {
             return new WritableFileIterationLazy(this);
         }
@@ -90,20 +91,16 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
         // Create subject and insert data.
         final URI entrySubject = this.creatEntitySubject();
         try {
-            // TODO michal.klempa think of not connecting everytime
-            FaultTolerantHelper.execute(connectionSource, new FaultTolerantHelper.Code() {
-                @Override
-                public void execute(RepositoryConnection connection) throws DataUnitException, RepositoryException {
-                    addEntry(entrySubject, symbolicName, connection);
-                    final ValueFactory valueFactory = connection.getValueFactory();
-                    // Add file uri.
-                    connection.add(
-                            entrySubject,
-                            valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
-                            valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
-                            getMetadataWriteGraphname()
-                    );
-                }
+            faultTolerant.execute((connection) -> {
+                addEntry(entrySubject, symbolicName, connection);
+                final ValueFactory valueFactory = connection.getValueFactory();
+                // Add file uri.
+                connection.add(
+                        entrySubject,
+                        valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                        valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
+                        getMetadataWriteGraphname()
+                );
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);

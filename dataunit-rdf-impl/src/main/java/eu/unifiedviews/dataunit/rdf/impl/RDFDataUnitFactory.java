@@ -1,28 +1,19 @@
 package eu.unifiedviews.dataunit.rdf.impl;
 
-import java.io.File;
-
-import eu.unifiedviews.commons.rdf.ConnectionSource;
-import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.commons.dataunit.DataUnitFactory;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 
 /**
  * Factory for RDF data units.
  *
  * @author Škoda Petr
  */
-public class RDFDataUnitFactory {
+public class RDFDataUnitFactory implements DataUnitFactory {
 
-    /**
-     *
-     * @param dataUnitName Name of data unit.
-     * @param graphAsString Unique graph URI in a string form.
-     * @param connectionSource Connection source for RDF repository.
-     * @param workingDirectory Working directory.
-     * @return
-     * @throws DataUnitException
-     */
-    public RDFDataUnitImpl create(String dataUnitName, String graphAsString, ConnectionSource connectionSource, File workingDirectory) throws DataUnitException {
-        return new RDFDataUnitImpl(dataUnitName, graphAsString, connectionSource);
+    @Override
+    public ManagableDataUnit create(String name, String uri, String directoryUri, CoreServiceBus coreServices) {
+        return new RDFDataUnitImpl(name, directoryUri, directoryUri, coreServices);
     }
 
 }

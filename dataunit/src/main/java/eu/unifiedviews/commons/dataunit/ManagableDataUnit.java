@@ -26,9 +26,8 @@ public interface ManagableDataUnit extends DataUnit {
          */
         RDF,
         /**
-         * Represent file data unit.
+         * Represent files data unit.
          */
-        FILE,
         FILES
     }
 

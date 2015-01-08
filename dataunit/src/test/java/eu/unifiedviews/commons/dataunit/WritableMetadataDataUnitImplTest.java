@@ -12,8 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 
-import eu.unifiedviews.commons.rdf.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
@@ -32,8 +36,34 @@ public class WritableMetadataDataUnitImplTest {
     class TestWritableMetadataDataUnit extends AbstractWritableMetadataDataUnit {
 
         public TestWritableMetadataDataUnit(String dataUnitName, String writeContextString,
-                ConnectionSource connectionSource) {
-            super(dataUnitName, writeContextString, connectionSource);
+                final ConnectionSource connectionSource) {
+            super(dataUnitName, writeContextString, new CoreServiceBus() {
+
+                @Override
+                public <T> T getService(Class<T> serviceClass) throws IllegalArgumentException {
+                    // Simple test implementation of bus service
+                    if (serviceClass.isAssignableFrom(ConnectionSource.class)) {
+                        return (T)connectionSource;
+                    } else if (serviceClass.isAssignableFrom(FaultTolerant.class)) {
+                        return (T) new FaultTolerant() {
+
+                            @Override
+                            public void execute(FaultTolerant.Code codeToExecute) throws RepositoryException, DataUnitException {
+                                final RepositoryConnection conn = connectionSource.getConnection();
+                                try {
+                                    codeToExecute.execute(conn);
+                                } finally {
+                                    conn.close();
+                                }
+                            }
+
+                        };
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                }
+            });
+
         }
 
         @Override

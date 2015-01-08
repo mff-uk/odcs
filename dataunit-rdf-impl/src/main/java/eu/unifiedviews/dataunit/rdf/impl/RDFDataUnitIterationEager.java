@@ -12,13 +12,12 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.commons.rdf.ConnectionSource;
-import eu.unifiedviews.commons.rdf.FaultTolerantHelper;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -48,7 +47,7 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
             + "<" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + GRAPH_URI_BINDING + ". "
             + "}";
 
-    public RDFDataUnitIterationEager(MetadataDataUnit metadataDataUnit, ConnectionSource connectionSource) throws DataUnitException {
+    public RDFDataUnitIterationEager(MetadataDataUnit metadataDataUnit, ConnectionSource connectionSource, FaultTolerant faultTolerant) throws DataUnitException {
         // We can select from multiple graphs.
         final StringBuilder fromPart = new StringBuilder();
         for (URI graph : metadataDataUnit.getMetadataGraphnames()) {
@@ -61,33 +60,30 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
         // Execute and gather data.
         final List<RDFDataUnit.Entry> internalCollection = new LinkedList<>();
         try {
-            FaultTolerantHelper.execute(connectionSource, new FaultTolerantHelper.Code() {
-                @Override
-                public void execute(RepositoryConnection connection) throws DataUnitException, RepositoryException {
-                    final TupleQuery query;
-                    try {
-                        query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
-                    } catch (MalformedQueryException ex) {
-                        throw new DataUnitException("Problem with system query.", ex);
+            faultTolerant.execute((connection) -> {
+                TupleQuery query;
+                try {
+                    query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
+                } catch (MalformedQueryException ex) {
+                    throw new DataUnitException("Problem with system query.", ex);
+                }
+                // Clear set and load.
+                internalCollection.clear();
+                TupleQueryResult queryResult = null;
+                try {
+                    queryResult = query.evaluate();
+                    while (queryResult.hasNext()) {
+                        BindingSet item = queryResult.next();
+                        internalCollection.add(new RDFDataUnitEntryImpl(item.getValue(SYMBOLIC_NAME_BINDING).stringValue(), new URIImpl(item.getValue(GRAPH_URI_BINDING).stringValue())));
                     }
-                    // Clear set and load.
-                    internalCollection.clear();
-                    TupleQueryResult queryResult = null;
-                    try {
-                        queryResult = query.evaluate();
-                        while (queryResult.hasNext()) {
-                            BindingSet item = queryResult.next();
-                            internalCollection.add(new RDFDataUnitEntryImpl(item.getValue(SYMBOLIC_NAME_BINDING).stringValue(), new URIImpl(item.getValue(GRAPH_URI_BINDING).stringValue())));
-                        }
-                    } catch (QueryEvaluationException ex) {
-                        throw new DataUnitException("Could not select all files from repository", ex);
-                    } finally {
-                        if (queryResult != null) {
-                            try {
-                                queryResult.close();
-                            } catch (QueryEvaluationException ex) {
-                                LOG.warn("Error in close.", ex);
-                            }
+                } catch (QueryEvaluationException ex) {
+                    throw new DataUnitException("Could not select all files from repository", ex);
+                } finally {
+                    if (queryResult != null) {
+                        try {
+                            queryResult.close();
+                        } catch (QueryEvaluationException ex) {
+                            LOG.warn("Error in close.", ex);
                         }
                     }
                 }
