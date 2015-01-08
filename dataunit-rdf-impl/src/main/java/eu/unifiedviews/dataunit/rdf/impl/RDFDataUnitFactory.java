@@ -13,7 +13,7 @@ public class RDFDataUnitFactory implements DataUnitFactory {
 
     @Override
     public ManagableDataUnit create(String name, String uri, String directoryUri, CoreServiceBus coreServices) {
-        return new RDFDataUnitImpl(name, directoryUri, directoryUri, coreServices);
+        return new RDFDataUnitImpl(name, directoryUri, uri, coreServices);
     }
 
 }
