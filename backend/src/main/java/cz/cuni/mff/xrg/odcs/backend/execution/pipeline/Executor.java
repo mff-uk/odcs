@@ -473,6 +473,7 @@ public class Executor implements Runnable {
         // we do not interrupt !!! as there may
         // be running pre-post executors
         try {
+            executorThread.interrupt();
             executorThread.join();
         } catch (InterruptedException e) {
             // if we are interrupt stop waiting
