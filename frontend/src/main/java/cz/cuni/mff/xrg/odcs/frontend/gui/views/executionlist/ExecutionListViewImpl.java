@@ -533,7 +533,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 btnEdit.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
+                        presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipelineId").getValue());
                     }
                 });
                 btnEdit.addStyleName("small_button");
