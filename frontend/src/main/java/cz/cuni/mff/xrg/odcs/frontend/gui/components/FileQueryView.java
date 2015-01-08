@@ -18,7 +18,7 @@ public class FileQueryView extends QueryView {
 
         final Label label = new Label("Browser not available for FilesDataUnit");
         mainLayout.addComponent(label);
-        mainLayout.setComponentAlignment(mainLayout, Alignment.MIDDLE_CENTER);
+        mainLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 
         setCompositionRoot(mainLayout);
     }
