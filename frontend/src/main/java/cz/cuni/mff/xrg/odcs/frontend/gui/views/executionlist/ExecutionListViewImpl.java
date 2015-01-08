@@ -525,7 +525,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     }
                 });
 
-        executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn("pipelineName", new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
                 final Button btnEdit = new Button();
