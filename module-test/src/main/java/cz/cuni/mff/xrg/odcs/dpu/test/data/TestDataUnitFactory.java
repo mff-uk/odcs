@@ -7,13 +7,17 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
-import eu.unifiedviews.commons.rdf.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
@@ -82,11 +86,8 @@ public class TestDataUnitFactory {
                 repository.initialize();
                 initializedRepositories.put(pipelineId, repository);
             }
-            final ConnectionSource connectionSource = new ConnectionSource(repository, false);
-
-            //public RDFDataUnitImpl(String dataUnitName, String writeContextString, ConnectionSource connectionSource)
-
-            return rdfFactory.create(name, namedGraph, connectionSource, dataUnitWorkingDirectory);
+            return (ManageableWritableRDFDataUnit)rdfFactory.create(name, namedGraph,
+                    dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
         }
     }
 
@@ -104,9 +105,59 @@ public class TestDataUnitFactory {
                 repository.initialize();
                 initializedRepositories.put(pipelineId, repository);
             }
-            final ConnectionSource connectionSource = new ConnectionSource(repository, false);
-
-            return filesFactory.create(name, namedGraph, connectionSource, dataUnitWorkingDirectory);
+            return (ManageableWritableFilesDataUnit)filesFactory.create(name, namedGraph,
+                    dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
         }
+    }
+
+    private CoreServiceBus createCoreServiceBus(final Repository repository) {
+        return new CoreServiceBus() {
+            @Override
+            public <T> T getService(Class<T> serviceClass) throws IllegalArgumentException {
+                // Simple test implementation of bus service
+                if (serviceClass.isAssignableFrom(ConnectionSource.class)) {
+                    return (T)createConnectionSource(repository);
+                } else if (serviceClass.isAssignableFrom(FaultTolerant.class)) {
+                    return (T) new FaultTolerant() {
+
+                        @Override
+                        public void execute(FaultTolerant.Code codeToExecute)
+                                throws RepositoryException, DataUnitException {
+                            final RepositoryConnection conn =
+                                    createConnectionSource(repository).getConnection();
+                            try {
+                                codeToExecute.execute(conn);
+                            } finally {
+                                conn.close();
+                            }
+                        }
+
+                    };
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        };
+    }
+
+    private ConnectionSource createConnectionSource(final Repository repository) {
+        return new ConnectionSource() {
+
+            @Override
+            public RepositoryConnection getConnection() throws RepositoryException {
+                return repository.getConnection();
+            }
+
+            @Override
+            public boolean isRetryOnFailure() {
+                return false;
+            }
+
+            @Override
+            public ValueFactory getValueFactory() {
+                return repository.getValueFactory();
+            }
+
+        };
     }
 }
