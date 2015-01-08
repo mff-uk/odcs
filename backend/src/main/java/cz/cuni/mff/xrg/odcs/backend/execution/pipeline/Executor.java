@@ -376,7 +376,7 @@ public class Executor implements Runnable {
                 dpuResults.failure();
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
                         "DPU execution failed",
-                        "The DPU execution thread ends in non-standart way",
+                        "The DPU execution thread ends in non-standard way",
                         node.getDpuInstance(), execution, this));
             }
             execResult.add(dpuResults);
