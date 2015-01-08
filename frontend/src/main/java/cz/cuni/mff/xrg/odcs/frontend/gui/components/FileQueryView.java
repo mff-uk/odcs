@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -14,9 +15,9 @@ public class FileQueryView extends QueryView {
      */
     public FileQueryView() {
         final VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSizeFull();
+        mainLayout.setHeight("240px");
 
-        final Label label = new Label("Browser not available for FilesDataUnit");
+        final Label label = new Label("&nbsp;<b>Browser is not available.</b>", ContentMode.HTML);
         mainLayout.addComponent(label);
         mainLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 

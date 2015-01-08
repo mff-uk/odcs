@@ -36,6 +36,7 @@ public class Browse extends CustomComponent {
         this.execution = execution;
 
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(true);
 
         selector = new DataUnitSelector(execution);
         selector.addListener(new Listener() {
