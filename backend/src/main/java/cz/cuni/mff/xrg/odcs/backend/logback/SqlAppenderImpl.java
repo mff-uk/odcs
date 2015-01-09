@@ -140,10 +140,12 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
         LOG.trace("flushIntoDatabase called for {} logs", logs.size());
         try (PreparedStatement stmt = connection.prepareStatement(getInsertSQL())) {
             // append all logs
+            LOG.trace("Appending logs");
             for (ILoggingEvent item : logs) {
                 bindStatement(item, stmt);
                 stmt.addBatch();
             }
+            LOG.trace("Executing sql statement");
             // call insert
             stmt.executeBatch();
             stmt.close();
