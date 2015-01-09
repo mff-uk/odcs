@@ -14,6 +14,7 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -178,7 +179,9 @@ public class DPURecordWrap {
                 // setup the dialog
                 final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, new Locale("en", "US"));
                 configDialog.setContext(context);
-                configDialog.initialize();
+                if (configDialog instanceof InitializableConfigDialog) {
+                    ((InitializableConfigDialog) configDialog).initialize();
+                }
             }
         } else {
             // no configuration dialog
