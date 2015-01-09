@@ -178,6 +178,7 @@ public class DPURecordWrap {
                 // setup the dialog
                 final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, new Locale("en", "US"));
                 configDialog.setContext(context);
+                configDialog.initialize();
             }
         } else {
             // no configuration dialog
