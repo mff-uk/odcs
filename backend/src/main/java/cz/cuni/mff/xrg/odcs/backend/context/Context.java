@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +108,8 @@ public class Context implements DPUContext {
      */
     private boolean canceled;
 
+    private Locale locale;
+
     /**
      * True if the execution should be stopped on DPU's request. The execution
      * does not failed instantly by this.
@@ -123,6 +126,7 @@ public class Context implements DPUContext {
         this.errorMessage = false;
         this.canceled = false;
         this.stopExecution = false;
+        this.locale = null;
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -359,5 +363,14 @@ public class Context implements DPUContext {
         File result = new File(getGeneralWorkingDir(), "dpu_instance_" + String.valueOf(dpuInstance.getId()));
         result.mkdirs();
         return result.toURI().toASCIIString();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

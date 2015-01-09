@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
 import com.vaadin.ui.UI;
 
@@ -17,7 +18,7 @@ import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
  * configuration and configuration dialog.
- * 
+ *
  * @author Petyr
  */
 public class DPURecordWrap {
@@ -50,7 +51,7 @@ public class DPURecordWrap {
     /**
      * Try to save configuration from {@link #configDialog} into {@link #dpuRecord}. If the {@link #configDialog} is null nothing happen.
      * This function does not save data into database.
-     * 
+     *
      * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
@@ -71,7 +72,7 @@ public class DPURecordWrap {
     /**
      * Return configuration dialog for wrapped DPU. The configuration is not
      * set. To set dialog configuration call {@link #configuredDialog}
-     * 
+     *
      * @return configuration dialog for wrapped DPU
      * @throws ModuleException
      * @throws FileNotFoundException
@@ -92,7 +93,7 @@ public class DPURecordWrap {
     /**
      * If respective configuration dialog for wrapped DPU exist, then set it's
      * configuration. Otherwise do nothing.
-     * 
+     *
      * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
@@ -116,7 +117,7 @@ public class DPURecordWrap {
      * <li>DPU has configuration dialog.</li>
      * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
      * </ul>
-     * 
+     *
      * @return True if the configuration changed.
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
@@ -124,7 +125,7 @@ public class DPURecordWrap {
         if (configDialog == null || !dialogConfigured) {
             return false;
         }
-        // ok we satisfy necesary conditions, we may ask the dialog 
+        // ok we satisfy necesary conditions, we may ask the dialog
         // for changes
         try {
             final boolean isChanged = configDialog.hasConfigChanged();
@@ -136,7 +137,7 @@ public class DPURecordWrap {
 
     /**
      * Return description from the dialog.
-     * 
+     *
      * @return Null in case of no dialog.
      */
     public String getDescription() {
@@ -151,7 +152,7 @@ public class DPURecordWrap {
      * ({@link #configDialog} is not null) then nothing is done. If the {@link #dpuRecord} does not provide configuration dialog set {@link #configDialog} to
      * null.
      * Can possibly emit runtime exception.
-     * 
+     *
      * @throws ModuleException
      * @throws FileNotFoundException
      */
@@ -160,7 +161,7 @@ public class DPURecordWrap {
         if (configDialog == null) {
             // continue and load the dialog
         } else {
-            // already loaded .. 
+            // already loaded ..
             return;
         }
         // first we need load instance of the DPU
@@ -175,7 +176,7 @@ public class DPURecordWrap {
             configDialog = dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, new Locale("en", "US"));
                 configDialog.setContext(context);
             }
         } else {
@@ -187,12 +188,12 @@ public class DPURecordWrap {
 
     /**
      * Try to load configuration from {@link #dpuRecord} into {@link #configDialog}. Can possibly emit runtime exception.
-     * 
+     *
      * @throws DPUConfigException
      */
     private void loadConfigIntoDialog() throws DPUConfigException {
         if (configDialog == null) {
-            // no dialog .. nothing to do 
+            // no dialog .. nothing to do
             return;
         }
         // we try to configure the dialog

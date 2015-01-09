@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,5 +238,10 @@ public class TestContext implements DPUContext {
     @Override
     public String getDpuInstanceDirectory() {
         return dpuInstanceDirectory.toURI().toASCIIString();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return new Locale("en", "US");
     }
 }
