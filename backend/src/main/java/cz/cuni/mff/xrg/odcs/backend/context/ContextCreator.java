@@ -12,6 +12,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import eu.unifiedviews.dataunit.DataUnit;
 
 /**
@@ -31,6 +33,12 @@ abstract class ContextCreator {
 
     @Autowired
     private AppConfig appConfig;
+
+    /**
+     * Runtime properties facade.
+     */
+    @Autowired
+    protected RuntimePropertiesFacade runtimePropertiesFacade;
 
     @Autowired
     private AutowireCapableBeanFactory autowireBeanFactory;
@@ -53,7 +61,12 @@ abstract class ContextCreator {
         newContext.setDPU(dpuInstance);
         newContext.setContextInfo(contextInfo);
         newContext.setLastSuccExec(lastSuccExec);
-        newContext.setLocale(new Locale("en", "US"));
+        String localeName = "en_US";
+        RuntimeProperty localeNameProperty = runtimePropertiesFacade.getByName("locale");
+        if (localeNameProperty != null) {
+            localeName = localeNameProperty.getValue();
+        }
+        newContext.setLocale(new Locale(localeName));
 
         // prepare DataUnitManagers
         final File workingDir = new File(

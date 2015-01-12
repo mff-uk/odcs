@@ -4,23 +4,17 @@ import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
@@ -28,16 +22,19 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Detail of selected DPU. Consists of common properties, name and description
  * and configuration dialog specific for DPU, which is loaded from DPU's jar
  * file.
- * 
+ *
  * @author Škoda Petr
  * @author Bogo
  */
 public class DPUDetail extends Window {
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
 
@@ -57,7 +54,7 @@ public class DPUDetail extends Window {
     private Button btnSaveAndCommit;
 
     private Button btnCancel;
-    
+
     private Button btnCopyFromTemplate;
 
     private boolean result;
@@ -65,7 +62,7 @@ public class DPUDetail extends Window {
     /**
      * Basic constructor, takes DPUFacade. In order to generate the layout call {@link #build()}. The build function has to be called before any other
      * function.
-     * 
+     *
      * @param dpuFacade
      */
     public DPUDetail(DPUFacade dpuFacade) {
@@ -113,7 +110,7 @@ public class DPUDetail extends Window {
 
     /**
      * Build the footer line with buttons.
-     * 
+     *
      * @return The main layout of this section.
      */
     public HorizontalLayout buildFooter() {
@@ -129,13 +126,13 @@ public class DPUDetail extends Window {
         btnCancel = new Button("Cancel");
         btnCancel.setWidth("90px");
         buttonBar.addComponent(btnCancel);
-        
+
         btnCopyFromTemplate = new Button("Copy from template");
         btnCopyFromTemplate.setWidth("160px");
         buttonBar.addComponent(btnCopyFromTemplate);
         buttonBar.setExpandRatio(btnCopyFromTemplate, 1.0f);
         buttonBar.setComponentAlignment(btnCopyFromTemplate, Alignment.MIDDLE_RIGHT);
-        
+
         btnCopyFromTemplate.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -150,7 +147,7 @@ public class DPUDetail extends Window {
                 instance.setRawConf(oldConf);
             }
         });
-        
+
         btnSaveAsNew = new Button("Save as DPU template");
         btnSaveAsNew.setWidth("160px");
         buttonBar.addComponent(btnSaveAsNew);
@@ -199,12 +196,12 @@ public class DPUDetail extends Window {
 
     /**
      * Show DPU detail.
-     * 
+     *
      * @param dpu
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
         this.setCaption(String.format("%s detail%s", dpu.getName().trim(),
                 readOnly ? " - Read only mode" : ""));
 
@@ -246,7 +243,7 @@ public class DPUDetail extends Window {
 
     /**
      * Saves configuration of DPURecord Instance which was set in detail dialog.
-     * 
+     *
      * @return True if save was successful, false otherwise.
      */
     protected boolean saveDPUInstance() {
@@ -264,12 +261,12 @@ public class DPUDetail extends Window {
                     Notification.Type.ERROR_MESSAGE);
             return false;
         } catch (DPUConfigException e) {
-            LOG.error("saveDPUInstance",e);
+            LOG.error("saveDPUInstance", e);
             Notification.show("Failed to save configuration. Reason:", e
                     .getMessage(), Type.ERROR_MESSAGE);
             return false;
         } catch (Exception e) {
-            LOG.error("saveDPUInstance",e);
+            LOG.error("saveDPUInstance", e);
 
             Throwable rootCause = DecorationHelper.findFinalCause(e);
             String text = String.format("Exception: %s, Message: %s",
@@ -285,7 +282,7 @@ public class DPUDetail extends Window {
     /**
      * Creates new DPU in tree with prefilled configuration taken from current
      * configuration of this DPU.
-     * 
+     *
      * @return True if save was successful, false otherwise.
      */
     protected boolean saveDpuAsNew() {
@@ -305,7 +302,7 @@ public class DPUDetail extends Window {
 
     /**
      * True in case that the dialog save some changes.
-     * 
+     *
      * @return
      */
     public boolean getResult() {

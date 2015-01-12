@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -22,6 +23,8 @@ import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
  * @author Bogo
  */
 public class PipelineValidator {
+    @Autowired
+    private RuntimePropertiesFacade runtimeProperties;
 
     @Autowired
     private DPUExplorer dpuExplorer;
@@ -33,7 +36,7 @@ public class PipelineValidator {
 
     /**
      * Validate edges of graph.
-     * 
+     *
      * @param graph
      *            Graph to validate.
      * @return Is graph valid.
@@ -51,7 +54,7 @@ public class PipelineValidator {
 
     /**
      * Validate graph.
-     * 
+     *
      * @param graph
      *            Graph to validate.
      * @return Is graph valid.
@@ -72,14 +75,14 @@ public class PipelineValidator {
 
     /**
      * Validate DPU.
-     * 
+     *
      * @param dpu
      *            DPU to validate.
      * @return Is DPU valid.
      */
     public boolean checkDPUValidity(DPUInstanceRecord dpu) {
         LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
-        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade);
+        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale());
 
         // load instance
         AbstractConfigDialog<?> confDialog;
@@ -105,7 +108,7 @@ public class PipelineValidator {
     public class PipelineValidationException extends Exception {
         /**
          * Constructor.
-         * 
+         *
          * @param report
          *            Report from validation.
          */

@@ -23,7 +23,6 @@ import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
  * @author Petyr
  */
 public class DPURecordWrap {
-
     /**
      * Wrapped DPU.
      */
@@ -39,14 +38,17 @@ public class DPURecordWrap {
      */
     private final boolean isTemplate;
 
+    private Locale locale;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
+        this.locale = locale;
     }
 
     /**
@@ -177,7 +179,7 @@ public class DPURecordWrap {
             configDialog = dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, new Locale("en", "US"));
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
                     ((InitializableConfigDialog) configDialog).initialize();
