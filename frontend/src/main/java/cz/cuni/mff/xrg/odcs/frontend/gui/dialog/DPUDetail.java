@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.*;
@@ -33,7 +32,6 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
  * @author Bogo
  */
 public class DPUDetail extends Window {
-    @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
 
     private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
@@ -65,7 +63,8 @@ public class DPUDetail extends Window {
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade) {
+    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade) {
+        this.runtimePropertiesFacade = runtimePropertiesFacade;
         this.dpuFacade = dpuFacade;
         // build the layout
         build();
