@@ -11,3 +11,6 @@ ALTER TABLE exec_pipeline MODIFY stop boolean;
 ALTER TABLE exec_schedule MODIFY just_once boolean;
 ALTER TABLE exec_schedule MODIFY enabled boolean;
 ALTER TABLE exec_schedule MODIFY strict_timing boolean;
+
+INSERT INTO `runtime_properties` (name, value) VALUES ('locale', 'en');
+
