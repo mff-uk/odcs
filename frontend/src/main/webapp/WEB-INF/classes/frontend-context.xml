@@ -153,5 +153,4 @@
     </bean>
 
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
-
 </beans>

@@ -282,3 +282,4 @@ UNLOCK TABLES;
 
 INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
 INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
+INSERT INTO `runtime_properties` (name, value) VALUES ('locale', 'en');
