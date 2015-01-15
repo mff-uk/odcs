@@ -91,7 +91,7 @@ function start() {
      log_failure_msg
      return
    fi
-   if [ -f "/var/lock/subsys/${NAME}" ]; then
+   if [ -f "/var/lock/${NAME}" ]; then
         if [ -f "${UNIFIEDVIEWS_PID}" ]; then
             read kpid < ${UNIFIEDVIEWS_PID}
 #           if checkpid $kpid 2>&1; then
@@ -117,7 +117,7 @@ function start() {
     [ "$RETVAL" -eq "0" ] && $SU - $UNIFIEDVIEWS_USER -c "${UNIFIEDVIEWS_SCRIPT} start" >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
     if [ "$RETVAL" -eq "0" ]; then 
         log_success_msg
-        touch /var/lock/subsys/${NAME}
+        touch /var/lock/${NAME}
     else
         log_failure_msg "Error code ${RETVAL}"
     fi
@@ -127,10 +127,10 @@ function start() {
 }
 function stop() {
     echo -n "Stopping ${UNIFIEDVIEWS_PROG}: "
-    if [ -f "/var/lock/subsys/${NAME}" ]; then
+    if [ -f "/var/lock/${NAME}" ]; then
       parseOptions
       if [ "$RETVAL" -eq "0" ]; then
-         touch /var/lock/subsys/${NAME} 2>&1 || RETVAL="4"
+         touch /var/lock/${NAME} 2>&1 || RETVAL="4"
 		  read kpid < ${UNIFIEDVIEWS_PID}
          [ "$RETVAL" -eq "0" ] && ${UNIFIEDVIEWS_SCRIPT} stop >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
       fi
@@ -154,7 +154,7 @@ function stop() {
                 fi
                 log_success_msg
             fi
-            rm -f /var/lock/subsys/${NAME} ${UNIFIEDVIEWS_PID}
+            rm -f /var/lock/${NAME} ${UNIFIEDVIEWS_PID}
         else
             log_failure_msg
             RETVAL="4"
@@ -194,7 +194,7 @@ function status()
 
 function checklockfile()
 {
-   if [ -f /var/lock/subsys/${NAME} ]; then
+   if [ -f /var/lock/${NAME} ]; then
       pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
 # The lockfile exists but the process is not running
       if [ -z "$pid" ]; then

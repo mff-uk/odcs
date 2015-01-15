@@ -11,6 +11,8 @@
 
     <!-- listener for watching events -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener"/>
+    <!-- Facade for managing runtime properties -->
+    <bean id="runtimePropertiesFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacadeImpl"/>
 
     <!-- dummy DataUnit factory -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.spring.DummyDataUnitFactory"/>
@@ -80,6 +82,7 @@
     <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl"/>
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
+    <bean id="dbRuntimeProperties" class="cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimePropertiesImpl"/>
     <!-- scan for pre/post executors -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl"/>
 
