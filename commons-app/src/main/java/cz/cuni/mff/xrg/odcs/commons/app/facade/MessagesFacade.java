@@ -9,6 +9,7 @@ public interface MessagesFacade extends Facade {
 
     /**
      * Get the resource bundle string stored under key.
+     * Locale is retrieved from {@link org.springframework.context.i18n.LocaleContextHolder}.
      *
      * @param key
      *            resource bundle key

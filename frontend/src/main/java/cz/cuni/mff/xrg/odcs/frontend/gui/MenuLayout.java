@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -62,6 +63,12 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     protected AppConfig appConfig;
+
+    /**
+     * Provides internationalized messages.
+     */
+    @Autowired
+    private MessagesFacade messagesFacade;
 
     /**
      * Used layout.
@@ -240,12 +247,13 @@ public class MenuLayout extends CustomComponent {
     public void setNavigation(ClassNavigatorHolder navigatorHolder) {
         this.navigator = navigatorHolder;
         // init menuBar
-        menuItems.put("", menuBar.addItem("Home", new NavigateToCommand(Initial.class, navigator)));
-        menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
-        menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
-        menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
-        menuItems.put("Scheduler", menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator)));
-        menuItems.put("Administrator", menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator)));
+        menuItems.put("", menuBar.addItem(messagesFacade.getString("MenuLayout.home"), new NavigateToCommand(Initial.class, navigator)));
+        menuItems.put("PipelineList", menuBar.addItem(messagesFacade.getString("MenuLayout.pipelines"), new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
+        menuItems.put("DPURecord", menuBar.addItem(messagesFacade.getString("MenuLayout.dpuTemplates"), new NavigateToCommand(DPUPresenterImpl.class, navigator)));
+        menuItems.put("ExecutionList", menuBar.addItem(messagesFacade.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
+        menuItems.put("Scheduler", menuBar.addItem(messagesFacade.getString("MenuLayout.scheduler"), new NavigateToCommand(Scheduler.class, navigator)));
+        menuItems.put("Administrator", menuBar.addItem(messagesFacade.getString("MenuLayout.settings"), new NavigateToCommand(Settings.class, navigator)));
+
     }
 
     /**

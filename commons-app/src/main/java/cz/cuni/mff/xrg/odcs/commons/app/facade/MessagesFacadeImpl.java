@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Facade that provides internationalized messages from resource bundle.
@@ -14,11 +15,9 @@ public class MessagesFacadeImpl implements MessagesFacade {
     @Autowired
     private MessageSource messageSource;
 
-    @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
-
     /**
      * Get the resource bundle string stored under key.
+     * Locale is retrieved from {@link org.springframework.context.i18n.LocaleContextHolder}.
      *
      * @param key
      *            resource bundle key
@@ -30,7 +29,7 @@ public class MessagesFacadeImpl implements MessagesFacade {
     @Override
     public String getString(String key, Object... args) {
         try {
-            return messageSource.getMessage(key, args, runtimePropertiesFacade.getLocale());
+            return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
         } catch (NoSuchMessageException e) {
             return '!' + key + '!';
         }
