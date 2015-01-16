@@ -131,6 +131,16 @@
             </map>
         </property>
     </bean>
+    
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="basenames">
+            <list>
+                <value>classpath:messages</value>
+            </list>
+        </property>
+    </bean>
+    
 
     <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
