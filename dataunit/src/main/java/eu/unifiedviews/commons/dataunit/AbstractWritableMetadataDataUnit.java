@@ -482,11 +482,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             Value object = result.next().getObject();
             if (result.hasNext()) {
                 // More then one record.
-                throw new DataUnitException("Multiple values for predicate: " + predicate.stringValue());
+                throw new DataUnitException("Multiple matches in graph <" + graph.stringValue() +
+                        "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
             }
             return object;
         }
-        throw new DataUnitException("No value for required predicate: " + predicate.stringValue());
+        throw new DataUnitException("No match in graph <" + graph.stringValue() +
+                "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
     }
 
 }
