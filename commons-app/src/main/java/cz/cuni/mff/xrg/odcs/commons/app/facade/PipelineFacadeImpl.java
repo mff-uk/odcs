@@ -240,7 +240,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Transactional
     @Override
     public void createOpenEvent(Pipeline pipeline) {
-
+        LOG.trace("createOpenEvent() ... ");
         if (pipeline.getId() == null) {
             // pipeline has not been persisted yet
             // -> it cannot be opened by anyone
@@ -252,7 +252,7 @@ class PipelineFacadeImpl implements PipelineFacade {
             // user logged out in the meantime -> ignore
             return;
         }
-
+        LOG.trace("createOpenEvent() ... (getOpenEvent)");
         OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
 
         if (event == null) {
@@ -261,8 +261,11 @@ class PipelineFacadeImpl implements PipelineFacade {
             event.setUser(user);
         }
 
+        LOG.trace("createOpenEvent() ... (saving)");
         event.setTimestamp(new Date());
         openEventDao.save(event);
+
+        LOG.trace("createOpenEvent() ... done");
     }
 
     /**
