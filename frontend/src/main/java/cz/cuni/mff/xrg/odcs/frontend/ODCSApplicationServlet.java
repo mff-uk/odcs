@@ -87,9 +87,9 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 
         Date end = new Date();
         if (end.getTime() - start.getTime() > 1000) {
-            LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
+            LOG.warn("< service ({}) in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
         } else {
-            LOG.info("< service ({}) in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+            LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
         }
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
