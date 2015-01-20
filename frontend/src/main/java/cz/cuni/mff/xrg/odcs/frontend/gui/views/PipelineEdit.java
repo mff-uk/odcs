@@ -250,8 +250,11 @@ public class PipelineEdit extends ViewComponent {
             @Override
             public void refresh(Refresher source) {
                 if (pipeline != null && new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+                    LOG.trace("refresh - 0");
                     pipelineFacade.createOpenEvent(pipeline);
+                    LOG.trace("refresh - 1");
                     List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
+                    LOG.trace("refresh - 2");
                     if (!pipelineFacade.isUpToDate(pipeline)) {
                         editConflicts.setValue("Another user made changes to the version you are editing, please refresh the pipeline detail!");
                         paralelInfoLayout.setVisible(true);
