@@ -18,6 +18,10 @@ frontend/src/main/webapp/WEB-INF/config.properties
 nbactions.xml
 nb-configuration.xml
 
+# IntelliJ IDEA files
+.idea/
+*.iml
+
 # Frontend generated sources
 
 # Build Directories #
