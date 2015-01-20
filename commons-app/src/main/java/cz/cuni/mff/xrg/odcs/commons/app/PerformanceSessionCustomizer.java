@@ -51,6 +51,7 @@ public class PerformanceSessionCustomizer implements SessionCustomizer {
         // Set writer for logs - times are in nano seconds!! (10^-9)
 
         //if (System.getProperty("eclipseLink.log") != null) {
+        if (false)
         {
             session.setLog(new LogWriter());
 
