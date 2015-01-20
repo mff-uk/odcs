@@ -10,9 +10,11 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
@@ -24,97 +26,118 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 @Transactional(readOnly = true)
 class UserFacadeImpl implements UserFacade {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserFacadeImpl.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(UserFacadeImpl.class);
 
-    @Autowired
-    private DbUser userDao;
+	@Autowired
+	private DbUser userDao;
 
-    /**
-     * Factory for a new User.
-     * 
-     * @param username
-     * @param plainPassword
-     * @param email
-     * @return new user instance
-     */
-    @Override
-    public User createUser(String username, String plainPassword, EmailAddress email) {
+	@Autowired
+	private DbRoleEntity roleDao;
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(plainPassword);
-        user.setEmail(email);
+	/**
+	 * Factory for a new User.
+	 * 
+	 * @param username
+	 * @param plainPassword
+	 * @param email
+	 * @return new user instance
+	 */
+	@Override
+	public User createUser(String username, String plainPassword,
+			EmailAddress email) {
 
-        // set default notification setting
-        UserNotificationRecord notify = new UserNotificationRecord();
-        user.setNotification(notify);
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(plainPassword);
+		user.setEmail(email);
 
-        notify.addEmail(email);
-        notify.setTypeError(NotificationRecordType.INSTANT);
-        notify.setTypeSuccess(NotificationRecordType.DAILY);
+		// set default notification setting
+		UserNotificationRecord notify = new UserNotificationRecord();
+		user.setNotification(notify);
 
-        return user;
-    }
+		notify.addEmail(email);
+		notify.setTypeError(NotificationRecordType.INSTANT);
+		notify.setTypeSuccess(NotificationRecordType.DAILY);
 
-    /**
-     * @return list of all users persisted in database
-     */
-    @PostFilter("hasPermission(filterObject, 'view')")
-    @Override
-    public List<User> getAllUsers() {
-        return userDao.getAll();
-    }
+		return user;
+	}
 
-    /**
-     * @param id
-     *            primary key
-     * @return user with given id or <code>null<code>
-     */
-    @PostAuthorize("hasPermission(returnObject, 'view')")
-    @Override
-    public User getUser(long id) {
-        return userDao.getInstance(id);
-    }
+	/**
+	 * @return list of all users persisted in database
+	 */
+	@PostFilter("hasPermission(filterObject, 'view')")
+	@Override
+	public List<User> getAllUsers() {
+		return userDao.getAll();
+	}
 
-    /**
-     * Find User by his unique username. This method is not secured, so that
-     * yet unauthenticated users can login.
-     * 
-     * @param username
-     * @return user
-     */
-    @Override
-    public User getUserByUsername(String username) {
-        User user = userDao.getByUsername(username);
-        if (user == null) {
-            LOG.info("User with username {} was not found.", username);
-        }
+	/**
+	 * @param id
+	 *            primary key
+	 * @return user with given id or <code>null<code>
+	 */
+	@PostAuthorize("hasPermission(returnObject, 'view')")
+	@Override
+	public User getUser(long id) {
+		return userDao.getInstance(id);
+	}
 
-        return user;
-    }
+	/**
+	 * Find User by his unique username. This method is not secured, so that yet
+	 * unauthenticated users can login.
+	 * 
+	 * @param username
+	 * @return user
+	 */
+	@Override
+	public User getUserByUsername(String username) {
+		User user = userDao.getByUsername(username);
+		if (user == null) {
+			LOG.info("User with username {} was not found.", username);
+		}
 
-    /**
-     * Saves any modifications made to the User into the database.
-     * 
-     * @param user
-     */
-    @Transactional
-    @PreAuthorize("hasPermission(#user, 'save')")
-    @Override
-    public void save(User user) {
-        userDao.save(user);
-    }
+		return user;
+	}
 
-    /**
-     * Deletes pipeline from database.
-     * 
-     * @param user
-     */
-    @Transactional
-    @PreAuthorize("hasPermission(#user, 'delete')")
-    @Override
-    public void delete(User user) {
-        userDao.delete(user);
-    }
+	/**
+	 * Saves any modifications made to the User into the database.
+	 * 
+	 * @param user
+	 */
+	@Transactional
+	@PreAuthorize("hasPermission(#user, 'save')")
+	@Override
+	public void save(User user) {
+		userDao.save(user);
+	}
 
+	/**
+	 * Deletes pipeline from database.
+	 * 
+	 * @param user
+	 */
+	@Transactional
+	@PreAuthorize("hasPermission(#user, 'delete')")
+	@Override
+	public void delete(User user) {
+		userDao.delete(user);
+	}
+
+	/**
+	 * @return list of all roles persisted in database
+	 */
+	@Override
+	public List<RoleEntity> getAllRoles() {
+		return roleDao.getAllRoles();
+	}
+
+	/**
+	 * @param name name
+	 * @return RoleEntity or null
+	 */
+	@Override
+	public RoleEntity getRoleByName(String name) {
+		return roleDao.getRoleByName(name);
+	}
 }

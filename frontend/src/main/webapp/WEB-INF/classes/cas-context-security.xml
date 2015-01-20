@@ -13,34 +13,22 @@
 		<authentication-provider ref="authenticationProvider" />
 	</authentication-manager>
 
-	<!-- b:bean id="authenticationProvider" class="cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordAuthenticationProvider"> 
-		<b:constructor-arg ref="userFacade"/> </b:bean -->
 	<b:bean id="authenticationProvider"
 		class="org.springframework.security.cas.authentication.CasAuthenticationProvider"
 		p:serviceProperties-ref="serviceProperties" p:key="casAuthProviderKey">
 		<b:property name="authenticationUserDetailsService">
 			<b:bean
-				class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper"
-				p:userDetailsService-ref="userDetailsService" />
+				class="cz.cuni.mff.xrg.odcs.frontend.auth.CasAuthenticationUserDetailsService">
+				<b:constructor-arg ref="userFacade" />
+			</b:bean>
+
 		</b:property>
 		<b:property name="ticketValidator">
             <b:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
-			<!-- b:bean class="org.jasig.cas.client.validation.Cas20ProxyTicketValidator"
-				p:acceptAnyProxy="true" p:proxyCallbackUrl="${proxy.callback.url}" p:proxyGrantingTicketStorage-ref="pgtStorage" -->
 				<b:constructor-arg value="${cas.server.host}" />
 			</b:bean>
 		</b:property>
 	</b:bean>
-
-	<b:bean id="userDetailsService"
-		class="cz.cuni.mff.xrg.odcs.frontend.auth.FrontendUserDetailsServiceImpl">
-		<b:constructor-arg ref="userFacade" />
-	</b:bean>
-
-	<user-service id="userService">
-		<user name="user" password="test" authorities="User" />
-		<user name="admin" password="test" authorities="Administrator" />
-	</user-service>
 
 	<b:bean id="pgtStorage"
 		class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl" />
@@ -94,21 +82,12 @@
 		</b:property>
 	</b:bean>
 
-
 	<http entry-point-ref="casEntryPoint" use-expressions="true">
-		<!-- intercept-url pattern="/" access="permitAll" / -->
-		<intercept-url pattern="/**" access="hasRole('User')" />
-		<!-- intercept-url pattern="/login/cas**" access="permitAll" / -->
-		<intercept-url pattern="/VAADIN/**" access="permitAll" />
-		<intercept-url pattern="/UIDL/**" access="permitAll" />
-		<intercept-url pattern="/uidl/**" access="permitAll" />
-
+		<intercept-url pattern="/**" access="isAuthenticated()" />
 		<custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER" />
 		<custom-filter ref="singleLogoutFilter" before="CAS_FILTER" />
 		<custom-filter ref="casFilter" position="CAS_FILTER" />
 	</http>
-
-	<!-- // -->
 
 	<b:bean id="authenticationContext"
 		class="cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext" />
@@ -118,7 +97,4 @@
 		class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
 		<b:property name="invalidateHttpSession" value="true" />
 	</b:bean>
-
-	<!-- /// -->
-
 </b:beans>
