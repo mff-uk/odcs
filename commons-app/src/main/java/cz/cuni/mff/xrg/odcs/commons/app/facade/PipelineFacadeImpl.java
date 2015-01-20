@@ -275,7 +275,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
     @Override
     public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
-        LOG.trace("getOpenPipelineEvents({})", pipeline.getId());
+        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
         if (pipeline.getId() == null) {
             // pipeline has not been persisted yet
             // -> it cannot be opened by anyone else
@@ -286,10 +286,14 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             User loggedUser = authCtx.getUser();
-            return openEventDao.getOpenEvents(pipeline, from, loggedUser);
+            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from, loggedUser);
+            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+            return res;
         } else {
             // user is null
-            return openEventDao.getOpenEvents(pipeline, from);
+            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from);
+            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+            return res;
         }
     }
 
