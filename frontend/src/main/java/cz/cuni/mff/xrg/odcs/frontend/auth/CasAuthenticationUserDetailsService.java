@@ -20,6 +20,10 @@ public class CasAuthenticationUserDetailsService extends
 	
 	private UserFacade userFacade;
 	
+	/**
+	 * Constructor
+	 * @param userFacade UserFacade object used for loading of user data
+	 */
 	public CasAuthenticationUserDetailsService(UserFacade userFacade) {
 		this.userFacade = userFacade;
 	}
