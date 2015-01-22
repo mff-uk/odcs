@@ -10,7 +10,7 @@
 	<description />
 
 	<properties>
-		<project.java.version>1.8</project.java.version>
+		<project.java.version>1.7</project.java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -189,7 +189,7 @@
 						</goals>
                         <configuration>
                             <!-- Do not fail compulation on Java doc errors (Java 8). -->
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <!--<additionalparam>-Xdoclint:none</additionalparam>-->
                         </configuration>                        
 					</execution>
 				</executions>

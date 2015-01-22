@@ -14,7 +14,6 @@ public interface FaultTolerant {
     /**
      * Interface for user function to execute.
      */
-    @FunctionalInterface
     interface Code {
         
         /**

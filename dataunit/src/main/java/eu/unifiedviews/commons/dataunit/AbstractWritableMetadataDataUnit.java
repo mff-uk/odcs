@@ -174,7 +174,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
         final URI entrySubject = creatEntitySubject();
         try {
-            faultTolerant.execute((connection) -> addEntry(entrySubject, symbolicName, connection));
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    addEntry(entrySubject, symbolicName, connection);
+                }
+            });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Error when adding entry.", ex);
         }
@@ -196,22 +202,27 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
          * properly.
          */
         try {
-            faultTolerant.execute((connection) -> {
-                // Delete graph with entries.
-                connection.clear(writeContext);
-                // Delete records from Ontology.GRAPH_METADATA graph.
-                Update query;
-                try {
-                    query = connection.prepareUpdate(QueryLanguage.SPARQL, CLEAR_QUERY);
-                } catch (MalformedQueryException ex) {
-                    throw new DataUnitException(ex);
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+
+                    // Delete graph with entries.
+                    connection.clear(writeContext);
+                    // Delete records from Ontology.GRAPH_METADATA graph.
+                    Update query;
+                    try {
+                        query = connection.prepareUpdate(QueryLanguage.SPARQL, CLEAR_QUERY);
+                    } catch (MalformedQueryException ex) {
+                        throw new DataUnitException(ex);
+                    }
+                    query.setBinding(WRITE_CONTEXT_BINDING, writeContext);
+                    try {
+                        query.execute();
+                    } catch (UpdateExecutionException ex) {
+                        throw new DataUnitException(ex);
+                    }
                 }
-                query.setBinding(WRITE_CONTEXT_BINDING, writeContext);
-                try {
-                    query.execute();
-                } catch (UpdateExecutionException ex) {
-                    throw new DataUnitException(ex);
-                }                
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Could not clear metadata.", ex);
@@ -258,27 +269,31 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     public void store() throws DataUnitException {
         // Write context - read and write.
         try {
-           faultTolerant.execute((connection) -> {
-                final ValueFactory valueFactory = connection.getValueFactory();
-                for (URI context : readContexts) {
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    final ValueFactory valueFactory = connection.getValueFactory();
+                    for (URI context : readContexts) {
+                        connection.add(
+                                writeContext,
+                                valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
+                                context,
+                                valueFactory.createURI(Ontology.GRAPH_METADATA));
+                    }
+                    // Just one write context.
                     connection.add(
                             writeContext,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
-                            context,
+                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
+                            writeContext,
+                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                    // And entry counter.
+                    connection.add(
+                            writeContext,
+                            valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
+                            valueFactory.createLiteral(entryCounter.intValue()),
                             valueFactory.createURI(Ontology.GRAPH_METADATA));
                 }
-                // Just one write context.
-                connection.add(
-                        writeContext,
-                        valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
-                        writeContext,
-                        valueFactory.createURI(Ontology.GRAPH_METADATA));
-                // And entry counter.
-                connection.add(
-                        writeContext,
-                        valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
-                        valueFactory.createLiteral(entryCounter.intValue()),
-                        valueFactory.createURI(Ontology.GRAPH_METADATA));
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Could not store metadata", ex);
@@ -291,46 +306,50 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         // Read context - read and write.
         final URI metadataSourceGraph = getMetadataWriteGraphname();
         try {
-            faultTolerant.execute((connection) -> {
-                // Clear current structures.
-                readContexts.clear();
-                // Load.
-                final ValueFactory valueFactory = connection.getValueFactory();
-                final RepositoryResult<Statement> result = connection.getStatements(
-                        metadataSourceGraph,
-                        valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
-                        null,
-                        false,
-                        valueFactory.createURI(Ontology.GRAPH_METADATA));
-                while (result.hasNext()) {
-                    Statement contextStatement = result.next();
-                    readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
-                }
-                // Get read context - this a little bit strange as we already use this context
-                // to read this data, but nothing bad should happen.
-                final Value writeContextValue = getSingleObject(connection,
-                        metadataSourceGraph,
-                        valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
-                        valueFactory.createURI(Ontology.GRAPH_METADATA));
-                if (writeContextValue instanceof URI) {
-                    writeContext = (URI) writeContextValue;
-                } else {
-                    throw new DataUnitException("Write context must be a URI!");
-                }
-                // Get entry counter.
-                final Value entryValue = getSingleObject(connection,
-                        metadataSourceGraph,
-                        valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
-                        valueFactory.createURI(Ontology.GRAPH_METADATA));
-                if (entryValue instanceof Literal) {
-                    final Literal entryLiteral = (Literal) entryValue;
-                    try {
-                        entryCounter.set(entryLiteral.intValue());
-                    } catch (NumberFormatException ex) {
-                        throw new DataUnitException("Entry counter must be an integer!", ex);
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    // Clear current structures.
+                    readContexts.clear();
+                    // Load.
+                    final ValueFactory valueFactory = connection.getValueFactory();
+                    final RepositoryResult<Statement> result = connection.getStatements(
+                            metadataSourceGraph,
+                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
+                            null,
+                            false,
+                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                    while (result.hasNext()) {
+                        Statement contextStatement = result.next();
+                        readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
                     }
-                } else {
-                    throw new DataUnitException("Entry counter must be an integer!");
+                    // Get read context - this a little bit strange as we already use this context
+                    // to read this data, but nothing bad should happen.
+                    final Value writeContextValue = getSingleObject(connection,
+                            metadataSourceGraph,
+                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
+                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                    if (writeContextValue instanceof URI) {
+                        writeContext = (URI) writeContextValue;
+                    } else {
+                        throw new DataUnitException("Write context must be a URI!");
+                    }
+                    // Get entry counter.
+                    final Value entryValue = getSingleObject(connection,
+                            metadataSourceGraph,
+                            valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
+                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                    if (entryValue instanceof Literal) {
+                        final Literal entryLiteral = (Literal) entryValue;
+                        try {
+                            entryCounter.set(entryLiteral.intValue());
+                        } catch (NumberFormatException ex) {
+                            throw new DataUnitException("Entry counter must be an integer!", ex);
+                        }
+                    } else {
+                        throw new DataUnitException("Entry counter must be an integer!");
+                    }
                 }
             });
         } catch (RepositoryException ex) {
@@ -418,39 +437,43 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         final String queryWithGraphs = String.format(DUPLICATE_ENTRIES_QUERY, fromClause.toString());
         // Ask query and log result.
         try {
-            faultTolerant.execute((connection) -> {
-                boolean containDuplicity = false;
-                // prepare query.
-                TupleQuery duplicateEntries;
-                try {
-                    duplicateEntries = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryWithGraphs);
-                } catch (MalformedQueryException ex) {
-                    throw new DataUnitException(ex);
-                }
-                // Execute query.
-                TupleQueryResult result = null;
-                try {
-                    result = duplicateEntries.evaluate();
-                    while (result.hasNext()) {
-                        final BindingSet bindingSet = result.next();
-                        final String symbolicName = bindingSet.getValue(SYMBOLIC_NAME_BINDING).stringValue();
-                        containDuplicity = true;
-                        LOG.error("Duplicity entry found for symbollic name: %s", symbolicName);
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    boolean containDuplicity = false;
+                    // prepare query.
+                    TupleQuery duplicateEntries;
+                    try {
+                        duplicateEntries = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryWithGraphs);
+                    } catch (MalformedQueryException ex) {
+                        throw new DataUnitException(ex);
                     }
-                } catch (QueryEvaluationException ex) {
-                    throw new DataUnitException(ex);
-                } finally {
-                    if (result != null) {
-                        try {
-                            result.close();
-                        } catch (QueryEvaluationException ex) {
-                            LOG.warn("Error in close", ex);
+                    // Execute query.
+                    TupleQueryResult result = null;
+                    try {
+                        result = duplicateEntries.evaluate();
+                        while (result.hasNext()) {
+                            final BindingSet bindingSet = result.next();
+                            final String symbolicName = bindingSet.getValue(SYMBOLIC_NAME_BINDING).stringValue();
+                            containDuplicity = true;
+                            LOG.error("Duplicity entry found for symbollic name: %s", symbolicName);
+                        }
+                    } catch (QueryEvaluationException ex) {
+                        throw new DataUnitException(ex);
+                    } finally {
+                        if (result != null) {
+                            try {
+                                result.close();
+                            } catch (QueryEvaluationException ex) {
+                                LOG.warn("Error in close", ex);
+                            }
                         }
                     }
-                }
-                // Throw an exception?
-                if (containDuplicity) {
-                    throw new DataUnitException("Duplicate symbolic names found, see logs for more details.");
+                    // Throw an exception?
+                    if (containDuplicity) {
+                        throw new DataUnitException("Duplicate symbolic names found, see logs for more details.");
+                    }
                 }
             });
         } catch (RepositoryException ex) {

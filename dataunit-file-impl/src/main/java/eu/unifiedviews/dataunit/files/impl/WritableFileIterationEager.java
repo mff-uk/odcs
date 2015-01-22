@@ -11,6 +11,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,32 +61,36 @@ class WritableFileIterationEager implements FilesDataUnit.Iteration {
         // Execute and gather data.
         final List<FilesDataUnit.Entry> internalCollection = new LinkedList<>();
         try {
-            faultTolerant.execute((connection) -> {
-                TupleQuery query;
-                try {
-                    query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
-                } catch (MalformedQueryException ex) {
-                    throw new DataUnitException("Problem with system query.", ex);
-                }
-                // Clear set and load.
-                internalCollection.clear();
-                TupleQueryResult queryResult = null;
-                try {
-                    queryResult = query.evaluate();
-                    while (queryResult.hasNext()) {
-                        BindingSet item = queryResult.next();
-                        internalCollection.add(new FilesDataUnitEntryImpl(
-                                item.getValue(SYMBOLIC_NAME_BINDING).stringValue(),
-                                item.getValue(FILE_URI_BINDING).stringValue()));
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    TupleQuery query;
+                    try {
+                        query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
+                    } catch (MalformedQueryException ex) {
+                        throw new DataUnitException("Problem with system query.", ex);
                     }
-                } catch (QueryEvaluationException ex) {
-                    throw new DataUnitException("Could not select all files from repository", ex);
-                } finally {
-                    if (queryResult != null) {
-                        try {
-                            queryResult.close();
-                        } catch (QueryEvaluationException ex) {
-                            LOG.warn("Error in close.", ex);
+                    // Clear set and load.
+                    internalCollection.clear();
+                    TupleQueryResult queryResult = null;
+                    try {
+                        queryResult = query.evaluate();
+                        while (queryResult.hasNext()) {
+                            BindingSet item = queryResult.next();
+                            internalCollection.add(new FilesDataUnitEntryImpl(
+                                    item.getValue(SYMBOLIC_NAME_BINDING).stringValue(),
+                                    item.getValue(FILE_URI_BINDING).stringValue()));
+                        }
+                    } catch (QueryEvaluationException ex) {
+                        throw new DataUnitException("Could not select all files from repository", ex);
+                    } finally {
+                        if (queryResult != null) {
+                            try {
+                                queryResult.close();
+                            } catch (QueryEvaluationException ex) {
+                                LOG.warn("Error in close.", ex);
+                            }
                         }
                     }
                 }

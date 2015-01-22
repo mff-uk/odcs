@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -118,16 +119,20 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
         // Create subject and insert data.
         final URI entrySubject = this.creatEntitySubject();
         try {
-            faultTolerant.execute((connection) -> {
-                addEntry(entrySubject, symbolicName, connection);
-                final ValueFactory valueFactory = connection.getValueFactory();
-                // Add file uri.
-                connection.add(
-                        entrySubject,
-                        valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
-                        valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
-                        getMetadataWriteGraphname()
-                );
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    addEntry(entrySubject, symbolicName, connection);
+                    final ValueFactory valueFactory = connection.getValueFactory();
+                    // Add file uri.
+                    connection.add(
+                            entrySubject,
+                            valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                            valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
+                            getMetadataWriteGraphname()
+                    );
+                }
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);

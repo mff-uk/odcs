@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -92,16 +93,20 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
         final URI entrySubject = this.creatEntitySubject();
         try {
-            faultTolerant.execute((connection) -> {
-                addEntry(entrySubject, symbolicName, connection);
-                final ValueFactory valueFactory = connection.getValueFactory();
-                // Add file uri.
-                connection.add(
-                        entrySubject,
-                        valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
-                        existingDataGraphURI,
-                        getMetadataWriteGraphname()
-                );
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    addEntry(entrySubject, symbolicName, connection);
+                    final ValueFactory valueFactory = connection.getValueFactory();
+                    // Add file uri.
+                    connection.add(
+                            entrySubject,
+                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            existingDataGraphURI,
+                            getMetadataWriteGraphname()
+                    );
+                }
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);
@@ -114,16 +119,20 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
         final URI entrySubject = this.creatEntitySubject();
         try {
-            faultTolerant.execute((connection) -> {
-                addEntry(entrySubject, symbolicName, connection);
-                final ValueFactory valueFactory = connection.getValueFactory();
-                // Add file uri.
-                connection.add(
-                        entrySubject,
-                        valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
-                        entrySubject,
-                        getMetadataWriteGraphname()
-                );
+            faultTolerant.execute(new FaultTolerant.Code() {
+
+                @Override
+                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    addEntry(entrySubject, symbolicName, connection);
+                    final ValueFactory valueFactory = connection.getValueFactory();
+                    // Add file uri.
+                    connection.add(
+                            entrySubject,
+                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            entrySubject,
+                            getMetadataWriteGraphname()
+                    );
+                }
             });
         } catch (RepositoryException ex) {
             throw new DataUnitException("Problem with repositry.", ex);
