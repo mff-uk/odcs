@@ -1,16 +1,18 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimeProperties;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 
 /**
  * Facade for fetching persisted entities.
- * 
+ *
  * @author mvi
  *
  */
@@ -19,7 +21,7 @@ public class RuntimePropertiesFacadeImpl implements RuntimePropertiesFacade {
 
     @Autowired
     private DbRuntimeProperties runtimePropertiesDao;
-    
+
     @Override
     public List<RuntimeProperty> getAllRuntimeProperties() {
         return runtimePropertiesDao.getAll();
@@ -33,12 +35,22 @@ public class RuntimePropertiesFacadeImpl implements RuntimePropertiesFacade {
     @Transactional
     @Override
     public void save(RuntimeProperty property) {
-       runtimePropertiesDao.save(property);        
+        runtimePropertiesDao.save(property);
     }
 
     @Transactional
     @Override
     public void delete(RuntimeProperty property) {
         runtimePropertiesDao.delete(property);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Locale getLocale() {
+        RuntimeProperty rp = this.getByName(ConfigProperty.LOCALE.toString());
+        if (rp == null) {
+            return Locale.forLanguageTag("en_US");
+        }
+        return Locale.forLanguageTag(rp.getValue());
     }
 }

@@ -27,7 +27,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      * Unique id of pipeline execution.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
+    @SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
     private Long id;
 
     /**

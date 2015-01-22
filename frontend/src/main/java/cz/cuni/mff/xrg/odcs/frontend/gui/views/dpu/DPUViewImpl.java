@@ -22,6 +22,7 @@ import com.vaadin.ui.*;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
@@ -60,6 +61,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.
 
     private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
+
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
@@ -201,14 +205,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportAll.addStyleName("v-button-primary");
         buttonExportAll.setEnabled(false);
         buttonExportAll
-        .addClickListener(new com.vaadin.ui.Button.ClickListener() {
-            private static final long serialVersionUID = 1L;
+                .addClickListener(new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                presenter.exportAllEventHandler();
-            }
-        });
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        presenter.exportAllEventHandler();
+                    }
+                });
         buttonBar.addComponent(buttonExportAll);
 
         mainLayout.addComponent(buttonBar);
@@ -425,15 +429,15 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting DPU template",
                         "Delete " + selectedDpu.getName().toString() + " DPU template?", "Delete", "Cancel",
                         new ConfirmDialog.Listener() {
-                    private static final long serialVersionUID = 1L;
+                            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onClose(ConfirmDialog cd) {
-                        if (cd.isConfirmed()) {
-                            presenter.deleteDPUEventHandler();
-                        }
-                    }
-                });
+                            @Override
+                            public void onClose(ConfirmDialog cd) {
+                                if (cd.isConfirmed()) {
+                                    presenter.deleteDPUEventHandler();
+                                }
+                            }
+                        });
 
             }
         });
@@ -497,7 +501,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         String selectedDpuName = selectedDpuWrap.getDPUTemplateRecord().getName();
         String selecteDpuDescription =
                 selectedDpuWrap.getDPUTemplateRecord().isUseDPUDescription() ? "" :
-                    selectedDpuWrap.getDPUTemplateRecord().getDescription();
+                        selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
         dpuName.setReadOnly(!presenter.hasPermission("save"));
@@ -727,7 +731,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             Notification.show(
                     "DPU's configuration dialog throws when asked for changes."
                             + " It's assumed to be changed.",
-                            e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    e.getMessage(), Notification.Type.ERROR_MESSAGE);
             LOG.error("hasConfigChanged() throws for DPU '{}'",
                     selectedDpuWrap.getDPUTemplateRecord().getId(), e);
             return true;
@@ -738,8 +742,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if (!dpuName.getValue().equals(selectedDpu.getName())) {
             return true;
         } else if (
-                // we are not in dpuDescriptionMode
-                !(dpuDescription.getValue().isEmpty() && selectedDpu.isUseDPUDescription())
+        // we are not in dpuDescriptionMode
+        !(dpuDescription.getValue().isEmpty() && selectedDpu.isUseDPUDescription())
                 &&
                 !dpuDescription.getValue().equals(selectedDpu.getDescription())) {
             return true;
@@ -786,8 +790,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
 
             selectedDpuWrap.getDPUTemplateRecord()
-            .setShareType((ShareType) groupVisibility
-                    .getValue());
+                    .setShareType((ShareType) groupVisibility
+                            .getValue());
             presenter.saveDPUEventHandler(selectedDpuWrap);
         }
     }
@@ -797,7 +801,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu);
+            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);

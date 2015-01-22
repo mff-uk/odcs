@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import ch.qos.logback.classic.Level;
@@ -36,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 /**
  * Implementation of log appender. The code is inspired by {@link ch.qos.logback.core.db.DBAppenderBase}.
  * The appender is designed to append into single table in Virtuoso.
- * 
+ *
  * @author Petr Škoda
  */
 public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
@@ -95,19 +94,19 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Return string that is used as insert query into logging table.
-     * 
+     *
      * @return SQL command used to the insert data to the database.
      */
     private String getInsertSQL() {
         return "INSERT INTO logging"
-                + " (logLevel, timestmp, logger, message, dpu, execution, stack_trace, relative_id)"
+                + " (log_level, timestmp, logger, message, dpu, execution, stack_trace, relative_id)"
                 + " VALUES (?, ?, ? ,?, ?, ?, ?, ?)";
     }
 
     /**
      * Return not null {@link Connection}. If failed to get connection then
      * continue to try until success.
-     * 
+     *
      * @return Connection to the database.
      */
     private Connection getConnection() {
@@ -117,7 +116,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
                 connection = connectionSource.getConnection();
                 connection.setAutoCommit(false);
             } catch (SQLException ex) {
-                // wait for some time an try it again .. 
+                // wait for some time an try it again ..
                 LOG.error("Failed to get sql connection, next try in second.", ex);
                 try {
                     Thread.sleep(1000);
@@ -131,7 +130,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Store given logs into database.
-     * 
+     *
      * @param connection
      * @param logs
      * @return True only if all logs has been saved into database.
@@ -152,9 +151,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
             connection.commit();
         } catch (BatchUpdateException sqle) {
             LOG.error("Failed to save logs into database. Given logs will not be saved.", sqle);
-            // also reset the counter, as it may count logs that are not in 
+            // also reset the counter, as it may count logs that are not in
             // database .. this will force some queris into database
-            // but as we do not know which logs passed and which not we 
+            // but as we do not know which logs passed and which not we
             // have to do this
             relativeIdHolder.resetIdCounters();
             return true;
@@ -233,7 +232,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
             Connection connection = getConnection();
 
             // update next try based on result
-            // if the save failed, we try it again .. 
+            // if the save failed, we try it again ..
             while (toFetch != null) {
                 // if one of them failed, then we instantly end,
                 // close connection, get new one .. and give
@@ -254,7 +253,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
                             toFetch = null;
                         }
                     } catch (Exception ex) {
-                        // just for sure .. 
+                        // just for sure ..
                         LOG.error("Iterator throws!!!", ex);
                     }
 
@@ -277,7 +276,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     /**
      * Do immediate write of given log into database. If the database is down
      * then the log is not saved.
-     * 
+     *
      * @param eventObject
      */
     private void appendImmediate(ILoggingEvent eventObject) {
@@ -347,7 +346,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     public void append(ILoggingEvent eventObject) {
 
         if (supportsBatchUpdates) {
-            // we can use batch .. so we just add the logs into 
+            // we can use batch .. so we just add the logs into
             // the queue
             synchronized (lockList) {
                 primaryList.add(eventObject);
@@ -359,7 +358,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Bind the parameters to he insert statement.
-     * 
+     *
      * @param event
      * @param stmt
      * @throws Throwable
@@ -367,7 +366,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     protected synchronized void bindStatement(ILoggingEvent event,
             PreparedStatement stmt) throws Throwable {
 
-        /* ! ! ! ! ! ! ! ! ! 
+        /* ! ! ! ! ! ! ! ! !
          * As the message and stackTrace are BLOBS interpreted as string they
          * must not be empty -> they have to be null or have some content
          */
@@ -433,7 +432,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Convert information about stack trace into text form.
-     * 
+     *
      * @param proxy
      * @param sb
      */

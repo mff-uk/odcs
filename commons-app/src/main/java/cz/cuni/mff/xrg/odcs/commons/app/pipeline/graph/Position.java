@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -29,7 +30,8 @@ public class Position implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_position")
+    @SequenceGenerator(name = "seq_ppl_position", allocationSize = 1)
     private Long id;
 
     /**

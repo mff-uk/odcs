@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.SequenceGenerator;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
@@ -25,7 +26,8 @@ public abstract class NotificationRecord implements DataObject {
      * Unique ID for each scheduler notification.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
+    @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
     private Long id;
 
     /**

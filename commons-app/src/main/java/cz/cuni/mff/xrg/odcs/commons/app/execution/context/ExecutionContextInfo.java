@@ -64,7 +64,8 @@ public class ExecutionContextInfo implements DataObject {
      * Unique id of pipeline execution.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_pipeline")
+    @SequenceGenerator(name = "seq_exec_context_pipeline", allocationSize = 1)
     private Long id;
 
     /**

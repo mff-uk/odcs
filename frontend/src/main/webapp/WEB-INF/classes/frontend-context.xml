@@ -96,7 +96,16 @@
     <!-- dialogs -->
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype"/>
-   
+    
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="basenames">
+            <list>
+                <value>classpath:messages</value>
+            </list>
+        </property>
+    </bean>
+    
     <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
         <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
@@ -118,7 +127,6 @@
     </bean>
 
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
-
     <bean class="cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager"/>
 
 </beans>

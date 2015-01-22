@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>odcs</artifactId>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ODCleanStore</name>
 	<description />
@@ -14,13 +14,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- When removing -V also update OSGIModuleFacadeConfig -->
-		<uv-dpu-api.version>1.1.0-V-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.0.1-V</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>1.0.1-V</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>1.0.1-V</uv-dataunit-files.version>
-		<uv-dataunit-helpers.version>1.1.0-V-SNAPSHOT</uv-dataunit-helpers.version>
         <!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
+		<uv-dpu-api.version>1.2.0-SNAPSHOT</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>1.2.0-SNAPSHOT</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>1.2.0-SNAPSHOT</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>1.2.0-SNAPSHOT</uv-dataunit-files.version>
+		<uv-dataunit-helpers.version>1.2.0-SNAPSHOT</uv-dataunit-helpers.version>
 		<dataunit.version>1.5.1-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
@@ -65,7 +64,7 @@
 		<module>module-test</module>
 		<!-- build modules/plugins/dpus -->
 		<module>core-dpus</module>
-		<!--<module>master</module>-->
+		<module>master</module>
 	</modules>
 
 	<scm>
