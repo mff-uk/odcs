@@ -7,9 +7,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +26,7 @@ import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 
 /**
@@ -37,6 +47,23 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
     private final File workingDirectory;
 
     private final String workingDirectoryURI;
+
+    private static final String FILE_URI_BINDING = "fileUri";
+
+    private static final String UPDATE_EXISTING_FILE = ""
+                + "DELETE "
+                + "{ "
+                + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+                + "} "
+                + "INSERT "
+                + "{ "
+                + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?" + FILE_URI_BINDING + " "
+                + "} "
+                + "WHERE "
+                + "{"
+                + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+                + "?s <" + FilesDataUnit.PREDICATE_FILE_URI + "> ?o "
+                + "}";
 
     public LocalFSFilesDataUnit(String dataUnitName, String workingDirectoryURI,
             String writeContextString, CoreServiceBus coreServices) {
@@ -134,6 +161,57 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
         }
         // Then rdf.
         super.clear();
+    }
+
+    @Override
+    public void updateExistingFileURI(String symbolicName, String newFileURIString) throws DataUnitException {
+        checkForMultithreadAccess();
+
+        RepositoryConnection connection = null;
+        RepositoryResult<Statement> result = null;
+        try {
+            // TODO michal.klempa think of not connecting everytime
+            connection = this.connectionSource.getConnection();
+            connection.begin();
+            ValueFactory valueFactory = connection.getValueFactory();
+            Literal symbolicNameLiteral = valueFactory.createLiteral(symbolicName);
+            try {
+                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, UPDATE_EXISTING_FILE);
+                update.setBinding(SYMBOLIC_NAME_BINDING, symbolicNameLiteral);
+                update.setBinding(FILE_URI_BINDING, valueFactory.createLiteral(newFileURIString));
+
+                DatasetImpl dataset = new DatasetImpl();
+                dataset.addDefaultGraph(getMetadataWriteGraphname());
+                dataset.setDefaultInsertGraph(getMetadataWriteGraphname());
+                dataset.addDefaultRemoveGraph(getMetadataWriteGraphname());
+
+                update.setDataset(dataset);
+                update.execute();
+            } catch (MalformedQueryException | UpdateExecutionException ex) {
+                // Not possible
+                throw new DataUnitException(ex);
+            }
+            connection.commit();
+        } catch (RepositoryException ex) {
+            throw new DataUnitException("Error when adding data graph.", ex);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error in close", ex);
+                    // eat close exception, we cannot do anything clever here
+                }
+            }
+        }
     }
 
 }
