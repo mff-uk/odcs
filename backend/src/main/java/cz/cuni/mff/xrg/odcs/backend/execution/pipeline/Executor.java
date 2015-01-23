@@ -470,9 +470,8 @@ public class Executor implements Runnable {
         // set cancel flag
         dpuExecutor.cancel();
         // interrupt executorThread, and wait for it ...
-        // we do not interrupt !!! as there may
-        // be running pre-post executors
         try {
+            // TODO Petr revise core code to kame sure that it's ready to work with potential interrupt
             executorThread.interrupt();
             executorThread.join();
         } catch (InterruptedException e) {
