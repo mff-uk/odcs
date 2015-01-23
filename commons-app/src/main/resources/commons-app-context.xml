@@ -95,4 +95,11 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator"/>
 
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager"/>
+
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactoryImpl"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
+    
+    <!-- DAO layer. -->
+    <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
+
 </beans>

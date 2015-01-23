@@ -23,9 +23,9 @@
     <!-- we use annotations to run tasks -->
     <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
     <!-- Used for asynch calls even for scheduled functions. -->
-    <task:executor id="taskExecutor" pool-size="8"/>
+    <task:executor id="taskExecutor" pool-size="4"/>
     <!-- Used for Scheduled tasks.-->
-    <task:scheduler id="taskScheduler" pool-size="8"/>
+    <task:scheduler id="taskScheduler" pool-size="4"/>
 
     <!-- Scan Views for bean definitions. -->
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
@@ -67,7 +67,9 @@
 
     <!-- accessors -->
     <bean id="pipelineAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor"/>
+    <bean id="pipelineViewAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor"/>
     <bean id="executionAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor"/>
+    <bean id="executionViewAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor"/>
     <bean id="messageRecordAccessor" class="cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor"/>
 
     <!-- tranlator for vaadin's filters -->
@@ -94,43 +96,6 @@
     <!-- dialogs -->
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype"/>
-    <!-- TODO: we can use special package and factory class -->
-
-    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
-        <property name="key" value="${database.rdf.platform}"/>
-        <property name="implementations">
-            <map>
-                <entry key="inMemoryRDF">
-                    <bean id="inMemoryRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
-                    </bean>
-                </entry>
-                <entry key="localRDF">
-                    <bean id="localRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
-                    </bean>
-                </entry>
-                <entry key="virtuoso">
-                    <bean id="virtuosoRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-                <entry key="remoteRDF">
-                    <bean id="remoteRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf.RemoteRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-            </map>
-        </property>
-    </bean>
     
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="defaultEncoding" value="UTF-8" />
@@ -141,7 +106,6 @@
         </property>
     </bean>
     
-
     <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
         <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
@@ -163,4 +127,6 @@
     </bean>
 
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager"/>
+
 </beans>

@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
@@ -9,15 +11,17 @@ import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Save the context after DPU execution.
- * 
- * @author Petyr
+ * Check the state of data units.
+ *  
  */
 @Component
 public class CheckDataUnits implements DPUPostExecutor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CheckDataUnits.class);
 
     public static final int ORDER = ContextSaver.ORDER + 1;
 
@@ -28,17 +32,25 @@ public class CheckDataUnits implements DPUPostExecutor {
 
     @Override
     public boolean postAction(Node node, Map<Node, Context> contexts, Object dpuInstance, PipelineExecution execution, ProcessingUnitInfo unitInfo) {
-        // get the context
-        Context context = contexts.get(node);
-        // save it
+        final Context context = contexts.get(node);
+        boolean result = true;
         for (ManagableDataUnit managableDataUnit : context.getOutputs()) {
-            managableDataUnit.isReleaseReady();
+            try {
+                managableDataUnit.checkConsistency();
+            } catch (DataUnitException ex) {
+                LOG.error("dataUnit.checkConsistency failed.", ex);
+                result = false;
+            }
         }
         for (ManagableDataUnit managableDataUnit : context.getInputs()) {
-            managableDataUnit.isReleaseReady();
+            try {
+                managableDataUnit.checkConsistency();
+            } catch (DataUnitException ex) {
+                LOG.error("dataUnit.checkConsistency failed.", ex);
+                result = false;
+            }
         }
-        // and return true
-        return true;
+        return result;
     }
 
 }

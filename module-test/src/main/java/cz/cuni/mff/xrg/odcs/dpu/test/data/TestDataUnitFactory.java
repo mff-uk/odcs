@@ -7,18 +7,22 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
+import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
 
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
@@ -33,14 +37,18 @@ public class TestDataUnitFactory {
      */
     private int dataUnitIdCounter = 0;
 
-    private Object counterLock = new Object();
+    private final Object counterLock = new Object();
 
     /**
      * Working directory.
      */
     private final File workingDirectory;
 
-    private final Map<String, Repository> initializedRepositories = new HashMap<String, Repository>();
+    private final Map<String, Repository> initializedRepositories = new HashMap<>();
+
+    private final RDFDataUnitFactory rdfFactory = new RDFDataUnitFactory();
+
+    private final FilesDataUnitFactory filesFactory = new FilesDataUnitFactory();
 
     /**
      * Create a {@link TestDataUnitFactory} that use given directory as working
@@ -59,27 +67,27 @@ public class TestDataUnitFactory {
      *
      * @param name
      *            Name of the DataUnit.
-     * @param useVirtuoso
-     *            False to use local repository, True to use Virtuoso.
      * @return New {@link ManagableRdfDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public ManagableRdfDataUnit createRDFDataUnit(String name) throws RepositoryException {
+    public ManageableWritableRDFDataUnit createRDFDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
         synchronized (counterLock) {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile();
+
             Repository repository = initializedRepositories.get(pipelineId);
             if (repository == null) {
                 repository = new SailRepository(new NativeStore(new File(workingDirectory, pipelineId)));
                 repository.initialize();
                 initializedRepositories.put(pipelineId, repository);
             }
-
-            return new LocalRDFDataUnit(
-                    repository,
-                    name,
-                    namedGraph);
+            return (ManageableWritableRDFDataUnit)rdfFactory.create(name, namedGraph,
+                    dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
         }
     }
 
@@ -88,9 +96,68 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
-            String workingDirectoryURIString = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile().toURI().toASCIIString();
-            RDFDataUnit backingDataUnit = this.createRDFDataUnit(name);
-            return new LocalFSFilesDataUnit(name, workingDirectoryURIString, backingDataUnit);
+
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile();
+    
+            Repository repository = initializedRepositories.get(pipelineId);
+            if (repository == null) {
+                repository = new SailRepository(new NativeStore(new File(workingDirectory, pipelineId)));
+                repository.initialize();
+                initializedRepositories.put(pipelineId, repository);
+            }
+            return (ManageableWritableFilesDataUnit)filesFactory.create(name, namedGraph,
+                    dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
         }
+    }
+
+    private CoreServiceBus createCoreServiceBus(final Repository repository) {
+        return new CoreServiceBus() {
+            @Override
+            public <T> T getService(Class<T> serviceClass) throws IllegalArgumentException {
+                // Simple test implementation of bus service
+                if (serviceClass.isAssignableFrom(ConnectionSource.class)) {
+                    return (T)createConnectionSource(repository);
+                } else if (serviceClass.isAssignableFrom(FaultTolerant.class)) {
+                    return (T) new FaultTolerant() {
+
+                        @Override
+                        public void execute(FaultTolerant.Code codeToExecute)
+                                throws RepositoryException, DataUnitException {
+                            final RepositoryConnection conn =
+                                    createConnectionSource(repository).getConnection();
+                            try {
+                                codeToExecute.execute(conn);
+                            } finally {
+                                conn.close();
+                            }
+                        }
+
+                    };
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        };
+    }
+
+    private ConnectionSource createConnectionSource(final Repository repository) {
+        return new ConnectionSource() {
+
+            @Override
+            public RepositoryConnection getConnection() throws RepositoryException {
+                return repository.getConnection();
+            }
+
+            @Override
+            public boolean isRetryOnFailure() {
+                return false;
+            }
+
+            @Override
+            public ValueFactory getValueFactory() {
+                return repository.getValueFactory();
+            }
+
+        };
     }
 }
