@@ -17,3 +17,7 @@ INSERT INTO `runtime_properties` (name, value) VALUES ('locale', 'en');
 
 -- Update loggin table, rename column logLevel into log_level.
 ALTER TABLE `logging` CHANGE COLUMN `logLevel` `log_level` INT(11) NOT NULL ;
+
+-- Update version.
+UPDATE `properties` SET `value` = '001.006.000' WHERE `key` = 'UV.Core.version';
+UPDATE `properties` SET `value` = '001.002.000' WHERE `key` = 'UV.Plugin-DevEnv.version';
