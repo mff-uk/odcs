@@ -16,20 +16,19 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.ManageableWritableFilesDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
-import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import eu.unifiedviews.dataunit.files.WritableFilesDataUnit;
+import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.dpu.DPU;
 
 /**
@@ -150,9 +149,11 @@ public class TestEnvironment {
      *            Name of DataUnit.
      * @return Created {@link RDFDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public WritableRDFDataUnit createRdfFDataUnit(String name) throws RepositoryException {
-        ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
+    public WritableRDFDataUnit createRdfFDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         customDataUnits.put(name, rdf);
         return rdf;
     }
@@ -166,9 +167,11 @@ public class TestEnvironment {
      *            If true then Virtuoso is used as a storage.
      * @return Created input {@link RDFDataUnit}.
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) throws RepositoryException {
-        ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
+    public WritableRDFDataUnit createRdfInput(String name, boolean useVirtuoso) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addInput(name, rdf);
         return rdf;
     }
@@ -182,12 +185,13 @@ public class TestEnvironment {
      * @param useVirtuoso
      *            If true then Virtuoso is used as a storage.
      * @return Created output {@link RDFDataUnit}.
-     * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
      * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
     public WritableRDFDataUnit createRdfOutput(String name, boolean useVirtuoso)
-            throws RDFException, RepositoryException {
-        ManagableRdfDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
+            throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRDFDataUnit rdf = testDataUnitFactory.createRDFDataUnit(name);
         addOutput(name, rdf);
         return rdf;
     }
@@ -213,8 +217,6 @@ public class TestEnvironment {
      *
      * @param name
      *            Name of DataUnit.
-     * @param useVirtuoso
-     *            If true then Virtuoso is used as a storage.
      * @return Created input {@link WritableFilesDataUnit}.
      * @throws RepositoryException
      * @throws DataUnitException
@@ -272,7 +274,7 @@ public class TestEnvironment {
 
         // check ..
         if (url == null) {
-            throw new RDFException("Missing input file in resource for: "
+            throw new DataUnitException("Missing input file in resource for: "
                     + resourceName);
         }
 
@@ -318,23 +320,27 @@ public class TestEnvironment {
      */
     public void release() {
         // release all DataUnits ..
-        for (ManagableDataUnit item : inputDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+        try {
+            for (ManagableDataUnit item : inputDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
-        }
-        for (ManagableDataUnit item : outputDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+            for (ManagableDataUnit item : outputDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
-        }
-        for (ManagableDataUnit item : customDataUnits.values()) {
-            if (item != null) {
-                item.clear();
-                item.release();
+            for (ManagableDataUnit item : customDataUnits.values()) {
+                if (item != null) {
+                    item.clear();
+                    item.release();
+                }
             }
+        } catch (DataUnitException ex) {
+            throw new RuntimeException(ex);
         }
 
         // delete working directory ..

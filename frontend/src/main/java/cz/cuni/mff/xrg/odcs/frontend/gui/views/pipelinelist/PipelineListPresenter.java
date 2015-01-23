@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -143,14 +144,14 @@ public interface PipelineListPresenter extends Presenter {
      */
     public final class PipelineListData {
 
-        private final ReadOnlyContainer<Pipeline> container;
+        private final ReadOnlyContainer<PipelineView> container;
 
         /**
          * Gets the container.
          * 
          * @return Container.
          */
-        public ReadOnlyContainer<Pipeline> getContainer() {
+        public ReadOnlyContainer<PipelineView> getContainer() {
             return container;
         }
 
@@ -160,7 +161,7 @@ public interface PipelineListPresenter extends Presenter {
          * @param container
          *            Container to hold.
          */
-        public PipelineListData(ReadOnlyContainer<Pipeline> container) {
+        public PipelineListData(ReadOnlyContainer<PipelineView> container) {
             this.container = container;
         }
     }

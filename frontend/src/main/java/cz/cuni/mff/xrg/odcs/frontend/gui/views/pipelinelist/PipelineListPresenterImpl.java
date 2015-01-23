@@ -35,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
@@ -45,6 +46,8 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresen
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
+import eu.unifiedviews.commons.dao.DBPipelineView;
+import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
  * Implementation of {@link PipelineListPresenter}.
@@ -65,7 +68,13 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private DbPipeline dbPipeline;
 
     @Autowired
+    private DBPipelineView dbPipelineView;
+
+    @Autowired
     private PipelineAccessor pipelineAccessor;
+
+    @Autowired
+    private PipelineViewAccessor pipelineViewAccessor;
 
     @Autowired
     private PipelineListView view;
@@ -89,7 +98,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     private PipelineListData dataObject;
 
-    private DbCachedSource<Pipeline> cachedSource;
+    private DbCachedSource<PipelineView> cachedSource;
 
     private RefreshManager refreshManager;
 
@@ -113,7 +122,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     	
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
+//        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
+        cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
+
         dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
 
         // prepare view
@@ -237,8 +248,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public boolean canDeletePipeline(long pipelineId) {
-        Pipeline pipeline = cachedSource.getObject(pipelineId);
-        return permissions.hasPermission(pipeline, "delete");
+        //Pipeline pipeline = cachedSource.getObject(pipelineId);
+        //return permissions.hasPermission(pipeline, "delete");
+        return true;
     }
 
     @Override

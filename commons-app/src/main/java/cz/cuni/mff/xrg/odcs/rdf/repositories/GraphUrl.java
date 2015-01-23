@@ -8,7 +8,7 @@ package cz.cuni.mff.xrg.odcs.rdf.repositories;
  */
 public class GraphUrl {
 
-    private static final String prefix = "http://linked.opendata.cz/resource/odcs/internal/pipeline/";
+    private static final String prefix = "http://unifiedviews.eu/resource/internal/dataunit/";
 
     private GraphUrl() {
     }

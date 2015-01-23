@@ -20,7 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Examine the given DPU instance for {@link InputDataUnit} annotations. If

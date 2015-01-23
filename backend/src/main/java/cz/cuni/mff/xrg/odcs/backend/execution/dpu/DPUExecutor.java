@@ -234,22 +234,22 @@ public final class DPUExecutor implements Runnable {
                 LOG.error("DPU do not implement execution interface.");
             }
         } catch (DPUException e) {
-            LOG.error("Execution failed for DPUException.");
+            LOG.error("Execution failed for DPUException.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Exception e) {
-            LOG.error("Execution failed for Exception.");
+            LOG.error("Execution failed for Exception.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Error e) {
-            LOG.error("Execution failed for Error.");
+            LOG.error("Execution failed for Error.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Throwable e) {
-            LOG.error("Execution failed for Throwable.");
+            LOG.error("Execution failed for Throwable.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();

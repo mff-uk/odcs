@@ -376,7 +376,7 @@ public class Executor implements Runnable {
                 dpuResults.failure();
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
                         "DPU execution failed",
-                        "The DPU execution thread ends in non-standart way",
+                        "The DPU execution thread ends in non-standard way",
                         node.getDpuInstance(), execution, this));
             }
             execResult.add(dpuResults);
@@ -470,9 +470,9 @@ public class Executor implements Runnable {
         // set cancel flag
         dpuExecutor.cancel();
         // interrupt executorThread, and wait for it ...
-        // we do not interrupt !!! as there may
-        // be running pre-post executors
         try {
+            // TODO Petr revise core code to kame sure that it's ready to work with potential interrupt
+            executorThread.interrupt();
             executorThread.join();
         } catch (InterruptedException e) {
             // if we are interrupt stop waiting

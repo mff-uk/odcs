@@ -250,8 +250,11 @@ public class PipelineEdit extends ViewComponent {
             @Override
             public void refresh(Refresher source) {
                 if (pipeline != null && new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+                    LOG.trace("refresh - 0");
                     pipelineFacade.createOpenEvent(pipeline);
+                    LOG.trace("refresh - 1");
                     List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
+                    LOG.trace("refresh - 2");
                     if (!pipelineFacade.isUpToDate(pipeline)) {
                         editConflicts.setValue("Another user made changes to the version you are editing, please refresh the pipeline detail!");
                         paralelInfoLayout.setVisible(true);
@@ -291,13 +294,10 @@ public class PipelineEdit extends ViewComponent {
     private VerticalLayout buildMainLayout() {
         isExpanded = true;
 
-        //verticalSplit = new VerticalSplitPanel();
-        //verticalSplit.setSizeFull();
         // common part: create layout
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(new MarginInfo(false, true, false, true));
         mainLayout.setImmediate(true);
-        mainLayout.setMargin(true);
-        mainLayout.setStyleName("mainLayout");
 
         // top-level component properties
         //setSizeUndefined();
@@ -356,7 +356,7 @@ public class PipelineEdit extends ViewComponent {
             @Override
             protected String getCss(Component c) {
                 if (c instanceof TabSheet) {
-                    return "margin-left: 0px; margin-top: 5px;";
+                    return "margin-left: 0px; margin-top: 0px;";
                 } else if (c instanceof Panel) {
                     return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
                 } else if (c instanceof HorizontalLayout) {
@@ -476,7 +476,6 @@ public class PipelineEdit extends ViewComponent {
         });
 
         tabSheet = new TabSheet();
-
         standardTab = tabSheet.addTab(new Label("Under construction"), "Standard");
         standardTab.setEnabled(true);
 
@@ -788,14 +787,14 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupComponentSize() {
-        int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 60;
+        int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 30;
         int browserHeight = UI.getCurrent().getPage().getBrowserWindowHeight();
         if (pipelineCanvas.getCanvasWidth() < browserWidth) {
             tabSheet.setWidth(pipelineCanvas.getCanvasWidth() + 40, Unit.PIXELS);
         } else {
             tabSheet.setWidth(100, Unit.PERCENTAGE);
         }
-        int tabSheetHeight = browserHeight - (isExpanded ? 340 : 150);
+        int tabSheetHeight = browserHeight - (isExpanded ? 305 : 115);
         tabSheet.setHeight(Math.min(tabSheetHeight, pipelineCanvas.getCanvasHeight() + 60), Unit.PIXELS);
         tabSheet.markAsDirty();
     }

@@ -37,7 +37,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.GraphDeleter;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailComponent;
@@ -208,72 +207,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         pipelinesLayout.setImmediate(true);
         pipelinesLayout.setStyleName("settings");
         pipelinesLayout.setWidth("100%");
-        // add information from graph deleter
-        final Label deleteMsg = new Label("The last state of graph deleter: " +
-                GraphDeleter.getMessage());
-        pipelinesLayout.addComponent(deleteMsg);
-
-        final Label refreshLabel = new Label(
-                "The graph deletor is currently running ...");
-        pipelinesLayout.addComponent(refreshLabel);
-        final Button refreshButton = new Button("Refresh");
-        pipelinesLayout.addComponent(refreshButton);
-        final Label clearLabel = new Label(
-                "Delete all intermediate graphs created \n by the pipelines in the debug mode");
-        pipelinesLayout.addComponent(clearLabel);
-        final Button clearButton = new Button("Clear");
-        pipelinesLayout.addComponent(clearButton);
-
-        // hide some based on current state
-        if (GraphDeleter.isRunning()) {
-            clearLabel.setVisible(false);
-            clearButton.setVisible(false);
-        } else {
-            refreshLabel.setVisible(false);
-            refreshButton.setVisible(false);
-        }
-
-        // actions ...
-        refreshButton.addClickListener(new ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if (GraphDeleter.isRunning()) {
-                    // ok .. nothing, just show the message
-                    Notification.show("The graph deletor is still running.",
-                            Notification.Type.HUMANIZED_MESSAGE);
-                } else {
-                    // done .. update view
-                    deleteMsg.setValue("The last state of graph deleter: " +
-                            GraphDeleter.getMessage());
-                    refreshLabel.setVisible(false);
-                    refreshButton.setVisible(false);
-                    clearLabel.setVisible(true);
-                    clearButton.setVisible(true);
-                }
-            }
-        });
-
-        clearButton.addClickListener(new ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                // start the execution
-                GraphDeleter.deleteGraphs();
-                // show notification to the user
-                Notification.show("Virtuoso graph cleaning started ...",
-                        Notification.Type.HUMANIZED_MESSAGE);
-                // and update view - hide clear and show delete
-                deleteMsg.setValue("The last state of graph deleter: " +
-                        GraphDeleter.getMessage());
-                refreshLabel.setVisible(true);
-                refreshButton.setVisible(true);
-                clearLabel.setVisible(false);
-                clearButton.setVisible(false);
-            }
-        });
 
         //layout for Namespace Prefixes
 //		prefixesLayout = new VerticalLayout();

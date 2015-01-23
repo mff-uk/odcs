@@ -12,11 +12,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Provide access to resources.
  * 
+ * TODO Petr: use test to define the folder structure
+ *
  * @author Škoda Petr
  */
 public class ResourceManager {
@@ -46,8 +49,91 @@ public class ResourceManager {
      */
     private static final String EXPORT_DIR = "temp" + File.separator + "export";
 
+    /**
+     * Name of sub-directory where RDF repositories could store their data.
+     */
+    private static final String REPOSITORY_DIRECTORY = "repositories";
+
+    /**
+     * Prefix of sub-directory where data related to a single execution should be stored.
+     */
+    private static final String EXEC_DIR_PREFIX = "exec_";
+
+    /**
+     * Located under {@link #EXEC_DIR_PREFIX}.
+     */
+    private static final String EXEC_WORKING_DIR = "working";
+
+    /**
+     * Located under {@link #EXEC_DIR_PREFIX}.
+     */
+    private static final String EXEC_STORAGE_DIR = "storage";
+
+    private static final String DPU_PREFIX = "dpu_";
+
+    /**
+     * No prefix used for backward compatibility.
+     */
+    private static final String DATA_UNIT_PREFIX = "";
+
+    private static final String REPOSITORY_DIR = "repositories";
+
     @Autowired
-    private AppConfig appConfig;
+    protected AppConfig appConfig;
+
+    /**
+     *
+     * @param execution
+     * @return Root directory for pipeline execution. Directory does not have to exists.
+     * @throws MissingResourceException
+     */
+    public File getExecutionDir(PipelineExecution execution) throws MissingResourceException {
+        return new File(getRootWorkingDir(), EXEC_DIR_PREFIX + execution.getId().toString());
+    }
+
+    public File getExecutionRepositoryDir(Long executionId) throws MissingResourceException {
+        return new File(getRootWorkingDir(), EXEC_DIR_PREFIX + executionId.toString() +
+                File.separator + REPOSITORY_DIR);
+    }
+
+    public File getExecutionWorkingDir(PipelineExecution execution) throws MissingResourceException {
+        return new File(getExecutionDir(execution), EXEC_WORKING_DIR);
+    }
+
+    public File getExecutionStorageDir(PipelineExecution execution) throws MissingResourceException {
+        return new File(getExecutionDir(execution), EXEC_STORAGE_DIR);
+    }
+
+    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index)
+            throws MissingResourceException {
+        return new File(getDataUnitStorageDir(execution, dpu), DATA_UNIT_PREFIX + index.toString());
+    }
+
+    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu, Integer index)
+            throws MissingResourceException {
+        return new File(getDataUnitStorageDir(execution, dpu), DATA_UNIT_PREFIX + index.toString());
+    }
+
+    public File getDataUnitStorageDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
+        return new File(getExecutionDir(execution), EXEC_STORAGE_DIR + File.separatorChar +
+                getDpuDirectoryName(dpu));
+    }
+
+    public File getDataUnitWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
+        return new File(getExecutionDir(execution), EXEC_WORKING_DIR + File.separatorChar +
+                getDpuDirectoryName(dpu));
+    }
+
+    /**
+     *
+     * @param dpuInstance
+     * @return Name of directory for given dpu.
+     */
+    private String getDpuDirectoryName(DPUInstanceRecord dpuInstance) {
+        return DPU_PREFIX + dpuInstance.getId().toString();
+    }
 
     /**
      * Return jar file of given DPU.
@@ -72,6 +158,34 @@ public class ResourceManager {
     }
 
     /**
+     * 
+     * @param execution
+     * @param dpu
+     * @return Path to the DPU working directory.
+     * @throws MissingResourceException 
+     */
+    public File getDPUWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
+        // TODO Petr: we may utilize getDataUnitWorkingDir in some form
+        return new File(getExecutionWorkingDir(execution), 
+                getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
+    }
+
+    /**
+     *
+     * @param execution
+     * @param dpu
+     * @return Path to the DPU working directory.
+     * @throws MissingResourceException
+     */
+    public File getDPUStorageDir(PipelineExecution execution, DPUInstanceRecord dpu)
+            throws MissingResourceException {
+        // TODO Petr: we may utilize getDataUnitStorageDir in some form
+        return new File(getExecutionStorageDir(execution),
+                getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
+    }
+    
+    /**
      * @param dpu
      * @param user
      * @return Path to per-user DPU data storage.
@@ -82,12 +196,12 @@ public class ResourceManager {
             throw new MissingResourceException("Unknown user.");
         }
 
-        final String workingPath = getWorkingDir();
+        final String workingPath = getRootWorkingDir();
         final DPUTemplateRecord template = getDPUTemplate(dpu);
 
         // prepare relative part of the path
-        final String relativePath = DPU_DATE_USER_DIR + File.separator + user
-                .getUsername() + File.separator + template.getJarDirectory();
+        final String relativePath = DPU_DATE_USER_DIR + File.separator + user.getUsername() +
+                File.separator + template.getJarDirectory();
 
         return new File(workingPath, relativePath);
     }
@@ -98,7 +212,7 @@ public class ResourceManager {
      * @throws MissingResourceException
      */
     public File getDPUDataGlobalDir(DPURecord dpu) throws MissingResourceException {
-        final String workingPath = getWorkingDir();
+        final String workingPath = getRootWorkingDir();
         final DPUTemplateRecord template = getDPUTemplate(dpu);
 
         // prepare relative part of the path
@@ -114,7 +228,7 @@ public class ResourceManager {
      * @throws MissingResourceException
      */
     public File getImportTempDir() throws MissingResourceException {
-        final String workingPath = getWorkingDir();
+        final String workingPath = getRootWorkingDir();
         return new File(workingPath, IMPORT_DIR);
     }
 
@@ -132,7 +246,7 @@ public class ResourceManager {
      * @throws MissingResourceException
      */
     public File getExportTempDir() throws MissingResourceException {
-        final String workingPath = getWorkingDir();
+        final String workingPath = getRootWorkingDir();
         return new File(workingPath, EXPORT_DIR);
     }
 
@@ -148,12 +262,20 @@ public class ResourceManager {
     }
 
     /**
+     *
+     * @return Directory where RDF repositories should be stored.
+     * @throws MissingResourceException
+     */
+    public File getRootRepositoriesDir() throws MissingResourceException {
+        return new File(getRootWorkingDir(), REPOSITORY_DIRECTORY);
+    }
+
+    /**
      * @param dpu
      * @return Template for given DPU. Return given DPU if it's template.
      * @throws MissingResourceException
      */
-    private DPUTemplateRecord getDPUTemplate(DPURecord dpu)
-            throws MissingResourceException {
+    private DPUTemplateRecord getDPUTemplate(DPURecord dpu) throws MissingResourceException {
         final DPUTemplateRecord template;
         if (dpu instanceof DPUInstanceRecord) {
             template = ((DPUInstanceRecord) dpu).getTemplate();
@@ -173,7 +295,7 @@ public class ResourceManager {
      * @return Working directory.
      * @throws MissingResourceException
      */
-    private String getWorkingDir() throws MissingResourceException {
+    private String getRootWorkingDir() throws MissingResourceException {
         try {
             return appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR);
         } catch (MissingConfigPropertyException ex) {

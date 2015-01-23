@@ -525,7 +525,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     }
                 });
 
-        executionTable.addGeneratedColumn("pipeline.name", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn("pipelineName", new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
                 final Button btnEdit = new Button();
@@ -533,7 +533,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 btnEdit.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipeline.id").getValue());
+                        presenter.navigateToEventHandler(PipelineEdit.class, source.getItem(itemId).getItemProperty("pipelineId").getValue());
                     }
                 });
                 btnEdit.addStyleName("small_button");

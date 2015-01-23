@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.5.1-SNAPSHOT</version>
+		<version>1.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>dataunit-file-impl</artifactId>
 	<name>dataunit-file-impl</name>
@@ -16,6 +16,11 @@
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
 			<version>${uv-dpu-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-files</artifactId>
+			<version>${uv-dataunit-files.version}</version>
 		</dependency>
 		<dependency> <!-- dataunit project -->
 			<groupId>cz.cuni.mff.xrg.odcs</groupId>
@@ -41,7 +46,7 @@
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.5</version>
+			<version>1.4.7</version>
 		</dependency>
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>

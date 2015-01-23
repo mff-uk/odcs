@@ -48,13 +48,11 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.RDFDataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
@@ -63,9 +61,11 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryFilterManager;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.RegexFilter;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
 
 public class RepositoryFrontendHelper {
+
     private static final Logger log = LoggerFactory.getLogger(RepositoryFrontendHelper.class);
 
     /**
@@ -78,53 +78,24 @@ public class RepositoryFrontendHelper {
      * @param dataUnitInfo
      * @return Repository or null if there is no browser for given type.
      */
-    public static ManagableRdfDataUnit getRepository(ExecutionInfo executionInfo,
+    public static ManageableWritableRDFDataUnit getRepository(ExecutionInfo executionInfo,
             DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
+        final FrontendDataUnitManager dataUnitManager = ((AppEntry) UI.getCurrent()).getBean(FrontendDataUnitManager.class);
+        return dataUnitManager.getRDFDataUnit(executionInfo, dpuInstance, dataUnitInfo, FrontendDataUnitManager.CLOSE_TIME_SHORT);
+    }
 
-        // get type and directory
-        if (dataUnitInfo == null) {
-            // the context doesn't exist
-            return null;
-        }
-
-        //
-        if (executionInfo == null) {
-            log.error("executionInfo is null!");
-            return null;
-        }
-
-        DpuContextInfo dpuInfo = executionInfo.dpu(dpuInstance);
-        if (dpuInfo == null) {
-            log.error("DPU info is null!");
-            return null;
-        }
-        String dataUnitId = dpuInfo.createId(dataUnitInfo.getIndex());
-
-        switch (dataUnitInfo.getType()) {
-            case RDF:
-                try {
-                    RDFDataUnitFactory rdfDataUnitFactory = ((AppEntry) UI.getCurrent()).getBean(
-                            RDFDataUnitFactory.class);
-
-                    String namedGraph = GraphUrl.translateDataUnitId(dataUnitId);
-
-                    ManagableRdfDataUnit repository =
-                            rdfDataUnitFactory.create(executionInfo.getExecutionContext().generatePipelineId(), dataUnitInfo.getName(), namedGraph);
-
-                    // load data
-                    repository.load();
-
-                    return repository;
-
-                } catch (RuntimeException e) {
-                    log.error("Error", e);
-                    return null;
-                }
-
-            default:
-                return null;
-        }
-
+    /**
+     * Longer time before close then getRepository.
+     *
+     * @param executionInfo
+     * @param dpuInstance
+     * @param dataUnitInfo
+     * @return
+     */
+    public static ManageableWritableRDFDataUnit getRepositoryForDownload(ExecutionInfo executionInfo,
+            DPUInstanceRecord dpuInstance, DataUnitInfo dataUnitInfo) {
+        final FrontendDataUnitManager dataUnitManager = ((AppEntry) UI.getCurrent()).getBean(FrontendDataUnitManager.class);
+        return dataUnitManager.getRDFDataUnit(executionInfo, dpuInstance, dataUnitInfo, FrontendDataUnitManager.CLOSE_TIME_LONG);
     }
 
     /**
