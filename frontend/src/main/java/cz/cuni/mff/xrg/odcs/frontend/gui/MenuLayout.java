@@ -259,7 +259,7 @@ public class MenuLayout extends CustomComponent {
             LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, ex.getMessage());
         }
         // Add items.
-        menuItems.put("", menuBar.addItem(messagesFacade.getString("MenuLayout.home"), new NavigateToCommand(Initial.class, navigator)));
+        menuItems.put("", menuBar.addItem(instalName, new NavigateToCommand(Initial.class, navigator)));
         menuItems.put("PipelineList", menuBar.addItem(messagesFacade.getString("MenuLayout.pipelines"), new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
         menuItems.put("DPURecord", menuBar.addItem(messagesFacade.getString("MenuLayout.dpuTemplates"), new NavigateToCommand(DPUPresenterImpl.class, navigator)));
         menuItems.put("ExecutionList", menuBar.addItem(messagesFacade.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
