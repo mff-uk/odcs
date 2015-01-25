@@ -23,7 +23,7 @@ public class DbRoleEntityImpl extends DbAccessBase<RoleEntity> implements
 	public RoleEntity getRoleByName(String name) {
         final String stringQuery = "SELECT e FROM RoleEntity e WHERE e.name = :rname";
         TypedQuery<RoleEntity> query = createTypedQuery(stringQuery);
-        query.setParameter("uname", name);
+        query.setParameter("rname", name);
         return execute(query);
 	}
 }

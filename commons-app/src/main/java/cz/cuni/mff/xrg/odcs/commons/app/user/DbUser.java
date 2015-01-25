@@ -25,5 +25,12 @@ public interface DbUser extends DbAccess<User> {
      */
     public User getByUsername(String username);
     
-
+    /**
+     * Find User by his unique external identifier.
+     * 
+     * @param extid
+     * @return user
+     */
+    public User getByExtId(String extid);
+    
 }

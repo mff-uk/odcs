@@ -5,9 +5,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <b:bean class="cz.cuni.mff.xrg.odcs.frontend.HostnameVerifierUtil" init-method="allowLocalhost" />
+	<b:bean class="cz.cuni.mff.xrg.odcs.frontend.HostnameVerifierUtil"
+		init-method="allowLocalhost" />
 
-<debug/>
+	<debug />
 	<!-- // Configure Authentication mechanism -->
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider ref="authenticationProvider" />
@@ -24,7 +25,7 @@
 
 		</b:property>
 		<b:property name="ticketValidator">
-            <b:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+			<b:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
 				<b:constructor-arg value="${cas.server.host}" />
 			</b:bean>
 		</b:property>
@@ -49,10 +50,9 @@
 	<b:bean id="permissionEvaluator"
 		class="cz.cuni.mff.xrg.odcs.commons.app.auth.DefaultPermissionEvaluator" />
 
-	<!-- // -->
-
 	<!-- This filter handles a Single Logout Request from the CAS Server -->
 	<b:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter" />
+	
 	<!-- This filter redirects to the CAS Server to signal Single Logout should 
 		be performed -->
 	<b:bean id="requestSingleLogoutFilter"
@@ -78,7 +78,12 @@
 		<b:property name="authenticationFailureHandler">
 			<b:bean
 				class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"
-				p:defaultFailureUrl="${cas.failed.url}" />
+				p:defaultFailureUrl="/" />
+		</b:property>
+		<b:property name="authenticationSuccessHandler">
+			<b:bean
+				class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler"
+				p:defaultTargetUrl="/" p:alwaysUseDefaultTargetUrl="true" />
 		</b:property>
 	</b:bean>
 

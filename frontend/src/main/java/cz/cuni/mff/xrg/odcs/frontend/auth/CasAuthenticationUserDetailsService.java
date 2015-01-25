@@ -7,43 +7,59 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.cas.userdetails.AbstractCasAssertionUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 public class CasAuthenticationUserDetailsService extends
-		AbstractCasAssertionUserDetailsService {
-	
-	private static final Logger LOG = LoggerFactory
-			.getLogger(CasAuthenticationUserDetailsService.class);
-	
-	private UserFacade userFacade;
-	
-	/**
-	 * Constructor
-	 * @param userFacade UserFacade object used for loading of user data
-	 */
-	public CasAuthenticationUserDetailsService(UserFacade userFacade) {
-		this.userFacade = userFacade;
-	}
+        AbstractCasAssertionUserDetailsService {
 
-	@Override
-	protected UserDetails loadUserDetails(Assertion assertion) {
-		String username = assertion.getPrincipal().getName();
-		LOG.warn("loading user by username " + username);
-		
-		Map<String, Object> attributes = assertion.getAttributes();
-		LOG.warn("Roles: " + attributes.get("role"));
-		
-		LOG.warn("loading user by username " + username);
-        User user = userFacade.getUserByUsername(username);
-        
+    private static final Logger LOG = LoggerFactory
+            .getLogger(CasAuthenticationUserDetailsService.class);
+
+    private UserFacade userFacade;
+
+    /**
+     * Constructor
+     * 
+     * @param userFacade
+     *            UserFacade object used for loading of user data
+     */
+    public CasAuthenticationUserDetailsService(UserFacade userFacade) {
+        this.userFacade = userFacade;
+    }
+
+    @Override
+    protected UserDetails loadUserDetails(final Assertion assertion) {
+
+        String username = assertion.getPrincipal().getName();
+
+        Map<String, Object> attributes = assertion.getAttributes();
+        if (attributes != null) {
+            LOG.warn("Received role attributes: " + attributes.get("role"));
+        }
+        String[] roles = new String[] { "User" };
+
+        User user = userFacade.getUserByExtId(username);
+
         if (user == null) {
-        	LOG.error("user is null !");
-            throw new UsernameNotFoundException(username);
+            LOG.info("user is not found, trying to create him !");
+            user = userFacade.createUser(username, "*****", new EmailAddress(username + "@nomail.com"));
+            user.getExternalIdentifiers().add(username);
+            user.setTableRows(20);
         }
 
+        user.getRoles().clear();
+
+        for (String rolename : roles) {
+            RoleEntity role = userFacade.getRoleByName(rolename);
+            user.addRole(role);
+        }
+
+        userFacade.saveNoAuth(user);
+
         return user;
-	}
+    }
 }

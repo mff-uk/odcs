@@ -45,12 +45,30 @@ public interface UserFacade extends Facade {
 	User getUserByUsername(String username);
 
 	/**
+     * Find User by his externalId. This method is not secured, so that yet
+     * unauthenticated users can login.
+     * 
+     * @param extid
+     * @return user
+     */
+    User getUserByExtId(String extid);
+
+	
+	/**
 	 * Saves any modifications made to the User into the database.
 	 * 
 	 * @param user
 	 */
 	void save(User user);
 
+	/**
+     * Saves any modifications made to the User into the database.
+     * 
+     * @param user
+     */
+    void saveNoAuth(User user);
+
+	
 	/**
 	 * Deletes pipeline from database.
 	 * 

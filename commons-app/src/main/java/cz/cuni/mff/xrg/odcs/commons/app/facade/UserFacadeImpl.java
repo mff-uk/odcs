@@ -26,118 +26,148 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 @Transactional(readOnly = true)
 class UserFacadeImpl implements UserFacade {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(UserFacadeImpl.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(UserFacadeImpl.class);
 
-	@Autowired
-	private DbUser userDao;
+    @Autowired
+    private DbUser userDao;
 
-	@Autowired
-	private DbRoleEntity roleDao;
+    @Autowired
+    private DbRoleEntity roleDao;
 
-	/**
-	 * Factory for a new User.
-	 * 
-	 * @param username
-	 * @param plainPassword
-	 * @param email
-	 * @return new user instance
-	 */
-	@Override
-	public User createUser(String username, String plainPassword,
-			EmailAddress email) {
+    /**
+     * Factory for a new User.
+     * 
+     * @param username
+     * @param plainPassword
+     * @param email
+     * @return new user instance
+     */
+    @Override
+    public User createUser(String username, String plainPassword,
+            EmailAddress email) {
 
-		User user = new User();
-		user.setUsername(username);
-		user.setPassword(plainPassword);
-		user.setEmail(email);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(plainPassword);
+        user.setEmail(email);
 
-		// set default notification setting
-		UserNotificationRecord notify = new UserNotificationRecord();
-		user.setNotification(notify);
+        // set default notification setting
+        UserNotificationRecord notify = new UserNotificationRecord();
+        user.setNotification(notify);
 
-		notify.addEmail(email);
-		notify.setTypeError(NotificationRecordType.INSTANT);
-		notify.setTypeSuccess(NotificationRecordType.DAILY);
+        notify.addEmail(email);
+        notify.setTypeError(NotificationRecordType.INSTANT);
+        notify.setTypeSuccess(NotificationRecordType.DAILY);
 
-		return user;
-	}
+        return user;
+    }
 
-	/**
-	 * @return list of all users persisted in database
-	 */
-	@PostFilter("hasPermission(filterObject, 'view')")
-	@Override
-	public List<User> getAllUsers() {
-		return userDao.getAll();
-	}
+    /**
+     * @return list of all users persisted in database
+     */
+    @PostFilter("hasPermission(filterObject, 'view')")
+    @Override
+    public List<User> getAllUsers() {
+        return userDao.getAll();
+    }
 
-	/**
-	 * @param id
-	 *            primary key
-	 * @return user with given id or <code>null<code>
-	 */
-	@PostAuthorize("hasPermission(returnObject, 'view')")
-	@Override
-	public User getUser(long id) {
-		return userDao.getInstance(id);
-	}
+    /**
+     * @param id
+     *            primary key
+     * @return user with given id or <code>null<code>
+     */
+    @PostAuthorize("hasPermission(returnObject, 'view')")
+    @Override
+    public User getUser(long id) {
+        return userDao.getInstance(id);
+    }
 
-	/**
-	 * Find User by his unique username. This method is not secured, so that yet
-	 * unauthenticated users can login.
-	 * 
-	 * @param username
-	 * @return user
-	 */
-	@Override
-	public User getUserByUsername(String username) {
-		User user = userDao.getByUsername(username);
-		if (user == null) {
-			LOG.info("User with username {} was not found.", username);
-		}
+    /**
+     * Find User by his unique username. This method is not secured, so that yet
+     * unauthenticated users can login.
+     * 
+     * @param username
+     * @return user
+     */
+    @Override
+    public User getUserByUsername(String username) {
+        User user = userDao.getByUsername(username);
+        if (user == null) {
+            LOG.info("User with username {} was not found.", username);
+        }
 
-		return user;
-	}
+        return user;
+    }
 
-	/**
-	 * Saves any modifications made to the User into the database.
-	 * 
-	 * @param user
-	 */
-	@Transactional
-	@PreAuthorize("hasPermission(#user, 'save')")
-	@Override
-	public void save(User user) {
-		userDao.save(user);
-	}
+    /**
+     * Find User by his unique username. This method is not secured, so that yet
+     * unauthenticated users can login.
+     * 
+     * @param username
+     * @return user
+     */
+    @Override
+    public User getUserByExtId(String extid) {
+        User user = userDao.getByExtId(extid);
+        if (user == null) {
+            LOG.info("User with username {} was not found.", extid);
+        }
 
-	/**
-	 * Deletes pipeline from database.
-	 * 
-	 * @param user
-	 */
-	@Transactional
-	@PreAuthorize("hasPermission(#user, 'delete')")
-	@Override
-	public void delete(User user) {
-		userDao.delete(user);
-	}
+        return user;
+    }
 
-	/**
-	 * @return list of all roles persisted in database
-	 */
-	@Override
-	public List<RoleEntity> getAllRoles() {
-		return roleDao.getAllRoles();
-	}
+    
+    /**
+     * Saves any modifications made to the User into the database.
+     * 
+     * @param user
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#user, 'save')")
+    @Override
+    public void save(User user) {
+        userDao.save(user);
+    }
 
-	/**
-	 * @param name name
-	 * @return RoleEntity or null
-	 */
-	@Override
-	public RoleEntity getRoleByName(String name) {
-		return roleDao.getRoleByName(name);
-	}
+    /**
+     * Saves any modifications made to the User into the database.No Authorization of call, used for creating of user during authorization
+     * 
+     * @param user
+     */
+    @Transactional
+    @Override
+    public void saveNoAuth(User user) {
+        userDao.save(user);
+    }
+
+    /**
+     * Deletes pipeline from database.
+     * 
+     * @param user
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#user, 'delete')")
+    @Override
+    public void delete(User user) {
+        userDao.delete(user);
+    }
+
+    /**
+     * @return list of all roles persisted in database
+     */
+    @Override
+    public List<RoleEntity> getAllRoles() {
+        return roleDao.getAllRoles();
+    }
+
+    /**
+     * @param name
+     *            name
+     * @return RoleEntity or null
+     */
+    @Override
+    public RoleEntity getRoleByName(String name) {
+        return roleDao.getRoleByName(name);
+    }
 }
