@@ -61,6 +61,12 @@
 			<artifactId>uv-dataunit-files</artifactId>
 			<version>${uv-dataunit-files.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-relational</artifactId>
+			<version>${uv-dataunit-relational.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
