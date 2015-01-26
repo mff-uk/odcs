@@ -145,7 +145,8 @@ public class MenuLayout extends CustomComponent {
                 authService.logout(RequestHolder.getRequest());
                 authCtx.clear();
                 refreshUserBar();
-                navigator.navigateTo(Login.class);
+                getUI().getPage().setLocation(appConfig.getString(ConfigProperty.LOGOUT_URL));
+                //navigator.navigateTo(Login.class);
                 doAfterLogoutCleaning();
             }
         });

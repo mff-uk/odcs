@@ -57,8 +57,8 @@
 		be performed -->
 	<b:bean id="requestSingleLogoutFilter"
 		class="org.springframework.security.web.authentication.logout.LogoutFilter"
-		p:filterProcessesUrl="${logout.url}">
-		<b:constructor-arg value="${cas.logout.url}" />
+		p:filterProcessesUrl="/cas_logout">
+		<b:constructor-arg value="https://192.168.1.8:8443/cas2/logout?service=http%3A%2F%2F192.168.7.42%3A18080%2Funifiedviews%2F" />
 		<b:constructor-arg>
 			<b:bean
 				class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />

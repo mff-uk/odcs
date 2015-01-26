@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionEnum;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
@@ -67,6 +68,7 @@ class UserFacadeImpl implements UserFacade {
      * @return list of all users persisted in database
      */
     @PostFilter("hasPermission(filterObject, 'view')")
+
     @Override
     public List<User> getAllUsers() {
         return userDao.getAll();
