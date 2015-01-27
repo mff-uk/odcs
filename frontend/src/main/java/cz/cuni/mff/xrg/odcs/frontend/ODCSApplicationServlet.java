@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,8 @@ import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 public class ODCSApplicationServlet extends SpringVaadinServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ODCSApplicationServlet.class);
+
+    private int serviceCounter = 0;
 
     /**
      * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
@@ -76,8 +79,18 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         }
 
         // Do the business.
+        Date start = new Date();
+        int serviceId = serviceCounter++;
+        LOG.info("> service ({})", serviceId);
+
         super.service(request, response);
 
+        Date end = new Date();
+        if (end.getTime() - start.getTime() > 1000) {
+            LOG.warn("< service ({}) in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+        } else {
+            LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
+        }
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
         // by different thread, which will need to load security context from

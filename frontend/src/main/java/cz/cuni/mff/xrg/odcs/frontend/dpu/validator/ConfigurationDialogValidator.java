@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.validator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -16,6 +18,8 @@ import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 @Component
 class ConfigurationDialogValidator implements DPUValidator {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationDialogValidator.class);
+
     @Override
     public void validate(DPUTemplateRecord dpu, Object dpuInstance)
             throws DPUValidatorException {
@@ -27,6 +31,7 @@ class ConfigurationDialogValidator implements DPUValidator {
                 AbstractConfigDialog dialog = provider.getConfigurationDialog();
             } catch (Throwable t) {
                 // catch everything ..
+                LOG.error("Dialog load failed.", t);
                 throw new DPUValidatorException("Failed to load dialog for exception: " + t.getMessage());
             }
         } else {

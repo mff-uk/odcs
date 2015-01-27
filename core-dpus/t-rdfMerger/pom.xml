@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core-dpus</artifactId>
-		<version>1.5.1-SNAPSHOT</version>
+		<version>1.6.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews.plugins</groupId>
 	<artifactId>uv-t-rdfMerger</artifactId>
 	<name>T-RdfMerger</name>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<description>Merges RDF data in no time.</description>
 	<packaging>bundle</packaging>
 
@@ -22,12 +22,4 @@
 		<dpu.mainClass>RdfMerger</dpu.mainClass>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>cz.cuni.mff.xrg.odcs</groupId>
-			<artifactId>dataunit</artifactId>
-			<version>1.4.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

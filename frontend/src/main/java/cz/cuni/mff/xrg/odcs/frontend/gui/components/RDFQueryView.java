@@ -21,8 +21,6 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
@@ -41,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
@@ -148,8 +147,7 @@ public class RDFQueryView extends QueryView {
 
                     @Override
                     public InputStream getStream() {
-                        ManagableRdfDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(),
-                                getDataUnitInfo());
+                        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), getSelectedDpu(), getDataUnitInfo());
                         String query = getQuery();
                         if (repository == null || query == null) {
                             return null;
@@ -226,27 +224,6 @@ public class RDFQueryView extends QueryView {
                 }
             }
         });
-        resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                Object oValue = event.getItem().getItemProperty(event.getPropertyId()).getValue();
-                String uri;
-                if (oValue.getClass() == URIImpl.class) {
-                    uri = ((URIImpl) oValue).stringValue();
-                } else {
-                    uri = oValue.getClass() == String.class ? (String) oValue : oValue.toString();
-                    if (!uri.startsWith("http://")) {
-                        return;
-                    }
-                }
-                queryText.setValue(String.format("DESCRIBE <%s>", uri));
-                try {
-                    runQuery();
-                } catch (InvalidQueryException ex) {
-                    //Should not happen
-                }
-            }
-        });
         mainLayout.addComponent(resultTable);
         resultTableControls = resultTable.createControls();
         resultTableControls.setImmediate(true);
@@ -280,9 +257,8 @@ public class RDFQueryView extends QueryView {
                             }
                         }
 
-                        ManagableRdfDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu, tableDataUnit);
-                        return getDownloadData(tableRepo, tableQuery,
-                                downloadFormatSelect.getValue(), filters);
+                        ManageableWritableRDFDataUnit tableRepo = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), tableDpu, tableDataUnit);
+                        return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue(), filters);
                     }
                 });
         tableFileDownloader.extend(tableDownload);

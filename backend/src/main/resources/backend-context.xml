@@ -88,6 +88,7 @@
           scope="prototype" lazy-init="true"/>
 
     <!-- data unit factory class -->
+<!--
     <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory"/>
 
 	<bean id="filesDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnitFactory"/>
@@ -127,6 +128,7 @@
             </map>
         </property>
     </bean>
+-->
 
     <!-- store events into database -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase"/>
@@ -149,9 +151,6 @@
     <!-- autodiscovery for pipeline's pre/post executors -->
     <context:component-scan
             base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl"/>
-    <!-- autodiscovery for monitors -->
-    <context:component-scan
-            base-package="cz.cuni.mff.xrg.odcs.backend.monitor"/>
     <!-- components for sending reports -->
     <context:component-scan
             base-package="cz.cuni.mff.xrg.odcs.backend.report"/>

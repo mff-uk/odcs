@@ -18,7 +18,11 @@ DROP TABLE IF EXISTS "ppl_model";
 DROP TABLE IF EXISTS "dpu_instance";
 DROP TABLE IF EXISTS "dpu_template";
 DROP TABLE IF EXISTS "ppl_position";
+DROP TABLE IF EXISTS "user_role_permission";
+DROP TABLE IF EXISTS "permission";
+DROP TABLE IF EXISTS "usr_extuser";
 DROP TABLE IF EXISTS "usr_user_role";
+DROP TABLE IF EXISTS "role";
 DROP TABLE IF EXISTS "usr_user";
 DROP TABLE IF EXISTS "sch_email";
 DROP TABLE IF EXISTS "rdf_ns_prefix";
@@ -312,11 +316,41 @@ CREATE TABLE "usr_user"
 );
 CREATE INDEX "ix_USR_USER_email_id" ON "usr_user" ("email_id");
 
+CREATE SEQUENCE "seq_permission" START WITH 1;
+CREATE TABLE "permission" (
+  "id" INTEGER,
+  "name" varchar(142) NOT NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("name")
+);
+CREATE INDEX "ix_permission_name" ON "permission" ("name");
+
+CREATE SEQUENCE "seq_role" START WITH 1;
+CREATE TABLE "role" (
+  "id" INTEGER,
+  "name" varchar(142) NOT NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("name")
+);
+CREATE INDEX "ix_role_name" ON "role" ("name");
+
+CREATE TABLE "user_role_permission" (
+  "role_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  PRIMARY KEY ("role_id","permission_id")
+);
+
 CREATE TABLE "usr_user_role"
 (
   "user_id" INTEGER NOT NULL,
   "role_id" INTEGER NOT NULL,
   PRIMARY KEY ("user_id", "role_id")
+);
+
+CREATE TABLE "usr_extuser" (
+  "id_usr" INTEGER NOT NULL,
+  "id_extuser" varchar(25) NOT NULL,
+  PRIMARY KEY ("id_usr","id_extuser")
 );
 
 CREATE SEQUENCE "seq_rdf_ns_prefix" START 1;
@@ -557,6 +591,20 @@ ADD FOREIGN KEY ("user_id")
     REFERENCES "usr_user" ("id")
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
+  ALTER TABLE "user_role_permission"
+  ADD FOREIGN KEY ("permission_id") 
+  	REFERENCES "permission" ("id") 
+  	ON DELETE CASCADE ON UPDATE CASCADE;
+  
+  ALTER TABLE "user_role_permission"
+  ADD FOREIGN KEY ("role_id") 
+  	REFERENCES "role" ("id") 
+  	ON DELETE CASCADE ON UPDATE CASCADE;
+
+  ALTER TABLE "usr_extuser"
+  ADD FOREIGN KEY ("id_usr") 
+  	REFERENCES "usr_user" ("id")
+  	ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- Table "ppl_open_event"
 ALTER TABLE "ppl_open_event"
@@ -603,3 +651,21 @@ CREATE TABLE "logging"
 CREATE INDEX "ix_LOGGING_dpu" ON "logging" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "logging" ("execution");
 CREATE INDEX "ix_LOGGIN_relative_id" ON "logging" ("relative_id");
+
+-- Views.
+
+CREATE VIEW "exec_last_view" AS
+SELECT id, pipeline_id, t_end, t_start, status
+FROM "exec_pipeline" AS exec
+WHERE t_end = (SELECT max(t_end) FROM "exec_pipeline" AS lastExec WHERE exec.pipeline_id = lastExec.pipeline_id);
+
+CREATE VIEW "pipeline_view" AS
+SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status
+FROM "ppl_model" AS ppl
+LEFT JOIN "exec_last_view" AS exec ON exec.pipeline_id = ppl.id;
+
+CREATE VIEW "exec_view" AS
+SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change
+FROM "exec_pipeline" AS exec
+JOIN "ppl_model" AS ppl ON ppl.id = exec.pipeline_id
+JOIN "usr_user" AS owner ON owner.id = exec.owner_id;

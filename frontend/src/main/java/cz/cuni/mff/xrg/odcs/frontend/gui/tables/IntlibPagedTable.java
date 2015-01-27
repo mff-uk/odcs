@@ -51,7 +51,6 @@ public class IntlibPagedTable extends PagedFilterTable {
      * 
      * @return layout with table controls.
      */
-    @Override
     public HorizontalLayout createControls() {
 
         Label pageLabel = new Label("Page:&nbsp;", ContentMode.HTML);

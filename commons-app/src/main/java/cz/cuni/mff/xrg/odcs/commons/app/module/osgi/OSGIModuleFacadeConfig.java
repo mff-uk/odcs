@@ -150,7 +150,8 @@ class OSGIModuleFacadeConfig {
         String list = "";
         String delimiter = ",";
         try {
-            list = StringUtils.join(IOUtils.readLines(resource.getInputStream()), ",").replaceAll("-SNAPSHOT", ".SNAPSHOT");
+            // TODO repalceAll("-V" can be removed once version in root pom.xml are put back to normal
+            list = StringUtils.join(IOUtils.readLines(resource.getInputStream()), ",").replaceAll("-V","").replaceAll("-SNAPSHOT", ".SNAPSHOT");
             LOG.debug("list of package to expose: ", list);
         } catch (IOException e) {
             LOG.error("Error", e);

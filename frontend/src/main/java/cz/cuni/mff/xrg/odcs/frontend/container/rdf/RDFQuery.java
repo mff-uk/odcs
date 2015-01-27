@@ -25,7 +25,6 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
@@ -33,6 +32,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
 
 /**
@@ -47,15 +47,13 @@ public class RDFQuery implements Query {
 
     private static final String ALL_STATEMENT_QUERY = "CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}";
 
-    private String baseQuery;
+    private final String baseQuery;
 
-    private int batchSize;
+    private final int batchSize;
 
-    private RDFQueryDefinition queryDefinition;
+    private final RDFQueryDefinition queryDefinition;
 
     private ArrayList<Item> cachedItems;
-
-    private ManagableRdfDataUnit repository;
 
     /**
      * Constructor.
@@ -66,9 +64,6 @@ public class RDFQuery implements Query {
         this.baseQuery = queryDefinition.getBaseQuery();
         this.batchSize = queryDefinition.getBatchSize();
         this.queryDefinition = queryDefinition;
-        this.repository = RepositoryFrontendHelper
-                .getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
-
     }
 
     /**
@@ -78,7 +73,7 @@ public class RDFQuery implements Query {
      */
     @Override
     public int size() {
-
+        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             throw new RuntimeException("Unable to load RDFDataUnit.");
         }
@@ -100,7 +95,11 @@ public class RDFQuery implements Query {
                     Notification.Type.ERROR_MESSAGE);
             LOG.debug("Size query exception", ex);
         } finally {
-            repository.release();
+            try {
+                repository.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Faild to release repository.", ex);
+            }
         }
         return 0;
     }
@@ -125,6 +124,7 @@ public class RDFQuery implements Query {
             return cachedItems.subList(startIndex, startIndex + count);
         }
 
+        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             LOG.debug("Unable to load RDFDataUnit.");
             throw new RuntimeException("Unable to load RDFDataUnit.");
@@ -141,12 +141,11 @@ public class RDFQuery implements Query {
             restriction.setOffset(offset * batchSize);
         }
         String query = restriction.getRestrictedQuery();
-        SPARQLQueryType type;
-        Object data = null;
         RepositoryConnection connection = null;
         try {
-            type = getQueryType(query);
-            Graph graph = null;
+            SPARQLQueryType type = getQueryType(query);
+            Object data;
+            Graph graph;
             connection = repository.getConnection();
             switch (type) {
                 case SELECT:
@@ -221,14 +220,9 @@ public class RDFQuery implements Query {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    Notification.show("Connection problem",
-                            "Could close connection to frontend repository: "
-                            + ex.getCause().getMessage(),
-                            Notification.Type.ERROR_MESSAGE);
+                    LOG.warn("Can't close connection.", ex);
                 }
             }
-            // close reporistory
-            repository.release();
         }
         return null;
     }

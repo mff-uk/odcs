@@ -73,10 +73,11 @@ public class RecordDetail extends Window {
         mainLayout.addComponent(messageLabel, 0, 4);
 
         fullMessageContent = new RichTextArea();
-        fullMessageContent.setValue(record.getFullMessage());
+        fullMessageContent.setValue(record.getFullMessage().replaceAll("\\n", "</br>"));
         fullMessageContent.setReadOnly(true);
         fullMessageContent.setSizeFull();
         mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
+        mainLayout.setRowExpandRatio(5, 1.0f);
 
         mainLayout.setColumnExpandRatio(1, 1.0f);
         mainLayout.setRowExpandRatio(5, 1.0f);
