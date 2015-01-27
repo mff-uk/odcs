@@ -12,5 +12,12 @@ ALTER TABLE exec_schedule MODIFY just_once boolean;
 ALTER TABLE exec_schedule MODIFY enabled boolean;
 ALTER TABLE exec_schedule MODIFY strict_timing boolean;
 
+-- New runtime property for localization.
 INSERT INTO `runtime_properties` (name, value) VALUES ('locale', 'en');
 
+-- Update loggin table, rename column logLevel into log_level.
+ALTER TABLE `logging` CHANGE COLUMN `logLevel` `log_level` INT(11) NOT NULL ;
+
+-- Update version.
+UPDATE `properties` SET `value` = '001.005.005' WHERE `key` = 'UV.Core.version';
+UPDATE `properties` SET `value` = '001.002.000' WHERE `key` = 'UV.Plugin-DevEnv.version';
