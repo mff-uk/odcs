@@ -20,20 +20,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.Dataset;
-import org.openrdf.query.GraphQuery;
-import org.openrdf.query.GraphQueryResult;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.QueryResults;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.*;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
@@ -44,6 +31,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
@@ -52,6 +40,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
@@ -126,6 +115,7 @@ public class RepositoryFrontendHelper {
 
     public static File executeSelectQuery(RepositoryConnection connection, String selectQuery, String filePath,
             SelectFormatType selectType, Set<URI> dataGraph) throws InvalidQueryException {
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         try {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
@@ -168,7 +158,7 @@ public class RepositoryFrontendHelper {
 
         } catch (QueryEvaluationException | MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. " + ex.getMessage(),
+                    messages.getString("RepositoryFrontendHelper.select.invalidQuery") + ex.getMessage(),
                     ex);
         } catch (TupleQueryResultHandlerException ex) {
             log.error("Writing result to file fail. {}", ex.getMessage(),
@@ -182,7 +172,7 @@ public class RepositoryFrontendHelper {
         }
 
         throw new InvalidQueryException(
-                "Creating File with RDF data fault.");
+                messages.getString("RepositoryFrontendHelper.select.dataFault"));
 
     }
 
@@ -200,7 +190,7 @@ public class RepositoryFrontendHelper {
     public static Map<String, List<String>> executeSelectQuery(RepositoryConnection connection,
             String selectQuery, Set<URI> dataGraph)
             throws InvalidQueryException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         Map<String, List<String>> map = new LinkedHashMap<>();
 
         List<BindingSet> listBindings = new ArrayList<>();
@@ -217,7 +207,7 @@ public class RepositoryFrontendHelper {
             listBindings = Iterations.asList(result);
         } catch (QueryEvaluationException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. " + ex
+                    messages.getString("RepositoryFrontendHelper.evaluationException") + ex
                             .getMessage(),
                     ex);
         } finally {
@@ -268,7 +258,7 @@ public class RepositoryFrontendHelper {
     public static TupleQueryResult executeSelectQueryAsTuples(RepositoryConnection connection,
             String selectQuery, Set<URI> dataGraph)
             throws InvalidQueryException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         try {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
@@ -279,28 +269,27 @@ public class RepositoryFrontendHelper {
 
             try {
                 TupleQueryResult tupleResult = tupleQuery.evaluate();
-                log.debug(
-                        "Query {} has not null result.", selectQuery);
+                log.debug("Query {} has not null result.", selectQuery);
 
                 return tupleResult;
 
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
-                        "This query is probably not valid. " + ex
+                        messages.getString("RepositoryFrontendHelper.selectAsTuples.evaluation") + ex
                                 .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. "
+                    messages.getString("RepositoryFrontendHelper.selectAsTuples.malformed")
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             log.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);
         }
         throw new InvalidQueryException(
-                "Getting TupleQueryResult using SPARQL select query failed.");
+                messages.getString("RepositoryFrontendHelper.selectAsTuples.failed"));
     }
 
     /**
@@ -319,7 +308,7 @@ public class RepositoryFrontendHelper {
      *             case))
      */
     public static Graph describeURI(RepositoryConnection connection, Set<URI> dataGraph, Resource uriResource) throws InvalidQueryException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         if (uriResource instanceof URI) {
             String describeQuery = String.format("DESCRIBE <%s>", uriResource
                     .toString());
@@ -327,7 +316,7 @@ public class RepositoryFrontendHelper {
             return executeConstructQuery(connection, describeQuery, new DatasetBuilder().withDefaultGraphs(dataGraph).withNamedGraphs(dataGraph).build());
         } else {
             throw new InvalidQueryException(
-                    "Resource " + uriResource.toString() + "is not URI type");
+                    messages.getString("RepositoryFrontendHelper.describe.resource", uriResource.toString()));
         }
 
     }
@@ -346,7 +335,7 @@ public class RepositoryFrontendHelper {
      */
     public static Graph executeConstructQuery(RepositoryConnection connection, String constructQuery, Dataset dataSet)
             throws InvalidQueryException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         try {
 
             GraphQuery graphQuery = connection.prepareGraphQuery(
@@ -364,14 +353,14 @@ public class RepositoryFrontendHelper {
 
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
-                        "This query is probably not valid. " + ex
+                        messages.getString("RepositoryFrontendHelper.construct.evaluation") + ex
                                 .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. "
+                    messages.getString("RepositoryFrontendHelper.construct.malformed")
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             log.error("Connection to RDF repository failed. {}",
@@ -379,7 +368,7 @@ public class RepositoryFrontendHelper {
         }
 
         throw new InvalidQueryException(
-                "Getting GraphQueryResult using SPARQL construct query failed.");
+                messages.getString("RepositoryFrontendHelper.construct.failed"));
     }
 
     /**
@@ -401,7 +390,7 @@ public class RepositoryFrontendHelper {
      */
     public static File executeConstructQuery(RepositoryConnection connection, Set<URI> dataGraph, String constructQuery,
             RDFFormatType formatType, String filePath) throws InvalidQueryException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         try {
 
             GraphQuery graphQuery = connection.prepareGraphQuery(
@@ -418,14 +407,13 @@ public class RepositoryFrontendHelper {
 
                 graphQuery.evaluate(goal);
 
-                log.debug(
-                        "Query {} has not null result.", constructQuery);
+                log.debug("Query {} has not null result.", constructQuery);
 
                 return file;
 
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
-                        "This query is probably not valid. " + ex
+                        messages.getString("RepositoryFrontendHelper.construct2.evaluation") + ex
                                 .getMessage(),
                         ex);
             } catch (IOException ex) {
@@ -435,7 +423,7 @@ public class RepositoryFrontendHelper {
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. "
+                    messages.getString("RepositoryFrontendHelper.construct.malformed")
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             log.error("Connection to RDF repository failed. {}", ex
@@ -445,7 +433,7 @@ public class RepositoryFrontendHelper {
         }
 
         throw new InvalidQueryException(
-                "Creating File with RDF data fault.");
+                messages.getString("RepositoryFrontendHelper.construct2.failed"));
     }
 
     private static MyRDFHandler getHandlerForConstructQuery(File file,
@@ -476,7 +464,7 @@ public class RepositoryFrontendHelper {
      */
     public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph, Dataset dataset)
             throws RDFException {
-
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), RepositoryFrontendHelper.class.getClassLoader());
         try {
 
             String newUpdateQuery = AddGraphToUpdateQuery(updateQuery, dataGraph);
@@ -484,8 +472,7 @@ public class RepositoryFrontendHelper {
                     newUpdateQuery);
             myupdate.setDataset(dataset);
 
-            log.debug(
-                    "This SPARQL update query is valid and prepared for execution:");
+            log.debug("This SPARQL update query is valid and prepared for execution:");
             log.debug(newUpdateQuery);
 
             myupdate.execute();
@@ -500,7 +487,7 @@ public class RepositoryFrontendHelper {
 
         } catch (UpdateExecutionException ex) {
 
-            final String message = "SPARQL query was not executed !!!";
+            final String message = messages.getString("RepositoryFrontendHelper.update.not.executed");
             log.debug(message);
             log.debug(ex.getMessage());
 
@@ -508,7 +495,7 @@ public class RepositoryFrontendHelper {
 
         } catch (RepositoryException ex) {
             throw new RDFException(
-                    "Connection to repository is not available. "
+                    messages.getString("RepositoryFrontendHelper.update.exception")
                             + ex.getMessage(), ex);
         }
 
@@ -606,7 +593,7 @@ public class RepositoryFrontendHelper {
     private static void deleteNamedGraph(RepositoryConnection connection, String graphName) {
 
         try {
-            connection.clear(new URIImpl(graphName)); 
+            connection.clear(new URIImpl(graphName));
 
             log.info("Graph {} was sucessfully deleted", graphName);
         } catch (RepositoryException ex) {

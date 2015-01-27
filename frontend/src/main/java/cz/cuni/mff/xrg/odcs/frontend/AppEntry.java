@@ -27,6 +27,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -63,6 +64,9 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
+
+    @Autowired
+    private MessagesFacade messagesFacade;
 
     private RefreshManager refreshManager;
 
@@ -142,14 +146,14 @@ public class AppEntry extends com.vaadin.ui.UI {
                 Throwable cause = DecorationHelper.findFinalCause(event.getThrowable());
                 if (cause != null) {
                     if (cause.getClass() == VirtuosoException.class && ((VirtuosoException) cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
-                        Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+                        Notification.show(messagesFacade.getString("AppEntry.database.error"), messagesFacade.getString("AppEntry.database.error.description"), Type.ERROR_MESSAGE);
                         return;
                     }
 
                     // Display the error message in a custom fashion
                     //String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
                     //Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
-                    Notification.show("Unexpected error occured.", "Please reload the application.", Type.ERROR_MESSAGE);
+                    Notification.show(messagesFacade.getString("AppEntry.unexpected.error"), messagesFacade.getString("AppEntry.unexpected.error.description"), Type.ERROR_MESSAGE);
                     // and log ...
                     LOG.error("Uncaught exception", cause);
                 } else {
@@ -231,19 +235,20 @@ public class AppEntry extends com.vaadin.ui.UI {
                     }
 
                     // Prompt the user to save or cancel if the name is changed
-                    ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes.\nDo you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
-                        @Override
-                        public void onClose(ConfirmDialog cd) {
-                            if (cd.isConfirmed()) {
-                                if (!lastView.saveChanges()) {
-                                    return;
+                    ConfirmDialog.show(getUI(),
+                            messagesFacade.getString("AppEntry.confirmDialog.name"), messagesFacade.getString("AppEntry.confirmDialog.text"), messagesFacade.getString("AppEntry.confirmDialog.save"), messagesFacade.getString("AppEntry.confirmDialog.discard"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        if (!lastView.saveChanges()) {
+                                            return;
+                                        }
+                                    } else {
+                                        forceViewChange = true;
+                                    }
+                                    navigatorHolder.navigateTo(pendingViewAndParameters);
                                 }
-                            } else {
-                                forceViewChange = true;
-                            }
-                            navigatorHolder.navigateTo(pendingViewAndParameters);
-                        }
-                    });
+                            });
                     //Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
 
                     return false;

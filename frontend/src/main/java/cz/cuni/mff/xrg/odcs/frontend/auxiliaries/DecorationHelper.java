@@ -1,10 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 
 /**
  * Class with helper methods used in frontend.
@@ -116,8 +119,9 @@ public class DecorationHelper {
      * @return Icon for scheduled column.
      */
     public static Embedded getIconForScheduled(boolean isScheduled) {
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), DecorationHelper.class.getClassLoader());
         ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.png" : "icons/not_scheduled.png");
-        String description = isScheduled ? "Scheduled" : "Manual";
+        String description = isScheduled ? messages.getString("DecorationHelper.shceduled") : messages.getString("DecorationHelper.manual");
         Embedded emb = new Embedded(description, img);
         emb.setDescription(description);
         return emb;

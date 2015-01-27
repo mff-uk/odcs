@@ -4,8 +4,11 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 
@@ -58,25 +61,26 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
     @Override
     public String getColumnName(String id) {
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "id":
-                return "Id";
+                return messages.getString("ExecutionAccessor.id");
             case "start":
-                return "Started";
+                return messages.getString("ExecutionAccessor.started");
             case "pipeline.name":
-                return "Pipeline";
+                return messages.getString("ExecutionAccessor.pipeline");
             case "duration":
-                return "Duration";
+                return messages.getString("ExecutionAccessor.duration");
             case "owner.username":
-                return "Executed by";
+                return messages.getString("ExecutionAccessor.owner");
             case "status":
-                return "Status";
+                return messages.getString("ExecutionAccessor.status");
             case "isDebugging":
-                return "Debug";
+                return messages.getString("ExecutionAccessor.isDebugging");
             case "lastChange":
-                return "Last modification";
+                return messages.getString("ExecutionAccessor.lastChange");
             case "schedule":
-                return "Sch.";
+                return messages.getString("ExecutionAccessor.schedule");
             default:
                 return null;
         }

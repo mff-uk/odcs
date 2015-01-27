@@ -4,8 +4,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
+import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 
 /**
@@ -55,15 +58,16 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 
     @Override
     public String getColumnName(String id) {
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "time":
-                return "Timestamp";
+                return messages.getString("MessageRecordAccessor.timestamp");
             case "dpu":
-                return "DPU Instance";
+                return messages.getString("MessageRecordAccessor.dpu");
             case "shortMessage":
-                return "Short message";
+                return messages.getString("MessageRecordAccessor.short");
             case "type":
-                return "type";
+                return messages.getString("MessageRecordAccessor.type");
             default:
                 return id;
         }

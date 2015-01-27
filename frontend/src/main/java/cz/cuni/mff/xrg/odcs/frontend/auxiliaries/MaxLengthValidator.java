@@ -1,6 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import com.vaadin.data.Validator;
+
+import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 
 /**
  * Validator for checking maximum length of input. Maximum length can be set in
@@ -38,10 +42,11 @@ public final class MaxLengthValidator implements Validator {
      */
     @Override
     public void validate(Object value) throws InvalidValueException {
+        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), DecorationHelper.class.getClassLoader());
         if (value.getClass() == String.class) {
             String stringValue = (String) value;
             if (stringValue.length() > maxLength) {
-                throw new Validator.InvalidValueException(String.format("Max length is %d characters! Current length is %d characters!", maxLength, stringValue.length()));
+                throw new Validator.InvalidValueException(messages.getString("MaxLengthValidator.exception", maxLength, stringValue.length()));
             }
         }
     }

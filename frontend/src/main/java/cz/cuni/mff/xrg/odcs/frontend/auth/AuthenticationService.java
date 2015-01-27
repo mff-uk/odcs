@@ -34,6 +34,7 @@ import com.vaadin.server.VaadinService;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
@@ -73,6 +74,9 @@ public class AuthenticationService {
 
     @Autowired
     private LogoutHandler logoutHandler;
+
+    @Autowired
+    private MessagesFacade messagesFacade;
 
     @Autowired
     private UserFacade userFacade;
@@ -147,7 +151,7 @@ public class AuthenticationService {
                 || token.getUsername() == null;
 
         if (invalid) {
-            throw new InsufficientAuthenticationException("Invalid token provided!");
+            throw new InsufficientAuthenticationException(messagesFacade.getString("AuthenticationService.token.invalid"));
         }
 
         assert token != null;
@@ -155,24 +159,24 @@ public class AuthenticationService {
         User user = userFacade.getUserByUsername(token.getUsername());
 
         if (user == null) {
-            throw new UsernameNotFoundException("User '" + token.getUsername() + "' could not be found when trying remember-me authentication.");
+            throw new UsernameNotFoundException(messagesFacade.getString("AuthenticationService.user.not.found", token.getUsername()));
         }
 
         String toHash = generateStringToHash(user, token.getCreated());
         try {
             if (!PasswordHash.validatePassword(toHash, token.getHash())) {
                 LOG.error("Invalid authentication token hash. This is most likely an attack!");
-                throw new InsufficientAuthenticationException("Invalid authentication token hash.");
+                throw new InsufficientAuthenticationException(messagesFacade.getString("AuthenticationService.token.hash.invalid"));
             }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             LOG.error("Could not validate hash for given remember-me token.", ex);
-            throw new InsufficientAuthenticationException("Could not validate hash for given remember-me token.");
+            throw new InsufficientAuthenticationException(messagesFacade.getString("AuthenticationService.validation.error"));
         }
 
         Date now = new Date();
         long diff = now.getTime() - token.getCreated().getTime();
         if (diff > COOKIE_TTL * 1000) {
-            throw new CredentialsExpiredException("Remember-me token has expired.");
+            throw new CredentialsExpiredException(messagesFacade.getString("AuthenticationService.token.expired"));
         }
     }
 
