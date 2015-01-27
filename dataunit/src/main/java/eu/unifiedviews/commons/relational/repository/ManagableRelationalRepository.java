@@ -11,8 +11,19 @@ public interface ManagableRelationalRepository {
         IN_MEMORY
     }
 
+    /**
+     * Get SQL connection to the underlying database
+     * 
+     * @return
+     * @throws SQLException
+     */
     Connection getDatabaseConnection() throws SQLException;
 
+    /**
+     * Terminate all connections to the database and shutdown the database
+     * 
+     * @throws Exception
+     */
     void release() throws Exception;
 
 }

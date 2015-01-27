@@ -38,13 +38,6 @@ public interface DatabaseWrapperConfigIF {
     int getMaxPooledConnections();
 
     /**
-     * Whether the database wrapper should use a pooled connections provider
-     * 
-     * @return true if connections pool should is used or false if classic connections provider is used
-     */
-    boolean useConnectionsPool();
-
-    /**
      * Return name of JDBC driver which can be used to connect to the underlying relational database
      * 
      * @return Name of JDBC driver used to connect to database

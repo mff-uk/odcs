@@ -48,6 +48,7 @@ public class PooledConnectionProvider implements ConnectionProviderIF {
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(databaseURL, props);
 
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+        poolableConnectionFactory.setDefaultAutoCommit(false);
 
         this.connectionPool =
                 new GenericObjectPool<>(poolableConnectionFactory, createConnectionPoolConfig(config));
@@ -70,13 +71,18 @@ public class PooledConnectionProvider implements ConnectionProviderIF {
     @Override
     public Connection getConnection() throws SQLException {
         Connection conn = this.pooledDataSource.getConnection();
-        conn.setAutoCommit(false);
         return conn;
     }
 
+    /**
+     * Closes all idle connections borrowed from pool and shuts down the pool <br/>
+     * <b>WARN:</b> However, active connections are not closed automatically and must be closed by the client!
+     * in order to fully destroy connections pool
+     */
     @Override
     public void close() {
         try {
+            this.connectionPool.clear();
             this.connectionPool.close();
         } catch (Exception e) {
             // ignore

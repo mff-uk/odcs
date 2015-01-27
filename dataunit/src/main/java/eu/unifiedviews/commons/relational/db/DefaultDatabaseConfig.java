@@ -12,8 +12,6 @@ public class DefaultDatabaseConfig implements DatabaseWrapperConfigIF {
 
     private final static int DEFAULT_MAX_POOLED_CONNECTIONS = 20;
 
-    private final static boolean DEFAULT_USE_CONNECTIONS_POOL = true;
-
     private String databaseURL;
 
     private String userName;
@@ -24,10 +22,8 @@ public class DefaultDatabaseConfig implements DatabaseWrapperConfigIF {
 
     private int maxPooledConnections = DEFAULT_MAX_POOLED_CONNECTIONS;
 
-    private boolean useConnectionPool = DEFAULT_USE_CONNECTIONS_POOL;
-
-    public DefaultDatabaseConfig(String databaseName, String userName, String password, String jdbcDriverName) {
-        this.databaseURL = databaseName;
+    public DefaultDatabaseConfig(String databaseURL, String userName, String password, String jdbcDriverName) {
+        this.databaseURL = databaseURL;
         this.userName = userName;
         this.password = password;
         this.jdbcDriverName = jdbcDriverName;
@@ -55,15 +51,6 @@ public class DefaultDatabaseConfig implements DatabaseWrapperConfigIF {
     @Override
     public int getMaxPooledConnections() {
         return this.maxPooledConnections;
-    }
-
-    public void setUseConnectionsPool(boolean useConnectionPool) {
-        this.useConnectionPool = useConnectionPool;
-    }
-
-    @Override
-    public boolean useConnectionsPool() {
-        return this.useConnectionPool;
     }
 
     @Override

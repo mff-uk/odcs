@@ -4,6 +4,7 @@ import java.io.File;
 
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
+import eu.unifiedviews.commons.relational.repository.RelationalException;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**

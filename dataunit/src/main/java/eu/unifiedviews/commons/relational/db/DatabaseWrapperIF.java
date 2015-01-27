@@ -25,4 +25,9 @@ public interface DatabaseWrapperIF {
      */
     DatabaseWrapperConfigIF getConfiguration();
 
+    /**
+     * 
+     */
+    void shutdown();
+
 }

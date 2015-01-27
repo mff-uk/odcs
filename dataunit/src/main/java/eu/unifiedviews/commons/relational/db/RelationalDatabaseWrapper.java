@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * {@link RelationalDatabaseWrapper} is a wrapper around an embedded, in memory H2 database engine.
+ * {@link RelationalDatabaseWrapper} is a wrapper around a relational database
  * It provides access to this database by creating a new in memory database based on {@link DatabaseWrapperConfigIF} configuration.
- * {@link RelationalDatabaseWrapper} provides two types of connection providers.
- * By default, it uses {@link PooledConnectionProvider}, which uses pool of database connections.
- * If desired, {@link ClassicConnectionProvider} can be used
+ * Database wrapper uses {@link PooledConnectionProvider}, which uses pool of database connections.
  * 
  * @author Tomas
  */
@@ -19,11 +17,7 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
     private final DatabaseWrapperConfigIF config;
 
     public RelationalDatabaseWrapper(DatabaseWrapperConfigIF config) throws Exception {
-        if (config.useConnectionsPool()) {
-            this.connectionProvider = new PooledConnectionProvider(config);
-        } else {
-            this.connectionProvider = new ClassicConnectionProvider(config);
-        }
+        this.connectionProvider = new PooledConnectionProvider(config);
         this.config = config;
     }
 
@@ -34,6 +28,11 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
     @Override
     public DatabaseWrapperConfigIF getConfiguration() {
         return this.config;
+    }
+
+    @Override
+    public void shutdown() {
+        this.connectionProvider.close();
     }
 
 }

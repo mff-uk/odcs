@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
@@ -14,13 +15,13 @@ import eu.unifiedviews.commons.dataunit.core.CoreServiceBusImpl;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerantImpl;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
+import eu.unifiedviews.commons.relational.repository.ManagableRelationalRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
+import eu.unifiedviews.dataunit.relational.impl.RelationalDataUnitFactory;
 
 /**
- * 
- *
  * @author Škoda Petr
  */
 class DataUnitFactoryImpl implements DataUnitFactory {
@@ -29,6 +30,9 @@ class DataUnitFactoryImpl implements DataUnitFactory {
 
     @Autowired
     private RepositoryManager repositoryManager;
+
+    @Autowired
+    RelationalRepositoryManager dataUnitRelRepositoryManager;
 
     @Value("${dataunit.failure.wait:30}")
     private int waitTime;
@@ -40,22 +44,43 @@ class DataUnitFactoryImpl implements DataUnitFactory {
 
     private final FilesDataUnitFactory filesDataUnitFactory = new FilesDataUnitFactory();
 
+    private final RelationalDataUnitFactory relationalDataUnitFactory = new RelationalDataUnitFactory();
+
     @Override
     public ManagableDataUnit create(ManagableDataUnit.Type type, Long executionId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException {
         LOG.info("create({}, {}, {}, {}, {})", type, executionId, dataUnitUri, dataUnitName, dataUnitDirectory);
         // Get repository.
         final ManagableRepository repository = repositoryManager.get(executionId);
+
         // Prepare core bus.
-        final CoreServiceBus serviceBus = new CoreServiceBusImpl(
-                repository.getConnectionSource(),
-                new FaultTolerantImpl(repository.getConnectionSource(), waitTime * 1000, numberOfAttemps));
+        final CoreServiceBus serviceBus;
+        if (type == ManagableDataUnit.Type.RELATIONAL) {
+            ManagableRelationalRepository dataUnitDatabase = null;
+            try {
+                dataUnitDatabase = this.dataUnitRelRepositoryManager.getRepository(executionId);
+            } catch (Exception e) {
+                throw new DataUnitException("Failed to create database repository for dataunit");
+            }
+            serviceBus = new CoreServiceBusImpl(
+                    repository.getConnectionSource(),
+                    new FaultTolerantImpl(repository.getConnectionSource(), this.waitTime * 1000, this.numberOfAttemps),
+                    dataUnitDatabase);
+        } else {
+            serviceBus = new CoreServiceBusImpl(
+                    repository.getConnectionSource(),
+                    new FaultTolerantImpl(repository.getConnectionSource(), waitTime * 1000, numberOfAttemps));
+        }
+
         // Create DataUnit.
         switch (type) {
             case FILES:
-                return filesDataUnitFactory.create(dataUnitName, dataUnitUri, 
+                return this.filesDataUnitFactory.create(dataUnitName, dataUnitUri,
                         dataUnitDirectory.toURI().toString(), serviceBus);
             case RDF:
-                return rdfDataUnitFactory.create(dataUnitName, dataUnitUri,
+                return this.rdfDataUnitFactory.create(dataUnitName, dataUnitUri,
+                        dataUnitDirectory.toURI().toString(), serviceBus);
+            case RELATIONAL:
+                return this.relationalDataUnitFactory.create(dataUnitName, dataUnitUri,
                         dataUnitDirectory.toURI().toString(), serviceBus);
             default:
                 throw new DataUnitException("Unknwon DataUnit type: " + type.toString());
