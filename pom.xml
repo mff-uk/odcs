@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>odcs</artifactId>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.5.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ODCleanStore</name>
 	<description />
@@ -14,12 +14,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<uv-dpu-api.version>1.1.1-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>1.1.1-SNAPSHOT</uv-dpu-api-helpers.version>
+		<uv-dpu-api.version>1.2.0-SNAPSHOT</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>1.2.0-SNAPSHOT</uv-dpu-api-helpers.version>
 		<uv-dataunit-rdf.version>1.2.0-SNAPSHOT</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>1.2.0-SNAPSHOT</uv-dataunit-files.version>
 		<uv-dataunit-helpers.version>1.2.0-SNAPSHOT</uv-dataunit-helpers.version>
-		<dataunit.version>1.5.1-SNAPSHOT</dataunit.version>
+		<dataunit.version>1.5.5-SNAPSHOT</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 			for OSGI's package export -->
