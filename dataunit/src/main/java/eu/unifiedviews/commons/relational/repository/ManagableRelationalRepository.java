@@ -1,7 +1,8 @@
 package eu.unifiedviews.commons.relational.repository;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+
+import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 
 public interface ManagableRelationalRepository {
 
@@ -12,12 +13,12 @@ public interface ManagableRelationalRepository {
     }
 
     /**
-     * Get SQL connection to the underlying database
+     * Get SQL connection provider to the underlying database
      * 
-     * @return
+     * @return Implementation of {@link DataUnitDatabaseConnectionProvider} which provides connections to the underlying database
      * @throws SQLException
      */
-    Connection getDatabaseConnection() throws SQLException;
+    DataUnitDatabaseConnectionProvider getDatabaseConnectionProvider();
 
     /**
      * Terminate all connections to the database and shutdown the database

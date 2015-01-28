@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
-import eu.unifiedviews.commons.relational.repository.ManagableRelationalRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
@@ -32,7 +32,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     private final static Logger LOG = LoggerFactory.getLogger(RelationalDataUnitImpl.class);
 
-    private final ManagableRelationalRepository dataUnitDatabase;
+    private final DataUnitDatabaseConnectionProvider dataUnitDatabase;
 
     private static final String DB_TABLE_NAME_PREFIX = "du_";
 
@@ -57,7 +57,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     public RelationalDataUnitImpl(String dataUnitName, String databaseURL, String writeContextString, CoreServiceBus coreServices) {
         super(dataUnitName, writeContextString, coreServices);
-        this.dataUnitDatabase = coreServices.getService(ManagableRelationalRepository.class);
+        this.dataUnitDatabase = coreServices.getService(DataUnitDatabaseConnectionProvider.class);
     }
 
     @Override

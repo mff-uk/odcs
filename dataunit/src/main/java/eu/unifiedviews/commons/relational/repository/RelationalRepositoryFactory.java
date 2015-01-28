@@ -38,7 +38,7 @@ public class RelationalRepositoryFactory {
 
         Connection connection = null;
         try {
-            connection = repository.getDatabaseConnection();
+            connection = repository.getDatabaseConnectionProvider().getDatabaseConnection();
         } catch (Exception e) {
             throw new RelationalException("Failed to connect to created repository", e);
         } finally {

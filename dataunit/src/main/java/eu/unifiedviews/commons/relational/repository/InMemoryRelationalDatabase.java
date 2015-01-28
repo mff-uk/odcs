@@ -1,11 +1,9 @@
 package eu.unifiedviews.commons.relational.repository;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.commons.relational.db.DatabaseWrapperConfigIF;
 import eu.unifiedviews.commons.relational.db.DatabaseWrapperIF;
 import eu.unifiedviews.commons.relational.db.DefaultDatabaseConfig;
@@ -41,6 +39,7 @@ public class InMemoryRelationalDatabase implements ManagableRelationalRepository
         this.databaseURL = this.baseDatabaseURL + ManagableRelationalRepository.BASE_DATABASE_NAME
                 + "_" + String.valueOf(this.executionId);
 
+        LOG.debug("Creating dataunit in memory database with URL: {} and dummy user name: {}", this.databaseURL, USER_NAME);
         this.databaseWrapper = createDatabaseWrapper();
     }
 
@@ -57,13 +56,14 @@ public class InMemoryRelationalDatabase implements ManagableRelationalRepository
     }
 
     @Override
-    public Connection getDatabaseConnection() throws SQLException {
-        return this.databaseWrapper.getConnection();
+    public void release() throws Exception {
+        LOG.debug("Releasing data unit relational repository");
+        this.databaseWrapper.shutdown();
     }
 
     @Override
-    public void release() throws Exception {
-        this.databaseWrapper.shutdown();
+    public DataUnitDatabaseConnectionProvider getDatabaseConnectionProvider() {
+        return new DataUnitDatabaseConnectionProviderImpl(this.databaseWrapper);
     }
 
 }

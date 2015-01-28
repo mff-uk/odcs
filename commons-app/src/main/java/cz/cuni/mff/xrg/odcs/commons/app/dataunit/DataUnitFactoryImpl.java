@@ -55,16 +55,16 @@ class DataUnitFactoryImpl implements DataUnitFactory {
         // Prepare core bus.
         final CoreServiceBus serviceBus;
         if (type == ManagableDataUnit.Type.RELATIONAL) {
-            ManagableRelationalRepository dataUnitDatabase = null;
+            ManagableRelationalRepository dataUnitDbRepository = null;
             try {
-                dataUnitDatabase = this.dataUnitRelRepositoryManager.getRepository(executionId);
+                dataUnitDbRepository = this.dataUnitRelRepositoryManager.getRepository(executionId);
             } catch (Exception e) {
                 throw new DataUnitException("Failed to create database repository for dataunit");
             }
             serviceBus = new CoreServiceBusImpl(
                     repository.getConnectionSource(),
                     new FaultTolerantImpl(repository.getConnectionSource(), this.waitTime * 1000, this.numberOfAttemps),
-                    dataUnitDatabase);
+                    dataUnitDbRepository.getDatabaseConnectionProvider());
         } else {
             serviceBus = new CoreServiceBusImpl(
                     repository.getConnectionSource(),

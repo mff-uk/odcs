@@ -23,6 +23,7 @@ import org.openrdf.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
@@ -262,8 +263,8 @@ public class RelationalDataUnitImplTest {
                             }
                         }
                     };
-                } else if (serviceClass.isAssignableFrom(ManagableRelationalRepository.class)) {
-                    return (T) RelationalDataUnitImplTest.this.dataUnitDatabase;
+                } else if (serviceClass.isAssignableFrom(DataUnitDatabaseConnectionProvider.class)) {
+                    return (T) RelationalDataUnitImplTest.this.dataUnitDatabase.getDatabaseConnectionProvider();
                 } else {
                     throw new IllegalArgumentException();
                 }
