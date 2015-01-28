@@ -57,7 +57,7 @@ UNIFIEDVIEWS_USER="${UNIFIEDVIEWS_USER:-uv}"
 UNIFIEDVIEWS_GROUP="${UNIFIEDVIEWS_GROUP:-`id -gn $UNIFIEDVIEWS_USER`}"
 
 # Define the unifiedviews log file
-UNIFIEDVIEWS_LOG="${UNIFIEDVIEWS_LOG:-/var/log/${NAME}-initd.log}"
+UNIFIEDVIEWS_LOG="${UNIFIEDVIEWS_LOG:-/var/log/unifiedviews/${NAME}-initd.log}"
 
 # Define the pid file name
 # If change is needed, use sysconfig instead of here
@@ -255,3 +255,5 @@ case "$1" in
 esac
 
 exit $RETVAL
+
+
