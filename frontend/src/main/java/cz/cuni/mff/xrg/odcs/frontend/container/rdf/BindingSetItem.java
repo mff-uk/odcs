@@ -4,13 +4,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.query.BindingSet;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Implementation of {@link Item} interface for underlying {@link BindingSet} object.
@@ -63,13 +62,11 @@ public class BindingSetItem implements Item {
 
     @Override
     public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
-        throw new UnsupportedOperationException(messages.getString("BindingSetItem.add.exception"));
+        throw new UnsupportedOperationException(Messages.getString("BindingSetItem.add.exception"));
     }
 
     @Override
     public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
-        throw new UnsupportedOperationException(messages.getString("BindingSetItem.remove.exception"));
+        throw new UnsupportedOperationException(Messages.getString("BindingSetItem.remove.exception"));
     }
 }

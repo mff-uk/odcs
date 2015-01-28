@@ -4,13 +4,11 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Accessor for {@link PipelineExecution}s.
@@ -61,26 +59,25 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
 
     @Override
     public String getColumnName(String id) {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "id":
-                return messages.getString("ExecutionAccessor.id");
+                return Messages.getString("ExecutionAccessor.id");
             case "start":
-                return messages.getString("ExecutionAccessor.started");
+                return Messages.getString("ExecutionAccessor.started");
             case "pipeline.name":
-                return messages.getString("ExecutionAccessor.pipeline");
+                return Messages.getString("ExecutionAccessor.pipeline");
             case "duration":
-                return messages.getString("ExecutionAccessor.duration");
+                return Messages.getString("ExecutionAccessor.duration");
             case "owner.username":
-                return messages.getString("ExecutionAccessor.owner");
+                return Messages.getString("ExecutionAccessor.owner");
             case "status":
-                return messages.getString("ExecutionAccessor.status");
+                return Messages.getString("ExecutionAccessor.status");
             case "isDebugging":
-                return messages.getString("ExecutionAccessor.isDebugging");
+                return Messages.getString("ExecutionAccessor.isDebugging");
             case "lastChange":
-                return messages.getString("ExecutionAccessor.lastChange");
+                return Messages.getString("ExecutionAccessor.lastChange");
             case "schedule":
-                return messages.getString("ExecutionAccessor.schedule");
+                return Messages.getString("ExecutionAccessor.schedule");
             default:
                 return null;
         }

@@ -18,7 +18,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.addons.lazyquerycontainer.Query;
 
@@ -26,7 +25,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
@@ -57,8 +56,6 @@ public class RDFQuery implements Query {
 
     private ArrayList<Item> cachedItems;
 
-    private FrontendMessages messages;
-
     /**
      * Constructor.
      *
@@ -69,7 +66,6 @@ public class RDFQuery implements Query {
         this.baseQuery = queryDefinition.getBaseQuery();
         this.batchSize = queryDefinition.getBatchSize();
         this.queryDefinition = queryDefinition;
-        messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
     }
 
     /**
@@ -81,7 +77,7 @@ public class RDFQuery implements Query {
     public int size() {
         ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
-            throw new RuntimeException(messages.getString("RDFQuery.size.exception"));
+            throw new RuntimeException(Messages.getString("RDFQuery.size.exception"));
         }
         try {
             int count;
@@ -95,8 +91,8 @@ public class RDFQuery implements Query {
             LOG.debug("Size query finished!");
             return count;
         } catch (InvalidQueryException ex) {
-            Notification.show(messages.getString("RDFQuery.size.invalidQuery.name"),
-                    messages.getString("RDFQuery.size.invalidQuery.description")
+            Notification.show(Messages.getString("RDFQuery.size.invalidQuery.name"),
+                    Messages.getString("RDFQuery.size.invalidQuery.description")
                             + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
             LOG.debug("Size query exception", ex);
@@ -135,7 +131,7 @@ public class RDFQuery implements Query {
         ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             LOG.debug("Unable to load RDFDataUnit.");
-            throw new RuntimeException(messages.getString("RDFQuery.loadItems.exception"));
+            throw new RuntimeException(Messages.getString("RDFQuery.loadItems.exception"));
         }
 
         String filteredQuery = setWhereCriteria(baseQuery);
@@ -209,18 +205,18 @@ public class RDFQuery implements Query {
             LOG.debug("Loading of items finished.");
             return items;
         } catch (InvalidQueryException ex) {
-            Notification.show(messages.getString("RDFQuery.loadItems.invalidQuery.name"),
-                    messages.getString("RDFQuery.loadItems.invalidQuery.description")
+            Notification.show(Messages.getString("RDFQuery.loadItems.invalidQuery.name"),
+                    Messages.getString("RDFQuery.loadItems.invalidQuery.description")
                             + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } catch (QueryEvaluationException ex) {
-            Notification.show(messages.getString("RDFQuery.loadItems.queryEvaluation.name"),
-                    messages.getString("RDFQuery.loadItems.queryEvaluation.description")
+            Notification.show(Messages.getString("RDFQuery.loadItems.queryEvaluation.name"),
+                    Messages.getString("RDFQuery.loadItems.queryEvaluation.description")
                             + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } catch (DataUnitException e) {
-            Notification.show(messages.getString("RDFQuery.loadItems.dataUnit.name"),
-                    messages.getString("RDFQuery.loadItems.dataUnit.description") + e.getCause().getMessage(),
+            Notification.show(Messages.getString("RDFQuery.loadItems.dataUnit.name"),
+                    Messages.getString("RDFQuery.loadItems.dataUnit.description") + e.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } finally {
             if (connection != null) {
@@ -258,7 +254,7 @@ public class RDFQuery implements Query {
     @Override
     public void saveItems(List<Item> list, List<Item> list1, List<Item> list2) {
         throw new UnsupportedOperationException(
-                messages.getString("RDFQuery.saveItems.unsupported"));
+                Messages.getString("RDFQuery.saveItems.unsupported"));
     }
 
     /**
@@ -269,7 +265,7 @@ public class RDFQuery implements Query {
     @Override
     public boolean deleteAllItems() {
         throw new UnsupportedOperationException(
-                messages.getString("RDFQuery.deleteAllItems.unsupported"));
+                Messages.getString("RDFQuery.deleteAllItems.unsupported"));
     }
 
     /**
@@ -280,7 +276,7 @@ public class RDFQuery implements Query {
     @Override
     public Item constructItem() {
         throw new UnsupportedOperationException(
-                messages.getString("RDFQuery.constructItem.unsupported"));
+                Messages.getString("RDFQuery.constructItem.unsupported"));
     }
 
     private List<RDFTriple> getRDFTriplesData(Graph graph) {
@@ -307,7 +303,7 @@ public class RDFQuery implements Query {
         if (query.length() < 9) {
             //Due to expected exception format in catch block
             throw new InvalidQueryException(new InvalidQueryException(
-                    messages.getString("RDFQuery.queryType.invalidQuery") + query));
+                    Messages.getString("RDFQuery.queryType.invalidQuery") + query));
         }
         QueryPart queryPart = new QueryPart(query);
         SPARQLQueryType type = queryPart.getSPARQLQueryType();
@@ -340,14 +336,14 @@ public class RDFQuery implements Query {
             } catch (QueryEvaluationException ex) {
 
                 throw new InvalidQueryException(
-                        messages.getString("RDFQuery.constructSize.invalidQuery") + ex
+                        Messages.getString("RDFQuery.constructSize.invalidQuery") + ex
                                 .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    messages.getString("RDFQuery.constructSize.malformedQuery")
+                    Messages.getString("RDFQuery.constructSize.malformedQuery")
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
@@ -394,17 +390,17 @@ public class RDFQuery implements Query {
                     return resultSize;
                 }
                 throw new InvalidQueryException(
-                        messages.getString("RDFQuery.selectSize.invalidQuery", queryPart.getQuery()));
+                        Messages.getString("RDFQuery.selectSize.invalidQuery", queryPart.getQuery()));
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
-                        messages.getString("RDFQuery.selectSize.notValid") + ex
+                        Messages.getString("RDFQuery.selectSize.notValid") + ex
                                 .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    messages.getString("RDFQuery.selectSize.malformedQuery")
+                    Messages.getString("RDFQuery.selectSize.malformedQuery")
                             + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
@@ -461,7 +457,7 @@ public class RDFQuery implements Query {
                 break;
             case UNKNOWN:
                 throw new InvalidQueryException(
-                        messages.getString("RDFQuery.resultSize.invalidQuery", query));
+                        Messages.getString("RDFQuery.resultSize.invalidQuery", query));
         }
 
         return size;

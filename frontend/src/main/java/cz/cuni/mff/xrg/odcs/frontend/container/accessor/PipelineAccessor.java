@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
@@ -17,11 +16,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Accessor for {@link Pipeline}s.
@@ -83,18 +82,17 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
 
     @Override
     public String getColumnName(String id) {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "id":
-                return messages.getString("PipelineAccessor.id");
+                return Messages.getString("PipelineAccessor.id");
             case "name":
-                return messages.getString("PipelineAccessor.name");
+                return Messages.getString("PipelineAccessor.name");
             case "duration":
-                return messages.getString("PipelineAccessor.lastRun");
+                return Messages.getString("PipelineAccessor.lastRun");
             case "lastExecTime":
-                return messages.getString("PipelineAccessor.lastExecution");
+                return Messages.getString("PipelineAccessor.lastExecution");
             case "lastExecStatus":
-                return messages.getString("PipelineAccessor.lastStatus");
+                return Messages.getString("PipelineAccessor.lastStatus");
             default:
                 return id;
         }

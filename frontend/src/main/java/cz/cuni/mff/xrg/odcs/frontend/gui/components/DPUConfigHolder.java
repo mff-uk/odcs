@@ -6,6 +6,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Component for holding the DPU's configuration dialog. The component show message if the configuration
  * component is null.
@@ -28,7 +30,7 @@ public class DPUConfigHolder extends CustomComponent {
         // Build layout for no configuration.
         final Label infoLabel = new Label();
         infoLabel.setSizeUndefined();
-        infoLabel.setValue("This DPU doesn't provide configuration component.");
+        infoLabel.setValue(Messages.getString("DPUConfigHolder.configuration"));
         noConfigLayout = new VerticalLayout();
         noConfigLayout.setSizeFull();
         noConfigLayout.addComponent(infoLabel);

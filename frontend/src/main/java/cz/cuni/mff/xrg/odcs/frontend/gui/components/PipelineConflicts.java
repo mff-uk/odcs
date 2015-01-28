@@ -24,6 +24,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for pipeline conflict creation.
@@ -77,7 +78,7 @@ public class PipelineConflicts extends Window {
         // set dialog properties
         this.setResizable(false);
         this.setModal(true);
-        this.setCaption("Pipeline Conflicts");
+        this.setCaption(Messages.getString("PipelineConflicts.pipeline.conflicts"));
         // build layout
         buildMainLayout();
         this.setContent(mainLayout);
@@ -137,12 +138,12 @@ public class PipelineConflicts extends Window {
         selectPipe.setWidth("400px");
         selectPipe.setHeight("200px");
         selectPipe.setItemCaptionPropertyId("name");
-        selectPipe.setLeftColumnCaption("Pipeline list");
-        selectPipe.setRightColumnCaption("Conflict pipelines");
+        selectPipe.setLeftColumnCaption(Messages.getString("PipelineConflicts.pipeline.list"));
+        selectPipe.setRightColumnCaption(Messages.getString("PipelineConflicts.conflicting.pipelines"));
 
         mainLayout.addComponent(selectPipe);
 
-        clearConflicts = new Button("Clear Conflicts");
+        clearConflicts = new Button(Messages.getString("PipelineConflicts.clear.conflicts"));
         clearConflicts.setImmediate(true);
         clearConflicts.addClickListener(new ClickListener() {
 
@@ -161,7 +162,7 @@ public class PipelineConflicts extends Window {
 
         //Save button
         Button saveButton = new Button();
-        saveButton.setCaption("OK");
+        saveButton.setCaption(Messages.getString("PipelineConflicts.ok"));
         saveButton.setWidth("90px");
         saveButton.setImmediate(true);
         saveButton.addClickListener(new ClickListener() {
@@ -190,7 +191,7 @@ public class PipelineConflicts extends Window {
         buttonBar.addComponent(saveButton);
 
         //Cancel button
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        Button cancelButton = new Button(Messages.getString("PipelineConflicts.cancel"), new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
             @Override

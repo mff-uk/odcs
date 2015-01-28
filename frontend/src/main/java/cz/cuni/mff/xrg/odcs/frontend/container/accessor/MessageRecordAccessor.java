@@ -4,12 +4,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * @author Bogo
@@ -58,16 +56,15 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
 
     @Override
     public String getColumnName(String id) {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "time":
-                return messages.getString("MessageRecordAccessor.timestamp");
+                return Messages.getString("MessageRecordAccessor.timestamp");
             case "dpu":
-                return messages.getString("MessageRecordAccessor.dpu");
+                return Messages.getString("MessageRecordAccessor.dpu");
             case "shortMessage":
-                return messages.getString("MessageRecordAccessor.short");
+                return Messages.getString("MessageRecordAccessor.short");
             case "type":
-                return messages.getString("MessageRecordAccessor.type");
+                return Messages.getString("MessageRecordAccessor.type");
             default:
                 return id;
         }

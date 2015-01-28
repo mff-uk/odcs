@@ -5,13 +5,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
@@ -63,26 +61,25 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
 
     @Override
     public String getColumnName(String id) {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "id":
-                return messages.getString("ExecutionViewAccessor.id");
+                return Messages.getString("ExecutionViewAccessor.id");
             case "start":
-                return messages.getString("ExecutionViewAccessor.started");
+                return Messages.getString("ExecutionViewAccessor.started");
             case "pipelineName":
-                return messages.getString("ExecutionViewAccessor.pipeline");
+                return Messages.getString("ExecutionViewAccessor.pipeline");
             case "duration":
-                return messages.getString("ExecutionViewAccessor.duration");
+                return Messages.getString("ExecutionViewAccessor.duration");
             case "ownerName":
-                return messages.getString("ExecutionViewAccessor.owner");
+                return Messages.getString("ExecutionViewAccessor.owner");
             case "status":
-                return messages.getString("ExecutionViewAccessor.status");
+                return Messages.getString("ExecutionViewAccessor.status");
             case "isDebugging":
-                return messages.getString("ExecutionViewAccessor.isDebugging");
+                return Messages.getString("ExecutionViewAccessor.isDebugging");
             case "lastChange":
-                return messages.getString("ExecutionViewAccessor.lastChange");
+                return Messages.getString("ExecutionViewAccessor.lastChange");
             case "schedule":
-                return messages.getString("ExecutionViewAccessor.schedule");
+                return Messages.getString("ExecutionViewAccessor.schedule");
             default:
                 return null;
         }

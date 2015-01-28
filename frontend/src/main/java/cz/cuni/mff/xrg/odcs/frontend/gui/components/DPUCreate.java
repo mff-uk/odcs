@@ -42,6 +42,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for the DPU template creation. Allows to upload a JAR file and on base
@@ -67,7 +68,8 @@ public class DPUCreate extends Window {
     }
 
     /**
-     * @param aUploadInfoWindow the uploadInfoWindow to set
+     * @param aUploadInfoWindow
+     *            the uploadInfoWindow to set
      */
     public static void setUploadInfoWindow(UploadInfoWindow aUploadInfoWindow) {
         uploadInfoWindow = aUploadInfoWindow;
@@ -81,7 +83,8 @@ public class DPUCreate extends Window {
     }
 
     /**
-     * @param aFl the fl to set
+     * @param aFl
+     *            the fl to set
      */
     public static void setFl(int aFl) {
         fl = aFl;
@@ -133,7 +136,7 @@ public class DPUCreate extends Window {
 
         this.setResizable(false);
         this.setModal(true);
-        this.setCaption("DPU Template Creation");
+        this.setCaption(Messages.getString("DPUCreate.create"));
 
         TabSheet tabs = new TabSheet();
         tabs.addTab(createJarTab(), "jar");
@@ -154,9 +157,9 @@ public class DPUCreate extends Window {
         dpuGeneralSettingsLayoutZip.setWidth("400px");
         dpuGeneralSettingsLayoutZip.setHeight("200px");
 
-        Label help = new Label("It creates DPU templates from DPUs inside ZIP"
-                + " file using DPU template name from DPU defined by DPU developer."
-                + " DPU template name can be later changed.");
+        Label help = new Label(Messages.getString("DPUCreate.create.description")
+                + Messages.getString("DPUCreate.create.description2")
+                + Messages.getString("DPUCreate.create.description3"));
         help.setWidth("310px");
         help.setHeight("60px");
         dpuGeneralSettingsLayoutZip.addComponent(help, 1, 0);
@@ -164,7 +167,7 @@ public class DPUCreate extends Window {
         //Visibility of DPU Template: label & OptionGroup
         groupVisibilityZip = createVisibilityOption(dpuGeneralSettingsLayoutZip, 1);
 
-        Label selectLabel = new Label("Select .zip file");
+        Label selectLabel = new Label(Messages.getString("DPUCreate.select.zip"));
         selectLabel.setImmediate(false);
         selectLabel.setWidth("-1px");
         selectLabel.setHeight("-1px");
@@ -196,7 +199,7 @@ public class DPUCreate extends Window {
     }
 
     private TextArea createDpuDescription(GridLayout layout, int row) {
-        Label descriptionLabel = new Label("Description");
+        Label descriptionLabel = new Label(Messages.getString("DPUCreate.description"));
         descriptionLabel.setImmediate(false);
         descriptionLabel.setWidth("-1px");
         descriptionLabel.setHeight("-1px");
@@ -225,7 +228,7 @@ public class DPUCreate extends Window {
                         && !((String) value).isEmpty()) {
                     return;
                 }
-                throw new Validator.InvalidValueException("Name must be filled!");
+                throw new Validator.InvalidValueException(Messages.getString("DPUCreate.name.filled"));
 
             }
         });
@@ -244,14 +247,14 @@ public class DPUCreate extends Window {
         dpuGeneralSettingsLayout.setHeight("200px");
 
         //Name of DPU Template: label & TextField
-        Label nameLabel = new Label("Name");
+        Label nameLabel = new Label(Messages.getString("DPUCreate.name"));
         nameLabel.setImmediate(false);
         nameLabel.setWidth("-1px");
         nameLabel.setHeight("-1px");
         dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
 
         dpuName = createDpuName();
-        dpuName.setInputPrompt("<If not selected, one from jar will be used.>");
+        dpuName.setInputPrompt(Messages.getString("DPUCreate.prompt"));
         dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
 
         //Description of DPU Template: label & TextArea
@@ -260,7 +263,7 @@ public class DPUCreate extends Window {
         //Visibility of DPU Template: label & OptionGroup
         groupVisibility = createVisibilityOption(dpuGeneralSettingsLayout, 2);
 
-        Label selectLabel = new Label("Select .jar file");
+        Label selectLabel = new Label(Messages.getString("DPUCreate.select.jar"));
         selectLabel.setImmediate(false);
         selectLabel.setWidth("-1px");
         selectLabel.setHeight("-1px");
@@ -292,7 +295,7 @@ public class DPUCreate extends Window {
     }
 
     private OptionGroup createVisibilityOption(GridLayout layout, int row) {
-        Label visibilityLabel = new Label("Visibility");
+        Label visibilityLabel = new Label(Messages.getString("DPUCreate.visibility"));
         visibilityLabel.setImmediate(false);
         visibilityLabel.setWidth("-1px");
         visibilityLabel.setHeight("-1px");
@@ -311,7 +314,7 @@ public class DPUCreate extends Window {
     }
 
     private Button createSaveZipButton() {
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("DPUCreate.save"));
         saveButton.setWidth("90px");
 
         saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
@@ -329,8 +332,8 @@ public class DPUCreate extends Window {
             public void buttonClick(ClickEvent event) {
                 // checking validation of the mandatory fields
                 if ((!uploadFileZip.isValid())) {
-                    Notification.show("Failed to save DPURecord",
-                            "Mandatory fields should be filled",
+                    Notification.show(Messages.getString("DPUCreate.save.failed"),
+                            Messages.getString("DPUCreate.save.failed.description"),
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -348,19 +351,19 @@ public class DPUCreate extends Window {
 
                     dpusFromXmlFile = importFromLstFile(tmpFile);
                 } catch (IOException e) {
-                    String msg = "Problem with loading file: " + sourceFile.getName();
+                    String msg = Messages.getString("DPUCreate.load.failed") + sourceFile.getName();
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;
                 } catch (ImportException e) {
-                    String msg = "Problem with loading dpu template list file";
+                    String msg = Messages.getString("DPUCreate.load.failed.list");
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
                 if ((dpus == null) || dpus.isEmpty()) {
-                    String msg = "There is no jars in file: " + sourceFile.getName();
+                    String msg = Messages.getString("DPUCreate.jars.empty") + sourceFile.getName();
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                     LOG.error(msg);
                     return;
@@ -415,13 +418,13 @@ public class DPUCreate extends Window {
         TextArea text = new TextArea(null, builder.toString());
         text.setSizeFull();
         content.addComponent(text);
-        Button btnClose = new Button("Close");
+        Button btnClose = new Button(Messages.getString("DPUCreate.close"));
         content.addComponent(btnClose);
         content.setComponentAlignment(btnClose, Alignment.BOTTOM_CENTER);
         content.setExpandRatio(text, 1.0f);
 
         final Window resultDialog = new SimpleDialog(content);
-        resultDialog.setCaption("Result log");
+        resultDialog.setCaption(Messages.getString("DPUCreate.result.log"));
         if (!UI.getCurrent().getWindows().contains(resultDialog)) {
             UI.getCurrent().addWindow(resultDialog);
         }
@@ -437,7 +440,6 @@ public class DPUCreate extends Window {
     }
 
     /**
-     *
      * Find corresponding dpu template from lst file for dpuJarFileName
      *
      * @param dpuJarFileName
@@ -463,7 +465,7 @@ public class DPUCreate extends Window {
     }
 
     private Button createSaveJarButton() {
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("DPUCreate.save.jar"));
         saveButton.setWidth("90px");
 
         saveButton.addClickListener(new AuthAwareButtonClickWrapper(new ClickListener() {
@@ -481,8 +483,8 @@ public class DPUCreate extends Window {
             public void buttonClick(ClickEvent event) {
                 // checking validation of the mandatory fields
                 if (!uploadFile.isValid()) {
-                    Notification.show("Failed to save DPURecord",
-                            "Mandatory fields should be filled",
+                    Notification.show(Messages.getString("DPUCreate.save.failed"),
+                            Messages.getString("DPUCreate.save.failed.description"),
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -494,7 +496,7 @@ public class DPUCreate extends Window {
                     dpuGeneralSettingsLayout.removeComponent(1, 3);
                     uploadFile = new TextField();
                     dpuGeneralSettingsLayout.addComponent(buildUploadLayout(dpuGeneralSettingsLayout, fileUploadReceiver, uploadFile, "jar", 3), 1, 3);
-                    Notification.show("Failed to create DPU",
+                    Notification.show(Messages.getString("DPUCreate.create.failed"),
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
                     return;
@@ -506,7 +508,7 @@ public class DPUCreate extends Window {
     }
 
     private Button createCancelButton() {
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        Button cancelButton = new Button(Messages.getString("DPUCreate.cancel"), new Button.ClickListener() {
             /**
              * Closes DPU Template creation window
              */
@@ -601,7 +603,7 @@ public class DPUCreate extends Window {
         //JAR file uploader
         final Upload selectFile = new Upload(null, fileUploadReceiver);
         selectFile.setImmediate(true);
-        selectFile.setButtonCaption("Choose file");
+        selectFile.setButtonCaption(Messages.getString("DPUCreate.file.choose"));
         selectFile.addStyleName("horizontalgroup");
         selectFile.setHeight("40px");
 
@@ -622,7 +624,7 @@ public class DPUCreate extends Window {
                 if (!fileExtension.equals(extension)) {
                     selectFile.interruptUpload();
                     Notification.show(
-                            "Selected file is not ." + fileExtension + " file",
+                            Messages.getString("DPUCreate.selected.file", fileExtension),
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -681,7 +683,7 @@ public class DPUCreate extends Window {
                         && !((String) value).isEmpty()) {
                     return;
                 }
-                throw new Validator.InvalidValueException("Upload file must be filled!");
+                throw new Validator.InvalidValueException(Messages.getString("DPUCreate.upload"));
 
             }
         });

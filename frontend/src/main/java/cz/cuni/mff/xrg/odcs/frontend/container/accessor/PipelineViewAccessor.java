@@ -4,17 +4,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.frontend.FrontendMessages;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
@@ -66,18 +64,17 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
     @Override
     public String getColumnName(String id) {
-        FrontendMessages messages = new FrontendMessages(LocaleContextHolder.getLocale(), this.getClass().getClassLoader());
         switch (id) {
             case "id":
-                return messages.getString("PipelineViewAccessor.id");
+                return Messages.getString("PipelineViewAccessor.id");
             case "name":
-                return messages.getString("PipelineViewAccessor.name");
+                return Messages.getString("PipelineViewAccessor.name");
             case "duration":
-                return messages.getString("PipelineViewAccessor.lastRun");
+                return Messages.getString("PipelineViewAccessor.lastRun");
             case "lastExecTime":
-                return messages.getString("PipelineViewAccessor.lastExecution");
+                return Messages.getString("PipelineViewAccessor.lastExecution");
             case "lastExecStatus":
-                return messages.getString("PipelineViewAccessor.lastStatus");
+                return Messages.getString("PipelineViewAccessor.lastStatus");
             default:
                 return id;
         }

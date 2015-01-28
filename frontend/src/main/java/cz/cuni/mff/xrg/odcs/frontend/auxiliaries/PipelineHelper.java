@@ -15,7 +15,6 @@ import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -23,6 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * @author Bogo
@@ -35,9 +35,6 @@ public class PipelineHelper {
 
     @Autowired
     private PipelineFacade pipelineFacade;
-
-    @Autowired
-    private MessagesFacade messagesFacade;
 
     @Autowired
     private CheckDatabaseService checkDatabaseService;
@@ -74,7 +71,7 @@ public class PipelineHelper {
         final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline,
                 Arrays.asList(PipelineExecutionStatus.QUEUED, PipelineExecutionStatus.RUNNING));
         if (hasQueuedOrRunning) {
-            Notification.show(messagesFacade.getString("PipelineHelper.start.failed"), messagesFacade.getString("PipelineHelper.start.failed.description"), Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineHelper.start.failed"), Messages.getString("PipelineHelper.start.failed.description"), Type.WARNING_MESSAGE);
             return null;
         }
 
@@ -93,14 +90,15 @@ public class PipelineHelper {
         } catch (RemoteAccessException e) {
             ConfirmDialog
                     .show(UI.getCurrent(),
-                            messagesFacade.getString("PipelineHelper.backend.offline.dialog.name"), messagesFacade.getString("PipelineHelper.backend.offline.dialog.message"), messagesFacade.getString("PipelineHelper.backend.offline.dialog.schedule"), messagesFacade.getString("PipelineHelper.backend.offline.dialog.cancel"), new ConfirmDialog.Listener() { //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                            Messages.getString("PipelineHelper.backend.offline.dialog.name"), Messages.getString("PipelineHelper.backend.offline.dialog.message"), Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
+                            Messages.getString("PipelineHelper.backend.offline.dialog.cancel"), new ConfirmDialog.Listener() {
                                 private static final long serialVersionUID = 1L;
 
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
                                     if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
-                                        Notification.show(messagesFacade.getString("PipelineHelper.execution.state.title"), messagesFacade.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
+                                        Notification.show(Messages.getString("PipelineHelper.execution.state.title"), Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
                                         return; // already running
                                     }
                                     if (cd.isConfirmed()) {
@@ -112,7 +110,7 @@ public class PipelineHelper {
                             });
             return null;
         }
-        Notification.show(messagesFacade.getString("PipelineHelper.execution.started"), Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show(Messages.getString("PipelineHelper.execution.started"), Notification.Type.HUMANIZED_MESSAGE);
         return pipelineExec;
     }
 

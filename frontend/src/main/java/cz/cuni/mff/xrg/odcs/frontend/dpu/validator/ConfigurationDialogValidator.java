@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 
@@ -32,7 +33,7 @@ class ConfigurationDialogValidator implements DPUValidator {
             } catch (Throwable t) {
                 // catch everything ..
                 LOG.error("Dialog load failed.", t);
-                throw new DPUValidatorException("Failed to load dialog for exception: " + t.getMessage());
+                throw new DPUValidatorException(Messages.getString("ConfigurationDialogValidator.exception") + t.getMessage());
             }
         } else {
             // no dialog
