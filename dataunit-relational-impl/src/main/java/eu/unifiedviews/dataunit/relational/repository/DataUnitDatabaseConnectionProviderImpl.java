@@ -1,10 +1,10 @@
-package eu.unifiedviews.commons.relational.repository;
+package eu.unifiedviews.dataunit.relational.repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
-import eu.unifiedviews.commons.relational.db.DatabaseWrapperIF;
+import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
 
 public class DataUnitDatabaseConnectionProviderImpl implements DataUnitDatabaseConnectionProvider {
     private DatabaseWrapperIF databaseWrapper;

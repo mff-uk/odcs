@@ -1,4 +1,4 @@
-package eu.unifiedviews.commons.relational.db;
+package eu.unifiedviews.dataunit.relational.db;
 
 /**
  * Database wrapper configuration interface

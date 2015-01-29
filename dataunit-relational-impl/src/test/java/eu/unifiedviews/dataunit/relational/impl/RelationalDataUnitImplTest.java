@@ -23,16 +23,16 @@ import org.openrdf.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
-import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
-import eu.unifiedviews.commons.relational.repository.ManagableRelationalRepository;
-import eu.unifiedviews.commons.relational.repository.RelationalException;
-import eu.unifiedviews.commons.relational.repository.RelationalRepositoryFactory;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
+import eu.unifiedviews.dataunit.relational.repository.RelationalException;
+import eu.unifiedviews.dataunit.relational.repository.RelationalRepositoryFactory;
 
 public class RelationalDataUnitImplTest {
 

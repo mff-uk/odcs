@@ -15,11 +15,11 @@ import eu.unifiedviews.commons.dataunit.core.CoreServiceBusImpl;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerantImpl;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
-import eu.unifiedviews.commons.relational.repository.ManagableRelationalRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
 import eu.unifiedviews.dataunit.relational.impl.RelationalDataUnitFactory;
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
 
 /**
  * @author Škoda Petr

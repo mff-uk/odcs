@@ -11,10 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import eu.unifiedviews.commons.relational.repository.ManagableRelationalRepository;
-import eu.unifiedviews.commons.relational.repository.RelationalException;
-import eu.unifiedviews.commons.relational.repository.RelationalRepositoryFactory;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
+import eu.unifiedviews.dataunit.relational.repository.RelationalException;
+import eu.unifiedviews.dataunit.relational.repository.RelationalRepositoryFactory;
 
 public class RelationalRepositoryManager {
 

@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
-import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
+import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 
 public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit implements ManageableWritableRelationalDataUnit {

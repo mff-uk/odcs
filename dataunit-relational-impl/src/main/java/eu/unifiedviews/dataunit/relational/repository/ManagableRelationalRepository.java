@@ -1,8 +1,8 @@
-package eu.unifiedviews.commons.relational.repository;
+package eu.unifiedviews.dataunit.relational.repository;
 
 import java.sql.SQLException;
 
-import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
 
 public interface ManagableRelationalRepository {
 

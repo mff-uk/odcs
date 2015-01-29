@@ -1,14 +1,14 @@
-package eu.unifiedviews.commons.relational.repository;
+package eu.unifiedviews.dataunit.relational.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.commons.dataunit.core.DataUnitDatabaseConnectionProvider;
-import eu.unifiedviews.commons.relational.db.DatabaseWrapperConfigIF;
-import eu.unifiedviews.commons.relational.db.DatabaseWrapperIF;
-import eu.unifiedviews.commons.relational.db.DefaultDatabaseConfig;
-import eu.unifiedviews.commons.relational.db.RelationalDatabaseWrapper;
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperConfigIF;
+import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
+import eu.unifiedviews.dataunit.relational.db.DefaultDatabaseConfig;
+import eu.unifiedviews.dataunit.relational.db.RelationalDatabaseWrapper;
 
 public class InMemoryRelationalDatabase implements ManagableRelationalRepository {
 

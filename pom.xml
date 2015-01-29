@@ -54,6 +54,7 @@
 		<module>dataunit-file-impl</module>
 		<module>dataunit-rdf</module>
 		<module>dataunit-rdf-impl</module>
+		<module>dataunit-relational-impl</module>
 		<!-- odcs libraries -->
 		<module>commons-app</module>
 		<!-- application -->
