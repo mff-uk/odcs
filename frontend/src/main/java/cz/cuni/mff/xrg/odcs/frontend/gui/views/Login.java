@@ -114,7 +114,7 @@ public class Login extends ViewComponent {
         });
         layout.addComponent(loginButton);
         password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
-        Label info = new Label(String.format(Messages.getString("Login.admin.contact"), appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
+        Label info = new Label(Messages.getString("Login.admin.contact", appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
         info.setContentMode(ContentMode.HTML);
         layout.addComponent(info);
         layout.setSizeUndefined();

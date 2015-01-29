@@ -265,13 +265,13 @@ public class PipelineEdit extends ViewComponent {
                     } else {
                         String message;
                         if (openEvents.size() == 1) {
-                            message = String.format(Messages.getString("PipelineEdit.user.browsing"), openEvents.get(0).getUser().getUsername());
+                            message = Messages.getString("PipelineEdit.user.browsing", openEvents.get(0).getUser().getUsername());
                         } else {
                             String userList = "";
                             for (OpenEvent openEvent : openEvents) {
                                 userList += String.format("%s %s", openEvents.indexOf(openEvent) == 0 ? "" : ",", openEvent.getUser().getUsername());
                             }
-                            message = String.format(Messages.getString("PipelineEdit.users.browsing"), userList);
+                            message = Messages.getString("PipelineEdit.users.browsing", userList);
                         }
                         editConflicts.setValue(message);
                         paralelInfoLayout.setVisible(true);

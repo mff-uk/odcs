@@ -660,7 +660,7 @@ public class SchedulePipeline extends Window {
 
                     // store scheduling rule record to DB
                     scheduleFacade.save(schedule);
-                    Notification.show(String.format(Messages.getString("SchedulePipeline.save.success"), schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show(Messages.getString("SchedulePipeline.save.success", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
                 } else {
                     if (schedule.getNotification() != null) {
@@ -671,7 +671,7 @@ public class SchedulePipeline extends Window {
                         Long priority = job.getValue();
                         schedule.setPriority(priority);
                         scheduleFacade.save(schedule);
-                        Notification.show(String.format(Messages.getString("SchedulePipeline.save.success"), schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show(Messages.getString("SchedulePipeline.save.success", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
                     }
                 }

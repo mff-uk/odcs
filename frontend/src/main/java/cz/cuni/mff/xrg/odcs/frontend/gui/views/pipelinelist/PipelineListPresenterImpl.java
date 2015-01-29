@@ -233,7 +233,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
             while (it.hasNext()) {
                 users = users + ", " + it.next();
             }
-            String scheduleMessage = String.format(Messages.getString("PipelineListPresenterImpl.pipeline.scheduled"), users);
+            String scheduleMessage = Messages.getString("PipelineListPresenterImpl.pipeline.scheduled", users);
             message = message + scheduleMessage;
         }
         ConfirmDialog.show(UI.getCurrent(),
