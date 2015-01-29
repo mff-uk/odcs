@@ -22,7 +22,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
+
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Intlib extension of FilterTable add-on. PagedFilterTable provides paging for
@@ -53,7 +55,7 @@ public class IntlibPagedTable extends PagedFilterTable {
      */
     public HorizontalLayout createControls() {
 
-        Label pageLabel = new Label("Page:&nbsp;", ContentMode.HTML);
+        Label pageLabel = new Label(Messages.getString("IntlibPagedTable.page"), ContentMode.HTML);
         final TextField currentPageTextField = new TextField();
         currentPageTextField.setValue(String.valueOf(getCurrentPage()));
         currentPageTextField.setConverter(new StringToIntegerConverter() {
@@ -126,7 +128,7 @@ public class IntlibPagedTable extends PagedFilterTable {
         previous.setStyleName(Reindeer.BUTTON_LINK);
         next.setStyleName(Reindeer.BUTTON_LINK);
         last.setStyleName(Reindeer.BUTTON_LINK);
-        
+
         first.setWidth("15px");
         last.setWidth("15px");
         previous.setWidth("8px");

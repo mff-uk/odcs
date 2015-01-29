@@ -26,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -86,7 +87,7 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>Login</h1>");
+        logo.setValue(Messages.getString("Login.login"));
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
 
@@ -95,17 +96,17 @@ public class Login extends ViewComponent {
         error.setVisible(false);
         layout.addComponent(error);
 
-        login = new TextField("User:");
+        login = new TextField(Messages.getString("Login.user"));
         login.focus();
         layout.addComponent(login);
 
-        password = new PasswordField("Password:");
+        password = new PasswordField(Messages.getString("Login.password"));
         layout.addComponent(password);
 
-        rememberme = new CheckBox("Remember me");
+        rememberme = new CheckBox(Messages.getString("Login.rememberMe"));
         layout.addComponent(rememberme);
 
-        Button loginButton = new Button("Login", new Button.ClickListener() {
+        Button loginButton = new Button(Messages.getString("Login.login.button"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 login();
@@ -113,7 +114,7 @@ public class Login extends ViewComponent {
         });
         layout.addComponent(loginButton);
         password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
-        Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
+        Label info = new Label(String.format(Messages.getString("Login.admin.contact"), appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
         info.setContentMode(ContentMode.HTML);
         layout.addComponent(info);
         layout.setSizeUndefined();
@@ -135,13 +136,13 @@ public class Login extends ViewComponent {
         } catch (AuthenticationException ex) {
             password.setValue("");
             LOG.info("Invalid credentials for username {}.", login.getValue());
-            error.setValue(String.format("Invalid credentials for username %s.", login.getValue()));
+            error.setValue(Messages.getString("Login.invalid.credentials", login.getValue()));
             error.setVisible(true);
             error.setSizeUndefined();
         } catch (TransactionException ex) {
             password.setValue("");
             LOG.error("SQL error.", ex);
-            error.setValue("Database error, check connection and configuration.");
+            error.setValue(Messages.getString("Login.database.error"));
             error.setVisible(true);
             error.setSizeUndefined();
         }
