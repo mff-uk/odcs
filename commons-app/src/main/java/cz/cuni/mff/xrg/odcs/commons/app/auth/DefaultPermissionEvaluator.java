@@ -5,12 +5,12 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
@@ -43,11 +43,20 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             return false;
         }
 
-        // administrator is almighty
-        if (auth.getAuthorities().contains(Role.ROLE_ADMIN)) {
-            return true;
+        boolean found = false;
+        
+        for (GrantedAuthority ga : auth.getAuthorities()) {
+            if(ga.getAuthority().equals(perm.toString())){
+                found = true;
+                break;
+            }
         }
 
+        //if you do not have an permission in the database return false;
+        if(!found){
+            return false;
+        }
+        
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;
@@ -61,22 +70,24 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
             switch (perm.toString()) {
-                case "view":
-                case "use":
-                case "copy":
-                case "export":
-                    if (ShareType.PUBLIC.contains(sTarget.getShareType())) {
-                        return true;
-                    }
-                    break;
-                case "save":
+//                case "view":
+//                case "use":
+//                case "copy":
+//                case "export":
+//                    if (ShareType.PUBLIC.contains(sTarget.getShareType())) {
+//                        return true;
+//                    }
+//                    break;
+                case "pipeline.create":
+                case "pipelineExecution.create":
+                //case "save":
                     if (ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                         return true;
                     }
                     break;
-                case "delete":
-                    // refuse delete, only for owner or admin
-                    break;
+//                case "delete":
+//                    // refuse delete, only for owner or admin
+//                    break;
             }
         }
 
@@ -84,7 +95,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         // pipeline itself is viewable
         if (target instanceof PipelineExecution) {
             switch (perm.toString()) {
-                case "view":
+                case "pipelineExecution.read":
                     Pipeline pipe = ((PipelineExecution) target).getPipeline();
                     boolean viewPipe = hasPermission(pipe, perm);
                     if (viewPipe) {

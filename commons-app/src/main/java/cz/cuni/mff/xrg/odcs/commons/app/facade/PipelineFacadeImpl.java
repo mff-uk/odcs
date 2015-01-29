@@ -72,6 +72,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * 
      * @return newly created pipeline
      */
+    @PreAuthorize("hasPermission('pipeline.create')")
     @Override
     public Pipeline createPipeline() {
         Pipeline newPipeline = new Pipeline();
@@ -92,7 +93,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return newly copied pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'copy')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.create')")
     @Override
     public Pipeline copyPipeline(Pipeline pipeline) {
 
@@ -125,7 +126,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *             container with paging instead
      */
     @Deprecated
-    @PostFilter("hasPermission(filterObject,'view')")
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getAllPipelines() {
         return pipelineDao.getAll();
@@ -139,7 +140,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return Pipeline the found pipeline or null if the pipeline with given ID
      *         does not exist
      */
-    @PostAuthorize("hasPermission(returnObject,'view')")
+    @PostAuthorize("hasPermission(returnObject,'pipeline.read')")
     @Override
     public Pipeline getPipeline(long id) {
         return pipelineDao.getInstance(id);
@@ -151,7 +152,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline,'save')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.create')")
     @Override
     public void save(Pipeline pipeline) {
 
@@ -177,20 +178,20 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'delete')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.delete')")
     @Override
     public void delete(Pipeline pipeline) {
         pipelineDao.delete(pipeline);
     }
 
-    @PreAuthorize("hasPermission(#dpu, 'view')")
-    @PostFilter("hasPermission(filterObject,'view')")
+    @PreAuthorize("hasPermission(#dpu, 'pipeline.read')")
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
     }
 
-    @PreAuthorize("hasPermission(#dpu, 'delete')")
+    @PreAuthorize("hasPermission(#dpu, 'pipeline.delete')")
     @Override
     public List<Pipeline> getAllPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
@@ -345,6 +346,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      * @return pipeline execution of given pipeline
      */
+    @PreAuthorize("hasPermission('pipelineExecution.create')")
     @Override
     public PipelineExecution createExecution(Pipeline pipeline) {
         PipelineExecution newExec = new PipelineExecution(pipeline);
@@ -362,6 +364,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *             container with paging support instead
      */
     @Deprecated
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutions() {
         return executionDao.getAll();
@@ -374,11 +377,13 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return list of executions
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
         return executionDao.getAll(status);
     }
 
 
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
@@ -392,6 +397,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *            of PipelineExecution
      * @return PipelineExecution
      */
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     @Override
     public PipelineExecution getExecution(long id) {
         return executionDao.getInstance(id);
@@ -404,6 +410,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return pipeline executions
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
         return executionDao.getAll(pipeline);
     }
@@ -418,6 +425,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return PipelineExecutions
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
         return executionDao.getAll(pipeline, status);
     }
@@ -451,6 +459,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public PipelineExecution getLastExec(Pipeline pipeline,
             Set<PipelineExecutionStatus> statuses) {
         return executionDao.getLastExecution(pipeline, statuses);
@@ -463,6 +472,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public PipelineExecution getLastExec(Pipeline pipeline) {
         return executionDao.getLastExecution(pipeline, EnumSet.allOf(PipelineExecutionStatus.class));
     }
@@ -477,6 +487,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
+    @PreAuthorize("hasPermission('pipelineExecution.read')")
     public PipelineExecution getLastExec(Schedule schedule,
             Set<PipelineExecutionStatus> statuses) {
         return executionDao.getLastExecution(schedule, statuses);
@@ -540,6 +551,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
+    @PreAuthorize("hasPermission('pipelineExecution.create')")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -552,6 +564,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
+    @PreAuthorize("hasPermission('pipelineExecution.delete')")
     @Override
     public void delete(PipelineExecution exec) {
         executionDao.delete(exec);
@@ -564,7 +577,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *            pipeline execution to stop
      */
     @Override
-    @PreAuthorize("hasPermission(#execution, 'save')")
+    @PreAuthorize("hasPermission(#execution, 'pipelineExecution.create')")
     @Transactional
     public void stopExecution(PipelineExecution execution) {
         PipelineExecution currentExec = getExecution(execution.getId());

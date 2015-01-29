@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionEnum;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
@@ -67,8 +66,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all users persisted in database
      */
-    @PostFilter("hasPermission(filterObject, 'view')")
-
+    @PostFilter("hasPermission(filterObject, 'user.read')")
     @Override
     public List<User> getAllUsers() {
         return userDao.getAll();
@@ -79,7 +77,7 @@ class UserFacadeImpl implements UserFacade {
      *            primary key
      * @return user with given id or <code>null<code>
      */
-    @PostAuthorize("hasPermission(returnObject, 'view')")
+    @PostAuthorize("hasPermission(returnObject, 'user.read')")
     @Override
     public User getUser(long id) {
         return userDao.getInstance(id);
@@ -119,14 +117,13 @@ class UserFacadeImpl implements UserFacade {
         return user;
     }
 
-    
     /**
      * Saves any modifications made to the User into the database.
      * 
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'save')")
+    @PreAuthorize("hasPermission(#user, 'user.create')")
     @Override
     public void save(User user) {
         userDao.save(user);
@@ -144,12 +141,12 @@ class UserFacadeImpl implements UserFacade {
     }
 
     /**
-     * Deletes pipeline from database.
+     * Deletes user from database.
      * 
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'delete')")
+    @PreAuthorize("hasPermission(#user, 'user.delete')")
     @Override
     public void delete(User user) {
         userDao.delete(user);
@@ -158,6 +155,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all roles persisted in database
      */
+    @PreAuthorize("hasPermission('role.read')")
     @Override
     public List<RoleEntity> getAllRoles() {
         return roleDao.getAllRoles();
@@ -172,4 +170,23 @@ class UserFacadeImpl implements UserFacade {
     public RoleEntity getRoleByName(String name) {
         return roleDao.getRoleByName(name);
     }
+
+    @PreAuthorize("hasPermission('role.create')")
+    @Override
+    public void save(RoleEntity role) {
+        roleDao.save(role);
+    }
+    
+    /**
+     * Deletes pipeline from database.
+     * 
+     * @param user
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#user, 'role.delete')")
+    @Override
+    public void delete(RoleEntity role) {
+        roleDao.delete(role);
+    }
+
 }

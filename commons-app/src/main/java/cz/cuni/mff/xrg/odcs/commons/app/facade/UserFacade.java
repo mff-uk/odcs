@@ -62,7 +62,7 @@ public interface UserFacade extends Facade {
 	void save(User user);
 
 	/**
-     * Saves any modifications made to the User into the database.
+     * Saves any modifications made to the User into the database without authorization. Useful during login process.
      * 
      * @param user
      */
@@ -70,7 +70,7 @@ public interface UserFacade extends Facade {
 
 	
 	/**
-	 * Deletes pipeline from database.
+	 * Deletes user from database.
 	 * 
 	 * @param user
 	 */
@@ -88,4 +88,17 @@ public interface UserFacade extends Facade {
 	 * @return RoleEntity or null
 	 */
 	RoleEntity getRoleByName(String name);
+	
+	/**
+	 * Saves any modification made to the Role into the database
+	 * @param role
+	 */
+	void save(RoleEntity role);
+
+	/**
+     * Deletes role from database.
+     * 
+     * @param user
+     */
+    void delete(RoleEntity role);
 }
