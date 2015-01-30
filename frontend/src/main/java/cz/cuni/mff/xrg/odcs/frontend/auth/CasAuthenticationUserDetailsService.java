@@ -35,13 +35,10 @@ public class CasAuthenticationUserDetailsService extends
     protected UserDetails loadUserDetails(final Assertion assertion) {
 
         String username = assertion.getPrincipal().getName();
+        Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 
-        Map<String, Object> attributes = assertion.getAttributes();
-        if (attributes != null) {
-            LOG.warn("Received role attributes: " + attributes.get("role"));
-        }
-        String[] roles = new String[] { "User" };
-
+        String rolename = attributes.get("role").toString();
+        
         User user = userFacade.getUserByExtId(username);
 
         if (user == null) {
@@ -53,10 +50,10 @@ public class CasAuthenticationUserDetailsService extends
 
         user.getRoles().clear();
 
-        for (String rolename : roles) {
+//        for (String rolename : roles) {
             RoleEntity role = userFacade.getRoleByName(rolename);
             user.addRole(role);
-        }
+//        }
 
         userFacade.saveNoAuth(user);
 
