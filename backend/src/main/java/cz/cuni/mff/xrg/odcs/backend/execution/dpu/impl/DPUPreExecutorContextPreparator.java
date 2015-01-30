@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -80,16 +81,9 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
                 Node sourceNode = edge.getFrom();
                 Context sourceContext = contexts.get(sourceNode);
                 if (sourceContext == null) {
-                    // prepare message
-                    StringBuilder message = new StringBuilder();
-                    message.append("Missing context for '");
-                    message.append(sourceNode.getDpuInstance().getName());
-                    message.append("' required by '");
-                    message.append("node.getDpuInstance().getName()");
-                    message.append("'");
                     // publish message
                     eventPublisher.publishEvent(
-                            DPUEvent.createPreExecutorFailed(context, this, message.toString()));
+                            DPUEvent.createPreExecutorFailed(context, this, Messages.getString("DPUPreExecutorContextPreparator.missing.context", sourceNode.getDpuInstance().getName())));
                     return false;
                 }
                 // else add data
@@ -98,7 +92,7 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
                 } catch (ContextException e) {
                     eventPublisher.publishEvent(
                             DPUEvent.createPreExecutorFailed(context, this,
-                                    "Failed to merge contexts.", e));
+                                    Messages.getString("DPUPreExecutorContextPreparator.merge.failed"), e));
                     return false;
                 }
             }

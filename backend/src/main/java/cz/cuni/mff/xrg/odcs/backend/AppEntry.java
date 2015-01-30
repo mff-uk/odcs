@@ -1,11 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend;
 
 import java.io.File;
+import java.util.Locale;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.h2.store.fs.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +17,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
+import cz.cuni.mff.xrg.odcs.backend.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
@@ -27,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 
 /**
  * Backend entry point.
@@ -187,6 +186,15 @@ public class AppEntry {
         logbackLogger.addAppender(sqlAppender);
     }
 
+    private void initLocale() {
+        // retrieve runtime properties
+        RuntimePropertiesFacade runtimePropertiesFacade = (RuntimePropertiesFacade) context.getBean("runtimePropertiesFacade");
+        // set locale to current thread
+        Locale locale = runtimePropertiesFacade.getLocale();
+        LOG.info("Using locale: " + locale);
+        LocaleHolder.setLocale(locale);
+    }
+
     /**
      * Main execution method.
      * 
@@ -196,10 +204,12 @@ public class AppEntry {
         // initialise
         initSpring();
 
+        // initialize locale settings from DB, so we need context
+        initLocale();
+
         // the log back is not initialised here .. 
         // we add file appender
         initLogbackAppender(context.getBean(AppConfig.class));
-
 
         // the sql appender cooperate with spring, so we need spring first
         initLogbackSqlAppender();

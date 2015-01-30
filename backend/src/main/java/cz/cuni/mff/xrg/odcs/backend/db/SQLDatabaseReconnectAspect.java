@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -67,19 +68,19 @@ class SQLDatabaseReconnectAspect {
     @PostConstruct
     public void configure() {
         if (appConfig == null) {
-            LOG.info("No configuration for database reconnects given, using defaults.");
+            LOG.info("No configuration for database reconnects given, using defaults."); //$NON-NLS-1$
             return;
         }
         try {
             retries = appConfig.getInteger(ConfigProperty.DATABASE_RETRIES);
         } catch (MissingConfigPropertyException ex) {
-            LOG.info("Missing config property {}, using default value '{}'.",
+            LOG.info("Missing config property {}, using default value '{}'.", //$NON-NLS-1$
                     ex.getProperty(), retries);
         }
         try {
             wait = appConfig.getInteger(ConfigProperty.DATABASE_WAIT);
         } catch (MissingConfigPropertyException ex) {
-            LOG.info("Missing config property {}, using default value '{}'.",
+            LOG.info("Missing config property {}, using default value '{}'.", //$NON-NLS-1$
                     ex.getProperty(), wait);
         }
     }
@@ -105,8 +106,8 @@ class SQLDatabaseReconnectAspect {
                 return result;
 
             } catch (RuntimeException ex) { // TODO more specific exception?
-                LOG.warn("failureTolerant has caught exception", ex);
-                LOG.warn("Database is down after {} attempts.", attempts);
+                LOG.warn("failureTolerant has caught exception", ex); //$NON-NLS-1$
+                LOG.warn("Database is down after {} attempts.", attempts); //$NON-NLS-1$
 
                 // check whether we should notify admin
                 if (attempts == NOTIFY_AFTER_RETRIES) {
@@ -116,7 +117,7 @@ class SQLDatabaseReconnectAspect {
                 // check whether retry attempts were exhausted
                 if (retries != -1 && attempts > retries) {
                     // we have waited for too long
-                    LOG.error("Giving up on database after {} retries.", attempts);
+                    LOG.error("Giving up on database after {} retries.", attempts); //$NON-NLS-1$
                     throw ex;
                 }
             }
@@ -125,7 +126,7 @@ class SQLDatabaseReconnectAspect {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                LOG.error("Thread interrupted while sleeping.", e);
+                LOG.error("Thread interrupted while sleeping.", e); //$NON-NLS-1$
             }
         }
     }
@@ -137,8 +138,8 @@ class SQLDatabaseReconnectAspect {
      */
     private synchronized void notify(Exception ex) {
         if (emailSender != null && appConfig != null && !emailSent) {
-            final String subject = "ODCS - database error";
-            String body = "Database is down with exception: </br>" + ex.toString();
+            final String subject = Messages.getString("SQLDatabaseReconnectAspect.database.error"); //$NON-NLS-1$
+            String body = Messages.getString("SQLDatabaseReconnectAspect.database.exception") + ex.toString(); //$NON-NLS-1$
             String recipient = appConfig.getString(ConfigProperty.EMAIL_ADMIN);
             emailSender.send(subject, body, recipient);
             // 
