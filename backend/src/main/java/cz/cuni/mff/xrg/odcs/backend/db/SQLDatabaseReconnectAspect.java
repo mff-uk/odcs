@@ -68,19 +68,19 @@ class SQLDatabaseReconnectAspect {
     @PostConstruct
     public void configure() {
         if (appConfig == null) {
-            LOG.info("No configuration for database reconnects given, using defaults."); //$NON-NLS-1$
+            LOG.info("No configuration for database reconnects given, using defaults.");
             return;
         }
         try {
             retries = appConfig.getInteger(ConfigProperty.DATABASE_RETRIES);
         } catch (MissingConfigPropertyException ex) {
-            LOG.info("Missing config property {}, using default value '{}'.", //$NON-NLS-1$
+            LOG.info("Missing config property {}, using default value '{}'.",
                     ex.getProperty(), retries);
         }
         try {
             wait = appConfig.getInteger(ConfigProperty.DATABASE_WAIT);
         } catch (MissingConfigPropertyException ex) {
-            LOG.info("Missing config property {}, using default value '{}'.", //$NON-NLS-1$
+            LOG.info("Missing config property {}, using default value '{}'.",
                     ex.getProperty(), wait);
         }
     }
@@ -106,8 +106,8 @@ class SQLDatabaseReconnectAspect {
                 return result;
 
             } catch (RuntimeException ex) { // TODO more specific exception?
-                LOG.warn("failureTolerant has caught exception", ex); //$NON-NLS-1$
-                LOG.warn("Database is down after {} attempts.", attempts); //$NON-NLS-1$
+                LOG.warn("failureTolerant has caught exception", ex);
+                LOG.warn("Database is down after {} attempts.", attempts);
 
                 // check whether we should notify admin
                 if (attempts == NOTIFY_AFTER_RETRIES) {
@@ -117,7 +117,7 @@ class SQLDatabaseReconnectAspect {
                 // check whether retry attempts were exhausted
                 if (retries != -1 && attempts > retries) {
                     // we have waited for too long
-                    LOG.error("Giving up on database after {} retries.", attempts); //$NON-NLS-1$
+                    LOG.error("Giving up on database after {} retries.", attempts);
                     throw ex;
                 }
             }
@@ -126,7 +126,7 @@ class SQLDatabaseReconnectAspect {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                LOG.error("Thread interrupted while sleeping.", e); //$NON-NLS-1$
+                LOG.error("Thread interrupted while sleeping.", e);
             }
         }
     }
@@ -138,8 +138,8 @@ class SQLDatabaseReconnectAspect {
      */
     private synchronized void notify(Exception ex) {
         if (emailSender != null && appConfig != null && !emailSent) {
-            final String subject = Messages.getString("SQLDatabaseReconnectAspect.database.error"); //$NON-NLS-1$
-            String body = Messages.getString("SQLDatabaseReconnectAspect.database.exception") + ex.toString(); //$NON-NLS-1$
+            final String subject = Messages.getString("SQLDatabaseReconnectAspect.database.error");
+            String body = Messages.getString("SQLDatabaseReconnectAspect.database.exception") + ex.toString();
             String recipient = appConfig.getString(ConfigProperty.EMAIL_ADMIN);
             emailSender.send(subject, body, recipient);
             // 
