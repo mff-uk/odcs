@@ -664,7 +664,7 @@ public class PipelineEdit extends ViewComponent {
                 // save current pipeline
                 if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(UI.getCurrent(),
-                            Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() { //$NON-NLS-4$
+                            Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
@@ -690,7 +690,7 @@ public class PipelineEdit extends ViewComponent {
                 if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
-                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"), new ConfirmDialog.Listener() { //$NON-NLS-4$
+                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"), new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
@@ -1175,7 +1175,7 @@ public class PipelineEdit extends ViewComponent {
         final ShareType visibility = (ShareType) pipelineVisibility.getValue();
         if (!pipelineFacade.isUpToDate(pipeline)) {
             ConfirmDialog.show(UI.getCurrent(),
-                    Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() { //$NON-NLS-4$
+                    Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {
                         @Override
                         public void onClose(ConfirmDialog cd) {
                             if (cd.isConfirmed()) {
@@ -1188,7 +1188,7 @@ public class PipelineEdit extends ViewComponent {
         } else if (pipeline.getShareType() == ShareType.PRIVATE && ShareType.PUBLIC.contains(visibility) && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
             ConfirmDialog
                     .show(UI.getCurrent(),
-                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"), new ConfirmDialog.Listener() { //$NON-NLS-4$
+                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"), new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {

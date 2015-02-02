@@ -648,7 +648,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     private void changeURI(long executionId) {
         String uriFragment = Page.getCurrent().getUriFragment();
         ParametersHandler handler = new ParametersHandler(uriFragment);
-        handler.addParameter("exec", "" + executionId); //$NON-NLS-2$
+        handler.addParameter("exec", "" + executionId);
         ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
     }
 

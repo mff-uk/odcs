@@ -10,6 +10,7 @@ import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
@@ -267,13 +268,13 @@ class BundleContainer {
             if (packageName == null) {
                 LOG.error("'DPU-Package' undefined for '{}'", uri);
                 throw new ModuleException(
-                        "Can't find 'DPU-Package' record in bundle's manifest.mf");
+                        Messages.getString("BundleContainer.dpu-package.not.found"));
             }
             final String className = (String) headers.get("DPU-MainClass");
             if (className == null) {
                 LOG.error("'DPU-MainClass' undefined for '{}'", uri);
                 throw new ModuleException(
-                        "Can't find 'DPU-MainClass' record in bundle's manifest.mf");
+                        Messages.getString("BundleContainer.dpu-mainClass.not.found"));
             }
             mainClassNameCache = packageName + "." + className;
         }
