@@ -17,7 +17,6 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
-import cz.cuni.mff.xrg.odcs.backend.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
@@ -26,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 
 /**
  * Backend entry point.
@@ -189,10 +189,10 @@ public class AppEntry {
     private void initLocale() {
         // retrieve runtime properties
         RuntimePropertiesFacade runtimePropertiesFacade = (RuntimePropertiesFacade) context.getBean("runtimePropertiesFacade");
-        // set locale to current thread
         Locale locale = runtimePropertiesFacade.getLocale();
-        LOG.info("Using locale: " + locale);
+        // set retrieved locale to LocaleHolder
         LocaleHolder.setLocale(locale);
+        LOG.info("Using locale: " + LocaleHolder.getLocale());
     }
 
     /**
@@ -204,7 +204,7 @@ public class AppEntry {
         // initialise
         initSpring();
 
-        // initialize locale settings from DB, so we need context
+        // initialize locale settings from DB, so we need spring first
         initLocale();
 
         // the log back is not initialised here .. 

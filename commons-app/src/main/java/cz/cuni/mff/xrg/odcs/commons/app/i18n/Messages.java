@@ -1,16 +1,14 @@
-package cz.cuni.mff.xrg.odcs.frontend.i18n;
+package cz.cuni.mff.xrg.odcs.commons.app.i18n;
 
 import java.text.MessageFormat;
 
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-
 /**
  * Class responsible for retrieving internationalized messages.
- * Use this class only for internationalization of frontend module!
- * This is because it looks only into frontend resource bundles located in ../frontend/src/main/resources.
+ * Use this class only for internationalization of commons-app module!
+ * This is because it looks only into commons resource bundles located in ../commons-app/src/main/resources.
  * Locale used in retrieving messages comes from LocaleHolder @see {@link cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder}
  * 
  * @author mva
