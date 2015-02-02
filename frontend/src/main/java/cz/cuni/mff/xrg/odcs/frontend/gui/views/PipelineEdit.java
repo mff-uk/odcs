@@ -913,11 +913,11 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility = new OptionGroup();
         pipelineVisibility.addStyleName("horizontalgroup");
         pipelineVisibility.addItem(ShareType.PRIVATE);
-        pipelineVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RO);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RW);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, ShareType.PUBLIC_RW.getName());
+        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
         pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {

@@ -612,9 +612,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
         groupVisibility.addItem(ShareType.PRIVATE);
-        groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        groupVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         groupVisibility.addItem(ShareType.PUBLIC_RO);
-        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
         // JAR path of DPU Template.

@@ -304,9 +304,9 @@ public class DPUCreate extends Window {
         OptionGroup grVis = new OptionGroup();
         grVis.addStyleName("horizontalgroup");
         grVis.addItem(ShareType.PRIVATE);
-        grVis.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        grVis.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         grVis.addItem(ShareType.PUBLIC_RO);
-        grVis.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        grVis.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         grVis.setValue(ShareType.PUBLIC_RO);
 
         layout.addComponent(grVis, 1, row);
