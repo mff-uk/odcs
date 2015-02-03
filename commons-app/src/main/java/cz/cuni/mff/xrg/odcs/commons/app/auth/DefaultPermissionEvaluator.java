@@ -44,19 +44,19 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         }
 
         boolean found = false;
-        
+
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            if(ga.getAuthority().equals(perm.toString())){
+            if (ga.getAuthority().equals(perm.toString())) {
                 found = true;
                 break;
             }
         }
 
         //if you do not have an permission in the database return false;
-        if(!found){
+        if (!found) {
             return false;
         }
-        
+
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;
@@ -70,24 +70,12 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
             switch (perm.toString()) {
-//                case "view":
-//                case "use":
-//                case "copy":
-//                case "export":
-//                    if (ShareType.PUBLIC.contains(sTarget.getShareType())) {
-//                        return true;
-//                    }
-//                    break;
                 case "pipeline.create":
                 case "pipelineExecution.create":
-                //case "save":
                     if (ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                         return true;
                     }
                     break;
-//                case "delete":
-//                    // refuse delete, only for owner or admin
-//                    break;
             }
         }
 
