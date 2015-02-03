@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException;
+import cz.cuni.mff.xrg.odcs.rdf.i18n.Messages;
 
 /**
  * Responsible for test/controll parameters needed for method RDF.
@@ -96,16 +97,16 @@ public class ParamController {
             final String endpointName = endpointURL.toString().toLowerCase();
 
             if (!endpointName.startsWith("http://")) {
-                message = "Endpoint url name have to started with prefix \"http://\".";
+                message = Messages.getString("ParamController.endpoint.prefix") + " \"http://\".";
             } else if (endpointName.contains(" ")) {
-                message = "Endpoint url constains white spaces";
+                message = Messages.getString("ParamController.endpoint.contains.whitespaces");
             }
             if (message != null) {
                 logger.debug(message);
                 throw new RDFException(message);
             }
         } else {
-            message = "Mandatory URL path is null. SPARQL Endpoint URL must be specified";
+            message = Messages.getString("ParamController.url.is.null");
             logger.debug(message);
             throw new RDFException(message);
 

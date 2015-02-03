@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
+import cz.cuni.mff.xrg.odcs.rdf.i18n.Messages;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
@@ -9,13 +10,11 @@ import eu.unifiedviews.dataunit.DataUnitException;
  */
 public class InvalidQueryException extends DataUnitException {
 
-    private static final String message = "This SPARQL query is not valid !!!";
-
     /**
      * Create a new instance of {@link InvalidQueryException} with the default {@link #message}.
      */
     public InvalidQueryException() {
-        super(message);
+        super(Messages.getString("InvalidQueryException.exception"));
     }
 
     /**

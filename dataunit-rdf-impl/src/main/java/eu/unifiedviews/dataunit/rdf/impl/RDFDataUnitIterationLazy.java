@@ -12,6 +12,7 @@ import org.openrdf.repository.RepositoryResult;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 
 /**
  * Must be used with reliable repository, can handle large data as loads only one entity at a time.
@@ -44,7 +45,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
             Statement rdfDataGraphURIStatement = result2.next();
             return new RDFDataUnitEntryImpl(statement.getObject().stringValue(), new URIImpl(rdfDataGraphURIStatement.getObject().stringValue()));
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error iterating underlying repository", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.iterating.error"), ex);
         } catch (NoSuchElementException ex) {
             this.close();
             throw ex;
@@ -54,7 +55,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
                     result2.close();
                 }
             } catch (RepositoryException ex) {
-                throw new DataUnitException("Error closing result", ex);
+                throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.closing.error"), ex);
             }
         }
     }
@@ -72,7 +73,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
             }
             return hasNext;
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error in hasNext", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.hasNext.error"), ex);
         }
     }
 
@@ -81,17 +82,17 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
         try {
             result.close();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error closing result", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.closing.error"), ex);
         }
         try {
             connection.close();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error closing connection", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.connection.closing.error"), ex);
         }
         try {
             connection2.close();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error closing connection", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.connection.closing.error"), ex);
         }
     }
 
@@ -106,7 +107,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
             try {
                 result = connection.getStatements(null, connection.getValueFactory().createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
             } catch (RepositoryException ex) {
-                throw new DataUnitException("Error obtaining entry list.", ex);
+                throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.obtaining.entryList.error"), ex);
             }
         }
     }
