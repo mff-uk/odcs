@@ -329,10 +329,10 @@ CREATE SEQUENCE "seq_usr_user" START 1;
 CREATE TABLE "usr_user"
 (
   "id" INTEGER,
-  "username" VARCHAR(25) NOT NULL,
+  "username" VARCHAR(256) NOT NULL,
   "email_id" INTEGER,
-  "u_password" CHAR(142) NOT NULL,
-  "full_name" VARCHAR(55),
+  "u_password" CHAR(256) NOT NULL,
+  "full_name" VARCHAR(256),
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),
   UNIQUE ("username")
@@ -372,7 +372,7 @@ CREATE TABLE "usr_user_role"
 
 CREATE TABLE "usr_extuser" (
   "id_usr" INTEGER NOT NULL,
-  "id_extuser" varchar(25) NOT NULL,
+  "id_extuser" varchar(256) NOT NULL,
   PRIMARY KEY ("id_usr","id_extuser")
 );
 
