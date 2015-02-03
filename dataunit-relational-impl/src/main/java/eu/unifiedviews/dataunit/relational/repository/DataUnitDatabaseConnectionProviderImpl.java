@@ -3,7 +3,7 @@ package eu.unifiedviews.dataunit.relational.repository;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
 
 public class DataUnitDatabaseConnectionProviderImpl implements DataUnitDatabaseConnectionProvider {

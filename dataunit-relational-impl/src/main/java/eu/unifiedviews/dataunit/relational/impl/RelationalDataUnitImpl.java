@@ -25,8 +25,8 @@ import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
-import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 
 public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit implements ManageableWritableRelationalDataUnit {
 

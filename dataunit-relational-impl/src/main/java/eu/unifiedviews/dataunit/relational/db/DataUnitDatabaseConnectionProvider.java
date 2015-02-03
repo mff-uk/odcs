@@ -1,4 +1,4 @@
-package eu.unifiedviews.dataunit.relational;
+package eu.unifiedviews.dataunit.relational.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;

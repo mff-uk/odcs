@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperConfigIF;
 import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
 import eu.unifiedviews.dataunit.relational.db.DefaultDatabaseConfig;

@@ -1,6 +1,6 @@
 package eu.unifiedviews.commons.dataunit.core;
 
-import eu.unifiedviews.dataunit.relational.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 
 /**
  * @author Škoda Petr
