@@ -59,7 +59,7 @@ class DataUnitFactoryImpl implements DataUnitFactory {
             try {
                 dataUnitDbRepository = this.dataUnitRelRepositoryManager.getRepository(executionId);
             } catch (Exception e) {
-                throw new DataUnitException("Failed to create database repository for dataunit");
+                throw new DataUnitException("Failed to create database repository for dataunit", e);
             }
             serviceBus = new CoreServiceBusImpl(
                     repository.getConnectionSource(),
