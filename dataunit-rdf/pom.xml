@@ -22,6 +22,12 @@
 			<artifactId>uv-dataunit-files</artifactId>
 			<version>${uv-dataunit-files.version}</version>
 		</dependency>
+        <dependency> <!-- dataunit base project -->
+            <groupId>cz.cuni.mff.xrg.odcs</groupId>
+            <artifactId>dataunit</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
 		<dependency> <!-- openRDF dependency -->
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-config</artifactId>

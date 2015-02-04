@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import java.util.Locale;
 import java.util.Map;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,6 @@ import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
-import eu.unifiedviews.helpers.dpu.localization.LocaleHolder;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -84,9 +85,10 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
-        // Retrieve Locale from Runtime properties, and set it in LocaleHolder
+        // Retrieve Locale from Runtime properties, and set it in LocaleHolders
         Locale locale = runtimePropertiesFacade.getLocale();
         LocaleHolder.setLocale(locale);
+        DataunitLocaleHolder.setLocale(locale);
 
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling

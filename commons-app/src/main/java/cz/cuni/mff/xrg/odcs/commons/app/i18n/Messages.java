@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import eu.unifiedviews.helpers.dpu.localization.LocaleHolder;
 
 /**
  * Class responsible for retrieving internationalized messages.

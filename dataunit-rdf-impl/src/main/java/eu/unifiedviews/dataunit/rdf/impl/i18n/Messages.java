@@ -2,17 +2,16 @@ package eu.unifiedviews.dataunit.rdf.impl.i18n;
 
 import java.text.MessageFormat;
 
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-
-import eu.unifiedviews.helpers.dpu.localization.LocaleHolder;
 
 /**
  * Class responsible for retrieving internationalized messages.
  * Use this class only for internationalization of dataunit-rdf-impl module!
  * This is because it looks only into dataunit-rdf-impl resource bundles located in ../dataunit-rdf-impl/src/main/resources.
- * Locale used in retrieving messages comes from LocaleHolder @see {@link cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder}
- * 
+ * Locale used in retrieving messages comes from LocaleHolder @see {@link eu.unifiedviews.commons.i18n.DataunitLocaleHolder}
+ *
  * @author mva
  */
 public class Messages {
@@ -24,15 +23,13 @@ public class Messages {
     /**
      * Get the resource bundle string stored under key, formatted using {@link MessageFormat}.
      *
-     * @param key
-     *            resource bundle key
-     * @param args
-     *            parameters to formatting routine
+     * @param key  resource bundle key
+     * @param args parameters to formatting routine
      * @return formatted string, returns "!key!" when the value is not found in bundle
      */
     public static String getString(final String key, final Object... args) {
         try {
-            return MESSAGE_SOURCE.getMessage(key, args, LocaleHolder.getLocale());
+            return MESSAGE_SOURCE.getMessage(key, args, DataunitLocaleHolder.getLocale());
         } catch (NoSuchMessageException e) {
             return '!' + key + '!';
         }
@@ -40,7 +37,7 @@ public class Messages {
 
     /**
      * Initialize resource bundle.
-     * 
+     *
      * @return ResourceBundle
      */
     private static ReloadableResourceBundleMessageSource initializeResourceBundle() {

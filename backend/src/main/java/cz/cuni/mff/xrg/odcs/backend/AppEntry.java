@@ -3,6 +3,9 @@ package cz.cuni.mff.xrg.odcs.backend;
 import java.io.File;
 import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
+import org.h2.store.Data;
 import org.h2.store.fs.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
-import eu.unifiedviews.helpers.dpu.localization.LocaleHolder;
 
 /**
  * Backend entry point.
@@ -190,8 +192,9 @@ public class AppEntry {
         // retrieve runtime properties
         RuntimePropertiesFacade runtimePropertiesFacade = (RuntimePropertiesFacade) context.getBean("runtimePropertiesFacade");
         Locale locale = runtimePropertiesFacade.getLocale();
-        // set retrieved locale to LocaleHolder
+        // set retrieved locale to LocaleHolders
         LocaleHolder.setLocale(locale);
+        DataunitLocaleHolder.setLocale(locale);
         LOG.info("Using locale: " + LocaleHolder.getLocale());
     }
 

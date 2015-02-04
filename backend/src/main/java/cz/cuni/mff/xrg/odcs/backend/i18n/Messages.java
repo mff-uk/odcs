@@ -2,17 +2,16 @@ package cz.cuni.mff.xrg.odcs.backend.i18n;
 
 import java.text.MessageFormat;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-
-import eu.unifiedviews.helpers.dpu.localization.LocaleHolder;
 
 /**
  * Class responsible for retrieving internationalized messages.
  * Use this class only for internationalization of backend module!
  * This is because it looks only into backend resource bundles located in ../backend/src/main/resources.
  * Locale used in retrieving messages comes from LocaleHolder @see {@link cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder}
- * 
+ *
  * @author mva
  */
 public class Messages {
@@ -24,10 +23,8 @@ public class Messages {
     /**
      * Get the resource bundle string stored under key, formatted using {@link MessageFormat}.
      *
-     * @param key
-     *            resource bundle key
-     * @param args
-     *            parameters to formatting routine
+     * @param key  resource bundle key
+     * @param args parameters to formatting routine
      * @return formatted string, returns "!key!" when the value is not found in bundle
      */
     public static String getString(final String key, final Object... args) {
@@ -40,7 +37,7 @@ public class Messages {
 
     /**
      * Initialize resource bundle.
-     * 
+     *
      * @return ResourceBundle
      */
     private static ReloadableResourceBundleMessageSource initializeResourceBundle() {
