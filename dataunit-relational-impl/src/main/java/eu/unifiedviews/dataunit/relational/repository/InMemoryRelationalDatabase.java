@@ -33,12 +33,14 @@ public class InMemoryRelationalDatabase implements ManagableRelationalRepository
     private DatabaseWrapperIF databaseWrapper;
 
     public InMemoryRelationalDatabase(String baseDatabaseURL, String jdbcDriverName, long executionId) throws DataUnitException {
-        this.baseDatabaseURL = (baseDatabaseURL != null) ? baseDatabaseURL : DEFAULT_BASE_DB_URL;
-        this.jdbcDriverName = (jdbcDriverName != null) ? jdbcDriverName : DEFAULT_JDBC_DRIVER;
+        // if not configured, use default values
+        this.baseDatabaseURL = (baseDatabaseURL != null && baseDatabaseURL.length() > 1) ? baseDatabaseURL : DEFAULT_BASE_DB_URL;
+        this.jdbcDriverName = (jdbcDriverName != null && jdbcDriverName.length() > 1) ? jdbcDriverName : DEFAULT_JDBC_DRIVER;
         this.executionId = executionId;
         this.databaseURL = this.baseDatabaseURL + ManagableRelationalRepository.BASE_DATABASE_NAME
                 + "_" + String.valueOf(this.executionId);
 
+        LOG.debug("Using {} driver to connect to database", this.jdbcDriverName);
         LOG.debug("Creating dataunit in memory database with URL: {} and dummy user name: {}", this.databaseURL, USER_NAME);
         this.databaseWrapper = createDatabaseWrapper();
     }
