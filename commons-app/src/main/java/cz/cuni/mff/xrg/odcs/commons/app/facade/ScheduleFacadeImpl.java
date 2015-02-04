@@ -78,7 +78,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param pipeline
      * @return
      */
-    @PreAuthorize("hasPermission('scheduleRule.read')")
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public List<Schedule> getSchedulesFor(Pipeline pipeline) {
         return scheduleDao.getSchedulesFor(pipeline);
@@ -91,7 +91,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return
      */
-    @PreAuthorize("hasPermission('scheduleRule.read')")
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public List<Schedule> getAllTimeBasedNotQueuedRunning() {
         return scheduleDao.getAllTimeBasedNotQueuedRunning();
@@ -103,7 +103,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param id
      * @return
      */
-    @PreAuthorize("hasPermission('scheduleRule.read')")
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public Schedule getSchedule(long id) {
         return scheduleDao.getInstance(id);
@@ -127,7 +127,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
-    @PreAuthorize("hasPermission('scheduleRule.delete')")
+    @PreAuthorize("hasRole('scheduleRule.delete')")
     @Override
     public void delete(Schedule schedule) {
         scheduleDao.delete(schedule);
@@ -151,7 +151,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @param schedule
      */
-    @PreAuthorize("hasPermission('scheduleRule.execute')")
+    @PreAuthorize("hasRole('scheduleRule.execute')")
     @Transactional
     @Override
     public void execute(Schedule schedule) {
@@ -230,7 +230,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE} and that should be executed (all their {@link Schedule#afterPipelines
      *         after-pipeline} executions finished).
      */
-    @PreAuthorize("hasPermission('scheduleRule.read')")
+    @PreAuthorize("hasRole('scheduleRule.read')")
     private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
         List<Schedule> result = new LinkedList<>();
 

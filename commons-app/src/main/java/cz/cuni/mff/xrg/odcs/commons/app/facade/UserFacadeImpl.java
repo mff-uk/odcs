@@ -155,7 +155,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all roles persisted in database
      */
-    @PreAuthorize("hasPermission('role.read')")
+    @PreAuthorize("hasRole('role.read')")
     @Override
     public List<RoleEntity> getAllRoles() {
         return roleDao.getAllRoles();
@@ -171,7 +171,7 @@ class UserFacadeImpl implements UserFacade {
         return roleDao.getRoleByName(name);
     }
 
-    @PreAuthorize("hasPermission('role.create')")
+    @PreAuthorize("hasRole('role.create')")
     @Override
     public void save(RoleEntity role) {
         roleDao.save(role);

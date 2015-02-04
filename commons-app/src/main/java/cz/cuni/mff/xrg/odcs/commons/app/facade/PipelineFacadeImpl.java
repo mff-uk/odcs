@@ -72,7 +72,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * 
      * @return newly created pipeline
      */
-    @PreAuthorize("hasPermission('pipeline.create')")
+    @PreAuthorize("hasRole('pipeline.create')")
     @Override
     public Pipeline createPipeline() {
         Pipeline newPipeline = new Pipeline();
@@ -346,7 +346,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      * @return pipeline execution of given pipeline
      */
-    @PreAuthorize("hasPermission('pipelineExecution.create')")
+    @PreAuthorize("hasRole('pipelineExecution.create')")
     @Override
     public PipelineExecution createExecution(Pipeline pipeline) {
         PipelineExecution newExec = new PipelineExecution(pipeline);
@@ -364,7 +364,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *             container with paging support instead
      */
     @Deprecated
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutions() {
         return executionDao.getAll();
@@ -377,13 +377,13 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return list of executions
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status) {
         return executionDao.getAll(status);
     }
 
 
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
@@ -397,7 +397,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *            of PipelineExecution
      * @return PipelineExecution
      */
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public PipelineExecution getExecution(long id) {
         return executionDao.getInstance(id);
@@ -410,7 +410,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return pipeline executions
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
         return executionDao.getAll(pipeline);
     }
@@ -425,7 +425,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return PipelineExecutions
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
         return executionDao.getAll(pipeline, status);
     }
@@ -459,7 +459,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public PipelineExecution getLastExec(Pipeline pipeline,
             Set<PipelineExecutionStatus> statuses) {
         return executionDao.getLastExecution(pipeline, statuses);
@@ -472,7 +472,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public PipelineExecution getLastExec(Pipeline pipeline) {
         return executionDao.getLastExecution(pipeline, EnumSet.allOf(PipelineExecutionStatus.class));
     }
@@ -487,7 +487,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return last execution or null
      */
     @Override
-    @PreAuthorize("hasPermission('pipelineExecution.read')")
+    @PreAuthorize("hasRole('pipelineExecution.read')")
     public PipelineExecution getLastExec(Schedule schedule,
             Set<PipelineExecutionStatus> statuses) {
         return executionDao.getLastExecution(schedule, statuses);
@@ -551,7 +551,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasPermission('pipelineExecution.create')")
+    @PreAuthorize("hasRole('pipelineExecution.create')")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -564,7 +564,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasPermission('pipelineExecution.delete')")
+    @PreAuthorize("hasRole('pipelineExecution.delete')")
     @Override
     public void delete(PipelineExecution exec) {
         executionDao.delete(exec);
