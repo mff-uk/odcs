@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openrdf.model.Literal;
@@ -34,9 +37,9 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     private final DataUnitDatabaseConnectionProvider dataUnitDatabase;
 
-    private static final String DB_TABLE_NAME_PREFIX = "du_";
-
     private static final String DB_TABLE_NAME_BINDING = "dbTableName";
+
+    private Set<String> databaseTables = new HashSet<>();
 
     private static final String UPDATE_EXISTING_TABLE = ""
             + "DELETE "
@@ -67,13 +70,18 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
             throw new DataUnitException("Database table " + dbTableName + " does not exist!");
         }
         saveTableInRepository(symbolicName, dbTableName);
+        this.databaseTables.add(dbTableName);
     }
 
     @Override
     public String addNewDatabaseTable(String symbolicName) throws DataUnitException {
         checkForMultithreadAccess();
+        // to ensure that both table name and symbolic name are unique for the pipeline, we use the same 
+        // string for table name and symbolic name which is checked against the database
         String tableName = generateTableName(symbolicName);
-        saveTableInRepository(symbolicName, tableName);
+        String newSymbolicName = tableName;
+        saveTableInRepository(newSymbolicName, tableName);
+        this.databaseTables.add(tableName);
 
         return tableName;
 
@@ -200,28 +208,58 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
         return getType().equals(dataUnitType);
     }
 
-    private String generateTableName(String symbolicName) {
-        StringBuilder tableName = new StringBuilder(DB_TABLE_NAME_PREFIX);
+    private String generateTableName(String symbolicName) throws DataUnitException {
+        StringBuilder tableName = new StringBuilder();
         tableName.append(symbolicName);
         tableName.append("_");
         tableName.append(this.tableIndex.getAndIncrement());
+        int iteration = 1;
+        while (checkTableExists(tableName.toString().toUpperCase())) {
+            LOG.debug("Table name {} already exists", tableName.toString());
+            if (iteration == 1) {
+                tableName.append("_");
+            }
+            tableName.append("X");
+            iteration++;
+        }
 
+        LOG.debug("Using table name {}", tableName.toString());
         String tableNameAsString = tableName.toString();
         return tableNameAsString.toUpperCase();
     }
 
     @Override
     public void clear() throws DataUnitException {
-        try {
-            dropAllDatabaseTables();
-        } catch (Exception e) {
-            throw new DataUnitException(e);
-        }
+        dropAllDatabaseTables();
+        this.databaseTables.clear();
         super.clear();
     }
 
-    private void dropAllDatabaseTables() {
-        // TODO Get list of all tables and drop them
+    private void dropAllDatabaseTables() throws DataUnitException {
+        Connection conn = null;
+        Statement stmnt = null;
+        try {
+            conn = getDatabaseConnection();
+            stmnt = conn.createStatement();
+            for (String table : this.databaseTables) {
+                stmnt.execute("DROP TABLE " + table + " IF EXISTS");
+            }
+            conn.commit();
+        } catch (Exception e) {
+            LOG.error("Failed to drop existing database tables", e);
+            throw new DataUnitException("Failed to clear existing tables", e);
+        } finally {
+            try {
+                if (stmnt != null) {
+                    stmnt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                LOG.error("Failed to clear database resources", e);
+            }
+        }
     }
 
     public void release() {

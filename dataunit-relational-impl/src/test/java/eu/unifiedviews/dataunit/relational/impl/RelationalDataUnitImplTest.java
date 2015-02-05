@@ -106,7 +106,53 @@ public class RelationalDataUnitImplTest {
         Assert.assertEquals(1, counter);
         this.dataUnit.clear();
         this.dataUnit.release();
+    }
 
+    @Test
+    public void addCreateAndIterateTest() throws DataUnitException, SQLException {
+        // Add initial tables.
+        String tableName1 = this.dataUnit.addNewDatabaseTable("table1");
+        String tableName2 = this.dataUnit.addNewDatabaseTable("table2");
+        // Just check for size.
+        try {
+            int counter = 0;
+            Connection connection = this.dataUnit.getDatabaseConnection();
+            createTable(connection, tableName1, TABLE_COLUMNS_1, TABLE_COLUMN_TYPES_1);
+            createTable(connection, tableName2, TABLE_COLUMNS_2, TABLE_COLUMN_TYPES_2);
+            connection.close();
+
+            connection = this.dataUnit.getDatabaseConnection();
+            Assert.assertEquals(true, checkTableExists(connection, tableName1));
+            Assert.assertEquals(true, checkTableExists(connection, tableName2));
+            connection.close();
+
+            RelationalDataUnit.Iteration iter = this.dataUnit.getIteration();
+            while (iter.hasNext()) {
+                iter.next();
+                counter++;
+            }
+            Assert.assertEquals(2, counter);
+
+            this.dataUnit.clear();
+            counter = 0;
+            tableName1 = this.dataUnit.addNewDatabaseTable("table1");
+            connection = this.dataUnit.getDatabaseConnection();
+            createTable(connection, tableName1, TABLE_COLUMNS_1, TABLE_COLUMN_TYPES_1);
+            connection.close();
+
+            connection = this.dataUnit.getDatabaseConnection();
+            Assert.assertEquals(true, checkTableExists(connection, tableName1));
+
+            iter = this.dataUnit.getIteration();
+            while (iter.hasNext()) {
+                iter.next();
+                counter++;
+            }
+            Assert.assertEquals(1, counter);
+        } finally {
+            this.dataUnit.clear();
+            this.dataUnit.release();
+        }
     }
 
     @Test
