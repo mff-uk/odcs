@@ -32,7 +32,7 @@ class DataUnitFactoryImpl implements DataUnitFactory {
     private RepositoryManager repositoryManager;
 
     @Autowired
-    RelationalRepositoryManager dataUnitRelRepositoryManager;
+    private RelationalRepositoryManager dataUnitRelRepositoryManager;
 
     @Value("${dataunit.failure.wait:30}")
     private int waitTime;
