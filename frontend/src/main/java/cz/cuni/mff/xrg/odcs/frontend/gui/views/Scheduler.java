@@ -189,6 +189,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         Button addRuleButton = new Button();
         addRuleButton.setCaption("Add new scheduling rule");
         addRuleButton.addStyleName("v-button-primary");
+        addRuleButton.setVisible(utils.hasUserAuthority("scheduleRule.create"));
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     @Override

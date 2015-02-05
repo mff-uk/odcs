@@ -77,6 +77,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline.setHeight("25px");
         btnCreatePipeline.setWidth("120px");
         btnCreatePipeline.addStyleName("v-button-primary");
+        btnCreatePipeline.setVisible(utils.hasUserAuthority("pipeline.create"));
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -91,6 +92,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline.setHeight("25px");
         btnImportPipeline.setWidth("120px");
         btnImportPipeline.addStyleName("v-button-primary");
+        btnImportPipeline.setVisible(utils.hasUserAuthority("pipeline.import"));
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override

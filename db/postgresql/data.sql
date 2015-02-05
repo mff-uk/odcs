@@ -11,6 +11,10 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuD
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuJars');
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportScheduleRules');
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.import');
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.importScheduleRules');
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.importUserData');
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.read');
@@ -67,6 +71,15 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.delete'
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.edit');
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.export');
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.import');
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.read');
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));

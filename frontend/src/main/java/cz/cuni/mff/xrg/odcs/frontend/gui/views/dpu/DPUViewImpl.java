@@ -172,6 +172,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
         buttonCreateDPU.addStyleName("v-button-primary");
+        buttonCreateDPU.setVisible(utils.hasUserAuthority("dpuTemplate.create"));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -188,6 +189,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonImportDPU.setWidth("150px");
         buttonImportDPU.addStyleName("v-button-primary");
         buttonImportDPU.setEnabled(false);
+        buttonImportDPU.setVisible(utils.hasUserAuthority("dpuTemplate.import"));
         buttonImportDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -204,6 +206,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportAll.setWidth("150px");
         buttonExportAll.addStyleName("v-button-primary");
         buttonExportAll.setEnabled(false);
+        buttonExportAll.setVisible(utils.hasUserAuthority("dpuTemplate.export"));
         buttonExportAll
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
