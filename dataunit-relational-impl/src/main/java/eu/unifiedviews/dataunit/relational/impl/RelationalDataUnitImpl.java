@@ -66,7 +66,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
     @Override
     public void addExistingDatabaseTable(final String symbolicName, final String dbTableName) throws DataUnitException {
         checkForMultithreadAccess();
-        if (checkTableExists(dbTableName)) {
+        if (!checkTableExists(dbTableName)) {
             throw new DataUnitException("Database table " + dbTableName + " does not exist!");
         }
         saveTableInRepository(symbolicName, dbTableName);
