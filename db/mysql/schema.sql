@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS `pipeline_view`;
+DROP VIEW IF EXISTS `exec_last_view`;
+DROP VIEW IF EXISTS `exec_view`;
 DROP TABLE IF EXISTS `exec_dataunit_info`;
 DROP TABLE IF EXISTS `exec_context_dpu`;
 DROP TABLE IF EXISTS `exec_record`;
