@@ -98,7 +98,7 @@ class CleanUp implements PostExecutor {
         if (!execution.isDebugging()) {
             // delete working directory the sub directories should be already deleted by DPU's.
             try {
-                delete(resourceManager.getExecutionWorkingDir(execution));
+                delete(resourceManager.getExecutionDir(execution));
             } catch (MissingResourceException ex ){
                 LOG.warn("Can't delete directory.", ex);
             }
