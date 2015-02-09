@@ -152,7 +152,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.create')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.save')")
     @Override
     public void save(Pipeline pipeline) {
 

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Permission;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
@@ -43,18 +44,21 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             return false;
         }
 
-        boolean found = false;
+        Permission foundPermission = null;
 
         for (GrantedAuthority ga : auth.getAuthorities()) {
             if (ga.getAuthority().equals(perm.toString())) {
-                found = true;
+                foundPermission = (Permission) ga;
                 break;
             }
         }
 
         //if you do not have an permission in the database return false;
-        if (!found) {
+        // nasty hack
+        if (foundPermission == null && !perm.toString().endsWith(".delete")) {
             return false;
+        } else if (foundPermission != null && perm.toString().endsWith(".delete")) {
+            return true;
         }
 
         // entity owner is almighty
@@ -64,34 +68,31 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             if (owner != null && auth.getName().equals(owner.getUsername())) {
                 return true;
             }
+            if (owner != null && !auth.getName().equals(owner.getUsername()) && perm.toString().endsWith(".delete")) {
+                return false;
+            }
         }
 
         // check if our entity is shared
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
-            switch (perm.toString()) {
-                case "pipeline.create":
-                case "pipelineExecution.create":
-                    if (ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
-                        return true;
-                    }
-                    break;
+            if (foundPermission != null && foundPermission.isRwOnly()) {
+                if (!ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
+                    return false;
+                }
             }
+            return true;
         }
 
         // Pipeline execution actions are always viewable if
         // pipeline itself is viewable
         if (target instanceof PipelineExecution) {
-            switch (perm.toString()) {
-                case "pipelineExecution.read":
-                    Pipeline pipe = ((PipelineExecution) target).getPipeline();
-                    boolean viewPipe = hasPermission(pipe, perm);
-                    if (viewPipe) {
-                        // user has permission to view pipeline
-                        // for this execution -> allow to see execution as well
-                        return true;
-                    }
-                    break;
+            Pipeline pipe = ((PipelineExecution) target).getPipeline();
+            boolean viewPipe = hasPermission(pipe, perm);
+            if (viewPipe) {
+                // user has permission to view pipeline
+                // for this execution -> allow to see execution as well
+                return true;
             }
         }
 

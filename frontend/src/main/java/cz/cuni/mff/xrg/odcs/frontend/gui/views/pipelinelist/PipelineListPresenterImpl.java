@@ -248,9 +248,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public boolean canDeletePipeline(long pipelineId) {
-        //Pipeline pipeline = cachedSource.getObject(pipelineId);
-        //return permissions.hasPermission(pipeline, "delete");
-        return true;
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.delete");
     }
 
     @Override

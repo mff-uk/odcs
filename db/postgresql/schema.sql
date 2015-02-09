@@ -343,6 +343,7 @@ CREATE SEQUENCE "seq_permission" START WITH 1;
 CREATE TABLE "permission" (
   "id" INTEGER,
   "name" varchar(142) NOT NULL,
+  "rwonly" boolean,
   PRIMARY KEY ("id"),
   UNIQUE ("name")
 );

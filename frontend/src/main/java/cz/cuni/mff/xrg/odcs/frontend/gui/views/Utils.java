@@ -59,8 +59,9 @@ public class Utils {
         if(authString == null)
             return false;
         for (GrantedAuthority ga : getUser().getAuthorities()) {
-            if(authString.equals(ga.toString()))
+            if(authString.equals(ga.getAuthority())){
                 return true;
+            }
         }
         return false;
     }

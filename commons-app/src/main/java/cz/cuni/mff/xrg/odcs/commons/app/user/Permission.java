@@ -14,37 +14,48 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name = "permission")
 public class Permission implements GrantedAuthority {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Primary key for entity.
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
-	@SequenceGenerator(name = "seq_permission", allocationSize = 1)
-	private Long id;
+    /**
+     * Primary key for entity.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
+    @SequenceGenerator(name = "seq_permission", allocationSize = 1)
+    private Long id;
 
-	@Column
-	private String name;
+    @Column
+    private String name;
 
-	public Long getId() {
-		return id;
-	}
+    @Column
+    private boolean rwOnly;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public String getAuthority() {
-		return name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isRwOnly() {
+        return rwOnly;
+    }
+
+    public void setRwOnly(boolean rwOnly) {
+        this.rwOnly = rwOnly;
+    }
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }
