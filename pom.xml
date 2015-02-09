@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<uv-dpu-api.version>1.2.0T</uv-dpu-api.version>
+		<uv-dpu-api.version>1.2.0</uv-dpu-api.version>
 		<uv-dpu-api-helpers.version>1.2.0</uv-dpu-api-helpers.version>
 		<uv-dataunit-rdf.version>1.2.0</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>1.2.0</uv-dataunit-files.version>
