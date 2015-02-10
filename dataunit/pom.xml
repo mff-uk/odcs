@@ -6,7 +6,6 @@
 		<version>1.6.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>dataunit</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
 	<description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>
 
