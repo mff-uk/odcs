@@ -9,4 +9,6 @@ public interface DataUnitDatabaseConnectionProvider {
 
     void release() throws Exception;
 
+    boolean isActive();
+
 }

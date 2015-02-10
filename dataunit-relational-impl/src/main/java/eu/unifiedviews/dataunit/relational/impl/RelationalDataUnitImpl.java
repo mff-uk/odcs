@@ -230,7 +230,9 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     @Override
     public void clear() throws DataUnitException {
-        dropAllDatabaseTables();
+        if (this.dataUnitDatabase.isActive()) {
+            dropAllDatabaseTables();
+        }
         this.databaseTables.clear();
         super.clear();
     }

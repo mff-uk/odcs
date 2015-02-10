@@ -23,4 +23,9 @@ public class DataUnitDatabaseConnectionProviderImpl implements DataUnitDatabaseC
         this.databaseWrapper.shutdown();
     }
 
+    @Override
+    public boolean isActive() {
+        return this.databaseWrapper.isActive();
+    }
+
 }

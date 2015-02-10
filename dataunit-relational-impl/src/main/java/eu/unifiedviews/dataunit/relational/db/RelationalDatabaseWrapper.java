@@ -16,6 +16,8 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
 
     private final DatabaseWrapperConfigIF config;
 
+    private boolean bActive = true;
+
     public RelationalDatabaseWrapper(DatabaseWrapperConfigIF config) throws Exception {
         this.connectionProvider = new PooledConnectionProvider(config);
         this.config = config;
@@ -33,6 +35,12 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
     @Override
     public void shutdown() {
         this.connectionProvider.close();
+        this.bActive = false;
+    }
+
+    @Override
+    public boolean isActive() {
+        return this.bActive;
     }
 
 }

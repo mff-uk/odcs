@@ -26,8 +26,15 @@ public interface DatabaseWrapperIF {
     DatabaseWrapperConfigIF getConfiguration();
 
     /**
-     * 
+     * Shuts down the connections
      */
     void shutdown();
+
+    /**
+     * Whether the connection wrapper is active
+     * 
+     * @return
+     */
+    boolean isActive();
 
 }
