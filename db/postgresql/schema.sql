@@ -626,7 +626,6 @@ CREATE INDEX "ix_LOGGIN_execution" ON "logging" ("execution");
 CREATE INDEX "ix_LOGGIN_relative_id" ON "logging" ("relative_id");
 
 -- Views.
-
 CREATE VIEW "exec_last_view" AS
 SELECT id, pipeline_id, t_end, t_start, status
 FROM "exec_pipeline" AS exec
