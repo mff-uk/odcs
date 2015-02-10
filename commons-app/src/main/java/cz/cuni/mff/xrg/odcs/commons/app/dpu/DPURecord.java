@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Represent imported DPU in database.
- * 
+ *
  * @author Petyr
  * @author Bogo
  * @author Maria Kukhar
@@ -85,7 +85,7 @@ public abstract class DPURecord implements DataObject {
 
     /**
      * Constructor with name and type of DPU record.
-     * 
+     *
      * @param name
      *            Name of the DPU.
      */
@@ -96,7 +96,7 @@ public abstract class DPURecord implements DataObject {
 
     /**
      * Create new DPURecord by copying the values from existing DPURecord.
-     * 
+     *
      * @param dpuRecord
      *            Existing DPU record.
      */
@@ -177,7 +177,7 @@ public abstract class DPURecord implements DataObject {
     /**
      * Load appropriate DPU instance info {@link #instance}. The instance is
      * then accessible through the {@link #getInstance()} method.
-     * 
+     *
      * @param moduleFacade
      * @throws ModuleException
      */
@@ -190,7 +190,7 @@ public abstract class DPURecord implements DataObject {
 
     /**
      * Get stored instance if loaded. To load instance use {@link #loadInstance}.
-     * 
+     *
      * @return Stored instance.
      */
     public Object getInstance() {
@@ -221,7 +221,7 @@ public abstract class DPURecord implements DataObject {
 
     /**
      * Set raw configuration representation. Use with caution!
-     * 
+     *
      * @param conf
      */
     public void setRawConf(String conf) {
@@ -236,7 +236,7 @@ public abstract class DPURecord implements DataObject {
     /**
      * Generates hash code from primary key if it is available, otherwise from
      * the rest of the attributes.
-     * 
+     *
      * @return hash code
      */
     @Override
@@ -260,7 +260,7 @@ public abstract class DPURecord implements DataObject {
      * configuration is also a part ofDPUs identity, because we may want to have
      * same DPUs that only differ in configuration (although we should ideally
      * change DPUs name).
-     * 
+     *
      * @param obj
      * @return whether {@code this} object is equal to given object
      */

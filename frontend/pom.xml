@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.5.0</version>
+		<version>1.5.5</version>
 	</parent>
 	<artifactId>frontend</artifactId>
 	<packaging>war</packaging>
@@ -133,11 +133,11 @@
 			<artifactId>spring-vaadin-integration</artifactId>
 			<version>2.0.1</version>
 		</dependency>
-		
+
 		<dependency>
-		   <groupId>com.wcs.wcslib</groupId>
-		   <artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
-		   <version>1.7.1</version>
+			<groupId>com.wcs.wcslib</groupId>
+			<artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
+			<version>1.7.1</version>
 		</dependency>
 
 		<!-- Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory). 
@@ -179,6 +179,18 @@
 					<groupId>org.springframework</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jasig.cas.client</groupId>
+			<artifactId>cas-client-core</artifactId>
+			<version>3.3.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-cas</artifactId>
+			<version>${org.springframework.security.version}</version>
 		</dependency>
 
 		<dependency>

@@ -14,7 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Entity representing RDF namespace prefix.
- * 
+ *
  * @author Jan Vojt
  */
 @Entity
@@ -49,7 +49,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Constructs new prefix with given name for given URI.
-     * 
+     *
      * @param name
      *            prefix
      * @param prefixURI
@@ -88,7 +88,7 @@ public class NamespacePrefix implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -112,7 +112,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

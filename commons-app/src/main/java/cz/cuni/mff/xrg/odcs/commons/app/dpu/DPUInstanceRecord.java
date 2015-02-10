@@ -12,7 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
  * Represent the DPU instance pipeline placement in DB.
- * 
+ *
  * @author Petyr
  * @author Jan Vojt
  */
@@ -44,7 +44,7 @@ public class DPUInstanceRecord extends DPURecord {
      * Primary key {@link #id} of newly created object is <code>null</code>.
      * Copying is NOT propagated on {@link #template}, original reference is
      * preserved.
-     * 
+     *
      * @param dpuInstance
      */
     public DPUInstanceRecord(DPUInstanceRecord dpuInstance) {
@@ -55,7 +55,7 @@ public class DPUInstanceRecord extends DPURecord {
 
     /**
      * Create new DPUInstanceRecord with given name and type.
-     * 
+     *
      * @param name
      */
     public DPUInstanceRecord(String name) {
@@ -65,7 +65,7 @@ public class DPUInstanceRecord extends DPURecord {
 
     /**
      * Create instance based on given template.
-     * 
+     *
      * @param template
      */
     public DPUInstanceRecord(DPUTemplateRecord template) {
@@ -113,7 +113,7 @@ public class DPUInstanceRecord extends DPURecord {
 
     /**
      * Load DPU's instance from associated jar file.
-     * 
+     *
      * @param moduleFacade
      *            ModuleFacade used to load DPU.
      * @throws ModuleException

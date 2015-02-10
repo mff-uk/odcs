@@ -24,6 +24,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -37,7 +38,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 
 /**
  * Component for visualization of the pipeline.
- * 
+ *
  * @author Bogo
  */
 @Component
@@ -76,6 +77,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private DPUExplorer dpuExplorer;
+
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     @Autowired
     private PipelineValidator pipelineValidator;
@@ -179,13 +183,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade);
+        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 
     /**
      * Saves graph from graph canvas.
-     * 
+     *
      * @param pipeline
      *            {@link Pipeline} where graph should be saved.
      * @return If after save clean up is needed.
@@ -211,7 +215,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Adds new DPUTemplateRecord to graph canvas.
-     * 
+     *
      * @param dpu
      *            Id of {@link DPUTemplateRecord} which should be added.
      * @param x
@@ -229,7 +233,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Adds new edge to graph canvas.
-     * 
+     *
      * @param dpuFrom
      *            Id of Node, where edge starts.
      * @param dpuTo
@@ -256,7 +260,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Shows given pipeline on graph canvas.
-     * 
+     *
      * @param pipeline
      *            {@link Pipeline} to show on graph canvas.
      */
@@ -266,7 +270,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Shows detail of given {@link DPUInstanceRecord} in new sub-window.
-     * 
+     *
      * @param node
      *            {@link Node} containing DPU, which detail should be showed.
      */
@@ -298,7 +302,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Change canvas size.
-     * 
+     *
      * @param height
      *            New height of canvas in pixels.
      * @param width
@@ -310,7 +314,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Zoom the canvas.
-     * 
+     *
      * @param isZoomIn
      *            +/- zoom.
      * @return {@link Position} with new size of canvas.
@@ -344,7 +348,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Undo changes on canvas.
-     * 
+     *
      * @return History stack contains another graph.
      */
     public boolean undo() {
@@ -357,7 +361,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Changes mode of the pipeline canvas.
-     * 
+     *
      * @param newMode
      */
     public void changeMode(String newMode) {
@@ -367,7 +371,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Returns if PipelineCanvas was modified since last save.
-     * 
+     *
      * @return Is modified?
      */
     public boolean isModified() {
@@ -388,7 +392,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Inform listeners, about supplied event.
-     * 
+     *
      * @param event
      */
     protected void fireEvent(Event event) {
@@ -400,7 +404,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Initializes the canvas with given graph.
-     * 
+     *
      * @param pg
      *            {@link PipelineGraph} to show on canvas.
      */
@@ -436,7 +440,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Method updating node position on server side.
-     * 
+     *
      * @param dpuId
      *            Id of {@link Node} which was moved.
      * @param newX
@@ -454,7 +458,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Shows detail of given {@link Edge} in new sub-window.
-     * 
+     *
      * @param edge
      *            {@link Edge} which detail should be showed.
      */
@@ -489,7 +493,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Copy DPURecord on canvas.
-     * 
+     *
      * @param nodeId
      *            Id of Node, which DPURecord should be copied.
      */
@@ -506,7 +510,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Start pipeline in debug mode and show debug window.
-     * 
+     *
      * @param dpuId
      *            {@Link int} id of dpu, where debug should end.
      * @throws IllegalArgumentException
@@ -540,7 +544,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Invoke formatting action.
-     * 
+     *
      * @param action
      *            Formatting action.
      */
@@ -551,7 +555,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Resizes canvas, incerases the size by given number of pixels in given
      * direction.
-     * 
+     *
      * @param direction
      *            Direction to enlarge cavnas in
      * @param pixels
@@ -570,7 +574,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 //            resized = true;
 //            currentWidth += SIZE_INCREASE;
 //            resize("left", SIZE_INCREASE);
-//        } else 
+//        } else
         if (currentWidth - (newX + DPU_WIDTH) < MIN_DISTANCE_FROM_BORDER) {
             resized = true;
             currentWidth += SIZE_INCREASE;
@@ -581,7 +585,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 //            resized = true;
 //            currentHeight += SIZE_INCREASE;
 //            resize("top", SIZE_INCREASE);
-//        } else 
+//        } else
         if (currentHeight - (newY + DPU_HEIGHT) < MIN_DISTANCE_FROM_BORDER) {
             resized = true;
             currentHeight += SIZE_INCREASE;

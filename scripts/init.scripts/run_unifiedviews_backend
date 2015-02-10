@@ -99,22 +99,33 @@ UNIFIEDVIEWS_USER="${UNIFIEDVIEWS_USER:-root}"
 # Define the unifiedviews group
 UNIFIEDVIEWS_GROUP="${UNIFIEDVIEWS_GROUP:-`id -gn $UNIFIEDVIEWS_USER`}"
 
-
+RET=0
 if [ "$1" = "start" ]; then
-     nohup ${JAVACMD} $JAVA_OPTS -jar "$UNIFIEDVIEWS_BACKEND" & 
-     pid="$!"
-    if [ ! -z "$UNIFIEDVIEWS_PID" ]; then
-       echo "$pid" > $UNIFIEDVIEWS_PID
-    fi
-    echo $pid > $UNIFIEDVIEWS_PID
-    exit 0
+     if [ ! -f $UNIFIEDVIEWS_BACKEND ]; then
+       echo  "Unable to run backend."
+       RET=1
+     fi
+
+
+     if [ "$RET" -eq "0" ]; then
+        nohup ${JAVACMD} $JAVA_OPTS -jar "$UNIFIEDVIEWS_BACKEND" &
+        pid="$!"
+        if [ "$RET" -eq "0" ]; then
+            echo "$pid" > $UNIFIEDVIEWS_PID
+        fi
+     fi
+
+    
+
 elif [ "$1" = "stop" ]; then
 	read process_id < ${UNIFIEDVIEWS_PID}
     # send sigterm 
     kill -15 ${process_id}
-    exit 0
+    RET=0
     
 else
   echo "Usage: $0 {start|start-security|stop}"
-  exit 1
+  RET=1
 fi
+
+exit $RET

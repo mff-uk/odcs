@@ -16,6 +16,7 @@ public enum ConfigProperty {
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
+    LOCALE("locale"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),

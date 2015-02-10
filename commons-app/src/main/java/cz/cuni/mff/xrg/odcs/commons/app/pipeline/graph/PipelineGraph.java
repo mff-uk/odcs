@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 /**
  * Oriented acyclic graph representation of pipeline. Each Node represents a
  * DPURecord instance, and each edge represents data flow.
- * 
+ *
  * @author Jiri Tomes
  * @author Bogo
  * @author Jan Vojt
@@ -68,7 +68,7 @@ public class PipelineGraph implements DataObject {
     /**
      * Copy constructor. Note that newly created graph is NOT associated with
      * any pipeline, as graph should always be unique.
-     * 
+     *
      * @param graph
      *            the value of pipeline graph.
      */
@@ -101,7 +101,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Add node to pipeline graph.
-     * 
+     *
      * @param node
      *            The value of node will be added to pipeline graph.
      */
@@ -112,7 +112,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Removes node from graph.
-     * 
+     *
      * @param node
      *            the node will be removed.
      * @return <tt>true</tt> if graph contained given node
@@ -124,7 +124,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Returns the set of nodes for pipeline graph.
-     * 
+     *
      * @return the set of nodes for pipeline graph.
      */
     public Set<Node> getNodes() {
@@ -133,7 +133,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Set new set of nodes for this pipeline graph.
-     * 
+     *
      * @param newNodes
      *            set of nodes for pipeline graph.
      */
@@ -147,7 +147,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Returns the set of edges for this pipeline graph.
-     * 
+     *
      * @return the set of edges for this pipeline graph.
      */
     public Set<Edge> getEdges() {
@@ -156,7 +156,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Set new set of edges for this pipeline graph
-     * 
+     *
      * @param edges
      *            set of edges for pipeline graph.
      */
@@ -171,7 +171,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Adds a new node created from given DPUInstance.
-     * 
+     *
      * @param dpuInstance
      *            DPU instance
      * @return node instance
@@ -184,7 +184,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Removes DPURecord from graph.
-     * 
+     *
      * @param dpuId
      *            value of DPU id.
      * @return removed node
@@ -199,7 +199,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Adds a single edge into pipeline graph, unless it exists already.
-     * 
+     *
      * @param from
      *            source DPURecord
      * @param to
@@ -225,7 +225,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Removes an egde from graph. Reference to graph in edge is also cleared.
-     * 
+     *
      * @param edge
      *            The value of edge that will be removed.
      * @return true if edge was removed, false if no such edge was in the graph
@@ -238,7 +238,7 @@ public class PipelineGraph implements DataObject {
     /**
      * Duplicate method from adding edge to graph. Probably only one shall
      * remain.
-     * 
+     *
      * @param fromId
      *            node id
      * @param toId
@@ -255,7 +255,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Removes edge from graph.
-     * 
+     *
      * @param edgeId
      *            id of edge to be removed
      * @return edge with given id that was removed
@@ -270,7 +270,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Gets edge with given id.
-     * 
+     *
      * @param id
      *            edge id
      * @return edge with given id
@@ -286,7 +286,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Gets node with given id.
-     * 
+     *
      * @param id
      *            node id
      * @return node with given id
@@ -302,7 +302,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Updates Node position in graph.
-     * 
+     *
      * @param dpuId
      *            The DPU ID will that will be moved.
      * @param newX
@@ -321,7 +321,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Returns the pipeline for this pipeline graph.
-     * 
+     *
      * @return the pipeline for this pipeline graph.
      */
     public Pipeline getPipeline() {
@@ -330,7 +330,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Set the new pipeline set for this pipeline graph.
-     * 
+     *
      * @param pipeline
      *            the new pipeline set for this pipeline graph.
      */
@@ -340,7 +340,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Validates new edge in graph. TODO refractor and use <code>Exception</code>s instead of <code>String</code>s.
-     * 
+     *
      * @param fromId
      *            ID of node where the edge starts
      * @param toId
@@ -428,7 +428,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Returns maximum coordinates of DPUs in graph.
-     * 
+     *
      * @return maximum coordinates of DPUs in graph.
      */
     public Position getBounds() {
@@ -451,7 +451,7 @@ public class PipelineGraph implements DataObject {
     /**
      * Clones the graph into a new object with the same id. Internally calls the
      * copy constructor and sets the same id as in original graph.
-     * 
+     *
      * @return cloned graph
      */
     public PipelineGraph cloneGraph() {
@@ -462,7 +462,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Returns the set ID of pipeline graph as {@link Long} value.
-     * 
+     *
      * @return the set ID of pipeline graph as {@link Long} value.
      */
     @Override
@@ -472,7 +472,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Get all edges pointing to given node.
-     * 
+     *
      * @param node
      *            The value of node.
      * @return list of edges
@@ -489,7 +489,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Get all edges starting at given node.
-     * 
+     *
      * @param node
      *            The value of node.
      * @return list of edges
@@ -507,7 +507,7 @@ public class PipelineGraph implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -531,7 +531,7 @@ public class PipelineGraph implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

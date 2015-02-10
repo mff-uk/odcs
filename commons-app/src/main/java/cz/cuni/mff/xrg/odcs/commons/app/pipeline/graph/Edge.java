@@ -12,12 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import eu.unifiedviews.dataunit.DataUnit;
 
 /**
  * Edge represents oriented connection between nodes of the graph.
- * 
+ *
  * @author Bogo
  */
 @Entity
@@ -52,7 +52,7 @@ public class Edge implements DataObject {
 
     /**
      * Set script defining outputs to inputs mappings.
-     * 
+     *
      * @param script
      */
     public void setScript(String script) {
@@ -61,7 +61,7 @@ public class Edge implements DataObject {
 
     /**
      * Get script defining outputs to inputs mappings.
-     * 
+     *
      * @return script defining outputs to inputs mappings.
      */
     public String getScript() {
@@ -76,7 +76,7 @@ public class Edge implements DataObject {
 
     /**
      * Constructor with specification of connecting nodes.
-     * 
+     *
      * @param from
      * @param to
      */
@@ -86,7 +86,7 @@ public class Edge implements DataObject {
 
     /**
      * Constructor with specification of connecting nodes and {@link DataUnit} name.
-     * 
+     *
      * @param from
      * @param to
      * @param script
@@ -121,7 +121,7 @@ public class Edge implements DataObject {
 
     /**
      * Get graph this edge is in.
-     * 
+     *
      * @return graph
      */
     public PipelineGraph getGraph() {
@@ -130,7 +130,7 @@ public class Edge implements DataObject {
 
     /**
      * Set graph this edge is in.
-     * 
+     *
      * @param graph
      */
     public void setGraph(PipelineGraph graph) {
