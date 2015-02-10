@@ -72,7 +72,6 @@ public class TestEnvironment {
 
     /**
      * Create test environment. As working directory is used temp file.
-     *
      */
     public TestEnvironment() {
         try {
@@ -342,7 +341,7 @@ public class TestEnvironment {
     public WritableRelationalDataUnit createRelationalOutput(String name)
             throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
-        addInput(name, relational);
+        addOutput(name, relational);
         return relational;
     }
 
