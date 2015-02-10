@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Level;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.execution.ExecutionResult;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
@@ -375,8 +376,8 @@ public class Executor implements Runnable {
                 // and this is equal to the failure
                 dpuResults.failure();
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
-                        "DPU execution failed",
-                        "The DPU execution thread ends in non-standard way",
+                        Messages.getString("Executor.execution.failed"),
+                        Messages.getString("Executor.execution.failed.detail"),
                         node.getDpuInstance(), execution, this));
             }
             execResult.add(dpuResults);

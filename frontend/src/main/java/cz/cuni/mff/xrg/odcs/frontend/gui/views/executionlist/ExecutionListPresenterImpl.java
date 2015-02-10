@@ -28,13 +28,13 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
@@ -86,23 +86,22 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     private Date lastLoad = new Date(0L);
 
     private ClassNavigator navigator;
-    
+
     private boolean isInitialized = false;
 
     @Override
     public Object enter() {
-    	if (isInitialized) {
-    		navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-    		addRefreshManager();
-			return view.enter(this);
-		}
-    	
+        if (isInitialized) {
+            navigator = ((AppEntry) UI.getCurrent()).getNavigation();
+            addRefreshManager();
+            return view.enter(this);
+        }
+
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
 //        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(), utils.getPageLength());
-        
-        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
 
+        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
 
         ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
         c.sort(new Object[] { "id" }, new boolean[] { false });
@@ -113,16 +112,16 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
         // set data object
         view.setDisplay(dataObject);
-        
+
         isInitialized = true;
-        
+
         // return main component
         return viewObject;
     }
-    
+
     private void addRefreshManager() {
-    	refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
-    	refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
+        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+        refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
             @Override
@@ -180,11 +179,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         }
     }
 
-	@Override
+    @Override
     public void refreshEventHandler() {
         boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
-        		|| (cachedSource.size() > 0 && 
-        		   pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                || (cachedSource.size() > 0 &&
+                pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
@@ -208,12 +207,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public void showDebugEventHandler(long executionId) {
-    	if (!view.hasExecution(executionId)) {
-			return;
-		}
+        if (!view.hasExecution(executionId)) {
+            return;
+        }
         PipelineExecution exec = getLightExecution(executionId);
         if (exec == null) {
-            Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("ExecutionListPresenterImpl.0", executionId), Notification.Type.ERROR_MESSAGE);
             return;
         }
         view.showExecutionDetail(exec, new ExecutionDetailData(getMessageDataSource()));
@@ -304,13 +303,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         }
     }
 
-	@Override
-	public void doAfterLogout() {
-		isInitialized = false;
-	}
+    @Override
+    public void doAfterLogout() {
+        isInitialized = false;
+    }
 
-	@Override
-	public boolean isLayoutInitialized() {
-		return isInitialized;
-	}
+    @Override
+    public boolean isLayoutInitialized() {
+        return isInitialized;
+    }
 }

@@ -18,7 +18,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacade;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -30,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
@@ -63,12 +63,6 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     protected AppConfig appConfig;
-
-    /**
-     * Provides internationalized messages.
-     */
-    @Autowired
-    private MessagesFacade messagesFacade;
 
     /**
      * Used layout.
@@ -110,7 +104,7 @@ public class MenuLayout extends CustomComponent {
      */
     public void build() {
         setSizeFull();
-        
+
         // common part: create layout
         mainLayout = new VerticalLayout();
         mainLayout.setMargin(false);
@@ -131,11 +125,11 @@ public class MenuLayout extends CustomComponent {
         userName.addStyleName("username");
 
         logOutButton = new Button();
-        logOutButton.setCaption("Logout");
+        logOutButton.setCaption(Messages.getString("MenuLayout.logout"));
         logOutButton.setVisible(authCtx.isAuthenticated());
         logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
         logOutButton.addStyleName("logout");
-        logOutButton.setIcon(new ThemeResource("img/logout.svg"), "Log out");
+        logOutButton.setIcon(new ThemeResource("img/logout.svg"), Messages.getString("MenuLayout.icon.logout"));
         logOutButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -150,9 +144,9 @@ public class MenuLayout extends CustomComponent {
         final HorizontalLayout headerLine = new HorizontalLayout(menuBar, userName, logOutButton, backendStatus);
         headerLine.setSizeFull();
 
-		headerLine.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+        headerLine.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
         headerLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
-		headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
+        headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
         headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
         headerLine.setExpandRatio(menuBar, 1.0f);
 
@@ -187,7 +181,6 @@ public class MenuLayout extends CustomComponent {
     }
 
     /**
-     *
      * @return Generated background css.
      */
     private String buildBackgroundCss() {
@@ -239,7 +232,7 @@ public class MenuLayout extends CustomComponent {
      * @param isRunning
      */
     public void refreshBackendStatus(boolean isRunning) {
-        backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
+        backendStatus.setDescription(isRunning ? Messages.getString("MenuLayout.backend.online") : Messages.getString("MenuLayout.backend.offline"));
         backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.svg" : "icons/offline.svg"));
     }
 
@@ -251,7 +244,7 @@ public class MenuLayout extends CustomComponent {
     public void setNavigation(ClassNavigatorHolder navigatorHolder) {
         this.navigator = navigatorHolder;
         // Use installation name as a name for home button.
-        String instalName = "Home";
+        String instalName = Messages.getString("MenuLayout.home");
         try {
             instalName = appConfig.getString(ConfigProperty.INSTALLATION_NAME);
         } catch (MissingConfigPropertyException ex) {
@@ -260,11 +253,11 @@ public class MenuLayout extends CustomComponent {
         }
         // Add items.
         menuItems.put("", menuBar.addItem(instalName, new NavigateToCommand(Initial.class, navigator)));
-        menuItems.put("PipelineList", menuBar.addItem(messagesFacade.getString("MenuLayout.pipelines"), new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
-        menuItems.put("DPURecord", menuBar.addItem(messagesFacade.getString("MenuLayout.dpuTemplates"), new NavigateToCommand(DPUPresenterImpl.class, navigator)));
-        menuItems.put("ExecutionList", menuBar.addItem(messagesFacade.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
-        menuItems.put("Scheduler", menuBar.addItem(messagesFacade.getString("MenuLayout.scheduler"), new NavigateToCommand(Scheduler.class, navigator)));
-        menuItems.put("Administrator", menuBar.addItem(messagesFacade.getString("MenuLayout.settings"), new NavigateToCommand(Settings.class, navigator)));
+        menuItems.put("PipelineList", menuBar.addItem(Messages.getString("MenuLayout.pipelines"), new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
+        menuItems.put("DPURecord", menuBar.addItem(Messages.getString("MenuLayout.dpuTemplates"), new NavigateToCommand(DPUPresenterImpl.class, navigator)));
+        menuItems.put("ExecutionList", menuBar.addItem(Messages.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
+        menuItems.put("Scheduler", menuBar.addItem(Messages.getString("MenuLayout.scheduler"), new NavigateToCommand(Scheduler.class, navigator)));
+        menuItems.put("Administrator", menuBar.addItem(Messages.getString("MenuLayout.settings"), new NavigateToCommand(Settings.class, navigator)));
     }
 
     /**

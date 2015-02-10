@@ -19,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 
 /**
@@ -67,12 +68,12 @@ public class DataUnitSelector extends CustomComponent {
         dpuSelector = buildDpuSelector();
         mainLayout.addComponent(dpuSelector, 0, 1);
 
-        Label dpuSelectorLabel = new Label("Select DPU:");
+        Label dpuSelectorLabel = new Label(Messages.getString("DataUnitSelector.dpu"));
         mainLayout.addComponent(dpuSelectorLabel, 0, 0);
 
-        Label dataUnitLabel = new Label("Select Data Unit:");
+        Label dataUnitLabel = new Label(Messages.getString("DataUnitSelector.dataUnit"));
 
-        inputDataUnits = new CheckBox("Input");
+        inputDataUnits = new CheckBox(Messages.getString("DataUnitSelector.input"));
         inputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
@@ -81,7 +82,7 @@ public class DataUnitSelector extends CustomComponent {
         });
         inputDataUnits.setEnabled(false);
 
-        outputDataUnits = new CheckBox("Output");
+        outputDataUnits = new CheckBox(Messages.getString("DataUnitSelector.output"));
         outputDataUnits.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
@@ -116,7 +117,7 @@ public class DataUnitSelector extends CustomComponent {
         dataUnitGraph.setWidth(100, Unit.PERCENTAGE);
         mainLayout.addComponent(dataUnitGraph, 1, 2, 5, 2);
 
-        browse = new Button("Browse");
+        browse = new Button(Messages.getString("DataUnitSelector.browse"));
         browse.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

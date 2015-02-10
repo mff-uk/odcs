@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -21,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
@@ -29,7 +32,6 @@ import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 
 /**
  * Class is designed to provide access to DataUnits for Frontend.
- *
  * It's also responsible for closing of opened DataUnits after some time. TODO Implement better solution then
  * time-based closing?
  *
@@ -38,14 +40,14 @@ import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 public class FrontendDataUnitManager {
 
     private static class DataUnitHolder {
-        
+
         private final ManagableDataUnit dataUnit;
 
         /**
          * Time when the underling DataUnit should be closed.
          */
         private long closeTime = 0l;
-        
+
         private final Long executionId;
 
         public DataUnitHolder(ManagableDataUnit dataUnit, Long executionId) {
@@ -73,7 +75,7 @@ public class FrontendDataUnitManager {
                 closeTime = newCloseTime;
             }
         }
-        
+
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(FrontendDataUnitManager.class);
@@ -131,7 +133,7 @@ public class FrontendDataUnitManager {
                     .getExecution(), dpuInstance, dataUnitInfo.getIndex());
         } catch (MissingResourceException ex) {
             LOG.error("Missing resource.", ex);
-            throw new RuntimeException("Missing resource.", ex);
+            throw new RuntimeException(Messages.getString("FrontendDataUnitManager.resource"), ex);
         }
         final String directoryStr = directory.toString();
         // Check in cache use directory for identification.
@@ -139,7 +141,7 @@ public class FrontendDataUnitManager {
             if (dataUnits.containsKey(directoryStr)) {
                 final DataUnitHolder holder = dataUnits.get(directoryStr);
                 holder.setCloseTime(timeToClose);
-                return (ManageableWritableRDFDataUnit)holder.getDataUnit();
+                return (ManageableWritableRDFDataUnit) holder.getDataUnit();
             }
         }
         // We need to create a new one.
@@ -152,7 +154,7 @@ public class FrontendDataUnitManager {
                     directory);
         } catch (DataUnitException | RDFException ex) {
             LOG.error("Can't create DataUnit.", ex);
-            throw new RuntimeException("Can't create DataUnit.", ex);
+            throw new RuntimeException(Messages.getString("FrontendDataUnitManager.dataUnit.create"), ex);
         }
 
         try {
@@ -164,7 +166,7 @@ public class FrontendDataUnitManager {
             } catch (DataUnitException e) {
                 LOG.warn("Can't close DataUnit.", e);
             }
-            throw new RuntimeException("Can't load DataUnit.", ex);
+            throw new RuntimeException(Messages.getString("FrontendDataUnitManager.dataUnit.load"), ex);
         }
         LOG.info("DataUnit has been created for directory '{}'", directoryStr);
         // Add to cache.
@@ -243,7 +245,7 @@ public class FrontendDataUnitManager {
                 }
             }
             // Delete records.
-            for (String directoryStr : toDelete) {                
+            for (String directoryStr : toDelete) {
                 final DataUnitHolder holder = dataUnits.get(directoryStr);
                 decRepoCounter(holder);
                 try {
@@ -255,7 +257,7 @@ public class FrontendDataUnitManager {
             }
             // Check for Repositories to close.
             boolean scanForNext = true;
-            while(scanForNext) {
+            while (scanForNext) {
                 scanForNext = false;
                 for (Long executionId : openedForExecution.keySet()) {
                     if (openedForExecution.get(executionId) == 0) {

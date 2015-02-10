@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -96,14 +97,7 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
      * @return
      */
     private String subjectInstant(PipelineExecution execution, Schedule schedule) {
-        StringBuilder subject = new StringBuilder();
-
-        subject.append("Execution report for: ");
-        subject.append(execution.getPipeline().getName());
-        subject.append(" ");
-        subject.append(execution.getStart().toString());
-
-        return subject.toString();
+        return Messages.getString("InstantReport.execution.report", execution.getPipeline().getName(), execution.getStart().toString());
     }
 
     @Override

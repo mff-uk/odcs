@@ -26,6 +26,7 @@ import com.vaadin.ui.Window;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Status window for pipeline.
@@ -53,7 +54,7 @@ public class PipelineStatus extends Window {
         this.setResizable(false);
         this.setDraggable(false);
         this.setModal(true);
-        this.setCaption("Pipeline status");
+        this.setCaption(Messages.getString("PipelineStatus.status"));
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
@@ -62,7 +63,7 @@ public class PipelineStatus extends Window {
 
         HorizontalLayout lastRunLayout = new HorizontalLayout();
         lastRunLayout.setSpacing(true);
-        lastRunLayout.addComponent(new Label("Last run:"));
+        lastRunLayout.addComponent(new Label(Messages.getString("PipelineStatus.last.run")));
 
         lastRunTime = new Label();
 
@@ -75,7 +76,7 @@ public class PipelineStatus extends Window {
 
         HorizontalLayout runsNumberLayout = new HorizontalLayout();
         runsNumberLayout.setSpacing(true);
-        runsNumberLayout.addComponent(new Label("Number of runs:"));
+        runsNumberLayout.addComponent(new Label(Messages.getString("PipelineStatus.run.numbers")));
 
         runsNumber = new Label();
 

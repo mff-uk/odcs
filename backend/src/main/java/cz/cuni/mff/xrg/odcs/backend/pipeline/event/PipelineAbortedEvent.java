@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.pipeline.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -26,7 +27,7 @@ public final class PipelineAbortedEvent extends PipelineEvent {
     public MessageRecord getRecord() {
         return new MessageRecord(time, MessageRecordType.PIPELINE_INFO,
                 dpuInstance, execution,
-                "Pipeline execution aborted.",
-                "Pipeline execution aborted on user request.");
+                Messages.getString("PipelineAbortedEvent.execution.aborted"),
+                Messages.getString("PipelineAbortedEvent.execution.aborted.detail"));
     }
 }

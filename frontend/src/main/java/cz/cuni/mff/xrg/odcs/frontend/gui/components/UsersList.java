@@ -20,7 +20,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -28,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * GUI for User List which opens from the Administrator menu. Contains table
@@ -45,8 +45,8 @@ public class UsersList {
 
     private static String[] visibleCols = new String[] { "id", "fullname", "user", "role", "actions" };
 
-    private static String[] headers = new String[] { "Id", "Full User Name", "User Name", "Role(s)",
-            "Actions" };
+    private static String[] headers = new String[] { Messages.getString("UsersList.id"), Messages.getString("UsersList.full.username"), Messages.getString("UsersList.username"), Messages.getString("UsersList.roles"),
+            Messages.getString("UsersList.actions") };
 
     private IndexedContainer tableData;
 
@@ -78,7 +78,7 @@ public class UsersList {
         topLine.setSpacing(true);
 
         Button addUserButton = new Button();
-        addUserButton.setCaption("Create new user");
+        addUserButton.setCaption(Messages.getString("UsersList.user.create"));
         addUserButton.setWidth("120px");
         addUserButton.addStyleName("v-button-primary");
         addUserButton
@@ -105,7 +105,7 @@ public class UsersList {
         topLine.addComponent(addUserButton);
 
         Button buttonDeleteFilters = new Button();
-        buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.setCaption(Messages.getString("UsersList.filter.clear"));
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("120px");
         buttonDeleteFilters.addStyleName("v-button-primary");
@@ -271,7 +271,7 @@ public class UsersList {
 
             //Edit button. Open dialog for edit user's details.
             Button changeButton = new Button();
-            changeButton.setDescription("Edit");
+            changeButton.setDescription(Messages.getString("UsersList.edit"));
             changeButton.addStyleName("small_button");
             changeButton.setIcon(new ThemeResource("icons/gear.svg"));
             //changeButton.setWidth("80px");
@@ -292,7 +292,7 @@ public class UsersList {
 
             //Delete button. Delete user's record from Database.
             Button deleteButton = new Button();
-            deleteButton.setDescription("Delete");
+            deleteButton.setDescription(Messages.getString("UsersList.delete"));
             deleteButton.addStyleName("small_button");
             deleteButton.setIcon(new ThemeResource("icons/trash.svg"));
             //deleteButton.setWidth("80px");
@@ -305,8 +305,8 @@ public class UsersList {
                             .getValue();
                     userDel = userFacade.getUser(userId);
                     //open confirmation dialog
-                    ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting user",
-                            "Delete the  " + userDel.getUsername() + " user?", "Delete", "Cancel",
+                    ConfirmDialog.show(UI.getCurrent(), Messages.getString("UsersList.delete.confirmation"),
+                            Messages.getString("UsersList.detele.message", userDel.getUsername()), Messages.getString("UsersList.delete.option"), Messages.getString("UsersList.cancel.option"),
                             new ConfirmDialog.Listener() {
                                 private static final long serialVersionUID = 1L;
 

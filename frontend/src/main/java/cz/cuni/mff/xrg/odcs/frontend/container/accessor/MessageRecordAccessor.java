@@ -7,6 +7,7 @@ import java.util.List;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * @author Bogo
@@ -57,13 +58,13 @@ public class MessageRecordAccessor implements ClassAccessor<MessageRecord> {
     public String getColumnName(String id) {
         switch (id) {
             case "time":
-                return "Timestamp";
+                return Messages.getString("MessageRecordAccessor.timestamp");
             case "dpu":
-                return "DPU Instance";
+                return Messages.getString("MessageRecordAccessor.dpu");
             case "shortMessage":
-                return "Short message";
+                return Messages.getString("MessageRecordAccessor.short");
             case "type":
-                return "type";
+                return Messages.getString("MessageRecordAccessor.type");
             default:
                 return id;
         }

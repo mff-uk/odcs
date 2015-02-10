@@ -66,9 +66,6 @@
     
     <!-- Facade for managing runtime properties -->
     <bean id="runtimePropertiesFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacadeImpl"/>
-    
-    <!-- Facade for returning internationalized messages -->
-    <bean id="messagesFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.MessagesFacadeImpl"/>
 
     <!-- Service or exploring DPUs -->
     <bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer"/>

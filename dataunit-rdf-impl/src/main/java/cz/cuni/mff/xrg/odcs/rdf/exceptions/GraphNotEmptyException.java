@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
 import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 
 /**
  * This exception is thrown when target graph on the SPARQL endpoint where RDF
@@ -10,13 +11,11 @@ import eu.unifiedviews.dataunit.DataUnitException;
  */
 public class GraphNotEmptyException extends DataUnitException {
 
-    private static String defaultMessage = "Target graph is not empty. Load to SPARQL endpoint fail.";
-
     /**
      * Create a new instance of {@link GraphNotEmptyException} with {@link #defaultMessage}.
      */
     public GraphNotEmptyException() {
-        super(defaultMessage);
+        super(Messages.getString("GraphNotEmptyException.default.messages"));
     }
 
     /**

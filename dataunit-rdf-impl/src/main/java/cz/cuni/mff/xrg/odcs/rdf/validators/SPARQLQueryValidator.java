@@ -7,6 +7,7 @@ import org.openrdf.query.parser.QueryParserUtil;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
+import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 
 /**
  * Class responsible to find out, if sparql queries are valid or not.
@@ -97,7 +98,7 @@ public class SPARQLQueryValidator implements QueryValidator {
 
             SPARQLQueryType myType = queryPart.getSPARQLQueryType();
             if (!isSameType(myType, requiredType)) {
-                message = requiredType.toString() + " Unsupported SPARQL 1.1 query - the DPU expects SELECT/CONSTRUCT";
+                message = requiredType.toString() + Messages.getString("SPARQLQueryValidator.unsupported.query");
                 return false;
             }
         }
