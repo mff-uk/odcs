@@ -16,11 +16,19 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
 
     private boolean bActive = true;
 
+    /**
+     * Creates new wrapper around the relational database defined by {@link DatabaseWrapperConfigIF}
+     * 
+     * @param config
+     *            Connection parameters for the database
+     * @throws Exception
+     */
     public RelationalDatabaseWrapper(DatabaseWrapperConfigIF config) throws Exception {
         this.connectionProvider = new PooledDatabaseConnectionImpl(config);
         this.config = config;
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         return this.connectionProvider.getConnection();
     }

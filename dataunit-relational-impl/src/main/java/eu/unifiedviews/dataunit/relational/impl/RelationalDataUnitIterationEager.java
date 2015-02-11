@@ -23,6 +23,10 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit.Entry;
 
+/**
+ * Load list of tables at once. This class does not need reliable repository, but it's not suitable
+ * for larger number of tables.
+ */
 public class RelationalDataUnitIterationEager implements RelationalDataUnit.Iteration {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelationalDataUnitIterationEager.class);

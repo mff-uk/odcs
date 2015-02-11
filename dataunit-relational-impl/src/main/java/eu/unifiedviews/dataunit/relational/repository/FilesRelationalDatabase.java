@@ -15,6 +15,14 @@ import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
 import eu.unifiedviews.dataunit.relational.db.DefaultDatabaseConfig;
 import eu.unifiedviews.dataunit.relational.db.RelationalDatabaseWrapper;
 
+/**
+ * File implementation of relational database repository used by data units.
+ * This relational repository is shared by all DPUs and data units within one pipeline execution.
+ * It provides the connections to the underlying database and also handles creating and releasing of the underlying relational database.
+ * <p/>
+ * File implementation by default uses H2 database engine. This can be configured in program properties file. For details, see
+ * {@link cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager}
+ */
 public class FilesRelationalDatabase implements ManagableRelationalRepository {
 
     private static final String DEFAULT_BASE_DB_URL = "jdbc:h2:file:";
@@ -41,6 +49,19 @@ public class FilesRelationalDatabase implements ManagableRelationalRepository {
 
     private String databaseFileName;
 
+    /**
+     * Creates new {@link FilesRelationalDatabase} repository. Creates a database wrapper to a relational database defined by connection parameters
+     * 
+     * @param baseDatabaseURL
+     *            The first part of the JDBC URL after which the file location should follow; It is database engine specific, e.g. for H2 it's 'jdbc:h2:file:'
+     * @param jdbcDriverName
+     *            JDBC driver name to be used to connect to the underlying database
+     * @param executionId
+     *            Id of executing pipeline
+     * @param dataUnitDirectory
+     *            Data unit directory to place the database file
+     * @throws DataUnitException
+     */
     public FilesRelationalDatabase(String baseDatabaseURL, String jdbcDriverName, long executionId, File dataUnitDirectory) throws DataUnitException {
         // if not configured, use default values
         this.baseDatabaseURL = (baseDatabaseURL != null && baseDatabaseURL.length() > 1) ? baseDatabaseURL : DEFAULT_BASE_DB_URL;

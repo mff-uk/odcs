@@ -35,6 +35,9 @@ public class RelationalRepositoryManager {
      */
     private final Map<Long, Object> locks = new HashMap<>();
 
+    /**
+     * Created active repositories for pipelines
+     */
     private final Map<Long, ManagableRelationalRepository> repositories = Collections.synchronizedMap(new HashMap<Long, ManagableRelationalRepository>());
 
     private final RelationalRepositoryFactory factory = new RelationalRepositoryFactory();
@@ -43,6 +46,9 @@ public class RelationalRepositoryManager {
 
     private ManagableRelationalRepository.Type repositoryType;
 
+    /**
+     * Type of used underlying database. Currently supported 2 modes: <b>file</b>(default) and <b>inMemory</b>
+     */
     @Value("${database.dataunit.sql.type:}")
     private String repositoryTypeString;
 
@@ -64,13 +70,16 @@ public class RelationalRepositoryManager {
     @Value("${database.dataunit.sql.password:}")
     private String password;
 
+    /**
+     * JDBC driver name class name to use to connect to the underlying database
+     */
     @Value("${database.dataunit.sql.driver:}")
     private String jdbcDriverName;
 
-    @PostConstruct
     /**
      * Initialize relational data unit factory
      */
+    @PostConstruct
     public void init() {
         this.factory.setDatabaseParameters(this.user, this.password, this.baseUrl, this.jdbcDriverName);
         switch (this.repositoryTypeString) {

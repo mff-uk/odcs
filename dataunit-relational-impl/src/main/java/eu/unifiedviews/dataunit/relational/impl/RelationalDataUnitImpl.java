@@ -264,13 +264,13 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
         }
     }
 
-    @Override
     /**
      * Release all database tables and connections. After this call, data unit is not usable anymore.
      * However, the underlying database connection is not shut down as this is shared by all data units in one pipeline
      * Therefore, the release only deletes all database tables that the data unit contains and invalidates database connection
      * so it cannot be used from this data unit.
      */
+    @Override
     public void release() {
         try {
             if (this.dataUnitDatabase.isActive()) {

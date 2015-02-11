@@ -59,7 +59,7 @@ public class FilesRelationalDataUnitImplTest {
         final RepositoryFactory factory = new RepositoryFactory();
         final RelationalRepositoryFactory relFactory = new RelationalRepositoryFactory();
 
-        this.rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-filesDataUnit-");
+        this.rootDir = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), "uv-relationalDataUnit-");
         this.rootDirFile = (new File(this.rootDir.toFile(), "storage")).toPath();
         final String directory = this.rootDir.toAbsolutePath().toString() + File.separator + "1";
 

@@ -3,6 +3,9 @@ package eu.unifiedviews.dataunit.relational.impl;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 
+/**
+ * Holds basic information about the single database table
+ */
 public class RelationalDataUnitEntryImpl implements RelationalDataUnit.Entry {
 
     private final String symbolicName;

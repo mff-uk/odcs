@@ -4,10 +4,16 @@ import java.sql.SQLException;
 
 import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 
+/**
+ * Interface for relational database repository used by relational data units
+ */
 public interface ManagableRelationalRepository {
 
     public static final String BASE_DATABASE_NAME = "dataUnitDb";
 
+    /**
+     * Type of relational repository
+     */
     public static enum Type {
         FILE, IN_MEMORY
     }

@@ -13,6 +13,9 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit.Entry;
 
+/**
+ * Must be used with reliable repository, can handle large data as loads only one entity (database table) at a time.
+ */
 public class RelationalDataUnitIterationLazy implements RelationalDataUnit.Iteration {
 
     private RepositoryConnection connection = null;

@@ -26,6 +26,13 @@ public class PooledDatabaseConnectionImpl implements DatabaseConnection {
 
     private ObjectPool<PoolableConnection> connectionPool;
 
+    /**
+     * Creates new pooled database connection provider to the database defined by {@link DatabaseWrapperConfigIF}
+     * 
+     * @param config
+     *            Connection parameters for the database
+     * @throws Exception
+     */
     public PooledDatabaseConnectionImpl(DatabaseWrapperConfigIF config) throws Exception {
         setupConnectionPool(config);
     }

@@ -5,8 +5,6 @@ package eu.unifiedviews.dataunit.relational.db;
  * It provides communication parameters for database (db name, user name, password)
  * and optional connections pool parameters
  * By default, connections pool is used and max. connections pooled is set to 20
- * 
- * @author Tomas
  */
 public class DefaultDatabaseConfig implements DatabaseWrapperConfigIF {
 

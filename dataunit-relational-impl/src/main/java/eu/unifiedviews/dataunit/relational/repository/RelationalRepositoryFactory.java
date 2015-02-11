@@ -5,6 +5,9 @@ import java.sql.Connection;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 
+/**
+ * Factory for creating relational repositories used by relational data units
+ */
 public class RelationalRepositoryFactory {
 
     private String baseDbUrl;
@@ -15,6 +18,18 @@ public class RelationalRepositoryFactory {
 
     private String jdbcDriverName;
 
+    /**
+     * Set database parameters for this factory that will be used to create relational repository
+     * 
+     * @param userName
+     *            User name in the database
+     * @param password
+     *            Password in the database
+     * @param baseDbUrl
+     *            First part of JDBC URL of the database - it is type specific (memory, file) and database engine specific
+     * @param jdbcDriverName
+     *            JDBC driver name to use to connect to the underlying database
+     */
     public void setDatabaseParameters(String userName, String password, String baseDbUrl, String jdbcDriverName) {
         this.baseDbUrl = baseDbUrl;
         this.userName = userName;
@@ -22,6 +37,21 @@ public class RelationalRepositoryFactory {
         this.jdbcDriverName = jdbcDriverName;
     }
 
+    /**
+     * Create relational repository of given type and for given pipeline execution.
+     * Before calling this, make sure {@link setDatabaseParameters()} method was called and parameters are set
+     * 
+     * @param executionId
+     *            Id of executing pipeline
+     * @param dataUnitDirectory
+     *            Directory where data unit data (if any) should be placed
+     * @param type
+     *            Type of relational repository. Supported types are {@link ManagableRelationalRepository.Type.IN_MEMORY} and
+     *            {@link ManagableRelationalRepository.Type.FILE}
+     * @return Created relational repository
+     * @throws RelationalException
+     * @throws DataUnitException
+     */
     public ManagableRelationalRepository create(long executionId, File dataUnitDirectory, ManagableRelationalRepository.Type type) throws RelationalException, DataUnitException {
         ManagableRelationalRepository repository = null;
         switch (type) {

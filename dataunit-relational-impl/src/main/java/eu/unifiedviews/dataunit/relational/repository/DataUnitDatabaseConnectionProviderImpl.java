@@ -6,6 +6,10 @@ import java.sql.SQLException;
 import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 import eu.unifiedviews.dataunit.relational.db.DatabaseWrapperIF;
 
+/**
+ * Implementation of {@link DataUnitDatabaseConnectionProvider) interface which provides the database
+ * connections to the underlying relational database to data unit
+ */
 public class DataUnitDatabaseConnectionProviderImpl implements DataUnitDatabaseConnectionProvider {
     private DatabaseWrapperIF databaseWrapper;
 
