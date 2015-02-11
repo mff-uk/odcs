@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * {@link ConnectionProviderIF} interface for providing connection to the underlying database
- * 
- * @author Tomas
+ * {@link DatabaseConnection} interface for providing connection to the underlying database
  */
-public interface ConnectionProviderIF {
+public interface DatabaseConnection {
 
     /**
      * Return connection to the underlying database

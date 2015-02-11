@@ -6,20 +6,18 @@ import java.sql.SQLException;
 /**
  * {@link RelationalDatabaseWrapper} is a wrapper around a relational database
  * It provides access to this database by creating a new in memory database based on {@link DatabaseWrapperConfigIF} configuration.
- * Database wrapper uses {@link PooledConnectionProvider}, which uses pool of database connections.
- * 
- * @author Tomas
+ * Database wrapper uses {@link PooledDatabaseConnectionImpl}, which uses pool of database connections.
  */
 public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
 
-    private final ConnectionProviderIF connectionProvider;
+    private final DatabaseConnection connectionProvider;
 
     private final DatabaseWrapperConfigIF config;
 
     private boolean bActive = true;
 
     public RelationalDatabaseWrapper(DatabaseWrapperConfigIF config) throws Exception {
-        this.connectionProvider = new PooledConnectionProvider(config);
+        this.connectionProvider = new PooledDatabaseConnectionImpl(config);
         this.config = config;
     }
 

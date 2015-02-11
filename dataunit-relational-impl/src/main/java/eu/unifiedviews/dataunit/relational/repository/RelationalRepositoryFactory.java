@@ -1,15 +1,11 @@
 package eu.unifiedviews.dataunit.relational.repository;
 
+import java.io.File;
 import java.sql.Connection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 
 public class RelationalRepositoryFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RelationalRepositoryFactory.class);
 
     private String baseDbUrl;
 
@@ -26,11 +22,14 @@ public class RelationalRepositoryFactory {
         this.jdbcDriverName = jdbcDriverName;
     }
 
-    public ManagableRelationalRepository create(long executionId, ManagableRelationalRepository.Type type) throws RelationalException, DataUnitException {
+    public ManagableRelationalRepository create(long executionId, File dataUnitDirectory, ManagableRelationalRepository.Type type) throws RelationalException, DataUnitException {
         ManagableRelationalRepository repository = null;
         switch (type) {
             case IN_MEMORY:
                 repository = new InMemoryRelationalDatabase(this.baseDbUrl, this.jdbcDriverName, executionId);
+                break;
+            case FILE:
+                repository = new FilesRelationalDatabase(this.baseDbUrl, this.jdbcDriverName, executionId, dataUnitDirectory);
                 break;
             default:
                 throw new RelationalException("Unsupported dataunit relational database type: " + type.toString());

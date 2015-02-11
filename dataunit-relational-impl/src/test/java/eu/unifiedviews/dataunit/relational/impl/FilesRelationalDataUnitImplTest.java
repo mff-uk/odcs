@@ -34,7 +34,7 @@ import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalReposit
 import eu.unifiedviews.dataunit.relational.repository.RelationalException;
 import eu.unifiedviews.dataunit.relational.repository.RelationalRepositoryFactory;
 
-public class RelationalDataUnitImplTest {
+public class FilesRelationalDataUnitImplTest {
 
     private Path rootDir;
 
@@ -64,7 +64,7 @@ public class RelationalDataUnitImplTest {
         final String directory = this.rootDir.toAbsolutePath().toString() + File.separator + "1";
 
         this.repository = factory.create(1l, ManagableRepository.Type.LOCAL_RDF, directory);
-        this.dataUnitDatabase = relFactory.create(1L, ManagableRelationalRepository.Type.IN_MEMORY);
+        this.dataUnitDatabase = relFactory.create(1L, this.rootDir.toFile(), ManagableRelationalRepository.Type.FILE);
 
         final RelationalDataUnitFactory dataUnitfactory = new RelationalDataUnitFactory();
         this.dataUnit = (ManageableWritableRelationalDataUnit) dataUnitfactory.create("test",
@@ -76,6 +76,7 @@ public class RelationalDataUnitImplTest {
     @After
     public void cleanUp() throws Exception {
         this.repository.delete();
+        this.dataUnitDatabase.release();
         Files.deleteIfExists(this.rootDirFile);
         // There should be no data as we called clear.
         Assert.assertTrue("Failed to delete data directory", Files.deleteIfExists(this.rootDir));
@@ -149,6 +150,7 @@ public class RelationalDataUnitImplTest {
                 counter++;
             }
             Assert.assertEquals(1, counter);
+            connection.close();
         } finally {
             this.dataUnit.clear();
             this.dataUnit.release();
@@ -293,7 +295,7 @@ public class RelationalDataUnitImplTest {
             public <T> T getService(Class<T> serviceClass) throws IllegalArgumentException {
                 // Simple test implementation of bus service
                 if (serviceClass.isAssignableFrom(ConnectionSource.class)) {
-                    return (T) RelationalDataUnitImplTest.this.repository.getConnectionSource();
+                    return (T) FilesRelationalDataUnitImplTest.this.repository.getConnectionSource();
                 } else if (serviceClass.isAssignableFrom(FaultTolerant.class)) {
                     return (T) new FaultTolerant() {
 
@@ -301,7 +303,7 @@ public class RelationalDataUnitImplTest {
                         public void execute(FaultTolerant.Code codeToExecute)
                                 throws RepositoryException, DataUnitException {
                             final RepositoryConnection conn =
-                                    RelationalDataUnitImplTest.this.repository.getConnectionSource().getConnection();
+                                    FilesRelationalDataUnitImplTest.this.repository.getConnectionSource().getConnection();
                             try {
                                 codeToExecute.execute(conn);
                             } finally {
@@ -310,7 +312,7 @@ public class RelationalDataUnitImplTest {
                         }
                     };
                 } else if (serviceClass.isAssignableFrom(DataUnitDatabaseConnectionProvider.class)) {
-                    return (T) RelationalDataUnitImplTest.this.dataUnitDatabase.getDatabaseConnectionProvider();
+                    return (T) FilesRelationalDataUnitImplTest.this.dataUnitDatabase.getDatabaseConnectionProvider();
                 } else {
                     throw new IllegalArgumentException();
                 }

@@ -57,7 +57,7 @@ class DataUnitFactoryImpl implements DataUnitFactory {
         if (type == ManagableDataUnit.Type.RELATIONAL) {
             ManagableRelationalRepository dataUnitDbRepository = null;
             try {
-                dataUnitDbRepository = this.dataUnitRelRepositoryManager.getRepository(executionId);
+                dataUnitDbRepository = this.dataUnitRelRepositoryManager.getRepository(executionId, dataUnitDirectory);
             } catch (Exception e) {
                 throw new DataUnitException("Failed to create database repository for dataunit", e);
             }

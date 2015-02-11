@@ -35,7 +35,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     private final static Logger LOG = LoggerFactory.getLogger(RelationalDataUnitImpl.class);
 
-    private final DataUnitDatabaseConnectionProvider dataUnitDatabase;
+    private DataUnitDatabaseConnectionProvider dataUnitDatabase;
 
     private static final String DB_TABLE_NAME_BINDING = "dbTableName";
 
@@ -264,12 +264,23 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
         }
     }
 
+    @Override
+    /**
+     * Release all database tables and connections. After this call, data unit is not usable anymore.
+     * However, the underlying database connection is not shut down as this is shared by all data units in one pipeline
+     * Therefore, the release only deletes all database tables that the data unit contains and invalidates database connection
+     * so it cannot be used from this data unit.
+     */
     public void release() {
         try {
-            this.dataUnitDatabase.release();
-        } catch (Exception e) {
+            if (this.dataUnitDatabase.isActive()) {
+                dropAllDatabaseTables();
+            }
+            this.dataUnitDatabase = null;
+        } catch (DataUnitException e) {
             LOG.error("Failure during release of relational data unit", e);
         }
+
         super.release();
     }
 

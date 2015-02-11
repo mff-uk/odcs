@@ -9,7 +9,7 @@ public interface ManagableRelationalRepository {
     public static final String BASE_DATABASE_NAME = "dataUnitDb";
 
     public static enum Type {
-        IN_MEMORY
+        FILE, IN_MEMORY
     }
 
     /**

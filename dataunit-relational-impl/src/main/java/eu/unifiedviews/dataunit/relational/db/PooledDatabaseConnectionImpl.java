@@ -16,19 +16,17 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 /**
- * {@link PooledConnectionProvider} provides connection to the underlying database
+ * {@link PooledDatabaseConnectionImpl} provides connection to the underlying database
  * It uses Apache DBCP connections pool to serve database connections
  * Number of maximum pooled connections can be configured via {@link DatabaseWrapperConfigIF}
- * 
- * @author Tomas
  */
-public class PooledConnectionProvider implements ConnectionProviderIF {
+public class PooledDatabaseConnectionImpl implements DatabaseConnection {
 
     private DataSource pooledDataSource;
 
     private ObjectPool<PoolableConnection> connectionPool;
 
-    public PooledConnectionProvider(DatabaseWrapperConfigIF config) throws Exception {
+    public PooledDatabaseConnectionImpl(DatabaseWrapperConfigIF config) throws Exception {
         setupConnectionPool(config);
     }
 
