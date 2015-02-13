@@ -10,10 +10,12 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbOrganization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
@@ -34,6 +36,9 @@ class UserFacadeImpl implements UserFacade {
 
     @Autowired
     private DbRoleEntity roleDao;
+
+    @Autowired
+    private DbOrganization organizationDao;
 
     /**
      * Factory for a new User.
@@ -171,12 +176,13 @@ class UserFacadeImpl implements UserFacade {
         return roleDao.getRoleByName(name);
     }
 
+    @Transactional
     @PreAuthorize("hasRole('role.create')")
     @Override
     public void save(RoleEntity role) {
         roleDao.save(role);
     }
-    
+
     /**
      * Deletes pipeline from database.
      * 
@@ -189,4 +195,14 @@ class UserFacadeImpl implements UserFacade {
         roleDao.delete(role);
     }
 
+    @Override
+    public Organization getOrganizationByName(String name) {
+        return organizationDao.getOrganizationByName(name);
+    }
+
+    @Transactional
+    @Override
+    public void save(Organization o) {
+        organizationDao.save(o);
+    }
 }

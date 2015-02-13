@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
@@ -101,4 +102,8 @@ public interface UserFacade extends Facade {
      * @param user
      */
     void delete(RoleEntity role);
+
+    Organization getOrganizationByName(String name);
+
+    void save(Organization o);
 }

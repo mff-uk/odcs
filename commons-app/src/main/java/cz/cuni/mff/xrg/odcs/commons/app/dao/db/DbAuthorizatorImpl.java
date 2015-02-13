@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 
@@ -34,6 +35,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             return null;
         }
 
+        //dead code
         if (authCtx.getAuthentication().getAuthorities().contains(Role.ROLE_ADMIN)) {
             // admin has no restrictions
             return null;
@@ -45,7 +47,11 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             predicate = or(cb, predicate, root.get("shareType").in(ShareType.PUBLIC));
         }
 
-        if (OwnedEntity.class.isAssignableFrom(entityClass)) {
+        
+        //check either user or his organization
+        if (OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
+            predicate = or(cb, predicate, cb.equal(root.get("organization"), authCtx.getUser().getOrganization()));
+        }else if (OwnedEntity.class.isAssignableFrom(entityClass)) {
             predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
         }
 

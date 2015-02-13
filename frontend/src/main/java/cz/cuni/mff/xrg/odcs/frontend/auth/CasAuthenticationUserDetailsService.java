@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
@@ -39,6 +40,8 @@ public class CasAuthenticationUserDetailsService extends
 
         String rolename = attributes.get("role").toString();
         
+        String organization = "ministerstvo";
+        
         User user = userFacade.getUserByExtId(username);
 
         if (user == null) {
@@ -57,6 +60,16 @@ public class CasAuthenticationUserDetailsService extends
 
         userFacade.saveNoAuth(user);
 
+        //checks etc TODO
+        
+        Organization o = userFacade.getOrganizationByName(organization);
+        if(o == null){
+            o = new Organization();
+            o.setName(organization);
+            userFacade.save(o);
+        }
+        user.setOrganization(o);
+        
         return user;
     }
 }

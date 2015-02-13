@@ -25,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -94,8 +95,11 @@ public class User implements UserDetails, OwnedEntity, DataObject {
 
     @ElementCollection
     @CollectionTable(name = "usr_extuser", joinColumns = { @JoinColumn(name = "id_usr", referencedColumnName = "id") })
-    @Column(name="id_extuser")
+    @Column(name = "id_extuser")
     private Set<String> externalIdentifiers = new HashSet<>();
+
+    @Transient
+    private Organization organization;
 
     /**
      * Empty constructor required by JPA.
@@ -327,10 +331,10 @@ public class User implements UserDetails, OwnedEntity, DataObject {
         return this;
     }
 
-    public void addExternalIdentifier(String identifier){
+    public void addExternalIdentifier(String identifier) {
         externalIdentifiers.add(identifier);
     }
-    
+
     public Set<String> getExternalIdentifiers() {
         return externalIdentifiers;
     }
@@ -339,6 +343,14 @@ public class User implements UserDetails, OwnedEntity, DataObject {
         this.externalIdentifiers = externalIdentifiers;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+    
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.

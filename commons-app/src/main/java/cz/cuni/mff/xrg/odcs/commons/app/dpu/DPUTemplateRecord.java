@@ -15,6 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
@@ -33,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 @Entity
 @Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord
-        implements OwnedEntity, SharedEntity {
+        implements OwnedEntity, SharedEntity, OrganizationSharedEntity {
 
     /**
      * Visibility in DPUTree.
@@ -83,6 +85,10 @@ public class DPUTemplateRecord extends DPURecord
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     /**
      * Empty ctor for JPA.
@@ -153,6 +159,14 @@ public class DPUTemplateRecord extends DPURecord
     @Override
     public User getOwner() {
         return owner;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     @Override
