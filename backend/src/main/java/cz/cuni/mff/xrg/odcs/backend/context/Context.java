@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -312,7 +314,7 @@ public class Context implements DPUContext {
     @Override
     public File getResultDir() {
         try {
-            final File dir =  resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
+            final File dir = resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
             dir.mkdirs();
             return dir;
         } catch (MissingResourceException ex) {
@@ -367,6 +369,15 @@ public class Context implements DPUContext {
     }
 
     @Override
+    public Map<String, String> getEnvironment() {
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
+            result.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        return result;
+    }
+
+    @Override
     public Locale getLocale() {
         return locale;
     }
@@ -374,4 +385,5 @@ public class Context implements DPUContext {
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
+
 }
