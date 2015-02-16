@@ -244,4 +244,19 @@ public class TestContext implements DPUContext {
     public Locale getLocale() {
         return new Locale("en", "US");
     }
+
+    @Override
+    public Long getPipelineId() {
+        return 7L;
+    }
+
+    @Override
+    public Long getPipelineExecutionId() {
+        return 15L;
+    }
+
+    @Override
+    public Long getDpuInstanceId() {
+        return 9L;
+    }
 }
