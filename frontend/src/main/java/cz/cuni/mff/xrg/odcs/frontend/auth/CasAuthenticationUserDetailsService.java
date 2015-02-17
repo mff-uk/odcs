@@ -40,7 +40,7 @@ public class CasAuthenticationUserDetailsService extends
 
         String rolename = attributes.get("role").toString();
         
-        String organization = "ministerstvo";
+        String organization = attributes.get("organization").toString();
         
         User user = userFacade.getUserByExtId(username);
 

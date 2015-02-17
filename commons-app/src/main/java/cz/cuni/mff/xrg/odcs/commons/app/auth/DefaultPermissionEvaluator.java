@@ -4,12 +4,17 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Permission;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -23,6 +28,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
+
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
 
     /**
      * Authorization logic for permissions on entities.
@@ -60,6 +71,18 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         } else if (foundPermission != null && perm.toString().endsWith(".delete")) {
             return true;
         }
+
+        if ("organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+            if (target instanceof OrganizationSharedEntity) {
+                OrganizationSharedEntity oTarget = (OrganizationSharedEntity) target;
+                Organization organization = oTarget.getOrganization();
+                if (organization != null && ((User) auth.getPrincipal()).getOrganization().getName().equals(organization.getName())) {
+                    return true;
+                }
+                if (organization != null && !((User) auth.getPrincipal()).getOrganization().getName().equals(organization.getName()) && perm.toString().endsWith(".delete")) {
+                    return false;
+                }
+            }
 
         // entity owner is almighty
         if (target instanceof OwnedEntity) {

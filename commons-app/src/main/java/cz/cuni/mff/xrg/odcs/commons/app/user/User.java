@@ -276,7 +276,9 @@ public class User implements UserDetails, OwnedEntity, DataObject {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         ArrayList<Permission> permissions = new ArrayList<>();
         for (RoleEntity role : getRoles()) {
-            permissions.addAll(role.getPermissions());
+            if (role.getPermissions() != null) {
+                permissions.addAll(role.getPermissions());
+            }
         }
         return permissions;
     }
@@ -350,7 +352,7 @@ public class User implements UserDetails, OwnedEntity, DataObject {
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
-    
+
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.

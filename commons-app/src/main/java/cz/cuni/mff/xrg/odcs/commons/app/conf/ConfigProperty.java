@@ -74,7 +74,9 @@ public enum ConfigProperty {
     CAS_SERVER_HOST("cas.server.host"),
     CAS_SECURITY_CHECK_URL("cas.security.check.url"),
     CAS_LOGIN_URL("cas.login.url"),
-    CAS_LOGOUT_URL("cas.logout.url");
+    CAS_LOGOUT_URL("cas.logout.url"),
+    
+    OWNERSHIP_TYPE("ownership.type");
     
     private final String property;
 
