@@ -1,11 +1,12 @@
-package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
+package cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 
 import java.util.Locale;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-
 /**
- * Wrap {@link DPUTemplateRecord} to made work with configuration and
+ * Wrap {@link cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord} to made work with configuration and
  * configuration dialog easier.
  *
  * @author Petyr
@@ -22,8 +23,8 @@ public class DPUTemplateWrap extends DPURecordWrap {
      *
      * @param dpuTemplate
      */
-    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale) {
-        super(dpuTemplate, true, locale);
+    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale, ModuleFacade moduleFacade) {
+        super(dpuTemplate, true, locale, moduleFacade);
         this.dpuTemplate = dpuTemplate;
     }
 

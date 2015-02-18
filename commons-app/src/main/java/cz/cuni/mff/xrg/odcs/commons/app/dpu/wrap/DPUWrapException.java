@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
+package cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap;
 
 /**
  * Exception used to wrap other exception that can occurs

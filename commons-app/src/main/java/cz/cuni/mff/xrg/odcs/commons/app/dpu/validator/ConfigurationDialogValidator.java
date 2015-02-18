@@ -1,15 +1,14 @@
-package cz.cuni.mff.xrg.odcs.frontend.dpu.validator;
+package cz.cuni.mff.xrg.odcs.commons.app.dpu.validator;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
+import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
-import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 
 /**
  * Validate DPU's dialog.
