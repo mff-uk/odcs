@@ -32,7 +32,11 @@ public interface ManagableDataUnit extends DataUnit {
         /**
          * Represent files data unit.
          */
-        FILES
+        FILES,
+        /**
+         * General relational data unit
+         */
+        RELATIONAL
     }
 
     /**
