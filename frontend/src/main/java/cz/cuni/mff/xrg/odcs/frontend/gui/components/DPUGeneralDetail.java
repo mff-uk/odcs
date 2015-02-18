@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPURecordWrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
-import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPURecordWrap;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
