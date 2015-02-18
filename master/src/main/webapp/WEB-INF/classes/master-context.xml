@@ -18,10 +18,22 @@
 	</bean>
 
 	<import resource="classpath:commons-app-context.xml" />
+
 	<context:component-scan base-package="eu.unifiedviews.master.api"/>
 	    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
         <constructor-arg ref="configuration"/>
         <constructor-arg value="FRONTEND"/>
     </bean>
-	
+
+    <!-- service for dpu import -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService"/>
+
+    <!-- bean that provide functionality for manipulating with DPUs -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator"/>
+
+    <!-- bean for notification -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient"/>
+
+    <!-- Scan validator -->
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.commons.app.dpu.validator"/>
 </beans>
