@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -44,6 +44,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListComponentProvider;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -71,7 +72,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private VerticalLayout pipelinesLayout;
 
     private VerticalLayout tabsLayout;
-    
+
     private VerticalLayout runtimePropsLayout;
 
     private Button notificationsButton;
@@ -81,7 +82,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button usersButton;
 
     private Button pipelinesButton;
-    
+
     private Button runtimePropsButton;
 
     private Button shownTab = null;
@@ -112,7 +113,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private UserFacade userFacade;
-    
+
     @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
 
@@ -120,7 +121,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * Currently logged in user.
      */
     private User loggedUser;
-    
+
     private boolean isMainLayoutInitialized = false;
 
     private ManipulableListManager runtimePropsManager;
@@ -160,9 +161,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     public void enter(ViewChangeEvent event) {
         loggedUser = authCtx.getUser();
         if (!isMainLayoutInitialized) {
-        	buildMainLayout();
-        	isMainLayoutInitialized = true;
-		}
+            buildMainLayout();
+            isMainLayoutInitialized = true;
+        }
         setCompositionRoot(mainLayout);
     }
 
@@ -217,7 +218,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 //		prefixesLayout.setStyleName("settings");
 
         //My account tab
-        accountButton = new NativeButton("My account");
+        accountButton = new NativeButton(Messages.getString("Settings.my.account"));
         accountButton.setHeight("40px");
         accountButton.setWidth("170px");
         accountButton.setStyleName("selectedtab");
@@ -239,7 +240,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.setComponentAlignment(accountButton, Alignment.TOP_RIGHT);
 
         //Scheduler notifications tab
-        notificationsButton = new NativeButton("Scheduler notifications");
+        notificationsButton = new NativeButton(Messages.getString("Settings.scheduler.notifications"));
         notificationsButton.setHeight("40px");
         notificationsButton.setWidth("170px");
         notificationsButton.setStyleName("multiline");
@@ -263,7 +264,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 Alignment.TOP_RIGHT);
 
         //Manage users tab
-        usersButton = new NativeButton("Manage users");
+        usersButton = new NativeButton(Messages.getString("Settings.manage.users"));
         usersButton.setHeight("40px");
         usersButton.setWidth("170px");
         usersButton.setStyleName("multiline");
@@ -290,7 +291,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
 
         //Delete debug resources tab
-        pipelinesButton = new NativeButton("Delete debug resources");
+        pipelinesButton = new NativeButton(Messages.getString("Settings.delete.resources"));
         pipelinesButton.setHeight("40px");
         pipelinesButton.setWidth("170px");
         pipelinesButton.setStyleName("multiline");
@@ -341,14 +342,14 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 //				}
 //			}
 //		});
-        
+
         //tabsLayout.addComponent(prefixesButton);
         //tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
-        
+
         // runtime limits
         runtimePropsLayout = createRuntimePropsLayout();
-        
-        runtimePropsButton = new NativeButton("Runtime properties");
+
+        runtimePropsButton = new NativeButton(Messages.getString("Settings.runtime.properties"));
         runtimePropsButton.setHeight("40px");
         runtimePropsButton.setWidth("170px");
         runtimePropsButton.setStyleName("multiline");
@@ -393,31 +394,31 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         HorizontalLayout buttonBar = new HorizontalLayout();
         buttonBar.setWidth(380, Unit.PIXELS);
         buttonBar.setMargin(new MarginInfo(true, false, false, false));
-        final Button saveButton = new Button("Save");
+        final Button saveButton = new Button(Messages.getString("Settings.runtime.properties.save"));
         saveButton.setEnabled(false);
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
-            
+
             @Override
             public void buttonClick(ClickEvent event) {
                 List<Component> componentList = runtimePropsManager.getComponentList();
-                
+
                 // prepare props toSave
                 Map<String, RuntimeProperty> toSave = new HashMap<String, RuntimeProperty>();
                 Set<String> notChanged = new HashSet<String>();
-                
+
                 try {
                     for (Component property : componentList) {
                         String name = validateAndGetValue(property, 0);
                         String value = validateAndGetValue(property, 1);
-                        
+
                         if (toSave.containsKey(name) || notChanged.contains(name)) {
-                            Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
+                            Notification.show(Messages.getString("Settings.runtime.properties.save.failed"), Messages.getString("Settings.runtime.properties.save.failed.description") + name, Notification.Type.ERROR_MESSAGE);
                             return;
                         }
-                        
+
                         RuntimeProperty prop = getRuntimePropertyByName(name);
-                        
+
                         if (prop == null) { // doesnt exist, have to make new one
                             prop = new RuntimeProperty();
                             prop.setName(name);
@@ -431,39 +432,39 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         }
                     }
                 } catch (InvalidValueException e) {
-                    Notification.show("Save failed.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    Notification.show(Messages.getString("Settings.runtime.properties.invalid.value"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 // remove missing, user removed props
                 for (RuntimeProperty prop : runtimeProperties) {
                     if (!notChanged.contains(prop.getName())
                             && !toSave.containsKey(prop.getName())) {
                         runtimePropertiesFacade.delete(prop);
-                    }                    
+                    }
                 }
-                
+
                 for (RuntimeProperty runtimeProperty : toSave.values()) {
                     runtimePropertiesFacade.save(runtimeProperty);
                 }
-                
-                Notification.show("Save succesfull.", "Runtime properties were saved succesfully.", Notification.Type.HUMANIZED_MESSAGE);
+
+                Notification.show(Messages.getString("Settings.runtime.properties.save.successfull"), Messages.getString("Settings.runtime.properties.save.successfull.description"), Notification.Type.HUMANIZED_MESSAGE);
                 saveButton.setEnabled(false);
                 refreshRuntimeProperties();
             }
         });
         buttonBar.addComponent(saveButton);
         buttonBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
-        
+
         runtimePropsManager = new ManipulableListManager(new ManipulableListComponentProvider() {
-            
+
             @Override
             public Component createNewComponent(String[] values) {
                 String name = values[0] == null ? "" : values[0].trim();
                 String value = values[1] == null ? "" : values[1].trim();
-                
+
                 GridLayout oneLine = new GridLayout(2, 1);
-                
+
                 TextChangeListener changeListener = new TextChangeListener() {
                     private static final long serialVersionUID = 1L;
 
@@ -472,17 +473,17 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         saveButton.setEnabled(true);
                     }
                 };
-                
+
                 TextField text = new TextField();
                 text.addTextChangeListener(changeListener);
                 text.setRequired(true);
-                text.setRequiredError("Name is Required");
+                text.setRequiredError(Messages.getString("Settings.name.required"));
                 text.setValue(name);
-                text.setInputPrompt("name");
+                text.setInputPrompt(Messages.getString("Settings.prompt.name"));
                 text.setWidth(250, Unit.PIXELS);
                 text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 0, 0);
-                
+
                 if (name.equals(ConfigProperty.FRONTEND_RUN_NOW_PIPELINE_PRIORITY.toString())) {
                     ComboBox priorityComboBox = new ComboBox();
                     priorityComboBox.setNullSelectionAllowed(false);
@@ -490,10 +491,10 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     priorityComboBox.setImmediate(true);
                     priorityComboBox.setWidth(250, Unit.PIXELS);
                     // Add some items
-                    for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+                    for (ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
                         priorityComboBox.addItem(job);
                     }
-                    
+
                     long val = ScheduledJobsPriority.HIGHEST.getValue();
                     try {
                         val = Long.parseLong(value);
@@ -502,7 +503,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     }
 
                     priorityComboBox.setValue(ScheduledJobsPriority.getForValue(val));
-                    
+
                     priorityComboBox.addValueChangeListener(new ValueChangeListener() {
                         private static final long serialVersionUID = 1L;
 
@@ -511,24 +512,24 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                             saveButton.setEnabled(true);
                         }
                     });
-                    
+
                     oneLine.addComponent(priorityComboBox, 1, 0);
                 } else {
                     text = new TextField();
                     text.addTextChangeListener(changeListener);
                     text.setValue(value);
-                    text.setInputPrompt("value");
+                    text.setInputPrompt(Messages.getString("Settings.prompt.value"));
                     text.setWidth(250, Unit.PIXELS);
                     text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                     oneLine.addComponent(text, 1, 0);
                 }
-                
+
                 return oneLine;
             }
-            
+
             @Override
             public Component createNewComponent() {
-                return createNewComponent(new String[] {"", ""});
+                return createNewComponent(new String[] { "", "" });
             }
         });
         runtimePropsManager.setChangeListener(new Listener() {
@@ -540,17 +541,17 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             }
         });
         Layout runtimePropsList = runtimePropsManager.initList(null);
-        
+
         // fill data
         refreshRuntimeProperties();
         layout.addComponent(runtimePropsList);
         layout.setExpandRatio(runtimePropsList, 1);
-        
+
         layout.addComponent(buttonBar);
-        
+
         return layout;
     }
-    
+
     private RuntimeProperty getRuntimePropertyByName(String name) {
         for (RuntimeProperty prop : runtimeProperties) {
             if (prop.getName().equals(name)) {
@@ -570,21 +571,23 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         for (RuntimeProperty runtimeProperty : runtimeProperties) {
             runtimePropsManager.addComponent(new String[] {
                     runtimeProperty.getName(),
-                    runtimeProperty.getValue()});
+                    runtimeProperty.getValue() });
         }
         runtimePropsManager.refreshData();
     }
-    
+
     /**
      * Validates and return the TextField.value
      * 
-     * @param layout GridLayout
-     * @param column column number of TextField in grid layout to return value
+     * @param layout
+     *            GridLayout
+     * @param column
+     *            column number of TextField in grid layout to return value
      * @return
      * @throws InvalidValueException
      */
     private String validateAndGetValue(Component layout, int column) throws InvalidValueException {
-        
+
         Component field = ((GridLayout) layout).getComponent(column, 0);
         if (field instanceof TextField) {
             TextField textField = (TextField) field;
@@ -620,9 +623,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         notificationsLayout.addComponent(buttonBarNotify);
 
         notificationsLayout.addComponent(new Label(
-                "Default form of report about scheduled pipeline execution"), 0);
+                Messages.getString("Settings.default.form")), 0);
         notificationsLayout.addComponent(new Label(
-                "(may be overriden in the particular schedulled event) :"), 1);
+                Messages.getString("Settings.default.form.detail")), 1);
 
         return notificationsLayout;
     }
@@ -655,14 +658,14 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         accountLayout.addComponent(emailLayout);
 
-        Label rowsLabel = new Label("Number of rows in tables:");
+        Label rowsLabel = new Label(Messages.getString("Settings.table.row.count"));
         rows = new TextField();
 
         Integer tableRows = loggedUser.getTableRows() != null ? loggedUser
                 .getTableRows() : 20;
         rows.setPropertyDataSource(new ObjectProperty<>(tableRows));
         rows.addValidator(new IntegerRangeValidator(
-                "Please enter value between 5 and 100.",
+                Messages.getString("Settings.range.validation"),
                 5, 100));
         rows.setBuffered(true);
         rows.setImmediate(true);
@@ -681,7 +684,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         accountLayout.addComponent(rows);
 
         accountLayout.addComponent(buttonBarMyAcc);
-        accountLayout.addComponent(new Label("Email Notifications to:"), 0);
+        accountLayout.addComponent(new Label(Messages.getString("Settings.email.notifications")), 0);
 
         return accountLayout;
     }
@@ -700,7 +703,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         buttonMyAccountBar.setMargin(new MarginInfo(true, false, false, false));
         buttonMyAccountBar.setEnabled(false);
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("Settings.myAccount.save"));
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -735,7 +738,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 new MarginInfo(true, false, false, false));
         buttonNotificationBar.setEnabled(false);
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("Settings.notifications.save"));
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -771,7 +774,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
         runtimePropsButton.setStyleName("multiline");
-        
+
         shownTab = pressedButton;
         shownTab.setStyleName("selectedtab");
 
@@ -790,12 +793,11 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             try {
                 rows.validate();
             } catch (Validator.InvalidValueException ex) {
-                Notification.show("Failed to save settings, reason:", emailValidationText() + "; \"Number of rows in tables\" must be a number between 5 and 100. You entered \""
-                        + rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("Settings.schedule.fail"), emailValidationText() + Messages.getString("Settings.schedule.fail.description", rows.getValue()), Notification.Type.ERROR_MESSAGE);
                 return false;
             }
 
-            Notification.show("Failed to save settings, reason:",
+            Notification.show(Messages.getString("Settings.failed.to.save"),
                     emailValidationText(), Notification.Type.ERROR_MESSAGE);
             return false;
         }
@@ -803,8 +805,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         try {
             rows.validate();
         } catch (Validator.InvalidValueException ex) {
-            Notification.show("Failed to save settings, reason:", "\"Number of rows in tables\" must be a number between 5 and 100. You entered \""
-                    + rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("Settings.failed.to.save.reason"), Messages.getString("Settings.failed.to.save.description", rows.getValue()), Notification.Type.ERROR_MESSAGE);
             return false;
         }
 
@@ -825,7 +826,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
         rows.commit();
         userFacade.save(loggedUser);
-        Notification.show("My account settings were successfully saved",
+        Notification.show(Messages.getString("Settings.myAccout.successfull"),
                 Notification.Type.HUMANIZED_MESSAGE);
         if (buttonNotificationBar != null)
             buttonNotificationBar.setEnabled(false);
@@ -856,9 +857,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         if (isMyAccountModified()) {
 
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("Settings.unsaved.changes"),
+                    Messages.getString("Settings.unsaved.changes.dialog"),
+                    Messages.getString("Settings.unsaved.changes.save"), Messages.getString("Settings.unsaved.changes.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -896,9 +897,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             final VerticalLayout layoutShow) {
         if (areNotificationsModified()) {
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("Settings.notifications.unsaved"),
+                    Messages.getString("Settings.notifications.unsaved.dialog"),
+                    Messages.getString("Settings.notifications.unsaved.save"), Messages.getString("Settings.notifications.unsaved.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -954,21 +955,21 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         Set<EmailAddress> newEmails = newNotification.getEmails();
         return !hasTheSameEmails(oldEmails, newEmails) || rows.isModified();
     }
-    
+
     private boolean hasTheSameEmails(Set<EmailAddress> oldEmails, Set<EmailAddress> newEmails) {
-    	// i have to do it this way because the new mails dont have id set and the old have it set
-    	// so the oldEmails.equals(newEmails) method will always return false (dont want to change
-    	// hashCode and equals method of EmailAdress because they are correct but here it cant be used)
-    	if (oldEmails.size() != newEmails.size()) {
-			return false;
-		}
-    	for (EmailAddress emailAddress : oldEmails) {
-    		// both email dont have id set, so i can compare them with equals
-			if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
-				return false;
-			}
-		}
-    	return true;
+        // i have to do it this way because the new mails dont have id set and the old have it set
+        // so the oldEmails.equals(newEmails) method will always return false (dont want to change
+        // hashCode and equals method of EmailAdress because they are correct but here it cant be used)
+        if (oldEmails.size() != newEmails.size()) {
+            return false;
+        }
+        for (EmailAddress emailAddress : oldEmails) {
+            // both email dont have id set, so i can compare them with equals
+            if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String emailValidationText() {
@@ -1004,21 +1005,21 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 }
             }
             if (errorNumber == 1) {
-                errorText = "Email " + wrongFormat + " has wrong format.";
+                errorText = Messages.getString("Settings.validation.email") + wrongFormat + Messages.getString("Settings.validation.wrong.format");
             }
             if (errorNumber > 1) {
-                errorText = "Emails " + wrongFormat + ", have wrong format.";
+                errorText = Messages.getString("Settings.validation.emails") + wrongFormat + Messages.getString("Settings.validation.emails.wrong.format");
             }
         } else {
-            errorText = "At least one mail has to be filled, so that the notification can be send.";
+            errorText = Messages.getString("Settings.validation.email.minimum");
         }
 
         return errorText;
 
     }
 
-	@Override
-	public void doAfterLogout() {
-		isMainLayoutInitialized = false;
-	}
+    @Override
+    public void doAfterLogout() {
+        isMainLayoutInitialized = false;
+    }
 }

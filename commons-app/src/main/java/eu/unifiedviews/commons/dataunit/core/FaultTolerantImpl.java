@@ -10,10 +10,10 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- *
  * @author Škoda Petr
  */
 public class FaultTolerantImpl implements FaultTolerant {
@@ -57,12 +57,11 @@ public class FaultTolerantImpl implements FaultTolerant {
                 }
             }
             // If we are here we fail to execute user code.
-            throw new DataUnitException("Failed to execute user given code.");
+            throw new DataUnitException(Messages.getString("FaultTolerantImpl.user.code.execution.fail"));
         }
     }
 
     /**
-     *
      * @param connectionSource
      * @param codeToExecute
      * @return False if operation fail.

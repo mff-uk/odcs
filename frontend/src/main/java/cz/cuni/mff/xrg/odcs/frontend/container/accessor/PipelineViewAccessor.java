@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
@@ -65,15 +66,15 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     public String getColumnName(String id) {
         switch (id) {
             case "id":
-                return "Id";
+                return Messages.getString("PipelineViewAccessor.id");
             case "name":
-                return "Name";
+                return Messages.getString("PipelineViewAccessor.name");
             case "duration":
-                return "Last run time";
+                return Messages.getString("PipelineViewAccessor.lastRun");
             case "lastExecTime":
-                return "Last execution time";
+                return Messages.getString("PipelineViewAccessor.lastExecution");
             case "lastExecStatus":
-                return "Last status";
+                return Messages.getString("PipelineViewAccessor.lastStatus");
             default:
                 return id;
         }

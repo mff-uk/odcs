@@ -13,13 +13,14 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
+import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Window showing Edge detail. Used to create mappings between output and input
@@ -67,7 +68,7 @@ public class EdgeDetail extends Window {
         this.setResizable(false);
         this.setModal(true);
         this.edge = e;
-        this.setCaption("Edge detail");
+        this.setCaption(Messages.getString("EdgeDetail.edge.detail"));
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("dpuDetailMainLayout");
@@ -78,7 +79,7 @@ public class EdgeDetail extends Window {
         edgeSettingsLayout.setSpacing(true);
 
         chbRunAfterEdge = new CheckBox();
-        chbRunAfterEdge.setCaption("Is \"run after\" edge");
+        chbRunAfterEdge.setCaption(Messages.getString("EdgeDetail.run.after"));
         mainLayout.addComponent(chbRunAfterEdge);
         chbRunAfterEdge.addValueChangeListener(new Property.ValueChangeListener() {
 
@@ -92,7 +93,7 @@ public class EdgeDetail extends Window {
             }
         });
 
-        outputSelect = new Table("Output data units of the source DPU:");
+        outputSelect = new Table(Messages.getString("EdgeDetail.output.dataUnits"));
         outputSelect.setSelectable(true);
         outputSelect.setMultiSelect(true);
         outputSelect.setNewItemsAllowed(false);
@@ -122,7 +123,7 @@ public class EdgeDetail extends Window {
 
         outputSelect.setItemDescriptionGenerator(tooltipGenerator);
 
-        inputSelect = new Table("Input data units of the target DPU:");
+        inputSelect = new Table(Messages.getString("EdgeDetail.input.dataUnits"));
         inputSelect.setSelectable(true);
         inputSelect.setWidth(250, Unit.PIXELS);
         inputSelect.setNewItemsAllowed(false);
@@ -139,7 +140,7 @@ public class EdgeDetail extends Window {
         inputSelect.setItemDescriptionGenerator(tooltipGenerator);
 
         edgeSettingsLayout.addComponent(inputSelect, 1, 0, 1, 4);
-        Button mapButton = new Button("Map", new Button.ClickListener() {
+        Button mapButton = new Button(Messages.getString("EdgeDetail.map"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
 
@@ -155,7 +156,7 @@ public class EdgeDetail extends Window {
                         .getValue();
                 if (outputs.isEmpty() || input == null) {
                     Notification.show(
-                            "At least one output and exactly one input must be selected!",
+                            Messages.getString("EdgeDetail.minimum.selected"),
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -166,7 +167,7 @@ public class EdgeDetail extends Window {
 
                     if (!input.getTypeName().equals(output.getTypeName())) {
                         Notification.show(
-                                "Input and output data unit have incompatible type, mapping couldn't be created!",
+                                Messages.getString("EdgeDetail.incompatible.type"),
                                 Notification.Type.WARNING_MESSAGE);
                         // and skipp given mapping
                         continue;
@@ -175,7 +176,7 @@ public class EdgeDetail extends Window {
                     if (addMappingToList(newMapping)) {
                         mappings.add(newMapping);
                     } else {
-                        Notification.show("Selected mapping already exists!",
+                        Notification.show(Messages.getString("EdgeDetail.mapping.exists"),
                                 Notification.Type.WARNING_MESSAGE);
                     }
                 }
@@ -185,7 +186,7 @@ public class EdgeDetail extends Window {
         mapButton.setEnabled(!readOnly);
         edgeSettingsLayout.addComponent(mapButton, 2, 1);
 
-        Button clearButton = new Button("Clear selection",
+        Button clearButton = new Button(Messages.getString("EdgeDetail.clear"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -196,7 +197,7 @@ public class EdgeDetail extends Window {
         clearButton.setWidth(130, Unit.PIXELS);
         edgeSettingsLayout.addComponent(clearButton, 2, 2);
 
-        mappingsSelect = new ListSelect("Available mappings:");
+        mappingsSelect = new ListSelect(Messages.getString("EdgeDetail.available.mappings"));
         mappingsSelect.setStyleName("select-hide-tb");
         mappingsSelect.setWidth(500, Unit.PIXELS);
         mappingsSelect.setMultiSelect(true);
@@ -204,7 +205,7 @@ public class EdgeDetail extends Window {
         mappingsSelect.setImmediate(true);
         edgeSettingsLayout.addComponent(mappingsSelect, 0, 5, 1, 9);
 
-        Button deleteButton = new Button("Delete mapping",
+        Button deleteButton = new Button(Messages.getString("EdgeDetail.detele"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -229,7 +230,7 @@ public class EdgeDetail extends Window {
         buttonBar.setWidth(100, Unit.PERCENTAGE);
         buttonBar.setMargin(new MarginInfo(true, false, false, false));
 
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        Button cancelButton = new Button(Messages.getString("EdgeDetail.cancel"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -238,7 +239,7 @@ public class EdgeDetail extends Window {
         cancelButton.setWidth(100, Unit.PIXELS);
         buttonBar.addComponent(cancelButton);
 
-        Button saveAndCommitButton = new Button("Save",
+        Button saveAndCommitButton = new Button(Messages.getString("EdgeDetail.save"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {

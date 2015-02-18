@@ -11,14 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.dpu.config.DPUConfigurable;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigurable;
 
 /**
  * Class provide one-place access to create/update/delete actions for DPUs. It
@@ -73,64 +74,64 @@ public class DPUModuleManipulator {
         if (sourceFile == null) {
             // failed to load file
             throw new DPUCreateException(
-                    "The DPU's file has not been loaded properly.");
+                    Messages.getString("DPUModuleManipulator.dpu.load.fail"));
         }
         if (!sourceFile.exists()) {
-			LOG.error("Unable to find dpu: " + name);
-			throw new DPUCreateException("Unable to find dpu: " + name);
-		}
-        
+            LOG.error("Unable to find dpu: " + name);
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + name);
+        }
+
         // get directory name and also validate the DPU's file name
         final String newDpuFileName = sourceFile.getName();
-        final String newDpuDirName =  getDirectoryName(newDpuFileName);
+        final String newDpuDirName = getDirectoryName(newDpuFileName);
         // prepare directory secure that this method
         // will not continue for same jar-file twice .. use synchronisation
         // over file system.
         File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
-        
+
         DPUTemplateRecord newTemplate;
         boolean isChild = false;
         if (newDPUDir.exists()) {
             DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
 
             if (parent == null) {
-                throw new DPUCreateException("DPU " + newDpuFileName + " already exists but with different version.");
+                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.different.version", newDpuFileName));
             }
 
             if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
-                throw new DPUCreateException("DPU " + newDpuFileName + " with name " + name + " already exists.");
+                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", name, newDpuFileName));
             }
-            
+
             DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(name);
             if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
-                throw new DPUCreateException("Child DPU " + newDpuFileName + " with name " + name + " already exists.");
+                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, name));
             }
 
             newTemplate = dpuFacade.createTemplate(name, null);
             newTemplate.setParent(parent);
             isChild = true;
-		} else {
-			prepareDirectory(newDPUDir);
-			
-			// copy
-			try {
-				FileUtils.copyFile(sourceFile, newDPUFile);
-			} catch (IOException e) {
-				LOG.error("Failed to copy file, when creating new DPU.", e);
-				// release
-				try {
-					FileUtils.deleteDirectory(newDPUDir);
-				} catch (IOException ex) {
-					LOG.error("Failed to delete directory after DPU.", ex);
-				}
-				// failed to copy file
-				throw new DPUCreateException("Failed to create DPU file.");
-			}
-			
-			// we need dpu template to work wit DPUs
-			newTemplate = dpuFacade.createTemplate(name, null);
-		}
+        } else {
+            prepareDirectory(newDPUDir);
+
+            // copy
+            try {
+                FileUtils.copyFile(sourceFile, newDPUFile);
+            } catch (IOException e) {
+                LOG.error("Failed to copy file, when creating new DPU.", e);
+                // release
+                try {
+                    FileUtils.deleteDirectory(newDPUDir);
+                } catch (IOException ex) {
+                    LOG.error("Failed to delete directory after DPU.", ex);
+                }
+                // failed to copy file
+                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.create.fail"));
+            }
+
+            // we need dpu template to work wit DPUs
+            newTemplate = dpuFacade.createTemplate(name, null);
+        }
 
         newTemplate.setJarDirectory(newDpuDirName);
         newTemplate.setJarName(newDpuFileName);
@@ -143,11 +144,11 @@ public class DPUModuleManipulator {
             dpuObject = moduleFacade.getInstance(newTemplate);
         } catch (ModuleException e) {
             LOG.error("Failed to load new DPU bundle.", e);
-            String msg = "Failed to load DPU bacause of exception:" + e.getMessage();
+            String msg = Messages.getString("DPUModuleManipulator.dpu.load.fail.exception") + e.getMessage();
             release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         } catch (Throwable t) {
-        	String msg = "Failed to load DPU bacause of !unexpected! exception:" + t.getMessage();
-            LOG.error(msg, t);
+            LOG.error("Failed to load DPU bacause of !unexpected! exception:", t);
+            String msg = Messages.getString("DPUModuleManipulator.dpu.load.fail.unexpected.exception") + t.getMessage();
             release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         }
 
@@ -162,7 +163,7 @@ public class DPUModuleManipulator {
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
-            release(newDPUFile, newDPUDir, newTemplate, "DPU has unspecified type.", isChild);
+            release(newDPUFile, newDPUDir, newTemplate, Messages.getString("DPUModuleManipulator.dpu.unspecified.type"), isChild);
         }
 
         // is configurable
@@ -172,7 +173,7 @@ public class DPUModuleManipulator {
                 newTemplate.setRawConf(configurable.getDefaultConfiguration());
             } catch (DPUConfigException e) {
                 // failed to load default configuration .. 
-                String msg = "Failed to obtain DPU's default configuration.";
+                String msg = Messages.getString("DPUModuleManipulator.dpu.default.configuration.fail");
                 release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
             }
         }
@@ -199,7 +200,7 @@ public class DPUModuleManipulator {
         try {
             dpuFacade.save(newTemplate);
         } catch (Throwable e) {
-            String msg = "Failed to save new DPU: " + e.getMessage();
+            String msg = Messages.getString("DPUModuleManipulator.dpu.save.fail") + e.getMessage();
             release(newDPUFile, newDPUDir, newTemplate, msg, isChild);
         }
 
@@ -209,7 +210,7 @@ public class DPUModuleManipulator {
         // return new DPUTempateRecord
         return newTemplate;
     }
-    
+
     /**
      * Cleaning up after failed dpu creation
      * 
@@ -221,21 +222,21 @@ public class DPUModuleManipulator {
      * @throws DPUCreateException
      */
     private void release(File newDPUFile, File newDPUDir, DPUTemplateRecord newTemplate, String msg, boolean isChild)
-    		throws DPUCreateException {
-    	// release
+            throws DPUCreateException {
+        // release
         if (!isChild) { // child is pointing to the same jar, so no deleting if its not a parent
-        	newDPUFile.delete();
-        	try {
-        		FileUtils.deleteDirectory(newDPUDir);
-        	} catch (IOException ex) {
-        		LOG.error("Failed to delete directory after DPU.", ex);
-        	}
-		}
+            newDPUFile.delete();
+            try {
+                FileUtils.deleteDirectory(newDPUDir);
+            } catch (IOException ex) {
+                LOG.error("Failed to delete directory after DPU.", ex);
+            }
+        }
         moduleFacade.unLoad(newTemplate);
         throw new DPUCreateException(msg);
-	}
+    }
 
-	/**
+    /**
      * Try to replace jar-file for given DPU with given file. During the replace
      * the given DPU is inaccessible through the {@link ModuleFacade}. If the
      * new jar file can not be used, the old jar file is preserved and the {@link DPUReplaceException} is thrown.
@@ -299,7 +300,7 @@ public class DPUModuleManipulator {
             // recover
             recoverFromBackUp(originalDpuFile);
             moduleFacade.endUpdate(dpu, true);
-            throw new DPUReplaceException("Can't copy new DPU jar file.");
+            throw new DPUReplaceException(Messages.getString("DPUModuleManipulator.dpu.copy.fail"));
         }
 
         // now we try to load new instance of DPU
@@ -317,7 +318,7 @@ public class DPUModuleManipulator {
             moduleFacade.endUpdate(dpu, true);
             // the old bundle will be loaded with first user request
             throw new DPUReplaceException(
-                    "Can't load instance from new bundle. Exception: "
+                    Messages.getString("DPUModuleManipulator.instance.load.fail")
                             + e.getMessage());
         } catch (Throwable e) {
             LOG.warn("Unexpected exception! Failed to load bunle during replace.", e);
@@ -327,7 +328,7 @@ public class DPUModuleManipulator {
             moduleFacade.endUpdate(dpu, true);
             // the old bundle will be loaded with first user request
             throw new DPUReplaceException(
-                    "Can't load instance from new bundle. !Unexpected! exception: "
+                    Messages.getString("DPUModuleManipulator.instance.load.exception")
                             + e.getMessage());
         }
 
@@ -342,9 +343,9 @@ public class DPUModuleManipulator {
             // we store message about type here
             String typeMessage;
             if (dpuType == null) {
-                typeMessage = "New DPU has unspecified type. Check the DPU's annotations";
+                typeMessage = Messages.getString("DPUModuleManipulator.check.dpu.annotations");
             } else {
-                typeMessage = "New DPU has different type then the old one.";
+                typeMessage = Messages.getString("DPUModuleManipulator.dpu.type.different");
             }
             // recover
             recoverFromBackUp(originalDpuFile);
@@ -352,7 +353,7 @@ public class DPUModuleManipulator {
             moduleFacade.endUpdate(dpu, true);
             // DPU type changed .. we do not allow this
             throw new DPUReplaceException(
-                    "New DPU has different type then the old one. "
+                    Messages.getString("DPUModuleManipulator.dpu.type.different.exception")
                             + typeMessage);
         }
 
@@ -433,14 +434,13 @@ public class DPUModuleManipulator {
      */
     protected void prepareDirectory(File newDpuDir)
             throws DPUCreateException {
-        
+
         // create directory
         if (newDpuDir.mkdir()) {
             // ok, directory has been created
         } else {
             // failed
-            throw new DPUCreateException(String.format(
-                    "Failed to create DPU's directory: '%s'", newDpuDir.getName()));
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.dir.create.fail", newDpuDir.getName()));
         }
     }
 
@@ -464,7 +464,7 @@ public class DPUModuleManipulator {
             return matcher.group(1);
         } else {
             throw new DPUCreateException(
-                    "DPU's name must be in format NAME-VERSION.*.jar");
+                    Messages.getString("DPUModuleManipulator.dpu.name.format.fail"));
         }
     }
 
@@ -514,7 +514,7 @@ public class DPUModuleManipulator {
             LOG.error("Failed to create backup file: {}",
                     originalDpuBackUp.getPath());
             throw new DPUReplaceException(
-                    "Failed to create original DPU backup.");
+                    Messages.getString("DPUModuleManipulator.dpu.backup.fail"));
         }
     }
 

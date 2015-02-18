@@ -23,6 +23,7 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit.Entry;
+import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 
 /**
  * Load list of graphs at once. This class does not need reliable repository, but it's not suitable
@@ -69,7 +70,7 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
                     try {
                         query = connection.prepareTupleQuery(QueryLanguage.SPARQL, selectQuery);
                     } catch (MalformedQueryException ex) {
-                        throw new DataUnitException("Problem with system query.", ex);
+                        throw new DataUnitException(Messages.getString("RDFDataUnitIterationEager.system.query.problem"), ex);
                     }
                     // Clear set and load.
                     internalCollection.clear();
@@ -81,7 +82,7 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
                             internalCollection.add(new RDFDataUnitEntryImpl(item.getValue(SYMBOLIC_NAME_BINDING).stringValue(), new URIImpl(item.getValue(GRAPH_URI_BINDING).stringValue())));
                         }
                     } catch (QueryEvaluationException ex) {
-                        throw new DataUnitException("Could not select all files from repository", ex);
+                        throw new DataUnitException(Messages.getString("RDFDataUnitIterationEager.could.not.select.all.files"), ex);
                     } finally {
                         if (queryResult != null) {
                             try {
@@ -94,7 +95,7 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
                 }
             });
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Problem with repository", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitIterationEager.repository.problem"), ex);
         }
         iterator = internalCollection.iterator();
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
@@ -26,7 +27,8 @@ class DailyReportEmailBuilder {
 
         try {
             final String name = config.getString(ConfigProperty.BACKEND_NAME);
-            body.append("<p>Instance: ");
+            body.append("<p>");
+            body.append(Messages.getString("DailyReportEmailBuilder.instance"));
             body.append(name);
             body.append("</p><br/>");
         } catch (MissingConfigPropertyException e) {
@@ -46,10 +48,12 @@ class DailyReportEmailBuilder {
 
         body.append("<table border=2 cellpadding=2 >");
         body.append("<tr bgcolor=\"#C0C0C0\">");
-        body.append("<th>pipeline</th><th>execution</th><th>start</th><th>end</th><th>result</th>");
+        body.append(Messages.getString("DailyReportEmailBuilder.header"));
         // add column for link
         if (urlBase != null) {
-            body.append("<th>detail</th>");
+            body.append("<th>");
+            body.append(Messages.getString("DailyReportEmailBuilder.detail"));
+            body.append("</th>");
         }
         body.append("</tr>");
 
@@ -75,25 +79,25 @@ class DailyReportEmailBuilder {
             body.append("<td>");
             switch (exec.getStatus()) {
                 case CANCELLED:
-                    body.append("cancelled");
+                    body.append(Messages.getString("DailyReportEmailBuilder.cancelled"));
                     break;
                 case CANCELLING:
-                    body.append("canceling");
+                    body.append(Messages.getString("DailyReportEmailBuilder.cancelling"));
                     break;
                 case FAILED:
-                    body.append("failed");
+                    body.append(Messages.getString("DailyReportEmailBuilder.failed"));
                     break;
                 case FINISHED_SUCCESS:
-                    body.append("finished");
+                    body.append(Messages.getString("DailyReportEmailBuilder.finished"));
                     break;
                 case FINISHED_WARNING:
-                    body.append("finished with warning");
+                    body.append(Messages.getString("DailyReportEmailBuilder.finished.with.warning"));
                     break;
                 case QUEUED:
-                    body.append("queued");
+                    body.append(Messages.getString("DailyReportEmailBuilder.queued"));
                     break;
                 case RUNNING:
-                    body.append("running");
+                    body.append(Messages.getString("DailyReportEmailBuilder.running"));
                     break;
             }
             body.append("</td>");
@@ -102,7 +106,9 @@ class DailyReportEmailBuilder {
                 body.append("<td> <a href=/");
                 body.append(urlBase);
                 body.append(exec.getId().toString());
-                body.append("\" >Execution detail<a/> </td>");
+                body.append("\" >");
+                body.append(Messages.getString("DailyReportEmailBuilder.execution.detail"));
+                body.append("<a/> </td>");
             }
 
             // end line

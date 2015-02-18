@@ -4,7 +4,9 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
+
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * @author Petyr
@@ -48,7 +50,7 @@ class DataBrowser extends ViewComponent {
         label.setImmediate(false);
         label.setWidth("-1px");
         label.setHeight("-1px");
-        label.setValue("<h1>DataBrowser</h>");
+        label.setValue(Messages.getString("DataBrowser.browser"));
         label.setContentMode(ContentMode.HTML);
         mainLayout.addComponent(label, "top:100.0px;left:80.0px;");
 

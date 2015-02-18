@@ -77,7 +77,7 @@ class CleanUp implements PostExecutor {
         }
         if (execution.isDebugging()) {
 //            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
-
+            
             try {
                 repositoryManager.release(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
@@ -109,8 +109,8 @@ class CleanUp implements PostExecutor {
         if (!execution.isDebugging()) {
             // delete working directory the sub directories should be already deleted by DPU's.
             try {
-                delete(resourceManager.getExecutionWorkingDir(execution));
-            } catch (MissingResourceException ex) {
+                delete(resourceManager.getExecutionDir(execution));
+            } catch (MissingResourceException ex ){
                 LOG.warn("Can't delete directory.", ex);
             }
         }
@@ -118,17 +118,17 @@ class CleanUp implements PostExecutor {
         // delete result, storage if empty
         try {
             deleteIfEmpty(resourceManager.getExecutionWorkingDir(execution));
-        } catch (MissingResourceException ex) {
+        } catch (MissingResourceException ex ){
             LOG.warn("Can't delete directory.", ex);
         }
         try {
             deleteIfEmpty(resourceManager.getExecutionStorageDir(execution));
-        } catch (MissingResourceException ex) {
+        } catch (MissingResourceException ex ){
             LOG.warn("Can't delete directory.", ex);
         }
         try {
             deleteIfEmpty(resourceManager.getExecutionDir(execution));
-        } catch (MissingResourceException ex) {
+        } catch (MissingResourceException ex ){
             LOG.warn("Can't delete directory.", ex);
         }
 

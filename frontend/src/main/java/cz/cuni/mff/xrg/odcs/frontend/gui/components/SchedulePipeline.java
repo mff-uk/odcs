@@ -1,8 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.util.*;
-
-import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +17,14 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
@@ -36,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbInMemorySource;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for the scheduling rule creation. Designed for setting the description
@@ -154,7 +158,7 @@ public class SchedulePipeline extends Window {
     public SchedulePipeline() {
         this.setResizable(false);
         this.setModal(true);
-        this.setCaption("Schedule a pipeline");
+        this.setCaption(Messages.getString("SchedulePipeline.schedule"));
     }
 
     /**
@@ -378,7 +382,7 @@ public class SchedulePipeline extends Window {
                 if (value != null) {
                     return;
                 }
-                throw new InvalidValueException("Pipeline must be filled");
+                throw new InvalidValueException(Messages.getString("SchedulePipeline.pipeline.empty"));
             }
         });
 
@@ -417,21 +421,21 @@ public class SchedulePipeline extends Window {
         });
         comboPipeline.setWidth("460px");
 
-        idLabel = new Label("ID");
+        idLabel = new Label(Messages.getString("SchedulePipeline.id"));
         layoutPipeline.addComponent(idLabel, 0, 3);
-        id = new Label("New");
+        id = new Label(Messages.getString("SchedulePipeline.new"));
         layoutPipeline.addComponent(id, 1, 3);
 
-        layoutPipeline.addComponent(new Label("Pipeline "), 0, 0);
+        layoutPipeline.addComponent(new Label(Messages.getString("SchedulePipeline.pipeline")), 0, 0);
         layoutPipeline.addComponent(comboPipeline, 1, 0);
 
-        layoutPipeline.addComponent(new Label("Description"), 0, 1);
+        layoutPipeline.addComponent(new Label(Messages.getString("SchedulePipeline.description")), 0, 1);
         scheduleDescription = new TextArea();
         scheduleDescription.setImmediate(true);
         scheduleDescription.setWidth("460px");
         layoutPipeline.addComponent(scheduleDescription, 1, 1);
 
-        layoutPipeline.addComponent(new Label("Schedulled by"), 0, 2);
+        layoutPipeline.addComponent(new Label(Messages.getString("SchedulePipeline.scheduled.by")), 0, 2);
         author = new Label();
         layoutPipeline.addComponent(author, 1, 2);
 
@@ -445,9 +449,9 @@ public class SchedulePipeline extends Window {
         scheduleType.setValue(ScheduleType.PERIODICALLY);
         scheduleType
                 .setItemCaption(ScheduleType.PERIODICALLY,
-                        "Schedule the pipeline to run automatically in fixed interval.");
+                        Messages.getString("SchedulePipeline.schedule.periodically"));
         scheduleType.setItemCaption(ScheduleType.AFTER_PIPELINE,
-                "Schedule the pipeline to run after selected pipelines finish.");
+                Messages.getString("SchedulePipeline.schedule.after"));
         scheduleType.addValueChangeListener(new ValueChangeListener() {
             /**
              * For each type will be shown corresponding layout with components
@@ -482,7 +486,7 @@ public class SchedulePipeline extends Window {
 
         //Save button
         Button createRule = new Button();
-        createRule.setCaption("Save");
+        createRule.setCaption(Messages.getString("SchedulePipeline.save"));
         createRule.setWidth("90px");
         createRule.setImmediate(true);
         createRule.addClickListener(new ClickListener() {
@@ -513,9 +517,9 @@ public class SchedulePipeline extends Window {
 
                     } catch (Validator.InvalidValueException e) {
                         if (!errors.equals("")) {
-                            errors = errors + "; Interval value must be a positive integer number, you entered \"" + tfEvery.getValue() + "\"";
+                            errors = errors + Messages.getString("SchedulePipeline.interval.positive") + tfEvery.getValue() + "\"";
                         } else {
-                            errors = errors + "Interval value must be a positive integer number, you entered \"" + tfEvery.getValue() + "\"";
+                            errors = errors + Messages.getString("SchedulePipeline.interval.positive2") + tfEvery.getValue() + "\"";
                         }
                     }
 
@@ -524,9 +528,9 @@ public class SchedulePipeline extends Window {
 
                     } catch (Validator.InvalidValueException e) {
                         if (!errors.equals("")) {
-                            errors = errors + "; Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue() + "\"";
+                            errors = errors + Messages.getString("SchedulePipeline.tolerance.positive") + tfTolerance.getValue() + "\"";
                         } else {
-                            errors = errors + "Tolerance value must be a positive integer number, you entered \"" + tfTolerance.getValue() + "\"";
+                            errors = errors + Messages.getString("SchedulePipeline.tolerance.positive2") + tfTolerance.getValue() + "\"";
                         }
                     }
 
@@ -548,8 +552,8 @@ public class SchedulePipeline extends Window {
 
                 if (!errors.equals("")) {
                     errors = errors + ".";
-                    Notification.show("Failed to create scheduler rule.",
-                            errors + " Please correct that before saving. ", Notification.Type.ERROR_MESSAGE);
+                    Notification.show(Messages.getString("SchedulePipeline.create.rule.failed"),
+                            errors + Messages.getString("SchedulePipeline.create.rule.failed.description"), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
@@ -635,7 +639,7 @@ public class SchedulePipeline extends Window {
                         String errorText = emailValidation();
 
                         if (!errorText.equals("")) {
-                            Notification.show("Failed to save settings, reason:", errorText, Notification.Type.ERROR_MESSAGE);
+                            Notification.show(Messages.getString("SchedulePipeline.settings.save.failed"), errorText, Notification.Type.ERROR_MESSAGE);
                             return;
                         }
                     }
@@ -656,7 +660,7 @@ public class SchedulePipeline extends Window {
 
                     // store scheduling rule record to DB
                     scheduleFacade.save(schedule);
-                    Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+                    Notification.show(Messages.getString("SchedulePipeline.save.success", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
                 } else {
                     if (schedule.getNotification() != null) {
@@ -667,7 +671,7 @@ public class SchedulePipeline extends Window {
                         Long priority = job.getValue();
                         schedule.setPriority(priority);
                         scheduleFacade.save(schedule);
-                        Notification.show(String.format("Pipeline %s scheduled successfuly!", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
+                        Notification.show(Messages.getString("SchedulePipeline.save.success", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
 
                     }
                 }
@@ -678,7 +682,7 @@ public class SchedulePipeline extends Window {
 
         buttonBar.addComponent(createRule);
 
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        Button cancelButton = new Button(Messages.getString("SchedulePipeline.cancel"), new Button.ClickListener() {
             /**
              * Closes Scheduling pipeline window
              */
@@ -695,8 +699,8 @@ public class SchedulePipeline extends Window {
 
         VerticalLayout notificationsLayout = buildnotificationsLayout();
 
-        tabSheet.addTab(coreLayout, "Core", null);
-        tabSheet.addTab(notificationsLayout, "Notifications", null);
+        tabSheet.addTab(coreLayout, Messages.getString("SchedulePipeline.core"), null);
+        tabSheet.addTab(notificationsLayout, Messages.getString("SchedulePipeline.notifications"), null);
 
         mainLayout.addComponent(tabSheet);
         mainLayout.addComponent(buttonBar);
@@ -724,7 +728,7 @@ public class SchedulePipeline extends Window {
 
         notifyThis = new CheckBox();
         notifyThis.setImmediate(true);
-        notifyThis.setCaption("Use default notification settings");
+        notifyThis.setCaption(Messages.getString("SchedulePipeline.use.default"));
         notificationsLayout.addComponent(notifyThis, 0);
         emailNotifications.setDisableComponents();
         getEmailLayout().setEnabled(false);
@@ -766,14 +770,14 @@ public class SchedulePipeline extends Window {
         afterLayout.setColumnExpandRatio(1, 0.8f);
         afterLayout.setStyleName("scheduling");
 
-        afterLayout.addComponent(new Label("Select pipeline:"), 0, 0);
+        afterLayout.addComponent(new Label(Messages.getString("SchedulePipeline.pipeline.select")), 0, 0);
 
         VerticalLayout selectPipelineLayout = new VerticalLayout();
         selectPipelineLayout.setSpacing(true);
 
         pipeFilter = new TextField();
         pipeFilter.setImmediate(false);
-        pipeFilter.setInputPrompt("type to filter pipelines");
+        pipeFilter.setInputPrompt(Messages.getString("SchedulePipeline.pipeline.filter"));
         pipeFilter.setWidth("140px");
         pipeFilter.setTextChangeEventMode(TextChangeEventMode.LAZY);
         pipeFilter.addTextChangeListener(new FieldEvents.TextChangeListener() {
@@ -832,8 +836,8 @@ public class SchedulePipeline extends Window {
         selectPipe.setWidth("400px");
         selectPipe.setHeight("200px");
         selectPipe.setItemCaptionPropertyId("name");
-        selectPipe.setLeftColumnCaption("Available pipelines");
-        selectPipe.setRightColumnCaption("Selected pipelines");
+        selectPipe.setLeftColumnCaption(Messages.getString("SchedulePipeline.pipelines.available"));
+        selectPipe.setRightColumnCaption(Messages.getString("SchedulePipeline.pipelines.selected"));
         //selectPipe is mandatory component 
         selectPipe.addValidator(new Validator() {
             private static final long serialVersionUID = 1L;
@@ -845,7 +849,7 @@ public class SchedulePipeline extends Window {
                     return;
                 }
                 throw new InvalidValueException(
-                        "Selected pipeline must be filled");
+                        Messages.getString("SchedulePipeline.pipelines.selected.empty"));
 
             }
         });
@@ -878,7 +882,7 @@ public class SchedulePipeline extends Window {
         firstExecutionLayout.setSpacing(true);
 
         //Date component
-        firstExecutionLayout.addComponent(new Label("Date and time of first execution:"));
+        firstExecutionLayout.addComponent(new Label(Messages.getString("SchedulePipeline.date.and.time.execution")));
 
         date = new InlineDateField();
         date.setValue(new java.util.Date());
@@ -887,7 +891,7 @@ public class SchedulePipeline extends Window {
 
         //Just ones component. Used if the pipeline will be run only ones
         justOnce = new CheckBox();
-        justOnce.setCaption("Just once");
+        justOnce.setCaption(Messages.getString("SchedulePipeline.once"));
         justOnce.setValue(false);
         justOnce.setImmediate(true);
         justOnce.addValueChangeListener(new ValueChangeListener() {
@@ -916,18 +920,18 @@ public class SchedulePipeline extends Window {
         VerticalLayout dateIntervalLayout = new VerticalLayout();
         dateIntervalLayout.setSpacing(true);
 
-        dateIntervalLayout.addComponent(new Label("Interval:"));
+        dateIntervalLayout.addComponent(new Label(Messages.getString("SchedulePipeline.interval")));
 
         //OptionGroup with an interval 
         inervalLayout = new VerticalLayout();
         intervalOption = new OptionGroup();
         intervalOption.setImmediate(true);
         intervalOption.addItem(PeriodUnit.DAY);
-        intervalOption.setItemCaption(PeriodUnit.DAY, "every day");
+        intervalOption.setItemCaption(PeriodUnit.DAY, Messages.getString("SchedulePipeline.every.day"));
         intervalOption.addItem(PeriodUnit.WEEK);
-        intervalOption.setItemCaption(PeriodUnit.WEEK, "every week");
+        intervalOption.setItemCaption(PeriodUnit.WEEK, Messages.getString("SchedulePipeline.every.week"));
         intervalOption.addItem(PeriodUnit.MONTH);
-        intervalOption.setItemCaption(PeriodUnit.MONTH, "every month");
+        intervalOption.setItemCaption(PeriodUnit.MONTH, Messages.getString("SchedulePipeline.every.month"));
         intervalOption.addItem("every");
         intervalOption.setValue(PeriodUnit.DAY);
         intervalOption.addValueChangeListener(new ValueChangeListener() {
@@ -978,7 +982,7 @@ public class SchedulePipeline extends Window {
                 if (((Integer) val != null) && ((Integer) val > 0)) {
                     return;
                 }
-                throw new InvalidValueException("Value must be positive");
+                throw new InvalidValueException(Messages.getString("SchedulePipeline.value.positive"));
 
             }
         });
@@ -989,13 +993,13 @@ public class SchedulePipeline extends Window {
         comboEvery.setNullSelectionAllowed(false);
         comboEvery.setImmediate(true);
         comboEvery.addItem(PeriodUnit.MINUTE);
-        comboEvery.setItemCaption(PeriodUnit.MINUTE, "Minutes");
+        comboEvery.setItemCaption(PeriodUnit.MINUTE, Messages.getString("SchedulePipeline.minutes"));
         comboEvery.addItem(PeriodUnit.HOUR);
-        comboEvery.setItemCaption(PeriodUnit.HOUR, "Hours");
+        comboEvery.setItemCaption(PeriodUnit.HOUR, Messages.getString("SchedulePipeline.hours"));
         comboEvery.addItem(PeriodUnit.DAY);
-        comboEvery.setItemCaption(PeriodUnit.DAY, "Days");
+        comboEvery.setItemCaption(PeriodUnit.DAY, Messages.getString("SchedulePipeline.days"));
         comboEvery.addItem(PeriodUnit.MONTH);
-        comboEvery.setItemCaption(PeriodUnit.MONTH, "Months");
+        comboEvery.setItemCaption(PeriodUnit.MONTH, Messages.getString("SchedulePipeline.months"));
         comboEvery.setValue(PeriodUnit.DAY);
         comboEvery.setEnabled(false);
         comboEvery.setTextInputAllowed(false);
@@ -1009,7 +1013,7 @@ public class SchedulePipeline extends Window {
         strictlyTimedLayout.setSpacing(true);
 
         strictlyTimed = new CheckBox();
-        strictlyTimed.setCaption("Strictly Timed");
+        strictlyTimed.setCaption(Messages.getString("SchedulePipeline.timed.strictly"));
         strictlyTimed.setValue(false);
         strictlyTimed.setImmediate(true);
         strictlyTimed.addValueChangeListener(new ValueChangeListener() {
@@ -1036,11 +1040,11 @@ public class SchedulePipeline extends Window {
         strictlyTimedLayout.addComponent(strictlyTimed);
 
         priorityLayout = new VerticalLayout();
-        
+
         toleranceLayout = new HorizontalLayout();
         toleranceLayout.setSpacing(true);
         toleranceLayout.setEnabled(false);
-        toleranceLayout.addComponent(new Label("Tolerance: "));
+        toleranceLayout.addComponent(new Label(Messages.getString("SchedulePipeline.tolerance")));
 
         valueTol = new ObjectProperty<>(1);
         tfTolerance = new TextField(valueTol);
@@ -1055,33 +1059,32 @@ public class SchedulePipeline extends Window {
                 if (((Integer) val != null) && ((Integer) val > 0)) {
                     return;
                 }
-                throw new InvalidValueException("Value must be positive");
+                throw new InvalidValueException(Messages.getString("SchedulePipeline.positive.value"));
 
             }
         });
 
-
         toleranceLayout.addComponent(tfTolerance);
 
-        toleranceLayout.addComponent(new Label("minutes"));
+        toleranceLayout.addComponent(new Label(Messages.getString("SchedulePipeline.value.minutes")));
 
         priorityComboBox = new ComboBox();
         priorityComboBox.setNullSelectionAllowed(false);
         priorityComboBox.setTextInputAllowed(false);
         priorityComboBox.setImmediate(true);
         // Add some items
-        for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+        for (ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
             priorityComboBox.addItem(job);
         }
 
         priorityComboBox.setValue(ScheduledJobsPriority.HIGHEST);
         HorizontalLayout priorityComboBoxLayout = new HorizontalLayout();
 
-        Label priorityLabel = new Label("Priority");
+        Label priorityLabel = new Label(Messages.getString("SchedulePipeline.priority"));
         priorityComboBoxLayout.addComponent(priorityLabel);
-        
+
         Label priorityDescription = new Label(ScheduledJobsPriority.IGNORE.name()
-                + " - immediate start");
+                + Messages.getString("SchedulePipeline.immediate.start"));
         priorityDescription.setWidth(100, Unit.PERCENTAGE);
         priorityComboBoxLayout.addComponent(priorityComboBox);
         priorityComboBoxLayout.setComponentAlignment(priorityComboBox, Alignment.BOTTOM_RIGHT);
@@ -1166,19 +1169,19 @@ public class SchedulePipeline extends Window {
                 }
             }
             if (errorNumber == 1) {
-                errorText = "Email " + wrongFormat + " has wrong format. ";
+                errorText = Messages.getString("SchedulePipeline.email") + wrongFormat + Messages.getString("SchedulePipeline.format.wrong");
             }
             if (errorNumber > 1) {
-                errorText = "Emails " + wrongFormat + ", have wrong format. ";
+                errorText = Messages.getString("SchedulePipeline.emails") + wrongFormat + Messages.getString("SchedulePipeline.emails.format.wrong");
             }
             if (duplicateNumber == 1) {
-                errorText = errorText + "Email " + duplicate + " is introduced more times, please correct.";
+                errorText = errorText + Messages.getString("SchedulePipeline.email2") + duplicate + Messages.getString("SchedulePipeline.is.introduced");
             }
             if (duplicateNumber > 1) {
-                errorText = errorText + "Emails " + duplicate + ", are introduced more times, please correct.";
+                errorText = errorText + Messages.getString("SchedulePipeline.emails2") + duplicate + Messages.getString("SchedulePipeline.are.introduced");
             }
         } else {
-            errorText = "At least one mail has to be filled, so that the notification can be send.";
+            errorText = Messages.getString("SchedulePipeline.email.at.least.once");
         }
 
         return errorText;

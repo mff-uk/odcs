@@ -12,12 +12,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Provide access to resources.
- * 
  * TODO Petr: use test to define the folder structure
  *
  * @author Škoda Petr
@@ -82,7 +82,6 @@ public class ResourceManager {
     protected AppConfig appConfig;
 
     /**
-     *
      * @param execution
      * @return Root directory for pipeline execution. Directory does not have to exists.
      * @throws MissingResourceException
@@ -127,7 +126,6 @@ public class ResourceManager {
     }
 
     /**
-     *
      * @param dpuInstance
      * @return Name of directory for given dpu.
      */
@@ -148,7 +146,7 @@ public class ResourceManager {
             modulePath = appConfig.getString(ConfigProperty.MODULE_PATH);
         } catch (MissingConfigPropertyException ex) {
             throw new MissingResourceException(
-                    "Config property module_path is no set.");
+                    Messages.getString("ResourceManager.module_path.not.set"));
         }
         // get DPU template
         final DPUTemplateRecord template = getDPUTemplate(dpu);
@@ -158,21 +156,19 @@ public class ResourceManager {
     }
 
     /**
-     * 
      * @param execution
      * @param dpu
      * @return Path to the DPU working directory.
-     * @throws MissingResourceException 
+     * @throws MissingResourceException
      */
     public File getDPUWorkingDir(PipelineExecution execution, DPUInstanceRecord dpu)
             throws MissingResourceException {
         // TODO Petr: we may utilize getDataUnitWorkingDir in some form
-        return new File(getExecutionWorkingDir(execution), 
+        return new File(getExecutionWorkingDir(execution),
                 getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
     }
 
     /**
-     *
      * @param execution
      * @param dpu
      * @return Path to the DPU working directory.
@@ -184,7 +180,7 @@ public class ResourceManager {
         return new File(getExecutionStorageDir(execution),
                 getDpuDirectoryName(dpu) + File.separatorChar + "dpu");
     }
-    
+
     /**
      * @param dpu
      * @param user
@@ -193,7 +189,7 @@ public class ResourceManager {
      */
     public File getDPUDataUserDir(DPURecord dpu, User user) throws MissingResourceException {
         if (user == null) {
-            throw new MissingResourceException("Unknown user.");
+            throw new MissingResourceException(Messages.getString("ResourceManager.unknown.user"));
         }
 
         final String workingPath = getRootWorkingDir();
@@ -262,7 +258,6 @@ public class ResourceManager {
     }
 
     /**
-     *
      * @return Directory where RDF repositories should be stored.
      * @throws MissingResourceException
      */
@@ -282,11 +277,11 @@ public class ResourceManager {
         } else if (dpu instanceof DPUTemplateRecord) {
             template = (DPUTemplateRecord) dpu;
         } else {
-            throw new MissingResourceException("Unknown DPU type.");
+            throw new MissingResourceException(Messages.getString("ResourceManager.unknown.dpu.type"));
         }
 
         if (template == null) {
-            throw new MissingResourceException("DPU tempalte is not set.");
+            throw new MissingResourceException(Messages.getString("ResourceManager.dpuTemplate.not.set"));
         }
         return template;
     }
@@ -300,7 +295,7 @@ public class ResourceManager {
             return appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR);
         } catch (MissingConfigPropertyException ex) {
             throw new MissingResourceException(
-                    "Config property module_path is no set.");
+                    Messages.getString("ResourceManager.module_path.not.set"));
         }
     }
 
@@ -324,7 +319,7 @@ public class ResourceManager {
             newFile = new File(root, datePrefix + "-" + i.toString());
             if (i > 1000) {
                 throw new MissingResourceException(
-                        "Failed to create temp directory in: " + root.toString());
+                        Messages.getString("ResourceManager.temp.dir.create.fail") + root.toString());
             }
         }
         return newFile;

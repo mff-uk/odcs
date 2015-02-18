@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
@@ -68,7 +69,7 @@ public class DPURecordWrap {
         } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to save configuration.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.save"), e);
         }
     }
 
@@ -88,7 +89,7 @@ public class DPURecordWrap {
         } catch (ModuleException | FileNotFoundException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to load dialog.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.load"), e);
         }
         return configDialog;
     }
@@ -108,7 +109,7 @@ public class DPURecordWrap {
         } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to configure dpu's dialog.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.configure"), e);
         }
     }
 
@@ -118,7 +119,7 @@ public class DPURecordWrap {
      * following conditions:
      * <ul>
      * <li>DPU has configuration dialog.</li>
-     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
+     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
      * </ul>
      *
      * @return True if the configuration changed.
@@ -134,7 +135,7 @@ public class DPURecordWrap {
             final boolean isChanged = configDialog.hasConfigChanged();
             return isChanged;
         } catch (Exception ex) {
-            throw new DPUWrapException("Configuration dialog throws an exception.", ex);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.exception"), ex);
         }
     }
 

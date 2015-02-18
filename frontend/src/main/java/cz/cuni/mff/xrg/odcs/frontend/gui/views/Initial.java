@@ -11,6 +11,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -58,12 +59,12 @@ public class Initial extends ViewComponent {
         label.setImmediate(false);
         label.setWidth("-1px");
         label.setHeight("-1px");
-        label.setValue("<h2>Welcome to the administration interface of UnifiedViews - ETL tool for RDF data.</h2>"
-                + "<p>The tool uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>"
-                + "makes data processing highly customizable by allowing to use custom plugins -- data processing units (DPUs) -- on the pipelines;<br/>"
-                + "provides monitoring, debugging, and schedulling of ETL tasks.<br/>"
+        label.setValue(Messages.getString("Initial.welcome")
+                + Messages.getString("Initial.p1")
+                + Messages.getString("Initial.p2")
+                + Messages.getString("Initial.p3")
                 + "</p>"
-                + "<p>For more information, please visit the <a href=\"https://grips.semantic-web.at/display/UDDOC/Introduction\"> UnifiedViews</a> documentation.</p>");
+                + Messages.getString("Initial.more.info"));
 
         label.setContentMode(ContentMode.HTML);
         mainLayout.addComponent(label, "top:100.0px;left:30px;");

@@ -1,3 +1,24 @@
+﻿DROP SEQUENCE IF EXISTS "seq_dpu_record";
+DROP SEQUENCE IF EXISTS "seq_exec_dataunit_info";
+DROP SEQUENCE IF EXISTS "seq_exec_context_pipeline";
+DROP SEQUENCE IF EXISTS "seq_exec_context_dpu";
+DROP SEQUENCE IF EXISTS "seq_exec_record";
+DROP SEQUENCE IF EXISTS "seq_exec_pipeline";
+DROP SEQUENCE IF EXISTS "seq_exec_schedule";
+DROP SEQUENCE IF EXISTS "seq_ppl_model";
+DROP SEQUENCE IF EXISTS "seq_ppl_edge";
+DROP SEQUENCE IF EXISTS "seq_ppl_node";
+DROP SEQUENCE IF EXISTS "seq_ppl_graph";
+DROP SEQUENCE IF EXISTS "seq_ppl_position";
+DROP SEQUENCE IF EXISTS "seq_runtime_properties";
+DROP SEQUENCE IF EXISTS "seq_sch_notification";
+DROP SEQUENCE IF EXISTS "seq_sch_email";
+DROP SEQUENCE IF EXISTS "seq_usr_user";
+DROP SEQUENCE IF EXISTS "seq_rdf_ns_prefix";
+DROP SEQUENCE IF EXISTS "seq_ppl_open_event";
+DROP VIEW IF EXISTS "pipeline_view";
+DROP VIEW IF EXISTS "exec_last_view";
+DROP VIEW IF EXISTS "exec_view";
 DROP TABLE IF EXISTS "exec_dataunit_info";
 DROP TABLE IF EXISTS "exec_context_dpu";
 DROP TABLE IF EXISTS "exec_record";
@@ -605,7 +626,6 @@ CREATE INDEX "ix_LOGGIN_execution" ON "logging" ("execution");
 CREATE INDEX "ix_LOGGIN_relative_id" ON "logging" ("relative_id");
 
 -- Views.
-
 CREATE VIEW "exec_last_view" AS
 SELECT id, pipeline_id, t_end, t_start, status
 FROM "exec_pipeline" AS exec
