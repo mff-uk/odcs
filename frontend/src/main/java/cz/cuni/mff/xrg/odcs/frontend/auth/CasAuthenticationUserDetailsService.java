@@ -39,13 +39,12 @@ public class CasAuthenticationUserDetailsService extends
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 
         String rolename = attributes.get("role").toString();
-        
+
         String organization = attributes.get("organization").toString();
-        
+
         User user = userFacade.getUserByExtId(username);
 
         if (user == null) {
-            LOG.info("user is not found, trying to create him !");
             user = userFacade.createUser(username, "*****", new EmailAddress(username + "@nomail.com"));
             user.getExternalIdentifiers().add(username);
             user.setTableRows(20);
@@ -53,23 +52,23 @@ public class CasAuthenticationUserDetailsService extends
 
         user.getRoles().clear();
 
-//        for (String rolename : roles) {
-            RoleEntity role = userFacade.getRoleByName(rolename);
-            user.addRole(role);
-//        }
+        RoleEntity role = userFacade.getRoleByName(rolename);
+        user.addRole(role);
+
 
         userFacade.saveNoAuth(user);
 
         //checks etc TODO
-        
-        Organization o = userFacade.getOrganizationByName(organization);
-        if(o == null){
-            o = new Organization();
-            o.setName(organization);
-            userFacade.save(o);
+        if (organization != null) {
+            Organization o = userFacade.getOrganizationByName(organization);
+            if (o == null) {
+                o = new Organization();
+                o.setName(organization);
+                userFacade.save(o);
+            }
+            user.setOrganization(o);
         }
-        user.setOrganization(o);
-        
+
         return user;
     }
 }

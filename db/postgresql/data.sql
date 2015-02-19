@@ -3,6 +3,8 @@ INSERT INTO "sch_email" VALUES (nextval('seq_sch_email'),'admin@example.com'),(n
 INSERT INTO "role" VALUES (nextval('seq_role'), 'Administrator'),(nextval('seq_role'),'User'),(nextval('seq_role'),'Povinna osoba'),(nextval('seq_role'),'Spravca transformacii'); 
 
 --INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'spravca.transformacii', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.delete', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.save', true);
@@ -81,6 +83,11 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Pov
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'scheduleRule.setPriority', false);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.create', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.save', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));

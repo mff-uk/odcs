@@ -205,7 +205,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         }
         // getting all Pipelines with specified DPU in it
         List<Pipeline> pipelines;
-        if (permissions.hasPermission(dpu, "delete")) {
+        if (permissions.hasPermission(dpu, "pipeline.delete")) {
             pipelines = pipelineFacade.getAllPipelinesUsingDPU(dpu);
         } else {
             pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
@@ -258,7 +258,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public void selectDPUEventHandler(final DPUTemplateRecord dpu) {
         //if the previous selected
-        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("save")) {
+        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("pipeline.save")) {
 
             //open confirmation dialog
             ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
@@ -414,13 +414,13 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public boolean showPipelineDeleteButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "delete");
+        return permissions.hasPermission(pipe, "pipeline.delete");
     }
 
     @Override
     public boolean showPipelineDetailButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "view");
+        return permissions.hasPermission(pipe, "pipeline.view");
     }
 
 	@Override

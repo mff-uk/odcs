@@ -314,7 +314,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
                     if (isChanged() || tabname.equals("configuration")) {
-                        buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                        buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                     } else {
                         buttonSaveDPU.setEnabled(false);
                     }
@@ -422,7 +422,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonDeleteDPU.setCaption("Delete");
         buttonDeleteDPU.setHeight("25px");
         buttonDeleteDPU.setWidth("100px");
-        buttonDeleteDPU.setEnabled(presenter.hasPermission("delete"));
+        buttonDeleteDPU.setEnabled(presenter.hasPermission("dpuTemplate.delete"));
         buttonDeleteDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -454,7 +454,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportDPU.setCaption("Export");
         buttonExportDPU.setHeight("25px");
         buttonExportDPU.setWidth("100px");
-        buttonExportDPU.setEnabled(presenter.hasPermission("export"));
+        buttonExportDPU.setEnabled(presenter.hasPermission("dpuTemplate.export"));
         buttonExportDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -507,9 +507,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission("save"));
+        dpuName.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission("save"));
+        dpuDescription.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
@@ -523,7 +523,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void valueChange(Property.ValueChangeEvent event) {
-                    buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                    buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                 }
             });
         }
@@ -601,7 +601,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
             }
         });
         dpuSettingsLayout.addComponent(dpuDescription, 1, 1);
@@ -640,7 +640,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         reloadFile.setButtonCaption("Replace");
         reloadFile.addStyleName("horizontalgroup");
         reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission("save"));
+        reloadFile.setEnabled(presenter.hasPermission("dpuTemplate.save"));
         reloadFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then

@@ -6,6 +6,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
@@ -14,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import eu.unifiedviews.commons.dao.view.PipelineView;
@@ -25,6 +27,8 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  * @author Jan Vojt
  */
 class DbAuthorizatorImpl implements DbAuthorizator {
+
+    private static final String CAN_SEE_ALL = "spravca.transformacii";
 
     @Autowired(required = false)
     private AuthenticationContext authCtx;
@@ -43,6 +47,11 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             return null;
         }
 
+        for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
+            if (CAN_SEE_ALL.equals(ga.getAuthority()))
+                return null;
+        }
+
         Predicate predicate = null;
 
         if (SharedEntity.class.isAssignableFrom(entityClass)) {
@@ -51,12 +60,14 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
         boolean ownedByOrganization = "organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
 
+        Organization org = authCtx.getUser().getOrganization();
+
         //check either user or his organization
         if (ownedByOrganization && OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, cb.equal(root.get("organization"), authCtx.getUser().getOrganization()));
+            predicate = or(cb, predicate, cb.equal(root.get("organization"), org));
         } else if (PipelineView.class.isAssignableFrom(entityClass)) {
             if (ownedByOrganization)
-                predicate = or(cb, predicate, cb.equal(root.get("orgName"), authCtx.getUser().getOrganization().getName()));
+                predicate = or(cb, predicate, cb.equal(root.get("orgName"), org == null ? null : org.getName()));
             else
                 predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
         } else if (OwnedEntity.class.isAssignableFrom(entityClass)) {
