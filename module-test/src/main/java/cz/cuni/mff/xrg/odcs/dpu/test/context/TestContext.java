@@ -1,8 +1,10 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,5 +260,9 @@ public class TestContext implements DPUContext {
     @Override
     public Long getDpuInstanceId() {
         return 9L;
+    }
+
+    public Map<String, String> getEnvironment() {
+        return Collections.<String, String> emptyMap();
     }
 }
