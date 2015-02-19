@@ -286,38 +286,49 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
-		var imgPath = "VAADIN/themes/UnifiedViewsTheme/img/";
-		basePath = basePath + imgPath;
+		var request = new XMLHttpRequest();
+		request.open("GET", basePath + 'frontend.theme', false);
+		request.onreadystatechange = function () {
+			var frontendTheme;
+			if (request.readyState === 4) {
+				if (request.status === 200 || request.status == 0) {
+					frontendTheme = request.responseText;
+				}
+			}
+			var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
+			basePath = basePath + imgPath;
 
-		addConnectionIcon = new Image();
-		addConnectionIcon.src = basePath + "arrow_right.svg";
+			addConnectionIcon = new Image();
+			addConnectionIcon.src = basePath + "arrow_right.svg";
 
-		removeConnectionIcon = new Image();
-		removeConnectionIcon.src = basePath + "TrashFull.svg";
+			removeConnectionIcon = new Image();
+			removeConnectionIcon.src = basePath + "TrashFull.svg";
 
-		debugIcon = new Image();
-		debugIcon.src = basePath + "debug.svg";
+			debugIcon = new Image();
+			debugIcon.src = basePath + "debug.svg";
 
-		detailIcon = new Image();
-		detailIcon.src = basePath + "Gear.svg";
+			detailIcon = new Image();
+			detailIcon.src = basePath + "Gear.svg";
 
-		formatIcon = new Image();
-		formatIcon.src = basePath + "format.svg";
+			formatIcon = new Image();
+			formatIcon.src = basePath + "format.svg";
 
-		copyIcon = new Image();
-		copyIcon.src = basePath + "copy.svg";
+			copyIcon = new Image();
+			copyIcon.src = basePath + "copy.svg";
 
-		distributeIcon = new Image();
-		distributeIcon.src = basePath + "distribute.svg";
+			distributeIcon = new Image();
+			distributeIcon.src = basePath + "distribute.svg";
 
-		invalidIcon = new Image();
-		invalidIcon.src = basePath + "exclamation.svg";
+			invalidIcon = new Image();
+			invalidIcon.src = basePath + "exclamation.svg";
 
-		tooltip = createTooltip('Tooltip');
-		dpuLayer.add(tooltip);
+			tooltip = createTooltip('Tooltip');
+			dpuLayer.add(tooltip);
 
-//		formattingActionBar = createFormattingActionBar();
-//		dpuLayer.add(formattingActionBar);
+//			formattingActionBar = createFormattingActionBar();
+//			dpuLayer.add(formattingActionBar);
+		}
+		request.send(null);
 	}
 
 	var inSetupSelectionBox = false;
