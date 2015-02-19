@@ -2,11 +2,7 @@ package eu.unifiedviews.master.api;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import eu.unifiedviews.master.model.ApiException;
@@ -20,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,16 +33,10 @@ import java.nio.file.Files;
 public class DPUResource {
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
-
-    @Autowired
     private DPUFacade dpuFacade;
 
     @Autowired
     private DPUModuleManipulator dpuManipulator;
-
-    @Autowired
-    private ModuleFacade moduleFacade;
 
     private static final Logger LOG = LoggerFactory.getLogger(DPUResource.class);
 
@@ -74,12 +63,8 @@ public class DPUResource {
             }
         }
 
-        DPUTemplateWrap dpuWrap;
         try {
-            dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, dpuName), runtimePropertiesFacade.getLocale(), moduleFacade);
-            // set additional variables
-            DPUTemplateRecord dpuTemplate = dpuWrap.getDPUTemplateRecord();
-            // now we know all, we can update the DPU template
+            DPUTemplateRecord dpuTemplate = dpuManipulator.create(jarFile, dpuName);
             dpuTemplate.setDescription(dpuDescription);
             dpuTemplate.setShareType(shareType);
             dpuFacade.save(dpuTemplate);
