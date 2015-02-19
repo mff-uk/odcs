@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap;
 
+import com.vaadin.ui.UI;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.dialog.ConfigDialogContextImpl;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
