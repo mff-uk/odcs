@@ -312,7 +312,7 @@ public class Context implements DPUContext {
     @Override
     public File getResultDir() {
         try {
-            final File dir =  resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
+            final File dir = resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
             dir.mkdirs();
             return dir;
         } catch (MissingResourceException ex) {
@@ -373,5 +373,20 @@ public class Context implements DPUContext {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    @Override
+    public Long getPipelineId() {
+        return this.contextInfo.getExecution().getPipeline().getId();
+    }
+
+    @Override
+    public Long getPipelineExecutionId() {
+        return this.contextInfo.getExecutionId();
+    }
+
+    @Override
+    public Long getDpuInstanceId() {
+        return dpuInstance.getId();
     }
 }
