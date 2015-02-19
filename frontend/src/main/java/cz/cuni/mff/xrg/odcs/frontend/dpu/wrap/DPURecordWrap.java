@@ -1,19 +1,21 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap;
+package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
+
+import java.io.FileNotFoundException;
+import java.util.Locale;
 
 import com.vaadin.ui.UI;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.dialog.ConfigDialogContextImpl;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
 import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
 import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
-
-import java.io.FileNotFoundException;
-import java.util.Locale;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -39,26 +41,23 @@ public class DPURecordWrap {
 
     private Locale locale;
 
-    private ModuleFacade moduleFacade;
-
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, ModuleFacade moduleFacade) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
         this.locale = locale;
-        this.moduleFacade = moduleFacade;
     }
 
     /**
      * Try to save configuration from {@link #configDialog} into {@link #dpuRecord}. If the {@link #configDialog} is null nothing happen.
      * This function does not save data into database.
      *
-     * @throws eu.unifiedviews.dpu.config.DPUConfigException
-     * @throws DPUWrapException
+     * @throws DPUConfigException
+     * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
     public void saveConfig() throws DPUConfigException, DPUWrapException {
         if (configDialog == null) {
@@ -79,8 +78,8 @@ public class DPURecordWrap {
      * set. To set dialog configuration call {@link #configuredDialog}
      *
      * @return configuration dialog for wrapped DPU
-     * @throws cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException
-     * @throws java.io.FileNotFoundException
+     * @throws ModuleException
+     * @throws FileNotFoundException
      */
     public AbstractConfigDialog<?> getDialog()
             throws ModuleException, FileNotFoundException, DPUWrapException {
@@ -99,8 +98,8 @@ public class DPURecordWrap {
      * If respective configuration dialog for wrapped DPU exist, then set it's
      * configuration. Otherwise do nothing.
      *
-     * @throws eu.unifiedviews.dpu.config.DPUConfigException
-     * @throws DPUWrapException
+     * @throws DPUConfigException
+     * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
     public void configuredDialog()
             throws DPUConfigException, DPUWrapException {
@@ -120,11 +119,11 @@ public class DPURecordWrap {
      * following conditions:
      * <ul>
      * <li>DPU has configuration dialog.</li>
-     * <li>The dialog has been obtained by calling {@link #getDialog()}</li> <li><li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
+     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
      * </ul>
      *
      * @return True if the configuration changed.
-     * @throws DPUWrapException
+     * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
     public boolean hasConfigChanged() throws DPUWrapException {
         if (configDialog == null || !dialogConfigured) {
@@ -158,8 +157,8 @@ public class DPURecordWrap {
      * null.
      * Can possibly emit runtime exception.
      *
-     * @throws cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException
-     * @throws java.io.FileNotFoundException
+     * @throws ModuleException
+     * @throws FileNotFoundException
      */
     @SuppressWarnings("unchecked")
     private void loadConfigDialog() throws ModuleException, FileNotFoundException {
@@ -170,7 +169,7 @@ public class DPURecordWrap {
             return;
         }
         // first we need load instance of the DPU
-        dpuRecord.loadInstance(moduleFacade);
+        dpuRecord.loadInstance(((AppEntry) UI.getCurrent()).getBean(ModuleFacade.class));
         Object instance = dpuRecord.getInstance();
         // now try to load the dialog
         if (instance instanceof ConfigDialogProvider<?>) {
@@ -197,7 +196,7 @@ public class DPURecordWrap {
     /**
      * Try to load configuration from {@link #dpuRecord} into {@link #configDialog}. Can possibly emit runtime exception.
      *
-     * @throws eu.unifiedviews.dpu.config.DPUConfigException
+     * @throws DPUConfigException
      */
     private void loadConfigIntoDialog() throws DPUConfigException {
         if (configDialog == null) {

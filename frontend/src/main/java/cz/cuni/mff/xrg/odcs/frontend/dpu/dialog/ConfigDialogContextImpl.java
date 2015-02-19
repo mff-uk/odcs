@@ -1,11 +1,11 @@
-package cz.cuni.mff.xrg.odcs.commons.app.dpu.dialog;
-
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
+package cz.cuni.mff.xrg.odcs.frontend.dpu.dialog;
 
 import java.util.Locale;
 
+import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
+
 /**
- * Implementation of {@link eu.unifiedviews.helpers.dpu.config.ConfigDialogContext}.
+ * Implementation of {@link ConfigDialogContext}.
  *
  * @author Petyr
  */
