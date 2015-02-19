@@ -16,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
@@ -46,6 +47,9 @@ class CleanUp implements PostExecutor {
 
     @Autowired
     private RepositoryManager repositoryManager;
+
+    @Autowired
+    private RelationalRepositoryManager relationalRepositoryManager;
 
     @Override
     public int getOrder() {
@@ -87,7 +91,14 @@ class CleanUp implements PostExecutor {
             } catch (RDFException ex) {
                 LOG.error("Can't delete repository.", ex);
             }
-        }     
+        }
+
+        try {
+            this.relationalRepositoryManager.release(execution.getContext().getExecutionId());
+        } catch (Exception e) {
+            LOG.error("Failed to release relational repository", e);
+        }
+
         // prepare execution root
         File rootDir = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
@@ -98,7 +109,7 @@ class CleanUp implements PostExecutor {
         if (!execution.isDebugging()) {
             // delete working directory the sub directories should be already deleted by DPU's.
             try {
-                delete(resourceManager.getExecutionWorkingDir(execution));
+                delete(resourceManager.getExecutionDir(execution));
             } catch (MissingResourceException ex ){
                 LOG.warn("Can't delete directory.", ex);
             }
