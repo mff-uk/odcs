@@ -2,9 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.FileNotFoundException;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUWrapException;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +25,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUTree;
@@ -69,9 +68,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
-
-    @Autowired
-    private ModuleFacade moduleFacade;
 
     private TextField dpuName; // name of selected DPU Template
 
@@ -807,7 +803,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale(), moduleFacade);
+            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);

@@ -2,10 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.FileNotFoundException;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUInstanceWrap;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUWrapException;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -20,6 +16,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
@@ -203,8 +201,7 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        ModuleFacade moduleFacade = ((AppEntry) UI.getCurrent()).getBean(ModuleFacade.class);
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, moduleFacade, runtimePropertiesFacade.getLocale());
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

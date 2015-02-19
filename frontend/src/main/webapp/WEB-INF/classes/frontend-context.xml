@@ -31,8 +31,8 @@
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.views"/>
     <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.gui.components"/>
 
-    <!-- Scan validator -->
-    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.commons.app.dpu.validator"/>
+    <!-- Scan validators -->
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.frontend.dpu.validator"/>
 
     <!-- Module configuration needs to be defined here,
     because it differs from backend -->

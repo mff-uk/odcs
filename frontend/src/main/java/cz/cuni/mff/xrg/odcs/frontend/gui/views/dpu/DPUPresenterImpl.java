@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUWrapException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;

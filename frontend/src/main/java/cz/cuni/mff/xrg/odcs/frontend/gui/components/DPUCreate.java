@@ -10,8 +10,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.wrap.DPUTemplateWrap;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
@@ -125,9 +124,6 @@ public class DPUCreate extends Window {
 
     @Autowired
     private ImportService dpuImportService;
-
-    @Autowired
-    private ModuleFacade moduleFacade;
 
     /**
      * Basic constructor.
@@ -563,7 +559,7 @@ public class DPUCreate extends Window {
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), runtimePropertiesFacade.getLocale(), moduleFacade);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), runtimePropertiesFacade.getLocale());
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
@@ -586,7 +582,7 @@ public class DPUCreate extends Window {
     private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
         String name = dpuName.isValid() ? dpuName.getValue() : null;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), runtimePropertiesFacade.getLocale(), moduleFacade);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), runtimePropertiesFacade.getLocale());
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
