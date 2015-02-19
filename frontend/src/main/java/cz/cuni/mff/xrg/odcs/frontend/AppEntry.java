@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import java.util.Locale;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorHandler;
@@ -28,7 +25,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -49,7 +50,6 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
  * 
  * @author Petyr
  */
-@Theme("UnifiedViewsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
@@ -83,8 +83,13 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Autowired
     private BackendHeartbeat heartbeatService;
 
+    @Autowired
+    private AppConfig appConfig;
+
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
+        setTheme(appConfig.getString(ConfigProperty.FRONTEND_THEME));
+
         // Retrieve Locale from Runtime properties, and set it in LocaleHolders
         Locale locale = runtimePropertiesFacade.getLocale();
         LocaleHolder.setLocale(locale);
