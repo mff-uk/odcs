@@ -55,6 +55,8 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         Schedule sch = new Schedule();
         if (authCtx != null) {
             sch.setOwner(authCtx.getUser());
+            if(authCtx.getUser().getOrganization() != null)
+                sch.setOrganization(authCtx.getUser().getOrganization());
         }
         return sch;
     }

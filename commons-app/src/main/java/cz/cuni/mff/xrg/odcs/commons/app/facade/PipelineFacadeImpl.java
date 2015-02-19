@@ -354,6 +354,8 @@ class PipelineFacadeImpl implements PipelineFacade {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
+            if(authCtx.getUser().getOrganization() != null)
+                newExec.setOrganization(authCtx.getUser().getOrganization());
         }
         return newExec;
     }
