@@ -52,9 +52,12 @@ public class CasAuthenticationUserDetailsService extends
 
         user.getRoles().clear();
 
-        RoleEntity role = userFacade.getRoleByName(rolename);
-        user.addRole(role);
-
+        if (rolename != null) {
+            RoleEntity role = userFacade.getRoleByName(rolename);
+            if (role != null) {
+                user.addRole(role);
+            }
+        }
 
         userFacade.saveNoAuth(user);
 
@@ -68,7 +71,6 @@ public class CasAuthenticationUserDetailsService extends
             }
             user.setOrganization(o);
         }
-
         return user;
     }
 }

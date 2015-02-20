@@ -82,6 +82,10 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'scheduleRule.setPriority', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.create', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
@@ -111,6 +115,8 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.management', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.create', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
@@ -148,6 +154,21 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'deleteDebugResources', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'runtimeProperties.edit', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'editEmailGlobal', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'editNotificationFrequency', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+
 INSERT INTO "usr_user" VALUES (nextval('seq_usr_user'),'admin',1,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John Admin',20);
 INSERT INTO "usr_extuser" VALUES (currval('seq_usr_user'), 'admin');
 INSERT INTO "usr_user" VALUES (nextval('seq_usr_user'),'user',2,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John User',20);

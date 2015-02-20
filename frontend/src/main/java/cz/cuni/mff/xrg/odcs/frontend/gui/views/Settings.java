@@ -8,11 +8,12 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.GrantedAuthority;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -21,9 +22,21 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
@@ -34,7 +47,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
@@ -71,7 +83,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private VerticalLayout pipelinesLayout;
 
     private VerticalLayout tabsLayout;
-    
+
     private VerticalLayout runtimePropsLayout;
 
     private Button notificationsButton;
@@ -81,7 +93,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button usersButton;
 
     private Button pipelinesButton;
-    
+
     private Button runtimePropsButton;
 
     private Button shownTab = null;
@@ -112,7 +124,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private UserFacade userFacade;
-    
+
     @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
 
@@ -120,7 +132,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * Currently logged in user.
      */
     private User loggedUser;
-    
+
     private boolean isMainLayoutInitialized = false;
 
     private ManipulableListManager runtimePropsManager;
@@ -160,9 +172,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     public void enter(ViewChangeEvent event) {
         loggedUser = authCtx.getUser();
         if (!isMainLayoutInitialized) {
-        	buildMainLayout();
-        	isMainLayoutInitialized = true;
-		}
+            buildMainLayout();
+            isMainLayoutInitialized = true;
+        }
         setCompositionRoot(mainLayout);
     }
 
@@ -243,6 +255,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         notificationsButton.setHeight("40px");
         notificationsButton.setWidth("170px");
         notificationsButton.setStyleName("multiline");
+
+        notificationsButton.setVisible(hasPermission("editNotificationFrequency"));
+
         notificationsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -267,7 +282,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         usersButton.setHeight("40px");
         usersButton.setWidth("170px");
         usersButton.setStyleName("multiline");
-        usersButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        usersButton.setVisible(hasPermission("user.management"));
+
         usersButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -294,7 +310,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         pipelinesButton.setHeight("40px");
         pipelinesButton.setWidth("170px");
         pipelinesButton.setStyleName("multiline");
-        pipelinesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        pipelinesButton.setVisible(hasPermission("deleteDebugResources"));
+
         pipelinesButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -341,18 +358,19 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 //				}
 //			}
 //		});
-        
+
         //tabsLayout.addComponent(prefixesButton);
         //tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
-        
+
         // runtime limits
         runtimePropsLayout = createRuntimePropsLayout();
-        
+
         runtimePropsButton = new NativeButton("Runtime properties");
         runtimePropsButton.setHeight("40px");
         runtimePropsButton.setWidth("170px");
         runtimePropsButton.setStyleName("multiline");
-        runtimePropsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        runtimePropsButton.setVisible(hasPermission("runtimeProperties.edit"));
+
         runtimePropsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -397,27 +415,27 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         saveButton.setEnabled(false);
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
-            
+
             @Override
             public void buttonClick(ClickEvent event) {
                 List<Component> componentList = runtimePropsManager.getComponentList();
-                
+
                 // prepare props toSave
                 Map<String, RuntimeProperty> toSave = new HashMap<String, RuntimeProperty>();
                 Set<String> notChanged = new HashSet<String>();
-                
+
                 try {
                     for (Component property : componentList) {
                         String name = validateAndGetValue(property, 0);
                         String value = validateAndGetValue(property, 1);
-                        
+
                         if (toSave.containsKey(name) || notChanged.contains(name)) {
                             Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
                             return;
                         }
-                        
+
                         RuntimeProperty prop = getRuntimePropertyByName(name);
-                        
+
                         if (prop == null) { // doesnt exist, have to make new one
                             prop = new RuntimeProperty();
                             prop.setName(name);
@@ -434,19 +452,19 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     Notification.show("Save failed.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 // remove missing, user removed props
                 for (RuntimeProperty prop : runtimeProperties) {
                     if (!notChanged.contains(prop.getName())
                             && !toSave.containsKey(prop.getName())) {
                         runtimePropertiesFacade.delete(prop);
-                    }                    
+                    }
                 }
-                
+
                 for (RuntimeProperty runtimeProperty : toSave.values()) {
                     runtimePropertiesFacade.save(runtimeProperty);
                 }
-                
+
                 Notification.show("Save succesfull.", "Runtime properties were saved succesfully.", Notification.Type.HUMANIZED_MESSAGE);
                 saveButton.setEnabled(false);
                 refreshRuntimeProperties();
@@ -454,16 +472,16 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         });
         buttonBar.addComponent(saveButton);
         buttonBar.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
-        
+
         runtimePropsManager = new ManipulableListManager(new ManipulableListComponentProvider() {
-            
+
             @Override
             public Component createNewComponent(String[] values) {
                 String name = values[0] == null ? "" : values[0].trim();
                 String value = values[1] == null ? "" : values[1].trim();
-                
+
                 GridLayout oneLine = new GridLayout(2, 1);
-                
+
                 TextChangeListener changeListener = new TextChangeListener() {
                     private static final long serialVersionUID = 1L;
 
@@ -472,7 +490,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         saveButton.setEnabled(true);
                     }
                 };
-                
+
                 TextField text = new TextField();
                 text.addTextChangeListener(changeListener);
                 text.setRequired(true);
@@ -482,7 +500,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 text.setWidth(250, Unit.PIXELS);
                 text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 0, 0);
-                
+
                 if (name.equals(ConfigProperty.FRONTEND_RUN_NOW_PIPELINE_PRIORITY.toString())) {
                     ComboBox priorityComboBox = new ComboBox();
                     priorityComboBox.setNullSelectionAllowed(false);
@@ -490,10 +508,10 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     priorityComboBox.setImmediate(true);
                     priorityComboBox.setWidth(250, Unit.PIXELS);
                     // Add some items
-                    for ( ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
+                    for (ScheduledJobsPriority job : ScheduledJobsPriority.values()) {
                         priorityComboBox.addItem(job);
                     }
-                    
+
                     long val = ScheduledJobsPriority.HIGHEST.getValue();
                     try {
                         val = Long.parseLong(value);
@@ -502,7 +520,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     }
 
                     priorityComboBox.setValue(ScheduledJobsPriority.getForValue(val));
-                    
+
                     priorityComboBox.addValueChangeListener(new ValueChangeListener() {
                         private static final long serialVersionUID = 1L;
 
@@ -511,7 +529,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                             saveButton.setEnabled(true);
                         }
                     });
-                    
+
                     oneLine.addComponent(priorityComboBox, 1, 0);
                 } else {
                     text = new TextField();
@@ -522,13 +540,13 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                     oneLine.addComponent(text, 1, 0);
                 }
-                
+
                 return oneLine;
             }
-            
+
             @Override
             public Component createNewComponent() {
-                return createNewComponent(new String[] {"", ""});
+                return createNewComponent(new String[] { "", "" });
             }
         });
         runtimePropsManager.setChangeListener(new Listener() {
@@ -540,17 +558,17 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             }
         });
         Layout runtimePropsList = runtimePropsManager.initList(null);
-        
+
         // fill data
         refreshRuntimeProperties();
         layout.addComponent(runtimePropsList);
         layout.setExpandRatio(runtimePropsList, 1);
-        
+
         layout.addComponent(buttonBar);
-        
+
         return layout;
     }
-    
+
     private RuntimeProperty getRuntimePropertyByName(String name) {
         for (RuntimeProperty prop : runtimeProperties) {
             if (prop.getName().equals(name)) {
@@ -570,21 +588,23 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         for (RuntimeProperty runtimeProperty : runtimeProperties) {
             runtimePropsManager.addComponent(new String[] {
                     runtimeProperty.getName(),
-                    runtimeProperty.getValue()});
+                    runtimeProperty.getValue() });
         }
         runtimePropsManager.refreshData();
     }
-    
+
     /**
      * Validates and return the TextField.value
      * 
-     * @param layout GridLayout
-     * @param column column number of TextField in grid layout to return value
+     * @param layout
+     *            GridLayout
+     * @param column
+     *            column number of TextField in grid layout to return value
      * @return
      * @throws InvalidValueException
      */
     private String validateAndGetValue(Component layout, int column) throws InvalidValueException {
-        
+
         Component field = ((GridLayout) layout).getComponent(column, 0);
         if (field instanceof TextField) {
             TextField textField = (TextField) field;
@@ -653,7 +673,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         HorizontalLayout buttonBarMyAcc = buildButtonMyAccountBar();
 
-        accountLayout.addComponent(emailLayout);
+        if (hasPermission("editEmailGlobal")) {
+            accountLayout.addComponent(emailLayout);
+        }
 
         Label rowsLabel = new Label("Number of rows in tables:");
         rows = new TextField();
@@ -681,8 +703,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         accountLayout.addComponent(rows);
 
         accountLayout.addComponent(buttonBarMyAcc);
-        accountLayout.addComponent(new Label("Email Notifications to:"), 0);
-
+        if (hasPermission("editEmailGlobal")) {
+            accountLayout.addComponent(new Label("Email Notifications to:"), 0);
+        }
         return accountLayout;
     }
 
@@ -771,7 +794,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
         runtimePropsButton.setStyleName("multiline");
-        
+
         shownTab = pressedButton;
         shownTab.setStyleName("selectedtab");
 
@@ -954,21 +977,21 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         Set<EmailAddress> newEmails = newNotification.getEmails();
         return !hasTheSameEmails(oldEmails, newEmails) || rows.isModified();
     }
-    
+
     private boolean hasTheSameEmails(Set<EmailAddress> oldEmails, Set<EmailAddress> newEmails) {
-    	// i have to do it this way because the new mails dont have id set and the old have it set
-    	// so the oldEmails.equals(newEmails) method will always return false (dont want to change
-    	// hashCode and equals method of EmailAdress because they are correct but here it cant be used)
-    	if (oldEmails.size() != newEmails.size()) {
-			return false;
-		}
-    	for (EmailAddress emailAddress : oldEmails) {
-    		// both email dont have id set, so i can compare them with equals
-			if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
-				return false;
-			}
-		}
-    	return true;
+        // i have to do it this way because the new mails dont have id set and the old have it set
+        // so the oldEmails.equals(newEmails) method will always return false (dont want to change
+        // hashCode and equals method of EmailAdress because they are correct but here it cant be used)
+        if (oldEmails.size() != newEmails.size()) {
+            return false;
+        }
+        for (EmailAddress emailAddress : oldEmails) {
+            // both email dont have id set, so i can compare them with equals
+            if (!newEmails.contains(new EmailAddress(emailAddress.getEmail()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String emailValidationText() {
@@ -1017,8 +1040,23 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     }
 
-	@Override
-	public void doAfterLogout() {
-		isMainLayoutInitialized = false;
-	}
+    /**
+     * Check for permission.
+     * 
+     * @param type
+     *            Required permission.
+     * @return If the user has given permission
+     */
+    public boolean hasPermission(String type) {
+        for (GrantedAuthority ga : loggedUser.getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void doAfterLogout() {
+        isMainLayoutInitialized = false;
+    }
 }

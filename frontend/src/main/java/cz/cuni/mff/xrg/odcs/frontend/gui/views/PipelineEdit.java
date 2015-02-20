@@ -30,13 +30,29 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
@@ -44,6 +60,8 @@ import com.vaadin.ui.themes.BaseTheme;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -179,6 +197,12 @@ public class PipelineEdit extends ViewComponent {
     @Autowired
     private DPUFacade dpuFacade;
 
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+
     private RefreshManager refreshManager;
 
     @Autowired
@@ -237,7 +261,7 @@ public class PipelineEdit extends ViewComponent {
         // or use this.entity.getEntity();
 
         if (this.pipeline == null) {
-        	return;
+            return;
         } else {
             setMode(hasPermission("pipeline.save"));
             updateLblPipelineName();
@@ -904,8 +928,9 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label("Visibility");
-        pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
-
+        if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+            pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
+        }
         pipelineVisibility = new OptionGroup();
         pipelineVisibility.addStyleName("horizontalgroup");
         pipelineVisibility.addItem(ShareType.PRIVATE);
@@ -914,6 +939,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
         pipelineVisibility.addItem(ShareType.PUBLIC_RW);
         pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, ShareType.PUBLIC_RW.getName());
+
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
         pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -922,8 +948,9 @@ public class PipelineEdit extends ViewComponent {
                 setupButtons(true);
             }
         });
-        pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
-
+        if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+            pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
+        }
         pipelineSettingsLayout.addComponent(new Label("Created by"), 0, 3);
 
         author = new Label();
@@ -1094,18 +1121,18 @@ public class PipelineEdit extends ViewComponent {
      */
     protected Pipeline loadPipeline(String id) {
         // get data from DB ..
-    	try {
-    		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
-		} catch (AccessDeniedException e) {
-			Notification.show("Error opening pipeline detail.", "You don't have permission to view this pipeline", Type.ERROR_MESSAGE);
-			closeView();
-			return null;
-		}
+        try {
+            this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+        } catch (AccessDeniedException e) {
+            Notification.show("Error opening pipeline detail.", "You don't have permission to view this pipeline", Type.ERROR_MESSAGE);
+            closeView();
+            return null;
+        }
         if (this.pipeline == null) {
-        	Notification.show("Error opening pipeline detail.", "Pipeline doesn't exist.", Type.ERROR_MESSAGE);
-        	closeView();
-			return null;
-		}
+            Notification.show("Error opening pipeline detail.", "Pipeline doesn't exist.", Type.ERROR_MESSAGE);
+            closeView();
+            return null;
+        }
         setIdLabel(pipeline.getId());
         author.setValue(pipeline.getOwner().getUsername());
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
