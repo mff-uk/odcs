@@ -44,7 +44,7 @@ public class DPUModuleManipulator {
     @Autowired
     private ModuleChangeNotifier notifier;
 
-    @Autowired
+    @Autowired(required = false)
     private List<DPUValidator> validators;
 
     /**
