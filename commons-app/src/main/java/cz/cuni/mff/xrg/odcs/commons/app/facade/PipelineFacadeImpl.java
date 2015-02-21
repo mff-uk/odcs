@@ -114,6 +114,8 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
+            if(authCtx.getUser().getOrganization() != null)
+                newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
 
         save(newPipeline);

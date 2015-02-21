@@ -18,8 +18,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuData', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuJars', false);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportScheduleRules', false);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.import', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
@@ -35,6 +33,16 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Pov
 INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.run', false);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.runDebug', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuData', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Spravca transformacii'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuJars', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Povinna osoba'), currval('seq_permission'));

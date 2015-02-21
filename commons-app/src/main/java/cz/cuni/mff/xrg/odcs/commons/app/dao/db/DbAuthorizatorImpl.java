@@ -64,10 +64,14 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
         //check either user or his organization
         if (ownedByOrganization && OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, cb.equal(root.get("organization"), org));
+            if (org != null) {
+                predicate = or(cb, predicate, cb.equal(root.get("organization"), org));
+            } else {
+                predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
+            }
         } else if (PipelineView.class.isAssignableFrom(entityClass)) {
-            if (ownedByOrganization)
-                predicate = or(cb, predicate, cb.equal(root.get("orgName"), org == null ? null : org.getName()));
+            if (ownedByOrganization && org != null)
+                predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
             else
                 predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
         } else if (OwnedEntity.class.isAssignableFrom(entityClass)) {

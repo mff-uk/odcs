@@ -1,22 +1,36 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
-import com.vaadin.server.FileDownloader;
-import com.vaadin.ui.*;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.TreeSet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+
+import com.vaadin.server.FileDownloader;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 
 /**
  * @author Škoda Petr
@@ -36,6 +50,8 @@ public class PipelineExport extends Window {
 
     private Label usedJarsText;
 
+    private AuthenticationContext authCtx;
+    
     /**
      * Export service.
      */
@@ -46,9 +62,10 @@ public class PipelineExport extends Window {
      */
     private Pipeline pipeline;
 
-    public PipelineExport(ExportService exportService, Pipeline pipeline) {
+    public PipelineExport(ExportService exportService, Pipeline pipeline, AuthenticationContext authCtx) {
         this.exportService = exportService;
         this.pipeline = pipeline;
+        this.authCtx = authCtx;
         init();
     }
 
@@ -69,12 +86,17 @@ public class PipelineExport extends Window {
         chbExportDPUData = new CheckBox("Export DPU data");
         chbExportDPUData.setWidth("100%");
         chbExportDPUData.setValue(false);
-        detailLayout.addComponent(chbExportDPUData);
 
+        if (hasPermission("pipeline.exportDpuData")) {
+            detailLayout.addComponent(chbExportDPUData);
+        }
         chbExportJars = new CheckBox("Export DPUs JARs");
         chbExportJars.setWidth("100%");
         chbExportJars.setValue(false);
-        detailLayout.addComponent(chbExportJars);
+
+        if (hasPermission("pipeline.exportDpuJars")) {
+            detailLayout.addComponent(chbExportJars);
+        }
 
         chbExportSchedule = new CheckBox("Export pipeline's schedule");
         chbExportSchedule.setWidth("100%");
@@ -91,14 +113,14 @@ public class PipelineExport extends Window {
         TreeSet<DpuItem> usedDpus = exportService.getDpusInformation(pipeline);
 
         Table table = new Table();
-        table.addContainerProperty("DPU template", String.class,  null);
-        table.addContainerProperty("DPU jar's name",  String.class,  null);
-        table.addContainerProperty("Version",  String.class,  null);
+        table.addContainerProperty("DPU template", String.class, null);
+        table.addContainerProperty("DPU jar's name", String.class, null);
+        table.addContainerProperty("Version", String.class, null);
         table.setWidth("100%");
         table.setHeight("130px");
         //add dpu's information to table
         for (DpuItem entry : usedDpus) {
-            table.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
+            table.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
         }
 
         panel.setContent(table);
@@ -161,5 +183,19 @@ public class PipelineExport extends Window {
         fileDownloader.extend(btnExport);
     }
 
+    /**
+     * Check for permission.
+     * 
+     * @param type
+     *            Required permission.
+     * @return If the user has given permission
+     */
+    public boolean hasPermission(String type) {
+        for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
+    }
 
 }
