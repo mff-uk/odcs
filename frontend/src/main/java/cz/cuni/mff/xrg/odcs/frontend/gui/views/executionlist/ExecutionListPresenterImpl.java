@@ -195,9 +195,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public boolean canStopExecution(long executionId) {
-//        PipelineExecution exec = cachedSource.getObject(executionId);
-//        return permissionEvaluator.hasPermission(exec, "save");
-        return true;
+        PipelineExecution exec = 
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.cancel");
     }
 
     @Override
@@ -313,4 +313,32 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 	public boolean isLayoutInitialized() {
 		return isInitialized;
 	}
+
+    @Override
+    public boolean canReadLog(long executionId) {
+        PipelineExecution exec = 
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.readLog");
+    }
+
+    @Override
+    public boolean canDebugData(long executionId) {
+        PipelineExecution exec = 
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.debugData");
+    }
+
+    @Override
+    public boolean canRunPipeline(long executionId) {
+        PipelineExecution exec = 
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipeline.run");
+    }
+
+    @Override
+    public boolean canDebugPipeline(long executionId) {
+        PipelineExecution exec = 
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipeline.runDebug");
+    }
 }

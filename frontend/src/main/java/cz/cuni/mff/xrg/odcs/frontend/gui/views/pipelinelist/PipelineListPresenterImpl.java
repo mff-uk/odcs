@@ -253,6 +253,36 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     }
 
     @Override
+    public boolean canEditPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.edit");
+    }
+
+    @Override
+    public boolean canDebugPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.runDebug");
+    }
+
+    @Override
+    public boolean canSchedulePipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.schedule");
+    }
+
+    @Override
+    public boolean canCopyPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.copy");
+    }
+
+    @Override
+    public boolean canRunPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.run");
+    }
+
+    @Override
     public void scheduleEventHandler(long id) {
         Pipeline pipeline = getLightPipeline(id);
         // open scheduler dialog

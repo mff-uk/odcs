@@ -719,13 +719,16 @@ WHERE t_end = (SELECT max(t_end) FROM "exec_pipeline" AS lastExec WHERE exec.pip
 
 CREATE VIEW "pipeline_view" AS
 SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, org.name 
-AS org_name FROM "ppl_model" AS ppl
+AS org_name , ppl.visibility AS visibility FROM "ppl_model" AS ppl
 LEFT JOIN "exec_last_view" AS exec ON exec.pipeline_id = ppl.id
 LEFT JOIN "usr_user" AS usr ON ppl.user_id = usr.id
 left JOIN "organization" as org ON ppl.organization_id = org.id;
 
 CREATE VIEW "exec_view" AS
-SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change
+SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
+exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change,
+org.name AS org_name
 FROM "exec_pipeline" AS exec
-JOIN "ppl_model" AS ppl ON ppl.id = exec.pipeline_id
-JOIN "usr_user" AS owner ON owner.id = exec.owner_id;
+LEFT JOIN "ppl_model" AS ppl ON ppl.id = exec.pipeline_id
+LEFT JOIN "usr_user" AS owner ON owner.id = exec.owner_id
+left JOIN "organization" as org ON exec.organization_id = org.id;

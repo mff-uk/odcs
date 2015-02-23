@@ -64,25 +64,17 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
-        //if you do not have an permission in the database return false;
-        // nasty hack
-        if (foundPermission == null && !perm.toString().endsWith(".delete")) {
-            return false;
-        } else if (foundPermission != null && perm.toString().endsWith(".delete")) {
-            return true;
-        }
-
         if ("organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-            if (target instanceof OrganizationSharedEntity) {
-                OrganizationSharedEntity oTarget = (OrganizationSharedEntity) target;
-                Organization organization = oTarget.getOrganization();
-                if (organization != null && ((User) auth.getPrincipal()).getOrganization().getName().equals(organization.getName())) {
-                    return true;
-                }
-                if (organization != null && !((User) auth.getPrincipal()).getOrganization().getName().equals(organization.getName()) && perm.toString().endsWith(".delete")) {
-                    return false;
-                }
-            }
+            return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
+
+        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+            return hasPermissionUser(auth, target, (String) perm, foundPermission);
+
+        return false;
+
+    }
+
+    private boolean hasPermissionUser(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
 
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
@@ -91,27 +83,25 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             if (owner != null && auth.getName().equals(owner.getUsername())) {
                 return true;
             }
-            if (owner != null && !auth.getName().equals(owner.getUsername()) && perm.toString().endsWith(".delete")) {
-                return false;
-            }
         }
 
         // check if our entity is shared
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
-            if (foundPermission != null && foundPermission.isRwOnly()) {
-                if (!ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
+            if (foundPermission != null) {
+                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                     return false;
+                } else {
+                    return true;
                 }
             }
-            return true;
         }
 
         // Pipeline execution actions are always viewable if
         // pipeline itself is viewable
         if (target instanceof PipelineExecution) {
             Pipeline pipe = ((PipelineExecution) target).getPipeline();
-            boolean viewPipe = hasPermission(pipe, perm);
+            boolean viewPipe = hasPermission(pipe, requestedPerm);
             if (viewPipe) {
                 // user has permission to view pipeline
                 // for this execution -> allow to see execution as well
@@ -120,11 +110,50 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         }
 
         // in other cases be restrictive
-        LOG.debug(
-                "Method hasPermission refused access for object <{}> and permission <{}>.",
-                target,
-                perm
-                );
+        LOG.debug("Method hasPermission refused access for object <{}> and permission <{}>.",
+                target, requestedPerm);
+        return false;
+    }
+
+    private boolean hasPermissionOrganization(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
+
+        User user = (User) auth.getPrincipal();
+
+        if (target instanceof OrganizationSharedEntity) {
+            OrganizationSharedEntity oTarget = (OrganizationSharedEntity) target;
+            Organization organization = oTarget.getOrganization();
+
+            if (organization != null) {
+                if (user.getOrganization().getName().equals(organization.getName())) {
+                    return true;
+                }
+            }
+        }
+
+        // entity owner is almighty
+        if (target instanceof OwnedEntity) {
+            OwnedEntity oTarget = (OwnedEntity) target;
+            User owner = oTarget.getOwner();
+            if (owner != null && auth.getName().equals(owner.getUsername())) {
+                return true;
+            }
+        }
+
+        // Pipeline execution actions are always viewable if
+        // pipeline itself is viewable
+        if (target instanceof PipelineExecution) {
+            Pipeline pipe = ((PipelineExecution) target).getPipeline();
+            boolean viewPipe = hasPermission(pipe, requestedPerm);
+            if (viewPipe) {
+                // user has permission to view pipeline
+                // for this execution -> allow to see execution as well
+                return true;
+            }
+        }
+
+        // in other cases be restrictive
+        LOG.debug("Method hasPermission refused access for object <{}> and permission <{}>.",
+                target, requestedPerm);
         return false;
     }
 

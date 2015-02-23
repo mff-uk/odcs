@@ -54,7 +54,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     private Button btnCreatePipeline;
 
     private Button btnImportPipeline;
-    
+
     @Autowired
     private Utils utils;
 
@@ -185,12 +185,22 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.runEventHandler(id, false);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canRunPipeline(id);
+            }
         }, new ThemeResource("icons/running.png"));
 
         generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id, true);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canDebugPipeline(id);
             }
         }, new ThemeResource("icons/debug.png"));
 
@@ -199,6 +209,11 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.scheduleEventHandler(id);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canSchedulePipeline(id);
+            }
         }, new ThemeResource("icons/scheduled.png"));
 
         generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
@@ -206,12 +221,22 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             protected void action(long id) {
                 presenter.copyEventHandler(id);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canCopyPipeline(id);
+            }
         }, new ThemeResource("icons/copy.png"));
 
         generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.navigateToEventHandler(PipelineEdit.class, id);
+            }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canEditPipeline(id);
             }
         }, new ThemeResource("icons/gear.png"));
 
@@ -232,9 +257,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     @Override
     public Object enter(PipelineListPresenter presenter) {
-    	if (!presenter.isLayoutInitialized()) {
-    		buildPage(presenter);
-		}
+        if (!presenter.isLayoutInitialized()) {
+            buildPage(presenter);
+        }
 
         return this;
     }
