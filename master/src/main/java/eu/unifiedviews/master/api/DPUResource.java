@@ -3,8 +3,12 @@ package eu.unifiedviews.master.api;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import eu.unifiedviews.master.model.ApiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +31,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Path("/import")
@@ -34,6 +41,9 @@ public class DPUResource {
 
     @Autowired
     private DPUFacade dpuFacade;
+
+    @Autowired
+    private PipelineFacade pipelineFacade;
 
     @Autowired
     private DPUModuleManipulator dpuManipulator;
@@ -44,7 +54,7 @@ public class DPUResource {
     @Path("/dpu/jar")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public @ResponseBody String importJarDpu(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @QueryParam("name") String dpuName, @QueryParam("description") String dpuDescription, @QueryParam("visibility") String visibility) {
+    public @ResponseBody String importJarDpu(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @QueryParam("name") String dpuName, @QueryParam("description") String dpuDescription, @QueryParam("visibility") String visibility, @QueryParam("force") boolean force) {
         // parse input steam to file, located in temporary directory
         File jarFile = inputStreamToFile(inputStream, contentDispositionHeader.getFileName());
         // if dpu name is empty, set it to null
@@ -54,7 +64,7 @@ public class DPUResource {
         ShareType shareType;
         if (StringUtils.isEmpty(visibility)) { // if visibility is null, or empty, use default value
             shareType = ShareType.PUBLIC_RO;
-        } else { // parse value
+        } else { // else parse value
             try {
                 shareType = ShareType.valueOf(visibility);
             } catch (IllegalArgumentException e) {
@@ -63,6 +73,38 @@ public class DPUResource {
             }
         }
 
+        // check if DPU already exists in UV
+        String dpuDirName = getDirectoryName(jarFile.getName());
+        if(dpuDirName == null) {
+            throw new ApiException(Response.Status.BAD_REQUEST, "Cannot process DPU name!");
+        }
+        DPUTemplateRecord dpuTemplate = dpuFacade.getByDirectory(dpuDirName);
+        if(dpuTemplate == null) { // it doesnt exists, create it
+            createDpu(dpuName, dpuDescription, shareType, jarFile);
+        } else if(force == true) { // it does exists, check force flag and replace
+            replaceDpu(dpuTemplate, jarFile);
+        } else {
+            throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
+        }
+
+        // now we can delete the file
+        deleteTempFile(jarFile);
+        return "OK";
+    }
+
+    private void replaceDpu(DPUTemplateRecord dpuTemplate, File jarFile) {
+        try {
+            List<Pipeline> pipelines = pipelineFacade.getPipelinesUsingDPU(dpuTemplate);
+            if(!pipelines.isEmpty()) {
+                throw new ApiException(Response.Status.CONFLICT, "DPU is already used in pipelines!.");
+            }
+            dpuManipulator.replace(dpuTemplate, jarFile);
+        } catch (DPUReplaceException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    private void createDpu(String dpuName, String dpuDescription, ShareType shareType, File jarFile) {
         try {
             DPUTemplateRecord dpuTemplate = dpuManipulator.create(jarFile, dpuName);
             dpuTemplate.setDescription(dpuDescription);
@@ -72,10 +114,6 @@ public class DPUResource {
             LOG.error("Exception at importing DPU", e);
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        // now we can delete the file
-        deleteTempFile(jarFile);
-        return "OK";
     }
 
     /**
@@ -114,5 +152,18 @@ public class DPUResource {
         File parent = file.getParentFile();
         file.delete();
         parent.delete();
+    }
+
+    private static String getDirectoryName(String sourceFileName) {
+        // the name must be in format: NAME-.*.jar
+        final Pattern pattern = Pattern
+                .compile("(.+)-(\\d(\\.\\d+)+).*\\.jar");
+        final Matcher matcher = pattern.matcher(sourceFileName);
+        if (matcher.matches()) {
+            // 0 - original, 1 - name, 2 - version
+            return matcher.group(1);
+        } else {
+            return null;
+        }
     }
 }
