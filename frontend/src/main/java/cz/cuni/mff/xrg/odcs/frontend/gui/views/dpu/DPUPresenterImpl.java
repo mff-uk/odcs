@@ -416,7 +416,9 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public boolean showPipelineDeleteButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "pipeline.delete");
+        boolean isAdmin = permissions.hasPermission(pipe, "spravca.transformacii");
+        boolean canDelete = permissions.hasPermission(pipe, "pipeline.delete");
+        return isAdmin || canDelete;
     }
 
     @Override

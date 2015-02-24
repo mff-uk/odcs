@@ -97,7 +97,12 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
                 if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                     return false;
                 } else {
-                    return true;
+                    //only owner can delete
+                    if(!"pipeline.delete".equals(requestedPerm)){
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }

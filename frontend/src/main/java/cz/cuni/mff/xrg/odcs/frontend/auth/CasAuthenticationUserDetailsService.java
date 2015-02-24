@@ -20,6 +20,9 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
+    private static final String ORG_ATTRIBUTE = "organization";
+    private static final String ROLE_ATTRIBUTE = "role";
+    
     private UserFacade userFacade;
 
     /**
@@ -38,9 +41,12 @@ public class CasAuthenticationUserDetailsService extends
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 
-        String rolename = attributes.get("role").toString();
+        String rolename = null;
+        
+        if(attributes.get(ROLE_ATTRIBUTE)!=null)
+            rolename = attributes.get(ROLE_ATTRIBUTE).toString();
 
-        String organization = attributes.get("organization") != null ? attributes.get("organization").toString() : null;
+        String organization = attributes.get(ORG_ATTRIBUTE) != null ? attributes.get(ORG_ATTRIBUTE).toString() : null;
 
         User user = userFacade.getUserByExtId(username);
 
@@ -61,7 +67,6 @@ public class CasAuthenticationUserDetailsService extends
 
         userFacade.saveNoAuth(user);
 
-        //checks etc TODO
         if (organization != null) {
             Organization o = userFacade.getOrganizationByName(organization);
             if (o == null) {

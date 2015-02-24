@@ -935,7 +935,6 @@ public class PipelineEdit extends ViewComponent {
         if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
-        pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
 
         pipelineVisibility = new OptionGroup();
         pipelineVisibility.addStyleName("horizontalgroup");
@@ -958,7 +957,6 @@ public class PipelineEdit extends ViewComponent {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
-        pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
 
         author = new Label();
         pipelineSettingsLayout.addComponent(author, 1, 3);
