@@ -262,7 +262,12 @@ public class TestContext implements DPUContext {
         return 9L;
     }
 
+    @Override
     public Map<String, String> getEnvironment() {
         return Collections.<String, String> emptyMap();
+    }
+
+    public String getPipelineOwner() {
+        return "test_user";
     }
 }
