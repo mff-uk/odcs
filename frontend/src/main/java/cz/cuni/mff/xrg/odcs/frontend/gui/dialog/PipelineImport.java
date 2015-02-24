@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
-
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for pipeline import.
@@ -37,7 +37,8 @@ public class PipelineImport extends Window {
     private Pipeline importedPipeline = null;
 
     private List<DpuItem> usedDpus = new ArrayList<>();
-    private  TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+
+    private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
     private Table usedDpusTable = new Table();
 
@@ -46,12 +47,11 @@ public class PipelineImport extends Window {
     private Button btnImport = new Button();
 
     private Panel panelMissingDpus = new Panel();
-    
-    private CheckBox chbExportDPUData = new CheckBox("Import user's data");
 
-    private CheckBox chbExportSchedule = new CheckBox("Import pipeline's schedule");
+    private CheckBox chbExportDPUData = new CheckBox(Messages.getString("PipelineImport.import.usersData"));
 
-    
+    private CheckBox chbExportSchedule = new CheckBox(Messages.getString("PipelineImport.import.schedule"));
+
     /**
      * Receive uploaded file.
      */
@@ -68,7 +68,7 @@ public class PipelineImport extends Window {
     private final ImportService importService;
 
     public PipelineImport(ImportService importService) {
-        super("Pipeline import");
+        super(Messages.getString("PipelineImport.pipeline.import"));
         this.importService = importService;
         init();
     }
@@ -100,7 +100,7 @@ public class PipelineImport extends Window {
         detailLayout.setColumnExpandRatio(1, 1);
 
         {
-            Label lbl = new Label("Zip archive:");
+            Label lbl = new Label(Messages.getString("PipelineImport.zip.archive"));
             lbl.setWidth("-1px");
             detailLayout.addComponent(lbl, 0, 0);
         }
@@ -115,7 +115,7 @@ public class PipelineImport extends Window {
         fileUploadReceiver = new FileUploadReceiver();
         final Upload upload = new Upload(null, fileUploadReceiver);
         upload.setImmediate(true);
-        upload.setButtonCaption("Upload file");
+        upload.setButtonCaption(Messages.getString("PipelineImport.upload.file"));
         // modify the look so the upload component is more user friendly
         upload.addStyleName("horizontalgroup");
 
@@ -133,7 +133,7 @@ public class PipelineImport extends Window {
 
                 if (ext.compareToIgnoreCase("zip") != 0) {
                     upload.interruptUpload();
-                    Notification.show("Selected file is not zip file",
+                    Notification.show(Messages.getString("PipelineImport.not.zip.file"),
                             Notification.Type.ERROR_MESSAGE);
                     btnImport.setEnabled(false);
                 } else {
@@ -191,20 +191,20 @@ public class PipelineImport extends Window {
                     }
 
                     if (usedDpus == null) {
-                        String msg = "It is not possible to read the file [used_dpu.xml]\nwhere used dpus are.";
+                        String msg = Messages.getString("PipelineImport.read.file.fail");
                         LOG.warn(msg);
                         Notification.show(msg, Notification.Type.WARNING_MESSAGE);
                     } else {
                         // show result on table  these dpus which are in use
                         for (DpuItem entry : usedDpus) {
-                            usedDpusTable.addItem(new Object[]{entry.getDpuName(), entry.getJarName(), entry.getVersion()}, null);
+                            usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
                         }
                     }
 
                     if (missingDpus.size() > 0) {
                         btnImport.setEnabled(false);
-                        Notification.show("It is not possible to import pipeline due to missing DPUs.\n" +
-                                "Please install DPUs from table and then run import again", Notification.Type.ERROR_MESSAGE);
+                        Notification.show(Messages.getString("PipelineImport.missing.dpu.fail") +
+                                Messages.getString("PipelineImport.install.dpu"), Notification.Type.ERROR_MESSAGE);
 
                     } else {
                         btnImport.setEnabled(true);
@@ -215,9 +215,8 @@ public class PipelineImport extends Window {
                     for (Map.Entry<String, DpuItem> entry : missingDpus.entrySet()) {
                         String key = entry.getKey();
                         DpuItem value = entry.getValue();
-                        missingDpusTable.addItem(new Object[]{value.getDpuName(), value.getJarName(), value.getVersion()}, null);
+                        missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
                     }
-
 
                 } catch (Exception e) {
                     LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
@@ -227,7 +226,7 @@ public class PipelineImport extends Window {
 
         detailLayout.addComponent(upload, 1, 1);
         detailLayout.setComponentAlignment(upload, Alignment.TOP_LEFT);
-        final  HorizontalLayout checkBoxesLayout = new HorizontalLayout();
+        final HorizontalLayout checkBoxesLayout = new HorizontalLayout();
         checkBoxesLayout.setWidth("100%");
         checkBoxesLayout.setMargin(true);
         chbExportSchedule.setEnabled(false);
@@ -237,17 +236,16 @@ public class PipelineImport extends Window {
         checkBoxesLayout.addComponent(chbExportDPUData);
         checkBoxesLayout.setComponentAlignment(chbExportDPUData, Alignment.MIDDLE_RIGHT);
 
-
         final VerticalLayout usedJarsLayout = new VerticalLayout();
         usedJarsLayout.setWidth("100%");
 
-        Panel panel = new Panel("The DPUs which are used in imported pipeline:");
+        Panel panel = new Panel(Messages.getString("PipelineImport.dpu.used"));
         panel.setWidth("100%");
         panel.setHeight("150px");
 
-        usedDpusTable.addContainerProperty("DPU template", String.class,  null);
-        usedDpusTable.addContainerProperty("DPU jar's name",  String.class,  null);
-        usedDpusTable.addContainerProperty("Version",  String.class,  null);
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.template"), String.class, null);
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.jarName"), String.class, null);
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.version"), String.class, null);
 
         usedDpusTable.setWidth("100%");
         usedDpusTable.setHeight("130px");
@@ -255,34 +253,32 @@ public class PipelineImport extends Window {
         panel.setContent(usedDpusTable);
         usedJarsLayout.addComponent(panel);
 
-        
         final VerticalLayout missingJarsLayout = new VerticalLayout();
         missingJarsLayout.setWidth("100%");
 
-        panelMissingDpus = new Panel("The DPUs which are missing in system. Install them before import:");
+        panelMissingDpus = new Panel(Messages.getString("PipelineImport.missing.dpus"));
         panelMissingDpus.setWidth("100%");
         panelMissingDpus.setHeight("150px");
 
-        missingDpusTable.addContainerProperty("DPU template", String.class,  null);
-        missingDpusTable.addContainerProperty("DPU jar's name",  String.class,  null);
-        missingDpusTable.addContainerProperty("version",  String.class,  null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.dpu.template"), String.class, null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.jarName"), String.class, null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.version"), String.class, null);
 
         missingDpusTable.setWidth("100%");
         missingDpusTable.setHeight("130px");
         panelMissingDpus.setContent(missingDpusTable);
         missingJarsLayout.addComponent(panelMissingDpus);
 
-
         // bottom buttons
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
 
-        btnImport = new Button("Import", new Button.ClickListener() {
+        btnImport = new Button(Messages.getString("PipelineImport.import"), new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!txtUploadFile.isValid()) {
-                    Notification.show("No archive selected.",
+                    Notification.show(Messages.getString("PipelineImport.archive.notSelected"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
                     // import
@@ -292,7 +288,7 @@ public class PipelineImport extends Window {
                         close();
                     } catch (ImportException | IOException ex) {
                         LOG.error("Import failed.", ex);
-                        Notification.show("Import failed. " + ex.getMessage(),
+                        Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
                                 Notification.Type.ERROR_MESSAGE);
                     }
                 }
@@ -301,7 +297,7 @@ public class PipelineImport extends Window {
         buttonLayout.addComponent(btnImport);
         buttonLayout.setComponentAlignment(btnImport, Alignment.MIDDLE_LEFT);
 
-        Button btnCancel = new Button("Cancel", new Button.ClickListener() {
+        Button btnCancel = new Button(Messages.getString("PipelineImport.cancel"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();

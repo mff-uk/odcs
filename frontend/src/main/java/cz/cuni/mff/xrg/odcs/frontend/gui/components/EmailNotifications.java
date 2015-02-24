@@ -12,6 +12,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Builds layout with GUI components for settings notifications about scheduled
@@ -56,16 +57,16 @@ public class EmailNotifications {
         GridLayout notifycationLayout = new GridLayout(2, 2);
         notifycationLayout.setSpacing(true);
 
-        notifycationLayout.addComponent(new Label("Successful execution:"), 0, 0);
+        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.successful")), 0, 0);
         successfulExec = new OptionGroup();
         successfulExec.setImmediate(true);
         successfulExec.addItem(NotificationRecordType.INSTANT);
         successfulExec.addItem(NotificationRecordType.DAILY);
         successfulExec.addItem(NotificationRecordType.NO_REPORT);
         successfulExec.setValue(NotificationRecordType.DAILY);
-        successfulExec.setItemCaption(NotificationRecordType.INSTANT, "Instant");
-        successfulExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report (default)");
-        successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
+        successfulExec.setItemCaption(NotificationRecordType.INSTANT, Messages.getString("EmailNotifications.instant"));
+        successfulExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report"));
+        successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report.default"));
 
         successfulExec.addValueChangeListener(new ValueChangeListener() {
             private static final long serialVersionUID = 1L;
@@ -102,7 +103,7 @@ public class EmailNotifications {
         notifycationLayout.addComponent(successfulExec, 1, 0);
         emailNotificationsLayout.addComponent(notifycationLayout);
 
-        notifycationLayout.addComponent(new Label("Error in execution:"), 0, 1);
+        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.error")), 0, 1);
         errorExec = new OptionGroup();
         errorExec.setImmediate(true);
         errorExec.setImmediate(true);
@@ -110,9 +111,9 @@ public class EmailNotifications {
         errorExec.addItem(NotificationRecordType.DAILY);
         errorExec.addItem(NotificationRecordType.NO_REPORT);
         errorExec.setValue(NotificationRecordType.INSTANT);
-        errorExec.setItemCaption(NotificationRecordType.INSTANT, "Instant (default)");
-        errorExec.setItemCaption(NotificationRecordType.DAILY, "Daily bulk report");
-        errorExec.setItemCaption(NotificationRecordType.NO_REPORT, "No report");
+        errorExec.setItemCaption(NotificationRecordType.INSTANT, Messages.getString("EmailNotifications.instant.default"));
+        errorExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report.default"));
+        errorExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report"));
 
         errorExec.addValueChangeListener(new ValueChangeListener() {
             private static final long serialVersionUID = 1L;

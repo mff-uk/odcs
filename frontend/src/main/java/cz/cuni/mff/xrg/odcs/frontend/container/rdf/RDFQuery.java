@@ -25,6 +25,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Notification;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.help.RDFTriple;
@@ -58,7 +59,8 @@ public class RDFQuery implements Query {
     /**
      * Constructor.
      *
-     * @param queryDefinition Query definition.
+     * @param queryDefinition
+     *            Query definition.
      */
     public RDFQuery(RDFQueryDefinition queryDefinition) {
         this.baseQuery = queryDefinition.getBaseQuery();
@@ -75,7 +77,7 @@ public class RDFQuery implements Query {
     public int size() {
         ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
-            throw new RuntimeException("Unable to load RDFDataUnit.");
+            throw new RuntimeException(Messages.getString("RDFQuery.size.exception"));
         }
         try {
             int count;
@@ -89,9 +91,9 @@ public class RDFQuery implements Query {
             LOG.debug("Size query finished!");
             return count;
         } catch (InvalidQueryException ex) {
-            Notification.show("Query Validator",
-                    "Query is not valid: "
-                    + ex.getCause().getMessage(),
+            Notification.show(Messages.getString("RDFQuery.size.invalidQuery.name"),
+                    Messages.getString("RDFQuery.size.invalidQuery.description")
+                            + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
             LOG.debug("Size query exception", ex);
         } finally {
@@ -111,8 +113,10 @@ public class RDFQuery implements Query {
     /**
      * Load batch of items.
      *
-     * @param startIndex Starting index of the item list.
-     * @param count Count of the items to be retrieved.
+     * @param startIndex
+     *            Starting index of the item list.
+     * @param count
+     *            Count of the items to be retrieved.
      * @return List of items.
      */
     @Override
@@ -127,7 +131,7 @@ public class RDFQuery implements Query {
         ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepository(queryDefinition.getInfo(), queryDefinition.getDpu(), queryDefinition.getDataUnit());
         if (repository == null) {
             LOG.debug("Unable to load RDFDataUnit.");
-            throw new RuntimeException("Unable to load RDFDataUnit.");
+            throw new RuntimeException(Messages.getString("RDFQuery.loadItems.exception"));
         }
 
         String filteredQuery = setWhereCriteria(baseQuery);
@@ -194,26 +198,25 @@ public class RDFQuery implements Query {
                     for (RDFTriple triple : (List<RDFTriple>) data) {
                         cachedItems.add(toItem(triple));
                     }
-                    LOG.debug(
-                            "Loading of items finished, whole result preloaded and cached.");
+                    LOG.debug("Loading of items finished, whole result preloaded and cached.");
                     return cachedItems.subList(startIndex, startIndex + count);
             }
 
             LOG.debug("Loading of items finished.");
             return items;
         } catch (InvalidQueryException ex) {
-            Notification.show("Query Validator",
-                    "Query is not valid: "
-                    + ex.getCause().getMessage(),
+            Notification.show(Messages.getString("RDFQuery.loadItems.invalidQuery.name"),
+                    Messages.getString("RDFQuery.loadItems.invalidQuery.description")
+                            + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } catch (QueryEvaluationException ex) {
-            Notification.show("Query Evaluation",
-                    "Error in query evaluation: "
-                    + ex.getCause().getMessage(),
+            Notification.show(Messages.getString("RDFQuery.loadItems.queryEvaluation.name"),
+                    Messages.getString("RDFQuery.loadItems.queryEvaluation.description")
+                            + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } catch (DataUnitException e) {
-            Notification.show("DataUnit problem",
-                    "Error: " + e.getCause().getMessage(),
+            Notification.show(Messages.getString("RDFQuery.loadItems.dataUnit.name"),
+                    Messages.getString("RDFQuery.loadItems.dataUnit.description") + e.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } finally {
             if (connection != null) {
@@ -251,7 +254,7 @@ public class RDFQuery implements Query {
     @Override
     public void saveItems(List<Item> list, List<Item> list1, List<Item> list2) {
         throw new UnsupportedOperationException(
-                "RDFLazyQueryContainer is read-only.");
+                Messages.getString("RDFQuery.saveItems.unsupported"));
     }
 
     /**
@@ -262,7 +265,7 @@ public class RDFQuery implements Query {
     @Override
     public boolean deleteAllItems() {
         throw new UnsupportedOperationException(
-                "RDFLazyQueryContainer is read-only.");
+                Messages.getString("RDFQuery.deleteAllItems.unsupported"));
     }
 
     /**
@@ -273,7 +276,7 @@ public class RDFQuery implements Query {
     @Override
     public Item constructItem() {
         throw new UnsupportedOperationException(
-                "RDFLazyQueryContainer is read-only.");
+                Messages.getString("RDFQuery.constructItem.unsupported"));
     }
 
     private List<RDFTriple> getRDFTriplesData(Graph graph) {
@@ -300,7 +303,7 @@ public class RDFQuery implements Query {
         if (query.length() < 9) {
             //Due to expected exception format in catch block
             throw new InvalidQueryException(new InvalidQueryException(
-                    "Invalid query: " + query));
+                    Messages.getString("RDFQuery.queryType.invalidQuery") + query));
         }
         QueryPart queryPart = new QueryPart(query);
         SPARQLQueryType type = queryPart.getSPARQLQueryType();
@@ -333,15 +336,15 @@ public class RDFQuery implements Query {
             } catch (QueryEvaluationException ex) {
 
                 throw new InvalidQueryException(
-                        "This query is probably not valid. " + ex
-                        .getMessage(),
+                        Messages.getString("RDFQuery.constructSize.invalidQuery") + ex
+                                .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid as construct query. "
-                    + ex.getMessage(), ex);
+                    Messages.getString("RDFQuery.constructSize.malformedQuery")
+                            + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);
@@ -353,8 +356,7 @@ public class RDFQuery implements Query {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    LOG.warn(
-                            "Failed to close connection to RDF repository while querying. {}",
+                    LOG.warn("Failed to close connection to RDF repository while querying. {}",
                             ex.getMessage(), ex);
                 }
             }
@@ -367,8 +369,7 @@ public class RDFQuery implements Query {
 
         final String sizeVar = "selectSize";
 
-        final String sizeQuery = String.format(
-                "%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
+        final String sizeQuery = String.format("%s SELECT (count(*) AS ?%s) WHERE {%s}", queryPart
                 .getQueryPrefixes(), sizeVar,
                 queryPart.getQueryWithoutPrefixes());
         RepositoryConnection connection = null;
@@ -389,18 +390,18 @@ public class RDFQuery implements Query {
                     return resultSize;
                 }
                 throw new InvalidQueryException(
-                        "Query: " + queryPart.getQuery() + " has no bindings for information about its size");
+                        Messages.getString("RDFQuery.selectSize.invalidQuery", queryPart.getQuery()));
             } catch (QueryEvaluationException ex) {
                 throw new InvalidQueryException(
-                        "This query is probably not valid. " + ex
-                        .getMessage(),
+                        Messages.getString("RDFQuery.selectSize.notValid") + ex
+                                .getMessage(),
                         ex);
             }
 
         } catch (MalformedQueryException ex) {
             throw new InvalidQueryException(
-                    "This query is probably not valid. "
-                    + ex.getMessage(), ex);
+                    Messages.getString("RDFQuery.selectSize.malformedQuery")
+                            + ex.getMessage(), ex);
         } catch (RepositoryException ex) {
             LOG.error("Connection to RDF repository failed. {}",
                     ex.getMessage(), ex);
@@ -412,8 +413,7 @@ public class RDFQuery implements Query {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    LOG.warn(
-                            "Failed to close connection to RDF repository while querying. {}",
+                    LOG.warn("Failed to close connection to RDF repository while querying. {}",
                             ex.getMessage(), ex);
                 }
             }
@@ -434,9 +434,11 @@ public class RDFQuery implements Query {
      * For given valid SELECT of CONSTRUCT query return its size {count of rows
      * returns for given query).
      *
-     * @param query Valid SELECT/CONTRUCT query for asking.
+     * @param query
+     *            Valid SELECT/CONTRUCT query for asking.
      * @return size for given valid query as long.
-     * @throws InvalidQueryException if query is not valid.
+     * @throws InvalidQueryException
+     *             if query is not valid.
      */
     private long getResultSizeForQuery(RDFDataUnit rdfDataUnit, String query) throws InvalidQueryException {
 
@@ -455,7 +457,7 @@ public class RDFQuery implements Query {
                 break;
             case UNKNOWN:
                 throw new InvalidQueryException(
-                        "Given query: " + query + "have to be SELECT or CONSTRUCT type.");
+                        Messages.getString("RDFQuery.resultSize.invalidQuery", query));
         }
 
         return size;

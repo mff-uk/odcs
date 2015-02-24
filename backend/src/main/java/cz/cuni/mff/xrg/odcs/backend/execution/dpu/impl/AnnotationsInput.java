@@ -11,16 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
 
 /**
  * Examine the given DPU instance for {@link InputDataUnit} annotations. If
@@ -96,8 +97,7 @@ public class AnnotationsInput implements DPUPreExecutor {
             field.set(instance, value);
         } catch (IllegalArgumentException | IllegalAccessException e) {
             // create message
-            final String message = "Failed to set value for '"
-                    + field.getName() + "' exception: " + e.getMessage();
+            final String message = Messages.getString("AnnotationsInput.set.value.failed", field.getName(), e.getMessage());
             eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
                     this, message));
             return false;
@@ -175,8 +175,7 @@ public class AnnotationsInput implements DPUPreExecutor {
             if (annotation.optional()) {
                 return true;
             }
-            final String message = "No input for field: " + field.getName()
-                    + " All inputs have different type.";
+            final String message = Messages.getString("AnnotationsInput.no.input", field.getName());
             eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
                     this, message));
             return false;
@@ -190,7 +189,7 @@ public class AnnotationsInput implements DPUPreExecutor {
                 return true;
             }
             // error
-            final String message = "Can't find DataUnit with required name for field:"
+            final String message = Messages.getString("AnnotationsInput.dataUnit.notFound")
                     + field.getName();
             eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(
                     context, this, message));

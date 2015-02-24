@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
@@ -62,23 +63,23 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     public String getColumnName(String id) {
         switch (id) {
             case "id":
-                return "Id";
+                return Messages.getString("ExecutionViewAccessor.id");
             case "start":
-                return "Started";
+                return Messages.getString("ExecutionViewAccessor.started");
             case "pipelineName":
-                return "Pipeline";
+                return Messages.getString("ExecutionViewAccessor.pipeline");
             case "duration":
-                return "Duration";
+                return Messages.getString("ExecutionViewAccessor.duration");
             case "ownerName":
-                return "Executed by";
+                return Messages.getString("ExecutionViewAccessor.owner");
             case "status":
-                return "Status";
+                return Messages.getString("ExecutionViewAccessor.status");
             case "isDebugging":
-                return "Debug";
+                return Messages.getString("ExecutionViewAccessor.isDebugging");
             case "lastChange":
-                return "Last modification";
+                return Messages.getString("ExecutionViewAccessor.lastChange");
             case "schedule":
-                return "Sch.";
+                return Messages.getString("ExecutionViewAccessor.schedule");
             default:
                 return null;
         }

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFCancelException;
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.TripleCounter;
 import eu.unifiedviews.dpu.DPUContext;
 
@@ -118,7 +119,7 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
     public void handleStatement(Statement st) throws RDFHandlerException {
         try {
             if (isParsingCanceled()) {
-                throw new RDFCancelException("Extraction was CANCELLED by user");
+                throw new RDFCancelException(Messages.getString("TripleCountHandler.excraction.calcelled")); //$NON-NLS-1$
 
             } else if (!hasProblem) {
                 super.handleStatement(st);
@@ -144,10 +145,10 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
         } catch (RDFHandlerException e) {
             logger.debug(
-                    "\n" + "Triple contains problems:"
-                            + "\n Subject:" + st.getSubject().toString()
-                            + "\n Predicate:" + st.getPredicate().toString()
-                            + "\n Object:" + st.getObject().toString());
+                    "\n" + "Triple contains problems:" //$NON-NLS-1$ //$NON-NLS-2$
+                            + "\n Subject:" + st.getSubject().toString() //$NON-NLS-1$
+                            + "\n Predicate:" + st.getPredicate().toString() //$NON-NLS-1$
+                            + "\n Object:" + st.getObject().toString()); //$NON-NLS-1$
 
         }
     }
@@ -165,15 +166,15 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
         try {
             super.startRDF();
             if (checkData) {
-                logger.info("Data validation started");
+                logger.info("Data validation started"); //$NON-NLS-1$
             } else {
-                logger.info("Parsing started");
+                logger.info("Parsing started"); //$NON-NLS-1$
             }
         } catch (RDFHandlerException e) {
             if (checkData) {
-                logger.info("Starting data validation FAILED");
+                logger.info("Starting data validation FAILED"); //$NON-NLS-1$
             } else {
-                logger.info("Starting parsing FAILED");
+                logger.info("Starting parsing FAILED"); //$NON-NLS-1$
             }
             throw new RDFHandlerException(e.getMessage(), e);
         }
@@ -192,21 +193,21 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
         try {
             super.endRDF();
             if (checkData) {
-                logger.info("Data validation successfully");
-                logger.info("TOTAL VALIDATED:" + getTripleCount() + " triples");
+                logger.info("Data validation successfully"); //$NON-NLS-1$
+                logger.info("TOTAL VALIDATED:" + getTripleCount() + " triples"); //$NON-NLS-1$ //$NON-NLS-2$
             } else {
-                logger.info("Parsing ended successfully");
-                logger.info("TOTAL ADDED:" + getTripleCount() + " triples");
+                logger.info("Parsing ended successfully"); //$NON-NLS-1$
+                logger.info("TOTAL ADDED:" + getTripleCount() + " triples"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } catch (RDFHandlerException e) {
             logger.error(e.getMessage());
             if (checkData) {
-                logger.info("Ending data validating FAILED");
-                logger.info("TOTAL VALIDATED:" + getTripleCount() + " triples");
+                logger.info("Ending data validating FAILED"); //$NON-NLS-1$
+                logger.info("TOTAL VALIDATED:" + getTripleCount() + " triples"); //$NON-NLS-1$ //$NON-NLS-2$
 
             } else {
-                logger.info("Ending parsing FAILED");
-                logger.info("TOTAL ADDED:" + getTripleCount() + " triples");
+                logger.info("Ending parsing FAILED"); //$NON-NLS-1$
+                logger.info("TOTAL ADDED:" + getTripleCount() + " triples"); //$NON-NLS-1$ //$NON-NLS-2$
 
             }
         }
@@ -353,12 +354,12 @@ public class TripleCountHandler extends RDFInserter implements TripleCounter {
         Statement statement = next.getStatement();
         String problemType = next.getConflictType().name();
 
-        String problem = "\n" + errorCount + "] " + problemType + " in triple :"
-                + "\n Subject: " + statement.getSubject().toString()
-                + "\n Predicate: " + statement.getPredicate().toString()
-                + "\n Object: " + statement.getObject().toString()
-                + "\n PROBLEM message: " + next.getMessage()
-                + "\n Find on source line: " + next.getLine();
+        String problem = "\n" + errorCount + "] " + problemType + Messages.getString("TripleCountHandler.in.triple") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                + Messages.getString("TripleCountHandler.subject") + statement.getSubject().toString() //$NON-NLS-1$
+                + Messages.getString("TripleCountHandler.predicate") + statement.getPredicate().toString() //$NON-NLS-1$
+                + Messages.getString("TripleCountHandler.object") + statement.getObject().toString() //$NON-NLS-1$
+                + Messages.getString("TripleCountHandler.problem.message") + next.getMessage() //$NON-NLS-1$
+                + Messages.getString("TripleCountHandler.source.line") + next.getLine(); //$NON-NLS-1$
 
         return problem;
     }

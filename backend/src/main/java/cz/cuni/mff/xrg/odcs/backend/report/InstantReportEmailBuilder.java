@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
@@ -32,26 +33,37 @@ class InstantReportEmailBuilder {
 
         try {
             final String name = config.getString(ConfigProperty.BACKEND_NAME);
-            body.append("<p>Instance: ");
+            body.append("<p>");
+            body.append(Messages.getString("InstantReportEmailBuilder.instance"));
             body.append(name);
             body.append("</p><br/>");
         } catch (MissingConfigPropertyException e) {
             // no name is presented
         }
 
-        body.append("<b>Report for pipeline: </b>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.report"));
+        body.append("</b>");
         body.append(execution.getPipeline().getName());
         body.append("<br/>");
-        body.append("<b>Execution id: </b>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.execution"));
+        body.append("</b>");
         body.append(execution.getId().toString());
         body.append("<br/>");
-        body.append("<b>Execution starts at: </b>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.starts"));
+        body.append("</b>");
         body.append(execution.getStart().toString());
         body.append("<br/>");
-        body.append("<b>Execution ends at: </b>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.ends"));
+        body.append("</b>");
         body.append(execution.getEnd().toString());
         body.append("<br/>");
-        body.append("<b>Execution result: </b>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.result"));
+        body.append("</b>");
         body.append(execution.getStatus());
         // add link to the execution detail if the url is specified
         try {
@@ -64,14 +76,18 @@ class InstantReportEmailBuilder {
             body.append("<br/>");
             body.append("<a href=/");
             body.append(urlBase);
-            body.append("\" >Execution detail<a/> ");
+            body.append("\" >");
+            body.append(Messages.getString("InstantReportEmailBuilder.execution.detail"));
+            body.append("<a/> ");
         } catch (MissingConfigPropertyException e) {
             // no name is presented
         }
         body.append("<br/><br/>");
         // append messages
         final List<MessageRecord> messages = dpuFacade.getAllDPURecords(execution);
-        body.append("<b>Published messages:</b> <br/>");
+        body.append("<b>");
+        body.append(Messages.getString("InstantReportEmailBuilder.published.messages"));
+        body.append("</b> <br/>");
         body.append("<table border=2 cellpadding=2 >");
         body.append("<tr bgcolor=\"#C0C0C0\">");
         body.append("<th>dpu</th><th>time</th><th>type</th><th>short message</th>");

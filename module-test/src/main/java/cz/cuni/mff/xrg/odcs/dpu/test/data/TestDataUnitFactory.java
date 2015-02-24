@@ -23,6 +23,11 @@ import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
+import eu.unifiedviews.dataunit.relational.impl.ManageableWritableRelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.impl.RelationalDataUnitFactory;
+import eu.unifiedviews.dataunit.relational.repository.InMemoryRelationalDatabase;
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
 
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
@@ -46,9 +51,13 @@ public class TestDataUnitFactory {
 
     private final Map<String, Repository> initializedRepositories = new HashMap<>();
 
+    private final Map<String, ManagableRelationalRepository> initializedRelationalRepositories = new HashMap<>();
+
     private final RDFDataUnitFactory rdfFactory = new RDFDataUnitFactory();
 
     private final FilesDataUnitFactory filesFactory = new FilesDataUnitFactory();
+
+    private final RelationalDataUnitFactory relationalFactory = new RelationalDataUnitFactory();
 
     /**
      * Create a {@link TestDataUnitFactory} that use given directory as working
@@ -110,6 +119,34 @@ public class TestDataUnitFactory {
         }
     }
 
+    public ManageableWritableRelationalDataUnit createRelationalDataUnit(String name) throws IOException, RepositoryException, DataUnitException {
+        synchronized (this.counterLock) {
+            int dataUnitId = this.dataUnitIdCounter++;
+            final String id = "dpu-test_" + Integer.toString(dataUnitId) + "_" + name;
+            final String namedGraph = GraphUrl.translateDataUnitId(id);
+            String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(this.workingDirectory.getCanonicalPath()), pipelineId).toFile();
+
+            Repository repository = this.initializedRepositories.get(pipelineId);
+            if (repository == null) {
+                repository = new SailRepository(new NativeStore(new File(this.workingDirectory, pipelineId)));
+                repository.initialize();
+                this.initializedRepositories.put(pipelineId, repository);
+            }
+
+            ManagableRelationalRepository relationalRepo = this.initializedRelationalRepositories.get(pipelineId);
+            if (relationalRepo == null) {
+                relationalRepo = new InMemoryRelationalDatabase(null, null, dataUnitId);
+                this.initializedRelationalRepositories.put(pipelineId, relationalRepo);
+            }
+
+            return (ManageableWritableRelationalDataUnit) this.relationalFactory.create(name, namedGraph,
+                    dataUnitWorkingDirectory.toURI().toString(), createCoreServiceBus(repository, relationalRepo));
+
+        }
+    }
+
     private CoreServiceBus createCoreServiceBus(final Repository repository) {
         return new CoreServiceBus() {
             @Override
@@ -133,6 +170,39 @@ public class TestDataUnitFactory {
                         }
 
                     };
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        };
+    }
+
+    private CoreServiceBus createCoreServiceBus(final Repository repository, final ManagableRelationalRepository relationalRepo) {
+        return new CoreServiceBus() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T> T getService(Class<T> serviceClass) throws IllegalArgumentException {
+                // Simple test implementation of bus service
+                if (serviceClass.isAssignableFrom(ConnectionSource.class)) {
+                    return (T) createConnectionSource(repository);
+                } else if (serviceClass.isAssignableFrom(FaultTolerant.class)) {
+                    return (T) new FaultTolerant() {
+
+                        @Override
+                        public void execute(FaultTolerant.Code codeToExecute)
+                                throws RepositoryException, DataUnitException {
+                            final RepositoryConnection conn =
+                                    createConnectionSource(repository).getConnection();
+                            try {
+                                codeToExecute.execute(conn);
+                            } finally {
+                                conn.close();
+                            }
+                        }
+
+                    };
+                } else if (serviceClass.isAssignableFrom(DataUnitDatabaseConnectionProvider.class)) {
+                    return (T) relationalRepo.getDatabaseConnectionProvider();
                 } else {
                     throw new IllegalArgumentException();
                 }

@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessRead;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSource;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Implementation of {@link ContainerSource}. Has data caching abilities.
@@ -135,7 +136,7 @@ public class DbCachedSource<T extends DataObject> implements ContainerSource<T>,
         } catch (InstantiationException | IllegalAccessException e) {
             LOG.error("Failed to create the default instance.", e);
         }
-        throw new RuntimeException("Failed to load data.");
+        throw new RuntimeException(Messages.getString("DbCachedSource.data.failed"));
     }
 
     /**
@@ -408,7 +409,7 @@ public class DbCachedSource<T extends DataObject> implements ContainerSource<T>,
                 return index;
             }
         }
-        throw new RuntimeException("Can not determine the index of non cached data.");
+        throw new RuntimeException(Messages.getString("DbCachedSource.index.fail"));
     }
 
     @Override

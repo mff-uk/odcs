@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.dpu.test.context.TestContext;
 import cz.cuni.mff.xrg.odcs.dpu.test.data.TestDataUnitFactory;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
@@ -29,6 +29,8 @@ import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.WritableRDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
+import eu.unifiedviews.dataunit.relational.WritableRelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.impl.ManageableWritableRelationalDataUnit;
 import eu.unifiedviews.dpu.DPU;
 
 /**
@@ -70,7 +72,6 @@ public class TestEnvironment {
 
     /**
      * Create test environment. As working directory is used temp file.
-     *
      */
     public TestEnvironment() {
         try {
@@ -291,6 +292,57 @@ public class TestEnvironment {
 
         addInput(name, filesDataUnit);
         return filesDataUnit;
+    }
+
+    /**
+     * Create {@link WritableRelationalDataUnit} which is just returned to test developer for use.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @return Created {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
+        this.customDataUnits.put(name, relational);
+
+        return relational;
+    }
+
+    /**
+     * Create input {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalInput(String name) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
+        addInput(name, relational);
+
+        return relational;
+    }
+
+    /**
+     * Create output {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalOutput(String name)
+            throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
+        addOutput(name, relational);
+        return relational;
     }
 
     // - - - - - - - - - method for test execution - - - - - - - - - //

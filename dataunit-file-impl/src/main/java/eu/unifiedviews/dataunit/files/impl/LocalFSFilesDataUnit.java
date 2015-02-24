@@ -160,12 +160,15 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
     //ManageableDataUnit interface
     @Override
     public void clear() throws DataUnitException {
-        // We also delte data under
-        if (!FileUtils.deleteQuietly(new File(java.net.URI.create(this.workingDirectoryURI)))) {
-            LOG.warn("Can't delete storage directory");
-        }
-        // Then rdf.
+        // Delte underlying RDF data first..
         super.clear();
+        // Then delete storage directory.
+        final File storageFile = new File(java.net.URI.create(this.workingDirectoryURI));
+        if (storageFile.exists()) {
+            if (!FileUtils.deleteQuietly(storageFile)) {
+                LOG.warn("Can't delete storage directory: {}", this.workingDirectoryURI);
+            }
+        }
     }
 
     @Override

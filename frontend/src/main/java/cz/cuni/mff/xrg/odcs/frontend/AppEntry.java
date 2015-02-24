@@ -7,14 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 
 import virtuoso.jdbc4.VirtuosoException;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorHandler;
@@ -27,7 +25,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -35,10 +36,12 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.MenuLayout;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ModifiableComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Initial;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Login;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -47,7 +50,6 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
  * 
  * @author Petyr
  */
-@Theme("UnifiedViewsTheme")
 public class AppEntry extends com.vaadin.ui.UI {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
@@ -81,11 +83,17 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Autowired
     private BackendHeartbeat heartbeatService;
 
+    @Autowired
+    private AppConfig appConfig;
+
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
-        // Retrieve Locale from Runtime properties, and set it in LocaleContextHolder
+        setTheme(appConfig.getString(ConfigProperty.FRONTEND_THEME));
+
+        // Retrieve Locale from Runtime properties, and set it in LocaleHolders
         Locale locale = runtimePropertiesFacade.getLocale();
-        LocaleContextHolder.setLocale(locale);
+        LocaleHolder.setLocale(locale);
+        DataunitLocaleHolder.setLocale(locale);
 
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
@@ -142,14 +150,14 @@ public class AppEntry extends com.vaadin.ui.UI {
                 Throwable cause = DecorationHelper.findFinalCause(event.getThrowable());
                 if (cause != null) {
                     if (cause.getClass() == VirtuosoException.class && ((VirtuosoException) cause).getErrorCode() == VirtuosoException.IOERROR && cause.getMessage().contains("Connection refused")) {
-                        Notification.show("Cannot connect to database!", "Please make sure that the database is running and properly configured.", Type.ERROR_MESSAGE);
+                        Notification.show(Messages.getString("AppEntry.database.error"), Messages.getString("AppEntry.database.error.description"), Type.ERROR_MESSAGE);
                         return;
                     }
 
                     // Display the error message in a custom fashion
                     //String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
                     //Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
-                    Notification.show("Unexpected error occured.", "Please reload the application.", Type.ERROR_MESSAGE);
+                    Notification.show(Messages.getString("AppEntry.unexpected.error"), Messages.getString("AppEntry.unexpected.error.description"), Type.ERROR_MESSAGE);
                     // and log ...
                     LOG.error("Uncaught exception", cause);
                 } else {
@@ -231,19 +239,20 @@ public class AppEntry extends com.vaadin.ui.UI {
                     }
 
                     // Prompt the user to save or cancel if the name is changed
-                    ConfirmDialog.show(getUI(), "Unsaved changes", "There are unsaved changes.\nDo you wish to save them or discard?", "Save", "Discard changes", new ConfirmDialog.Listener() {
-                        @Override
-                        public void onClose(ConfirmDialog cd) {
-                            if (cd.isConfirmed()) {
-                                if (!lastView.saveChanges()) {
-                                    return;
+                    ConfirmDialog.show(getUI(),
+                            Messages.getString("AppEntry.confirmDialog.name"), Messages.getString("AppEntry.confirmDialog.text"), Messages.getString("AppEntry.confirmDialog.save"), Messages.getString("AppEntry.confirmDialog.discard"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        if (!lastView.saveChanges()) {
+                                            return;
+                                        }
+                                    } else {
+                                        forceViewChange = true;
+                                    }
+                                    navigatorHolder.navigateTo(pendingViewAndParameters);
                                 }
-                            } else {
-                                forceViewChange = true;
-                            }
-                            navigatorHolder.navigateTo(pendingViewAndParameters);
-                        }
-                    });
+                            });
                     //Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
 
                     return false;

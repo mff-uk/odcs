@@ -35,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Component for visualization of the pipeline.
@@ -253,7 +254,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
             getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edgeFormater.format(edge.getScript()));
         } else {
-            Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.edge.failed"), result, Notification.Type.WARNING_MESSAGE);
         }
 
     }
@@ -424,17 +425,17 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         LOG.debug("DPU mandatory fields check completed");
         EdgeCompiler edgeCompiler = new EdgeCompiler();
         boolean hadInvalidMappings = false;
-        String message = "Pipeline contained invalid mapping(s). They were removed. List of removed mappings:\n";
+        String message = Messages.getString("PipelineCanvas.pipeline.invalid");
         for (Edge edge : graph.getEdges()) {
             List<String> invalidMappings = edgeCompiler.update(edge, dpuExplorer.getOutputs(edge.getFrom().getDpuInstance()), dpuExplorer.getInputs(edge.getTo().getDpuInstance()));
             if (!invalidMappings.isEmpty()) {
                 hadInvalidMappings = true;
-                message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
+                message += Messages.getString("PipelineCanvas.edge.from", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
             }
             getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edgeFormater.format(edge.getScript()));
         }
         if (hadInvalidMappings) {
-            Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.invalid.mappings"), message, Notification.Type.WARNING_MESSAGE);
         }
     }
 
@@ -535,10 +536,10 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         try {
             isGraphValid &= pipelineValidator.validateGraphEdges(graph);
             if (isGraphValid) {
-                Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
+                Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
             }
         } catch (PipelineValidationException ex) {
-            Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.mandatory.missing"), ex.getMessage(), Notification.Type.WARNING_MESSAGE);
         }
     }
 

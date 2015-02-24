@@ -44,7 +44,7 @@ CREATE TABLE `dpu_instance`
   `config_valid` boolean NOT NULL,
 -- DPUInstaceRecord
   `dpu_id` INTEGER,
-  `use_template_config` SMALLINT NOT NULL DEFAULT 0,
+  `use_template_config` BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_DPU_INSTANCE_dpu_id` ON `dpu_instance` (`dpu_id`);

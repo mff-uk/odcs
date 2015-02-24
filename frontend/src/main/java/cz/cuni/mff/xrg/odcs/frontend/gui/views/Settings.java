@@ -56,6 +56,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.EmailNotifications;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListComponentProvider;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.ManipulableListManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UsersList;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -229,7 +230,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 //		prefixesLayout.setStyleName("settings");
 
         //My account tab
-        accountButton = new NativeButton("My account");
+        accountButton = new NativeButton(Messages.getString("Settings.my.account"));
         accountButton.setHeight("40px");
         accountButton.setWidth("170px");
         accountButton.setStyleName("selectedtab");
@@ -251,7 +252,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.setComponentAlignment(accountButton, Alignment.TOP_RIGHT);
 
         //Scheduler notifications tab
-        notificationsButton = new NativeButton("Scheduler notifications");
+        notificationsButton = new NativeButton(Messages.getString("Settings.scheduler.notifications"));
         notificationsButton.setHeight("40px");
         notificationsButton.setWidth("170px");
         notificationsButton.setStyleName("multiline");
@@ -278,7 +279,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 Alignment.TOP_RIGHT);
 
         //Manage users tab
-        usersButton = new NativeButton("Manage users");
+        usersButton = new NativeButton(Messages.getString("Settings.manage.users"));
         usersButton.setHeight("40px");
         usersButton.setWidth("170px");
         usersButton.setStyleName("multiline");
@@ -306,7 +307,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
 
         //Delete debug resources tab
-        pipelinesButton = new NativeButton("Delete debug resources");
+        pipelinesButton = new NativeButton(Messages.getString("Settings.delete.resources"));
         pipelinesButton.setHeight("40px");
         pipelinesButton.setWidth("170px");
         pipelinesButton.setStyleName("multiline");
@@ -365,7 +366,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         // runtime limits
         runtimePropsLayout = createRuntimePropsLayout();
 
-        runtimePropsButton = new NativeButton("Runtime properties");
+        runtimePropsButton = new NativeButton(Messages.getString("Settings.runtime.properties"));
         runtimePropsButton.setHeight("40px");
         runtimePropsButton.setWidth("170px");
         runtimePropsButton.setStyleName("multiline");
@@ -411,7 +412,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         HorizontalLayout buttonBar = new HorizontalLayout();
         buttonBar.setWidth(380, Unit.PIXELS);
         buttonBar.setMargin(new MarginInfo(true, false, false, false));
-        final Button saveButton = new Button("Save");
+        final Button saveButton = new Button(Messages.getString("Settings.runtime.properties.save"));
         saveButton.setEnabled(false);
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -430,7 +431,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         String value = validateAndGetValue(property, 1);
 
                         if (toSave.containsKey(name) || notChanged.contains(name)) {
-                            Notification.show("Save failed.", "There are two or more properties with the same name: " + name, Notification.Type.ERROR_MESSAGE);
+                            Notification.show(Messages.getString("Settings.runtime.properties.save.failed"), Messages.getString("Settings.runtime.properties.save.failed.description") + name, Notification.Type.ERROR_MESSAGE);
                             return;
                         }
 
@@ -449,7 +450,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         }
                     }
                 } catch (InvalidValueException e) {
-                    Notification.show("Save failed.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    Notification.show(Messages.getString("Settings.runtime.properties.invalid.value"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
@@ -465,7 +466,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     runtimePropertiesFacade.save(runtimeProperty);
                 }
 
-                Notification.show("Save succesfull.", "Runtime properties were saved succesfully.", Notification.Type.HUMANIZED_MESSAGE);
+                Notification.show(Messages.getString("Settings.runtime.properties.save.successfull"), Messages.getString("Settings.runtime.properties.save.successfull.description"), Notification.Type.HUMANIZED_MESSAGE);
                 saveButton.setEnabled(false);
                 refreshRuntimeProperties();
             }
@@ -494,9 +495,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 TextField text = new TextField();
                 text.addTextChangeListener(changeListener);
                 text.setRequired(true);
-                text.setRequiredError("Name is Required");
+                text.setRequiredError(Messages.getString("Settings.name.required"));
                 text.setValue(name);
-                text.setInputPrompt("name");
+                text.setInputPrompt(Messages.getString("Settings.prompt.name"));
                 text.setWidth(250, Unit.PIXELS);
                 text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                 oneLine.addComponent(text, 0, 0);
@@ -535,7 +536,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                     text = new TextField();
                     text.addTextChangeListener(changeListener);
                     text.setValue(value);
-                    text.setInputPrompt("value");
+                    text.setInputPrompt(Messages.getString("Settings.prompt.value"));
                     text.setWidth(250, Unit.PIXELS);
                     text.addValidator(new MaxLengthValidator(LenghtLimits.RUNTIME_PROPERTY_NAME_AND_VALUE));
                     oneLine.addComponent(text, 1, 0);
@@ -640,9 +641,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         notificationsLayout.addComponent(buttonBarNotify);
 
         notificationsLayout.addComponent(new Label(
-                "Default form of report about scheduled pipeline execution"), 0);
+                Messages.getString("Settings.default.form")), 0);
         notificationsLayout.addComponent(new Label(
-                "(may be overriden in the particular schedulled event) :"), 1);
+                Messages.getString("Settings.default.form.detail")), 1);
 
         return notificationsLayout;
     }
@@ -677,14 +678,14 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             accountLayout.addComponent(emailLayout);
         }
 
-        Label rowsLabel = new Label("Number of rows in tables:");
+        Label rowsLabel = new Label(Messages.getString("Settings.table.row.count"));
         rows = new TextField();
 
         Integer tableRows = loggedUser.getTableRows() != null ? loggedUser
                 .getTableRows() : 20;
         rows.setPropertyDataSource(new ObjectProperty<>(tableRows));
         rows.addValidator(new IntegerRangeValidator(
-                "Please enter value between 5 and 100.",
+                Messages.getString("Settings.range.validation"),
                 5, 100));
         rows.setBuffered(true);
         rows.setImmediate(true);
@@ -704,7 +705,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         accountLayout.addComponent(buttonBarMyAcc);
         if (hasPermission("editEmailGlobal")) {
-            accountLayout.addComponent(new Label("Email Notifications to:"), 0);
+            accountLayout.addComponent(new Label(Messages.getString("Settings.email.notifications")), 0);
         }
         return accountLayout;
     }
@@ -723,7 +724,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         buttonMyAccountBar.setMargin(new MarginInfo(true, false, false, false));
         buttonMyAccountBar.setEnabled(false);
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("Settings.myAccount.save"));
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -758,7 +759,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 new MarginInfo(true, false, false, false));
         buttonNotificationBar.setEnabled(false);
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(Messages.getString("Settings.notifications.save"));
         saveButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -813,12 +814,11 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             try {
                 rows.validate();
             } catch (Validator.InvalidValueException ex) {
-                Notification.show("Failed to save settings, reason:", emailValidationText() + "; \"Number of rows in tables\" must be a number between 5 and 100. You entered \""
-                        + rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("Settings.schedule.fail"), emailValidationText() + Messages.getString("Settings.schedule.fail.description", rows.getValue()), Notification.Type.ERROR_MESSAGE);
                 return false;
             }
 
-            Notification.show("Failed to save settings, reason:",
+            Notification.show(Messages.getString("Settings.failed.to.save"),
                     emailValidationText(), Notification.Type.ERROR_MESSAGE);
             return false;
         }
@@ -826,8 +826,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         try {
             rows.validate();
         } catch (Validator.InvalidValueException ex) {
-            Notification.show("Failed to save settings, reason:", "\"Number of rows in tables\" must be a number between 5 and 100. You entered \""
-                    + rows.getValue() + "\". Please correct that before saving.", Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("Settings.failed.to.save.reason"), Messages.getString("Settings.failed.to.save.description", rows.getValue()), Notification.Type.ERROR_MESSAGE);
             return false;
         }
 
@@ -848,7 +847,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         loggedUser.setTableRows(Integer.parseInt(rows.getValue()));
         rows.commit();
         userFacade.save(loggedUser);
-        Notification.show("My account settings were successfully saved",
+        Notification.show(Messages.getString("Settings.myAccout.successfull"),
                 Notification.Type.HUMANIZED_MESSAGE);
         if (buttonNotificationBar != null)
             buttonNotificationBar.setEnabled(false);
@@ -879,9 +878,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         if (isMyAccountModified()) {
 
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("Settings.unsaved.changes"),
+                    Messages.getString("Settings.unsaved.changes.dialog"),
+                    Messages.getString("Settings.unsaved.changes.save"), Messages.getString("Settings.unsaved.changes.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -919,9 +918,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
             final VerticalLayout layoutShow) {
         if (areNotificationsModified()) {
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("Settings.notifications.unsaved"),
+                    Messages.getString("Settings.notifications.unsaved.dialog"),
+                    Messages.getString("Settings.notifications.unsaved.save"), Messages.getString("Settings.notifications.unsaved.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -1027,13 +1026,13 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 }
             }
             if (errorNumber == 1) {
-                errorText = "Email " + wrongFormat + " has wrong format.";
+                errorText = Messages.getString("Settings.validation.email") + wrongFormat + Messages.getString("Settings.validation.wrong.format");
             }
             if (errorNumber > 1) {
-                errorText = "Emails " + wrongFormat + ", have wrong format.";
+                errorText = Messages.getString("Settings.validation.emails") + wrongFormat + Messages.getString("Settings.validation.emails.wrong.format");
             }
         } else {
-            errorText = "At least one mail has to be filled, so that the notification can be send.";
+            errorText = Messages.getString("Settings.validation.email.minimum");
         }
 
         return errorText;

@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.data.Validator;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Validator for checking maximum length of input. Maximum length can be set in
  * constructor.
@@ -41,7 +43,7 @@ public final class MaxLengthValidator implements Validator {
         if (value.getClass() == String.class) {
             String stringValue = (String) value;
             if (stringValue.length() > maxLength) {
-                throw new Validator.InvalidValueException(String.format("Max length is %d characters! Current length is %d characters!", maxLength, stringValue.length()));
+                throw new Validator.InvalidValueException(Messages.getString("MaxLengthValidator.exception", maxLength, stringValue.length()));
             }
         }
     }

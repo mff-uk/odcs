@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 
 /**
@@ -89,7 +89,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     private HashMap<Date, Label> runTimeLabels = new HashMap<>();
 
     private ExecutionListPresenter presenter;
-    
+
     @Autowired
     private Utils utils;
 
@@ -98,11 +98,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     @Override
     public Object enter(final ExecutionListPresenter presenter) {
         // build page
-    	this.presenter = presenter;
-    	if (!presenter.isLayoutInitialized()) {
-    		buildPage(presenter);
-		}
-    	debugView.restore();
+        this.presenter = presenter;
+        if (!presenter.isLayoutInitialized()) {
+            buildPage(presenter);
+        }
+        debugView.restore();
         return this;
     }
 
@@ -126,7 +126,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         if (execution.getStatus() == PipelineExecutionStatus.RUNNING
                 || execution.getStatus() == PipelineExecutionStatus.QUEUED) {
             presenter.startDebugRefreshEventHandler(debugView, execution);
-        }        
+        }
         // no DPU specified
         LOG.trace("showExecutionDetail() : setExecution");
         debugView.setExecution(execution, null);
@@ -136,7 +136,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         // adjust hsplit
         LOG.trace("showExecutionDetail() : adjust hsplit");
         if (hsplit.isLocked()) {
-            debugView.setActiveTab("Events");
+            debugView.setActiveTab(Messages.getString("DebuggingView.events"));
             if (UI.getCurrent().getPage().getBrowserWindowWidth() < FALLBACK_WIDTH) {
                 hsplit.setSplitPosition(0, Unit.PERCENTAGE);
                 showMaster.setEnabled(true);
@@ -190,7 +190,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         monitorTableLayout.addComponent(topLine);
 
         // Refresh button. Refreshing the table
-        Button btnRefresh = new Button("Refresh", new Button.ClickListener() {
+        Button btnRefresh = new Button(Messages.getString("ExecutionListViewImpl.refresh"), new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -204,7 +204,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         //Clear Filters button. Clearing filters on the table with executions.
         Button btnClearFilters = new Button();
-        btnClearFilters.setCaption("Clear Filters");
+        btnClearFilters.setCaption(Messages.getString("ExecutionListViewImpl.clear.filters"));
         btnClearFilters.setHeight("25px");
         btnClearFilters.setWidth("120px");
         btnClearFilters.addStyleName("v-button-primary");
@@ -218,9 +218,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         topLine.addComponent(btnClearFilters);
-        
+
         // clear table sorting
-        Button btnClearSort = new Button("Clear Sort");
+        Button btnClearSort = new Button(Messages.getString("ExecutionListViewImpl.clear.sort"));
         btnClearSort.setHeight("25px");
         btnClearSort.setWidth("120px");
         btnClearSort.addStyleName("v-button-primary");
@@ -234,7 +234,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
         topLine.addComponent(btnClearSort);
-        
+
         // Table with pipeline execution records
         monitorTable = initializeExecutionTable(presenter);
         monitorTableLayout.addComponent(monitorTable);
@@ -265,7 +265,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         ActionColumnGenerator generator = new ActionColumnGenerator();
         // add action buttons
 
-        generator.addButton("Show log", null, new Action() {
+        generator.addButton(Messages.getString("ExecutionListViewImpl.show.log"), null, new Action() {
             @Override
             protected void action(long id) {
                 changeURI(id);
@@ -285,7 +285,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         }, new ThemeResource("icons/show_log.png"));
 
-        generator.addButton("Debug data", null, new Action() {
+        generator.addButton(Messages.getString("ExecutionListViewImpl.debug.data"), null, new Action() {
             @Override
             protected void action(long id) {
                 changeURI(id);
@@ -304,7 +304,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         }, new ThemeResource("icons/debug_data.png"));
 
-        generator.addButton("Cancel", null, new Action() {
+        generator.addButton(Messages.getString("ExecutionListViewImpl.cancel"), null, new Action() {
             @Override
             protected void action(long id) {
                 presenter.stopEventHandler(id);
@@ -324,7 +324,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         }, new ThemeResource("icons/cancelled.png"));
 
-        generator.addButton("Run pipeline", null, new Action() {
+        generator.addButton(Messages.getString("ExecutionListViewImpl.run.pipeline"), null, new Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id);
@@ -341,7 +341,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         }, new ThemeResource("icons/running.png"));
 
-        generator.addButton("Debug pipeline", null, new Action() {
+        generator.addButton(Messages.getString("ExecutionListViewImpl.debug.pipeline"), null, new Action() {
             @Override
             protected void action(long id) {
                 presenter.debugEventHandler(id);
@@ -374,7 +374,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         //Recursive call
         //buildDebugView(execution);
 
-        showMaster = new Button("Back to Execution Monitor", new ClickListener() {
+        showMaster = new Button(Messages.getString("ExecutionListViewImpl.back.to.exexution"), new ClickListener() {
 
             private static final long serialVersionUID = 4723715087122769012L;
 
@@ -463,11 +463,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     comboScheduled.addItem(true);
                     ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
                     comboScheduled.setItemIcon(true, iconScheduled);
-                    comboScheduled.setItemCaption(true, "Scheduled");
+                    comboScheduled.setItemCaption(true, Messages.getString("ExecutionListViewImpl.scheduled"));
                     comboScheduled.addItem(false);
                     ThemeResource iconNotScheduled = new ThemeResource("icons/not_scheduled.png");
                     comboScheduled.setItemIcon(false, iconNotScheduled);
-                    comboScheduled.setItemCaption(false, "Manual");
+                    comboScheduled.setItemCaption(false, Messages.getString("ExecutionListViewImpl.manual"));
                     return comboScheduled;
                 }
                 return null;
@@ -518,9 +518,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         executionTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
-					private static final long serialVersionUID = 9095300568169526085L;
+                    private static final long serialVersionUID = 9095300568169526085L;
 
-					@Override
+                    @Override
                     public void itemClick(ItemClickEvent event) {
                         ValueItem item = (ValueItem) event.getItem();
                         final long executionId = item.getId();
@@ -534,7 +534,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             @Override
             public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
                 final Button btnEdit = new Button();
-                btnEdit.setDescription("Detail");
+                btnEdit.setDescription(Messages.getString("ExecutionListViewImpl.detail"));
                 btnEdit.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -588,11 +588,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 boolean inDebug = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
                 Embedded emb;
                 if (inDebug) {
-                    emb = new Embedded("True", new ThemeResource("icons/debug.png"));
-                    emb.setDescription("TRUE");
+                    emb = new Embedded(Messages.getString("ExecutionListViewImpl.inDebug.true"), new ThemeResource("icons/debug.png"));
+                    emb.setDescription(Messages.getString("ExecutionListViewImpl.TRUE"));
                 } else {
-                    emb = new Embedded("False", new ThemeResource("icons/no_debug.png"));
-                    emb.setDescription("FALSE");
+                    emb = new Embedded(Messages.getString("ExecutionListViewImpl.inDebug.false"), new ThemeResource("icons/no_debug.png"));
+                    emb.setDescription(Messages.getString("ExecutionListViewImpl.FALSE"));
                 }
                 return emb;
             }
@@ -653,7 +653,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     private void changeURI(long executionId) {
         String uriFragment = Page.getCurrent().getUriFragment();
         ParametersHandler handler = new ParametersHandler(uriFragment);
-        handler.addParameter("exec", ""+executionId);
+        handler.addParameter("exec", "" + executionId);
         ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
     }
 
@@ -728,9 +728,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
             if (propertyId.equals("isDebugging")) {
                 if (value) {
-                    return "Debug";
+                    return Messages.getString("ExecutionListViewImpl.debug");
                 } else {
-                    return "Run";
+                    return Messages.getString("ExecutionListViewImpl.run");
                 }
             }
             return super.getBooleanFilterDisplayName(propertyId, value);
@@ -749,27 +749,27 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }
     }
 
-	@Override
-	public int getExecPage(Long execId) {
-		Iterator<?> it = monitorTable.getItemIds().iterator();
-		int index = 0;
-		while (it.hasNext()) {
-			Long id = (Long) it.next();
-			if (id.equals(execId)) {
-				return (index / monitorTable.getPageLength()) + 1; // pages are from 1
-			}
-			index++;
-		}
-		return 0;
-	}
+    @Override
+    public int getExecPage(Long execId) {
+        Iterator<?> it = monitorTable.getItemIds().iterator();
+        int index = 0;
+        while (it.hasNext()) {
+            Long id = (Long) it.next();
+            if (id.equals(execId)) {
+                return (index / monitorTable.getPageLength()) + 1; // pages are from 1
+            }
+            index++;
+        }
+        return 0;
+    }
 
-	@Override
-	public boolean hasExecution(long executionId) {
-		return monitorTable.getItemIds().contains(executionId);
-	};
-	
-	@Override
-	public void resetFilters() {
-	    monitorTable.resetFilters();
-	}
+    @Override
+    public boolean hasExecution(long executionId) {
+        return monitorTable.getItemIds().contains(executionId);
+    };
+
+    @Override
+    public void resetFilters() {
+        monitorTable.resetFilters();
+    }
 }

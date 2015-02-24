@@ -10,6 +10,8 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.SingleComponentContainer;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Can display {@lnk View} as well as {@link PresenterWrap} in {@link ComponentContainer}.
  * 
@@ -46,12 +48,12 @@ class PresenterViewDisplay implements ViewDisplay {
                 container.setContent((Component) presenterView);
             } else {
                 // unknown class
-                throw new IllegalArgumentException("Presenter do not return a component: "
+                throw new IllegalArgumentException(Messages.getString("PresenterViewDisplay_no.component")
                         + wrap.getPresenter());
             }
         } else {
             // unknown class
-            throw new IllegalArgumentException("View is not a component: "
+            throw new IllegalArgumentException(Messages.getString("PresenterViewDisplay_view.not.component")
                     + view);
         }
     }

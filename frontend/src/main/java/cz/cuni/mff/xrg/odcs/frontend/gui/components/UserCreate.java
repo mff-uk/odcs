@@ -36,6 +36,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for new user creation. Called from the {@link UsersList}.
@@ -91,7 +92,7 @@ public class UserCreate extends Window {
         this.userFacade = userFacade;
         this.setResizable(false);
         this.setModal(true);
-        this.setCaption("User's details");
+        this.setCaption(Messages.getString("UserCreate.user.details"));
 
         buildMainLayout(newUser);
         this.setContent(mainLayout);
@@ -125,7 +126,7 @@ public class UserCreate extends Window {
         userFullName.addValidator(new MaxLengthValidator(
                 LenghtLimits.USER_FULLNAME));
 
-        userDetailsLayout.addComponent(new Label("Full user name:"), 0, 0);
+        userDetailsLayout.addComponent(new Label(Messages.getString("UserCreate.full.user.name")), 0, 0);
         userDetailsLayout.addComponent(userFullName, 1, 0);
 
         userName = new TextField();
@@ -145,7 +146,7 @@ public class UserCreate extends Window {
                             if (selectUser == null
                                     || (selectUser.getId() != user.getId())) {
                                 ex = new InvalidValueException(
-                                        "user with this user name is already exist");
+                                        Messages.getString("UserCreate.user.exists"));
                                 throw ex;
                             }
                         }
@@ -153,13 +154,14 @@ public class UserCreate extends Window {
 
                     return;
                 }
-                ex = new InvalidValueException("user name field must be filled");
+                ex = new InvalidValueException(
+                        Messages.getString("UserCreate.user.filled"));
                 throw ex;
             }
         });
         userName.addValidator(new MaxLengthValidator(LenghtLimits.USER_NAME));
 
-        userDetailsLayout.addComponent(new Label("User name:"), 0, 1);
+        userDetailsLayout.addComponent(new Label(Messages.getString("UserCreate.user.name")), 0, 1);
         userDetailsLayout.addComponent(userName, 1, 1);
 
         password = new PasswordField();
@@ -176,7 +178,7 @@ public class UserCreate extends Window {
             }
         });
 
-        Label passLabel = new Label("Password:");
+        Label passLabel = new Label(Messages.getString("UserCreate.password"));
 
         userDetailsLayout.addComponent(passLabel, 0, 2);
         userDetailsLayout.addComponent(password, 1, 2);
@@ -184,7 +186,7 @@ public class UserCreate extends Window {
         passwordConfim = new PasswordField();
         passwordConfim.setImmediate(true);
         passwordConfim.setWidth("250px");
-        Label confirmLabel = new Label("Password<br>confirmation:");
+        Label confirmLabel = new Label(Messages.getString("UserCreate.password.confirmation"));
         passwordConfim.addFocusListener(new FocusListener() {
             private static final long serialVersionUID = 1L;
 
@@ -213,16 +215,15 @@ public class UserCreate extends Window {
                         && !((String) value).isEmpty()) {
                     String inputEmail = (String) value;
                     if (!EmailValidator.getInstance().isValid(inputEmail)) {
-                        throw new InvalidValueException("wrong е-mail format");
+                        throw new InvalidValueException(Messages.getString("UserCreate.wrong.email"));
                     }
                 } else {
-                    throw new InvalidValueException(
-                            "e-mail field must be filled");
+                    throw new InvalidValueException(Messages.getString("UserCreate.email.empty"));
                 }
             }
         });
 
-        userDetailsLayout.addComponent(new Label("E-mail:"), 0, 4);
+        userDetailsLayout.addComponent(new Label(Messages.getString("UserCreate.email")), 0, 4);
         userDetailsLayout.addComponent(userEmail, 1, 4);
 
         userDetailsLayout.setColumnExpandRatio(0, 0.3f);
@@ -242,8 +243,8 @@ public class UserCreate extends Window {
         roleSelector.setImmediate(true);
         roleSelector.setWidth("335px");
         roleSelector.setHeight("200px");
-        roleSelector.setLeftColumnCaption("Defined Roles:");
-        roleSelector.setRightColumnCaption("Set Roles:");
+        roleSelector.setLeftColumnCaption(Messages.getString("UserCreate.roles.defined"));
+        roleSelector.setRightColumnCaption(Messages.getString("UserCreate.roles.set"));
         roleSelector.addValueChangeListener(new ValueChangeListener() {
 
             private static final long serialVersionUID = 1L;
@@ -276,7 +277,7 @@ public class UserCreate extends Window {
                 if (!"[]".equals(value.toString())) {
                     return;
                 }
-                ex = new InvalidValueException("at least one role must be set");
+                ex = new InvalidValueException(Messages.getString("UserCreate.roles.atLeastOne"));
                 throw ex;
 
             }
@@ -288,7 +289,7 @@ public class UserCreate extends Window {
 
         // Save button
         Button createUser = new Button();
-        createUser.setCaption("Save");
+        createUser.setCaption(Messages.getString("UserCreate.save"));
         createUser.setWidth("90px");
         createUser.setImmediate(true);
         createUser.addClickListener(new ClickListener() {
@@ -342,7 +343,7 @@ public class UserCreate extends Window {
 
                 if (!errorText.equals("")) {
                     errorText = errorText + ".";
-                    Notification.show("Failed to save settings. Reason:",
+                    Notification.show(Messages.getString("UserCreate.save.failed"),
                             errorText, Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -357,16 +358,11 @@ public class UserCreate extends Window {
                         if (!passwordConfim.getValue().isEmpty()) {
                             userPassword = password.getValue();
                         } else {
-                            Notification.show("Password confirmation is wrong",
-                                    "The pasword can't be empty",
-                                    Notification.Type.ERROR_MESSAGE);
+                            Notification.show(Messages.getString("UserCreate.wrong.confirmation"), Messages.getString("UserCreate.password.empty"), Notification.Type.ERROR_MESSAGE);
                             return;
                         }
                     } else {
-                        Notification
-                                .show("Password confirmation is wrong",
-                                        "The typed pasword is different than the retyped password",
-                                        Notification.Type.ERROR_MESSAGE);
+                        Notification.show(Messages.getString("UserCreate.wrong.confirmation2"), Messages.getString("UserCreate.password.different"), Notification.Type.ERROR_MESSAGE);
                         return;
                     }
 
@@ -386,17 +382,11 @@ public class UserCreate extends Window {
                             if (!passwordConfim.getValue().isEmpty()) {
                                 user.setPassword(password.getValue());
                             } else {
-                                Notification.show(
-                                        "Password confirmation is wrong",
-                                        "The pasword can't be empty",
-                                        Notification.Type.ERROR_MESSAGE);
+                                Notification.show(Messages.getString("UserCreate.wrong.confirmation3"), Messages.getString("UserCreate.password.empty2"), Notification.Type.ERROR_MESSAGE);
                                 return;
                             }
                         } else {
-                            Notification
-                                    .show("Password confirmation is wrong",
-                                            "The typed pasword is different than the retyped password",
-                                            Notification.Type.ERROR_MESSAGE);
+                            Notification.show(Messages.getString("UserCreate.wrong.confirmation4"), Messages.getString("UserCreate.password.different2"), Notification.Type.ERROR_MESSAGE);
                             return;
                         }
                     }
@@ -433,7 +423,7 @@ public class UserCreate extends Window {
 
         buttonBar.addComponent(createUser);
 
-        Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+        Button cancelButton = new Button(Messages.getString("UserCreate.cancel"), new Button.ClickListener() {
             /**
              * Closes Scheduling pipeline window
              */

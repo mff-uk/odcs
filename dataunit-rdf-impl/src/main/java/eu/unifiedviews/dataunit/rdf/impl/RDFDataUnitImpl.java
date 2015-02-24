@@ -23,10 +23,10 @@ import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 
 /**
  * Abstract class provides common parent methods for RDFDataUnitImpl implementation.
- *
  */
 class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements ManageableWritableRDFDataUnit {
 
@@ -40,19 +40,19 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
     private static final String UPDATE_EXISTING_GRAPH = ""
-                    + "DELETE "
-                    + "{ "
-                    + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?o "
-                    + "} "
-                    + "INSERT "
-                    + "{ "
-                    + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
-                    + "} "
-                    + "WHERE "
-                    + "{"
-                    + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
-                    + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?o "
-                    + "}";
+            + "DELETE "
+            + "{ "
+            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?o "
+            + "} "
+            + "INSERT "
+            + "{ "
+            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?" + DATA_GRAPH_BINDING + " "
+            + "} "
+            + "WHERE "
+            + "{"
+            + "?s <" + MetadataDataUnit.PREDICATE_SYMBOLIC_NAME + "> ?" + SYMBOLIC_NAME_BINDING + " . "
+            + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?o "
+            + "}";
 
     public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
             String writeContextString, CoreServiceBus coreServices) {
@@ -105,11 +105,11 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                             valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             existingDataGraphURI,
                             getMetadataWriteGraphname()
-                    );
+                            );
                 }
             });
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Problem with repositry.", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitImpl.repository.problem"), ex);
         }
     }
 
@@ -131,11 +131,11 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                             valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             entrySubject,
                             getMetadataWriteGraphname()
-                    );
+                            );
                 }
             });
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Problem with repositry.", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitImpl.repository.problem"), ex);
         }
         return entrySubject;
     }
@@ -170,7 +170,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
             }
             connection.commit();
         } catch (RepositoryException ex) {
-            throw new DataUnitException("Error when adding data graph.", ex);
+            throw new DataUnitException(Messages.getString("RDFDataUnitImpl.adding.data.error"), ex);
         } finally {
             if (connection != null) {
                 try {

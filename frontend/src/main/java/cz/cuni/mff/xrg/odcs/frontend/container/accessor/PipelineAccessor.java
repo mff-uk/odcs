@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.DataTimeCache;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Accessor for {@link Pipeline}s.
@@ -83,15 +84,15 @@ public class PipelineAccessor implements ClassAccessor<Pipeline> {
     public String getColumnName(String id) {
         switch (id) {
             case "id":
-                return "Id";
+                return Messages.getString("PipelineAccessor.id");
             case "name":
-                return "Name";
+                return Messages.getString("PipelineAccessor.name");
             case "duration":
-                return "Last run time";
+                return Messages.getString("PipelineAccessor.lastRun");
             case "lastExecTime":
-                return "Last execution time";
+                return Messages.getString("PipelineAccessor.lastExecution");
             case "lastExecStatus":
-                return "Last status";
+                return Messages.getString("PipelineAccessor.lastStatus");
             default:
                 return id;
         }

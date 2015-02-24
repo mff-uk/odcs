@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * GUI for Namespace Prefixes which opens from the Administrator menu. Contains
@@ -40,7 +41,7 @@ public class NamespacePrefixes {
 
     private static String[] visibleCols = new String[] { "id", "name", "uri", "actions" };
 
-    private static String[] headers = new String[] { "ID", "Prefix name", "Prefix URI", "Actions" };
+    private static String[] headers = new String[] { Messages.getString("NamespacePrefixes.id"), Messages.getString("NamespacePrefixes.prefix.name"), Messages.getString("NamespacePrefixes.prefix.URI"), Messages.getString("NamespacePrefixes.actions") };
 
     private IndexedContainer tableData;
 
@@ -70,7 +71,7 @@ public class NamespacePrefixes {
         topLine.setSpacing(true);
 
         Button addUserButton = new Button();
-        addUserButton.setCaption("Create new prefix");
+        addUserButton.setCaption(Messages.getString("NamespacePrefixes.prefix.new"));
         addUserButton.setWidth("130px");
         addUserButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -96,7 +97,7 @@ public class NamespacePrefixes {
         topLine.addComponent(addUserButton);
 
         Button buttonDeleteFilters = new Button();
-        buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.setCaption(Messages.getString("NamespacePrefixes.filters.clear"));
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("130px");
         buttonDeleteFilters
@@ -244,7 +245,7 @@ public class NamespacePrefixes {
 
             //Edit button. Open dialog for edit user's details.
             Button changeButton = new Button();
-            changeButton.setCaption("Edit");
+            changeButton.setCaption(Messages.getString("NamespacePrefixes.edit"));
             changeButton.setWidth("80px");
             changeButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
@@ -263,7 +264,7 @@ public class NamespacePrefixes {
 
             //Delete button. Delete user's record from Database.
             Button deleteButton = new Button();
-            deleteButton.setCaption("Delete");
+            deleteButton.setCaption(Messages.getString("NamespacePrefixes.delete"));
             deleteButton.setWidth("80px");
             deleteButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
@@ -274,8 +275,8 @@ public class NamespacePrefixes {
                             .getValue();
                     prefixDel = namespacePrefixFacade.getPrefix(prefixId);
                     //open confirmation dialog
-                    ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting prefix",
-                            "Delete the  " + prefixDel.getName() + " prefix?", "Delete", "Cancel",
+                    ConfirmDialog.show(UI.getCurrent(), Messages.getString("NamespacePrefixes.dialog.delete.prefix"),
+                            Messages.getString("NamespacePrefixes.dialog.description", prefixDel.getName()), Messages.getString("NamespacePrefixes.dialog.delete"), Messages.getString("NamespacePrefixes.dialog.cancel"),
                             new ConfirmDialog.Listener() {
                                 private static final long serialVersionUID = 1L;
 
