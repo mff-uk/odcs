@@ -58,9 +58,6 @@ class DPUFacadeImpl implements DPUFacade {
         DPUTemplateRecord dpu = new DPUTemplateRecord(name, type);
         if (authCtx != null) {
             dpu.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
-                dpu.setOrganization(authCtx.getUser().getOrganization());
-
         }
         return dpu;
     }
@@ -72,13 +69,11 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.create')")
+    @PreAuthorize("hasRole('dpuTemplate.copy')")
     public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
         DPUTemplateRecord copy = new DPUTemplateRecord(original);
         if (authCtx != null) {
             copy.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
-                copy.setOrganization(authCtx.getUser().getOrganization());
 
         }
         return copy;
@@ -99,9 +94,6 @@ class DPUFacadeImpl implements DPUFacade {
         DPUTemplateRecord template = new DPUTemplateRecord(instance);
         if (authCtx != null) {
             template.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
-                template.setOrganization(authCtx.getUser().getOrganization());
-
         }
         if (instance.getTemplate().getParent() == null) {
             template.setParent(instance.getTemplate());
@@ -116,10 +108,10 @@ class DPUFacadeImpl implements DPUFacade {
      * 
      * @return DPURecord list
      */
-    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
+    //@PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
     @Override
     public List<DPUTemplateRecord> getAllTemplates() {
-        return templateDao.getAll();
+        return templateDao.getAllVisible(authCtx.getUser());
     }
 
     /**

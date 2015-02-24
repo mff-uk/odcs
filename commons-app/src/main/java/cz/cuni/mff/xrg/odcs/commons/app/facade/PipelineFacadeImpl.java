@@ -188,14 +188,14 @@ class PipelineFacadeImpl implements PipelineFacade {
         pipelineDao.delete(pipeline);
     }
 
-    @PreAuthorize("hasPermission(#dpu, 'pipeline.read')")
-    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @PreAuthorize("hasPermission(#dpu, 'dpuTemplate.read')")
+    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
     @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
     }
 
-    @PreAuthorize("hasPermission(#dpu, 'pipeline.delete')")
+    @PreAuthorize("hasPermission(#dpu, 'dpuTemplate.read')")
     @Override
     public List<Pipeline> getAllPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
@@ -350,7 +350,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      * @return pipeline execution of given pipeline
      */
-    @PreAuthorize("hasRole('pipelineExecution.create')")
+    @PreAuthorize("hasRole('pipeline.run')")
     @Override
     public PipelineExecution createExecution(Pipeline pipeline) {
         PipelineExecution newExec = new PipelineExecution(pipeline);
@@ -557,7 +557,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasRole('pipelineExecution.create')")
+    @PreAuthorize("hasRole('pipeline.run')")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -583,7 +583,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *            pipeline execution to stop
      */
     @Override
-    @PreAuthorize("hasPermission(#execution, 'pipelineExecution.create')")
+    @PreAuthorize("hasPermission(#execution, 'pipelineExecution.stop')")
     @Transactional
     public void stopExecution(PipelineExecution execution) {
         PipelineExecution currentExec = getExecution(execution.getId());

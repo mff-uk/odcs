@@ -83,7 +83,6 @@ CREATE TABLE "dpu_template"
   "config_valid" boolean NOT NULL,
 -- DPUTemplateRecord
   "user_id" INTEGER,
-  "organization_id" INTEGER,
   "visibility" SMALLINT,
   "type" SMALLINT,
   "jar_directory" VARCHAR(255),
@@ -94,7 +93,6 @@ CREATE TABLE "dpu_template"
 CREATE INDEX "ix_DPU_TEMPLATE_jar_directory" ON "dpu_template" ("jar_directory");
 CREATE INDEX "ix_DPU_TEMPLATE_parent_id" ON "dpu_template" ("parent_id");
 CREATE INDEX "ix_DPU_TEMPLATE_user_id" ON "dpu_template" ("user_id");
-CREATE INDEX "ix_DPU_TEMPLATE_organization_id" ON "dpu_template" ("organization_id");
 CREATE INDEX "ix_DPU_TEMPLATE_visibility" ON "dpu_template" ("visibility");
 
 CREATE SEQUENCE "seq_exec_dataunit_info" START 1;

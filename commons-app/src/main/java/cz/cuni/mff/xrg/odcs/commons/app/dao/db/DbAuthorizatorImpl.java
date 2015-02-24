@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
@@ -77,12 +78,6 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
         if (ExecutionView.class.isAssignableFrom(entityClass)) {
             predicate = or(cb, predicate, cb.equal(root.get("ownerName"), authCtx.getUser().getUsername()));
-
-//            Predicate subPredicate = null;
-//            subPredicate = cb.notEqual(root.get("ownerName"), authCtx.getUser().getUsername());
-//            subPredicate = and(cb, subPredicate, cb.notEqual(root.get("shareType"), ShareType.PRIVATE));
-//
-//            predicate = or(cb, predicate, subPredicate);
             return predicate;
         }
 
@@ -107,7 +102,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
     }
 
     public Predicate getAuthorizationPredicateOrganization(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-
+        
         Predicate predicate = null;
 
         Organization org = authCtx.getUser().getOrganization();

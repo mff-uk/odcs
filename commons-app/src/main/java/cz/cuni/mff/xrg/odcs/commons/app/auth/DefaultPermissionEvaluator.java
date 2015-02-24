@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
@@ -28,6 +29,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
+
+    private static final String CAN_SEE_ALL = "spravca.transformacii";
 
     /**
      * Application's configuration.
@@ -58,9 +61,11 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         Permission foundPermission = null;
 
         for (GrantedAuthority ga : auth.getAuthorities()) {
+            if (ga.getAuthority().equals(CAN_SEE_ALL)) {
+                return true;
+            }
             if (ga.getAuthority().equals(perm.toString())) {
                 foundPermission = (Permission) ga;
-                break;
             }
         }
 
@@ -136,6 +141,17 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             User owner = oTarget.getOwner();
             if (owner != null && auth.getName().equals(owner.getUsername())) {
                 return true;
+            }
+        }
+
+        if (target instanceof DPUTemplateRecord) {
+            DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
+            if (foundPermission != null) {
+                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(dpuTarget.getShareType())) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
 

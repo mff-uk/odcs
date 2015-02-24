@@ -46,6 +46,8 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     private static final int COLUMN_DURATION_WIDTH = 80;
 
     private static final int COLUMN_TIME_WIDTH = 115;
+    
+    private static final int COLUMN_CREATEDBY_WIDTH = 120;
 
     private VerticalLayout mainLayout;
 
@@ -133,6 +135,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
         tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);
         tablePipelines.setColumnWidth("lastExecTime", COLUMN_TIME_WIDTH);
+        tablePipelines.setColumnWidth("createdBy", COLUMN_CREATEDBY_WIDTH);
 
         tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
         tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);

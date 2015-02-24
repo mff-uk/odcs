@@ -35,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 @Entity
 @Table(name = "dpu_template")
 public class DPUTemplateRecord extends DPURecord
-        implements OwnedEntity, SharedEntity, OrganizationSharedEntity {
+        implements OwnedEntity, SharedEntity {
 
     /**
      * Visibility in DPUTree.
@@ -85,10 +85,6 @@ public class DPUTemplateRecord extends DPURecord
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
 
     /**
      * Empty ctor for JPA.
@@ -159,14 +155,6 @@ public class DPUTemplateRecord extends DPURecord
     @Override
     public User getOwner() {
         return owner;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     @Override

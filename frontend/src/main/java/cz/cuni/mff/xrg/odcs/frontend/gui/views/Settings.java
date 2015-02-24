@@ -256,7 +256,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         notificationsButton.setWidth("170px");
         notificationsButton.setStyleName("multiline");
 
-        notificationsButton.setVisible(hasPermission("editNotificationFrequency"));
+        notificationsButton.setVisible(hasPermission("userNotificationSettings.editNotificationFrequency"));
 
         notificationsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -673,7 +673,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         HorizontalLayout buttonBarMyAcc = buildButtonMyAccountBar();
 
-        if (hasPermission("editEmailGlobal")) {
+        if (hasPermission("userNotificationSettings.editEmailGlobal")) {
             accountLayout.addComponent(emailLayout);
         }
 

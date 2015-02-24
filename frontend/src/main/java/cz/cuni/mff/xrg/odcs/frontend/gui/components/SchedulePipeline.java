@@ -713,10 +713,10 @@ public class SchedulePipeline extends Window {
         buttonBar.addComponent(cancelButton);
 
         VerticalLayout notificationsLayout = buildnotificationsLayout();
-
         tabSheet.addTab(coreLayout, "Core", null);
-        tabSheet.addTab(notificationsLayout, "Notifications", null);
-
+        if (hasPermission("userNotificationSettings.createPipelineExecutionSettings")) {
+            tabSheet.addTab(notificationsLayout, "Notifications", null);
+        }
         mainLayout.addComponent(tabSheet);
         mainLayout.addComponent(buttonBar);
 //		mainLayout.setComponentAlignment(buttonBar, Alignment.MIDDLE_RIGHT);
