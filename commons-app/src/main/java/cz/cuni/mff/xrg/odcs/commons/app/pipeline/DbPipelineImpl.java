@@ -36,7 +36,7 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         final String queryStr = "SELECT e FROM Pipeline e WHERE e.organization.name = :orgName";
         TypedQuery<Pipeline> query = createTypedQuery(queryStr);
         query.setParameter("orgName", orgName);
-        return executeList(queryStr);
+        return executeList(query);
     }
 
     @Override
