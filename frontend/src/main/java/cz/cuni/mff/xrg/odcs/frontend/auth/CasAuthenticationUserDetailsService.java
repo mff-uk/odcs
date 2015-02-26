@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.auth;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.jasig.cas.client.validation.Assertion;
@@ -20,9 +22,10 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private static final String ORG_ATTRIBUTE = "organization";
-    private static final String ROLE_ATTRIBUTE = "role";
-    
+    private static final String ORG_ATTRIBUTE = "SubjectID";
+
+    private static final String ROLE_ATTRIBUTE = "SPR.Roles";
+
     private UserFacade userFacade;
 
     /**
@@ -41,10 +44,14 @@ public class CasAuthenticationUserDetailsService extends
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 
-        String rolename = null;
-        
-        if(attributes.get(ROLE_ATTRIBUTE)!=null)
-            rolename = attributes.get(ROLE_ATTRIBUTE).toString();
+        List<String> roles = new ArrayList<>();
+        Object roleAttributes = attributes.get(ROLE_ATTRIBUTE);
+        if (roleAttributes != null) {
+            if (roleAttributes instanceof String)
+                roles.add((String) roleAttributes);// = attributes.get(ROLE_ATTRIBUTE).toString();
+            else if (roleAttributes instanceof List)
+                roles.addAll((List) roleAttributes);
+        }
 
         String organization = attributes.get(ORG_ATTRIBUTE) != null ? attributes.get(ORG_ATTRIBUTE).toString() : null;
 
@@ -58,10 +65,16 @@ public class CasAuthenticationUserDetailsService extends
 
         user.getRoles().clear();
 
-        if (rolename != null) {
-            RoleEntity role = userFacade.getRoleByName(rolename);
-            if (role != null) {
-                user.addRole(role);
+        for (String rolename : roles) {
+            if (rolename != null) {
+                //TODO nevieme to inak otestit
+                if ("MOD-R-DATA".equals(rolename)) {
+                    rolename = "MOD_R_PO";
+                    RoleEntity role = userFacade.getRoleByName(rolename);
+                    if (role != null) {
+                        user.addRole(role);
+                    }
+                }
             }
         }
 
