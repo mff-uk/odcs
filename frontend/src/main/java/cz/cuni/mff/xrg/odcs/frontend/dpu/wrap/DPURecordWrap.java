@@ -12,10 +12,10 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogProvider;
+import eu.unifiedviews.dpu.config.vaadin.InitializableConfigDialog;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -159,9 +159,10 @@ public class DPURecordWrap {
      *
      * @throws ModuleException
      * @throws FileNotFoundException
+     * @throws DPUWrapException
      */
     @SuppressWarnings("unchecked")
-    private void loadConfigDialog() throws ModuleException, FileNotFoundException {
+    private void loadConfigDialog() throws ModuleException, FileNotFoundException, DPUWrapException {
         if (configDialog == null) {
             // continue and load the dialog
         } else {
@@ -183,7 +184,11 @@ public class DPURecordWrap {
                 final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
-                    ((InitializableConfigDialog) configDialog).initialize();
+                    try {
+                        ((InitializableConfigDialog) configDialog).initialize();
+                    } catch (DPUConfigException ex) {
+                        throw new DPUWrapException("Can't initialize dialog.");
+                    }
                 }
             }
         } else {

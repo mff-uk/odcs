@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.dpu.dialog;
 
 import java.util.Locale;
 
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
 
 /**
  * Implementation of {@link ConfigDialogContext}.
