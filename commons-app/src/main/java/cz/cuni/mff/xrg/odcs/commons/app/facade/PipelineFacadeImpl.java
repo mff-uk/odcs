@@ -149,7 +149,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public List<Pipeline> getAllPipelines(String organizationName) {
         // TODO: Add filter to pipeline DAO, to return only pipelines with given organization
-        return pipelineDao.getAll();
+        return pipelineDao.getPipelinesForOrganization(organizationName);
     }
 
     /**
