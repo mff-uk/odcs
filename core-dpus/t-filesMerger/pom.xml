@@ -20,4 +20,5 @@
 		<dpu.package>eu.unifiedviews.plugins.transformer.filesmerger</dpu.package>
 		<dpu.mainClass>FilesMerger</dpu.mainClass>
 	</properties>
+
 </project>
