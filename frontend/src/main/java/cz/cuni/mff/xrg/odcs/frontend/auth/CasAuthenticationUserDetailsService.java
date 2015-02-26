@@ -68,12 +68,11 @@ public class CasAuthenticationUserDetailsService extends
         for (String rolename : roles) {
             if (rolename != null) {
                 //TODO nevieme to inak otestit
-                if ("MOD-R-DATA".equals(rolename)) {
-                    rolename = "MOD_R_PO";
-                    RoleEntity role = userFacade.getRoleByName(rolename);
-                    if (role != null) {
-                        user.addRole(role);
-                    }
+                if ("MOD-R-DATA".equals(rolename))
+                    rolename = "MOD-R-PO";
+                RoleEntity role = userFacade.getRoleByName(rolename);
+                if (role != null) {
+                    user.addRole(role);
                 }
             }
         }
