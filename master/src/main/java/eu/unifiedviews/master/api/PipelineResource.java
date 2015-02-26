@@ -65,11 +65,11 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<PipelineDTO> getPipelines(@QueryParam("organizationName") String organizationName) {
+    public List<PipelineDTO> getPipelines(@QueryParam("organizationExternalId") Long organizationExternalId) {
         List<Pipeline> pipelines = null;
         try {
-            if(isNotEmpty(organizationName)){
-                pipelines = pipelineFacade.getAllPipelines(organizationName);
+            if(organizationExternalId != null){
+                pipelines = pipelineFacade.getAllPipelines(organizationExternalId);
             } else {
                 pipelines = pipelineFacade.getAllPipelines();
             }
