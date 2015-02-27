@@ -1,8 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
@@ -24,6 +27,9 @@ import eu.unifiedviews.dpu.config.vaadin.InitializableConfigDialog;
  * @author Petyr
  */
 public class DPURecordWrap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DPURecordWrap.class);
+
     /**
      * Wrapped DPU.
      */
@@ -177,8 +183,18 @@ public class DPURecordWrap {
             ConfigDialogProvider<?> dialogProvider;
             // 'unchecked casting' .. we check type in condition above
             dialogProvider = (ConfigDialogProvider<?>) instance;
+
+            try {
+                java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
+                final Object result = method.invoke(dialogProvider);
+                configDialog = (AbstractConfigDialog<?>)result;                
+            } catch (NoSuchMethodException | SecurityException ex) {
+                LOG.error("Can't get method.", ex);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                LOG.error("Can't call method.", ex);
+            }
             // get configuration dialog
-            configDialog = dialogProvider.getConfigurationDialog();
+            //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
                 final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
