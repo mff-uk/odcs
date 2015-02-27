@@ -59,7 +59,7 @@
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-api-helpers</artifactId>
+			<artifactId>uv-dpu-config-vaadin</artifactId>
 			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 		<dependency>

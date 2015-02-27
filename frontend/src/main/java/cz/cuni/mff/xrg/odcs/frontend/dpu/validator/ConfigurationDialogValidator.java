@@ -8,8 +8,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogProvider;
 
 /**
  * Validate DPU's dialog.
