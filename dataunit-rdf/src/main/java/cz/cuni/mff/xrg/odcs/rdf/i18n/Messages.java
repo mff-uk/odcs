@@ -16,7 +16,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
 public class Messages {
 
-    public static final String BUNDLE_NAME = "messages";
+    public static final String BUNDLE_NAME = "rdf-messages";
 
     public static final ReloadableResourceBundleMessageSource MESSAGE_SOURCE = initializeResourceBundle();
 
