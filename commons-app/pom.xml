@@ -52,6 +52,12 @@
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-config-vaadin</artifactId>
+			<version>${uv-dpu-api-helpers.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
 			<version>${uv-dataunit-rdf.version}</version>
 		</dependency>
