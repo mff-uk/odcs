@@ -277,7 +277,11 @@ public class User implements UserDetails, OwnedEntity, DataObject {
         ArrayList<Permission> permissions = new ArrayList<>();
         for (RoleEntity role : getRoles()) {
             if (role.getPermissions() != null) {
-                permissions.addAll(role.getPermissions());
+                for (Permission p : role.getPermissions()) {
+                    if (!permissions.contains(p)) {
+                        permissions.add(p);
+                    }
+                }
             }
         }
         return permissions;
