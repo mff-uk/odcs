@@ -2,6 +2,7 @@ package eu.unifiedviews.master.api;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -15,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +33,9 @@ import eu.unifiedviews.master.model.PipelineDTO;
 @Component
 @Path("/pipelines")
 public class PipelineResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PipelineResource.class);
+
     @Autowired
     private PipelineFacade pipelineFacade;
 
@@ -65,11 +71,17 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<PipelineDTO> getPipelines(@QueryParam("organizationExternalId") Long organizationExternalId) {
+    public List<PipelineDTO> getPipelines(@QueryParam("organizationExternalId") String organizationExternalId) {
         List<Pipeline> pipelines = null;
         try {
-            if(organizationExternalId != null){
-                pipelines = pipelineFacade.getAllPipelines(organizationExternalId);
+            if(isNotEmpty(organizationExternalId)){
+                try {
+                    Long id = Long.parseLong(organizationExternalId);
+                    pipelines = pipelineFacade.getAllPipelines(id);
+                } catch (NumberFormatException e) {
+                    // if organizationExternalId cannot be parsed return no results
+                    return new ArrayList<>();
+                }
             } else {
                 pipelines = pipelineFacade.getAllPipelines();
             }
