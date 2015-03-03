@@ -160,7 +160,6 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all roles persisted in database
      */
-    @PreAuthorize("hasRole('role.read')")
     @Override
     public List<RoleEntity> getAllRoles() {
         return roleDao.getAllRoles();
@@ -177,7 +176,6 @@ class UserFacadeImpl implements UserFacade {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('role.create')")
     @Override
     public void save(RoleEntity role) {
         roleDao.save(role);
@@ -189,7 +187,6 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'role.delete')")
     @Override
     public void delete(RoleEntity role) {
         roleDao.delete(role);
