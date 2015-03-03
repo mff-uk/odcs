@@ -25,8 +25,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -83,13 +81,8 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Autowired
     private BackendHeartbeat heartbeatService;
 
-    @Autowired
-    private AppConfig appConfig;
-
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
-        setTheme(appConfig.getString(ConfigProperty.FRONTEND_THEME));
-
         // Retrieve Locale from Runtime properties, and set it in LocaleHolders
         Locale locale = runtimePropertiesFacade.getLocale();
         LocaleHolder.setLocale(locale);
