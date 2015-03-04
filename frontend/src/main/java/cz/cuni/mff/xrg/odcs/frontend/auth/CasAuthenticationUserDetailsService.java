@@ -22,9 +22,9 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private static final String ORG_ATTRIBUTE = "SubjectID";
+    private String orgAttributeName = "SubjectID";
 
-    private static final String ROLE_ATTRIBUTE = "SPR.Roles";
+    private String roleAttributeName = "SPR.Roles";
 
     private UserFacade userFacade;
 
@@ -45,7 +45,7 @@ public class CasAuthenticationUserDetailsService extends
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
 
         List<String> roles = new ArrayList<>();
-        Object roleAttributes = attributes.get(ROLE_ATTRIBUTE);
+        Object roleAttributes = attributes.get(roleAttributeName);
         if (roleAttributes != null) {
             if (roleAttributes instanceof String)
                 roles.add((String) roleAttributes);// = attributes.get(ROLE_ATTRIBUTE).toString();
@@ -53,7 +53,7 @@ public class CasAuthenticationUserDetailsService extends
                 roles.addAll((List) roleAttributes);
         }
 
-        String organization = attributes.get(ORG_ATTRIBUTE) != null ? attributes.get(ORG_ATTRIBUTE).toString() : null;
+        String organization = attributes.get(orgAttributeName) != null ? attributes.get(orgAttributeName).toString() : null;
 
         User user = userFacade.getUserByExtId(username);
 
@@ -89,5 +89,13 @@ public class CasAuthenticationUserDetailsService extends
             user.setOrganization(o);
         }
         return user;
+    }
+
+    public void setOrgAttributeName(String orgAttributeName) {
+        this.orgAttributeName = orgAttributeName;
+    }
+
+    public void setRoleAttributeName(String roleAttributeName) {
+        this.roleAttributeName = roleAttributeName;
     }
 }

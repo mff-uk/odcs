@@ -162,6 +162,5 @@ INSERT INTO `usr_extuser` VALUES ((SELECT max(id) FROM  `usr_user`), 'user');
 INSERT INTO `sch_usr_notification` VALUES (NULL,1,1,1),(NULL,2,1,1);
 INSERT INTO `sch_usr_notification_email` VALUES (1,1),(2,2);
 INSERT INTO `usr_user_role` VALUES (1,1),(1,2),(2,1);
-INSERT INTO `runtime_properties` (`id`, `name`, `value`) VALUES (NULL, 'backend.scheduledPipelines.limit', '5');
-INSERT INTO `runtime_properties` (`id`, `name`, `value`) VALUES (NULL, 'run.now.pipeline.priority', '1');
-INSERT INTO `runtime_properties` (`id`, `name`, `value`) VALUES (NULL, 'locale', 'en');
+INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
+INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
