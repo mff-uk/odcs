@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.validator;
 
+import java.lang.reflect.InvocationTargetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,14 +27,23 @@ class ConfigurationDialogValidator implements DPUValidator {
             throws DPUValidatorException {
         if (dpuInstance instanceof ConfigDialogProvider) {
             @SuppressWarnings("rawtypes")
-            ConfigDialogProvider provider = (ConfigDialogProvider) dpuInstance;
+            ConfigDialogProvider dialogProvider = (ConfigDialogProvider) dpuInstance;
+
             try {
-                @SuppressWarnings({ "rawtypes", "unused" })
-                AbstractConfigDialog dialog = provider.getConfigurationDialog();
+                java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
+                final Object result = method.invoke(dialogProvider);
+                // Try to load a dialog.
+                AbstractConfigDialog<?> configDialog = (AbstractConfigDialog<?>)result;
+            } catch (NoSuchMethodException | SecurityException ex) {
+                LOG.error("Can't get method.", ex);
+                throw new DPUValidatorException(Messages.getString("ConfigurationDialogValidator.exception") + ex.getMessage(), ex);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                LOG.error("Can't call method.", ex);
+                throw new DPUValidatorException(Messages.getString("ConfigurationDialogValidator.exception") + ex.getMessage(), ex);
             } catch (Throwable t) {
                 // catch everything ..
                 LOG.error("Dialog load failed.", t);
-                throw new DPUValidatorException(Messages.getString("ConfigurationDialogValidator.exception") + t.getMessage());
+                throw new DPUValidatorException(Messages.getString("ConfigurationDialogValidator.exception") + t.getMessage(), t);
             }
         } else {
             // no dialog
