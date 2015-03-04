@@ -256,7 +256,7 @@ public class Context implements DPUContext {
 
     @Override
     public String getOrganization() {
-        return this.contextInfo.getExecution().getOrganization().getName();
+        return "TODO_CHANGE_THIS_MOCK";
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
