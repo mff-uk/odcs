@@ -232,4 +232,3 @@ INSERT INTO "sch_usr_notification_email" VALUES (1,1),(2,2);
 INSERT INTO "usr_user_role" VALUES (1,1),(1,2),(2,1);
 INSERT INTO "runtime_properties" ("id", "name", "value") VALUES (nextval('seq_runtime_properties'), 'backend.scheduledPipelines.limit', '5');
 INSERT INTO "runtime_properties" ("id", "name", "value") VALUES (nextval('seq_runtime_properties'), 'run.now.pipeline.priority', '1');
-INSERT INTO "runtime_properties" ("id", "name", "value") VALUES (nextval('seq_runtime_properties'), 'locale', 'en');
