@@ -14,4 +14,3 @@ INSERT INTO `sch_usr_notification` VALUES (1,1,1,1),(2,2,1,1);
 INSERT INTO `sch_usr_notification_email` VALUES (1,1),(2,2);
 INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
 INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
-INSERT INTO `runtime_properties` (name, value) VALUES ('locale', 'en');

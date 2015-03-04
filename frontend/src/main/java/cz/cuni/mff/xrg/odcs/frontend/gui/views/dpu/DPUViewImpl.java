@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +67,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
+    private AppConfig appConfig;
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
@@ -803,7 +806,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
+            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)));
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
