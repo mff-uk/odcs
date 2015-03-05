@@ -59,7 +59,7 @@ public class CasAuthenticationUserDetailsService extends
 
         if (user == null) {
             user = userFacade.createUser(username, "*****", new EmailAddress(username + "@nomail.com"));
-            user.getExternalIdentifiers().add(username);
+            user.setExternalIdentifier(username);
             user.setTableRows(20);
         }
 

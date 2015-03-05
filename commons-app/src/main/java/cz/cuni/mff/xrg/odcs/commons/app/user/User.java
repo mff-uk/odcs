@@ -11,9 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,6 +21,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
  */
 @Entity
 @Table(name = "usr_user")
+@SecondaryTable(name = "usr_extuser", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id_usr", referencedColumnName = "id"))
 public class User implements UserDetails, OwnedEntity, DataObject {
 
     /**
@@ -93,10 +94,8 @@ public class User implements UserDetails, OwnedEntity, DataObject {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserNotificationRecord notification;
 
-    @ElementCollection
-    @CollectionTable(name = "usr_extuser", joinColumns = { @JoinColumn(name = "id_usr", referencedColumnName = "id") })
-    @Column(name = "id_extuser")
-    private Set<String> externalIdentifiers = new HashSet<>();
+    @Column(table = "usr_extuser", name = "id_extuser")
+    private String externalIdentifier;
 
     @Transient
     private Organization organization;
@@ -337,16 +336,12 @@ public class User implements UserDetails, OwnedEntity, DataObject {
         return this;
     }
 
-    public void addExternalIdentifier(String identifier) {
-        externalIdentifiers.add(identifier);
+    public String getExternalIdentifier() {
+        return externalIdentifier;
     }
 
-    public Set<String> getExternalIdentifiers() {
-        return externalIdentifiers;
-    }
-
-    public void setExternalIdentifiers(Set<String> externalIdentifiers) {
-        this.externalIdentifiers = externalIdentifiers;
+    public void setExternalIdentifier(String externalIdentifier) {
+        this.externalIdentifier = externalIdentifier;
     }
 
     public Organization getOrganization() {
