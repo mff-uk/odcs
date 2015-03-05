@@ -19,7 +19,7 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>uv-dataunit-relational</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${uv-dataunit-relational.version}</version>
         </dependency>
         
         <dependency> <!-- dataunit base project -->

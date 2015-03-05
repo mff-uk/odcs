@@ -46,7 +46,13 @@
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-api-helpers</artifactId>
+			<artifactId>uv-dpu-helpers</artifactId>
+			<version>${uv-dpu-api-helpers.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-config-vaadin</artifactId>
 			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 
@@ -372,9 +378,9 @@
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<version>1.7</version>
 				<configuration>
-					<source>${project.java.version}</source>
-					<target>${project.java.version}</target>
-					<complianceLevel>${project.java.version}</complianceLevel>
+                    <source>${project.java.source.version}</source>
+                    <target>${project.java.target.version}</target>
+					<complianceLevel>${project.java.target.version}</complianceLevel>
 					<showWeaveInfo>true</showWeaveInfo>
 					<verbose>true</verbose>
 					<weaveDependencies>
