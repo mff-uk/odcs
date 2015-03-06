@@ -27,6 +27,10 @@ public class PipelineScheduleDTO {
 
     private String periodUnit;
 
+    private String userExternalId;
+
+    private String organizationExternalId;
+
     public Long getId() {
         return id;
     }
@@ -115,4 +119,37 @@ public class PipelineScheduleDTO {
         this.periodUnit = periodUnit;
     }
 
+    public String getUserExternalId() {
+        return userExternalId;
+    }
+
+    public void setUserExternalId(String userExternalId) {
+        this.userExternalId = userExternalId;
+    }
+
+    public String getOrganizationExternalId() {
+        return organizationExternalId;
+    }
+
+    public void setOrganizationExternalId(String organizationExternalId) {
+        this.organizationExternalId = organizationExternalId;
+    }
+
+    @Override public String toString() {
+        return "PipelineScheduleDTO{" +
+                "lastExecution='" + lastExecution + '\'' +
+                ", id=" + id +
+                ", description='" + description + '\'' +
+                ", enabled=" + enabled +
+                ", scheduleType=" + scheduleType +
+                ", firstExecution='" + firstExecution + '\'' +
+                ", nextExecution='" + nextExecution + '\'' +
+                ", afterPipelines=" + afterPipelines +
+                ", justOnce=" + justOnce +
+                ", period=" + period +
+                ", periodUnit='" + periodUnit + '\'' +
+                ", userExternalId=" + userExternalId +
+                ", organizationExternalId='" + organizationExternalId + '\'' +
+                '}';
+    }
 }

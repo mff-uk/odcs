@@ -15,6 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,13 +54,24 @@ public class PipelineResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
+        // try to get user
+        User user =  userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+        if(user == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+        }
+        // try to get organization
+        Organization organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
+        if(organization == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+        }
         Pipeline pipeline = null;
         try {
             pipeline = pipelineFacade.createPipeline();
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
-            pipeline.setUser(userFacade.getUser(1L));
+            pipeline.setUser(user);
+            pipeline.setOrganization(organization);
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
@@ -130,12 +143,24 @@ public class PipelineResource {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", id));
         }
         try {
+            // try to get pipeline
             pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
             }
+            // try to get user
+            User user =  userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+            if(user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+            }
+            // try to get organization
+            Organization organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
+            if(organization == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+            }
             pipelineCopy = pipelineFacade.copyPipeline(pipeline);
-            pipelineCopy.setUser(userFacade.getUser(1L));
+            pipelineCopy.setUser(user);
+            pipelineCopy.setOrganization(organization);
             pipelineCopy = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipelineCopy);
             pipelineFacade.save(pipelineCopy);
         } catch (ApiException ex) {

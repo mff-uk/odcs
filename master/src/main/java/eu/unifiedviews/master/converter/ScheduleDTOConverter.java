@@ -29,6 +29,16 @@ public class ScheduleDTOConverter {
             } else {
                 dto.setPeriodUnit(null);
             }
+            if(schedule.getOwner() != null) {
+                dto.setUserExternalId(schedule.getOwner().getExternalIdentifier());
+            } else {
+                dto.setUserExternalId(null);
+            }
+            if(schedule.getOrganization() != null) {
+                dto.setOrganizationExternalId(schedule.getOrganization().getName());
+            } else {
+                dto.setOrganizationExternalId(null);
+            }
             dto.setScheduleType(schedule.getType());
             Set<Pipeline> pipelines = schedule.getAfterPipelines();
             List<Long> pipelineIds = null;
