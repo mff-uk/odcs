@@ -4,7 +4,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
@@ -82,6 +81,15 @@ public class DPUResource {
         if(dpuTemplate == null) { // it doesnt exists, create it
             createDpu(dpuName, dpuDescription, shareType, jarFile);
         } else if(force == true) { // it does exists, check force flag and replace
+            if(StringUtils.isNotEmpty(dpuName)) {
+                dpuTemplate.setName(dpuName);
+            }
+            if(StringUtils.isNotEmpty(dpuDescription)) {
+                dpuTemplate.setDescription(dpuDescription);
+            }
+            if(StringUtils.isNotEmpty(visibility)) {
+                dpuTemplate.setShareType(shareType);
+            }
             replaceDpu(dpuTemplate, jarFile);
         } else {
             throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
