@@ -37,7 +37,7 @@ public class DbUserImpl extends DbAccessBase<User> implements DbUser {
 
     @Override
     public User getByExtId(String extid) {
-        final String stringQuery = "SELECT e FROM User e WHERE :extid MEMBER OF e.externalIdentifiers";
+        final String stringQuery = "SELECT e FROM User e WHERE e.externalIdentifier = :extid";
         TypedQuery<User> query = createTypedQuery(stringQuery);
         query.setParameter("extid", extid);
         return execute(query);
