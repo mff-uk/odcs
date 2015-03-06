@@ -79,7 +79,6 @@ public class UsersList {
 
         Button addUserButton = new Button();
         addUserButton.setCaption(Messages.getString("UsersList.user.create"));
-        addUserButton.setWidth("120px");
         addUserButton.addStyleName("v-button-primary");
         addUserButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -107,7 +106,6 @@ public class UsersList {
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption(Messages.getString("UsersList.filter.clear"));
         buttonDeleteFilters.setHeight("25px");
-        buttonDeleteFilters.setWidth("120px");
         buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
