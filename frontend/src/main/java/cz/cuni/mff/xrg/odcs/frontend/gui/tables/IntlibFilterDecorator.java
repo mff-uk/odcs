@@ -8,6 +8,8 @@ import org.tepi.filtertable.numberfilter.NumberFilterPopupConfig;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.datefield.Resolution;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Default {@link FilterDecorator} to be used in tables. Extend this class and
  * override needed methods for customizing.
@@ -29,9 +31,9 @@ public class IntlibFilterDecorator implements FilterDecorator {
     @Override
     public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
         if (value) {
-            return "True";
+            return Messages.getString("IntlibFilterDecorator.true");
         } else {
-            return "False";
+            return Messages.getString("IntlibFilterDecorator.false");
         }
     }
 
@@ -52,22 +54,22 @@ public class IntlibFilterDecorator implements FilterDecorator {
 
     @Override
     public String getFromCaption() {
-        return "From";
+        return Messages.getString("IntlibFilterDecorator.from");
     }
 
     @Override
     public String getToCaption() {
-        return "To";
+        return Messages.getString("IntlibFilterDecorator.to");
     }
 
     @Override
     public String getSetCaption() {
-        return "Set";
+        return Messages.getString("IntlibFilterDecorator.set");
     }
 
     @Override
     public String getClearCaption() {
-        return "Clear";
+        return Messages.getString("IntlibFilterDecorator.clear");
     }
 
     @Override

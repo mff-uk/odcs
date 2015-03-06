@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+
 /**
  * @author Jan Vojt
  */
@@ -19,6 +21,6 @@ public class MalformedEmailAddressException extends RuntimeException {
      *            the detail message.
      */
     public MalformedEmailAddressException(String email) {
-        super(String.format("Invalid email syntax or invalid domain: %s.", email));
+        super(Messages.getString("MalformedEmailAddressException.email.invalid", email));
     }
 }

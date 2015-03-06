@@ -9,6 +9,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Implementation of {@link Item} interface for underlying {@link BindingSet} object.
  * 
@@ -60,13 +62,11 @@ public class BindingSetItem implements Item {
 
     @Override
     public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(
-                "Not supported for BindingSetItem.");
+        throw new UnsupportedOperationException(Messages.getString("BindingSetItem.add.exception"));
     }
 
     @Override
     public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(
-                "Not supported for BindingSetItem.");
+        throw new UnsupportedOperationException(Messages.getString("BindingSetItem.remove.exception"));
     }
 }

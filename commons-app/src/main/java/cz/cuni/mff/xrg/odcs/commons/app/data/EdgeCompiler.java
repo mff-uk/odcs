@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.LogAndIgnore;
 import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.StoreInvalidMappings;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -288,7 +289,8 @@ public final class EdgeCompiler {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Input: %s", dpu
+                    report += "\n";
+                    report += Messages.getString("EdgeCompiler.dpu.input", dpu
                             .getName(), input.getName());
                 }
             }
@@ -309,7 +311,8 @@ public final class EdgeCompiler {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Output: %s", dpu
+                    report += "\n";
+                    report += Messages.getString("EdgeCompiler.dpu.output", dpu
                             .getName(), output.getName());
                 }
             }

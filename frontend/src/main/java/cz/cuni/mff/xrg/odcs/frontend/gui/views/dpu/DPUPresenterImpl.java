@@ -20,7 +20,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-import eu.unifiedviews.dpu.config.DPUConfigException;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -35,11 +34,14 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * @author Bogo
@@ -86,19 +88,19 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
      */
     private Map<Long, Pipeline> pipelinesWithDPU = new HashMap<>();
 
-	private boolean isLayoutInitialized = false;
+    private boolean isLayoutInitialized = false;
 
     @Override
     public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
         // saving configuration
         try {
             dpuWrap.saveConfig();
-            Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpurecord.saved"), Notification.Type.HUMANIZED_MESSAGE);
         } catch (DPUConfigException e) {
-            Notification.show("The configuration have not been saved.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.configuration.save.failed"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (DPUWrapException e) {
             Notification.show(
-                    "Unexpected error. The configuration may have not been saved.",
+                    Messages.getString("DPUPresenterImpl.unExpected.error"),
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);
             LOG.error("Unexpected error while saving configuration for {}", dpuWrap.getDPUTemplateRecord().getId(), e);
         }
@@ -115,7 +117,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         List<DPUTemplateRecord> allDpus = dpuFacade.getAllTemplates();
         while (found) {
             found = false;
-            nameOfDpuCopy = "Copy of " + selectedDpu.getName();
+            nameOfDpuCopy = Messages.getString("DPUPresenterImpl.copy.of") + selectedDpu.getName();
             if (i > 1) {
                 nameOfDpuCopy = nameOfDpuCopy + " " + i;
             }
@@ -151,7 +153,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             //find if DPU Template has child elements
             List<DPUTemplateRecord> childDpus = dpuFacade.getChildDPUs(dpu);
             if (!childDpus.isEmpty()) {
-                Notification.show("DPURecord can not be removed because it has child elements", Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("DPUPresenterImpl.cannot.remove.dpu"), Notification.Type.ERROR_MESSAGE);
                 return false;
             }
 
@@ -164,12 +166,12 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
                 dpuFacade.delete(dpu);
             }
 
-            Notification.show("DPURecord was removed",
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.removed"),
                     Notification.Type.HUMANIZED_MESSAGE);
             return true;
         } //If DPU Template it used by any pipeline, than show the names of this pipelines.
         else if (pipelines.size() == 1) {
-            Notification.show("DPURecord can not be removed because it has been used in Pipeline: ", pipelines.get(0).getName(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.not.removed"), pipelines.get(0).getName(), Notification.Type.WARNING_MESSAGE);
         } else {
             Iterator<Pipeline> iterator = pipelines.iterator();
             StringBuilder names = new StringBuilder(iterator.next().getName());
@@ -178,7 +180,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
                 names.append(iterator.next().getName());
             }
             names.append('.');
-            Notification.show("DPURecord can not be removed because it is being used in pipelines: ", names.toString(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.used"), names.toString(), Notification.Type.WARNING_MESSAGE);
         }
         return false;
     }
@@ -247,12 +249,12 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         try {
             dpuManipulator.replace(dpu, newJar);
         } catch (DPUReplaceException e) {
-            Notification.show("Failed to replace DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.replace.failed"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
             return;
         }
 
         // and show message to the user that the replace has been successful
-        Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show(Messages.getString("DPUPresenterImpl.replace.finished"), Notification.Type.HUMANIZED_MESSAGE);
     }
 
     @Override
@@ -261,9 +263,9 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("save")) {
 
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.unsaved.changes"),
+                    Messages.getString("DPUPresenterImpl.unsaved.changes.dialog"),
+                    Messages.getString("DPUPresenterImpl.unsaved.changes.save"), Messages.getString("DPUPresenterImpl.unsaved.changes.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -314,7 +316,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 //        	selectedDpu = null;
 //		}
         Object viewObject = view.enter(this);
-        isLayoutInitialized  = true;
+        isLayoutInitialized = true;
 
         createDPUCloseListener = new Window.CloseListener() {
             private static final long serialVersionUID = 1L;
@@ -349,12 +351,12 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Override
     public void importDPUTemplateEventHandler() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Messages.getString("DPUPresenterImpl.not.supported")); //To change body of generated methods, choose Tools | Templates. 
     }
 
     @Override
     public void exportAllEventHandler() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Messages.getString("DPUPresenterImpl.not.supported")); //To change body of generated methods, choose Tools | Templates. 
     }
 
     @Override
@@ -386,21 +388,21 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.RUNNING);
         }
         if (!executions.isEmpty()) {
-            Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.pipeline.running", pipe.getName()), Notification.Type.WARNING_MESSAGE);
             return;
         }
-        
-        String message = "Would you really like to delete the \"" + pipe.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
-    	ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
-			@Override
-			public void onClose(ConfirmDialog cd) {
-				if (cd.isConfirmed()) {
-					pipelinesWithDPU.remove(pipe.getId());
-					pipelineFacade.delete(pipe);
-					view.removePipelineFromTable(pipe.getId());
-				}
-			}
-		});
+
+        String message = Messages.getString("DPUPresenterImpl.delete.dialog", pipe.getName());
+        ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.delete.dialog.confirmation"), message, Messages.getString("DPUPresenterImpl.delete.dialog.confirmation.delete"), Messages.getString("DPUPresenterImpl.delete.dialog.confirmation.cancel"), new ConfirmDialog.Listener() {
+            @Override
+            public void onClose(ConfirmDialog cd) {
+                if (cd.isConfirmed()) {
+                    pipelinesWithDPU.remove(pipe.getId());
+                    pipelineFacade.delete(pipe);
+                    view.removePipelineFromTable(pipe.getId());
+                }
+            }
+        });
     }
 
     @Override
@@ -423,13 +425,13 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         return permissions.hasPermission(pipe, "view");
     }
 
-	@Override
-	public void doAfterLogout() {
-		isLayoutInitialized = false;
-	}
+    @Override
+    public void doAfterLogout() {
+        isLayoutInitialized = false;
+    }
 
-	@Override
-	public boolean isLayoutInitialized() {
-		return isLayoutInitialized;
-	}
+    @Override
+    public boolean isLayoutInitialized() {
+        return isLayoutInitialized;
+    }
 }

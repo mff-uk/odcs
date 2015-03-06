@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
+import cz.cuni.mff.xrg.odcs.rdf.i18n.Messages;
 import eu.unifiedviews.dpu.DPUContext;
 
 /**
@@ -154,12 +155,14 @@ public class StatisticalHandler extends TripleCountHandler {
         StringBuilder result = new StringBuilder();
 
         if (hasWarnings()) {
-            result.append("\nWARNINGS list:");
+            result.append("\n");
+            result.append(Messages.getString("StatisticalHandler.warnings.list"));
             result.append(getWarningsAsString());
 
         }
         if (hasErrors()) {
-            result.append("\nERRORS list:");
+            result.append("\n");
+            result.append(Messages.getString("StatisticalHandler.errors.list"));
             result.append(getErorrsAsString());
         }
 
@@ -223,12 +226,14 @@ public class StatisticalHandler extends TripleCountHandler {
         }
 
         if (!warning.isEmpty()) {
-            result.append("\nWARNINGS list:");
+            result.append("\n");
+            result.append(Messages.getString("StatisticalHandler.warnings.list"));
             result.append(getWarningsAsString(warning));
 
         }
         if (!errors.isEmpty()) {
-            result.append("\nERRORS list:");
+            result.append("\n");
+            result.append(Messages.getString("StatisticalHandler.errors.list"));
             result.append(getErorrsAsString(errors));
         }
 

@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Builds E-mail notification component which consists of text fields for e-mail
@@ -124,7 +125,7 @@ public class EmailComponent {
                     saveEditedTexts();
                 }
             });
-            textFieldEmail.setInputPrompt("user@email.com");
+            textFieldEmail.setInputPrompt(Messages.getString("EmailComponent.email.prompt"));
 
             textFieldEmail.addValidator(new Validator() {
                 private static final long serialVersionUID = 1L;
@@ -136,7 +137,7 @@ public class EmailComponent {
                             && !((String) value).isEmpty()) {
                         String inputEmail = (String) value;
                         if (!EmailValidator.getInstance().isValid(inputEmail)) {
-                            throw new InvalidValueException("wrong е-mail format");
+                            throw new InvalidValueException(Messages.getString("EmailComponent.email.wrong"));
                         }
 
                         int count = 0;
@@ -144,12 +145,12 @@ public class EmailComponent {
                             if (emailField.getValue().equals(inputEmail))
                                 count++;
                             if (count > 1) {
-                                throw new InvalidValueException("duplicate e-mail");
+                                throw new InvalidValueException(Messages.getString("EmailComponent.email.duplicate"));
                             }
 
                         }
                     } else {
-                        throw new InvalidValueException("e-mail must be filled");
+                        throw new InvalidValueException(Messages.getString("EmailComponent.email.not.filled"));
                     }
                 }
             });

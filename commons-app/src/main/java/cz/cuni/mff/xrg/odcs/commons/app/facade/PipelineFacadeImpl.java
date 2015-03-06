@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -240,29 +241,33 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Transactional
     @Override
     public void createOpenEvent(Pipeline pipeline) {
-
-        if (pipeline.getId() == null) {
-            // pipeline has not been persisted yet
-            // -> it cannot be opened by anyone
-            return;
-        }
-
-        User user = authCtx.getUser();
-        if (user == null) {
-            // user logged out in the meantime -> ignore
-            return;
-        }
-
-        OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
-
-        if (event == null) {
-            event = new OpenEvent();
-            event.setPipeline(pipeline);
-            event.setUser(user);
-        }
-
-        event.setTimestamp(new Date());
-        openEventDao.save(event);
+        // TODO Petr: UPDATE on openEvent takes too long ..
+//        LOG.trace("createOpenEvent() ... ");
+//        if (pipeline.getId() == null) {
+//            // pipeline has not been persisted yet
+//            // -> it cannot be opened by anyone
+//            return;
+//        }
+//
+//        User user = authCtx.getUser();
+//        if (user == null) {
+//            // user logged out in the meantime -> ignore
+//            return;
+//        }
+//        LOG.trace("createOpenEvent() ... (getOpenEvent)");
+//        OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
+//
+//        if (event == null) {
+//            event = new OpenEvent();
+//            event.setPipeline(pipeline);
+//            event.setUser(user);
+//        }
+//
+//        LOG.trace("createOpenEvent() ... (saving)");
+//        event.setTimestamp(new Date());
+//        openEventDao.save(event);
+//
+//        LOG.trace("createOpenEvent() ... done");
     }
 
     /**
@@ -275,22 +280,30 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
     @Override
     public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
-        LOG.trace("getOpenPipelineEvents({})", pipeline.getId());
-        if (pipeline.getId() == null) {
-            // pipeline has not been persisted yet
-            // -> it cannot be opened by anyone else
-            return new ArrayList<>();
-        }
-
-        Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
-
-        if (authCtx != null) {
-            User loggedUser = authCtx.getUser();
-            return openEventDao.getOpenEvents(pipeline, from, loggedUser);
-        } else {
-            // user is null
-            return openEventDao.getOpenEvents(pipeline, from);
-        }
+        // Return empry list. Ie. no pipeline is open.
+        return Arrays.asList();
+        
+        // TODO Petr: UPDATE on openEvent takes too long ..
+//        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
+//        if (pipeline.getId() == null) {
+//            // pipeline has not been persisted yet
+//            // -> it cannot be opened by anyone else
+//            return new ArrayList<>();
+//        }
+//
+//        Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
+//
+//        if (authCtx != null) {
+//            User loggedUser = authCtx.getUser();
+//            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from, loggedUser);
+//            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+//            return res;
+//        } else {
+//            // user is null
+//            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from);
+//            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+//            return res;
+//        }
     }
 
     /**

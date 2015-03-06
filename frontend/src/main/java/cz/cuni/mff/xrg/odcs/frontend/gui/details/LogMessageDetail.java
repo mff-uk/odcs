@@ -15,6 +15,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Shows detail of selected log message.
@@ -41,28 +42,28 @@ public class LogMessageDetail extends Window {
      * @param log
      */
     public LogMessageDetail(Log log) {
-        this.setCaption("Log message detail");
+        this.setCaption(Messages.getString("LogMessageDetail.log.message"));
         GridLayout mainLayout = new GridLayout(2, 7);
         mainLayout.setImmediate(true);
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         mainLayout.setSizeFull();
 
-        Label timeLabel = new Label("Time:");
+        Label timeLabel = new Label(Messages.getString("LogMessageDetail.time"));
         //At least one component must have fixed width, for expand ratio to work correctly for content column.
         timeLabel.setWidth("60px");
         mainLayout.addComponent(timeLabel, 0, 0);
         mainLayout.addComponent(timeContent, 1, 0);
 
-        Label levelLabel = new Label("Level:");
+        Label levelLabel = new Label(Messages.getString("LogMessageDetail.level"));
         mainLayout.addComponent(levelLabel, 0, 2);
         mainLayout.addComponent(levelContent, 1, 2);
 
-        Label sourceLabel = new Label("Source:");
+        Label sourceLabel = new Label(Messages.getString("LogMessageDetail.source"));
         mainLayout.addComponent(sourceLabel, 0, 3);
         mainLayout.addComponent(sourceContent, 1, 3);
 
-        Label messageLabel = new Label("Message:");
+        Label messageLabel = new Label(Messages.getString("LogMessageDetail.message"));
         mainLayout.addComponent(messageLabel, 0, 4);
 
         fullMessageContent = new TextArea();
@@ -71,9 +72,10 @@ public class LogMessageDetail extends Window {
         fullMessageContent.setSizeFull();
         fullMessageContent.setWordwrap(true);
         mainLayout.addComponent(fullMessageContent, 0, 5, 1, 5);
+        mainLayout.setRowExpandRatio(5, 1.0f);
         mainLayout.setComponentAlignment(fullMessageContent, Alignment.TOP_LEFT);
 
-        Button closeButton = new Button("Close", new Button.ClickListener() {
+        Button closeButton = new Button(Messages.getString("LogMessageDetail.close"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();

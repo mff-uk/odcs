@@ -10,17 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import eu.unifiedviews.dataunit.DataUnit;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitTypeResolver;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Examine the given DPU instance for annotations. If there is {@link OutputDataUnit} annotation on field then create or assign suitable
@@ -94,8 +96,7 @@ public class AnnotationsOutput implements DPUPreExecutor {
             field.set(instance, value);
         } catch (IllegalArgumentException | IllegalAccessException e) {
             // create message
-            final String message = "Failed to set value for '"
-                    + field.getName() + "' exception: " + e.getMessage();
+            final String message = Messages.getString("AnnotationsOutput.value.set.failed", field.getName(), e.getMessage());
             eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
                     this, message));
             return false;
@@ -131,7 +132,7 @@ public class AnnotationsOutput implements DPUPreExecutor {
 
         //classToDataUnitType(field.getType());
         if (type == null) {
-            final String message = "Unknown type of field: " + field.getName();
+            final String message = Messages.getString("AnnotationsOutput.unknown.field", field.getName());
             // type cannot be resolved -> publish event
             eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
                     this, message));
@@ -143,7 +144,12 @@ public class AnnotationsOutput implements DPUPreExecutor {
         ManagableDataUnit dataUnit;
         // if the data unit with such name and type already
         // exist then is returned and reused
-        dataUnit = context.addOutputDataUnit(type, annotation.name());
+        try {
+            dataUnit = context.addOutputDataUnit(type, annotation.name());
+        } catch (DataUnitException ex) {
+            LOG.error("Failed to add output DataUnit", ex);
+            return false;
+        }
 
         LOG.debug("out: {}.{} = {}", context.getDPU().getName(), field.getName(),
                 dataUnit.getName());

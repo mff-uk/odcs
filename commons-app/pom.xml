@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.5.5</version>
+		<version>1.6.0</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
@@ -61,6 +61,12 @@
 			<artifactId>uv-dataunit-files</artifactId>
 			<version>${uv-dataunit-files.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-relational</artifactId>
+			<version>${uv-dataunit-relational.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
@@ -91,6 +97,12 @@
 			<artifactId>dataunit-file-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency> <!-- relational dataunit project -->
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>dataunit-relational-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency> <!-- logback as implementation org.slf4j -->
 			<groupId>ch.qos.logback</groupId>
@@ -112,7 +124,7 @@
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.5</version>
+			<version>1.4.7</version>
 		</dependency>
 
 		<dependency> <!-- OSGI impelemention -->
@@ -358,7 +370,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.5</version>
+				<version>1.7</version>
 				<configuration>
 					<source>${project.java.version}</source>
 					<target>${project.java.version}</target>
@@ -393,8 +405,19 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
-				</dependencies>
+                    <dependencies>
+                        <!-- Support for Java 8 -->
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjtools</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                    </dependencies>
 			</plugin>
 		</plugins>
 		<resources>

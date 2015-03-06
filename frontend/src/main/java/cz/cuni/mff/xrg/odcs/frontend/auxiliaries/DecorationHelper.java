@@ -5,6 +5,7 @@ import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Class with helper methods used in frontend.
@@ -117,7 +118,7 @@ public class DecorationHelper {
      */
     public static Embedded getIconForScheduled(boolean isScheduled) {
         ThemeResource img = new ThemeResource(isScheduled ? "icons/scheduled.png" : "icons/not_scheduled.png");
-        String description = isScheduled ? "Scheduled" : "Manual";
+        String description = isScheduled ? Messages.getString("DecorationHelper.shceduled") : Messages.getString("DecorationHelper.manual");
         Embedded emb = new Embedded(description, img);
         emb.setDescription(description);
         return emb;

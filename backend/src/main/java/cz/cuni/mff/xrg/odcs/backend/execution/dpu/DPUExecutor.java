@@ -15,13 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
-import eu.unifiedviews.dpu.DPU;
-import eu.unifiedviews.dpu.DPUException;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.ExecutionResult;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
@@ -32,6 +31,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import eu.unifiedviews.dpu.DPU;
+import eu.unifiedviews.dpu.DPUException;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
@@ -199,7 +200,7 @@ public final class DPUExecutor implements Runnable {
                 // one event abour failure
                 eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
                         context, item,
-                        "The pre-executor throws an unexpected exception. See logs for more details."));
+                        Messages.getString("DPUExecutor.pre.executor.exception")));
                 // and second about .. the whole failure
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
                         t, node.getDpuInstance(), execution, this));
@@ -234,22 +235,22 @@ public final class DPUExecutor implements Runnable {
                 LOG.error("DPU do not implement execution interface.");
             }
         } catch (DPUException e) {
-            LOG.error("Execution failed for DPUException.");
+            LOG.error("Execution failed for DPUException.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Exception e) {
-            LOG.error("Execution failed for Exception.");
+            LOG.error("Execution failed for Exception.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Error e) {
-            LOG.error("Execution failed for Error.");
+            LOG.error("Execution failed for Error.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
         } catch (Throwable e) {
-            LOG.error("Execution failed for Throwable.");
+            LOG.error("Execution failed for Throwable.", e);
             eventPublisher.publishEvent(PipelineFailedEvent.create(e,
                     node.getDpuInstance(), execution, this));
             executionResult.failure();
@@ -292,7 +293,7 @@ public final class DPUExecutor implements Runnable {
                 // one event abour failure
                 eventPublisher.publishEvent(DPUEvent.createPostExecutorFailed(
                         context, item,
-                        "The post-executor throws an unexpected exception. See logs for more details."));
+                        Messages.getString("DPUExecutor.post.executor.exception")));
                 // and second about .. the whole failure
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
                         t, node.getDpuInstance(), execution, this));

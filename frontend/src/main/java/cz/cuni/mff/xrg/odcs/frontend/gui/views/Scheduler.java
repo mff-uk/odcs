@@ -22,14 +22,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
@@ -47,6 +42,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -92,8 +88,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     static String[] visibleCols = new String[] { "commands", "status", "pipeline", "rule",
             "last", "next", "duration" };
 
-    static String[] headers = new String[] { "Actions", "Status", "Pipeline", "Rule",
-            "Last", "Next", "Last run time" };
+    static String[] headers = new String[] { Messages.getString("Scheduler.actions"), Messages.getString("Scheduler.status"), Messages.getString("Scheduler.pipeline"), Messages.getString("Scheduler.rule"),
+            Messages.getString("Scheduler.last"), Messages.getString("Scheduler.next"), Messages.getString("Scheduler.last.runTime") };
 
     int style = DateFormat.MEDIUM;
 
@@ -120,7 +116,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
     private boolean isMainLayoutInitialized = false;
-    
+
     /**
      * The constructor should first build the main layout, set the composition
      * root and then do any custom initialization.
@@ -138,10 +134,10 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     @Override
     public void enter(ViewChangeEvent event) {
-    	if (!isMainLayoutInitialized) {
-    		buildMainLayout();
-    		isMainLayoutInitialized = true;
-		}
+        if (!isMainLayoutInitialized) {
+            buildMainLayout();
+            isMainLayoutInitialized = true;
+        }
         setCompositionRoot(mainLayout);
 
         refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
@@ -187,7 +183,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         //topLine.setWidth(100, Unit.PERCENTAGE);
 
         Button addRuleButton = new Button();
-        addRuleButton.setCaption("Add new scheduling rule");
+        addRuleButton.setCaption(Messages.getString("Scheduler.add.rule"));
         addRuleButton.addStyleName("v-button-primary");
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -201,7 +197,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         //topLine.setComponentAlignment(addRuleButton, Alignment.MIDDLE_RIGHT);
 
         Button buttonDeleteFilters = new Button();
-        buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.setCaption(Messages.getString("Scheduler.clear.filters"));
         buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.setHeight("25px");
         buttonDeleteFilters.setWidth("110px");
@@ -250,7 +246,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     Object columnId) {
                 boolean isEnabled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
                 ThemeResource img = new ThemeResource(isEnabled ? "icons/ok.png" : "icons/error.png");
-                String description = isEnabled ? "Enabled" : "Disabled";
+                String description = isEnabled ? Messages.getString("Scheduler.image.enabled") : Messages.getString("Scheduler.image.disabled");
                 Embedded emb = new Embedded(description, img);
                 emb.setDescription(description);
                 return emb;
@@ -338,24 +334,26 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                 DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
                 if (item.isJustOnce()) {
                     result.getContainerProperty(id, "rule").setValue(
-                            "Run on " + df.format(item.getFirstExecution()));
+                            Messages.getString("Scheduler.run.on") + df.format(item.getFirstExecution()));
                 } else {
                     if (item.getPeriod().equals((Integer) 1)) {
                         result.getContainerProperty(id, "rule").setValue(
-                                "Run on "
+                                Messages.getString("Scheduler.run.on")
                                         + df.format(item.getFirstExecution())
-                                        + " and then repeat every "
-                                        + item.getPeriodUnit().toString()
-                                                .toLowerCase());
+                                        + Messages.getString("Scheduler.and.repeat")
+                                        + " "
+                                        + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
+                                                .toLowerCase()));
                     } else {
                         result.getContainerProperty(id, "rule").setValue(
-                                "Run on "
+                                Messages.getString("Scheduler.run.on")
                                         + df.format(item.getFirstExecution())
-                                        + " and then repeat every "
+                                        + Messages.getString("Scheduler.and.repeat")
+                                        + " "
                                         + item.getPeriod().toString()
                                         + " "
-                                        + item.getPeriodUnit().toString()
-                                                .toLowerCase() + "s");
+                                        + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
+                                                .toLowerCase() + "s"));
                     }
                 }
             } else {
@@ -373,11 +371,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     }
                 }
                 if (after.size() > 1) {
-                    result.getContainerProperty(id,
-                            "rule").setValue("Run after pipelines: " + afterPipelines);
+                    result.getContainerProperty(id, "rule").setValue(Messages.getString("Scheduler.run.after.pipelines") + afterPipelines);
                 } else {
-                    result.getContainerProperty(id,
-                            "rule").setValue("Run after pipeline: " + afterPipelines);
+                    result.getContainerProperty(id, "rule").setValue(Messages.getString("Scheduler.run.after.pipeline") + afterPipelines);
                 }
             }
 
@@ -465,7 +461,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                 //Enable button
                 if (!testStatus) {
                     Button enableButton = new Button();
-                    enableButton.setDescription("Enable");
+                    enableButton.setDescription(Messages.getString("Scheduler.button.enable"));
                     enableButton.setIcon(new ThemeResource("icons/ok.png"));
                     enableButton.addClickListener(new ClickListener() {
                         @Override
@@ -480,7 +476,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                   //Disable button
                 else {
                     Button disableButton = new Button();
-                    disableButton.setDescription("Disable");
+                    disableButton.setDescription(Messages.getString("Scheduler.button.disable"));
                     disableButton.addStyleName("small_button");
                     disableButton.setIcon(new ThemeResource("icons/error.png"));
                     disableButton.addClickListener(new ClickListener() {
@@ -496,7 +492,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             }
             //Edit button. Opens the window for editing given scheduling rule.
             Button editButton = new Button();
-            editButton.setDescription("Edit");
+            editButton.setDescription(Messages.getString("Scheduler.edit"));
             editButton.addStyleName("small_button");
             editButton.setIcon(new ThemeResource("icons/gear.png"));
             editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -509,7 +505,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
             //Delete button. Delete scheduling rule from the table.
             Button deleteButton = new Button();
-            deleteButton.setDescription("Delete");
+            deleteButton.setDescription(Messages.getString("Scheduler.delete"));
             deleteButton.addStyleName("small_button");
             deleteButton.setIcon(new ThemeResource("icons/trash.png"));
             deleteButton.addClickListener(new ClickListener() {
@@ -518,8 +514,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     scheduleDel = scheduleFacade.getSchedule(schId);
 
                     //open confirmation dialog
-                    ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting scheduling rule",
-                            "Delete \"" + scheduleDel.getPipeline().getName().toString() + "\" pipeline scheduling rule?", "Delete", "Cancel",
+                    ConfirmDialog.show(UI.getCurrent(), Messages.getString("Scheduler.delete.scheduling"),
+                            Messages.getString("Scheduler.delete.scheduling.description", scheduleDel.getPipeline().getName().toString()), Messages.getString("Scheduler.delete.scheduling.deleteButton"), Messages.getString("Scheduler.delete.scheduling.calcelButton"),
                             new ConfirmDialog.Listener() {
                                 private static final long serialVersionUID = 1L;
 
@@ -560,15 +556,15 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         @Override
         public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
             if (value) {
-                return "Enabled";
+                return Messages.getString("Scheduler.enabled");
             } else {
-                return "Disabled";
+                return Messages.getString("Scheduler.disabled");
             }
         }
     }
 
-	@Override
-	public void doAfterLogout() {
-		isMainLayoutInitialized = false;
-	}
+    @Override
+    public void doAfterLogout() {
+        isMainLayoutInitialized = false;
+    }
 }

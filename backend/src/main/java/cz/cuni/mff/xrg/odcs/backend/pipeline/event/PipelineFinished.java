@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.pipeline.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
@@ -18,7 +19,7 @@ public final class PipelineFinished extends PipelineInfo {
             .getLogger(PipelineFinished.class);
 
     public PipelineFinished(PipelineExecution execution, Object source) {
-        super(execution, source, String.format("Execution: %d finished",
+        super(execution, source, Messages.getString("PipelineFinished.execution.finished",
                 execution.getId()), "");
 
         LOG.info("Execution {} finished with status: {}", execution.getId(),

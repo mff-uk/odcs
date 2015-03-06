@@ -6,9 +6,9 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -29,6 +29,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist.PipelineListPresenterImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 
@@ -84,54 +85,51 @@ public class MenuLayout extends CustomComponent {
 
     private Embedded backendStatus;
 
-    private Embedded Logo;
+    @Value("${header.color0:#0095b7}")
+    private String backgroundColor0;
 
-    private HashMap<String, MenuItem> menuItems = new HashMap<>();
+    @Value("${header.color1:#0095b7}")
+    private String backgroundColor1;
+
+    @Value("${header.color2:#007089}")
+    private String backgroundColor2;
+
+    @Value("${header.color3:#007089}")
+    private String backgroundColor3;
+
+    private final HashMap<String, MenuItem> menuItems = new HashMap<>();
 
     /**
      * Build the layout.
      */
     public void build() {
-        // top-level component properties
-        setWidth("100%");
-        // we can set height to the main component
-        // as it will not show scroll bars then
-        setHeight("100%");
+        setSizeFull();
 
         // common part: create layout
         mainLayout = new VerticalLayout();
-        mainLayout.setImmediate(false);
         mainLayout.setMargin(false);
-        mainLayout.setWidth("100%");
-        mainLayout.setHeight("100%");
-
-        // Add Logo.
-        Logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));
-        Logo.setStyleName("logo");
+        mainLayout.setSizeFull();
 
         // menuBar
         menuBar = new MenuBar();
-        menuBar.setImmediate(false);
-        menuBar.setWidth("100.0%");
-        menuBar.setHeight("45px");
+        menuBar.setSizeFull();
         menuBar.setHtmlContentAllowed(true);
 
         backendStatus = new Embedded();
         backendStatus.setWidth("16px");
         backendStatus.setHeight("16px");
-        backendStatus.setStyleName("backendStatus");
 
         userName = new Label(authCtx.getUsername());
         userName.setIcon(new ThemeResource("img/user.svg"));
-        userName.setWidth("100px");
+        userName.setWidth("150px");
         userName.addStyleName("username");
 
         logOutButton = new Button();
-        logOutButton.setCaption("Logout");
+        logOutButton.setCaption(Messages.getString("MenuLayout.logout"));
         logOutButton.setVisible(authCtx.isAuthenticated());
         logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
         logOutButton.addStyleName("logout");
-        logOutButton.setIcon(new ThemeResource("img/logout.svg"), "Log out");
+        logOutButton.setIcon(new ThemeResource("img/logout.svg"), Messages.getString("MenuLayout.icon.logout"));
         logOutButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -143,42 +141,33 @@ public class MenuLayout extends CustomComponent {
             }
         });
 
-        String instalName = "";
-        try {
-            instalName = appConfig.getString(ConfigProperty.INSTALLATION_NAME);
-        } catch (MissingConfigPropertyException ex) {
-            // using default value ""
-            LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, ex.getMessage());
-        }
-        Label installationName = new Label(instalName);
-        installationName.setStyleName("installationName");
+        final HorizontalLayout headerLine = new HorizontalLayout(menuBar, userName, logOutButton, backendStatus);
+        headerLine.setSizeFull();
 
-        HorizontalLayout headerLine = new HorizontalLayout(Logo, installationName, backendStatus, logOutButton, userName);
-        headerLine.setSpacing(false);
-        headerLine.setMargin(new MarginInfo(false, true, false, true));
-        headerLine.setHeight("75px");
-        headerLine.addStyleName("headerPanel");
-        headerLine.setComponentAlignment(Logo, Alignment.MIDDLE_LEFT);
-        headerLine.setComponentAlignment(installationName, Alignment.MIDDLE_LEFT);
-        headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_RIGHT);
-        headerLine.setComponentAlignment(userName, Alignment.MIDDLE_RIGHT);
-        headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_RIGHT);
+        headerLine.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+        headerLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);
+        headerLine.setComponentAlignment(logOutButton, Alignment.MIDDLE_CENTER);
+        headerLine.setComponentAlignment(backendStatus, Alignment.MIDDLE_CENTER);
+        headerLine.setExpandRatio(menuBar, 1.0f);
 
-        mainLayout.addComponent(headerLine);
-        mainLayout.setExpandRatio(headerLine, 0.0f);
+        // Custom layout for custom and dynamic background.
+        final CssLayout headerLayout = new CssLayout() {
+            @Override
+            protected String getCss(Component c) {
+                if (c == headerLine) {
+                    return buildBackgroundCss();
+                }
+                return super.getCss(c);
+            }
+        };
+        headerLayout.setWidth("100%");
+        headerLayout.setHeight("37px");
+        headerLayout.addComponent(headerLine);
 
-        HorizontalLayout menuLine = new HorizontalLayout(menuBar);
-        menuLine.setSpacing(false);
-        menuLine.setWidth("100%");
-        menuLine.setHeight("45px");
-        menuLine.addStyleName("loginPanel");
-        menuLine.setComponentAlignment(menuBar, Alignment.MIDDLE_CENTER);
-        menuLine.setExpandRatio(menuBar, 1.0f);
+        mainLayout.addComponent(headerLayout);
+        mainLayout.setExpandRatio(headerLayout, 0.0f);
 
-        mainLayout.addComponent(menuLine);
-        mainLayout.setExpandRatio(menuLine, 0.0f);
-
-        // viewLayout
+        // viewLayout - in here the content is stored.
         viewLayout = new Panel();
         viewLayout.setSizeFull();
         viewLayout.setStyleName("viewLayout");
@@ -189,6 +178,21 @@ public class MenuLayout extends CustomComponent {
         refreshBackendStatus(false);
 
         setCompositionRoot(mainLayout);
+    }
+
+    /**
+     * @return Generated background css.
+     */
+    private String buildBackgroundCss() {
+        final StringBuilder back = new StringBuilder();
+        back.append(String.format("background: -moz-linear-gradient(top, %s 0%%, %s 48%%, %s 51%%, %s 100%%);\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("background: -webkit-gradient(linear, left top, left bottom, color-stop(0%%,%s), color-stop(48%%,%s), color-stop(51%%,%s), color-stop(100%%,%s));\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("background: -webkit-linear-gradient(top, %s 0%%,%s 48%%,%s 51%%,%s 100%%);\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("background: -o-linear-gradient(top, %s 0%%,%s 48%%,%s 51%%,%s 100%%);\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("background: -ms-linear-gradient(top, %s 0%%,%s 48%%,%s 51%%,%s 100%%);\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("background: linear-gradient(to bottom, %s 0%%,%s 48%%,%s 51%%,%s 100%%);\n", backgroundColor0, backgroundColor1, backgroundColor2, backgroundColor3));
+        back.append(String.format("filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='%s', endColorstr='%s',GradientType=0 );", backgroundColor0, backgroundColor3));
+        return back.toString();
     }
 
     /**
@@ -228,7 +232,7 @@ public class MenuLayout extends CustomComponent {
      * @param isRunning
      */
     public void refreshBackendStatus(boolean isRunning) {
-        backendStatus.setDescription(isRunning ? "Backend is online!" : "Backend is offline!");
+        backendStatus.setDescription(isRunning ? Messages.getString("MenuLayout.backend.online") : Messages.getString("MenuLayout.backend.offline"));
         backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.svg" : "icons/offline.svg"));
     }
 
@@ -239,13 +243,21 @@ public class MenuLayout extends CustomComponent {
      */
     public void setNavigation(ClassNavigatorHolder navigatorHolder) {
         this.navigator = navigatorHolder;
-        // init menuBar
-        menuItems.put("", menuBar.addItem("Home", new NavigateToCommand(Initial.class, navigator)));
-        menuItems.put("PipelineList", menuBar.addItem("Pipelines", new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
-        menuItems.put("DPURecord", menuBar.addItem("DPU Templates", new NavigateToCommand(DPUPresenterImpl.class, navigator)));
-        menuItems.put("ExecutionList", menuBar.addItem("Execution Monitor", new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
-        menuItems.put("Scheduler", menuBar.addItem("Scheduler", new NavigateToCommand(Scheduler.class, navigator)));
-        menuItems.put("Administrator", menuBar.addItem("Settings", new NavigateToCommand(Settings.class, navigator)));
+        // Use installation name as a name for home button.
+        String instalName = Messages.getString("MenuLayout.home");
+        try {
+            instalName = appConfig.getString(ConfigProperty.INSTALLATION_NAME);
+        } catch (MissingConfigPropertyException ex) {
+            // using default value ""
+            LOG.error("Failed to load frontend property: " + ConfigProperty.INSTALLATION_NAME, ex.getMessage());
+        }
+        // Add items.
+        menuItems.put("", menuBar.addItem(instalName, new NavigateToCommand(Initial.class, navigator)));
+        menuItems.put("PipelineList", menuBar.addItem(Messages.getString("MenuLayout.pipelines"), new NavigateToCommand(PipelineListPresenterImpl.class, navigator)));
+        menuItems.put("DPURecord", menuBar.addItem(Messages.getString("MenuLayout.dpuTemplates"), new NavigateToCommand(DPUPresenterImpl.class, navigator)));
+        menuItems.put("ExecutionList", menuBar.addItem(Messages.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
+        menuItems.put("Scheduler", menuBar.addItem(Messages.getString("MenuLayout.scheduler"), new NavigateToCommand(Scheduler.class, navigator)));
+        menuItems.put("Administrator", menuBar.addItem(Messages.getString("MenuLayout.settings"), new NavigateToCommand(Settings.class, navigator)));
     }
 
     /**

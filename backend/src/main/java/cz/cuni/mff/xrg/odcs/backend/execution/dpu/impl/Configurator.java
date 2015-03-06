@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -70,12 +71,12 @@ class Configurator implements DPUPreExecutor {
             LOG.debug("DPU {} has been configured.", dpu.getName());
         } catch (DPUConfigException e) {
             eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
-                    context, this, "Failed to configure DPU.", e));
+                    context, this, Messages.getString("Configurator.configuration.fail"), e));
             // stop the execution
             return false;
         } catch (Throwable t) {
             eventPublisher.publishEvent(DPUEvent.createPreExecutorFailed(
-                    context, this, "dpu.configure throws non ConfigException", t));
+                    context, this, Messages.getString("Configurator.configException"), t));
             // stop the execution
             return false;
         }

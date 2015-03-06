@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.backend.scheduling;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = { "classpath:backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -83,8 +87,14 @@ public class SchedulerTest {
 
         engine.doCheck();
         assertEquals(engine.historyOfExecution.size(), 2);
-        assertEquals(schedule4.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
+
+        final Set<Long> history = new HashSet<>();
+        history.add(schedule4.getId());
+        history.add(schedule3.getId());
+
+        for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+        }
 
     }
 
@@ -115,39 +125,51 @@ public class SchedulerTest {
 
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
-
-        System.out.println("id: {} " + schedule.getId());
-        System.out.println("id: {} " + schedule2.getId());
-        System.out.println("id: {} " + schedule3.getId());
-        System.out.println("id: {} " + schedule4.getId());
-
         engine.doCheck();
 
-        for (PipelineExecution sch : engine.historyOfExecution) {
-            System.out.println("id: " + sch.getId().toString() + " position: " + sch.getOrderNumber());
-        }
         assertEquals(3, engine.historyOfExecution.size());
-        assertEquals(schedule.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule2.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(2).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule.getId());
+            history.add(schedule2.getId());
+            history.add(schedule3.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
 
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
         assertEquals(engine.historyOfExecution.size(), 3);
-        assertEquals(schedule.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule2.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(2).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule.getId());
+            history.add(schedule2.getId());
+            history.add(schedule3.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
 
         engine.numberOfRunningJobs--;
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
         assertEquals(engine.historyOfExecution.size(), 4);
-        assertEquals(schedule.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule2.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(2).getSchedule().getId());
-        assertEquals(schedule4.getId(), engine.historyOfExecution.get(3).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule.getId());
+            history.add(schedule2.getId());
+            history.add(schedule3.getId());
+            history.add(schedule4.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
 
     }
 
@@ -169,25 +191,47 @@ public class SchedulerTest {
 
         engine.doCheck();
         assertEquals(engine.historyOfExecution.size(), 2);
-        assertEquals(schedule4.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule3.getId());
+            history.add(schedule4.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
 
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
         assertEquals(engine.historyOfExecution.size(), 3);
-        assertEquals(schedule4.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
-        assertEquals(schedule2.getId(), engine.historyOfExecution.get(2).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule2.getId());
+            history.add(schedule3.getId());
+            history.add(schedule4.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
+
 
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
         assertEquals(engine.historyOfExecution.size(), 4);
-        assertEquals(schedule4.getId(), engine.historyOfExecution.get(0).getSchedule().getId());
-        assertEquals(schedule3.getId(), engine.historyOfExecution.get(1).getSchedule().getId());
-        assertEquals(schedule2.getId(), engine.historyOfExecution.get(2).getSchedule().getId());
-        assertEquals(schedule.getId(), engine.historyOfExecution.get(3).getSchedule().getId());
+        {
+            final Set<Long> history = new HashSet<>();
+            history.add(schedule.getId());
+            history.add(schedule2.getId());
+            history.add(schedule3.getId());
+            history.add(schedule4.getId());
+
+            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+                assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
+            }
+        }
 
     }
 }

@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.relational;
 import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
 
 /**
@@ -130,6 +131,7 @@ class OSGIModuleFacadeConfig {
         appendPackages(packageList, commons_web.PACKAGE_LIST);
         appendPackages(packageList, commons_module.PACKAGE_LIST);
         appendPackages(packageList, rdf.PACKAGE_LIST);
+        appendPackages(packageList, relational.PACKAGE_LIST);
 
         this.additionalPackages = packageList.toString();
         // check if load data from backend's library directory
@@ -150,7 +152,8 @@ class OSGIModuleFacadeConfig {
         String list = "";
         String delimiter = ",";
         try {
-            list = StringUtils.join(IOUtils.readLines(resource.getInputStream()), ",").replaceAll("-SNAPSHOT", ".SNAPSHOT");
+            // TODO repalceAll("-V" can be removed once version in root pom.xml are put back to normal
+            list = StringUtils.join(IOUtils.readLines(resource.getInputStream()), ",").replaceAll("-V","").replaceAll("-SNAPSHOT", ".SNAPSHOT");
             LOG.debug("list of package to expose: ", list);
         } catch (IOException e) {
             LOG.error("Error", e);

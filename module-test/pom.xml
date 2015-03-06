@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.5.5</version>
+		<version>1.6.0</version>
 	</parent>
 	<artifactId>module-test</artifactId>
 	<description>Contains classes for test support.</description>
@@ -22,6 +22,7 @@
 			<artifactId>uv-dataunit-rdf</artifactId>
 			<version>${uv-dataunit-rdf.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -49,6 +50,19 @@
 			<type>jar</type>
 		</dependency>
 
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dataunit-file-impl</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+		
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>dataunit-relational-impl</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
 
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>

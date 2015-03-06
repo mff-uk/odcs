@@ -73,6 +73,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ResizedEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.ShowDebugEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineExport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -237,7 +238,7 @@ public class PipelineEdit extends ViewComponent {
         // or use this.entity.getEntity();
 
         if (this.pipeline == null) {
-        	return;
+            return;
         } else {
             setMode(hasPermission("save"));
             updateLblPipelineName();
@@ -250,10 +251,13 @@ public class PipelineEdit extends ViewComponent {
             @Override
             public void refresh(Refresher source) {
                 if (pipeline != null && new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+                    LOG.trace("refresh - 0");
                     pipelineFacade.createOpenEvent(pipeline);
+                    LOG.trace("refresh - 1");
                     List<OpenEvent> openEvents = pipelineFacade.getOpenPipelineEvents(pipeline);
+                    LOG.trace("refresh - 2");
                     if (!pipelineFacade.isUpToDate(pipeline)) {
-                        editConflicts.setValue("Another user made changes to the version you are editing, please refresh the pipeline detail!");
+                        editConflicts.setValue(Messages.getString("PipelineEdit.conflict.another.user"));
                         paralelInfoLayout.setVisible(true);
                         buttonRefresh.setVisible(true);
                     } else if (openEvents.isEmpty()) {
@@ -261,13 +265,13 @@ public class PipelineEdit extends ViewComponent {
                     } else {
                         String message;
                         if (openEvents.size() == 1) {
-                            message = String.format("User %s is also browsing this pipeline.", openEvents.get(0).getUser().getUsername());
+                            message = Messages.getString("PipelineEdit.user.browsing", openEvents.get(0).getUser().getUsername());
                         } else {
                             String userList = "";
                             for (OpenEvent openEvent : openEvents) {
                                 userList += String.format("%s %s", openEvents.indexOf(openEvent) == 0 ? "" : ",", openEvent.getUser().getUsername());
                             }
-                            message = String.format("Users %s are also browsing this pipeline.", userList);
+                            message = Messages.getString("PipelineEdit.users.browsing", userList);
                         }
                         editConflicts.setValue(message);
                         paralelInfoLayout.setVisible(true);
@@ -291,13 +295,10 @@ public class PipelineEdit extends ViewComponent {
     private VerticalLayout buildMainLayout() {
         isExpanded = true;
 
-        //verticalSplit = new VerticalSplitPanel();
-        //verticalSplit.setSizeFull();
         // common part: create layout
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(new MarginInfo(false, true, false, true));
         mainLayout.setImmediate(true);
-        mainLayout.setMargin(true);
-        mainLayout.setStyleName("mainLayout");
 
         // top-level component properties
         //setSizeUndefined();
@@ -308,7 +309,7 @@ public class PipelineEdit extends ViewComponent {
         lblPipelineName.setHeight("-1px");
         lblPipelineName.setContentMode(ContentMode.HTML);
 
-        readOnlyLabel = new Label("Pipeline is open in read-only mode");
+        readOnlyLabel = new Label(Messages.getString("PipelineEdit.read-only.mode"));
         readOnlyLabel.setStyleName("readOnlyLabel");
         readOnlyLabel.setVisible(false);
 
@@ -324,7 +325,7 @@ public class PipelineEdit extends ViewComponent {
         btnMinimize.setStyleName(BaseTheme.BUTTON_LINK);
         btnMinimize.addStyleName("expand-minimize");
         btnMinimize.setIcon(new ThemeResource("icons/collapse.svg"));
-        btnMinimize.setDescription("Minimize pipeline detail");
+        btnMinimize.setDescription(Messages.getString("PipelineEdit.minimize"));
         btnMinimize.setVisible(isExpanded);
         topLine.addComponent(btnMinimize);
         topLine.setExpandRatio(btnMinimize, 1.0f);
@@ -339,7 +340,7 @@ public class PipelineEdit extends ViewComponent {
         btnExpand.setStyleName(BaseTheme.BUTTON_LINK);
         btnExpand.addStyleName("expand-minimize");
         btnExpand.setIcon(new ThemeResource("icons/expand.svg"));
-        btnExpand.setDescription("Expand pipeline detail");
+        btnExpand.setDescription(Messages.getString("PipelineEdit.exapand"));
         btnExpand.setVisible(false);
         topLine.addComponent(btnExpand);
         topLine.setExpandRatio(btnExpand, 1.0f);
@@ -356,7 +357,7 @@ public class PipelineEdit extends ViewComponent {
             @Override
             protected String getCss(Component c) {
                 if (c instanceof TabSheet) {
-                    return "margin-left: 0px; margin-top: 5px;";
+                    return "margin-left: 0px; margin-top: 0px;";
                 } else if (c instanceof Panel) {
                     return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
                 } else if (c instanceof HorizontalLayout) {
@@ -476,12 +477,11 @@ public class PipelineEdit extends ViewComponent {
         });
 
         tabSheet = new TabSheet();
-
-        standardTab = tabSheet.addTab(new Label("Under construction"), "Standard");
+        standardTab = tabSheet.addTab(new Label(Messages.getString("PipelineEdit.under.construction")), Messages.getString("PipelineEdit.tab.standard"));
         standardTab.setEnabled(true);
 
         //canvasPanel = new Panel(dadWrapper);
-        developTab = tabSheet.addTab(dadWrapper, "Develop");
+        developTab = tabSheet.addTab(dadWrapper, Messages.getString("PipelineEdit.tab.develop"));
         tabSheet.setSelectedTab(developTab);
         tabSheet.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
             @Override
@@ -489,13 +489,13 @@ public class PipelineEdit extends ViewComponent {
                 if (event.getTabSheet().getSelectedTab().getClass() != DragAndDropWrapper.class) {
                     if (canvasMode.equals(STANDARD_MODE)) {
                         canvasMode = DEVELOP_MODE;
-                        developTab.setCaption("Develop");
-                        standardTab.setCaption("Standard");
+                        developTab.setCaption(Messages.getString("PipelineEdit.standardMode.caption.develop"));
+                        standardTab.setCaption(Messages.getString("PipelineEdit.standardMode.caption.standard"));
                         tabSheet.setTabPosition(developTab, 1);
                     } else {
                         canvasMode = STANDARD_MODE;
-                        standardTab.setCaption("Develop");
-                        developTab.setCaption("Standard");
+                        standardTab.setCaption(Messages.getString("PipelineEdit.developMode.caption.develop"));
+                        developTab.setCaption(Messages.getString("PipelineEdit.developMode.caption.standard"));
                         tabSheet.setTabPosition(developTab, 0);
                     }
                     pipelineCanvas.changeMode(canvasMode);
@@ -524,7 +524,7 @@ public class PipelineEdit extends ViewComponent {
         editConflicts = new Label();
         editConflicts.setImmediate(true);
 
-        buttonRefresh = new Button("Refresh");
+        buttonRefresh = new Button(Messages.getString("PipelineEdit.refresh"));
         buttonRefresh.setHeight("25px");
         buttonRefresh.setWidth("100px");
         buttonRefresh.addClickListener(new Button.ClickListener() {
@@ -545,7 +545,7 @@ public class PipelineEdit extends ViewComponent {
         layout.addComponent(paralelInfoLayout);
 
         Button zoomIn = new Button();
-        zoomIn.setDescription("Zoom In");
+        zoomIn.setDescription(Messages.getString("PipelineEdit.zoomIn"));
         zoomIn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -553,7 +553,7 @@ public class PipelineEdit extends ViewComponent {
                 calculateCanvasDimensions(bounds.getX(), bounds.getY());
             }
         });
-        zoomIn.setIcon(new ThemeResource("icons/zoom_in.svg"), "Zoom in");
+        zoomIn.setIcon(new ThemeResource("icons/zoom_in.svg"), Messages.getString("PipelineEdit.icon.zoomIn"));
         //zoomIn.setWidth("110px");
         Button zoomOut = new Button();
         zoomOut.addClickListener(new Button.ClickListener() {
@@ -563,8 +563,8 @@ public class PipelineEdit extends ViewComponent {
                 calculateCanvasDimensions(bounds.getX(), bounds.getY());
             }
         });
-        zoomOut.setDescription("Zoom out");
-        zoomOut.setIcon(new ThemeResource("icons/zoom_out.svg"), "Zoom out");
+        zoomOut.setDescription(Messages.getString("PipelineEdit.zoomOut"));
+        zoomOut.setIcon(new ThemeResource("icons/zoom_out.svg"), Messages.getString("PipelineEdit.icon.zoomOut"));
         //zoomOut.setWidth("110px");
         undo = new Button();
         undo.addClickListener(new Button.ClickListener() {
@@ -577,8 +577,8 @@ public class PipelineEdit extends ViewComponent {
         });
         undo.setEnabled(false);
         undo.setImmediate(true);
-        undo.setDescription("Undo");
-        undo.setIcon(new ThemeResource("icons/undo.svg"), "Undo");
+        undo.setDescription(Messages.getString("PipelineEdit.undo"));
+        undo.setIcon(new ThemeResource("icons/undo.svg"), Messages.getString("PipelineEdit.icon.undo"));
         //undo.setWidth("110px");
         HorizontalLayout topActions = new HorizontalLayout(zoomIn, zoomOut, undo);
 
@@ -592,7 +592,7 @@ public class PipelineEdit extends ViewComponent {
 
         buttonBar = new HorizontalLayout();
 
-        Button buttonRevert = new Button("Revert to last commit");
+        Button buttonRevert = new Button(Messages.getString("PipelineEdit.revert"));
         buttonRevert.setHeight("25px");
         buttonRevert.setWidth("100px");
         buttonRevert.setEnabled(false);
@@ -608,7 +608,7 @@ public class PipelineEdit extends ViewComponent {
         leftPartOfButtonBar.setSpacing(true);
         leftPartOfButtonBar.setMargin(new MarginInfo(false, true, false, false));
 
-        Button buttonValidate = new Button("Validate");
+        Button buttonValidate = new Button(Messages.getString("PipelineEdit.validate"));
         buttonValidate.setHeight("25px");
         buttonValidate.setWidth("100px");
         buttonValidate.addClickListener(new Button.ClickListener() {
@@ -619,7 +619,7 @@ public class PipelineEdit extends ViewComponent {
         });
         leftPartOfButtonBar.addComponent(buttonValidate);
 
-        buttonConflicts = new Button("Conflicts");
+        buttonConflicts = new Button(Messages.getString("PipelineEdit.conflicts"));
         buttonConflicts.setHeight("25px");
         buttonConflicts.setWidth("100px");
         buttonConflicts.setImmediate(true);
@@ -634,7 +634,7 @@ public class PipelineEdit extends ViewComponent {
         leftPartOfButtonBar.addComponent(buttonConflicts);
         buttonBar.addComponent(leftPartOfButtonBar);
 
-        Button buttonCommit = new Button("Save & Commit");
+        Button buttonCommit = new Button(Messages.getString("PipelineEdit.save.and.commit"));
         buttonCommit.setHeight("25px");
         buttonCommit.setWidth("100px");
         buttonCommit.setEnabled(false);
@@ -654,7 +654,7 @@ public class PipelineEdit extends ViewComponent {
 
         HorizontalLayout copyLayout = new HorizontalLayout();
 
-        buttonCopy = new Button("Copy");
+        buttonCopy = new Button(Messages.getString("PipelineEdit.copy"));
         buttonCopy.setHeight("25px");
         buttonCopy.setWidth("100px");
         buttonCopy.setImmediate(true);
@@ -663,22 +663,23 @@ public class PipelineEdit extends ViewComponent {
             public void buttonClick(ClickEvent event) {
                 // save current pipeline
                 if (!pipelineFacade.isUpToDate(pipeline)) {
-                    ConfirmDialog.show(UI.getCurrent(), "Copying not actual version", "You are copying version, which is not actual. If saved, you won't see changes made by other user.", "Copy anyway", "Cancel", new ConfirmDialog.Listener() {
-                        @Override
-                        public void onClose(ConfirmDialog cd) {
-                            if (cd.isConfirmed()) {
-                                savePipelineAsNew();
-                                paralelInfoLayout.setVisible(false);
-                            }
-                        }
-                    });
+                    ConfirmDialog.show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        savePipelineAsNew();
+                                        paralelInfoLayout.setVisible(false);
+                                    }
+                                }
+                            });
                 } else {
                     savePipelineAsNew();
                 }
             }
         });
         copyLayout.addComponent(buttonCopy);
-        buttonCopyAndClose = new Button("Copy & Close");
+        buttonCopyAndClose = new Button(Messages.getString("PipelineEdit.copy.and.close"));
 
         buttonCopyAndClose.setHeight("25px");
         buttonCopyAndClose.setWidth("100px");
@@ -687,15 +688,17 @@ public class PipelineEdit extends ViewComponent {
             @Override
             public void buttonClick(ClickEvent event) {
                 if (!pipelineFacade.isUpToDate(pipeline)) {
-                    ConfirmDialog.show(UI.getCurrent(), "Copying not actual version", "You are copying version, which is not actual. If saved, you won't see changes made by other user.", "Copy anyway", "Cancel", new ConfirmDialog.Listener() {
-                        @Override
-                        public void onClose(ConfirmDialog cd) {
-                            if (cd.isConfirmed()) {
-                                savePipelineAsNew();
-                                closeView();
-                            }
-                        }
-                    });
+                    ConfirmDialog.show(
+                            UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        savePipelineAsNew();
+                                        closeView();
+                                    }
+                                }
+                            });
                 } else {
                     savePipelineAsNew();
                     closeView();
@@ -707,7 +710,7 @@ public class PipelineEdit extends ViewComponent {
 
         HorizontalLayout saveLayout = new HorizontalLayout();
 
-        buttonSave = new Button("Save");
+        buttonSave = new Button(Messages.getString("PipelineEdit.save"));
         buttonSave.setHeight("25px");
         buttonSave.setWidth("100px");
         buttonSave.setImmediate(true);
@@ -720,7 +723,7 @@ public class PipelineEdit extends ViewComponent {
         });
         saveLayout.addComponent(buttonSave);
 
-        buttonSaveAndClose = new Button("Save & Close");
+        buttonSaveAndClose = new Button(Messages.getString("PipelineEdit.save.and.close"));
         buttonSaveAndClose.setHeight("25px");
         buttonSaveAndClose.setWidth("100px");
         buttonSaveAndClose.setImmediate(true);
@@ -732,7 +735,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         saveLayout.addComponent(buttonSaveAndClose);
-        buttonSaveAndCloseAndDebug = new Button("Save & Close & Debug");
+        buttonSaveAndCloseAndDebug = new Button(Messages.getString("PipelineEdit.save.close.debug"));
         buttonSaveAndCloseAndDebug.setHeight("25px");
         //buttonSaveAndCloseAndDebug.setWidth("100px");
         buttonSaveAndCloseAndDebug.setImmediate(true);
@@ -747,7 +750,7 @@ public class PipelineEdit extends ViewComponent {
 
         rightPartOfButtonBar.addComponent(saveLayout);
 
-        buttonCancel = new Button("Close");
+        buttonCancel = new Button(Messages.getString("PipelineEdit.close"));
 
         buttonCancel.setHeight("25px");
         buttonCancel.setWidth("100px");
@@ -762,7 +765,7 @@ public class PipelineEdit extends ViewComponent {
         });
         rightPartOfButtonBar.addComponent(buttonCancel);
 
-        buttonExport = new Button("Export");
+        buttonExport = new Button(Messages.getString("PipelineEdit.export"));
         buttonExport.setHeight("25px");
         buttonExport.setWidth("100px");
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
@@ -788,14 +791,14 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupComponentSize() {
-        int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 60;
+        int browserWidth = UI.getCurrent().getPage().getBrowserWindowWidth() - 30;
         int browserHeight = UI.getCurrent().getPage().getBrowserWindowHeight();
         if (pipelineCanvas.getCanvasWidth() < browserWidth) {
             tabSheet.setWidth(pipelineCanvas.getCanvasWidth() + 40, Unit.PIXELS);
         } else {
             tabSheet.setWidth(100, Unit.PERCENTAGE);
         }
-        int tabSheetHeight = browserHeight - (isExpanded ? 340 : 150);
+        int tabSheetHeight = browserHeight - (isExpanded ? 305 : 115);
         tabSheet.setHeight(Math.min(tabSheetHeight, pipelineCanvas.getCanvasHeight() + 60), Unit.PIXELS);
         tabSheet.markAsDirty();
     }
@@ -854,13 +857,13 @@ public class PipelineEdit extends ViewComponent {
 
         pipelineSettingsLayout = new GridLayout(3, 5);
         pipelineSettingsLayout.setWidth(600, Unit.PIXELS);
-        idLabel = new Label("ID");
+        idLabel = new Label(Messages.getString("PipelineEdit.idLabel.id"));
         idLabel.setSizeUndefined();
         pipelineSettingsLayout.addComponent(idLabel, 0, 4);
-        idValue = new Label("ID");
+        idValue = new Label(Messages.getString("PipelineEdit.idValue.id"));
         idValue.setSizeUndefined();
         pipelineSettingsLayout.addComponent(idValue, 1, 4);
-        Label nameLabel = new Label("Name");
+        Label nameLabel = new Label(Messages.getString("PipelineEdit.name"));
         nameLabel.setImmediate(false);
         nameLabel.setSizeUndefined();
         pipelineSettingsLayout.addComponent(nameLabel, 0, 0);
@@ -875,7 +878,7 @@ public class PipelineEdit extends ViewComponent {
                 if (value.getClass() == String.class && !((String) value).isEmpty()) {
                     return;
                 }
-                throw new Validator.InvalidValueException("Name must be filled!");
+                throw new Validator.InvalidValueException(Messages.getString("PipelineEdit.name.empty"));
             }
         });
         pipelineName.addValidator(new MaxLengthValidator(LenghtLimits.PIPELINE_NAME));
@@ -886,7 +889,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
         pipelineSettingsLayout.addComponent(pipelineName, 1, 0);
-        Label descriptionLabel = new Label("Description");
+        Label descriptionLabel = new Label(Messages.getString("PipelineEdit.description"));
         descriptionLabel.setImmediate(false);
         descriptionLabel.setWidth("-1px");
         descriptionLabel.setHeight("-1px");
@@ -904,17 +907,17 @@ public class PipelineEdit extends ViewComponent {
         });
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
-        Label visibilityLabel = new Label("Visibility");
+        Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
         pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
 
         pipelineVisibility = new OptionGroup();
         pipelineVisibility.addStyleName("horizontalgroup");
         pipelineVisibility.addItem(ShareType.PRIVATE);
-        pipelineVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RO);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RW);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, ShareType.PUBLIC_RW.getName());
+        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
         pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -925,7 +928,7 @@ public class PipelineEdit extends ViewComponent {
         });
         pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
 
-        pipelineSettingsLayout.addComponent(new Label("Created by"), 0, 3);
+        pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
 
         author = new Label();
         pipelineSettingsLayout.addComponent(author, 1, 3);
@@ -1032,11 +1035,11 @@ public class PipelineEdit extends ViewComponent {
         debug.initialize(pExec, instance, true, true);
         debug.setExecution(pExec, instance);
 
-        final Window debugWindow = new Window("Debug window");
+        final Window debugWindow = new Window(Messages.getString("PipelineEdit.debug.window"));
         HorizontalLayout buttonLine = new HorizontalLayout();
         buttonLine.setSpacing(true);
         buttonLine.setWidth(100, Unit.PERCENTAGE);
-        Button rerunButton = new Button("Rerun", new Button.ClickListener() {
+        Button rerunButton = new Button(Messages.getString("PipelineEdit.rerun"), new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 PipelineExecution pExec = pipelineHelper.runPipeline(pip, true, debugNode);
@@ -1049,7 +1052,7 @@ public class PipelineEdit extends ViewComponent {
         });
         rerunButton.setWidth(100, Unit.PIXELS);
         buttonLine.addComponent(rerunButton);
-        Button closeButton = new Button("Close", new Button.ClickListener() {
+        Button closeButton = new Button(Messages.getString("PipelineEdit.close"), new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 debugWindow.close();
@@ -1095,18 +1098,18 @@ public class PipelineEdit extends ViewComponent {
      */
     protected Pipeline loadPipeline(String id) {
         // get data from DB ..
-    	try {
-    		this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
-		} catch (AccessDeniedException e) {
-			Notification.show("Error opening pipeline detail.", "You don't have permission to view this pipeline", Type.ERROR_MESSAGE);
-			closeView();
-			return null;
-		}
+        try {
+            this.pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
+        } catch (AccessDeniedException e) {
+            Notification.show(Messages.getString("PipelineEdit.opening.error"), Messages.getString("PipelineEdit.opening.error.description"), Type.ERROR_MESSAGE);
+            closeView();
+            return null;
+        }
         if (this.pipeline == null) {
-        	Notification.show("Error opening pipeline detail.", "Pipeline doesn't exist.", Type.ERROR_MESSAGE);
-        	closeView();
-			return null;
-		}
+            Notification.show(Messages.getString("PipelineEdit.opening.error.notExisting"), Messages.getString("PipelineEdit.opening.error.notExisting.description"), Type.ERROR_MESSAGE);
+            closeView();
+            return null;
+        }
         setIdLabel(pipeline.getId());
         author.setValue(pipeline.getOwner().getUsername());
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
@@ -1146,8 +1149,8 @@ public class PipelineEdit extends ViewComponent {
             pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
             pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
             setupButtons(false);
-            pipelineName.setInputPrompt("Insert pipeline name");
-            pipelineDescription.setInputPrompt("Insert pipeline description");
+            pipelineName.setInputPrompt(Messages.getString("PipelineEdit.pipeline.insert"));
+            pipelineDescription.setInputPrompt(Messages.getString("PipelineEdit.pipeline.insert.description"));
         }
 
         if (pipeline != null) {
@@ -1171,25 +1174,28 @@ public class PipelineEdit extends ViewComponent {
 
         final ShareType visibility = (ShareType) pipelineVisibility.getValue();
         if (!pipelineFacade.isUpToDate(pipeline)) {
-            ConfirmDialog.show(UI.getCurrent(), "Overwriting pipeline", "You are editing version, which is not actual. If saved, changes made by other user will be overwritten.", "Save anyway", "Cancel", new ConfirmDialog.Listener() {
-                @Override
-                public void onClose(ConfirmDialog cd) {
-                    if (cd.isConfirmed()) {
-                        finishSavePipeline(doCleanup, visibility, successAction);
-                        paralelInfoLayout.setVisible(false);
-                    }
-                }
-            });
+            ConfirmDialog.show(UI.getCurrent(),
+                    Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {
+                        @Override
+                        public void onClose(ConfirmDialog cd) {
+                            if (cd.isConfirmed()) {
+                                finishSavePipeline(doCleanup, visibility, successAction);
+                                paralelInfoLayout.setVisible(false);
+                            }
+                        }
+                    });
             return false;
         } else if (pipeline.getShareType() == ShareType.PRIVATE && ShareType.PUBLIC.contains(visibility) && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
-            ConfirmDialog.show(UI.getCurrent(), "Saving public pipeline", "Saving pipeline as public will cause all DPU templates, the pipeline is using, to become public. When they become public, they cannot be reverted to private.", "Save", "Cancel", new ConfirmDialog.Listener() {
-                @Override
-                public void onClose(ConfirmDialog cd) {
-                    if (cd.isConfirmed()) {
-                        finishSavePipeline(doCleanup, visibility, successAction);
-                    }
-                }
-            });
+            ConfirmDialog
+                    .show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        finishSavePipeline(doCleanup, visibility, successAction);
+                                    }
+                                }
+                            });
             return false;
         } else {
             return finishSavePipeline(doCleanup, visibility, successAction);
@@ -1213,7 +1219,7 @@ public class PipelineEdit extends ViewComponent {
             pipelineCanvas.afterSaveCleanUp();
         }
 
-        Notification.show("Pipeline saved successfully!", Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show(Messages.getString("PipelineEdit.save.successfull"), Notification.Type.HUMANIZED_MESSAGE);
         setupButtons();
 
         // Update pipeline name.
@@ -1279,10 +1285,10 @@ public class PipelineEdit extends ViewComponent {
             pipelineDescription.validate();
             pipelineVisibility.validate();
             if (pipelineFacade.hasPipelineWithName(pipelineName.getValue(), pipeline)) {
-                throw new Validator.InvalidValueException("Pipeline with same name already exists in the system.");
+                throw new Validator.InvalidValueException(Messages.getString("PipelineEdit.pipeline.duplicate"));
             }
         } catch (Validator.InvalidValueException e) {
-            Notification.show("Error saving pipeline", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("PipelineEdit.pipeline.error.saving"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -1292,16 +1298,16 @@ public class PipelineEdit extends ViewComponent {
         readOnlyLabel.setVisible(!isDevelop);
         if (isDevelop) {
             canvasMode = DEVELOP_MODE;
-            standardTab.setCaption("Standard");
+            standardTab.setCaption(Messages.getString("PipelineEdit.setMode.isDevelop.standard"));
             standardTab.setEnabled(false);
-            developTab.setCaption("Develop");
+            developTab.setCaption(Messages.getString("PipelineEdit.setMode.isDevelop.develop"));
             tabSheet.setTabPosition(developTab, 0);
             pipelineCanvas.changeMode(canvasMode);
         } else {
             canvasMode = STANDARD_MODE;
-            standardTab.setCaption("Develop");
+            standardTab.setCaption(Messages.getString("PipelineEdit.setMode.isStandard.develop"));
             standardTab.setEnabled(false);
-            developTab.setCaption("Standard");
+            developTab.setCaption(Messages.getString("PipelineEdit.setMode.isStandard.standard"));
             tabSheet.setTabPosition(developTab, 0);
             pipelineCanvas.changeMode(canvasMode);
         }
@@ -1335,43 +1341,43 @@ public class PipelineEdit extends ViewComponent {
         GridLayout bar = new GridLayout(3, 3);
         Button topAlign = new Button();
         topAlign.setData("align_top");
-        topAlign.setDescription("Align top");
-        topAlign.setIcon(new ThemeResource("icons/arrow_top.svg"), "Align top");
+        topAlign.setDescription(Messages.getString("PipelineEdit.align.top"));
+        topAlign.setIcon(new ThemeResource("icons/arrow_top.svg"), Messages.getString("PipelineEdit.icon.align.top"));
         topAlign.addClickListener(listener);
         bar.addComponent(topAlign, 1, 0);
 
         Button bottomAlign = new Button();
         bottomAlign.setData("align_bottom");
-        bottomAlign.setDescription("Align bottom");
-        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.svg"), "Align bottom");
+        bottomAlign.setDescription(Messages.getString("PipelineEdit.align.bottom"));
+        bottomAlign.setIcon(new ThemeResource("icons/arrow_bottom.svg"), Messages.getString("PipelineEdit.icon.align.bottom"));
         bottomAlign.addClickListener(listener);
         bar.addComponent(bottomAlign, 1, 2);
 
         Button leftAlign = new Button();
         leftAlign.setData("align_left");
-        leftAlign.setDescription("Align left");
-        leftAlign.setIcon(new ThemeResource("icons/arrow_left.svg"), "Align left");
+        leftAlign.setDescription(Messages.getString("PipelineEdit.align.left"));
+        leftAlign.setIcon(new ThemeResource("icons/arrow_left.svg"), Messages.getString("PipelineEdit.icon.align.left"));
         leftAlign.addClickListener(listener);
         bar.addComponent(leftAlign, 0, 1);
 
         Button rightAlign = new Button();
         rightAlign.setData("align_right");
-        rightAlign.setDescription("Align right");
-        rightAlign.setIcon(new ThemeResource("icons/arrow_right.svg"), "Align right");
+        rightAlign.setDescription(Messages.getString("PipelineEdit.align.right"));
+        rightAlign.setIcon(new ThemeResource("icons/arrow_right.svg"), Messages.getString("PipelineEdit.icon.align.right"));
         rightAlign.addClickListener(listener);
         bar.addComponent(rightAlign, 2, 1);
 
         Button distributeHorizontal = new Button();
         distributeHorizontal.setData("distribute_horizontal");
-        distributeHorizontal.setDescription("Distribute horizontally");
-        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.svg"), "Distribute horizontally");
+        distributeHorizontal.setDescription(Messages.getString("PipelineEdit.distribute.horizontally"));
+        distributeHorizontal.setIcon(new ThemeResource("icons/distribute.svg"), Messages.getString("PipelineEdit.icon.distribute.horizontally"));
         distributeHorizontal.addClickListener(listener);
         bar.addComponent(distributeHorizontal, 2, 0);
 
         Button distributeVertical = new Button();
         distributeVertical.setData("distribute_vertical");
-        distributeVertical.setDescription("Distribute vertically");
-        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.svg"), "Distribute vertically");
+        distributeVertical.setDescription(Messages.getString("PipelineEdit.distribute.vertically"));
+        distributeVertical.setIcon(new ThemeResource("icons/distribute_v.svg"), Messages.getString("PipelineEdit.icon.distribute.vertically"));
         distributeVertical.addClickListener(listener);
         bar.addComponent(distributeVertical, 2, 2);
 
@@ -1396,7 +1402,7 @@ public class PipelineEdit extends ViewComponent {
     private void updateLblPipelineName() {
         if (this.pipeline == null) {
         } else {
-            lblPipelineName.setValue("<h3>Pipeline detail for: '" + this.pipeline.getName() + "' <h3>");
+            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail") + this.pipeline.getName() + "' <h3>");
         }
     }
 

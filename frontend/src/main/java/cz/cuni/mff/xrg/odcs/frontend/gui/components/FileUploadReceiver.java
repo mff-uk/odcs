@@ -15,6 +15,8 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload.Receiver;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Upload selected file to template directory
  * 
@@ -51,7 +53,7 @@ public class FileUploadReceiver implements Receiver {
             return fstream;
 
         } catch (FileNotFoundException e) {
-            new Notification("Could not open file<br/>", e.getMessage(),
+            new Notification(Messages.getString("FileUploadReceiver.file.open"), e.getMessage(),
                     Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
             return null;
         }

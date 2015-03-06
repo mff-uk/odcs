@@ -28,6 +28,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -71,7 +72,7 @@ public class ExportService {
         try {
             tempDir = resourceManager.getNewExportTempDir();
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get temp directory.", ex);
+            throw new ExportException(Messages.getString("ExportService.temp.dir.fail"), ex);
         }
         final StringBuilder fileName = new StringBuilder();
         fileName.append("pipeline-");
@@ -94,7 +95,6 @@ public class ExportService {
     /**
      * Export given pipeline and all it's dependencies into given file.
      *
-     *
      * @param pipeline
      * @param targetFile
      * @param setting
@@ -105,11 +105,11 @@ public class ExportService {
             throws ExportException {
 
         if (authCtx == null) {
-            throw new ExportException("AuthenticationContext is null.");
+            throw new ExportException(Messages.getString("ExportService.authenticationContext.fail"));
         }
         final User user = authCtx.getUser();
         if (user == null) {
-            throw new ExportException("Unknown user.");
+            throw new ExportException(Messages.getString("ExportService.unknown.user"));
         }
 
         try (FileOutputStream fos = new FileOutputStream(targetFile);
@@ -164,7 +164,7 @@ public class ExportService {
         } catch (IOException ex) {
             targetFile.delete();
             throw new ExportException(
-                    "Failed to prepare file with exported pipeline", ex);
+                    Messages.getString("ExportService.pipeline.prepare.fail"), ex);
         } catch (ExportException ex) {
             targetFile.delete();
             throw ex;
@@ -178,7 +178,7 @@ public class ExportService {
             zipStream.putNextEntry(ze);
             xStream.toXML(savedTemplates, zipStream);
         } catch (IOException e) {
-            throw new ExportException("Failed to serialize dpu template information.", e);
+            throw new ExportException(Messages.getString("ExportService.dpu.serialization.fail"), e);
         }
     }
 
@@ -198,7 +198,7 @@ public class ExportService {
             // write into entry
             xStream.toXML(pipeline, zipStream);
         } catch (IOException ex) {
-            throw new ExportException("Failed to serialize pipeline.", ex);
+            throw new ExportException(Messages.getString("ExportService.pipeline.serialization.fail"), ex);
         }
     }
 
@@ -221,7 +221,7 @@ public class ExportService {
             // write into entry
             xStream.toXML(schedules, zipStream);
         } catch (IOException ex) {
-            throw new ExportException("Failed to serialize schedule.", ex);
+            throw new ExportException(Messages.getString("ExportService.schedule.serialization.fail"), ex);
         }
     }
 
@@ -234,13 +234,13 @@ public class ExportService {
      */
     private void saveDPUJar(DPUTemplateRecord template,
             ZipOutputStream zipStream)
-                    throws ExportException {
+            throws ExportException {
         // we copy the structure in dpu directory
         final File source;
         try {
             source = resourceManager.getDPUJarFile(template);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
         byte[] buffer = new byte[4096];
         try {
@@ -255,7 +255,7 @@ public class ExportService {
                 }
             }
         } catch (IOException ex) {
-            throw new ExportException("Failed to copy jar file.", ex);
+            throw new ExportException(Messages.getString("ExportService.jarFile.copy.fail"), ex);
         }
     }
 
@@ -273,7 +273,7 @@ public class ExportService {
         try {
             source = resourceManager.getDPUDataUserDir(template, user);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
 
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
@@ -295,7 +295,7 @@ public class ExportService {
         try {
             source = resourceManager.getDPUDataGlobalDir(template);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
 
         final String zipPrefix = ArchiveStructure.DPU_DATA_GLOBAL.getValue()
@@ -330,7 +330,7 @@ public class ExportService {
         try {
             sourceLenght = source.getCanonicalPath().length() + 1;
         } catch (IOException ex) {
-            throw new ExportException("Failed to get canonical path.", ex);
+            throw new ExportException(Messages.getString("ExportService.canonical.path.fail"), ex);
         }
 
         final Collection<File> files = FileUtils.listFiles(source,
@@ -349,7 +349,7 @@ public class ExportService {
                 final ZipEntry ze = new ZipEntry(relativePath);
                 zipStream.putNextEntry(ze);
             } catch (IOException ex) {
-                throw new ExportException("Preparation of zip entry failed",
+                throw new ExportException(Messages.getString("ExportService.zip.preparation.fail"),
                         ex);
             }
             // transfer data
@@ -359,7 +359,7 @@ public class ExportService {
                     zipStream.write(buffer, 0, len);
                 }
             } catch (IOException ex) {
-                throw new ExportException("Failed to add file into archive.",
+                throw new ExportException(Messages.getString("ExportService.zip.archive.fail"),
                         ex);
             }
         }
@@ -379,12 +379,12 @@ public class ExportService {
         try {
             serializedTarget = File.createTempFile("temp", ".tmp");
         } catch (IOException ex2) {
-            throw new ExportException("Error", ex2);
+            throw new ExportException(Messages.getString("ExportService.error"), ex2);
         }
         try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
             xStream.toXML(dpus, foutStream);
         } catch (IOException ex1) {
-            throw new ExportException("Error", ex1);
+            throw new ExportException(Messages.getString("ExportService.error"), ex1);
         }
 
         byte[] buffer = new byte[4096];
@@ -400,7 +400,7 @@ public class ExportService {
                 }
             }
         } catch (IOException ex) {
-            throw new ExportException("Failed to infos  jar file.", ex);
+            throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
         }
         LOG.debug("<<< Leaving saveDpusInfo()");
     }

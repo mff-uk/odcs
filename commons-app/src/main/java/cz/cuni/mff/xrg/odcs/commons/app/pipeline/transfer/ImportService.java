@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -67,7 +68,7 @@ public class ImportService {
         try {
             tempDir = resourceManager.getNewImportTempDir();
         } catch (MissingResourceException ex) {
-            throw new ImportException("Failed to get temp directory.", ex);
+            throw new ImportException(Messages.getString("ImportService.pipeline.temp.dir.fail"), ex);
         }
         return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
@@ -78,11 +79,11 @@ public class ImportService {
         FileUtils.deleteQuietly(tempDirectory);
 
         if (authCtx == null) {
-            throw new ImportException("AuthenticationContext is null.");
+            throw new ImportException(Messages.getString("ImportService.pipeline.authenticationContext.null"));
         }
         final User user = authCtx.getUser();
         if (user == null) {
-            throw new ImportException("Unknown user.");
+            throw new ImportException(Messages.getString("ImportService.pipeline.unknown.user"));
         }
         // unpack
         Pipeline pipe;
@@ -156,7 +157,7 @@ public class ImportService {
         try {
             return (Pipeline) xStream.fromXML(sourceFile);
         } catch (Throwable t) {
-            String msg = "Missing or wrong pipeline file";
+            String msg = Messages.getString("ImportService.pipeline.pipeline.file.fail");
             LOG.error(msg);
             throw new ImportException(msg, t);
         }
@@ -178,7 +179,7 @@ public class ImportService {
             List<DpuItem> result = (List<DpuItem>) xStream.fromXML(sourceFile);
             return result;
         } catch (Throwable t) {
-            String msg = "Missing or wrong used dpu file";
+            String msg = Messages.getString("ImportService.pipeline.dpu.file.wrong");
             LOG.error(msg);
             throw new ImportException(msg, t);
         }
@@ -210,7 +211,7 @@ public class ImportService {
                 // we have to import new DPU
                 result = moduleManipulator.create(jarFile, template.getName());
             } catch (DPUCreateException ex) {
-                throw new ImportException("Failed to import DPU", ex);
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail"), ex);
             }
         } else {
             // check visibility
@@ -230,9 +231,9 @@ public class ImportService {
                         .getDPUDataUserDir(result, user);
                 FileUtils.copyDirectory(userDataDir, dest);
             } catch (MissingResourceException ex) {
-                throw new ImportException("Missing resource.", ex);
+                throw new ImportException(Messages.getString("ImportService.pipeline.missing.resource"), ex);
             } catch (IOException ex) {
-                throw new ImportException("Failed to copy DPU user data", ex);
+                throw new ImportException(Messages.getString("ImportService.pipeline.userData.copy.fail"), ex);
             }
         }
 
@@ -242,9 +243,9 @@ public class ImportService {
                 final File dest = resourceManager.getDPUDataGlobalDir(result);
                 FileUtils.copyDirectory(globalDataDir, dest);
             } catch (MissingResourceException ex) {
-                throw new ImportException("Missing resource.", ex);
+                throw new ImportException(Messages.getString("ImportService.pipeline.missing.resource"), ex);
             } catch (IOException ex) {
-                throw new ImportException("Failed to copy DPU global data", ex);
+                throw new ImportException(Messages.getString("ImportService.pipeline.globalData.copy.fail"), ex);
             }
         }
 
@@ -268,7 +269,7 @@ public class ImportService {
         try {
             schedules = (List<Schedule>) xStream.fromXML(scheduleFile);
         } catch (Throwable t) {
-            throw new ImportException("Failed to deserialize schedules.", t);
+            throw new ImportException(Messages.getString("ImportService.pipeline.schedule.deserialization.fail"), t);
         }
 
         for (Schedule schedule : schedules) {

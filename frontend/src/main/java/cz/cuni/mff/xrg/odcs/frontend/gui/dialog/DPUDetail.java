@@ -20,6 +20,7 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 
@@ -118,15 +119,15 @@ public class DPUDetail extends Window {
         buttonBar.setSpacing(true);
         buttonBar.setWidth("100%");
 
-        btnSaveAndCommit = new Button("Save");
+        btnSaveAndCommit = new Button(Messages.getString("DPUDetail.save"));
         btnSaveAndCommit.setWidth("90px");
         buttonBar.addComponent(btnSaveAndCommit);
 
-        btnCancel = new Button("Cancel");
+        btnCancel = new Button(Messages.getString("DPUDetail.cancel"));
         btnCancel.setWidth("90px");
         buttonBar.addComponent(btnCancel);
 
-        btnCopyFromTemplate = new Button("Copy from template");
+        btnCopyFromTemplate = new Button(Messages.getString("DPUDetail.copy"));
         btnCopyFromTemplate.setWidth("160px");
         buttonBar.addComponent(btnCopyFromTemplate);
         buttonBar.setExpandRatio(btnCopyFromTemplate, 1.0f);
@@ -147,7 +148,7 @@ public class DPUDetail extends Window {
             }
         });
 
-        btnSaveAsNew = new Button("Save as DPU template");
+        btnSaveAsNew = new Button(Messages.getString("DPUDetail.saveAs"));
         btnSaveAsNew.setWidth("160px");
         buttonBar.addComponent(btnSaveAsNew);
 //        buttonBar.setExpandRatio(btnSaveAsNew, 1.0f);
@@ -177,7 +178,7 @@ public class DPUDetail extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 ConfirmDialog.show(UI.getCurrent(),
-                        "Save as new DPU template?",
+                        Messages.getString("DPUDetail.saveAs.dialog"),
                         new ConfirmDialog.Listener() {
                             @Override
                             public void onClose(ConfirmDialog cd) {
@@ -201,8 +202,8 @@ public class DPUDetail extends Window {
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
         this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
-        this.setCaption(String.format("%s detail%s", dpu.getName().trim(),
-                readOnly ? " - Read only mode" : ""));
+        this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
+                readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 
         generalDetail.loadFromDPU(dpu, false);
 
@@ -218,19 +219,19 @@ public class DPUDetail extends Window {
             confDialog = dpuInstance.getDialog();
             dpuInstance.configuredDialog();
         } catch (ModuleException e) {
-            Notification.show("Failed to load configuration dialog.", e
+            Notification.show(Messages.getString("DPUDetail.configuration.loadFail.dialog"), e
                     .getMessage(), Type.ERROR_MESSAGE);
             LOG.error("Failed to load dialog for {}", dpuInstance
                     .getDPUInstanceRecord().getId(), e);
         } catch (FileNotFoundException e) {
-            Notification.show("Missing DPU jar file.", e.getMessage(),
+            Notification.show(Messages.getString("DPUDetail.missing.jar"), e.getMessage(),
                     Type.ERROR_MESSAGE);
         } catch (DPUWrapException e) {
-            Notification.show("Failed to load DPU,", e.getMessage(),
+            Notification.show(Messages.getString("DPUDetail.dpu.loadFail.dialog"), e.getMessage(),
                     Type.ERROR_MESSAGE);
         } catch (DPUConfigException e) {
             Notification.show(
-                    "Configuration problem",
+                    Messages.getString("DPUDetail.configuration.problem"),
                     e.getMessage(), Type.WARNING_MESSAGE);
             LOG.error("Problem with configuration for {}", dpuInstance
                     .getDPUInstanceRecord().getId(), e);
@@ -254,24 +255,23 @@ public class DPUDetail extends Window {
             dpuInstance.saveConfig();
             generalDetail.saveToDPU(dpuInstance.getDPUInstanceRecord(), dpuInstance);
         } catch (SPARQLValidationException e) {
-            Notification.show("Query Validator",
-                    "Validation of " + e.getQueryNumber() + ". query failed: "
-                            + e.getMessage(),
+            Notification.show(Messages.getString("DPUDetail.query.validator"),
+                    Messages.getString("DPUDetail.query.validator.description", e.getQueryNumber(), e.getMessage()),
                     Notification.Type.ERROR_MESSAGE);
             return false;
         } catch (DPUConfigException e) {
             LOG.error("saveDPUInstance", e);
-            Notification.show("Failed to save configuration. Reason:", e
+            Notification.show(Messages.getString("DPUDetail.save.fail.dialog"), e
                     .getMessage(), Type.ERROR_MESSAGE);
             return false;
         } catch (Exception e) {
             LOG.error("saveDPUInstance", e);
 
             Throwable rootCause = DecorationHelper.findFinalCause(e);
-            String text = String.format("Exception: %s, Message: %s",
+            String text = Messages.getString("DPUDetail.exception.message",
                     rootCause.getClass().getName(), rootCause.getMessage());
             Notification.show(
-                    "Method for storing configuration threw exception:",
+                    Messages.getString("DPUDetail.configuration.store.fail"),
                     text, Type.ERROR_MESSAGE);
             return false;
         }

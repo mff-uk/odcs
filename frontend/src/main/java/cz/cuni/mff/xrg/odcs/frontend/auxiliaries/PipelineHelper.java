@@ -22,12 +22,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * @author Bogo
  */
 public class PipelineHelper {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(PipelineHelper.class);
 
     private static final Long DEFAULT_ORDER_POSITION = ScheduledJobsPriority.IGNORE.getValue();
@@ -37,7 +38,7 @@ public class PipelineHelper {
 
     @Autowired
     private CheckDatabaseService checkDatabaseService;
-    
+
     @Autowired
     private RuntimePropertiesFacade runtimePropertyFacade;
 
@@ -67,13 +68,13 @@ public class PipelineHelper {
      * @return {@link PipelineExecution} of given {@link Pipeline}.
      */
     public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
-        final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline, 
+        final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline,
                 Arrays.asList(PipelineExecutionStatus.QUEUED, PipelineExecutionStatus.RUNNING));
         if (hasQueuedOrRunning) {
-            Notification.show("Failed to start execution.", "Pipeline execution already queued or running.", Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineHelper.start.failed"), Messages.getString("PipelineHelper.start.failed.description"), Type.WARNING_MESSAGE);
             return null;
         }
-        
+
         final PipelineExecution pipelineExec = pipelineFacade.createExecution(pipeline);
         pipelineExec.setDebugging(inDebugMode);
         if (inDebugMode && debugNode != null) {
@@ -87,26 +88,29 @@ public class PipelineHelper {
             pipelineFacade.save(pipelineExec);
             checkDatabaseService.checkDatabase();
         } catch (RemoteAccessException e) {
-            ConfirmDialog.show(UI.getCurrent(), "Pipeline execution", "Backend is offline. Should the pipeline be scheduled to be launched when backend is online or do you want to cancel the execution?", "Schedule", "Cancel", new ConfirmDialog.Listener() {
-                private static final long serialVersionUID = 1L;
+            ConfirmDialog
+                    .show(UI.getCurrent(),
+                            Messages.getString("PipelineHelper.backend.offline.dialog.name"), Messages.getString("PipelineHelper.backend.offline.dialog.message"), Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
+                            Messages.getString("PipelineHelper.backend.offline.dialog.cancel"), new ConfirmDialog.Listener() {
+                                private static final long serialVersionUID = 1L;
 
-                @Override
-                public void onClose(ConfirmDialog cd) {
-                    PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
-                    if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
-                        Notification.show("Execution not sheduled / canceled", "Execution state changed in the meantime. Check and try again.", Type.WARNING_MESSAGE);
-                        return; // already running
-                    }
-                    if (cd.isConfirmed()) {
-                        pipelineFacade.save(pipelineExec);
-                    } else {
-                        pipelineFacade.delete(pipelineExec);
-                    }
-                }
-            });
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
+                                    if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
+                                        Notification.show(Messages.getString("PipelineHelper.execution.state.title"), Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
+                                        return; // already running
+                                    }
+                                    if (cd.isConfirmed()) {
+                                        pipelineFacade.save(pipelineExec);
+                                    } else {
+                                        pipelineFacade.delete(pipelineExec);
+                                    }
+                                }
+                            });
             return null;
         }
-        Notification.show("Pipeline execution started ..", Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show(Messages.getString("PipelineHelper.execution.started"), Notification.Type.HUMANIZED_MESSAGE);
         return pipelineExec;
     }
 
@@ -119,7 +123,7 @@ public class PipelineHelper {
     private Long getOrderPosition() {
         Long epoch = (long) System.currentTimeMillis();
         Long priority = DEFAULT_ORDER_POSITION;
-        
+
         // checking format of value
         RuntimeProperty property = runtimePropertyFacade.getByName(ConfigProperty.FRONTEND_RUN_NOW_PIPELINE_PRIORITY.toString());
         if (property != null) {
@@ -131,14 +135,14 @@ public class PipelineHelper {
                 LOG.warn("Using default value: " + DEFAULT_ORDER_POSITION);
             }
         }
-        
+
         // schould be in range IGNORE (0) - HIGHEST (3)
         if (priority < ScheduledJobsPriority.IGNORE.getValue()) {
             priority = ScheduledJobsPriority.IGNORE.getValue();
         } else if (priority > ScheduledJobsPriority.HIGHEST.getValue()) {
             priority = ScheduledJobsPriority.HIGHEST.getValue();
         }
-        
+
         Long orderNumber = priority;
         if (priority != ScheduledJobsPriority.IGNORE.getValue()) {
             orderNumber = (epoch / priority);

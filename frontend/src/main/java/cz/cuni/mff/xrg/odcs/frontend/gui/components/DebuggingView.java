@@ -39,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.LogTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.OpenLogsEvent;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.RecordsTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Shows complex debug information about current pipeline execution. Shows
@@ -57,7 +58,7 @@ public class DebuggingView extends CustomComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(DebuggingView.class);
 
-	private static final int ICON_HEIGHT = 16; // [pixels]
+    private static final int ICON_HEIGHT = 16; // [pixels]
 
     private VerticalLayout mainLayout;
 
@@ -188,7 +189,7 @@ public class DebuggingView extends CustomComponent {
 
         if (isFromCanvas) {
             HorizontalLayout topLine = new HorizontalLayout();
-            Label labelPipelineStatus = new Label("Pipeline status:");
+            Label labelPipelineStatus = new Label(Messages.getString("DebuggingView.status"));
             topLine.addComponent(labelPipelineStatus);
             iconStatus = new Embedded();
             iconStatus.setImmediate(true);
@@ -219,13 +220,13 @@ public class DebuggingView extends CustomComponent {
         msgTable.setWidth("100%");
 
         LOG.debug("Add Events tab");
-        tabs.addTab(msgTable, "Events");
+        tabs.addTab(msgTable, Messages.getString("DebuggingView.events"));
 
         HorizontalLayout optionLine = new HorizontalLayout();
         optionLine.setWidth(100, Unit.PERCENTAGE);
 
         //if (!isRunFinished()) {
-        refreshAutomatically = new CheckBox("Refresh automatically", true);
+        refreshAutomatically = new CheckBox(Messages.getString("DebuggingView.refresh"), true);
         refreshAutomatically.setImmediate(true);
         refreshAutomatically.setVisible(false);
         optionLine.addComponent(refreshAutomatically);
@@ -237,17 +238,17 @@ public class DebuggingView extends CustomComponent {
         logLayout.addComponent(logTable);
         logLayout.setSizeFull();
         LOG.debug("Add Log tab");
-        logsTab = tabs.addTab(logLayout, "Log");
+        logsTab = tabs.addTab(logLayout, Messages.getString("DebuggingView.log"));
 
         browse = new Browse(pipelineExec);
         if (debugDpu != null) {
             browse.setDpu(debugDpu);
         }
         LOG.debug("Add Browse tab");
-        queryTab = tabs.addTab(browse, "Browse/Query");
+        queryTab = tabs.addTab(browse, Messages.getString("DebuggingView.browse"));
 
         VerticalLayout options = new VerticalLayout();
-        Button download = new Button("Download all logs");
+        Button download = new Button(Messages.getString("DebuggingView.download"));
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
             @Override
             public String getFilename() {
@@ -269,7 +270,7 @@ public class DebuggingView extends CustomComponent {
         options.addComponent(download);
         options.setMargin(true);
         LOG.debug("Add Options tab");
-        tabs.addTab(options, "Options");
+        tabs.addTab(options, Messages.getString("DebuggingView.options"));
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);
@@ -378,18 +379,18 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("setExecution({}) -> done", execution.getId());
     }
-    
+
     public void restore() {
-    	if (pipelineExec == null) {
-			return;
-		}
-    	if (!isRunFinished()) {
+        if (pipelineExec == null) {
+            return;
+        }
+        if (!isRunFinished()) {
             // add us to the refresh manager, so we got some refresh events
             ((AppEntry) UI.getCurrent()).getRefreshManager().addListener(
                     RefreshManager.DEBUGGINGVIEW,
                     RefreshManager.getDebugRefresher(this, pipelineExec, pipelineFacade));
         } else {
-        	refresh();
+            refresh();
         }
     }
 

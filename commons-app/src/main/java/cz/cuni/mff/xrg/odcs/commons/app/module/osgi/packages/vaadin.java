@@ -10,7 +10,7 @@ public final class vaadin {
     /**
      * Used Vaadin version.
      */
-    public static final String VERSION = "7.1.10";
+    public static final String VERSION = "7.3.7";
 
     /**
      * List of OSGI packages to export. Does not start nor end with separator.

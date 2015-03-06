@@ -18,6 +18,10 @@ frontend/src/main/webapp/WEB-INF/config.properties
 nbactions.xml
 nb-configuration.xml
 
+# IntelliJ IDEA files
+.idea/
+*.iml
+
 # Frontend generated sources
 
 # Build Directories #
@@ -28,8 +32,8 @@ bin/
 *.war
 *.jar
 *.ear
-!/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/icons/arrow_bottom.svg
-/frontend/src/main/webapp/VAADIN/
-!/frontend/src/main/webapp/VAADIN/themes/UnifiedViewsTheme/
+frontend/src/main/webapp/VAADIN/gwt-unitCache
+frontend/src/main/webapp/VAADIN/themes/*/addons.scss
+frontend/src/main/webapp/VAADIN/widgetsets
 build.bat
 eclipse.bat

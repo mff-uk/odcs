@@ -8,7 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionChangedEvent;
 
 /**
@@ -36,6 +36,7 @@ public class Browse extends CustomComponent {
         this.execution = execution;
 
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(true);
 
         selector = new DataUnitSelector(execution);
         selector.addListener(new Listener() {
@@ -81,8 +82,7 @@ public class Browse extends CustomComponent {
         if (info == null) {
             return;
         }
-        if (info.getType() == ManagableDataUnit.Type.FILE ||
-        		info.getType() == ManagableDataUnit.Type.FILES) {
+        if (info.getType() == ManagableDataUnit.Type.FILES) {
             if (queryView.getClass() == RDFQueryView.class) {
                 mainLayout.removeComponent(queryView);
                 queryView = new FileQueryView();
