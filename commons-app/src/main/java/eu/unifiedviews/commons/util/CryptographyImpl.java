@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.commons.app.util;
+package eu.unifiedviews.commons.util;
 
 import java.io.File;
 import java.io.IOException;
