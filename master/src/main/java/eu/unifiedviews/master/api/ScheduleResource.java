@@ -253,9 +253,10 @@ public class ScheduleResource {
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
             }
+            schedule.setPipeline(pipeline);
+            schedule.setType(scheduleToUpdate.getScheduleType());
             schedule.setOwner(user);
             schedule.setOrganization(organization);
-            schedule.setPipeline(pipeline);
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
@@ -268,6 +269,7 @@ public class ScheduleResource {
                     }
                 }
             }
+            schedule.setPriority(scheduleToUpdate.getScheduledJobsPriority());
             ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
             scheduleFacade.save(schedule);
             return ScheduleDTOConverter.convertToDTO(schedule);

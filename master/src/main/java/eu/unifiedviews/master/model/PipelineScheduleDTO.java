@@ -2,6 +2,7 @@ package eu.unifiedviews.master.model;
 
 import java.util.List;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 public class PipelineScheduleDTO {
@@ -26,6 +27,8 @@ public class PipelineScheduleDTO {
     private Integer period;
 
     private String periodUnit;
+
+    private Long scheduledJobsPriority;
 
     private String userExternalId;
 
@@ -135,20 +138,29 @@ public class PipelineScheduleDTO {
         this.organizationExternalId = organizationExternalId;
     }
 
+    public Long getScheduledJobsPriority() {
+        return scheduledJobsPriority;
+    }
+
+    public void setScheduledJobsPriority(Long scheduledJobsPriority) {
+        this.scheduledJobsPriority = scheduledJobsPriority;
+    }
+
     @Override public String toString() {
         return "PipelineScheduleDTO{" +
-                "lastExecution='" + lastExecution + '\'' +
-                ", id=" + id +
+                "id=" + id +
                 ", description='" + description + '\'' +
                 ", enabled=" + enabled +
                 ", scheduleType=" + scheduleType +
                 ", firstExecution='" + firstExecution + '\'' +
+                ", lastExecution='" + lastExecution + '\'' +
                 ", nextExecution='" + nextExecution + '\'' +
                 ", afterPipelines=" + afterPipelines +
                 ", justOnce=" + justOnce +
                 ", period=" + period +
                 ", periodUnit='" + periodUnit + '\'' +
-                ", userExternalId=" + userExternalId +
+                ", scheduledJobsPriority=" + scheduledJobsPriority +
+                ", userExternalId='" + userExternalId + '\'' +
                 ", organizationExternalId='" + organizationExternalId + '\'' +
                 '}';
     }
