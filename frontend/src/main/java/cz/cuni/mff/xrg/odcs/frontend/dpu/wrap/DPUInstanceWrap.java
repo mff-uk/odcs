@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Wrap {@link DPUInstanceRecord} to made work with configuration and
@@ -26,8 +27,8 @@ public class DPUInstanceWrap extends DPURecordWrap {
      * @param dpuTemplate
      * @param dpuFacade
      */
-    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade, Locale locale) {
-        super(dpuTemplate, false, locale);
+    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade, Locale locale, Cryptography cryptography) {
+        super(dpuTemplate, false, locale, cryptography);
         this.dpuFacade = dpuFacade;
         this.dpuInstance = dpuTemplate;
     }

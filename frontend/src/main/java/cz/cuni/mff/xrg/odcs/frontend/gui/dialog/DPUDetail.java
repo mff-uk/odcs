@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Detail of selected DPU. Consists of common properties, name and description
@@ -58,15 +59,18 @@ public class DPUDetail extends Window {
 
     private boolean result;
 
+    private Cryptography cryptography;
+
     /**
      * Basic constructor, takes DPUFacade. In order to generate the layout call {@link #build()}. The build function has to be called before any other
      * function.
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade) {
+    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade, Cryptography cryptography) {
         this.runtimePropertiesFacade = runtimePropertiesFacade;
         this.dpuFacade = dpuFacade;
+        this.cryptography = cryptography;
         // build the layout
         build();
         // set dialog properties
@@ -201,7 +205,7 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale(), cryptography);
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

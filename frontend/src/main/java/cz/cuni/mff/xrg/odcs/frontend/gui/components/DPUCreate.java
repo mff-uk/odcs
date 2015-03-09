@@ -43,6 +43,7 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Dialog for the DPU template creation. Allows to upload a JAR file and on base
@@ -55,6 +56,9 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 public class DPUCreate extends Window {
     @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
+
+    @Autowired
+    private Cryptography cryptography;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -559,7 +563,7 @@ public class DPUCreate extends Window {
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), runtimePropertiesFacade.getLocale());
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), runtimePropertiesFacade.getLocale(), cryptography);
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
@@ -582,7 +586,7 @@ public class DPUCreate extends Window {
     private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
         String name = dpuName.isValid() ? dpuName.getValue() : null;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), runtimePropertiesFacade.getLocale());
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), runtimePropertiesFacade.getLocale(), cryptography);
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template

@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 import java.util.Locale;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Wrap {@link DPUTemplateRecord} to made work with configuration and
@@ -22,8 +23,8 @@ public class DPUTemplateWrap extends DPURecordWrap {
      *
      * @param dpuTemplate
      */
-    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale) {
-        super(dpuTemplate, true, locale);
+    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale, Cryptography cryptography) {
+        super(dpuTemplate, true, locale, cryptography);
         this.dpuTemplate = dpuTemplate;
     }
 

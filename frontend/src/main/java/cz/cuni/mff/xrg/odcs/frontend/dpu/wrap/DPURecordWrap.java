@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
@@ -19,6 +20,7 @@ import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
 import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
 import eu.unifiedviews.dpu.config.vaadin.ConfigDialogProvider;
 import eu.unifiedviews.dpu.config.vaadin.InitializableConfigDialog;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -47,15 +49,18 @@ public class DPURecordWrap {
 
     private Locale locale;
 
+    private Cryptography cryptography;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, Cryptography cryptography) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
         this.locale = locale;
+        this.cryptography = cryptography;
     }
 
     /**
@@ -125,7 +130,8 @@ public class DPURecordWrap {
      * following conditions:
      * <ul>
      * <li>DPU has configuration dialog.</li>
-     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
+     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li><li><li>The dialog has been configurated by calling<li>The dialog has been configurated by calling {
+     * @link #configuredDialog()}</li>
      * </ul>
      *
      * @return True if the configuration changed.
@@ -187,7 +193,7 @@ public class DPURecordWrap {
             try {
                 java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
                 final Object result = method.invoke(dialogProvider);
-                configDialog = (AbstractConfigDialog<?>)result;                
+                configDialog = (AbstractConfigDialog<?>) result;
             } catch (NoSuchMethodException | SecurityException ex) {
                 LOG.error("Can't get method.", ex);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -197,7 +203,7 @@ public class DPURecordWrap {
             //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, cryptography);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
                     try {

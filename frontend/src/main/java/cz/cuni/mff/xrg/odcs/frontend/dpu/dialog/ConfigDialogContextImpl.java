@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.dpu.dialog;
 import java.util.Locale;
 
 import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
+import eu.unifiedviews.util.Cryptography;
 
 /**
  * Implementation of {@link ConfigDialogContext}.
@@ -18,15 +19,18 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
 
     private final Locale locale;
 
+    private Cryptography cryptography;
+
     /**
      * Constructor.
      *
      * @param isTemplate
      *            Whether the dialog is used for DPU template.
      */
-    public ConfigDialogContextImpl(boolean isTemplate, Locale locale) {
+    public ConfigDialogContextImpl(boolean isTemplate, Locale locale, Cryptography cryptography) {
         this.isTemplate = isTemplate;
         this.locale = locale;
+        this.cryptography = cryptography;
     }
 
     @Override
@@ -38,4 +42,10 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
     public Locale getLocale() {
         return locale;
     }
+
+    @Override
+    public Cryptography getCryptography() {
+        return cryptography;
+    }
+
 }
