@@ -36,7 +36,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-import eu.unifiedviews.util.Cryptography;
 
 /**
  * Component for visualization of the pipeline.
@@ -88,9 +87,6 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private DPUFacade dpuFacade;
-
-    @Autowired
-    private Cryptography cryptography;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -188,7 +184,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade, cryptography);
+        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

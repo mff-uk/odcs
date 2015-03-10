@@ -18,7 +18,6 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
-import eu.unifiedviews.util.Cryptography;
 
 /**
  * @author Bogo
@@ -32,9 +31,6 @@ public class PipelineValidator {
 
     @Autowired
     private DPUFacade dpuFacade;
-
-    @Autowired
-    private Cryptography cryptography;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineValidator.class);
 
@@ -86,7 +82,7 @@ public class PipelineValidator {
      */
     public boolean checkDPUValidity(DPUInstanceRecord dpu) {
         LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
-        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale(), cryptography);
+        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale());
 
         // load instance
         AbstractConfigDialog<?> confDialog;

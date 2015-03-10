@@ -39,7 +39,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
-import eu.unifiedviews.util.Cryptography;
 
 /**
  * @author Bogo
@@ -69,9 +68,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
-
-    @Autowired
-    private Cryptography cryptography;
 
     private TextField dpuName; // name of selected DPU Template
 
@@ -807,7 +803,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale(), cryptography);
+            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
