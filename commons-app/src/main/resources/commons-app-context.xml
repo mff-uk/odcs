@@ -96,7 +96,7 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactoryImpl"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager"/>
-    <bean class="eu.unifiedviews.commons.util.CryptographyImpl">
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.util.CryptographyImpl">
         <constructor-arg value="${cryptography.key.file:}" />
     </bean>
     
