@@ -2,6 +2,9 @@ package eu.unifiedviews.master.api;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +18,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import eu.unifiedviews.master.converter.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import eu.unifiedviews.master.converter.PipelineDTOConverter;
@@ -42,10 +48,7 @@ public class PipelineResource {
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private ScheduleFacade scheduleFacade;
-
-    @Autowired
-    private DPUFacade dpuFacade;
+    private ImportService importService;
 
     @Autowired
     private UserFacade userFacade;
@@ -84,6 +87,7 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
+
     public List<PipelineDTO> getPipelines(@QueryParam("organizationExternalId") String organizationExternalId) {
         List<Pipeline> pipelines = null;
         try {
@@ -169,5 +173,26 @@ public class PipelineResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
         return PipelineDTOConverter.convert(pipelineCopy);
+    }
+
+    @POST
+    @Path("/import")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PipelineDTO importPipeline(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @FormDataParam("importUserData") boolean importUserData, @FormDataParam("importSchedule") boolean importSchedule) {
+        // parse input steam to file, located in temporary directory
+        File pipelineFile;
+        Pipeline importedPipeline;
+        try {
+            pipelineFile = ConvertUtils.inputStreamToFile(inputStream, contentDispositionHeader.getFileName());
+            importedPipeline = importService.importPipeline(pipelineFile, importUserData, importSchedule);
+        } catch (IOException e) {
+            LOG.error("Exception at reading input stream", e);
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch (ImportException e) {
+            LOG.error("Exception at importing pipeline", e);
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return PipelineDTOConverter.convert(importedPipeline);
     }
 }
