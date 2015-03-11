@@ -181,7 +181,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         //layout with tabs
         tabsLayout = new VerticalLayout();
-        tabsLayout.setWidth("170px");
+        tabsLayout.setWidth("250px");
         tabsLayout.setImmediate(true);
 
         //layout with my account components
@@ -220,7 +220,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //My account tab
         accountButton = new NativeButton(Messages.getString("Settings.my.account"));
         accountButton.setHeight("40px");
-        accountButton.setWidth("170px");
+        accountButton.setWidth("250px");
         accountButton.setStyleName("selectedtab");
         accountButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -242,7 +242,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //Scheduler notifications tab
         notificationsButton = new NativeButton(Messages.getString("Settings.scheduler.notifications"));
         notificationsButton.setHeight("40px");
-        notificationsButton.setWidth("170px");
+        notificationsButton.setWidth("250px");
         notificationsButton.setStyleName("multiline");
         notificationsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -266,7 +266,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //Manage users tab
         usersButton = new NativeButton(Messages.getString("Settings.manage.users"));
         usersButton.setHeight("40px");
-        usersButton.setWidth("170px");
+        usersButton.setWidth("250px");
         usersButton.setStyleName("multiline");
         usersButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
         usersButton.addClickListener(new ClickListener() {
@@ -293,7 +293,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //Delete debug resources tab
         pipelinesButton = new NativeButton(Messages.getString("Settings.delete.resources"));
         pipelinesButton.setHeight("40px");
-        pipelinesButton.setWidth("170px");
+        pipelinesButton.setWidth("250px");
         pipelinesButton.setStyleName("multiline");
         pipelinesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
         pipelinesButton.addClickListener(new ClickListener() {
@@ -351,7 +351,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         runtimePropsButton = new NativeButton(Messages.getString("Settings.runtime.properties"));
         runtimePropsButton.setHeight("40px");
-        runtimePropsButton.setWidth("170px");
+        runtimePropsButton.setWidth("250px");
         runtimePropsButton.setStyleName("multiline");
         runtimePropsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
         runtimePropsButton.addClickListener(new ClickListener() {

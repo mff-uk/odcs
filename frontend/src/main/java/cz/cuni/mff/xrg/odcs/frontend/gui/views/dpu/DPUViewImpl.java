@@ -38,7 +38,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
 
 /**
  * @author Bogo

@@ -40,13 +40,13 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     /**
      * Column widths for pipeline table.
      */
-    private static final int COLUMN_ACTIONS_WIDTH = 324;
+    private static final int COLUMN_ACTIONS_WIDTH = 250;
 
-    private static final int COLUMN_STATUS_WIDTH = 68;
+    private static final int COLUMN_STATUS_WIDTH = 100;
 
-    private static final int COLUMN_DURATION_WIDTH = 80;
+    private static final int COLUMN_DURATION_WIDTH = 180;
 
-    private static final int COLUMN_TIME_WIDTH = 115;
+    private static final int COLUMN_TIME_WIDTH = 180;
 
     private VerticalLayout mainLayout;
 
@@ -76,7 +76,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline = new Button();
         btnCreatePipeline.setCaption(Messages.getString("PipelineListViewImpl.create.pipeline"));
         btnCreatePipeline.setHeight("25px");
-        btnCreatePipeline.setWidth("120px");
         btnCreatePipeline.addStyleName("v-button-primary");
         btnCreatePipeline.addClickListener(new ClickListener() {
 
@@ -90,7 +89,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline = new Button();
         btnImportPipeline.setCaption(Messages.getString("PipelineListViewImpl.import.pipeline"));
         btnImportPipeline.setHeight("25px");
-        btnImportPipeline.setWidth("120px");
         btnImportPipeline.addStyleName("v-button-primary");
         btnImportPipeline.addClickListener(new ClickListener() {
 
@@ -104,7 +102,6 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         Button buttonDeleteFilters = new Button();
         buttonDeleteFilters.setCaption(Messages.getString("PipelineListViewImpl.clear.filters"));
         buttonDeleteFilters.setHeight("25px");
-        buttonDeleteFilters.setWidth("120px");
         buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.addClickListener(new ClickListener() {
 
@@ -128,6 +125,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         // add column
         tablePipelines.setImmediate(true);
         tablePipelines.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
+        tablePipelines.setColumnHeader("actions", Messages.getString("PipelineListViewImpl.actions"));
         tablePipelines.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
         tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
         tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);

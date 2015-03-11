@@ -34,7 +34,7 @@ import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryRestriction;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
-import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
+import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 
 /**
  * Implementation of {@link Query} interface for RDF queries. Just read-only
