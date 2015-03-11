@@ -106,10 +106,6 @@ public class DPUResource {
 
     private void replaceDpu(DPUTemplateRecord dpuTemplate, File jarFile) {
         try {
-            List<Pipeline> pipelines = pipelineFacade.getPipelinesUsingDPU(dpuTemplate);
-            if(!pipelines.isEmpty()) {
-                throw new ApiException(Response.Status.CONFLICT, "DPU is already used in pipelines!.");
-            }
             dpuManipulator.replace(dpuTemplate, jarFile);
         } catch (DPUReplaceException e) {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
