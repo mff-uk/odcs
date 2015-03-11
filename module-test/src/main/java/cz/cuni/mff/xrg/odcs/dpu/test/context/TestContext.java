@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.dpu.test.context;
 import java.io.File;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -72,11 +71,8 @@ public class TestContext implements DPUContext {
 
     private File dpuInstanceDirectory = null;
 
-    private Map<String, String> environmentProperties = null;
-
     public TestContext(File rootDirectory) {
         this.rootDirectory = rootDirectory;
-        this.environmentProperties = new HashMap<>();
         globalDirectory = new File(rootDirectory, "global");
         if (!globalDirectory.exists()) {
             globalDirectory.mkdirs();
@@ -268,15 +264,11 @@ public class TestContext implements DPUContext {
 
     @Override
     public Map<String, String> getEnvironment() {
-        return environmentProperties;
+        return Collections.<String, String> emptyMap();
     }
 
     @Override
     public String getPipelineOwner() {
         return "test_user";
-    }
-
-    @Override public String getOrganization() {
-        return "test_org";
     }
 }
