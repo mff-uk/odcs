@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
@@ -26,8 +27,8 @@ public class DPUInstanceWrap extends DPURecordWrap {
      * @param dpuTemplate
      * @param dpuFacade
      */
-    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade, Locale locale) {
-        super(dpuTemplate, false, locale);
+    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade, Locale locale, AppConfig appConfig) {
+        super(dpuTemplate, false, locale, appConfig);
         this.dpuFacade = dpuFacade;
         this.dpuInstance = dpuTemplate;
     }

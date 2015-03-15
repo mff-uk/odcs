@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vaadin.ui.UI;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -47,15 +48,18 @@ public class DPURecordWrap {
 
     private Locale locale;
 
+    private AppConfig appConfig;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, AppConfig appConfig) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
         this.locale = locale;
+        this.appConfig = appConfig;
     }
 
     /**
@@ -197,7 +201,7 @@ public class DPURecordWrap {
             //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, appConfig);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
                     try {
