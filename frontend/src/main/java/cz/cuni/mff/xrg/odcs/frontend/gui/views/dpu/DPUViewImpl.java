@@ -20,6 +20,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
@@ -68,6 +69,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
+
+    @Autowired
+    private AppConfig appConfig;
 
     private TextField dpuName; // name of selected DPU Template
 
@@ -769,7 +773,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
+            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale(), appConfig);
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);

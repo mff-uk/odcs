@@ -18,6 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
@@ -87,6 +88,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private DPUFacade dpuFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -184,7 +188,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade);
+        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade, appConfig);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

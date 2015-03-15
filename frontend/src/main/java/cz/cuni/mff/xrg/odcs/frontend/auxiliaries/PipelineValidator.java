@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -31,6 +32,9 @@ public class PipelineValidator {
 
     @Autowired
     private DPUFacade dpuFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineValidator.class);
 
@@ -82,7 +86,7 @@ public class PipelineValidator {
      */
     public boolean checkDPUValidity(DPUInstanceRecord dpu) {
         LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
-        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale());
+        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale(), appConfig);
 
         // load instance
         AbstractConfigDialog<?> confDialog;
