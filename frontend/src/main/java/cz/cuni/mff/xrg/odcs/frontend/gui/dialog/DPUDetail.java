@@ -4,12 +4,14 @@ import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -48,6 +50,8 @@ public class DPUDetail extends Window {
 
     private DPUConfigHolder configHolder;
 
+    private AppConfig appConfig;
+
     private Button btnSaveAsNew;
 
     private Button btnSaveAndCommit;
@@ -64,9 +68,10 @@ public class DPUDetail extends Window {
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade) {
+    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade, AppConfig appConfig) {
         this.runtimePropertiesFacade = runtimePropertiesFacade;
         this.dpuFacade = dpuFacade;
+        this.appConfig = appConfig;
         // build the layout
         build();
         // set dialog properties
@@ -201,7 +206,7 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale(), appConfig);
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

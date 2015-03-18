@@ -20,6 +20,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
@@ -68,6 +69,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
+
+    @Autowired
+    private AppConfig appConfig;
 
     private TextField dpuName; // name of selected DPU Template
 
@@ -181,40 +185,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         });
         buttonBar.addComponent(buttonCreateDPU);
-
-        Button buttonImportDPU = new Button();
-        buttonImportDPU.setVisible(false);
-        buttonImportDPU.setCaption(Messages.getString("DPUViewImpl.import.template"));
-        buttonImportDPU.setHeight("25px");
-        buttonImportDPU.setWidth("150px");
-        buttonImportDPU.addStyleName("v-button-primary");
-        buttonImportDPU.setEnabled(false);
-        buttonImportDPU.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                presenter.importDPUTemplateEventHandler();
-            }
-        });
-        buttonBar.addComponent(buttonImportDPU);
-
-        Button buttonExportAll = new Button();
-        buttonExportAll.setVisible(false);
-        buttonExportAll.setCaption(Messages.getString("DPUViewImpl.export.all"));
-        buttonExportAll.setHeight("25px");
-        buttonExportAll.setWidth("150px");
-        buttonExportAll.addStyleName("v-button-primary");
-        buttonExportAll.setEnabled(false);
-        buttonExportAll
-                .addClickListener(new com.vaadin.ui.Button.ClickListener() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        presenter.exportAllEventHandler();
-                    }
-                });
-        buttonBar.addComponent(buttonExportAll);
 
         mainLayout.addComponent(buttonBar);
         mainLayout.setExpandRatio(buttonBar, 0.0f);
@@ -803,7 +773,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
+            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale(), appConfig);
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
