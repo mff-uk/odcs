@@ -48,6 +48,8 @@ public enum ConfigProperty {
     DATABASE_RETRIES("retries"),
     DATABASE_WAIT("wait"),
     DATABASE_EXTENSION("useExtension"),
+    DATABASE_SQL_PASSWORD("database.sql.password"),
+    DATABASE_RDF_PASSWORD("database.rdf.password"),
 
     // namespaces for database inaccessible actions
     DATABASE_INACCESSIBLE("inaccessible"),
@@ -69,7 +71,9 @@ public enum ConfigProperty {
     EMAIL_ADMIN("email.admin"),
 
     CKAN_LOCATION("ckan.location"),
-    CKAN_API_KEY("ckan.api.key");
+    CKAN_API_KEY("ckan.api.key"),
+
+    CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
 
     private final String property;
 

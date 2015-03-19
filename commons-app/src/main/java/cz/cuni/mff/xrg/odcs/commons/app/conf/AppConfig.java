@@ -12,6 +12,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
+import eu.unifiedviews.commons.util.Cryptography;
+
 /**
  * Class with global application configuration.
  * 
@@ -31,6 +33,11 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
 
     /**
+     * Cryptography instance;
+     */
+    private static Cryptography cryptography;
+
+    /**
      * Use factory methods for constructing configurations.
      */
     private AppConfig() {
@@ -38,15 +45,25 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
 
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
-              Properties props) throws BeansException {
-         super.processProperties(beanFactory, props);
-  
-         for (Object key : props.keySet()) {
-             String keyStr = key.toString();
-             prop.put(keyStr, props.getProperty(keyStr));
-         }
-     }
-  
+            Properties props) throws BeansException {
+        if (cryptography == null) {
+            try {
+                cryptography = new Cryptography(props.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+
+        decrypt(props);
+
+        super.processProperties(beanFactory, props);
+
+        for (Object key : props.keySet()) {
+            String keyStr = key.toString();
+            prop.put(keyStr, props.getProperty(keyStr));
+        }
+    }
+
     /**
      * Constructor building from Spring resource.
      * 
@@ -79,6 +96,8 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         } catch (IllegalArgumentException ex) {
             throw new MalformedConfigFileException(ex);
         }
+
+        decrypt(config.prop);
 
         return config;
     }
@@ -152,4 +171,24 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     public Properties getProperties() {
         return (Properties) prop.clone();
     }
+
+    /**
+     * @return Cryptography instance.
+     */
+    public static Cryptography getCryptography() {
+        return cryptography;
+    }
+
+    private static void decrypt(Properties properties) {
+        properties.put(ConfigProperty.DATABASE_SQL_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.DATABASE_SQL_PASSWORD.toString())));
+
+        if (properties.containsKey(ConfigProperty.DATABASE_RDF_PASSWORD.toString())) {
+            properties.put(ConfigProperty.DATABASE_RDF_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.DATABASE_RDF_PASSWORD.toString())));
+        }
+
+        if (properties.containsKey(ConfigProperty.EMAIL_PASSWORD.toString())) {
+            properties.put(ConfigProperty.EMAIL_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.EMAIL_PASSWORD.toString())));
+        }
+    }
+
 }
