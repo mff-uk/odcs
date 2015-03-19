@@ -438,6 +438,8 @@ ADD FOREIGN KEY (`user_id`)
     REFERENCES `usr_user` (`id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
+ALTER TABLE ppl_model ADD UNIQUE (name(255));
+
 -- Table `ppl_ppl_conflicts`
 ALTER TABLE `ppl_ppl_conflicts`
 ADD FOREIGN KEY (`pipeline_id`)
