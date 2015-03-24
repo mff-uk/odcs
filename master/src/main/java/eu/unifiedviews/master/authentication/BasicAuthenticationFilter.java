@@ -59,7 +59,6 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String authorization = requestContext.getHeaderString("authorization");
-        authorization = (authorization == null) ? authorization : requestContext.getHeaderString("Authorization");
         if(!isAuthorizationValid(authorization)) {
             throw new ApiException(Response.Status.UNAUTHORIZED, "Request is not authorized!");
         }
