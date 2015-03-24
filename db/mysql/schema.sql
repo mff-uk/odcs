@@ -438,6 +438,8 @@ ADD FOREIGN KEY (`user_id`)
     REFERENCES `usr_user` (`id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
+-- This constraint is only limited to first 255 characters in column. Larger constraint is only
+-- possible with 'innodb_large_prefix' setting on database.
 ALTER TABLE ppl_model ADD UNIQUE (name(255));
 
 -- Table `ppl_ppl_conflicts`
