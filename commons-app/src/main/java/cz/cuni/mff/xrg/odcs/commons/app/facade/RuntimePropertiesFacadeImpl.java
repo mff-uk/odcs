@@ -43,14 +43,4 @@ public class RuntimePropertiesFacadeImpl implements RuntimePropertiesFacade {
     public void delete(RuntimeProperty property) {
         runtimePropertiesDao.delete(property);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Locale getLocale() {
-        RuntimeProperty rp = this.getByName(ConfigProperty.LOCALE.toString());
-        if (rp == null) {
-            return Locale.forLanguageTag("en_US");
-        }
-        return Locale.forLanguageTag(rp.getValue());
-    }
 }
