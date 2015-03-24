@@ -69,7 +69,10 @@ public enum ConfigProperty {
     EMAIL_ADMIN("email.admin"),
 
     CKAN_LOCATION("ckan.location"),
-    CKAN_API_KEY("ckan.api.key");
+    CKAN_API_KEY("ckan.api.key"),
+
+    MASTER_API_USER("master.api.user"),
+    MASTER_API_PASSWORD("master.api.password");
 
     private final String property;
 
