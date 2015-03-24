@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -22,6 +24,11 @@ import eu.unifiedviews.commons.util.Cryptography;
  */
 public class AppConfig extends PropertyPlaceholderConfigurer {
 
+    public static final List<ConfigProperty> ENCRYPTED_PROPERTIES = Arrays.asList(
+            ConfigProperty.DATABASE_SQL_PASSWORD,
+            ConfigProperty.DATABASE_RDF_PASSWORD,
+            ConfigProperty.EMAIL_PASSWORD);
+
     /**
      * Modifiable configuration itself.
      */
@@ -31,6 +38,11 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
      * Logging gateway.
      */
     private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
+
+    /**
+     * Determines whether cryptography is enabled or not.
+     */
+    private static boolean cryptographyEnabled;
 
     /**
      * Cryptography instance;
@@ -46,15 +58,17 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
             Properties props) throws BeansException {
-        if (cryptography == null) {
+        cryptographyEnabled = Boolean.TRUE.toString().equals(props.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+
+        if (cryptographyEnabled && cryptography == null) {
             try {
                 cryptography = new Cryptography(props.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
-        }
 
-        decrypt(props);
+            decrypt(props);
+        }
 
         super.processProperties(beanFactory, props);
 
@@ -172,23 +186,42 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         return (Properties) prop.clone();
     }
 
-    /**
-     * @return Cryptography instance.
-     */
-    public static Cryptography getCryptography() {
-        return cryptography;
+    private static void decrypt(Properties properties) {
+        for (ConfigProperty configProperty : ENCRYPTED_PROPERTIES) {
+            if (properties.containsKey(configProperty.toString())) {
+                properties.put(configProperty.toString(), cryptography.decrypt(properties.getProperty(configProperty.toString())));
+            }
+        }
     }
 
-    private static void decrypt(Properties properties) {
-        properties.put(ConfigProperty.DATABASE_SQL_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.DATABASE_SQL_PASSWORD.toString())));
+    /**
+     * @param input
+     *            byte array for preprocessing.
+     * @return Encrypted byte array if cryptography is enabled, input byte array otherwise.
+     */
+    public static byte[] preprocess(byte[] input) {
+        byte[] result = input;
 
-        if (properties.containsKey(ConfigProperty.DATABASE_RDF_PASSWORD.toString())) {
-            properties.put(ConfigProperty.DATABASE_RDF_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.DATABASE_RDF_PASSWORD.toString())));
+        if (cryptographyEnabled) {
+            result = cryptography.encrypt(input);
         }
 
-        if (properties.containsKey(ConfigProperty.EMAIL_PASSWORD.toString())) {
-            properties.put(ConfigProperty.EMAIL_PASSWORD.toString(), cryptography.decrypt(properties.getProperty(ConfigProperty.EMAIL_PASSWORD.toString())));
+        return result;
+    }
+
+    /**
+     * @param input
+     *            byte array for postprocessing.
+     * @return Decrypted byte array if cryptography is enabled, input byte array otherwise.
+     */
+    public static byte[] postprocess(byte[] input) {
+        byte[] result = input;
+
+        if (cryptographyEnabled) {
+            result = cryptography.decrypt(input);
         }
+
+        return result;
     }
 
 }

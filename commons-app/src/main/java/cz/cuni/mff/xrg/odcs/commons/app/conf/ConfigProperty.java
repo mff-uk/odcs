@@ -73,6 +73,7 @@ public enum ConfigProperty {
     CKAN_LOCATION("ckan.location"),
     CKAN_API_KEY("ckan.api.key"),
 
+    CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
 
     private final String property;

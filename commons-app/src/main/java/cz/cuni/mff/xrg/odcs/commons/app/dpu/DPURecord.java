@@ -306,27 +306,27 @@ public abstract class DPURecord implements DataObject {
 
     @PrePersist
     private void prePersist() {
-        serializedConfiguration = AppConfig.getCryptography().encrypt(serializedConfiguration);
+        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
     }
 
     @PostPersist
     private void postPersist() {
-        serializedConfiguration = AppConfig.getCryptography().decrypt(serializedConfiguration);
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
     }
 
     @PreUpdate
     private void preUpdate() {
-        serializedConfiguration = AppConfig.getCryptography().encrypt(serializedConfiguration);
+        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
     }
 
     @PostUpdate
     private void postUpdate() {
-        serializedConfiguration = AppConfig.getCryptography().decrypt(serializedConfiguration);
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
     }
 
     @PostLoad
     private void postLoad() {
-        serializedConfiguration = AppConfig.getCryptography().decrypt(serializedConfiguration);
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
     }
 
 }
