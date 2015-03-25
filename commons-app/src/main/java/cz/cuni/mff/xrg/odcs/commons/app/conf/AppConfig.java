@@ -42,7 +42,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     /**
      * Determines whether cryptography is enabled or not.
      */
-    private static boolean cryptographyEnabled;
+    private static Boolean cryptographyEnabled;
 
     /**
      * Cryptography instance;
@@ -58,17 +58,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
             Properties props) throws BeansException {
-        cryptographyEnabled = Boolean.TRUE.toString().equals(props.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
-
-        if (cryptographyEnabled && cryptography == null) {
-            try {
-                cryptography = new Cryptography(props.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-
-            decrypt(props);
-        }
+        decrypt(props);
 
         super.processProperties(beanFactory, props);
 
@@ -187,9 +177,23 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     }
 
     private static void decrypt(Properties properties) {
-        for (ConfigProperty configProperty : ENCRYPTED_PROPERTIES) {
-            if (properties.containsKey(configProperty.toString())) {
-                properties.put(configProperty.toString(), cryptography.decrypt(properties.getProperty(configProperty.toString())));
+        if (cryptographyEnabled == null) {
+            cryptographyEnabled = Boolean.TRUE.toString().equals(properties.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+        }
+
+        if (cryptographyEnabled) {
+            if (cryptography == null) {
+                try {
+                    cryptography = new Cryptography(properties.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+
+            for (ConfigProperty configProperty : ENCRYPTED_PROPERTIES) {
+                if (properties.containsKey(configProperty.toString())) {
+                    properties.put(configProperty.toString(), cryptography.decrypt(properties.getProperty(configProperty.toString())));
+                }
             }
         }
     }
