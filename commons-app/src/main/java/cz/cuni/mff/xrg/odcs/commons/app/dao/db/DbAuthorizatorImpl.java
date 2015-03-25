@@ -33,6 +33,8 @@ class DbAuthorizatorImpl implements DbAuthorizator {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
+    private static final String ORGANIZATION_MODE = "organization";
+    
     /**
      * Application's configuration.
      */
@@ -41,7 +43,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
     @Override
     public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-        boolean ownedByOrganization = "organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
+        boolean ownedByOrganization = ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
 
         if (authCtx == null) {
             // no athorization
@@ -130,7 +132,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
         //check either user or his organization
         if (OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
             if (org != null) {
-                predicate = or(cb, predicate, cb.equal(root.get("organization"), org));
+                predicate = or(cb, predicate, cb.equal(root.get(ORGANIZATION_MODE), org));
             } else {
                 predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
             }

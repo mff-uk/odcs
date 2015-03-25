@@ -30,6 +30,8 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
+    private static final String ORGANIZATION_MODE = "organization";
+    
     /**
      * Application's configuration.
      */
@@ -70,7 +72,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
-        if ("organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
             return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
 
         if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
