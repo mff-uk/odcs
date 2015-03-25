@@ -7,9 +7,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +31,10 @@ import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
@@ -54,8 +55,6 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 @Component
 @Scope("prototype")
 public class DPUCreate extends Window {
-    @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     @Autowired
     private AppConfig appConfig;
@@ -563,7 +562,8 @@ public class DPUCreate extends Window {
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), runtimePropertiesFacade.getLocale(), appConfig);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
@@ -586,7 +586,8 @@ public class DPUCreate extends Window {
     private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
         String name = dpuName.isValid() ? dpuName.getValue() : null;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), runtimePropertiesFacade.getLocale(), appConfig);
+
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template

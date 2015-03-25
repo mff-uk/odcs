@@ -201,7 +201,7 @@ CREATE SEQUENCE "seq_ppl_model" START 1;
 CREATE TABLE "ppl_model"
 (
   "id" INTEGER,
-  "name" VARCHAR(1024),
+  "name" VARCHAR(1024) UNIQUE,
   "description" TEXT,
   "user_id" INTEGER,
   "visibility" SMALLINT,
