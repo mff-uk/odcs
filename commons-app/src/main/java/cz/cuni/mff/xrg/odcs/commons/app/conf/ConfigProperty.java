@@ -73,6 +73,9 @@ public enum ConfigProperty {
     CKAN_LOCATION("ckan.location"),
     CKAN_API_KEY("ckan.api.key"),
 
+    MASTER_API_USER("master.api.user"),
+    MASTER_API_PASSWORD("master.api.password"),
+
     CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
 

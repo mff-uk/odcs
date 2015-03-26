@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +23,8 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
@@ -63,9 +64,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.
 
     private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
-
-    @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
@@ -773,8 +771,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale(), appConfig);
-
+            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
             }

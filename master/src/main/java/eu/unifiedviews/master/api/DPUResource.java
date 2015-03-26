@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.model.ApiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,7 @@ import java.util.regex.Pattern;
 
 @Component
 @Path("/import")
+@AuthenticationRequired
 public class DPUResource {
 
     @Autowired
