@@ -23,9 +23,7 @@ public interface DbPipeline extends DbAccess<Pipeline> {
 
     /**
      * @return List of all pipelines in DB.
-     * @deprecated performance intensive for many pipelines
      */
-    @Deprecated
     public List<Pipeline> getPipelinesForOrganization(String orgName);
 
     /**

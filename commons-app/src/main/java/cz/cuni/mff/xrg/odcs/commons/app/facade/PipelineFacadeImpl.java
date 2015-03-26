@@ -123,6 +123,21 @@ class PipelineFacadeImpl implements PipelineFacade {
     }
 
     /**
+     * Returns list of all pipelines persisted in the database for given organization.
+     *
+     * @param organizationName of pipeline
+     * @return list of pipelines
+     * @deprecated performance intensive for many pipelines in DB, use lazy
+     * container with paging instead
+     */
+    
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @Override
+    public List<Pipeline> getAllPipelines(String organizationName) {
+        return pipelineDao.getPipelinesForOrganization(organizationName);
+    }
+    
+    /**
      * Returns list of all pipelines persisted in the database.
      * 
      * @return list of pipelines
