@@ -58,14 +58,14 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
             Properties props) throws BeansException {
-        postprocess(props);
-
-        super.processProperties(beanFactory, props);
-
         for (Object key : props.keySet()) {
             String keyStr = key.toString();
             prop.put(keyStr, props.getProperty(keyStr));
         }
+
+        postprocess();
+
+        super.processProperties(beanFactory, prop);
     }
 
     /**
@@ -101,7 +101,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
             throw new MalformedConfigFileException(ex);
         }
 
-        postprocess(config.prop);
+        config.postprocess();
 
         return config;
     }
@@ -176,23 +176,23 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         return (Properties) prop.clone();
     }
 
-    private static void postprocess(Properties properties) {
+    private void postprocess() {
         if (cryptographyEnabled == null) {
-            cryptographyEnabled = Boolean.TRUE.toString().equals(properties.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+            cryptographyEnabled = Boolean.TRUE.toString().equals(prop.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
         }
 
         if (cryptographyEnabled) {
             if (cryptography == null) {
                 try {
-                    cryptography = new Cryptography(properties.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
+                    cryptography = new Cryptography(prop.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
                 } catch (Exception e) {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
 
             for (ConfigProperty configProperty : ENCRYPTED_PROPERTIES) {
-                if (properties.containsKey(configProperty.toString())) {
-                    properties.put(configProperty.toString(), cryptography.decrypt(properties.getProperty(configProperty.toString())));
+                if (prop.containsKey(configProperty.toString())) {
+                    prop.put(configProperty.toString(), cryptography.decrypt(prop.getProperty(configProperty.toString())));
                 }
             }
         }
