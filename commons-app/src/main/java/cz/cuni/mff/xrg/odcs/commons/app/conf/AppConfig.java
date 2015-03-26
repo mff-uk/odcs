@@ -58,7 +58,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
             Properties props) throws BeansException {
-        decrypt(props);
+        postprocess(props);
 
         super.processProperties(beanFactory, props);
 
@@ -101,7 +101,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
             throw new MalformedConfigFileException(ex);
         }
 
-        decrypt(config.prop);
+        postprocess(config.prop);
 
         return config;
     }
@@ -176,7 +176,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         return (Properties) prop.clone();
     }
 
-    private static void decrypt(Properties properties) {
+    private static void postprocess(Properties properties) {
         if (cryptographyEnabled == null) {
             cryptographyEnabled = Boolean.TRUE.toString().equals(properties.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
         }
