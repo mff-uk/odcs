@@ -100,6 +100,11 @@
     border:none;
 }
 
+.v-Notification-error {
+	background: #bd0a26 url(notification/img/error-close.png) no-repeat right top;
+	border: 3px solid #bd0a26;
+}
+
 .v-table .v-selected .v-table-cell-content {
 	border-right-color: #d4d4d4;
 }
@@ -134,7 +139,7 @@ http://fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600&subset=la
 }
 /* End of Open Sans font. */
 
-.v-app, .v-window, .v-popupview-popup, .v-tooltip, .v-app input, .v-app select, .v-app button, .v-app textarea, .v-window input, .v-window select, .v-window button, .v-window textarea, .v-popupview-popup input, .v-popupview-popup select, .v-popupview-popup button, .v-popupview-popup textarea, .v-filterselect-suggestpopup, .v-datefield-popup, .v-contextmenu, .v-Notification, .v-menubar-submenu, .v-drag-element, .v-table-header-drag {
+.v-app, .v-window, .v-popupview-popup, .v-tooltip, .v-app input, .v-app select, .v-app button, .v-app textarea, .v-window input, .v-window select, .v-window button, .v-window textarea, .v-popupview-popup input, .v-popupview-popup select, .v-popupview-popup button, .v-popupview-popup textarea, .v-filterselect-suggestpopup, .v-datefield-popup, .v-contextmenu, .v-menubar-submenu, .v-drag-element, .v-table-header-drag {
     color:#3e3e3e;
     font-family:'Open Sans',sans-serif;
 }
@@ -395,6 +400,19 @@ input.v-textfield-prompt, textarea.v-textarea-prompt{
     cursor:pointer;
     background:#5f5247;
     background:-moz-linear-gradient(top, #5f5247 70%, #5f5247 93%);
+    background:-moz-linear-gradient(top, #d4d4d4 25%, #ffffff 75%);
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(25%,#d4d4d4), color-stop(75%,#ffffff));
+    background:-webkit-linear-gradient(top, #d4d4d4 25%,#ffffff 75%);
+    background:-o-linear-gradient(top, #d4d4d4 25%,#ffffff 75%);
+    background:-ms-linear-gradient(top, #d4d4d4 25%,#ffffff 75%);
+    background:linear-gradient(to bottom, #d4d4d4 25%,#ffffff 75%);
+    filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4d4d4', endColorstr='#ffffff',GradientType=0 );
+    border:1px solid #d4d4d4;
+}
+
+.v-button:focus, .v-button.v-button-pagedtable-button:focus{
+    background:#5f5247;
+    background:-moz-linear-gradient(top, #5f5247 70%, #5f5247 93%);
     background:-moz-linear-gradient(top, #ffffff 25%, #d4d4d4 75%);
     background:-webkit-gradient(linear, left top, left bottom, color-stop(25%,#ffffff), color-stop(75%,#d4d4d4));
     background:-webkit-linear-gradient(top, #ffffff 25%,#d4d4d4 75%);
@@ -402,20 +420,7 @@ input.v-textfield-prompt, textarea.v-textarea-prompt{
     background:-ms-linear-gradient(top, #ffffff 25%,#d4d4d4 75%);
     background:linear-gradient(to bottom, #ffffff 25%,#d4d4d4 75%);
     filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d4d4d4',GradientType=0 );
-    border:1px solid #d4d4d4;
-}
-
-.v-button:focus, .v-button.v-button-pagedtable-button:focus{
-    background:#5f5247;
-    background:-moz-linear-gradient(top, #5f5247 70%, #5f5247 93%);
-    background:-moz-linear-gradient(top, #d4d4d4 70%, #ffffff 92%);
-    background:-webkit-gradient(linear, left top, left bottom, color-stop(70%,#d4d4d4), color-stop(92%,#ffffff));
-    background:-webkit-linear-gradient(top, #d4d4d4 70%,#ffffff 92%);
-    background:-o-linear-gradient(top, #d4d4d4 70%,#ffffff 92%);
-    background:-ms-linear-gradient(top, #d4d4d4 70%,#ffffff 92%);
-    background:linear-gradient(to bottom, #d4d4d4 70%,#ffffff 92%);
-    filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4d4d4', endColorstr='#ffffff',GradientType=0 );
-    border:1px solid #d4d4d4;
+    border:1px solid #5f5247;
 }
 
 .v-button-primary{
@@ -488,7 +493,7 @@ input.v-textfield-prompt, textarea.v-textarea-prompt{
 }
 
 .v-button-link .v-button-caption {
-    color:#bd0a26;
+    color:#3e3e3e;
 }
 
 .v-button-link:hover{
@@ -1070,7 +1075,7 @@ span.v-inline-datefield-calendarpanel-month{
 }
 
 .v-table-row:hover, .v-table-row-odd:hover{
-    background:none repeat scroll 0 0 #d4d4d4;
+    background:none repeat scroll 0 0 #c79769;
 }
 
 .v-table .v-selected, .black .v-table .v-selected{
@@ -1130,4 +1135,8 @@ span.v-inline-datefield-calendarpanel-month{
 
 .v-checkbox label{
     margin-top:3px;
+}
+
+.logout {
+    color: #ffffff;
 }

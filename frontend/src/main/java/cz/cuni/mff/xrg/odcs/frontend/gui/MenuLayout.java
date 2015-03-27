@@ -126,6 +126,7 @@ public class MenuLayout extends CustomComponent {
 
         logOutButton = new Button();
         logOutButton.setCaption(Messages.getString("MenuLayout.logout"));
+        logOutButton.setHtmlContentAllowed(true);
         logOutButton.setVisible(authCtx.isAuthenticated());
         logOutButton.setStyleName(BaseTheme.BUTTON_LINK);
         logOutButton.addStyleName("logout");
