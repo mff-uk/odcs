@@ -14,7 +14,7 @@ INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.co
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
 INSERT INTO `role` VALUES (NULL,'User');
-
+
 -- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
@@ -158,6 +158,10 @@ INSERT INTO `usr_extuser` VALUES ((SELECT max(id) FROM  `usr_user`), 'user');
 
 INSERT INTO `sch_usr_notification` VALUES (NULL,1,1,1),(NULL,2,1,1);
 INSERT INTO `sch_usr_notification_email` VALUES (1,1),(2,2);
-INSERT INTO `usr_user_role` VALUES (1,1),(1,2),(2,2);
+
+INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='Administrator'));
+INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='User'));
+INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='user'),(select id from role where name='User'));
+
 INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
 INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
