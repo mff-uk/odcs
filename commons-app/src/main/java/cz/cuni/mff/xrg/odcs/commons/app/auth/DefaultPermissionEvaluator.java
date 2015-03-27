@@ -53,6 +53,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
     @Override
     public boolean hasPermission(Authentication auth, Object target, Object perm) {
 
+        if(target instanceof User)
+            return true;
+        
         // check for missing authentication context
         if (auth == null) {
             return false;
@@ -84,6 +87,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private boolean hasPermissionUser(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
 
+        if(target instanceof User)
+            return true;
+        
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;

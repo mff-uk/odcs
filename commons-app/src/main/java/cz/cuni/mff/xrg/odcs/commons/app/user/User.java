@@ -42,7 +42,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 @Entity
 @Table(name = "usr_user")
 @SecondaryTable(name = "usr_extuser", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id_usr", referencedColumnName = "id"))
-public class User implements UserDetails, OwnedEntity, DataObject {
+public class User implements UserDetails, DataObject {
 
     /**
      * Primary key for entity.
@@ -324,16 +324,6 @@ public class User implements UserDetails, OwnedEntity, DataObject {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    /**
-     * Returns the owner.
-     *
-     * @return The owner
-     */
-    @Override
-    public User getOwner() {
-        return this;
     }
 
     public String getExternalIdentifier() {
