@@ -62,7 +62,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEn
     /**
      * Human-readable pipeline name
      */
-    @Column
+    @Column(unique = true)
     private String name;
 
     /**

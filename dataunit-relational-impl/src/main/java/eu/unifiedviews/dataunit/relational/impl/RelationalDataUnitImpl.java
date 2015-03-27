@@ -284,4 +284,13 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
         super.release();
     }
 
+    @Override
+    public Connection getDatabaseConnectionForUser(String userName, String password) throws DataUnitException {
+        try {
+            return this.dataUnitDatabase.getDatabaseConnectionForUser(userName, password);
+        } catch (SQLException e) {
+            throw new DataUnitException("Failed to obtain SQL connection for user " + userName, e);
+        }
+    }
+
 }

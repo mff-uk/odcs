@@ -32,4 +32,9 @@ public class DataUnitDatabaseConnectionProviderImpl implements DataUnitDatabaseC
         return this.databaseWrapper.isActive();
     }
 
+    @Override
+    public Connection getDatabaseConnectionForUser(String userName, String password) throws SQLException {
+        return this.databaseWrapper.getConnectionForUser(userName, password);
+    }
+
 }

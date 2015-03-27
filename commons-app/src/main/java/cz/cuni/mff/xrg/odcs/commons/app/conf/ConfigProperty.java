@@ -48,6 +48,8 @@ public enum ConfigProperty {
     DATABASE_RETRIES("retries"),
     DATABASE_WAIT("wait"),
     DATABASE_EXTENSION("useExtension"),
+    DATABASE_SQL_PASSWORD("database.sql.password"),
+    DATABASE_RDF_PASSWORD("database.rdf.password"),
 
     // namespaces for database inaccessible actions
     DATABASE_INACCESSIBLE("inaccessible"),
@@ -79,12 +81,15 @@ public enum ConfigProperty {
 
     OWNERSHIP_TYPE("ownership.type"),
 
-    MASTER_API_USER("master.api.user"),
-    MASTER_API_PASSWORD("master.api.password"),
-
     ADMIN_PERMISSION("admin.permission"),
 
     DEFAULT_ORGANIZATION("organization");
+
+    MASTER_API_USER("master.api.user"),
+    MASTER_API_PASSWORD("master.api.password"),
+
+    CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
+    CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
 
     private final String property;
 

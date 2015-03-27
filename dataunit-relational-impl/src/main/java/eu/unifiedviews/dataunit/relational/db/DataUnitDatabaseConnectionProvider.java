@@ -20,6 +20,14 @@ public interface DataUnitDatabaseConnectionProvider {
     Connection getDatabaseConnection() throws SQLException;
 
     /**
+     * Get SQL connection to the underlying data unit database for specific user
+     * 
+     * @return SQL connection to the database
+     * @throws SQLException
+     */
+    Connection getDatabaseConnectionForUser(String userName, String password) throws SQLException;
+
+    /**
      * Shuts down the database connection provider
      * 
      * @throws Exception

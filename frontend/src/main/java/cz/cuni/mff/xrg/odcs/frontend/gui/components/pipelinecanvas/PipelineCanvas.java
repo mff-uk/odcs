@@ -25,7 +25,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -81,13 +80,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     private DPUExplorer dpuExplorer;
 
     @Autowired
-    private AppConfig appConfig;
-
-    @Autowired
     private PipelineValidator pipelineValidator;
 
     @Autowired
     private DPUFacade dpuFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 

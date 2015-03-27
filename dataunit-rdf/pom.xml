@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
 		<artifactId>odcs</artifactId>
-		<version>1.6.0-SNAPSHOT</version>
+		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
 	<name>dataunit-rdf</name>
@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-api-helpers</artifactId>
+			<artifactId>uv-dpu-helpers</artifactId>
 			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 		<dependency>
