@@ -13,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -31,11 +30,13 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
 
     private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
 
+    private static final String ORG_MODE = "organization";
+
     private final UserFacade userFacade;
 
     @Autowired
     private AppConfig appConfig;
-    
+
     /**
      * Constructor sets up dependencies.
      * 
@@ -86,7 +87,10 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
             throw new BadCredentialsException(username);
         }
 
-        String defaultOrganization = appConfig.getString(ConfigProperty.DEFAULT_ORGANIZATION);
+        String defaultOrganization = null;
+        if (ORG_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+            defaultOrganization = appConfig.getString(ConfigProperty.DEFAULT_ORGANIZATION);
+        }
 
         Organization o = null;
 
