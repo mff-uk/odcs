@@ -83,7 +83,7 @@ public enum ConfigProperty {
 
     ADMIN_PERMISSION("admin.permission"),
 
-    DEFAULT_ORGANIZATION("organization");
+    DEFAULT_ORGANIZATION("organization"),
 
     MASTER_API_USER("master.api.user"),
     MASTER_API_PASSWORD("master.api.password"),
