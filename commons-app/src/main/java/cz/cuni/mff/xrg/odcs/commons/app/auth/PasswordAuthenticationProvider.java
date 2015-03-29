@@ -94,7 +94,7 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
 
         Organization o = null;
 
-        if (!defaultOrganization.isEmpty()) {
+        if (defaultOrganization!=null && !defaultOrganization.isEmpty()) {
             o = userFacade.getOrganizationByName(defaultOrganization);
             if (o == null) {
                 o = new Organization();
