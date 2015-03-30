@@ -4,9 +4,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -22,9 +26,14 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
-    private final List<String> all = Arrays.asList("id", "name", "duration", "lastExecTime", "lastExecStatus");
+    private static final String SHARE_MODE_ORG = "organization";
+    
+    @Autowired
+    AppConfig appConfig;
 
-    private final List<String> visible = Arrays.asList("name", "duration", "lastExecTime", "lastExecStatus");
+    private final List<String> all = Arrays.asList("id", "name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
+
+    private final List<String> visible = Arrays.asList("name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
 
     private final List<String> sortable = Arrays.asList("name");
 
@@ -75,6 +84,8 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 return Messages.getString("PipelineViewAccessor.lastExecution");
             case "lastExecStatus":
                 return Messages.getString("PipelineViewAccessor.lastStatus");
+            case "createdBy":
+                return Messages.getString("PipelineViewAccessor.createdBy");
             default:
                 return id;
         }
@@ -102,6 +113,11 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 } else {
                     return null;
                 }
+            case "createdBy":
+                if(SHARE_MODE_ORG.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+                    return object.getOrgName() + " (" + object.getUsrName() + ")";
+                else
+                    return object.getUsrName();
             default:
                 return null;
         }
@@ -118,9 +134,10 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 return String.class;
             case "lastExecStatus":
                 return Embedded.class;
+            case "createdBy":
+                return String.class;
             default:
                 return null;
         }
     }
-
 }

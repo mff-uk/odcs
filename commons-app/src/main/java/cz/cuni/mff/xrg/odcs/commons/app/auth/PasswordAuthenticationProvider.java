@@ -7,13 +7,17 @@ import java.security.spec.InvalidKeySpecException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
@@ -26,7 +30,12 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
 
     private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
 
+    private static final String ORG_MODE = "organization";
+
     private final UserFacade userFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     /**
      * Constructor sets up dependencies.
@@ -76,6 +85,23 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
         User user = userFacade.getUserByUsername(authentication.getName());
         if (user == null) {
             throw new BadCredentialsException(username);
+        }
+
+        String defaultOrganization = null;
+        if (ORG_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+            defaultOrganization = appConfig.getString(ConfigProperty.DEFAULT_ORGANIZATION);
+        }
+
+        Organization o = null;
+
+        if (defaultOrganization!=null && !defaultOrganization.isEmpty()) {
+            o = userFacade.getOrganizationByName(defaultOrganization);
+            if (o == null) {
+                o = new Organization();
+                o.setName(defaultOrganization);
+                userFacade.save(o);
+            }
+            user.setOrganization(o);
         }
 
         return user;

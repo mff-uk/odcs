@@ -22,6 +22,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -105,6 +107,12 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     private Date lastLoad = new Date(0L);
 
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+    
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -250,9 +258,41 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public boolean canDeletePipeline(long pipelineId) {
-        //Pipeline pipeline = cachedSource.getObject(pipelineId);
-        //return permissions.hasPermission(pipeline, "delete");
-        return true;
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        boolean isAdmin = permissions.hasPermission(pipeline, adminPermission);
+        boolean canDelete = permissions.hasPermission(pipeline, "pipeline.delete");
+        return isAdmin || canDelete;
+    }
+
+    @Override
+    public boolean canEditPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.edit");
+    }
+
+    @Override
+    public boolean canDebugPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.runDebug");
+    }
+
+    @Override
+    public boolean canSchedulePipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.schedule");
+    }
+
+    @Override
+    public boolean canCopyPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.copy");
+    }
+
+    @Override
+    public boolean canRunPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.run");
     }
 
     @Override

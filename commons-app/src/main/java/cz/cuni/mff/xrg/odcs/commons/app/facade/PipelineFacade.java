@@ -43,11 +43,20 @@ public interface PipelineFacade extends Facade {
     Pipeline copyPipeline(Pipeline pipeline);
 
     /**
-     * Returns list of all pipelines persisted in the database.
-     * 
+     * Returns list of all pipelines persisted in the database for given organization.
+     *
+     * @param organizationName
+     *            of pipeline
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
      *             container with paging instead
+     */
+    List<Pipeline> getAllPipelines(String organizationName);
+
+    /**
+     * Returns list of all pipelines persisted in the database.
+     * 
+     * @return list of pipelines
      */
     List<Pipeline> getAllPipelines();
 
@@ -158,7 +167,7 @@ public interface PipelineFacade extends Facade {
 
     /**
      * Fetches all {@link PipelineExecution}s from database.
-     * 
+     *
      * @return list of executions
      * @deprecated performance intensive for many pipeline executions, use
      *             container with paging support instead
@@ -173,9 +182,7 @@ public interface PipelineFacade extends Facade {
      */
     List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status);
 
-
     List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
-
 
     /**
      * Find pipeline execution in database by ID and return it.
@@ -270,16 +277,16 @@ public interface PipelineFacade extends Facade {
      * @return
      */
     public boolean hasModifiedPipelines(Date lastLoad);
-    
+
     /**
      * Tells whether one of pipelines was deleted
      * <p>
      * 
      * @param pipelinesIds
-     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     public boolean hasDeletedPipelines(List<Long> pipelineIds);
-    
+
     /**
      * Persists new {@link PipelineExecution} or updates it if it was already
      * persisted before.
@@ -304,16 +311,20 @@ public interface PipelineFacade extends Facade {
 
     /**
      * Checks if some of the executions were deleted
-     * @param executionIds execution to check
+     * 
+     * @param executionIds
+     *            execution to check
      * @return true if one or more execution were deleted
      */
-	boolean hasDeletedExecutions(List<Long> executionIds);
+    boolean hasDeletedExecutions(List<Long> executionIds);
 
-	/**
+    /**
      * Checks if there are executions for selected pipeline with selected statuses
      * 
-     * @param pipeline for which executions we are checking
-     * @param statuses of executions we are checking
+     * @param pipeline
+     *            for which executions we are checking
+     * @param statuses
+     *            of executions we are checking
      * @return true if there is at least one execution with selected statuses, false otherwise
      */
     boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);

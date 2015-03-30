@@ -1,20 +1,127 @@
-delete from `properties`;
-delete from `sch_email`;
-delete from `usr_user_role`;
-delete from `sch_email`;
-delete from `sch_usr_notification`;
-delete from `sch_usr_notification_email`;
-delete from `usr_user`;
-delete from `runtime_properties`;
-delete from `role`;
-delete from `permission`;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 
-INSERT INTO `properties` VALUES ('UV.Core.version','001.006.000'),('UV.Plugin-DevEnv.version','001.003.000');
-INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.com');
+ALTER TABLE `dpu_template` 
+ADD COLUMN `organization_id` INT(11) NULL DEFAULT NULL AFTER `user_id`,
+ADD INDEX `ix_DPU_TEMPLATE_organization_id` (`organization_id` ASC);
+
+ALTER TABLE `exec_pipeline` 
+ADD COLUMN `organization_id` INT(11) NULL DEFAULT NULL AFTER `owner_id`,
+ADD INDEX `ix_EXEC_PIPELINE_organization_id` (`organization_id` ASC);
+
+ALTER TABLE `exec_schedule` 
+ADD COLUMN `organization_id` INT(11) NULL DEFAULT NULL AFTER `user_id`,
+ADD INDEX `ix_EXEC_SCHEDULE_organization_id` (`organization_id` ASC);
+
+CREATE TABLE IF NOT EXISTS `organization` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name` (`name` ASC),
+  INDEX `ix_organization_name` (`name` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `permission` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(142) NOT NULL,
+  `rwonly` TINYINT(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name` (`name` ASC),
+  INDEX `ix_permission_name` (`name` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+ALTER TABLE `ppl_model` 
+ADD COLUMN `organization_id` INT(11) NULL DEFAULT NULL AFTER `user_id`,
+ADD INDEX `ix_PPL_MODEL_organization_id` (`organization_id` ASC);
+
+CREATE TABLE IF NOT EXISTS `role` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(142) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name` (`name` ASC),
+  INDEX `ix_role_name` (`name` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `user_role_permission` (
+  `role_id` INT(11) NOT NULL,
+  `permission_id` INT(11) NOT NULL,
+  PRIMARY KEY (`role_id`, `permission_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `usr_extuser` (
+  `id_usr` INT(11) NOT NULL,
+  `id_extuser` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id_usr`, `id_extuser`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+ALTER TABLE `usr_user_role` 
+ADD INDEX `role_id` (`role_id` ASC);
+
+ALTER TABLE `exec_pipeline` 
+ADD CONSTRAINT `exec_pipeline_ibfk_6`
+  FOREIGN KEY (`organization_id`)
+  REFERENCES `organization` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+ALTER TABLE `exec_schedule` 
+ADD CONSTRAINT `exec_schedule_ibfk_3`
+  FOREIGN KEY (`organization_id`)
+  REFERENCES `organization` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+ALTER TABLE `ppl_model` 
+ADD CONSTRAINT `ppl_model_ibfk_2`
+  FOREIGN KEY (`organization_id`)
+  REFERENCES `organization` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+ALTER TABLE `usr_user_role` 
+ADD CONSTRAINT `usr_user_role_ibfk_2`
+  FOREIGN KEY (`role_id`)
+  REFERENCES `role` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+
+DROP VIEW IF EXISTS `exec_last_view`;
+CREATE VIEW `exec_last_view` AS
+SELECT id, pipeline_id, t_end, t_start, status
+FROM `exec_pipeline` AS exec
+WHERE t_end = (SELECT max(t_end) FROM `exec_pipeline` AS lastExec WHERE exec.pipeline_id = lastExec.pipeline_id);
+
+DROP VIEW IF EXISTS `exec_view`;
+CREATE VIEW `exec_view` AS
+SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
+exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change,
+org.name AS org_name
+FROM `exec_pipeline` AS exec
+LEFT JOIN `ppl_model` AS ppl ON ppl.id = exec.pipeline_id
+LEFT JOIN `usr_user` AS owner ON owner.id = exec.owner_id
+left JOIN `organization` as org ON exec.organization_id = org.id;
+
+DROP VIEW IF EXISTS `pipeline_view`;
+CREATE VIEW `pipeline_view` AS
+SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, org.name 
+AS org_name , ppl.visibility AS visibility FROM `ppl_model` AS ppl
+LEFT JOIN `exec_last_view` AS exec ON exec.pipeline_id = ppl.id
+LEFT JOIN `usr_user` AS usr ON ppl.user_id = usr.id
+left JOIN `organization` as org ON ppl.organization_id = org.id;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
 INSERT INTO `role` VALUES (NULL,'User');
-
+
 -- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
@@ -151,17 +258,10 @@ INSERT INTO `permission` VALUES (NULL, 'userNotificationSettings.createPipelineE
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 
-INSERT INTO `usr_user` VALUES (NULL,'admin',1,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John Admin',20);
-INSERT INTO `usr_extuser` VALUES ((SELECT max(id) FROM  `usr_user`), 'admin');
-INSERT INTO `usr_user` VALUES (NULL,'user',2,'100000:3069f2086098a66ec0a859ec7872b09af7866bc7ecafe2bed3ec394454056db2:b5ab4961ae8ad7775b3b568145060fabb76d7bca41c7b535887201f79ee9788a','John User',20);
-INSERT INTO `usr_extuser` VALUES ((SELECT max(id) FROM  `usr_user`), 'user');
+INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='admin'), 'admin');
+INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='user'), 'user');
 
-INSERT INTO `sch_usr_notification` VALUES (NULL,1,1,1),(NULL,2,1,1);
-INSERT INTO `sch_usr_notification_email` VALUES (1,1),(2,2);
-
+DELETE FROM `usr_user_role`;
 INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='Administrator'));
 INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='User'));
 INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='user'),(select id from role where name='User'));
-
-INSERT INTO `runtime_properties` (name, value) VALUES ('backend.scheduledPipelines.limit', '5');
-INSERT INTO `runtime_properties` (name, value) VALUES ('run.now.pipeline.priority', '1');
