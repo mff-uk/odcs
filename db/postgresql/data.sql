@@ -6,7 +6,7 @@ delete from "sch_usr_notification";
 delete from "sch_usr_notification_email";
 delete from "usr_user";
 delete from "runtime_properties";
-INSERT INTO "properties" VALUES ('UV.Core.version','001.006.000'),('UV.Plugin-DevEnv.version','001.003.000');
+INSERT INTO "properties" VALUES ('UV.Core.version','002.000.000'),('UV.Plugin-DevEnv.version','002.000.000');
 INSERT INTO "sch_email" VALUES (nextval('seq_sch_email'),'admin@example.com'),(nextval('seq_sch_email'),'user@example.com');
 INSERT INTO "role" VALUES (nextval('seq_role'), 'Administrator'),(nextval('seq_role'),'User'); 
 
