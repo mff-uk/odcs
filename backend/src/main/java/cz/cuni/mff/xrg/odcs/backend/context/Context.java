@@ -254,7 +254,12 @@ public class Context implements DPUContext {
     }
 
     public String getOrganization() {
-        return this.contextInfo.getExecution().getOrganization().getName();
+        String organization = null;
+        if (this.contextInfo.getExecution().getOrganization() != null) {
+            organization = this.contextInfo.getExecution().getOrganization().getName();
+        }
+
+        return organization;
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
