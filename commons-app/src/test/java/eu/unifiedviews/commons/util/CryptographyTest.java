@@ -2,9 +2,8 @@ package eu.unifiedviews.commons.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -44,8 +43,8 @@ public class CryptographyTest {
     }
 
     @Test
-    public void encryptBytes() {
-        byte[] plainText = DatatypeConverter.parseBase64Binary("plainText");
+    public void encryptBytes() throws UnsupportedEncodingException {
+        byte[] plainText = "plainText".getBytes("utf8");
 
         encryptBytes(plainText);
     }

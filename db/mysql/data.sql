@@ -14,7 +14,7 @@ INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.co
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
 INSERT INTO `role` VALUES (NULL,'User');
-
+
 -- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
