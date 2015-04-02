@@ -54,6 +54,7 @@ class UserFacadeImpl implements UserFacade {
 
         User user = new User();
         user.setUsername(username);
+        user.setExternalIdentifier(username);
         user.setPassword(plainPassword);
         user.setEmail(email);
 
@@ -128,7 +129,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'user.create')")
+    @PreAuthorize("hasRole('user.create')")
     @Override
     public void save(User user) {
         userDao.save(user);

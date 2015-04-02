@@ -22,11 +22,12 @@ public interface DbPipeline extends DbAccess<Pipeline> {
     public List<Pipeline> getAll();
 
     /**
-     * @return List of all pipelines in DB.
-     * @deprecated performance intensive for many pipelines
+     * Return pipelines of given organization.
+     *
+     * @param orgName
+     * @return pipelines of given organization
      */
-    @Deprecated
-    public List<Pipeline> getPipelinesForOrganization(Long organizationExternalId);
+    public List<Pipeline> getPipelinesForOrganization(String orgName);
 
     /**
      * Fetches all pipelines using given DPU template.

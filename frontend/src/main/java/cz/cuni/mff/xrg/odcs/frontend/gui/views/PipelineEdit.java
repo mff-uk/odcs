@@ -104,6 +104,8 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 @Address(url = "PipelineEdit")
 public class PipelineEdit extends ViewComponent {
 
+    private static final String ORGANIZATION_MODE = "organization";
+    
     private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 
     private VerticalLayout mainLayout;
@@ -232,6 +234,9 @@ public class PipelineEdit extends ViewComponent {
     @Autowired
     private ExportService exportService;
 
+    @Autowired
+    private Utils utils;
+    
     /**
      * Empty constructor.
      */
@@ -618,7 +623,6 @@ public class PipelineEdit extends ViewComponent {
 
         Button buttonRevert = new Button(Messages.getString("PipelineEdit.revert"));
         buttonRevert.setHeight("25px");
-        buttonRevert.setWidth("100px");
         buttonRevert.setEnabled(false);
         buttonRevert.setVisible(false);
         buttonRevert.addClickListener(new Button.ClickListener() {
@@ -634,7 +638,6 @@ public class PipelineEdit extends ViewComponent {
 
         Button buttonValidate = new Button(Messages.getString("PipelineEdit.validate"));
         buttonValidate.setHeight("25px");
-        buttonValidate.setWidth("100px");
         buttonValidate.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -645,7 +648,6 @@ public class PipelineEdit extends ViewComponent {
 
         buttonConflicts = new Button(Messages.getString("PipelineEdit.conflicts"));
         buttonConflicts.setHeight("25px");
-        buttonConflicts.setWidth("100px");
         buttonConflicts.setImmediate(true);
         buttonConflicts.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -660,7 +662,6 @@ public class PipelineEdit extends ViewComponent {
 
         Button buttonCommit = new Button(Messages.getString("PipelineEdit.save.and.commit"));
         buttonCommit.setHeight("25px");
-        buttonCommit.setWidth("100px");
         buttonCommit.setEnabled(false);
         buttonCommit.setVisible(false);
         buttonCommit.addClickListener(new Button.ClickListener() {
@@ -680,7 +681,6 @@ public class PipelineEdit extends ViewComponent {
 
         buttonCopy = new Button(Messages.getString("PipelineEdit.copy"));
         buttonCopy.setHeight("25px");
-        buttonCopy.setWidth("100px");
         buttonCopy.setImmediate(true);
         buttonCopy.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -706,7 +706,6 @@ public class PipelineEdit extends ViewComponent {
         buttonCopyAndClose = new Button(Messages.getString("PipelineEdit.copy.and.close"));
 
         buttonCopyAndClose.setHeight("25px");
-        buttonCopyAndClose.setWidth("100px");
         buttonCopyAndClose.setImmediate(true);
         buttonCopyAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -736,7 +735,6 @@ public class PipelineEdit extends ViewComponent {
 
         buttonSave = new Button(Messages.getString("PipelineEdit.save"));
         buttonSave.setHeight("25px");
-        buttonSave.setWidth("100px");
         buttonSave.setImmediate(true);
         buttonSave.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -749,7 +747,6 @@ public class PipelineEdit extends ViewComponent {
 
         buttonSaveAndClose = new Button(Messages.getString("PipelineEdit.save.and.close"));
         buttonSaveAndClose.setHeight("25px");
-        buttonSaveAndClose.setWidth("100px");
         buttonSaveAndClose.setImmediate(true);
         buttonSaveAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -761,7 +758,6 @@ public class PipelineEdit extends ViewComponent {
         saveLayout.addComponent(buttonSaveAndClose);
         buttonSaveAndCloseAndDebug = new Button(Messages.getString("PipelineEdit.save.close.debug"));
         buttonSaveAndCloseAndDebug.setHeight("25px");
-        //buttonSaveAndCloseAndDebug.setWidth("100px");
         buttonSaveAndCloseAndDebug.setImmediate(true);
         buttonSaveAndCloseAndDebug.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
@@ -777,7 +773,6 @@ public class PipelineEdit extends ViewComponent {
         buttonCancel = new Button(Messages.getString("PipelineEdit.close"));
 
         buttonCancel.setHeight("25px");
-        buttonCancel.setWidth("100px");
         buttonCancel.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -791,7 +786,6 @@ public class PipelineEdit extends ViewComponent {
 
         buttonExport = new Button(Messages.getString("PipelineEdit.export"));
         buttonExport.setHeight("25px");
-        buttonExport.setWidth("100px");
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -932,7 +926,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -953,7 +947,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
@@ -1200,7 +1194,18 @@ public class PipelineEdit extends ViewComponent {
 
         final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
-        final ShareType visibility = (ShareType) pipelineVisibility.getValue();
+        final ShareType visibility;
+        
+        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
+            if(utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))){
+                    visibility = ShareType.PUBLIC_RO;
+            }else{
+                visibility = ShareType.PRIVATE;
+            }
+        }else{
+            visibility = (ShareType) pipelineVisibility.getValue();
+        }
+        
         if (!pipelineFacade.isUpToDate(pipeline)) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {

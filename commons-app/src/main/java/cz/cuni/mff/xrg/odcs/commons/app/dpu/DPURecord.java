@@ -3,16 +3,11 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.StringUtils;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -308,4 +303,30 @@ public abstract class DPURecord implements DataObject {
     public String toString() {
         return name;
     }
+
+    @PrePersist
+    private void prePersist() {
+        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
+    }
+
+    @PostPersist
+    private void postPersist() {
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
+    }
+
+    @PostUpdate
+    private void postUpdate() {
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
+    }
+
+    @PostLoad
+    private void postLoad() {
+        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
+    }
+
 }

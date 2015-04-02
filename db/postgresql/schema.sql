@@ -213,7 +213,7 @@ CREATE SEQUENCE "seq_ppl_model" START 1;
 CREATE TABLE "ppl_model"
 (
   "id" INTEGER,
-  "name" VARCHAR(1024),
+  "name" VARCHAR(1024) UNIQUE,
   "description" TEXT,
   "user_id" INTEGER,
   "organization_id" INTEGER,
@@ -647,6 +647,11 @@ ADD FOREIGN KEY ("user_id")
     REFERENCES "usr_user" ("id")
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
+ALTER TABLE "usr_user_role"
+ADD FOREIGN KEY ("role_id")
+    REFERENCES "role" ("id")
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
   ALTER TABLE "user_role_permission"
   ADD FOREIGN KEY ("permission_id") 
   	REFERENCES "permission" ("id") 
@@ -674,23 +679,10 @@ ADD FOREIGN KEY ("pipeline_id")
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- TRIGGERS      ######################################################
-
-
--- BEGIN MYSQL ONLY
-
---CREATE TRIGGER update_last_change BEFORE UPDATE ON "exec_pipeline"
--- FOR EACH ROW SET NEW.t_last_change = NOW();
--- END MYSQL ONLY
-
--- TABLE FOR LOGS
-
 DROP TABLE IF EXISTS "logging";
 CREATE TABLE "logging"
 (
--- BEGIN MYSQL ONLY
  "id" BIGSERIAL,
--- END MYSQL ONLY
   "log_level" INTEGER NOT NULL,
   "timestmp" BIGINT NOT NULL,
   "logger" VARCHAR(254) NOT NULL,
@@ -700,9 +692,7 @@ CREATE TABLE "logging"
   "stack_trace" TEXT,
   "relative_id" INTEGER,
   PRIMARY KEY (id)
--- BEGIN MYSQL ONLY
 );
--- END MYSQL ONLY
 
 CREATE INDEX "ix_LOGGING_dpu" ON "logging" ("dpu");
 CREATE INDEX "ix_LOGGIN_execution" ON "logging" ("execution");

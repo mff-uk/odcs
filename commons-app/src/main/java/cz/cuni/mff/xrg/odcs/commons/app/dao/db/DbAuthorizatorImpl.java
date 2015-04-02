@@ -30,11 +30,11 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 class DbAuthorizatorImpl implements DbAuthorizator {
 
-    private static final String CAN_SEE_ALL = "spravca.transformacii";
-
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
+    private static final String ORGANIZATION_MODE = "organization";
+    
     /**
      * Application's configuration.
      */
@@ -43,15 +43,17 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
     @Override
     public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-        boolean ownedByOrganization = "organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
+        boolean ownedByOrganization = ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
 
         if (authCtx == null) {
             // no athorization
             return null;
         }
 
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        
         for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
-            if (CAN_SEE_ALL.equals(ga.getAuthority()))
+            if (adminPermission.equals(ga.getAuthority()))
                 return null;
         }
 
@@ -112,6 +114,8 @@ class DbAuthorizatorImpl implements DbAuthorizator {
                 predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
             else
                 predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
+            
+            predicate = or(cb, predicate, cb.equal(root.get("shareType"), ShareType.PUBLIC_RO));
 
             return predicate;
         }
@@ -128,7 +132,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
         //check either user or his organization
         if (OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
             if (org != null) {
-                predicate = or(cb, predicate, cb.equal(root.get("organization"), org));
+                predicate = or(cb, predicate, cb.equal(root.get(ORGANIZATION_MODE), org));
             } else {
                 predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
             }

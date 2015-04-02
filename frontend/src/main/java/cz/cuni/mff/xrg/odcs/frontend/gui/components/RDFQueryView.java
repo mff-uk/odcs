@@ -40,7 +40,7 @@ import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
-import eu.unifiedviews.helpers.dataunit.rdfhelper.RDFHelper;
+import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 
 /**
  * Simple query view for browsing and querying debug data. User selects DPU and

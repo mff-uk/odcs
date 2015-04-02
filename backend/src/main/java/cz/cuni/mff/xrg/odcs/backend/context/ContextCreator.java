@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.context;
 import java.util.Date;
 import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
@@ -33,12 +34,6 @@ abstract class ContextCreator {
     private ResourceManager resourceManager;
 
     /**
-     * Runtime properties facade.
-     */
-    @Autowired
-    protected RuntimePropertiesFacade runtimePropertiesFacade;
-
-    /**
      * Create context for given {@link DPUInstanceRecord} and {@link ExecutionContextInfo}. The context is ready for use. Data from {@link ExecutionContextInfo}
      * are not loaded into context.
      *
@@ -55,12 +50,7 @@ abstract class ContextCreator {
         newContext.setDPU(dpuInstance);
         newContext.setContextInfo(contextInfo);
         newContext.setLastSuccExec(lastSuccExec);
-        String localeName = "en_US";
-        RuntimeProperty localeNameProperty = runtimePropertiesFacade.getByName("locale");
-        if (localeNameProperty != null) {
-            localeName = localeNameProperty.getValue();
-        }
-        newContext.setLocale(new Locale(localeName));
+        newContext.setLocale(LocaleHolder.getLocale());
 
         newContext.setInputsManager(DataUnitManager.createInputManager(dpuInstance, dataUnitFactory, contextInfo, resourceManager));
         newContext.setOutputsManager(DataUnitManager.createOutputManager(dpuInstance, dataUnitFactory, contextInfo, resourceManager));

@@ -15,4 +15,8 @@ public class DPUValidatorException extends Exception {
         super(cause);
     }
 
+    public DPUValidatorException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

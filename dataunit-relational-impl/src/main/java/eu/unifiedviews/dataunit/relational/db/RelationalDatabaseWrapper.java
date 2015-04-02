@@ -1,7 +1,9 @@
 package eu.unifiedviews.dataunit.relational.db;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * {@link RelationalDatabaseWrapper} is a wrapper around a relational database
@@ -47,6 +49,23 @@ public class RelationalDatabaseWrapper implements DatabaseWrapperIF {
     @Override
     public boolean isActive() {
         return this.bActive;
+    }
+
+    @Override
+    public Connection getConnectionForUser(String userName, String password) throws SQLException {
+        Connection conn = null;
+        try {
+            Class.forName(this.config.getJDBCDriverName());
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("JDBC driver class not found");
+        }
+
+        Properties dbProperties = new Properties();
+        dbProperties.put("user", userName);
+        dbProperties.put("password", password);
+        conn = DriverManager.getConnection(this.config.getDatabaseURL(), dbProperties);
+
+        return conn;
     }
 
 }

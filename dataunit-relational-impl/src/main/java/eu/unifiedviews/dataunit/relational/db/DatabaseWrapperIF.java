@@ -19,6 +19,16 @@ public interface DatabaseWrapperIF {
     Connection getConnection() throws SQLException;
 
     /**
+     * Get connection to the underlying database for given user
+     * 
+     * @param userName
+     * @param password
+     * @return
+     * @throws SQLException
+     */
+    Connection getConnectionForUser(String userName, String password) throws SQLException;
+
+    /**
      * Get configuration of the database wrapper
      * 
      * @return Database wrapper configuration

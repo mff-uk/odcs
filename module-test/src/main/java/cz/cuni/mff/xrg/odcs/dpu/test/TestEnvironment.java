@@ -396,11 +396,7 @@ public class TestEnvironment {
         }
 
         // delete working directory ..
-        try {
-            org.apache.commons.io.FileUtils.deleteDirectory(workingDirectory);
-        } catch (IOException e) {
-            LOG.error("Failed to delete working directory.", e);
-        }
+        org.apache.commons.io.FileUtils.deleteQuietly(workingDirectory);
     }
 
     // - - - - - - - - - methods for examining the results - - - - - - - - - //

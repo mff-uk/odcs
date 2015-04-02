@@ -30,8 +30,8 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
-    private static final String CAN_SEE_ALL = "spravca.transformacii";
-
+    private static final String ORGANIZATION_MODE = "organization";
+    
     /**
      * Application's configuration.
      */
@@ -53,6 +53,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
     @Override
     public boolean hasPermission(Authentication auth, Object target, Object perm) {
 
+        if(target instanceof User)
+            return true;
+        
         // check for missing authentication context
         if (auth == null) {
             return false;
@@ -61,7 +64,10 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         Permission foundPermission = null;
 
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            if (ga.getAuthority().equals(CAN_SEE_ALL)) {
+            
+            String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+            
+            if (ga.getAuthority().equals(adminPermission)) {
                 return true;
             }
             if (ga.getAuthority().equals(perm.toString())) {
@@ -69,7 +75,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
-        if ("organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
             return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
 
         if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
@@ -81,6 +87,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private boolean hasPermissionUser(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
 
+        if(target instanceof User)
+            return true;
+        
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;
@@ -149,6 +158,17 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
+        if (target instanceof Pipeline) {
+            Pipeline pipelineTarget = (Pipeline) target;
+            if (foundPermission != null) {
+                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(pipelineTarget.getShareType())) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        
         if (target instanceof DPUTemplateRecord) {
             DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
             if (foundPermission != null) {

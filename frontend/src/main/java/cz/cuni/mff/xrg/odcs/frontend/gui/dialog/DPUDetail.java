@@ -16,7 +16,6 @@ import com.vaadin.ui.Notification.Type;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
@@ -36,7 +35,6 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
  * @author Bogo
  */
 public class DPUDetail extends Window {
-    private AppConfig appConfig;
 
     private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
 
@@ -50,6 +48,8 @@ public class DPUDetail extends Window {
     private DPUGeneralDetail generalDetail;
 
     private DPUConfigHolder configHolder;
+
+    private AppConfig appConfig;
 
     private Button btnSaveAsNew;
 
@@ -70,6 +70,7 @@ public class DPUDetail extends Window {
     public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig) {
         this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
+        this.appConfig = appConfig;
         // build the layout
         build();
         // set dialog properties
@@ -204,7 +205,7 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)));
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

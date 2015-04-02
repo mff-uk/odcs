@@ -1,10 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vaadin.ui.UI;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -12,10 +16,10 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
-import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogContext;
-import eu.unifiedviews.helpers.dpu.config.ConfigDialogProvider;
-import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogProvider;
+import eu.unifiedviews.dpu.config.vaadin.InitializableConfigDialog;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
@@ -24,6 +28,9 @@ import eu.unifiedviews.helpers.dpu.config.InitializableConfigDialog;
  * @author Petyr
  */
 public class DPURecordWrap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DPURecordWrap.class);
+
     /**
      * Wrapped DPU.
      */
@@ -41,15 +48,18 @@ public class DPURecordWrap {
 
     private Locale locale;
 
+    private AppConfig appConfig;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, AppConfig appConfig) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
         this.locale = locale;
+        this.appConfig = appConfig;
     }
 
     /**
@@ -159,9 +169,10 @@ public class DPURecordWrap {
      *
      * @throws ModuleException
      * @throws FileNotFoundException
+     * @throws DPUWrapException
      */
     @SuppressWarnings("unchecked")
-    private void loadConfigDialog() throws ModuleException, FileNotFoundException {
+    private void loadConfigDialog() throws ModuleException, FileNotFoundException, DPUWrapException {
         if (configDialog == null) {
             // continue and load the dialog
         } else {
@@ -176,14 +187,28 @@ public class DPURecordWrap {
             ConfigDialogProvider<?> dialogProvider;
             // 'unchecked casting' .. we check type in condition above
             dialogProvider = (ConfigDialogProvider<?>) instance;
+
+            try {
+                java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
+                final Object result = method.invoke(dialogProvider);
+                configDialog = (AbstractConfigDialog<?>)result;                
+            } catch (NoSuchMethodException | SecurityException ex) {
+                LOG.error("Can't get method.", ex);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                LOG.error("Can't call method.", ex);
+            }
             // get configuration dialog
-            configDialog = dialogProvider.getConfigurationDialog();
+            //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, appConfig);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
-                    ((InitializableConfigDialog) configDialog).initialize();
+                    try {
+                        ((InitializableConfigDialog) configDialog).initialize();
+                    } catch (DPUConfigException ex) {
+                        throw new DPUWrapException("Can't initialize dialog.");
+                    }
                 }
             }
         } else {

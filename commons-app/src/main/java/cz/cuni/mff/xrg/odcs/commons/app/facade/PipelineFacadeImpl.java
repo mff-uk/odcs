@@ -123,8 +123,23 @@ class PipelineFacadeImpl implements PipelineFacade {
     }
 
     /**
+     * Returns list of all pipelines persisted in the database for given organization.
+     *
+     * @param organizationName of pipeline
+     * @return list of pipelines
+     * @deprecated performance intensive for many pipelines in DB, use lazy
+     * container with paging instead
+     */
+    
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @Override
+    public List<Pipeline> getAllPipelines(String organizationName) {
+        return pipelineDao.getPipelinesForOrganization(organizationName);
+    }
+    
+    /**
      * Returns list of all pipelines persisted in the database.
-     * 
+     *
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
      *             container with paging instead
@@ -134,22 +149,6 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public List<Pipeline> getAllPipelines() {
         return pipelineDao.getAll();
-    }
-
-    /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationExternalId of pipeline
-     * @return list of pipelines
-     * @deprecated performance intensive for many pipelines in DB, use lazy
-     * container with paging instead
-     */
-    @Deprecated
-    @PostFilter("hasPermission(filterObject,'pipeline.read')")
-    @Override
-    public List<Pipeline> getAllPipelines(Long organizationExternalId) {
-        // TODO: Add filter to pipeline DAO, to return only pipelines with given organization
-        return pipelineDao.getPipelinesForOrganization(organizationExternalId);
     }
 
     /**
@@ -558,7 +557,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * Tells whether one of pipelines was deleted
      * <p>
      * 
-     * @param pipelinesIds
+     * @param pipelineIds
      * @return true if one or more pipelines with provided ids were deleted, otherwise false 
      */
     @Override
