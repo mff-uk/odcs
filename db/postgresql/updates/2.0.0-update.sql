@@ -296,3 +296,7 @@ CREATE VIEW pipeline_view AS
      LEFT JOIN exec_last_view exec ON ((exec.pipeline_id = ppl.id)))
      LEFT JOIN usr_user usr ON ((ppl.user_id = usr.id)))
      LEFT JOIN organization org ON ((ppl.organization_id = org.id)));
+
+-- Update version.
+UPDATE "properties" SET "value" = '002.000.000' WHERE "key" = 'UV.Core.version';
+UPDATE "properties" SET "value" = '002.000.000' WHERE "key" = 'UV.Plugin-DevEnv.version';
