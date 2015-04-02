@@ -101,7 +101,7 @@
 }
 
 .v-Notification-error {
-	background: #bd0a26 url(notification/img/error-close.png) no-repeat right top;
+	background: #bd0a26 url(icons/error.png) no-repeat right top;
 	border: 3px solid #bd0a26;
 }
 

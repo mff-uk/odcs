@@ -9,12 +9,12 @@ delete from `runtime_properties`;
 delete from `role`;
 delete from `permission`;
 
-INSERT INTO `properties` VALUES ('UV.Core.version','001.006.000'),('UV.Plugin-DevEnv.version','001.003.000');
+INSERT INTO `properties` VALUES ('UV.Core.version','002.000.000'),('UV.Plugin-DevEnv.version','002.000.000');
 INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.com');
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
 INSERT INTO `role` VALUES (NULL,'User');
-
+
 -- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
