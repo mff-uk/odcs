@@ -78,6 +78,16 @@ public class DbAccessReadBase<T extends DataObject> implements DbAccessRead<T> {
     }
 
     /**
+     * Create count typed query
+     * 
+     * @param stringCountQuery
+     * @return typed JPA query for count
+     */
+    protected TypedQuery<Long> createCountTypedQuery(String stringCountQuery) {
+		return em.createQuery(stringCountQuery, Long.class);
+	}
+    
+    /**
      * Create typed query from given string.
      * 
      * @param stringQuery

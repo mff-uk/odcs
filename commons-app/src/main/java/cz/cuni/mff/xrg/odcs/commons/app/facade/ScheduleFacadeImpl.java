@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -48,11 +49,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return initialized Schedule
      */
+    @PreAuthorize("hasRole('scheduleRule.create')")
     @Override
     public Schedule createSchedule() {
         Schedule sch = new Schedule();
         if (authCtx != null) {
             sch.setOwner(authCtx.getUser());
+            if(authCtx.getUser().getOrganization() != null)
+                sch.setOrganization(authCtx.getUser().getOrganization());
         }
         return sch;
     }
@@ -64,7 +68,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @deprecated use container with paging instead
      */
     @Deprecated
-    @PostFilter("hasPermission(filterObject,'view')")
+    @PostFilter("hasPermission(filterObject,'scheduleRule.read')")
     @Override
     public List<Schedule> getAllSchedules() {
         return scheduleDao.getAllSchedules();
@@ -76,6 +80,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param pipeline
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public List<Schedule> getSchedulesFor(Pipeline pipeline) {
         return scheduleDao.getSchedulesFor(pipeline);
@@ -83,13 +88,15 @@ class ScheduleFacadeImpl implements ScheduleFacade {
 
     /**
      * Fetches all {@link Schedule}s which are activated in
-     * certain time.
+     * certain time and the execution for the scheduled pipeline
+     * isn't already queued or running.
      * 
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
-    public List<Schedule> getAllTimeBased() {
-        return scheduleDao.getAllTimeBased();
+    public List<Schedule> getAllTimeBasedNotQueuedRunning() {
+        return scheduleDao.getAllTimeBasedNotQueuedRunning();
     }
 
     /**
@@ -98,6 +105,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param id
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public Schedule getSchedule(long id) {
         return scheduleDao.getInstance(id);
@@ -109,7 +117,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
-    @PreAuthorize("hasPermission(#schedule, 'save')")
+    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.create')")
     @Override
     public void save(Schedule schedule) {
         scheduleDao.save(schedule);
@@ -121,6 +129,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
+    @PreAuthorize("hasRole('scheduleRule.delete')")
     @Override
     public void delete(Schedule schedule) {
         scheduleDao.delete(schedule);
@@ -144,6 +153,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @param schedule
      */
+    @PreAuthorize("hasRole('scheduleRule.execute')")
     @Transactional
     @Override
     public void execute(Schedule schedule) {
@@ -163,6 +173,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         pipelineExec.setSilentMode(false);
         // set user .. copy owner of schedule
         pipelineExec.setOwner(schedule.getOwner());
+
+        Long epoch = (long) System.currentTimeMillis();
+        Long orderNumber = schedule.getPriority();
+        if (orderNumber != ScheduledJobsPriority.IGNORE.getValue()) { // no dividing by 0
+            orderNumber = (epoch / orderNumber);
+        }
+
+        pipelineExec.setOrderNumber(orderNumber);
 
         // save data into DB -> in next DB check Engine start the execution
         pipelineFacade.save(pipelineExec);
@@ -214,6 +232,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE} and that should be executed (all their {@link Schedule#afterPipelines
      *         after-pipeline} executions finished).
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
         List<Schedule> result = new LinkedList<>();
 

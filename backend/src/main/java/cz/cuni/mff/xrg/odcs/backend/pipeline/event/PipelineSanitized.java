@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.backend.pipeline.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -26,7 +27,7 @@ public final class PipelineSanitized extends PipelineEvent {
     @Override
     public MessageRecord getRecord() {
         return new MessageRecord(time, MessageRecordType.PIPELINE_INFO, null,
-                execution, "Pipeline has been cancelled by sanitizer.", "");
+                execution, Messages.getString("PipelineSanitized.canceled"), "");
     }
 
 }

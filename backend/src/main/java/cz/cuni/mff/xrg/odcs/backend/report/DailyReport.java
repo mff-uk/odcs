@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
@@ -67,7 +68,7 @@ class DailyReport {
         // store emails to send on
         Map<EmailAddress, List<PipelineExecution>> toSend = new HashMap<>();
 
-        final String subject = "Daily report";
+        final String subject = Messages.getString("DailyReport.report");
 
         for (PipelineExecution exec : executions) {
             Set<EmailAddress> recipients = getRecipients(exec);

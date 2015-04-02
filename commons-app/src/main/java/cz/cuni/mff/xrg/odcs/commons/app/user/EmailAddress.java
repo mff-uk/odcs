@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * An abstract representation of an email address.
- * 
+ *
  * @author Jan Vojt
  */
 @Entity
@@ -42,7 +42,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
 
     /**
      * Create an <code>EmailAddress</code>.
-     * 
+     *
      * @param addressAsText
      *            a full email address
      * @throws MalformedEmailAddressException
@@ -83,7 +83,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
 
     /**
      * <b>Part of <code>Comparable</code> interface. Sorts alphabetically.
-     * 
+     *
      * @param obj
      */
     @Override

@@ -1,1 +1,0 @@
-ALTER TABLE "DB"."ODCS"."DPU_INSTANCE" DROP "tool_tip";

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,11 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Component for visualization of the pipeline.
- * 
+ *
  * @author Bogo
  */
 @Component
@@ -82,6 +84,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private DPUFacade dpuFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -179,13 +184,13 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade);
+        detailDialog = new DPUDetail(dpuFacade, appConfig);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 
     /**
      * Saves graph from graph canvas.
-     * 
+     *
      * @param pipeline
      *            {@link Pipeline} where graph should be saved.
      * @return If after save clean up is needed.
@@ -211,7 +216,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Adds new DPUTemplateRecord to graph canvas.
-     * 
+     *
      * @param dpu
      *            Id of {@link DPUTemplateRecord} which should be added.
      * @param x
@@ -229,7 +234,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Adds new edge to graph canvas.
-     * 
+     *
      * @param dpuFrom
      *            Id of Node, where edge starts.
      * @param dpuTo
@@ -249,14 +254,14 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
             getRpcProxy(PipelineCanvasClientRpc.class).addEdge(connectionId, dpuFrom, dpuTo, edgeFormater.format(edge.getScript()));
         } else {
-            Notification.show("Adding edge failed", result, Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.edge.failed"), result, Notification.Type.WARNING_MESSAGE);
         }
 
     }
 
     /**
      * Shows given pipeline on graph canvas.
-     * 
+     *
      * @param pipeline
      *            {@link Pipeline} to show on graph canvas.
      */
@@ -266,7 +271,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Shows detail of given {@link DPUInstanceRecord} in new sub-window.
-     * 
+     *
      * @param node
      *            {@link Node} containing DPU, which detail should be showed.
      */
@@ -298,7 +303,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Change canvas size.
-     * 
+     *
      * @param height
      *            New height of canvas in pixels.
      * @param width
@@ -310,7 +315,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Zoom the canvas.
-     * 
+     *
      * @param isZoomIn
      *            +/- zoom.
      * @return {@link Position} with new size of canvas.
@@ -344,7 +349,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Undo changes on canvas.
-     * 
+     *
      * @return History stack contains another graph.
      */
     public boolean undo() {
@@ -357,7 +362,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Changes mode of the pipeline canvas.
-     * 
+     *
      * @param newMode
      */
     public void changeMode(String newMode) {
@@ -367,7 +372,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Returns if PipelineCanvas was modified since last save.
-     * 
+     *
      * @return Is modified?
      */
     public boolean isModified() {
@@ -388,7 +393,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Inform listeners, about supplied event.
-     * 
+     *
      * @param event
      */
     protected void fireEvent(Event event) {
@@ -400,7 +405,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Initializes the canvas with given graph.
-     * 
+     *
      * @param pg
      *            {@link PipelineGraph} to show on canvas.
      */
@@ -420,23 +425,23 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         LOG.debug("DPU mandatory fields check completed");
         EdgeCompiler edgeCompiler = new EdgeCompiler();
         boolean hadInvalidMappings = false;
-        String message = "Pipeline contained invalid mapping(s). They were removed. List of removed mappings:\n";
+        String message = Messages.getString("PipelineCanvas.pipeline.invalid");
         for (Edge edge : graph.getEdges()) {
             List<String> invalidMappings = edgeCompiler.update(edge, dpuExplorer.getOutputs(edge.getFrom().getDpuInstance()), dpuExplorer.getInputs(edge.getTo().getDpuInstance()));
             if (!invalidMappings.isEmpty()) {
                 hadInvalidMappings = true;
-                message += String.format("Edge from %s to %s: %s.\n", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
+                message += Messages.getString("PipelineCanvas.edge.from", edge.getFrom().getDpuInstance().getName(), edge.getTo().getDpuInstance().getName(), invalidMappings.toString());
             }
             getRpcProxy(PipelineCanvasClientRpc.class).addEdge(edge.hashCode(), edge.getFrom().hashCode(), edge.getTo().hashCode(), edgeFormater.format(edge.getScript()));
         }
         if (hadInvalidMappings) {
-            Notification.show("Invalid mappings found!", message, Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.invalid.mappings"), message, Notification.Type.WARNING_MESSAGE);
         }
     }
 
     /**
      * Method updating node position on server side.
-     * 
+     *
      * @param dpuId
      *            Id of {@link Node} which was moved.
      * @param newX
@@ -454,7 +459,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Shows detail of given {@link Edge} in new sub-window.
-     * 
+     *
      * @param edge
      *            {@link Edge} which detail should be showed.
      */
@@ -489,7 +494,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Copy DPURecord on canvas.
-     * 
+     *
      * @param nodeId
      *            Id of Node, which DPURecord should be copied.
      */
@@ -506,7 +511,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     /**
      * Start pipeline in debug mode and show debug window.
-     * 
+     *
      * @param dpuId
      *            {@Link int} id of dpu, where debug should end.
      * @throws IllegalArgumentException
@@ -531,16 +536,16 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         try {
             isGraphValid &= pipelineValidator.validateGraphEdges(graph);
             if (isGraphValid) {
-                Notification.show("Pipeline is valid!", Notification.Type.WARNING_MESSAGE);
+                Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
             }
         } catch (PipelineValidationException ex) {
-            Notification.show("Mandatory input/output(s) missing!", ex.getMessage(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineCanvas.mandatory.missing"), ex.getMessage(), Notification.Type.WARNING_MESSAGE);
         }
     }
 
     /**
      * Invoke formatting action.
-     * 
+     *
      * @param action
      *            Formatting action.
      */
@@ -551,7 +556,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Resizes canvas, incerases the size by given number of pixels in given
      * direction.
-     * 
+     *
      * @param direction
      *            Direction to enlarge cavnas in
      * @param pixels
@@ -570,7 +575,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 //            resized = true;
 //            currentWidth += SIZE_INCREASE;
 //            resize("left", SIZE_INCREASE);
-//        } else 
+//        } else
         if (currentWidth - (newX + DPU_WIDTH) < MIN_DISTANCE_FROM_BORDER) {
             resized = true;
             currentWidth += SIZE_INCREASE;
@@ -581,7 +586,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 //            resized = true;
 //            currentHeight += SIZE_INCREASE;
 //            resize("top", SIZE_INCREASE);
-//        } else 
+//        } else
         if (currentHeight - (newY + DPU_HEIGHT) < MIN_DISTANCE_FROM_BORDER) {
             resized = true;
             currentHeight += SIZE_INCREASE;

@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -18,11 +17,9 @@ import org.tepi.filtertable.FilterGenerator;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
@@ -33,20 +30,24 @@ import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFQueryFactory;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RDFRegexFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.rdf.RepositoryFrontendHelper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
-import cz.cuni.mff.xrg.odcs.rdf.RDFData;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.enums.RDFFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.enums.SelectFormatType;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.InvalidQueryException;
 import cz.cuni.mff.xrg.odcs.rdf.query.utils.QueryPart;
 import cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 
 /**
  * Simple query view for browsing and querying debug data. User selects DPU and
  * then specifies DataUnit. User can simply browse the data, or query them. Both
  * SELECT and CONSTRUCT query can be used to show data in table and also to
  * download them. User can select format of data.
- * 
+ *
  * @author Bogo
  */
 public class RDFQueryView extends QueryView {
@@ -89,7 +90,7 @@ public class RDFQueryView extends QueryView {
     public RDFQueryView() {
         VerticalLayout mainLayout = new VerticalLayout();
 
-        mainLayout.addComponent(new Label("SPARQL Query:"));
+        mainLayout.addComponent(new Label(Messages.getString("RDFQueryView.query")));
 
         HorizontalLayout queryLine = new HorizontalLayout();
         queryLine.setSpacing(true);
@@ -103,15 +104,15 @@ public class RDFQueryView extends QueryView {
 
         VerticalLayout queryControls = new VerticalLayout();
 
-        queryButton = new Button("Run Query");
+        queryButton = new Button(Messages.getString("RDFQueryView.run"));
         queryButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
                     runQuery();
                 } catch (InvalidQueryException e) {
-                    Notification.show("Query Validator",
-                            "Query is not valid: "
+                    Notification.show(Messages.getString("RDFQueryView.validator"),
+                            Messages.getString("RDFQueryView.query.not.valid")
                                     + e.getCause().getMessage(),
                             Notification.Type.ERROR_MESSAGE);
                 }
@@ -136,7 +137,7 @@ public class RDFQueryView extends QueryView {
         formatSelect.select(RDFFormatType.getStringValue(RDFFormatType.RDFXML));
         runDownload.addComponent(formatSelect);
 
-        queryDownloadButton = new Button("Run Query and Download");
+        queryDownloadButton = new Button(Messages.getString("RDFQueryView.run.and.download"));
         OnDemandFileDownloader fileDownloader = new OnDemandFileDownloader(
                 new OnDemandStreamResource() {
                     @Override
@@ -146,8 +147,7 @@ public class RDFQueryView extends QueryView {
 
                     @Override
                     public InputStream getStream() {
-                        ManagableRdfDataUnit repository = RepositoryFrontendHelper.getRepository(getExecutionInfo(), getSelectedDpu(),
-                                getDataUnitInfo());
+                        ManageableWritableRDFDataUnit repository = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), getSelectedDpu(), getDataUnitInfo());
                         String query = getQuery();
                         if (repository == null || query == null) {
                             return null;
@@ -224,27 +224,6 @@ public class RDFQueryView extends QueryView {
                 }
             }
         });
-        resultTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-            @Override
-            public void itemClick(ItemClickEvent event) {
-                Object oValue = event.getItem().getItemProperty(event.getPropertyId()).getValue();
-                String uri;
-                if (oValue.getClass() == URIImpl.class) {
-                    uri = ((URIImpl) oValue).stringValue();
-                } else {
-                    uri = oValue.getClass() == String.class ? (String) oValue : oValue.toString();
-                    if (!uri.startsWith("http://")) {
-                        return;
-                    }
-                }
-                queryText.setValue(String.format("DESCRIBE <%s>", uri));
-                try {
-                    runQuery();
-                } catch (InvalidQueryException ex) {
-                    //Should not happen
-                }
-            }
-        });
         mainLayout.addComponent(resultTable);
         resultTableControls = resultTable.createControls();
         resultTableControls.setImmediate(true);
@@ -256,7 +235,7 @@ public class RDFQueryView extends QueryView {
         downloadFormatSelect.setImmediate(true);
         resultDownloadControls.addComponent(downloadFormatSelect);
 
-        tableDownload = new Button("Download");
+        tableDownload = new Button(Messages.getString("RDFQueryView.download"));
         OnDemandFileDownloader tableFileDownloader = new OnDemandFileDownloader(
                 new OnDemandStreamResource() {
                     @Override
@@ -278,9 +257,8 @@ public class RDFQueryView extends QueryView {
                             }
                         }
 
-                        ManagableRdfDataUnit tableRepo = RepositoryFrontendHelper.getRepository(getExecutionInfo(), tableDpu, tableDataUnit);
-                        return getDownloadData(tableRepo, tableQuery,
-                                downloadFormatSelect.getValue(), filters);
+                        ManageableWritableRDFDataUnit tableRepo = RepositoryFrontendHelper.getRepositoryForDownload(getExecutionInfo(), tableDpu, tableDataUnit);
+                        return getDownloadData(tableRepo, tableQuery, downloadFormatSelect.getValue(), filters);
                     }
                 });
         tableFileDownloader.extend(tableDownload);
@@ -306,7 +284,7 @@ public class RDFQueryView extends QueryView {
         if (query.length() < 9) {
             //Due to expected exception format in catch block
             throw new InvalidQueryException(new InvalidQueryException(
-                    "Invalid query: " + query));
+                    Messages.getString("RDFQueryView.query.invalid") + query));
         }
         QueryPart queryPart = new QueryPart(query);
         SPARQLQueryType type = queryPart.getSPARQLQueryType();
@@ -322,7 +300,7 @@ public class RDFQueryView extends QueryView {
     private String getQuery() {
         String query = queryText.getValue();
         if (query.trim().isEmpty()) {
-            Notification.show("No query was specified. Please specify query before running it.", Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("RDFQueryView.query.empty"), Notification.Type.WARNING_MESSAGE);
             return null;
         }
         return query.trim();
@@ -330,7 +308,7 @@ public class RDFQueryView extends QueryView {
 
     /**
      * Execute query on selected graph.
-     * 
+     *
      * @param isBrowse
      *            Is it browse query?
      * @throws InvalidQueryException
@@ -344,8 +322,8 @@ public class RDFQueryView extends QueryView {
 
         SPARQLQueryValidator validator = new SPARQLQueryValidator(query);
         if (!validator.isQueryValid()) {
-            Notification.show("Query Validator",
-                    "Query is not valid: "
+            Notification.show(Messages.getString("RDFQueryView.run.validator"),
+                    Messages.getString("RDFQueryView.run.query.not.valid")
                             + validator.getErrorMessage(),
                     Notification.Type.ERROR_MESSAGE);
             return;
@@ -393,7 +371,7 @@ public class RDFQueryView extends QueryView {
 
     @Override
     public void browseDataUnit() {
-        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}");
+        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o} LIMIT 1000");
         try {
             runQuery();
         } catch (InvalidQueryException ex) {
@@ -414,7 +392,7 @@ public class RDFQueryView extends QueryView {
 
     /**
      * Prepare data file for download after SELECT or CONSTRUCT query.
-     * 
+     *
      * @param repository
      *            {@link LocalRDFDataUnit} of selected graph.
      * @param query
@@ -422,7 +400,7 @@ public class RDFQueryView extends QueryView {
      * @throws InvalidQueryException
      *             If the query is badly formatted.
      */
-    private InputStream getDownloadData(RDFData repository, String query,
+    private InputStream getDownloadData(RDFDataUnit repository, String query,
             Object format, Collection<Filter> filters) {
         RepositoryConnection connection = null;
         try {
@@ -435,13 +413,13 @@ public class RDFQueryView extends QueryView {
             if (isSelectQuery != (format.getClass() == SelectFormatType.class)) {
 
                 if (isSelectQuery) {
-                    Notification.show("Not suported format for SELECT query !",
-                            "This format can be used only for CONSTRUCT queries !",
+                    Notification.show(Messages.getString("RDFQueryView.select.not.supported"),
+                            Messages.getString("RDFQueryView.format.not.supported.construct"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
                     Notification.show(
-                            "Not suported format for CONSTRUCT query !",
-                            "This format can be used only for SELECT queries !",
+                            Messages.getString("RDFQueryView.consctuct.not.supported"),
+                            Messages.getString("RDFQueryView.consctuct.not.supported.description"),
                             Notification.Type.ERROR_MESSAGE);
                 }
 
@@ -455,12 +433,12 @@ public class RDFQueryView extends QueryView {
                 SelectFormatType selectType = (SelectFormatType) format;
 
                 constructData = RepositoryFrontendHelper.executeSelectQuery(connection, query, fn,
-                        selectType, repository.getContexts());
+                        selectType, RDFHelper.getGraphsURISet(repository));
             } else {
                 RDFFormatType rdfType = RDFFormatType.getTypeByString(format
                         .toString());
 
-                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, repository.getContexts(), query, rdfType, fn);
+                constructData = RepositoryFrontendHelper.executeConstructQuery(connection, RDFHelper.getGraphsURISet(repository), query, rdfType, fn);
             }
 
             FileInputStream fis = new FileInputStream(constructData);
@@ -468,16 +446,16 @@ public class RDFQueryView extends QueryView {
         } catch (IOException ex) {
             LOG.error("File with result not found.", ex);
             Notification.show(
-                    "There was error in creating donwload file!",
+                    Messages.getString("RDFQueryView.download.error"),
                     Notification.Type.ERROR_MESSAGE);
         } catch (InvalidQueryException ex) {
             LOG.error("Invalid query!", ex);
-            Notification.show("Query Validator",
-                    "Query is not valid: "
+            Notification.show(Messages.getString("RDFQueryView.download.validator"),
+                    Messages.getString("RDFQueryView.download.query.not.valid")
                             + ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
-        } catch (RepositoryException ex) {
-            Notification.show("Problem with connection",
+        } catch (DataUnitException ex) {
+            Notification.show(Messages.getString("RDFQueryView.dataunit.problem"),
                     ex.getCause().getMessage(),
                     Notification.Type.ERROR_MESSAGE);
         } finally {
@@ -485,7 +463,7 @@ public class RDFQueryView extends QueryView {
                 try {
                     connection.close();
                 } catch (RepositoryException ex) {
-                    Notification.show("Problem closing connection",
+                    Notification.show(Messages.getString("RDFQueryView.closing.problem"),
                             ex.getCause().getMessage(),
                             Notification.Type.ERROR_MESSAGE);
                 }
@@ -496,8 +474,8 @@ public class RDFQueryView extends QueryView {
 
     private String getFileName(Object oFormat) {
         if (oFormat == null) {
-            Notification.show("Format not selected!",
-                    "Format must be selected for download!",
+            Notification.show(Messages.getString("RDFQueryView.format.empty"),
+                    Messages.getString("RDFQueryView.format.empty.description"),
                     Notification.Type.ERROR_MESSAGE);
             return "";
         }

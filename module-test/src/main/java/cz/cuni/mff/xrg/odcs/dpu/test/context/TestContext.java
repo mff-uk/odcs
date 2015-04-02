@@ -1,17 +1,20 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.
- * 
+ *
  * @author Petyr
  */
 public class TestContext implements DPUContext {
@@ -44,27 +47,39 @@ public class TestContext implements DPUContext {
     private boolean publishedError = false;
 
     /**
-     * Working directory, if null then the working subdirectory in {@link #rootDirectory} is used.
+     * Working directory, if null then the working subdirectory in
+     * {@link #rootDirectory} is used.
      */
     private File workingDirectory = null;
 
     /**
-     * Result directory, if null then the result subdirectory in {@link #rootDirectory} is used.
+     * Result directory, if null then the result subdirectory in
+     * {@link #rootDirectory} is used.
      */
     private File resultDirectory = null;
 
     /**
-     * Global DPU directory, if null then the global subdirectory in {@link #rootDirectory} is used.
+     * Global DPU directory, if null then the global subdirectory in
+     * {@link #rootDirectory} is used.
      */
     private File globalDirectory = null;
 
     /**
-     * User DPU directory, if null then the user subdirectory in {@link #rootDirectory} is used.
+     * User DPU directory, if null then the user subdirectory in
+     * {@link #rootDirectory} is used.
      */
     private File userDirectory = null;
 
+    /**
+     * Environment variables from Core, which are accesible by DPU.
+     */
+    private Map<String, String> environment;
+
+    private File dpuInstanceDirectory = null;
+
     public TestContext(File rootDirectory) {
         this.rootDirectory = rootDirectory;
+        this.environment = new HashMap<>();
         globalDirectory = new File(rootDirectory, "global");
         if (!globalDirectory.exists()) {
             globalDirectory.mkdirs();
@@ -80,6 +95,10 @@ public class TestContext implements DPUContext {
         workingDirectory = new File(rootDirectory, "working");
         if (!workingDirectory.exists()) {
             workingDirectory.mkdirs();
+        }
+        dpuInstanceDirectory = new File(rootDirectory, "dpuInstance");
+        if (!dpuInstanceDirectory.exists()) {
+            dpuInstanceDirectory.mkdirs();
         }
     }
 
@@ -115,12 +134,6 @@ public class TestContext implements DPUContext {
                         fullMessage);
                 publishedWarning = true;
                 break;
-            case TERMINATION_REQUEST:
-                LOG.info(
-                        "DPU publish termination message short: '{}' long: '{}'",
-                        shortMessage,
-                        fullMessage);
-                break;
         }
 
     }
@@ -154,13 +167,6 @@ public class TestContext implements DPUContext {
                         fullMessage,
                         exception);
                 publishedWarning = true;
-                break;
-            case TERMINATION_REQUEST:
-                LOG.info(
-                        "DPU publish termination message short: '{}' long: '{}'",
-                        shortMessage,
-                        fullMessage,
-                        exception);
                 break;
         }
     }
@@ -205,16 +211,14 @@ public class TestContext implements DPUContext {
     }
 
     /**
-     * @param lastExecution
-     *            Date of last execution.
+     * @param lastExecution Date of last execution.
      */
     public void setLastExecution(Date lastExecution) {
         this.lastExecution = lastExecution;
     }
 
     /**
-     * @param jarPath
-     *            Path to the jar file.
+     * @param jarPath Path to the jar file.
      */
     public void setJarPath(String jarPath) {
         this.jarPath = jarPath;
@@ -238,5 +242,45 @@ public class TestContext implements DPUContext {
     @Override
     public File getUserDirectory() {
         return userDirectory;
+    }
+
+    @Override
+    public String getDpuInstanceDirectory() {
+        return dpuInstanceDirectory.toURI().toASCIIString();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return new Locale("en", "US");
+    }
+
+    @Override
+    public Long getPipelineId() {
+        return 7L;
+    }
+
+    @Override
+    public Long getPipelineExecutionId() {
+        return 15L;
+    }
+
+    @Override
+    public Long getDpuInstanceId() {
+        return 9L;
+    }
+
+    @Override
+    public Map<String, String> getEnvironment() {
+        return environment;
+    }
+
+    @Override
+    public String getPipelineOwner() {
+        return "test_user";
+    }
+
+    @Override
+    public String getOrganization() {
+        return "test_organization";
     }
 }

@@ -1,10 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.dialog;
 
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
 
 /**
  * Implementation of {@link ConfigDialogContext}.
- * 
+ *
  * @author Petyr
  */
 public class ConfigDialogContextImpl implements ConfigDialogContext {
@@ -14,19 +19,37 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
      */
     private final boolean isTemplate;
 
+    private final Locale locale;
+
+    protected AppConfig appConfig;
+
     /**
      * Constructor.
-     * 
-     * @param isTemplate
-     *            Whether the dialog is used for DPU template.
+     *
      */
-    public ConfigDialogContextImpl(boolean isTemplate) {
+    public ConfigDialogContextImpl(boolean isTemplate, Locale locale, AppConfig appConfig) {
         this.isTemplate = isTemplate;
+        this.locale = locale;
+        this.appConfig = appConfig;
     }
 
     @Override
     public boolean isTemplate() {
         return this.isTemplate;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    @Override
+    public Map<String, String> getEnvironment() {
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
+            result.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        return result;
     }
 
 }

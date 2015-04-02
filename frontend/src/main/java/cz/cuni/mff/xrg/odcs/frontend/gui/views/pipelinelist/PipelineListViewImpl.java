@@ -24,6 +24,7 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Vaadin implementation for PipelineListView.
@@ -39,13 +40,15 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     /**
      * Column widths for pipeline table.
      */
-    private static final int COLUMN_ACTIONS_WIDTH = 324;
+    private static final int COLUMN_ACTIONS_WIDTH = 250;
 
-    private static final int COLUMN_STATUS_WIDTH = 68;
+    private static final int COLUMN_STATUS_WIDTH = 100;
 
-    private static final int COLUMN_DURATION_WIDTH = 80;
+    private static final int COLUMN_DURATION_WIDTH = 180;
 
-    private static final int COLUMN_TIME_WIDTH = 115;
+    private static final int COLUMN_CREATEDBY_WIDTH = 120;
+
+    private static final int COLUMN_TIME_WIDTH = 180;
 
     private VerticalLayout mainLayout;
 
@@ -73,9 +76,10 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         topLine.setSpacing(true);
 
         btnCreatePipeline = new Button();
-        btnCreatePipeline.setCaption("Create pipeline");
+        btnCreatePipeline.setCaption(Messages.getString("PipelineListViewImpl.create.pipeline"));
         btnCreatePipeline.setHeight("25px");
-        btnCreatePipeline.setWidth("120px");
+        btnCreatePipeline.addStyleName("v-button-primary");
+        btnCreatePipeline.setVisible(utils.hasUserAuthority("pipeline.create"));
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -86,9 +90,10 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         topLine.addComponent(btnCreatePipeline);
 
         btnImportPipeline = new Button();
-        btnImportPipeline.setCaption("Import pipeline");
+        btnImportPipeline.setCaption(Messages.getString("PipelineListViewImpl.import.pipeline"));
         btnImportPipeline.setHeight("25px");
-        btnImportPipeline.setWidth("120px");
+        btnImportPipeline.addStyleName("v-button-primary");
+        btnImportPipeline.setVisible(utils.hasUserAuthority("pipeline.import"));
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -99,9 +104,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         topLine.addComponent(btnImportPipeline);
 
         Button buttonDeleteFilters = new Button();
-        buttonDeleteFilters.setCaption("Clear Filters");
+        buttonDeleteFilters.setCaption(Messages.getString("PipelineListViewImpl.clear.filters"));
         buttonDeleteFilters.setHeight("25px");
-        buttonDeleteFilters.setWidth("120px");
+        buttonDeleteFilters.addStyleName("v-button-primary");
         buttonDeleteFilters.addClickListener(new ClickListener() {
 
             @Override
@@ -124,10 +129,12 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         // add column
         tablePipelines.setImmediate(true);
         tablePipelines.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
+        tablePipelines.setColumnHeader("actions", Messages.getString("PipelineListViewImpl.actions"));
         tablePipelines.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
         tablePipelines.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
         tablePipelines.setColumnWidth("lastExecStatus", COLUMN_STATUS_WIDTH);
         tablePipelines.setColumnWidth("lastExecTime", COLUMN_TIME_WIDTH);
+        tablePipelines.setColumnWidth("createdBy", COLUMN_CREATEDBY_WIDTH);
 
         tablePipelines.setColumnAlignment("lastExecStatus", CustomTable.Align.CENTER);
         tablePipelines.setColumnAlignment("duration", CustomTable.Align.RIGHT);
@@ -175,42 +182,67 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         ActionColumnGenerator generator = new ActionColumnGenerator();
         // add action buttons
 
-        generator.addButton("Run", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.run"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id, false);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canRunPipeline(id);
+            }
         }, new ThemeResource("icons/running.png"));
 
-        generator.addButton("Debug", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.debug"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.runEventHandler(id, true);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canDebugPipeline(id);
+            }
         }, new ThemeResource("icons/debug.png"));
 
-        generator.addButton("Schedule", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.schedule"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.scheduleEventHandler(id);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canSchedulePipeline(id);
+            }
         }, new ThemeResource("icons/scheduled.png"));
 
-        generator.addButton("Copy", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.copy"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.copyEventHandler(id);
             }
-        }, new ThemeResource("img/copy.png"));
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canCopyPipeline(id);
+            }
+        }, new ThemeResource("icons/copy.png"));
 
-        generator.addButton("Edit", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.edit"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.navigateToEventHandler(PipelineEdit.class, id);
             }
+        }, new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.canEditPipeline(id);
+            }
         }, new ThemeResource("icons/gear.png"));
 
-        generator.addButton("Delete", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("PipelineListViewImpl.delete"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(final long id) {
                 presenter.deleteEventHandler(id);
@@ -227,7 +259,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     @Override
     public Object enter(PipelineListPresenter presenter) {
-        buildPage(presenter);
+        if (!presenter.isLayoutInitialized()) {
+            buildPage(presenter);
+        }
 
         return this;
     }

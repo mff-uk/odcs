@@ -6,16 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
@@ -23,13 +22,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.xstream.JPAXStream;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
@@ -38,13 +40,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Export given pipeline into file.
- * 
+ *
  * @author Škoda Petr
  */
 public class ExportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(
             ExportService.class);
+
+    private static final String XML_ENCODING = "UTF-8";
 
     @Autowired
     private ScheduleFacade scheduleFacade;
@@ -68,49 +72,25 @@ public class ExportService {
         try {
             tempDir = resourceManager.getNewExportTempDir();
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get temp directory.", ex);
+            throw new ExportException(Messages.getString("ExportService.temp.dir.fail"), ex);
         }
         final StringBuilder fileName = new StringBuilder();
         fileName.append("pipeline-");
         fileName.append(pipeline.getId().toString());
         fileName.append(".zip");
 
-        final File targetFile = new File(tempDir, fileName.toString());
-        exportPipeline(pipeline, targetFile, setting);
+        File targetFile = new File(tempDir, fileName.toString());
+        exportPipeline(pipeline, targetFile, setting, getAuthCtx());
         return targetFile;
     }
 
-
-    public TreeMap<String, String> getDpusInformation(Pipeline pipeline) {
-        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline);
-
-        TreeMap<String, String> informationMap = new TreeMap<>();
-        if (pipeline != null) {
-            PipelineGraph graph = pipeline.getGraph();
-            if (graph != null) {
-                for (Node node : graph.getNodes()) {
-                    DPUInstanceRecord dpu = node.getDpuInstance();
-                    if(dpu == null)
-                        continue;
-
-                    DPUTemplateRecord template = dpu.getTemplate();
-                    String instanceName = dpu.getName();
-
-                    if(template == null)
-                        continue;
-                    String name = template.getJarName();
-
-                    if (!informationMap.containsKey(instanceName)) {
-                        informationMap.put(instanceName, name);
-                    }
-                }
-            }
-        }
-
-        LOG.debug("<<< Leaving getDpusInformation: {}", informationMap);
-        return informationMap;
+    public AuthenticationContext getAuthCtx() {
+        return authCtx;
     }
 
+    public void setAuthCtx(AuthenticationContext authCtx) {
+        this.authCtx = authCtx;
+    }
 
     /**
      * Export given pipeline and all it's dependencies into given file.
@@ -118,17 +98,18 @@ public class ExportService {
      * @param pipeline
      * @param targetFile
      * @param setting
+     * @param authCtx
      * @throws ExportException
      */
-    public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting)
+    public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting, AuthenticationContext authCtx)
             throws ExportException {
 
         if (authCtx == null) {
-            throw new ExportException("AuthenticationContext is null.");
+            throw new ExportException(Messages.getString("ExportService.authenticationContext.fail"));
         }
         final User user = authCtx.getUser();
         if (user == null) {
-            throw new ExportException("Unknown user.");
+            throw new ExportException(Messages.getString("ExportService.unknown.user"));
         }
 
         try (FileOutputStream fos = new FileOutputStream(targetFile);
@@ -140,22 +121,25 @@ public class ExportService {
                 saveSchedule(pipeline, zipStream);
             }
             // save jar and dpu files
-            HashSet<Long> savedTemplateId = new HashSet<>();
-			HashSet<String> savedTemplateDir = new HashSet<>();
+            Map<Long, DPUTemplateRecord> savedTemplates = new HashMap<Long, DPUTemplateRecord>();
+            Set<String> savedTemplateDir = new HashSet<String>();
+
+            TreeSet<DpuItem> dpusInformation = new TreeSet<>();
 
             for (Node node : pipeline.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
-                if (savedTemplateId.contains(template.getId())) {
+                if (savedTemplates.containsKey(template.getId())) {
                     // template already saved
                 } else {
-                    savedTemplateId.add(template.getId());
+                    savedTemplates.put(template.getId(), template);
                     // export jar file
-					final String jarDirectory = template.getJarDirectory();
-					if (savedTemplateDir.contains(jarDirectory)) {
-						// jar already exported
+                    final String jarDirectory = template.getJarDirectory();
+                    if (savedTemplateDir.contains(jarDirectory)) {
+                        // jar already exported
                     } else {
                         savedTemplateDir.add(jarDirectory);
+
                         if (setting.isExportJars()) {
                             saveDPUJar(template, zipStream);
                         }
@@ -166,14 +150,35 @@ public class ExportService {
                         saveDPUDataGlobal(template, zipStream);
                     }
                 }
+                // TODO jmc added version
+                String version = "unknown";
+                DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
+                if (!dpusInformation.contains(dpuItem)) {
+                    dpusInformation.add(dpuItem);
+                }
+
             }
+            saveDpusInfo(dpusInformation, zipStream);
+            saveTemplateInfo(new ArrayList<DPUTemplateRecord>(savedTemplates.values()), zipStream);
+
         } catch (IOException ex) {
             targetFile.delete();
             throw new ExportException(
-                    "Failed to prepare file with exported pipeline", ex);
+                    Messages.getString("ExportService.pipeline.prepare.fail"), ex);
         } catch (ExportException ex) {
             targetFile.delete();
             throw ex;
+        }
+    }
+
+    private void saveTemplateInfo(List<DPUTemplateRecord> savedTemplates, ZipOutputStream zipStream) throws ExportException {
+        final XStream xStream = JPAXStream.createForDPUTemplate(new DomDriver(XML_ENCODING));
+        try {
+            final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_TEMPLATE.getValue());
+            zipStream.putNextEntry(ze);
+            xStream.toXML(savedTemplates, zipStream);
+        } catch (IOException e) {
+            throw new ExportException(Messages.getString("ExportService.dpu.serialization.fail"), e);
         }
     }
 
@@ -186,14 +191,14 @@ public class ExportService {
      */
     private void savePipeline(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForPipeline();
+        final XStream xStream = JPAXStream.createForPipeline(new DomDriver(XML_ENCODING));
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.PIPELINE.getValue());
             zipStream.putNextEntry(ze);
             // write into entry
             xStream.toXML(pipeline, zipStream);
         } catch (IOException ex) {
-            throw new ExportException("Failed to serialize pipeline.", ex);
+            throw new ExportException(Messages.getString("ExportService.pipeline.serialization.fail"), ex);
         }
     }
 
@@ -207,7 +212,7 @@ public class ExportService {
      */
     private void saveSchedule(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
-        final XStream xStream = JPAXStream.createForSchedule();
+        final XStream xStream = JPAXStream.createForSchedule(new DomDriver(XML_ENCODING));
         final List<Schedule> schedules = scheduleFacade
                 .getSchedulesFor(pipeline);
         try {
@@ -216,7 +221,7 @@ public class ExportService {
             // write into entry
             xStream.toXML(schedules, zipStream);
         } catch (IOException ex) {
-            throw new ExportException("Failed to serialize schedule.", ex);
+            throw new ExportException(Messages.getString("ExportService.schedule.serialization.fail"), ex);
         }
     }
 
@@ -235,12 +240,12 @@ public class ExportService {
         try {
             source = resourceManager.getDPUJarFile(template);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
         byte[] buffer = new byte[4096];
         try {
             final ZipEntry ze = new ZipEntry(ArchiveStructure.DPU_JAR.getValue() +
-                    File.separator + template.getJarPath());
+                    ZipCommons.uniteSeparator + template.getJarPath());
             zipStream.putNextEntry(ze);
             // move jar file into the zip file
             try (FileInputStream in = new FileInputStream(source)) {
@@ -250,13 +255,13 @@ public class ExportService {
                 }
             }
         } catch (IOException ex) {
-            throw new ExportException("Failed to copy jar file.", ex);
+            throw new ExportException(Messages.getString("ExportService.jarFile.copy.fail"), ex);
         }
     }
 
     /**
      * Export DPU's user-based data into given zip stream.
-     * 
+     *
      * @param template
      * @param user
      * @param zipStream
@@ -268,19 +273,18 @@ public class ExportService {
         try {
             source = resourceManager.getDPUDataUserDir(template, user);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
-        
-        
+
         final String zipPrefix = ArchiveStructure.DPU_DATA_USER.getValue()
-                + File.separator + template.getJarDirectory();
+                + ZipCommons.uniteSeparator + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }
 
     /**
      * Export DPU's global data into given zip stream.
-     * 
+     *
      * @param template
      * @param zipStream
      * @throws ExportException
@@ -291,11 +295,11 @@ public class ExportService {
         try {
             source = resourceManager.getDPUDataGlobalDir(template);
         } catch (MissingResourceException ex) {
-            throw new ExportException("Failed to get path to jar file.");
+            throw new ExportException(Messages.getString("ExportService.jarFile.path.fail"));
         }
 
         final String zipPrefix = ArchiveStructure.DPU_DATA_GLOBAL.getValue()
-                + File.separator + template.getJarDirectory();
+                + ZipCommons.uniteSeparator + template.getJarDirectory();
 
         saveDirectory(source, zipPrefix, zipStream);
     }
@@ -303,7 +307,7 @@ public class ExportService {
     /**
      * Add files and directories from given directory into a zip. Relative path
      * from the given directory is used to identify the relative path in zip.
-     * 
+     *
      * @param source
      * @param targetPrefix
      *            Path prefix in output zip, it should not end with
@@ -320,13 +324,13 @@ public class ExportService {
         }
         LOG.trace("Copy '{}' under '{}'.", source.toString(), targetPrefix);
 
-        // no we add files into the 
+        // no we add files into the
         byte[] buffer = new byte[4096];
         final int sourceLenght;
         try {
             sourceLenght = source.getCanonicalPath().length() + 1;
         } catch (IOException ex) {
-            throw new ExportException("Failed to get canonical path.", ex);
+            throw new ExportException(Messages.getString("ExportService.canonical.path.fail"), ex);
         }
 
         final Collection<File> files = FileUtils.listFiles(source,
@@ -339,13 +343,13 @@ public class ExportService {
             }
             try {
                 // prepare relative path in archive
-                final String relativePath = targetPrefix + File.separator
+                final String relativePath = targetPrefix + ZipCommons.uniteSeparator
                         + file.getCanonicalPath().substring(sourceLenght);
                 // ...
                 final ZipEntry ze = new ZipEntry(relativePath);
                 zipStream.putNextEntry(ze);
             } catch (IOException ex) {
-                throw new ExportException("Preparation of zip entry failed",
+                throw new ExportException(Messages.getString("ExportService.zip.preparation.fail"),
                         ex);
             }
             // transfer data
@@ -355,10 +359,87 @@ public class ExportService {
                     zipStream.write(buffer, 0, len);
                 }
             } catch (IOException ex) {
-                throw new ExportException("Failed to add file into archive.",
+                throw new ExportException(Messages.getString("ExportService.zip.archive.fail"),
                         ex);
             }
         }
+    }
+
+    public void saveDpusInfo(TreeSet<DpuItem> dpusInformation, ZipOutputStream zipStream) throws ExportException {
+        LOG.debug(">>> Entering saveDpusInfo(dpusInformation={}, zipStream={})", dpusInformation, zipStream);
+
+        XStream xStream = new XStream(new DomDriver(XML_ENCODING));
+        // treeSet is not possible to aliasing
+        List<DpuItem> dpus = new ArrayList<DpuItem>();
+        dpus.addAll(dpusInformation);
+        xStream.alias("dpus", List.class);
+        xStream.alias("dpu", DpuItem.class);
+
+        File serializedTarget;
+        try {
+            serializedTarget = File.createTempFile("temp", ".tmp");
+        } catch (IOException ex2) {
+            throw new ExportException(Messages.getString("ExportService.error"), ex2);
+        }
+        try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
+            xStream.toXML(dpus, foutStream);
+        } catch (IOException ex1) {
+            throw new ExportException(Messages.getString("ExportService.error"), ex1);
+        }
+
+        byte[] buffer = new byte[4096];
+        try {
+            final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
+            zipStream.putNextEntry(ze);
+
+            // move jar file into the zip file
+            try (FileInputStream in = new FileInputStream(serializedTarget)) {
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    zipStream.write(buffer, 0, len);
+                }
+            }
+        } catch (IOException ex) {
+            throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
+        }
+        LOG.debug("<<< Leaving saveDpusInfo()");
+    }
+
+    public TreeSet<DpuItem> getDpusInformation(Pipeline pipeline) {
+        LOG.debug(">>> Entering getDpusInformation(pipeline={})", pipeline.getId());
+
+        TreeSet<DpuItem> dpusInformation = new TreeSet<>();
+        if (pipeline != null) {
+            PipelineGraph graph = pipeline.getGraph();
+            if (graph != null) {
+                Set<Node> nodes = graph.getNodes();
+                if (nodes != null) {
+                    for (Node node : nodes) {
+                        DPUInstanceRecord dpu = node.getDpuInstance();
+                        if (dpu == null) {
+                            continue;
+                        }
+
+                        DPUTemplateRecord template = dpu.getTemplate();
+                        String instanceName = dpu.getName();
+
+                        if (template == null) {
+                            continue;
+                        }
+
+                        String jarName = template.getJarName();
+                        String version = "unknown";
+                        DpuItem dpuItem = new DpuItem(instanceName, jarName, version);
+                        if (!dpusInformation.contains(dpuItem)) {
+                            dpusInformation.add(dpuItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        LOG.debug("<<< Leaving getDpusInformation: {}", dpusInformation);
+        return dpusInformation;
     }
 
 }

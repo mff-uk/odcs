@@ -2,7 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
 /**
  * Recognized configuration properties.
- * 
+ *
  * @author Jan Vojt
  */
 public enum ConfigProperty {
@@ -12,9 +12,11 @@ public enum ConfigProperty {
     BACKEND_NAME("backend.name"),
     BACKEND_HOST("backend.host"),
     BACKEND_PORT("backend.port"),
-    BACKEND_LOG_DIR("backend.log.dir"),
+    BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
+    BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
+    LOCALE("locale"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
@@ -23,6 +25,14 @@ public enum ConfigProperty {
      * Used to generate url for pipeline execution in emails.
      */
     FRONTEND_URL("frontend.url"),
+
+    FRONTEND_RUN_NOW_PIPELINE_PRIORITY("run.now.pipeline.priority"),
+    FRONTEND_THEME("frontend.theme"),
+
+    /**
+     * string diplayed next to the UV logo in GUI
+     */
+    INSTALLATION_NAME("installation.name"),
 
     // namespaces for virtuoso configuration
     RDBMS("database.sql"),
@@ -38,6 +48,8 @@ public enum ConfigProperty {
     DATABASE_RETRIES("retries"),
     DATABASE_WAIT("wait"),
     DATABASE_EXTENSION("useExtension"),
+    DATABASE_SQL_PASSWORD("database.sql.password"),
+    DATABASE_RDF_PASSWORD("database.rdf.password"),
 
     // namespaces for database inaccessible actions
     DATABASE_INACCESSIBLE("inaccessible"),
@@ -56,14 +68,36 @@ public enum ConfigProperty {
     EMAIL_AUTHORIZATION("email.authorization"),
     EMAIL_USERNAME("email.username"),
     EMAIL_PASSWORD("email.password"),
-    EMAIL_ADMIN("email.admin");
+    EMAIL_ADMIN("email.admin"),
+
+    CKAN_LOCATION("ckan.location"),
+    CKAN_API_KEY("ckan.api.key"),
+
+    LOGOUT_URL("logout.url"),
+    CAS_SERVER_HOST("cas.server.host"),
+    CAS_SECURITY_CHECK_URL("cas.security.check.url"),
+    CAS_LOGIN_URL("cas.login.url"),
+    CAS_LOGOUT_URL("cas.logout.url"),
+
+    OWNERSHIP_TYPE("ownership.type"),
+
+    ADMIN_PERMISSION("admin.permission"),
+
+    DEFAULT_ORGANIZATION("organization"),
+
+    MASTER_API_USER("master.api.user"),
+    MASTER_API_PASSWORD("master.api.password"),
+
+    CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
+    CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
 
     private final String property;
+
     public final String springValue;
-    
+
     private ConfigProperty(final String property) {
         this.property = property;
-        this.springValue ="${" + property + "}";
+        this.springValue = "${" + property + "}";
     }
 
     @Override

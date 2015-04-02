@@ -100,6 +100,7 @@ class FileNotifierServer implements Runnable {
             LOG.error("Failed to start DPU change watcher.", e);
             return;
         }
+        new File(moduleFacade.getDPUDirectory()).mkdirs();
         // register directories to watch
         register(Paths.get(moduleFacade.getDPUDirectory()));
 

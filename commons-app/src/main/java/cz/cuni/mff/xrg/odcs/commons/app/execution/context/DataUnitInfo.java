@@ -13,11 +13,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Holds information about single {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} context.
- * 
+ *
  * @author Petyr
  */
 @Entity
@@ -50,7 +50,7 @@ public class DataUnitInfo implements DataObject {
      */
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "type")
-    private DataUnitType type;
+    private ManagableDataUnit.Type type;
 
     /**
      * True if use as input otherwise false.
@@ -76,7 +76,7 @@ public class DataUnitInfo implements DataObject {
      */
     public DataUnitInfo(Integer index,
             String name,
-            DataUnitType type,
+            ManagableDataUnit.Type type,
             boolean isInput) {
         this.index = index;
         this.name = name;
@@ -103,7 +103,7 @@ public class DataUnitInfo implements DataObject {
     /**
      * @return DateUnit'stype.
      */
-    public DataUnitType getType() {
+    public ManagableDataUnit.Type getType() {
         return type;
     }
 
@@ -122,7 +122,7 @@ public class DataUnitInfo implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -146,7 +146,7 @@ public class DataUnitInfo implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

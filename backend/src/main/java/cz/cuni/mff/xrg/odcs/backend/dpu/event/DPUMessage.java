@@ -3,9 +3,9 @@ package cz.cuni.mff.xrg.odcs.backend.dpu.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.unifiedviews.dpu.DPUContext;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
 
 /**
  * Class for representing DPURecord messages send by ProcessingContext
@@ -19,7 +19,7 @@ public final class DPUMessage extends DPUEvent {
 
     public DPUMessage(String shortMessage,
             String longMessage,
-            MessageType type,
+            DPUContext.MessageType type,
             Context context,
             Object source) {
         super(context, source, MessageRecordType.fromMessageType(type),
@@ -46,12 +46,6 @@ public final class DPUMessage extends DPUEvent {
                 break;
             case WARNING:
                 LOG.warn("DPU '{}' publish message short: '{}' long: '{}'",
-                        context.getDPU().getName(),
-                        shortMessage,
-                        longMessage);
-                break;
-            case TERMINATION_REQUEST:
-                LOG.info("DPU '{}' requires pipeline termination with message short: '{}' long: '{}'",
                         context.getDPU().getName(),
                         shortMessage,
                         longMessage);

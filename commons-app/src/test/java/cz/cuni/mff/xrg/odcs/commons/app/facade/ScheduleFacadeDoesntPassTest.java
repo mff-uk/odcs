@@ -94,7 +94,7 @@ public class ScheduleFacadeDoesntPassTest {
         Pipeline pipeline = pipelineFacade.createPipeline();
         pipelineFacade.save(pipeline);
 
-        List<Schedule> schedules = scheduleFacade.getAllTimeBased();
+        List<Schedule> schedules = scheduleFacade.getAllTimeBasedNotQueuedRunning();
         assertNotNull(schedules);
 
         Schedule schedule = scheduleFacade.createSchedule();
@@ -102,7 +102,7 @@ public class ScheduleFacadeDoesntPassTest {
         schedule.setPipeline(pipeline);
         scheduleFacade.save(schedule);
 
-        List<Schedule> schedules1 = scheduleFacade.getAllTimeBased();
+        List<Schedule> schedules1 = scheduleFacade.getAllTimeBasedNotQueuedRunning();
         assertNotNull(schedules1);
         assertTrue(schedules.size() + 1 == schedules1.size());
 

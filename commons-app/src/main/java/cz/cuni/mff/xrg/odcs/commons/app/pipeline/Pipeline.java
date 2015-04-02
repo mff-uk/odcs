@@ -6,7 +6,24 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,13 +33,15 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer
  * and loader modules ({@link DPUInstanceRecord}s) organized in acyclic graph.
- * 
+ *
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Bogo
@@ -30,7 +49,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 @XmlRootElement
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataObject {
+public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEntity, Serializable, DataObject {
 
     /**
      * Unique ID for each pipeline
@@ -43,7 +62,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Human-readable pipeline name
      */
-    @Column
+    @Column(unique = true)
     private String name;
 
     /**
@@ -53,7 +72,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
-    private PipelineGraph graph = new PipelineGraph();
+    private PipelineGraph graph;
 
     /**
      * User who created and owns this pipeline.
@@ -61,6 +80,10 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     /**
      * Public vs private shareType.
@@ -91,11 +114,13 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * Default constructor for JPA
      */
     public Pipeline() {
+        graph = new PipelineGraph();
+        graph.setPipeline(this);
     }
 
     /**
      * Copy constructor. Creates a deep copy of given pipeline.
-     * 
+     *
      * @param pipeline
      *            to copy
      */
@@ -116,7 +141,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Constructor with given pipeline name and description.
-     * 
+     *
      * @param name
      *            Name of pipeline
      * @param description
@@ -130,7 +155,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the name of the pipeline.
-     * 
+     *
      * @return the name of the pipeline.
      */
     public String getName() {
@@ -139,7 +164,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new name to the pipeline.
-     * 
+     *
      * @param newName
      *            String value of new name of pipeline.
      */
@@ -149,7 +174,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the pipeline description.
-     * 
+     *
      * @return the value of the pipeline description.
      */
     public String getDescription() {
@@ -158,7 +183,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of the pipeline description.
-     * 
+     *
      * @param newDescription
      *            new value of the pipeline description.
      */
@@ -168,7 +193,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the instance of {@link PipelineGraph} for this pipeline.
-     * 
+     *
      * @return the instance of {@link PipelineGraph} for this pipeline.
      */
     public PipelineGraph getGraph() {
@@ -177,7 +202,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of {@link PipelineGraph} to this pipeline.
-     * 
+     *
      * @param graph
      *            instance of {@link PipelineGraph} will be set to this
      *            pipeline.
@@ -189,7 +214,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the set ID of this pipeline as {@link Long} value.
-     * 
+     *
      * @return the set ID of this pipeline as {@link Long} value.
      */
     @Override
@@ -199,7 +224,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of pipeline owner.
-     * 
+     *
      * @param owner
      *            instance of {@link User} as new pipeline owner.
      */
@@ -209,7 +234,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Return the instance of {@link User} as owner of this pipeline.
-     * 
+     *
      * @return the owner of this pipeline.
      */
     @Override
@@ -217,9 +242,17 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
         return owner;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     /**
      * Returns the set of pipeline conflicts.
-     * 
+     *
      * @return the set of pipeline conflicts.
      */
     public Set<Pipeline> getConflicts() {
@@ -229,7 +262,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Returns the pipeline visibility as one of {@link ShareType} values set
      * for this pipeline.
-     * 
+     *
      * @return the pipeline visibility as one of {@link ShareType} values set
      *         for this pipeline.
      */
@@ -240,7 +273,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set the pipeline {@link ShareType} values.
-     * 
+     *
      * @param shareType
      *            new value
      */
@@ -250,7 +283,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the {@link Date} instance where the pipeline was last changed.
-     * 
+     *
      * @return {@link Date} where the pipeline was last changed.
      */
     public Date getLastChange() {
@@ -260,7 +293,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Set the {@link Date} instance where the pipeline was last changed to this
      * pipeline.
-     * 
+     *
      * @param lastChange
      *            value of {@link Date} that will be set.
      */
@@ -271,7 +304,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -295,7 +328,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

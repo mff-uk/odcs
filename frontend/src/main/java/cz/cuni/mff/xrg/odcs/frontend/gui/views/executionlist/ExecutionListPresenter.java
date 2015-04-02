@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -63,6 +64,50 @@ public interface ExecutionListPresenter extends Presenter {
      */
     public boolean canStopExecution(long executionId);
 
+    /**
+     * Tells whether user has permission to read log.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to read log of given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canReadLog(long executionId);
+
+    /**
+     * Tells whether user has permission to debug pipeline execution, so we know
+     * whether to render debug button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to debug given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canDebugData(long executionId);
+
+    /**
+     * Tells whether user has permission to run pipeline execution, so we know
+     * whether to render run button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to run given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canRunPipeline(long executionId);
+
+    /**
+     * Tells whether user has permission to debug pipeline execution, so we know
+     * whether to render debug button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to debug given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canDebugPipeline(long executionId);
+
+    
     /**
      * Start refreshing of given {@link DebuggingView}.
      * 
@@ -154,6 +199,11 @@ public interface ExecutionListPresenter extends Presenter {
          *            Value of filter.
          */
         public void setFilter(String name, Object value);
+        
+        /**
+         * Resets selected filters.
+         */
+        void resetFilters();
 
         /**
          * Navigates table to given page.
@@ -162,6 +212,22 @@ public interface ExecutionListPresenter extends Presenter {
          *            Page to select.
          */
         public void setPage(int pageNumber);
+
+        /**
+         * Finds on which page is the selected execution
+         * 
+         * @param execId
+         * @return
+         */
+		public int getExecPage(Long execId);
+
+		/**
+		 * Checks if there is execution with selected executionId in the table
+		 * 
+		 * @param executionId
+		 * @return
+		 */
+		public boolean hasExecution(long executionId);
     }
 
     /**
@@ -169,14 +235,14 @@ public interface ExecutionListPresenter extends Presenter {
      */
     public final class ExecutionListData {
 
-        private final ReadOnlyContainer<PipelineExecution> container;
+        private final ReadOnlyContainer<ExecutionView> container;
 
         /**
-         * Gets container with {@link PipelineExecution}s.
+         * Gets container with {@link ExecutionView}s.
          * 
          * @return Container.
          */
-        public ReadOnlyContainer<PipelineExecution> getContainer() {
+        public ReadOnlyContainer<ExecutionView> getContainer() {
             return container;
         }
 
@@ -186,7 +252,7 @@ public interface ExecutionListPresenter extends Presenter {
          * @param container
          *            Container to hold.
          */
-        public ExecutionListData(ReadOnlyContainer<PipelineExecution> container) {
+        public ExecutionListData(ReadOnlyContainer<ExecutionView> container) {
             this.container = container;
         }
     }
@@ -221,4 +287,10 @@ public interface ExecutionListPresenter extends Presenter {
         }
 
     }
+
+    /**
+     * 
+     * @return
+     */
+	public boolean isLayoutInitialized();
 }

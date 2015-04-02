@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -137,8 +138,8 @@ class SQLDatabaseReconnectAspect {
      */
     private synchronized void notify(Exception ex) {
         if (emailSender != null && appConfig != null && !emailSent) {
-            final String subject = "ODCS - database error";
-            String body = "Database is down with exception: </br>" + ex.toString();
+            final String subject = Messages.getString("SQLDatabaseReconnectAspect.database.error");
+            String body = Messages.getString("SQLDatabaseReconnectAspect.database.exception") + ex.toString();
             String recipient = appConfig.getString(ConfigProperty.EMAIL_ADMIN);
             emailSender.send(subject, body, recipient);
             // 

@@ -1,22 +1,15 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * Exception is thrown when SPARQL data are not valid using SPARQL validator.
  * 
  * @author Jiri Tomes
  */
-public class SPARQLValidationException extends ConfigException {
+public class SPARQLValidationException extends DPUConfigException {
 
     private int queryNumber = 1;
-
-    /**
-     * Create a new instance of {@link SPARQLValidationException} with the
-     * default message.
-     */
-    public SPARQLValidationException() {
-    }
 
     /**
      * Create new instance of {@link SPARQLValidationException} with the

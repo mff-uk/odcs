@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -15,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
  * 
  * @author Petyr
  * @author Jan Vojt
+ * @author Martin Virag
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
@@ -27,6 +29,14 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
     public List<Pipeline> getAll() {
         final String queryStr = "SELECT e FROM Pipeline e";
         return executeList(queryStr);
+    }
+
+    @Override
+    public List<Pipeline> getPipelinesForOrganization(String orgName) {
+        final String queryStr = "SELECT e FROM Pipeline e WHERE e.organization.name = :orgName";
+        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
+        query.setParameter("orgName", orgName);
+        return executeList(query);
     }
 
     @Override
@@ -51,4 +61,32 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         return execute(query);
     }
 
+    @Override
+    public boolean hasModified(Date since) {
+        final String stringQuery = "SELECT MAX(e.lastChange)"
+                + " FROM Pipeline e";
+
+        TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
+        Date lastModified = (Date) query.getSingleResult();
+
+        if (lastModified == null) {
+            // there are no executions in DB
+            return false;
+        }
+
+        return lastModified.after(since);
+    }
+
+    @Override
+    public boolean hasDeletedPipelines(List<Long> pipelinesIds) {
+        if (pipelinesIds == null || pipelinesIds.isEmpty()) {
+            return false;
+        }
+        final String stringQuery = "SELECT COUNT(e) FROM Pipeline e"
+                + " WHERE e.id IN :ids";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("ids", pipelinesIds);
+        Long number = (Long) query.getSingleResult();
+        return !number.equals((long) pipelinesIds.size());
+    }
 }

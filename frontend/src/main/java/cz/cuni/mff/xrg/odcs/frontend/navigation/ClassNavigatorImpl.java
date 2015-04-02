@@ -10,7 +10,9 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
+
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Extends Vaadin's {@link ClassNavigator} for possibility to navigate over {@link Presenter}s.
@@ -51,7 +53,7 @@ public class ClassNavigatorImpl extends Navigator implements ClassNavigator {
     public void navigateTo(Class<?> target) {
         Address address = target.getAnnotation(Address.class);
         if (address == null) {
-            throw new RuntimeException("There is no address for presenter: "
+            throw new RuntimeException(Messages.getString("ClassNavigatorImpl.no.address")
                     + target);
         }
         // we have address, so we let others do the work instead of us 
@@ -62,7 +64,7 @@ public class ClassNavigatorImpl extends Navigator implements ClassNavigator {
     public void navigateTo(Class<?> target, String parameters) {
         Address address = target.getAnnotation(Address.class);
         if (address == null) {
-            throw new RuntimeException("There is no address for presenter: "
+            throw new RuntimeException(Messages.getString("ClassNavigatorImpl.no.address")
                     + target);
         }
         // we have address, so we let others do the work instead of us 

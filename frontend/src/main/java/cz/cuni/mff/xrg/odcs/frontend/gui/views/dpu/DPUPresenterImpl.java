@@ -21,6 +21,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -30,23 +32,26 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUCreate;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineStatus;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
+import eu.unifiedviews.dpu.config.DPUConfigException;
 
 /**
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "DPURecord")
-public class DPUPresenterImpl implements DPUPresenter {
+public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Autowired
     private DPUView view;
@@ -62,6 +67,12 @@ public class DPUPresenterImpl implements DPUPresenter {
     @Autowired
     private DPUModuleManipulator dpuManipulator;
 
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+    
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -85,17 +96,19 @@ public class DPUPresenterImpl implements DPUPresenter {
      */
     private Map<Long, Pipeline> pipelinesWithDPU = new HashMap<>();
 
+    private boolean isLayoutInitialized = false;
+
     @Override
     public void saveDPUEventHandler(DPUTemplateWrap dpuWrap) {
         // saving configuration
         try {
             dpuWrap.saveConfig();
-            Notification.show("DPURecord was saved", Notification.Type.HUMANIZED_MESSAGE);
-        } catch (ConfigException e) {
-            Notification.show("The configuration have not been saved.", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpurecord.saved"), Notification.Type.HUMANIZED_MESSAGE);
+        } catch (DPUConfigException e) {
+            Notification.show(Messages.getString("DPUPresenterImpl.configuration.save.failed"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
         } catch (DPUWrapException e) {
             Notification.show(
-                    "Unexpected error. The configuration may have not been saved.",
+                    Messages.getString("DPUPresenterImpl.unExpected.error"),
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);
             LOG.error("Unexpected error while saving configuration for {}", dpuWrap.getDPUTemplateRecord().getId(), e);
         }
@@ -112,7 +125,7 @@ public class DPUPresenterImpl implements DPUPresenter {
         List<DPUTemplateRecord> allDpus = dpuFacade.getAllTemplates();
         while (found) {
             found = false;
-            nameOfDpuCopy = "Copy of " + selectedDpu.getName();
+            nameOfDpuCopy = Messages.getString("DPUPresenterImpl.copy.of") + selectedDpu.getName();
             if (i > 1) {
                 nameOfDpuCopy = nameOfDpuCopy + " " + i;
             }
@@ -148,7 +161,7 @@ public class DPUPresenterImpl implements DPUPresenter {
             //find if DPU Template has child elements
             List<DPUTemplateRecord> childDpus = dpuFacade.getChildDPUs(dpu);
             if (!childDpus.isEmpty()) {
-                Notification.show("DPURecord can not be removed because it has child elements", Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("DPUPresenterImpl.cannot.remove.dpu"), Notification.Type.ERROR_MESSAGE);
                 return false;
             }
 
@@ -161,12 +174,12 @@ public class DPUPresenterImpl implements DPUPresenter {
                 dpuFacade.delete(dpu);
             }
 
-            Notification.show("DPURecord was removed",
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.removed"),
                     Notification.Type.HUMANIZED_MESSAGE);
             return true;
         } //If DPU Template it used by any pipeline, than show the names of this pipelines.
         else if (pipelines.size() == 1) {
-            Notification.show("DPURecord can not be removed because it has been used in Pipeline: ", pipelines.get(0).getName(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.not.removed"), pipelines.get(0).getName(), Notification.Type.WARNING_MESSAGE);
         } else {
             Iterator<Pipeline> iterator = pipelines.iterator();
             StringBuilder names = new StringBuilder(iterator.next().getName());
@@ -175,7 +188,7 @@ public class DPUPresenterImpl implements DPUPresenter {
                 names.append(iterator.next().getName());
             }
             names.append('.');
-            Notification.show("DPURecord can not be removed because it is being used in pipelines: ", names.toString(), Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.dpu.used"), names.toString(), Notification.Type.WARNING_MESSAGE);
         }
         return false;
     }
@@ -202,7 +215,7 @@ public class DPUPresenterImpl implements DPUPresenter {
         }
         // getting all Pipelines with specified DPU in it
         List<Pipeline> pipelines;
-        if (permissions.hasPermission(dpu, "delete")) {
+        if (permissions.hasPermission(dpu, "pipeline.delete")) {
             pipelines = pipelineFacade.getAllPipelinesUsingDPU(dpu);
         } else {
             pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
@@ -244,23 +257,23 @@ public class DPUPresenterImpl implements DPUPresenter {
         try {
             dpuManipulator.replace(dpu, newJar);
         } catch (DPUReplaceException e) {
-            Notification.show("Failed to replace DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.replace.failed"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
             return;
         }
 
         // and show message to the user that the replace has been successful
-        Notification.show("Replace finished", Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show(Messages.getString("DPUPresenterImpl.replace.finished"), Notification.Type.HUMANIZED_MESSAGE);
     }
 
     @Override
     public void selectDPUEventHandler(final DPUTemplateRecord dpu) {
         //if the previous selected
-        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("save")) {
+        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("pipeline.save")) {
 
             //open confirmation dialog
-            ConfirmDialog.show(UI.getCurrent(), "Unsaved changes",
-                    "There are unsaved changes.\nDo you wish to save them or discard?",
-                    "Save", "Discard changes",
+            ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.unsaved.changes"),
+                    Messages.getString("DPUPresenterImpl.unsaved.changes.dialog"),
+                    Messages.getString("DPUPresenterImpl.unsaved.changes.save"), Messages.getString("DPUPresenterImpl.unsaved.changes.discard"),
                     new ConfirmDialog.Listener() {
                         private static final long serialVersionUID = 1L;
 
@@ -307,8 +320,11 @@ public class DPUPresenterImpl implements DPUPresenter {
     @Override
     public Object enter() {
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        selectedDpu = null;
+//        if (!isLayoutInitialized) {
+//        	selectedDpu = null;
+//		}
         Object viewObject = view.enter(this);
+        isLayoutInitialized = true;
 
         createDPUCloseListener = new Window.CloseListener() {
             private static final long serialVersionUID = 1L;
@@ -343,12 +359,12 @@ public class DPUPresenterImpl implements DPUPresenter {
 
     @Override
     public void importDPUTemplateEventHandler() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Messages.getString("DPUPresenterImpl.not.supported")); //To change body of generated methods, choose Tools | Templates. 
     }
 
     @Override
     public void exportAllEventHandler() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(Messages.getString("DPUPresenterImpl.not.supported")); //To change body of generated methods, choose Tools | Templates. 
     }
 
     @Override
@@ -374,17 +390,27 @@ public class DPUPresenterImpl implements DPUPresenter {
 
     @Override
     public void pipelineDeleteEventHandler(Long id) {
-        Pipeline pipe = pipelineFacade.getPipeline(id);
+        final Pipeline pipe = pipelineFacade.getPipeline(id);
         List<PipelineExecution> executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.QUEUED);
         if (executions.isEmpty()) {
             executions = pipelineFacade.getExecutions(pipe, PipelineExecutionStatus.RUNNING);
         }
         if (!executions.isEmpty()) {
-            Notification.show("Pipeline " + pipe.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("DPUPresenterImpl.pipeline.running", pipe.getName()), Notification.Type.WARNING_MESSAGE);
             return;
         }
-        pipelinesWithDPU.remove(pipe.getId());
-        pipelineFacade.delete(pipe);
+
+        String message = Messages.getString("DPUPresenterImpl.delete.dialog", pipe.getName());
+        ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.delete.dialog.confirmation"), message, Messages.getString("DPUPresenterImpl.delete.dialog.confirmation.delete"), Messages.getString("DPUPresenterImpl.delete.dialog.confirmation.cancel"), new ConfirmDialog.Listener() {
+            @Override
+            public void onClose(ConfirmDialog cd) {
+                if (cd.isConfirmed()) {
+                    pipelinesWithDPU.remove(pipe.getId());
+                    pipelineFacade.delete(pipe);
+                    view.removePipelineFromTable(pipe.getId());
+                }
+            }
+        });
     }
 
     @Override
@@ -398,12 +424,27 @@ public class DPUPresenterImpl implements DPUPresenter {
     @Override
     public boolean showPipelineDeleteButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "delete");
+        
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        
+        boolean isAdmin = permissions.hasPermission(pipe, adminPermission);
+        boolean canDelete = permissions.hasPermission(pipe, "pipeline.delete");
+        return isAdmin || canDelete;
     }
 
     @Override
     public boolean showPipelineDetailButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "view");
+        return permissions.hasPermission(pipe, "pipeline.view");
+    }
+
+    @Override
+    public void doAfterLogout() {
+        isLayoutInitialized = false;
+    }
+
+    @Override
+    public boolean isLayoutInitialized() {
+        return isLayoutInitialized;
     }
 }

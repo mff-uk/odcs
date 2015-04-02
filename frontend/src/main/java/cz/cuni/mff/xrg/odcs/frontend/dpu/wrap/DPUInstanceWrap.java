@@ -1,12 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
+import java.util.Locale;
+
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 
 /**
  * Wrap {@link DPUInstanceRecord} to made work with configuration and
  * configuration dialog easier.
- * 
+ *
  * @author Petyr
  */
 public class DPUInstanceWrap extends DPURecordWrap {
@@ -20,12 +23,12 @@ public class DPUInstanceWrap extends DPURecordWrap {
 
     /**
      * Create wrap for DPUTemplateRecord.
-     * 
+     *
      * @param dpuTemplate
      * @param dpuFacade
      */
-    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade) {
-        super(dpuTemplate, false);
+    public DPUInstanceWrap(DPUInstanceRecord dpuTemplate, DPUFacade dpuFacade, Locale locale, AppConfig appConfig) {
+        super(dpuTemplate, false, locale, appConfig);
         this.dpuFacade = dpuFacade;
         this.dpuInstance = dpuTemplate;
     }
@@ -40,7 +43,7 @@ public class DPUInstanceWrap extends DPURecordWrap {
 
     /**
      * Get DPUInstance record.
-     * 
+     *
      * @return DPUInstance record
      */
     public DPUInstanceRecord getDPUInstanceRecord() {

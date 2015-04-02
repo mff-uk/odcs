@@ -4,11 +4,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 
 /**
@@ -24,6 +27,8 @@ public class Initial extends ViewComponent {
     private AbsoluteLayout mainLayout;
 
     private Label label;
+
+    private Embedded logo;
 
     /**
      * Constructor.
@@ -44,30 +49,28 @@ public class Initial extends ViewComponent {
     }
 
     private AbsoluteLayout buildMainLayout() {
+        setSizeFull();
         // common part: create layout
         mainLayout = new AbsoluteLayout();
-        mainLayout.setImmediate(false);
-        mainLayout.setWidth("1024px");
-        mainLayout.setHeight("768px");
-
-        // top-level component properties
-        this.setWidth("100.0%");
-        this.setHeight("100.0%");
+        mainLayout.setSizeFull();
 
         // label
         label = new Label();
         label.setImmediate(false);
         label.setWidth("-1px");
         label.setHeight("-1px");
-        label.setValue("<p>Welcome to the administration interface of UnifiedViews - ETL tool for RDF data.</p>"
-                + "<p>The tool uses data processing pipelines for obtaining, processing, and storing RDF data;<br/>"
-                + "makes data processing highly customizable by allowing to use custom plugins -- data processing units (DPUs) -- on the pipelines;<br/>"
-                + "provides monitoring, debugging, and schedulling of ETL tasks.<br/>"
+        label.setValue(Messages.getString("Initial.welcome")
+                + Messages.getString("Initial.p1")
+                + Messages.getString("Initial.p2")
+                + Messages.getString("Initial.p3")
                 + "</p>"
-                + "<p>For more information, please visit the <a href=\"https://grips.semantic-web.at/display/UDDOC/Introduction\"> UnifiedViews</a> documentation.</p>");
+                + Messages.getString("Initial.more.info"));
 
         label.setContentMode(ContentMode.HTML);
-        mainLayout.addComponent(label, "top:40.0px;left:80.0px;");
+        mainLayout.addComponent(label, "top:100.0px;left:30px;");
+
+        logo = new Embedded(null, new ThemeResource("img/unifiedviews_logo.svg"));
+        mainLayout.addComponent(logo, "top:30.0px; left:100px;");
 
         return mainLayout;
     }

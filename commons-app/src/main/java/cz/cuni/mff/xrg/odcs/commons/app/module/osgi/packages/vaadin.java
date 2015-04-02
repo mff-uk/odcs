@@ -10,7 +10,7 @@ public final class vaadin {
     /**
      * Used Vaadin version.
      */
-    public static final String VERSION = "7.1.10";
+    public static final String VERSION = "7.3.7";
 
     /**
      * List of OSGI packages to export. Does not start nor end with separator.
@@ -113,5 +113,6 @@ public final class vaadin {
                     "com.vaadin.sass.internal.tree;version=\"" + VERSION + "\"," +
                     "com.vaadin.sass.internal.tree.controldirective;version=\"" + VERSION + "\"," +
                     "com.vaadin.sass.internal.util;version=\"" + VERSION + "\"," +
-                    "com.vaadin.sass.internal.visitor;version=\"" + VERSION + "\"";
+                    "com.vaadin.sass.internal.visitor;version=\"" + VERSION + "\"," +
+                    "com.wcs.wcslib.vaadin.widget.multifileupload.ui;version=\"1.7.1\"";
 }

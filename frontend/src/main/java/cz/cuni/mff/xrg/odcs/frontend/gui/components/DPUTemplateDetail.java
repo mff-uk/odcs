@@ -14,6 +14,7 @@ import com.vaadin.ui.Upload;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareUploadSucceededWrapper;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Component with details of {@link DPUTemplateRecord}. Provide functionality
@@ -71,7 +72,7 @@ public class DPUTemplateDetail extends CustomComponent {
 
         // first label with fixed width
         {
-            Label lbl = new Label("Visibility:");
+            Label lbl = new Label(Messages.getString("DPUTemplateDetail.visibility"));
             lbl.setWidth("80px");
             mainLayout.addComponent(lbl, 0, 0);
         }
@@ -79,11 +80,11 @@ public class DPUTemplateDetail extends CustomComponent {
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
         groupVisibility.addItem(ShareType.PRIVATE);
-        groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE
-                .getName());
+        groupVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE
+                .name()));
         groupVisibility.addItem(ShareType.PUBLIC_RO);
-        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO
-                .getName());
+        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO
+                .name()));
         groupVisibility.addValueChangeListener(
                 new ValueChangeListener() {
 
@@ -97,7 +98,7 @@ public class DPUTemplateDetail extends CustomComponent {
 
         mainLayout.addComponent(groupVisibility, 1, 0);
 
-        mainLayout.addComponent(new Label("JAR path:"), 0, 1);
+        mainLayout.addComponent(new Label(Messages.getString("DPUTemplateDetail.path.jar")), 0, 1);
         jarPath = new Label();
         mainLayout.addComponent(jarPath, 1, 1);
 
@@ -108,7 +109,7 @@ public class DPUTemplateDetail extends CustomComponent {
         initRealoadFile();
         mainLayout.addComponent(reloadFile, 1, 2);
 
-        mainLayout.addComponent(new Label("Description of JAR:"), 0, 3);
+        mainLayout.addComponent(new Label(Messages.getString("DPUTemplateDetail.description.jar")), 0, 3);
         jarDescription = new RichTextArea();
         jarDescription.setReadOnly(true);
         jarDescription.setWidth("100%");
@@ -132,7 +133,7 @@ public class DPUTemplateDetail extends CustomComponent {
      */
     private void initRealoadFile() {
         reloadFile.setImmediate(true);
-        reloadFile.setButtonCaption("Replace");
+        reloadFile.setButtonCaption(Messages.getString("DPUTemplateDetail.replace"));
         reloadFile.addStyleName("horizontalgroup");
         reloadFile.setHeight("40px");
         reloadFile.addStartedListener(new Upload.StartedListener() {
@@ -154,7 +155,7 @@ public class DPUTemplateDetail extends CustomComponent {
                 if (!jar.equals(extension)) {
                     reloadFile.interruptUpload();
                     errorExtension = true;
-                    Notification.show("Selected file is not .jar file",
+                    Notification.show(Messages.getString("DPUTemplateDetail.jar.error"),
                             Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -184,11 +185,10 @@ public class DPUTemplateDetail extends CustomComponent {
             @Override
             public void uploadFailed(Upload.FailedEvent event) {
                 uploadInfoWindow.close();
-                // reset error flag
                 errorExtension = false;
                 // show notification
                 Notification.show(
-                        "Uploading " + event.getFilename() + " failed.",
+                        Messages.getString("DPUTemplateDetail.uploading.failed", event.getFilename()),
                         Notification.Type.ERROR_MESSAGE);
             }
         });

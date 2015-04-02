@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPU;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitTypeResolver;
@@ -15,11 +17,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsExtractor;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsLoader;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.AsTransformer;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.InputDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
 
 /**
  * Class which provides methods that can be used to explore DPU instance.
@@ -32,6 +29,8 @@ public class DPUExplorer {
      * Name of property that stores jar-file's description.
      */
     private static final String DPU_JAR_DESCRIPTION_NAME = "Bundle-Description";
+    private static final String DPU_NAME = "Bundle-Name";
+
 
     /**
      * Module facade used to access the DPU instances.
@@ -51,12 +50,14 @@ public class DPUExplorer {
     public DPUType getType(Object DPUInstance, String relativePath) {
         // try use annotations to resolve DPU type
         Class<?> objectClass = DPUInstance.getClass();
-        if (objectClass.getAnnotation(AsExtractor.class) != null) {
+        if (objectClass.getAnnotation(DPU.AsExtractor.class) != null) {
             return DPUType.EXTRACTOR;
-        } else if (objectClass.getAnnotation(AsTransformer.class) != null) {
+        } else if (objectClass.getAnnotation(DPU.AsTransformer.class) != null) {
             return DPUType.TRANSFORMER;
-        } else if (objectClass.getAnnotation(AsLoader.class) != null) {
+        } else if (objectClass.getAnnotation(DPU.AsLoader.class) != null) {
             return DPUType.LOADER;
+        } else if (objectClass.getAnnotation(DPU.AsQuality.class) != null) {
+            return DPUType.QUALITY;
         }
 
         // we do not know
@@ -75,7 +76,7 @@ public class DPUExplorer {
     public String getJarDescription(DPUTemplateRecord dpu) {
         // we try to use pom.xml information
         Dictionary<String, String> attributes = moduleFacade
-                .getJarProperties(dpu);
+                .getManifestHeaders(dpu);
         if (attributes == null) {
             // can't load information .. we run out of options
             return "";
@@ -84,6 +85,21 @@ public class DPUExplorer {
         // check for length
 
         return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_JAR_DESCRIPTION);
+    }
+
+
+    public String getBundleName(DPUTemplateRecord dpu) {
+        // we try to use pom.xml information
+        Dictionary<String, String> attributes = moduleFacade
+                .getManifestHeaders(dpu);
+        if (attributes == null) {
+            // can't load information .. we run out of options
+            return "";
+        }
+        String jarDescription = attributes.get(DPU_NAME);
+        // check for length
+
+        return StringUtils.abbreviate(jarDescription, LenghtLimits.DPU_NAME);
     }
 
     /**
@@ -98,12 +114,12 @@ public class DPUExplorer {
         // we need to load and get instance
         final Object dpuInstance = getInstance(dpu);
         // get annotations
-        List<AnnotationContainer<InputDataUnit>> inputs = AnnotationGetter
-                .getAnnotations(dpuInstance, InputDataUnit.class);
+        List<AnnotationContainer<DataUnit.AsInput>> inputs = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsInput.class);
         // translate to list
         List<DataUnitDescription> result = new ArrayList<>(inputs.size());
-        for (AnnotationContainer<InputDataUnit> item : inputs) {
-            final InputDataUnit annotation = item.getAnnotation();
+        for (AnnotationContainer<DataUnit.AsInput> item : inputs) {
+            final DataUnit.AsInput annotation = item.getAnnotation();
             // create description
             result.add(DataUnitDescription.createInput(
                     annotation.name(),
@@ -127,12 +143,12 @@ public class DPUExplorer {
         // we need to load and get instance
         final Object dpuInstance = getInstance(dpu);
         // get annotations
-        List<AnnotationContainer<OutputDataUnit>> outputs = AnnotationGetter
-                .getAnnotations(dpuInstance, OutputDataUnit.class);
+        List<AnnotationContainer<DataUnit.AsOutput>> outputs = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsOutput.class);
         // translate to list
         List<DataUnitDescription> result = new ArrayList<>(outputs.size());
-        for (AnnotationContainer<OutputDataUnit> item : outputs) {
-            final OutputDataUnit annotation = item.getAnnotation();
+        for (AnnotationContainer<DataUnit.AsOutput> item : outputs) {
+            final DataUnit.AsOutput annotation = item.getAnnotation();
             // create description			
             result.add(DataUnitDescription.createOutput(annotation.name(),
                     DataUnitTypeResolver.resolveClassToType(item.getField().getType()).toString(),

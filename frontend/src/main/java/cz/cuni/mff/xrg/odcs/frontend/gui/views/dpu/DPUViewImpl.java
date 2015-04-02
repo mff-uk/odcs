@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -36,7 +36,11 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu.DPUPresenter.DPUView;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
 
 /**
  * @author Bogo
@@ -55,14 +59,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private VerticalLayout verticalLayoutData; //Layout contains General tab components of {@link #tabSheet}.
 
-    private VerticalLayout verticalLayoutConfigure;// Layout contains Template Configuration tab components of {@link #tabSheet}. 
+    private VerticalLayout verticalLayoutConfigure;// Layout contains Template Configuration tab components of {@link #tabSheet}.
 
-    private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.  
+    private VerticalLayout verticalLayoutInstances;//Layout contains DPU instances tab components of {@link #tabSheet}.
 
     private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
+
+    @Autowired
+    private AppConfig appConfig;
 
     private TextField dpuName; // name of selected DPU Template
 
@@ -118,6 +125,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private Panel dpuTreePanel;
 
+    @Autowired
+    private Utils utils;
+
     /**
      * Constructor.
      */
@@ -129,7 +139,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        buildMainLayout();
+        if (!presenter.isLayoutInitialized()) {
+            buildMainLayout();
+        }
+
         setCompositionRoot(mainLayout);
         return this;
     }
@@ -137,7 +150,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     /**
      * Layout contains DPU Templates page elements: buttons on the top: "Create
      * DPU", "Import DPU", "Export All"; layout with DPU Templates tree {@link DPUTree} and DPU Template details
-     * 
+     *
      * @return mainLayout VerticalLayout with all components of DPU Templates
      *         page.
      */
@@ -158,9 +171,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonBar.setSpacing(true);
 
         Button buttonCreateDPU = new Button();
-        buttonCreateDPU.setCaption("Create DPU template");
+        buttonCreateDPU.setCaption(Messages.getString("DPUViewImpl.create.template"));
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
+        buttonCreateDPU.addStyleName("v-button-primary");
+        buttonCreateDPU.setVisible(utils.hasUserAuthority("dpuTemplate.create"));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -170,42 +185,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         });
         buttonBar.addComponent(buttonCreateDPU);
 
-        Button buttonImportDPU = new Button();
-        buttonImportDPU.setVisible(false);
-        buttonImportDPU.setCaption("Import DPU template");
-        buttonImportDPU.setHeight("25px");
-        buttonImportDPU.setWidth("150px");
-        buttonImportDPU.setEnabled(false);
-        buttonImportDPU.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                presenter.importDPUTemplateEventHandler();
-            }
-        });
-        buttonBar.addComponent(buttonImportDPU);
-
-        Button buttonExportAll = new Button();
-        buttonExportAll.setVisible(false);
-        buttonExportAll.setCaption("Export All");
-        buttonExportAll.setHeight("25px");
-        buttonExportAll.setWidth("150px");
-        buttonExportAll.setEnabled(false);
-        buttonExportAll
-                .addClickListener(new com.vaadin.ui.Button.ClickListener() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        presenter.exportAllEventHandler();
-                    }
-                });
-        buttonBar.addComponent(buttonExportAll);
-
         mainLayout.addComponent(buttonBar);
         mainLayout.setExpandRatio(buttonBar, 0.0f);
 
-        //layout with  DPURecord tree and DPURecord details 
+        //layout with  DPURecord tree and DPURecord details
         dpuLayout = buildDpuLayout();
         mainLayout.addComponent(dpuLayout);
         mainLayout.setExpandRatio(dpuLayout, 1.0f);
@@ -216,7 +199,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     /**
      * Builds layout contains DPU Templates tree {@link DPUTree} and DPU
      * Template details. Calls from {@link #buildMainLayout}
-     * 
+     *
      * @return dpuLayout GridLayout contains {@link DPUTree} and {@link #buildDPUDetailLayout}.
      */
     private HorizontalLayout buildDpuLayout() {
@@ -233,7 +216,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         infoLabel.setImmediate(false);
         infoLabel.setWidth("-1px");
         infoLabel.setHeight("-1px");
-        infoLabel.setValue("Select DPU template from the DPU template tree for displaying it's details.");
+        infoLabel.setValue(Messages.getString("DPUViewImpl.select.dpu.info"));
         infoLabel.setContentMode(ContentMode.HTML);
 
         layoutInfo.addComponent(infoLabel);
@@ -248,7 +231,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void itemClick(final ItemClickEvent event) {
-                    presenter.selectDPUEventHandler(event.getItemId().getClass() == DPUTemplateRecord.class ? (DPUTemplateRecord) event.getItemId() : null);
+                    if (event.getItemId().getClass() == DPUTemplateRecord.class) {
+                        presenter.selectDPUEventHandler((DPUTemplateRecord) event.getItemId());
+                    }
                 }
             });
         }
@@ -271,7 +256,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     /**
      * Builds layout with DPU Template details of DPU selected in the tree. DPU
      * Template details represents by {@link #tabSheet}. Calls from {@link #buildDpuLayout}
-     * 
+     *
      * @return dpuDetailLayout VerticalLayout with {@link #tabSheet} that
      *         contain all DPU Template details components.
      */
@@ -296,7 +281,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
                     if (isChanged() || tabname.equals("configuration")) {
-                        buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                        buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                     } else {
                         buttonSaveDPU.setEnabled(false);
                     }
@@ -309,33 +294,33 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         verticalLayoutData = buildVerticalLayoutData();
 
         verticalLayoutData.setCaption("general");
-        TabSheet.Tab dataTab = tabSheet.addTab(verticalLayoutData, "General");
-        //Template Configuration tab. Contains information about configuration 
+        TabSheet.Tab dataTab = tabSheet.addTab(verticalLayoutData, Messages.getString("DPUViewImpl.general"));
+        //Template Configuration tab. Contains information about configuration
         //from JAR file
         verticalLayoutConfigure = new VerticalLayout();
 
         verticalLayoutConfigure.setImmediate(false);
         verticalLayoutConfigure.setMargin(true);
         verticalLayoutConfigure.setCaption("configuration");
-        tabSheet.addTab(verticalLayoutConfigure, "Template Configuration");
+        tabSheet.addTab(verticalLayoutConfigure, Messages.getString("DPUViewImpl.template.configuration"));
         tabSheet.setSelectedTab(dataTab);
         if (selectedDpuWrap != null) {
-            AbstractConfigDialog<DPUConfigObject> configDialog = null;
+            AbstractConfigDialog<?> configDialog = null;
             //getting configuration dialog of selected DPU Template
             try {
                 configDialog = selectedDpuWrap.getDialog();
             } catch (ModuleException ex) {
                 Notification.show(
-                        "Failed to load configuration dialog",
+                        Messages.getString("DPUViewImpl.fileNotFound.configuration.load.fail"),
                         ex.getMessage(), Notification.Type.ERROR_MESSAGE);
                 LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
             } catch (FileNotFoundException ex) {
                 Notification.show(
-                        "File not found",
+                        Messages.getString("DPUViewImpl.fileNotFound"),
                         ex.getMessage(), Notification.Type.ERROR_MESSAGE);
                 LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
             } catch (Exception ex) {
-                Notification.show("Failed to load configuration dialog", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("DPUViewImpl.exception.configuration.fail"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
                 LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
             }
 
@@ -348,11 +333,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 verticalLayoutConfigure.addComponent(configDialog);
             }
         }
-        //DPU instances tab. Contains pipelines using the given DPU. 
+        //DPU instances tab. Contains pipelines using the given DPU.
         verticalLayoutInstances = buildVerticalLayoutInstances();
 
         verticalLayoutInstances.setCaption("instances");
-        tabSheet.addTab(verticalLayoutInstances, "DPU instances");
+        tabSheet.addTab(verticalLayoutInstances, Messages.getString("DPUViewImpl.dpu.instances"));
 
         dpuDetailLayout.addComponent(tabSheet);
         dpuDetailLayout.setExpandRatio(tabSheet, 1.0f);
@@ -367,7 +352,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     /**
      * Building layout contains action buttons of DPU Template details. Copy,
      * Delete, Export, Save.
-     * 
+     *
      * @return buttonDpuBar HorizontalLayout contains action buttons.
      */
     private HorizontalLayout buildDPUButtonBar() {
@@ -381,9 +366,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         // Copy DPU Template Button, may copy only DPU of 3 level.
         Button buttonCopyDPU = new Button();
-        buttonCopyDPU.setCaption("Copy");
+        buttonCopyDPU.setCaption(Messages.getString("DPUViewImpl.copy"));
         buttonCopyDPU.setHeight("25px");
         buttonCopyDPU.setWidth("100px");
+        buttonCopyDPU.setEnabled(presenter.hasPermission("dpuTemplate.copy"));
         buttonCopyDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -401,18 +387,20 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         // Delete DPU Template Button
         Button buttonDeleteDPU = new Button();
-        buttonDeleteDPU.setCaption("Delete");
+        buttonDeleteDPU.setCaption(Messages.getString("DPUViewImpl.delete"));
         buttonDeleteDPU.setHeight("25px");
         buttonDeleteDPU.setWidth("100px");
-        buttonDeleteDPU.setEnabled(presenter.hasPermission("delete"));
+        buttonDeleteDPU.setEnabled(presenter.hasPermission("dpuTemplate.delete"));
         buttonDeleteDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 //open confirmation dialog
-                ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting DPU template",
-                        "Delete " + selectedDpu.getName().toString() + " DPU template?", "Delete", "Cancel",
+                ConfirmDialog.show(
+                        UI.getCurrent(),
+                        Messages.getString("DPUViewImpl.delete.confirmation"),
+                        Messages.getString("DPUViewImpl.delete.confirmation.description", selectedDpu.getName().toString()), Messages.getString("DPUViewImpl.delete.confirmation.deleteButton"), Messages.getString("DPUViewImpl.delete.confirmation.cancelButton"),
                         new ConfirmDialog.Listener() {
                             private static final long serialVersionUID = 1L;
 
@@ -433,10 +421,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         // Export DPU Template Button
         Button buttonExportDPU = new Button();
         buttonExportDPU.setVisible(false);
-        buttonExportDPU.setCaption("Export");
+        buttonExportDPU.setCaption(Messages.getString("DPUViewImpl.export"));
         buttonExportDPU.setHeight("25px");
         buttonExportDPU.setWidth("100px");
-        buttonExportDPU.setEnabled(presenter.hasPermission("export"));
+        buttonExportDPU.setEnabled(presenter.hasPermission("dpuTemplate.export"));
         buttonExportDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -450,7 +438,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         // Save DPU Template Button
         buttonSaveDPU = new Button();
-        buttonSaveDPU.setCaption("Save");
+        buttonSaveDPU.setCaption(Messages.getString("DPUViewImpl.save"));
         buttonSaveDPU.setHeight("25px");
         buttonSaveDPU.setWidth("100px");
         buttonSaveDPU.setEnabled(false);
@@ -484,12 +472,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     public void setGeneralTabValues() {
 
         String selectedDpuName = selectedDpuWrap.getDPUTemplateRecord().getName();
-        String selecteDpuDescription = selectedDpuWrap.getDPUTemplateRecord().getDescription();
+        String selecteDpuDescription =
+                selectedDpuWrap.getDPUTemplateRecord().isUseDPUDescription() ? "" :
+                        selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission("save"));
+        dpuName.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission("save"));
+        dpuDescription.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
@@ -503,7 +493,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void valueChange(Property.ValueChangeEvent event) {
-                    buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                    buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                 }
             });
         }
@@ -511,7 +501,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     /**
      * Builds layout contains General tab of {@link #tabSheet}. Calls from {@link #buildDPUDetailLayout}
-     * 
+     *
      * @return verticalLayoutData VerticalLayout with all components of General
      *         tab.
      */
@@ -534,7 +524,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         dpuSettingsLayout.setColumnExpandRatio(1, 1.0f);
 
         //Name of DPU Template: label & TextField
-        Label nameLabel = new Label("Name:");
+        Label nameLabel = new Label(Messages.getString("DPUViewImpl.name"));
         nameLabel.setImmediate(false);
         nameLabel.setWidth("-1px");
         nameLabel.setHeight("-1px");
@@ -552,7 +542,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         && !((String) value).isEmpty()) {
                     return;
                 }
-                throw new Validator.InvalidValueException("Name must be filled!");
+                throw new Validator.InvalidValueException(Messages.getString("DPUViewImpl.name.empty"));
             }
         });
         dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
@@ -566,7 +556,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         });
 
         //Description of DPU Template: label & TextArea
-        Label descriptionLabel = new Label("Description:");
+        Label descriptionLabel = new Label(Messages.getString("DPUViewImpl.description"));
         descriptionLabel.setImmediate(false);
         descriptionLabel.setWidth("-1px");
         descriptionLabel.setHeight("-1px");
@@ -581,20 +571,20 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
             }
         });
         dpuSettingsLayout.addComponent(dpuDescription, 1, 1);
 
         //Visibility of DPU Template: label & OptionGroup
-        Label visibilityLabel = new Label("Visibility:");
+        Label visibilityLabel = new Label(Messages.getString("DPUViewImpl.visibility"));
         dpuSettingsLayout.addComponent(visibilityLabel, 0, 2);
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
         groupVisibility.addItem(ShareType.PRIVATE);
-        groupVisibility.setItemCaption(ShareType.PRIVATE, ShareType.PRIVATE.getName());
+        groupVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         groupVisibility.addItem(ShareType.PUBLIC_RO);
-        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, ShareType.PUBLIC_RO.getName());
+        groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
         // JAR path of DPU Template.
@@ -602,7 +592,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         jarPathLayout.setImmediate(false);
         jarPathLayout.setSpacing(true);
         jarPathLayout.setHeight("100%");
-        dpuSettingsLayout.addComponent(new Label("JAR path:"), 0, 3);
+        dpuSettingsLayout.addComponent(new Label(Messages.getString("DPUViewImpl.jar.path")), 0, 3);
 
         jarPath = new Label();
         String jarPathText = selectedDpuWrap.getDPUTemplateRecord().getJarPath();
@@ -617,10 +607,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         fileUploadReceiver = new FileUploadReceiver();
         reloadFile = new Upload(null, fileUploadReceiver);
         reloadFile.setImmediate(true);
-        reloadFile.setButtonCaption("Replace");
+        reloadFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
         reloadFile.addStyleName("horizontalgroup");
         reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission("save"));
+        reloadFile.setEnabled(presenter.hasPermission("dpuTemplate.save"));
         reloadFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then
@@ -639,7 +629,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 if (!jar.equals(extension)) {
                     reloadFile.interruptUpload();
                     errorExtension = true;
-                    Notification.show("Selected file is not .jar file", Notification.Type.ERROR_MESSAGE);
+                    Notification.show(Messages.getString("DPUViewImpl.file.not.jar"), Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
@@ -672,7 +662,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                     errorExtension = false;
                 }
 
-                Notification.show("Uploading " + event.getFilename() + " failed.", Notification.Type.ERROR_MESSAGE);
+                Notification.show(Messages.getString("DPUViewImpl.uploding.failed", event.getFilename()), Notification.Type.ERROR_MESSAGE);
             }
         });
 
@@ -684,7 +674,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         dpuSettingsLayout.addComponent(jarPathLayout, 1, 3);
 
         // Description of JAR of DPU Template.
-        dpuSettingsLayout.addComponent(new Label("Description of JAR:"), 0, 4);
+        dpuSettingsLayout.addComponent(new Label(Messages.getString("DPUViewImpl.jar.description")), 0, 4);
         RichTextArea jDescription = new RichTextArea();
         jDescription.setValue(selectedDpuWrap.getDPUTemplateRecord().getJarDescription());
         jDescription.setReadOnly(true);
@@ -712,8 +702,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             configChanged = selectedDpuWrap.hasConfigChanged();
         } catch (DPUWrapException e) {
             Notification.show(
-                    "DPU's configuration dialog throws when asked for changes."
-                            + " It's assumed to be changed.",
+                    Messages.getString("DPUViewImpl.dpu.configuration.changes"),
                     e.getMessage(), Notification.Type.ERROR_MESSAGE);
             LOG.error("hasConfigChanged() throws for DPU '{}'",
                     selectedDpuWrap.getDPUTemplateRecord().getId(), e);
@@ -724,7 +713,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         if (!dpuName.getValue().equals(selectedDpu.getName())) {
             return true;
-        } else if (!dpuDescription.getValue().equals(selectedDpu.getDescription())) {
+        } else if (
+        // we are not in dpuDescriptionMode
+        !(dpuDescription.getValue().isEmpty() && selectedDpu.isUseDPUDescription())
+                &&
+                !dpuDescription.getValue().equals(selectedDpu.getDescription())) {
             return true;
         } else if (!groupVisibility.getValue().equals(selectedDpu.getShareType())) {
             return true;
@@ -748,11 +741,26 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             return;
         }
         //saving Name, Description and Visibility
-        if ((selectedDpuWrap != null)
-                && (selectedDpuWrap.getDPUTemplateRecord().getId() != null)) {
+        if (selectedDpuWrap != null
+                && selectedDpuWrap.getDPUTemplateRecord().getId() != null) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
-            selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
-                    .getValue().trim());
+
+            if (dpuDescription.getValue() == null ||
+                    dpuDescription.getValue().isEmpty()) {
+                selectedDpuWrap.getDPUTemplateRecord().setUseDPUDescription(true);
+                try {
+                    selectedDpuWrap.getDPUTemplateRecord().setDescription(
+                            selectedDpuWrap.getDialog().getDescription());
+                } catch (ModuleException | DPUWrapException | FileNotFoundException ex) {
+                    LOG.error("Can't get DPU description. Empty used as default.", ex);
+                    selectedDpuWrap.getDPUTemplateRecord().setDescription("");
+                }
+            } else {
+                selectedDpuWrap.getDPUTemplateRecord().setUseDPUDescription(false);
+                selectedDpuWrap.getDPUTemplateRecord().setDescription(dpuDescription
+                        .getValue().trim());
+            }
+
             selectedDpuWrap.getDPUTemplateRecord()
                     .setShareType((ShareType) groupVisibility
                             .getValue());
@@ -763,10 +771,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     @Override
     public void selectNewDPU(DPUTemplateRecord dpu) {
         //If DPURecord that != null was selected then it's details will be shown.
-        if ((dpu != null) && (dpu.getId() != null)) {
+        if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu);
-
+            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
             }
@@ -781,15 +788,18 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             setGeneralTabValues();
             //Otherwise, the information layout will be shown.
         } else {
-            dpuLayout.removeComponent(dpuDetailLayout);
+            if (dpuDetailLayout != null) {
+                dpuLayout.removeComponent(dpuDetailLayout);
+            }
             dpuLayout.removeComponent(layoutInfo);
             dpuLayout.addComponent(layoutInfo, 1);
+            dpuLayout.setExpandRatio(layoutInfo, 1.0f);
         }
     }
 
     /**
      * Builds layout contains DPU instances tab of {@link #tabSheet}. Calls from {@link #buildDPUDetailLayout}
-     * 
+     *
      * @return verticalLayoutInstances VerticalLayout with all components of DPU
      *         instances tab.
      */
@@ -806,7 +816,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //Table with instancesof DPU
         instancesTable = new IntlibPagedTable();
         instancesTable.setSelectable(true);
-        instancesTable.setCaption("Pipelines:");
+        instancesTable.setCaption(Messages.getString("DPUViewImpl.pipelines"));
         instancesTable.setContainerDataSource(tableData);
 
         //sorting by id
@@ -814,7 +824,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         instancesTable.setSortContainerPropertyId(property);
         instancesTable.setSortAscending(true);
         instancesTable.sort();
-        instancesTable.setPageLength(10);
+        instancesTable.setPageLength(utils.getPageLength());
         instancesTable.setWidth("100%");
         instancesTable.setImmediate(true);
 //		instancesTable.setVisibleColumns((Object[]) visibleCols);
@@ -830,14 +840,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         verticalLayoutInstances.addComponent(instancesTable);
         verticalLayoutInstances.addComponent(instancesTable.createControls());
         instancesTable.setFilterFieldVisible("actions", false);
-        instancesTable.setPageLength(6);
 
         return verticalLayoutInstances;
     }
 
     /**
      * Validate DPU detail.
-     * 
+     *
      * @return If DPU detail is valid
      */
     public boolean validate() {
@@ -845,7 +854,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             dpuName.validate();
             dpuDescription.validate();
         } catch (Validator.InvalidValueException e) {
-            Notification.show("Error validating DPU", e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("DPUViewImpl.validation.error"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -859,14 +868,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         // refresh configuration
         try {
             selectedDpuWrap.configuredDialog();
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             Notification.show(
-                    "Configuration problem",
+                    Messages.getString("DPUViewImpl.configuration.problem"),
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);
             LOG.error("Failed to load configuration for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
         } catch (DPUWrapException e) {
             Notification.show(
-                    "Unexpected error. The configuration dialog may not be loaded correctly.",
+                    Messages.getString("DPUViewImpl.unexpected.error"),
                     e.getMessage(), Notification.Type.WARNING_MESSAGE);
             LOG.error("Unexpected error while loading dialog for {}", selectedDpuWrap.getDPUTemplateRecord().getId(), e);
         }
@@ -875,7 +884,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     /**
      * Generate column in table {@link #instancesTable}. with buttons:Detail,
      * Delete, Status.
-     * 
+     *
      * @author Maria Kukhar
      */
     private ActionColumnGenerator createActionColumn() {
@@ -900,7 +909,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             @Override
             protected void action(long id) {
                 presenter.pipelineDeleteEventHandler(id);
-                tableData.removeItem(id);
             }
         };
         ActionColumnGenerator.ButtonShowCondition deleteShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
@@ -911,16 +919,21 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         };
 
         // add buttons to column generator
-        generator.addButton("Detail", null, detailAction, detailShowCondition, new ThemeResource("icons/gear.png"));
-        generator.addButton("Delete", null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.png"));
-        generator.addButton("Status", null, new ActionColumnGenerator.Action() {
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.detail"), null, detailAction, detailShowCondition, new ThemeResource("icons/gear.svg"));
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.delete"), null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.svg"));
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.status"), null, new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.pipelineStatusEventHandler(id);
             }
-        }, new ThemeResource("icons/log.png"));
+        }, new ThemeResource("icons/log.svg"));
 
         return generator;
+    }
+
+    @Override
+    public void removePipelineFromTable(long id) {
+        tableData.removeItem(id);
     }
 
     private void setupResizeListener() {

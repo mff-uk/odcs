@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -19,12 +19,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dpu.DPUContext;
 
 public class Context implements DPUContext {
 
@@ -37,11 +37,6 @@ public class Context implements DPUContext {
      * Name of sub-directory in {@link #DPU_DIR} for user related data storage.
      */
     private static final String USER_DIR = "user";
-
-    /**
-     * Logger class for ExtendedCommonImpl class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
     /**
      * DPUInstanceRecord as owner of this context.
@@ -69,12 +64,6 @@ public class Context implements DPUContext {
     private DataUnitManager outputsManager;
 
     /**
-     * Used DataUnit factory.
-     */
-    @Autowired
-    protected DataUnitFactory dataUnitFactory;
-
-    /**
      * Application configuration.
      */
     @Autowired
@@ -91,6 +80,9 @@ public class Context implements DPUContext {
      */
     @Autowired
     private ModuleFacade moduleFacade;
+
+    @Autowired
+    private ResourceManager resourceManager;
 
     /**
      * True if {@link #sendMessage(MessageType, String)} or {@link #sendMessage(MessageType, String, String)} has been used to
@@ -110,6 +102,8 @@ public class Context implements DPUContext {
      */
     private boolean canceled;
 
+    private Locale locale;
+
     /**
      * True if the execution should be stopped on DPU's request. The execution
      * does not failed instantly by this.
@@ -126,6 +120,7 @@ public class Context implements DPUContext {
         this.errorMessage = false;
         this.canceled = false;
         this.stopExecution = false;
+        this.locale = null;
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -174,16 +169,16 @@ public class Context implements DPUContext {
      * Create required {@link ManagableDataUnit} and add it to the context if
      * not exist, if the {@link ManagableDataUnit} with given type is already in
      * context then the existing instance is returned.
-     * 
+     *
      * @param type
      *            Type of {@link ManagableDataUnit} to create.
      * @param name
      *            DataUnit name.
      * @return Created DataUni.
-     * @throws DataUnitCreateException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public ManagableDataUnit addOutputDataUnit(DataUnitType type, String name)
-             {
+    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException
+    {
         return outputsManager.addDataUnit(type, name);
     }
 
@@ -247,29 +242,43 @@ public class Context implements DPUContext {
     /**
      * Return identification of single DPU template shared by all templates with
      * same name.
-     * 
+     *
      * @return DPU template identification.
      */
     private String getTemplateIdentification() {
         return dpuInstance.getTemplate().getJarDirectory();
     }
 
+    public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getOwner().getUsername();
+    }
+
+    public String getOrganization() {
+        String organization = null;
+        if (this.contextInfo.getExecution().getOrganization() != null) {
+            organization = this.contextInfo.getExecution().getOrganization().getName();
+        }
+
+        return organization;
+    }
+
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
+
     @Override
-    public void sendMessage(MessageType type, String shortMessage) {
+    public void sendMessage(DPUContext.MessageType type, String shortMessage) {
         // jest re-call the other function
         sendMessage(type, shortMessage, "");
     }
 
     @Override
-    public void sendMessage(MessageType type,
+    public void sendMessage(DPUContext.MessageType type,
             String shortMessage,
             String fullMessage) {
         sendMessage(type, shortMessage, fullMessage, null);
     }
 
     @Override
-    public void sendMessage(MessageType type,
+    public void sendMessage(DPUContext.MessageType type,
             String shortMessage,
             String fullMessage,
             Exception exception) {
@@ -280,19 +289,15 @@ public class Context implements DPUContext {
             exception.printStackTrace(pw);
             fullMessage = fullMessage + "<br/><br/>Exception:<br/>" + sw.toString();
         }
-
         eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
                 type, this, this));
-        // set warningMessage and errorMessage 
+        // set warningMessage and errorMessage
         switch (type) {
             case WARNING:
                 this.warningMessage = true;
                 break;
             case ERROR:
                 this.errorMessage = true;
-                break;
-            case TERMINATION_REQUEST:
-                this.stopExecution = true;
                 break;
             default:
         }
@@ -310,24 +315,29 @@ public class Context implements DPUContext {
 
     @Override
     public File getWorkingDir() {
-        File directory = new File(getGeneralWorkingDir(),
-                contextInfo.getDPUTmpPath(dpuInstance));
-        directory.mkdirs();
-        return directory;
+        try {
+            final File dir = resourceManager.getDPUWorkingDir(contextInfo.getExecution(), dpuInstance);
+            dir.mkdirs();
+            return dir;
+        } catch (MissingResourceException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public File getResultDir() {
-        File directory = new File(getGeneralWorkingDir(),
-                contextInfo.getResultPath());
-        directory.mkdirs();
-        return directory;
+        try {
+            final File dir = resourceManager.getDPUStorageDir(contextInfo.getExecution(), dpuInstance);
+            dir.mkdirs();
+            return dir;
+        } catch (MissingResourceException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public File getJarPath() {
-        File path = new File(moduleFacade.getDPUDirectory()
-                + File.separator + dpuInstance.getJarPath());
+        File path = new File(moduleFacade.getDPUDirectory() + File.separator + dpuInstance.getJarPath());
         return path;
     }
 
@@ -338,6 +348,7 @@ public class Context implements DPUContext {
 
     @Override
     public File getGlobalDirectory() {
+        // TODO Petr: Move into ResourceManager
         File result = new File(getGeneralWorkingDir(), DPU_DIR + File.separator
                 + getTemplateIdentification());
         result.mkdirs();
@@ -346,6 +357,7 @@ public class Context implements DPUContext {
 
     @Override
     public File getUserDirectory() {
+        // TODO Petr: Move into ResourceManager
         User owner = getExecution().getOwner();
         String userId;
         if (owner == null) {
@@ -361,4 +373,44 @@ public class Context implements DPUContext {
         return result;
     }
 
+    @Override
+    public String getDpuInstanceDirectory() {
+        // TODO Petr: Move into ResourceManager and change format
+        File result = new File(getGeneralWorkingDir(), "dpu_instance_" + String.valueOf(dpuInstance.getId()));
+        result.mkdirs();
+        return result.toURI().toASCIIString();
+    }
+
+    @Override
+    public Map<String, String> getEnvironment() {
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
+            result.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        return result;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    @Override
+    public Long getPipelineId() {
+        return this.contextInfo.getExecution().getPipeline().getId();
+    }
+
+    @Override
+    public Long getPipelineExecutionId() {
+        return this.contextInfo.getExecutionId();
+    }
+
+    @Override
+    public Long getDpuInstanceId() {
+        return dpuInstance.getId();
+    }
 }

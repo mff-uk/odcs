@@ -10,7 +10,22 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,12 +36,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 
 /**
  * Holds user data (his account).
- * 
+ *
  * @author Jiri Tomes
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
+@SecondaryTable(name = "usr_extuser", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id_usr", referencedColumnName = "id"))
+public class User implements UserDetails, DataObject {
 
     /**
      * Primary key for entity.
@@ -67,12 +83,9 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
     /**
      * User roles representing sets of privileges.
      */
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Column(name = "role_id")
-    @Enumerated(EnumType.ORDINAL)
-    @CollectionTable(name = "usr_user_role", joinColumns =
-            @JoinColumn(name = "user_id"))
-    private Set<Role> roles = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usr_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+    private Set<RoleEntity> roles = new HashSet<>();
 
     /**
      * User notification settings used as a default for execution schedules.
@@ -80,6 +93,12 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserNotificationRecord notification;
+
+    @Column(table = "usr_extuser", name = "id_extuser")
+    private String externalIdentifier;
+
+    @Transient
+    private Organization organization;
 
     /**
      * Empty constructor required by JPA.
@@ -89,7 +108,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns user name as unique identifier.
-     * 
+     *
      * @return user name as unique identifier.
      */
     @Override
@@ -99,7 +118,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set user name to defined value.
-     * 
+     *
      * @param username
      *            String value of user name.
      */
@@ -109,7 +128,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns user email as instance of {@link EmailAddress}.
-     * 
+     *
      * @return user email as instance of {@link EmailAddress}.
      */
     public EmailAddress getEmail() {
@@ -118,7 +137,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set new user email value as instance of {@link EmailAddress}.
-     * 
+     *
      * @param newEmail
      *            new user email as instance of {@link EmailAddress}.
      */
@@ -128,7 +147,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns the full user name.
-     * 
+     *
      * @return the full user name.
      */
     public String getFullName() {
@@ -137,7 +156,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set the new value of full user name.
-     * 
+     *
      * @param fullName
      *            the new value of full user name.
      */
@@ -147,7 +166,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns the user password value as {@link String}.
-     * 
+     *
      * @return the user password value as {@link String}.
      */
     @Override
@@ -157,7 +176,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set the user password as value of {@link String}.
-     * 
+     *
      * @param password
      *            String value of password
      */
@@ -171,39 +190,36 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Add the role to the role set.
-     * 
+     *
      * @param role
      *            The value of {@link Role} will be added.
      */
-    @Override
-    public void addRole(Role role) {
+    public void addRole(RoleEntity role) {
         roles.add(role);
     }
 
     /**
      * Returns the set of roles for the user.
-     * 
+     *
      * @return the set of roles for the user.
      */
-    @Override
-    public Set<Role> getRoles() {
+    public Set<RoleEntity> getRoles() {
         return roles;
     }
 
     /**
      * Set the set of roles.
-     * 
+     *
      * @param newRoles
      *            the set of roles will be set.
      */
-    @Override
-    public void setRoles(Set<Role> newRoles) {
+    public void setRoles(Set<RoleEntity> newRoles) {
         roles = newRoles;
     }
 
     /**
      * Returns the set ID of this user as {@link Long} value.
-     * 
+     *
      * @return the set ID of this user as {@link Long} value.
      */
     @Override
@@ -213,7 +229,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns the user notification settings.
-     * 
+     *
      * @return the user notification settings.
      */
     public UserNotificationRecord getNotification() {
@@ -222,7 +238,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set new value of user notification settings.
-     * 
+     *
      * @param notification
      *            value of user notification settings.
      */
@@ -233,7 +249,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns the number of table rows.
-     * 
+     *
      * @return the number of table rows.
      */
     public Integer getTableRows() {
@@ -242,7 +258,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Set the number of table rows.
-     * 
+     *
      * @param value
      *            number of table rows.
      */
@@ -252,17 +268,27 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns the collection of set authorities.
-     * 
+     *
      * @return the collection of set authorities.
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>(getRoles());
+        ArrayList<Permission> permissions = new ArrayList<>();
+        for (RoleEntity role : getRoles()) {
+            if (role.getPermissions() != null) {
+                for (Permission p : role.getPermissions()) {
+                    if (!permissions.contains(p)) {
+                        permissions.add(p);
+                    }
+                }
+            }
+        }
+        return permissions;
     }
 
     /**
      * Returns true if account is not expired, false otherwise.
-     * 
+     *
      * @return true if account is not expired, false otherwise.
      */
     @Override
@@ -272,7 +298,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns true if account is not locked, false otherwise.
-     * 
+     *
      * @return true if account is not locked, false otherwise.
      */
     @Override
@@ -282,7 +308,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns true if the credentials are not expired, false otherwise.
-     * 
+     *
      * @return true if the credentials are not expired,, false otherwise.
      */
     @Override
@@ -292,7 +318,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Returns true if user details are enabled, false otherwise.
-     * 
+     *
      * @return true if user details are enabled, false otherwise.
      */
     @Override
@@ -300,20 +326,26 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
         return true;
     }
 
-    /**
-     * Returns the owner.
-     * 
-     * @return The owner
-     */
-    @Override
-    public User getOwner() {
-        return this;
+    public String getExternalIdentifier() {
+        return externalIdentifier;
+    }
+
+    public void setExternalIdentifier(String externalIdentifier) {
+        this.externalIdentifier = externalIdentifier;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -337,7 +369,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

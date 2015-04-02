@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+							http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<bean id="configuration" class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>file:${configFileLocation}</value>
+                <value>/WEB-INF/config.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<import resource="classpath:commons-app-context.xml" />
+
+	<context:component-scan base-package="eu.unifiedviews.master.api, eu.unifiedviews.master.authentication"/>
+	    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
+        <constructor-arg ref="configuration"/>
+        <constructor-arg value="FRONTEND"/>
+    </bean>
+
+    <!-- bean that provide functionality for manipulating with DPUs -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator"/>
+
+    <!-- bean for notification -->
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.impl.FileNotifierClient"/>
+</beans>

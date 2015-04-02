@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import java.util.Date;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
@@ -21,6 +22,11 @@ public interface DbPipeline extends DbAccess<Pipeline> {
     public List<Pipeline> getAll();
 
     /**
+     * @return List of all pipelines in DB.
+     */
+    public List<Pipeline> getPipelinesForOrganization(String orgName);
+
+    /**
      * Fetches all pipelines using given DPU template.
      * 
      * @param dpu
@@ -37,4 +43,22 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      */
     public Pipeline getPipelineByName(String name);
 
+    /**
+     * Tells whether there were any changes to pipeline since the
+     * last load.
+     * <p>
+     * 
+     * @param since
+     * @return whether any pipeline was created / updated since given date
+     */
+    public boolean hasModified(Date since);
+
+    /**
+     * Tells whether one of pipelines was deleted
+     * <p>
+     * 
+     * @param pipelinesIds
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false
+     */
+    public boolean hasDeletedPipelines(List<Long> pipelinesIds);
 }

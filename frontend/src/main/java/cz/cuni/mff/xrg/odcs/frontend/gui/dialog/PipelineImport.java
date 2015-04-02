@@ -1,6 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -9,10 +14,13 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for pipeline import.
@@ -27,6 +35,22 @@ public class PipelineImport extends Window {
     private TextField txtUploadFile;
 
     private Pipeline importedPipeline = null;
+
+    private List<DpuItem> usedDpus = new ArrayList<>();
+
+    private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+
+    private Table usedDpusTable = new Table();
+
+    private Table missingDpusTable = new Table();
+
+    private Button btnImport = new Button();
+
+    private Panel panelMissingDpus = new Panel();
+
+    private CheckBox chbExportDPUData = new CheckBox(Messages.getString("PipelineImport.import.usersData"));
+
+    private CheckBox chbExportSchedule = new CheckBox(Messages.getString("PipelineImport.import.schedule"));
 
     /**
      * Receive uploaded file.
@@ -44,7 +68,7 @@ public class PipelineImport extends Window {
     private final ImportService importService;
 
     public PipelineImport(ImportService importService) {
-        super("Pipeline import");
+        super(Messages.getString("PipelineImport.pipeline.import"));
         this.importService = importService;
         init();
     }
@@ -55,15 +79,16 @@ public class PipelineImport extends Window {
     private void init() {
         this.setResizable(false);
         this.setModal(true);
-        this.setWidth("320px");
-        this.setHeight("320px");
+        this.setWidth("500px");
+        this.setHeight("520px");
+        this.markAsDirtyRecursive();
 
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
         mainLayout.setSizeFull();
 
         // upload settings
-        final GridLayout detailLayout = new GridLayout(2, 2);
+        final GridLayout detailLayout = new GridLayout(2, 3);
         detailLayout.setMargin(false);
         detailLayout.setSpacing(true);
         detailLayout.setSizeFull();
@@ -75,7 +100,7 @@ public class PipelineImport extends Window {
         detailLayout.setColumnExpandRatio(1, 1);
 
         {
-            Label lbl = new Label("Zip archive:");
+            Label lbl = new Label(Messages.getString("PipelineImport.zip.archive"));
             lbl.setWidth("-1px");
             detailLayout.addComponent(lbl, 0, 0);
         }
@@ -90,7 +115,7 @@ public class PipelineImport extends Window {
         fileUploadReceiver = new FileUploadReceiver();
         final Upload upload = new Upload(null, fileUploadReceiver);
         upload.setImmediate(true);
-        upload.setButtonCaption("Upload file");
+        upload.setButtonCaption(Messages.getString("PipelineImport.upload.file"));
         // modify the look so the upload component is more user friendly
         upload.addStyleName("horizontalgroup");
 
@@ -103,16 +128,20 @@ public class PipelineImport extends Window {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
                 String ext = FilenameUtils.getExtension(event.getFilename());
+                missingDpusTable.removeAllItems();
+                usedDpusTable.removeAllItems();
 
                 if (ext.compareToIgnoreCase("zip") != 0) {
                     upload.interruptUpload();
-                    Notification.show("Selected file is not zip file",
+                    Notification.show(Messages.getString("PipelineImport.not.zip.file"),
                             Notification.Type.ERROR_MESSAGE);
+                    btnImport.setEnabled(false);
                 } else {
                     // show upload process dialog
                     if (uploadInfoWindow.getParent() == null) {
                         UI.getCurrent().addWindow(uploadInfoWindow);
                     }
+                    btnImport.setEnabled(true);
                     uploadInfoWindow.setClosable(false);
                 }
             }
@@ -140,34 +169,126 @@ public class PipelineImport extends Window {
                 uploadInfoWindow.setClosable(true);
                 uploadInfoWindow.close();
                 // hide uploader
-                upload.setVisible(false);
+                File zippedFile = fileUploadReceiver.getFile();
+                try {
+                    ImportedFileInformation result = importService.getImportedInformation(zippedFile);
+                    usedDpus = result.getUsedDpus();
+                    missingDpus = result.getMissingDpus();
+
+                    chbExportDPUData.setValue(false);
+                    chbExportSchedule.setValue(false);
+
+                    if (result.isUserDataFile()) {
+                        chbExportDPUData.setEnabled(true);
+                    } else {
+                        chbExportDPUData.setEnabled(false);
+                    }
+
+                    if (result.isScheduleFile()) {
+                        chbExportSchedule.setEnabled(true);
+                    } else {
+                        chbExportSchedule.setEnabled(false);
+                    }
+
+                    if (usedDpus == null) {
+                        String msg = Messages.getString("PipelineImport.read.file.fail");
+                        LOG.warn(msg);
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                    } else {
+                        // show result on table  these dpus which are in use
+                        for (DpuItem entry : usedDpus) {
+                            usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
+                        }
+                    }
+
+                    if (missingDpus.size() > 0) {
+                        btnImport.setEnabled(false);
+                        Notification.show(Messages.getString("PipelineImport.missing.dpu.fail") +
+                                Messages.getString("PipelineImport.install.dpu"), Notification.Type.ERROR_MESSAGE);
+
+                    } else {
+                        btnImport.setEnabled(true);
+
+                    }
+
+                    // show result on table - these dpus which are missing
+                    for (Map.Entry<String, DpuItem> entry : missingDpus.entrySet()) {
+                        String key = entry.getKey();
+                        DpuItem value = entry.getValue();
+                        missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
+                    }
+
+                } catch (Exception e) {
+                    LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
+                }
             }
         });
 
         detailLayout.addComponent(upload, 1, 1);
         detailLayout.setComponentAlignment(upload, Alignment.TOP_LEFT);
+        final HorizontalLayout checkBoxesLayout = new HorizontalLayout();
+        checkBoxesLayout.setWidth("100%");
+        checkBoxesLayout.setMargin(true);
+        chbExportSchedule.setEnabled(false);
+        chbExportDPUData.setEnabled(false);
+        checkBoxesLayout.addComponent(chbExportSchedule);
+        checkBoxesLayout.setComponentAlignment(chbExportSchedule, Alignment.MIDDLE_LEFT);
+        checkBoxesLayout.addComponent(chbExportDPUData);
+        checkBoxesLayout.setComponentAlignment(chbExportDPUData, Alignment.MIDDLE_RIGHT);
+
+        final VerticalLayout usedJarsLayout = new VerticalLayout();
+        usedJarsLayout.setWidth("100%");
+
+        Panel panel = new Panel(Messages.getString("PipelineImport.dpu.used"));
+        panel.setWidth("100%");
+        panel.setHeight("150px");
+
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.template"), String.class, null);
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.jarName"), String.class, null);
+        usedDpusTable.addContainerProperty(Messages.getString("PipelineImport.dpu.version"), String.class, null);
+
+        usedDpusTable.setWidth("100%");
+        usedDpusTable.setHeight("130px");
+
+        panel.setContent(usedDpusTable);
+        usedJarsLayout.addComponent(panel);
+
+        final VerticalLayout missingJarsLayout = new VerticalLayout();
+        missingJarsLayout.setWidth("100%");
+
+        panelMissingDpus = new Panel(Messages.getString("PipelineImport.missing.dpus"));
+        panelMissingDpus.setWidth("100%");
+        panelMissingDpus.setHeight("150px");
+
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.dpu.template"), String.class, null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.jarName"), String.class, null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.version"), String.class, null);
+
+        missingDpusTable.setWidth("100%");
+        missingDpusTable.setHeight("130px");
+        panelMissingDpus.setContent(missingDpusTable);
+        missingJarsLayout.addComponent(panelMissingDpus);
 
         // bottom buttons
-
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth("100%");
 
-        Button btnImport = new Button("Import", new Button.ClickListener() {
+        btnImport = new Button(Messages.getString("PipelineImport.import"), new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!txtUploadFile.isValid()) {
-                    Notification.show("No archive selected.",
+                    Notification.show(Messages.getString("PipelineImport.archive.notSelected"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
                     // import
                     final File zipFile = fileUploadReceiver.getFile();
                     try {
-                        importedPipeline = importService.importPipeline(zipFile);
+                        importedPipeline = importService.importPipeline(zipFile, chbExportDPUData.getValue(), chbExportSchedule.getValue());
                         close();
-                    } catch (ImportException ex) {
+                    } catch (ImportException | IOException ex) {
                         LOG.error("Import failed.", ex);
-                        Notification.show("Import failed. " + ex.getMessage(),
+                        Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
                                 Notification.Type.ERROR_MESSAGE);
                     }
                 }
@@ -176,7 +297,7 @@ public class PipelineImport extends Window {
         buttonLayout.addComponent(btnImport);
         buttonLayout.setComponentAlignment(btnImport, Alignment.MIDDLE_LEFT);
 
-        Button btnCancel = new Button("Cancel", new Button.ClickListener() {
+        Button btnCancel = new Button(Messages.getString("PipelineImport.cancel"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -188,6 +309,13 @@ public class PipelineImport extends Window {
         // add to the main layout
         mainLayout.addComponent(detailLayout);
         mainLayout.setExpandRatio(detailLayout, 1);
+        mainLayout.addComponent(checkBoxesLayout);
+        mainLayout.setExpandRatio(checkBoxesLayout, 1);
+
+        mainLayout.addComponent(usedJarsLayout);
+        mainLayout.setExpandRatio(usedJarsLayout, 3);
+        mainLayout.addComponent(missingJarsLayout);
+        mainLayout.setExpandRatio(missingJarsLayout, 3);
         mainLayout.addComponent(buttonLayout);
         mainLayout.setExpandRatio(buttonLayout, 0);
         setContent(mainLayout);

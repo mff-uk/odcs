@@ -1,19 +1,21 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.files.FilesDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 
 public class DataUnitTypeResolver {
-    public static DataUnitType resolveClassToType(Class<?> classType) {
+    
+    public static ManagableDataUnit.Type resolveClassToType(Class<?> classType) {
         if (RDFDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.RDF;
-        } else if (FileDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILE;
+            return ManagableDataUnit.Type.RDF;
         } else if (FilesDataUnit.class.isAssignableFrom(classType)) {
-            return DataUnitType.FILES;
+            return ManagableDataUnit.Type.FILES;
+        } else if (RelationalDataUnit.class.isAssignableFrom(classType)) {
+            return ManagableDataUnit.Type.RELATIONAL;
         }
         return null;
     }
+
 }

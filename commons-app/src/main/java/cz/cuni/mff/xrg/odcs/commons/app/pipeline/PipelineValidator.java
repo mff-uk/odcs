@@ -5,6 +5,7 @@ import java.util.List;
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -48,7 +49,8 @@ public class PipelineValidator {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Input: %s", dpu.getName(), input.getName());
+                    report += "\n";
+                    report += Messages.getString("PipelineValidator.dpu.input", dpu.getName(), input.getName());
                 }
             }
             List<DataUnitDescription> outputs = explorer.getOutputs(dpu);
@@ -69,7 +71,8 @@ public class PipelineValidator {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Output: %s", dpu.getName(), output.getName());
+                    report += "\n";
+                    report += Messages.getString("PipelineValidator.dpu.output", dpu.getName(), output.getName());
                 }
             }
         }

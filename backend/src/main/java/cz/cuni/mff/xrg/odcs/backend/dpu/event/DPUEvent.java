@@ -11,11 +11,12 @@ import org.springframework.context.ApplicationEvent;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Base abstract class for the DPURecord event.
@@ -114,7 +115,7 @@ public class DPUEvent extends ApplicationEvent {
 
         //final String msg = String.format("Starting DPU developer's code {}", dpu.getId());
 
-        final String msg = String.format("Starting DPU developer's code for DPU: %d", dpu.getId());
+        final String msg = Messages.getString("DPUEvent.starting", dpu.getId());
 
         LOG.info(msg);
         return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
@@ -129,7 +130,7 @@ public class DPUEvent extends ApplicationEvent {
      */
     public static DPUEvent createComplete(Context context, Object source) {
         final DPUInstanceRecord dpu = context.getDPU();
-        final String msg = String.format("DPU: %d completed", dpu.getId());
+        final String msg = Messages.getString("DPUEvent.completed", dpu.getId());
 
         LOG.info(msg);
         return new DPUEvent(context, source, MessageRecordType.DPU_INFO, msg, "");
@@ -146,7 +147,7 @@ public class DPUEvent extends ApplicationEvent {
         LOG.warn("Missing outpuds for '{}'", context.getDPU().getName());
 
         return new DPUEvent(context, source, MessageRecordType.DPU_WARNING,
-                "Missing output DataUnit.", "");
+                Messages.getString("DPUEvent.missing.output"), "");
     }
 
     /**
@@ -161,7 +162,7 @@ public class DPUEvent extends ApplicationEvent {
                 context.getDPU().getName());
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "Unexpected state of DPU before execution", "");
+                Messages.getString("DPUEvent.unexpected.state"), "");
     }
 
     /**
@@ -183,7 +184,7 @@ public class DPUEvent extends ApplicationEvent {
                 longMessage);
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "DPU's pre-executor failed.", longMessage);
+                Messages.getString("DPUEvent.pre.executor.failed"), longMessage);
     }
 
     /**
@@ -208,7 +209,7 @@ public class DPUEvent extends ApplicationEvent {
                 throwable);
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "DPU's pre-executor failed.", longMessage, throwable);
+                Messages.getString("DPUEvent.pre.executor.failed"), longMessage, throwable);
     }
 
     /**
@@ -230,7 +231,7 @@ public class DPUEvent extends ApplicationEvent {
                 longMessage);
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "DPU's post-executor failed.", longMessage);
+                Messages.getString("DPUEvent.post.executor.failed"), longMessage);
     }
 
     /**
@@ -248,7 +249,7 @@ public class DPUEvent extends ApplicationEvent {
                 context.getDPU().getName(), e);
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "DPU execution failed. ", e);
+                Messages.getString("DPUEvent.execution.failed"), e);
     }
 
     /**
@@ -265,7 +266,7 @@ public class DPUEvent extends ApplicationEvent {
                 context.getDPU().getName(), e);
 
         return new DPUEvent(context, source, MessageRecordType.DPU_ERROR,
-                "DataUnit error.", e);
+                Messages.getString("DPUEvent.dataUnit.error"), e);
     }
 
     /**
@@ -281,7 +282,7 @@ public class DPUEvent extends ApplicationEvent {
                 context.getDPU().getName());
 
         return new DPUEvent(context, source, MessageRecordType.DPU_INFO,
-                "Request for execution termination", "");
+                Messages.getString("DPUEvent.request.termination"), "");
     }
 
     /**

@@ -2,6 +2,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
+import eu.unifiedviews.commons.util.Cryptography;
+
 /**
  * Class with global application configuration.
  * 
@@ -19,6 +23,11 @@ import org.springframework.core.io.Resource;
  * @author Jan Vojt
  */
 public class AppConfig extends PropertyPlaceholderConfigurer {
+
+    public static final List<ConfigProperty> ENCRYPTED_PROPERTIES = Arrays.asList(
+            ConfigProperty.DATABASE_SQL_PASSWORD,
+            ConfigProperty.DATABASE_RDF_PASSWORD,
+            ConfigProperty.EMAIL_PASSWORD);
 
     /**
      * Modifiable configuration itself.
@@ -31,6 +40,16 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     private static final Logger LOG = Logger.getLogger(AppConfig.class.getName());
 
     /**
+     * Determines whether cryptography is enabled or not.
+     */
+    private static Boolean cryptographyEnabled;
+
+    /**
+     * Cryptography instance;
+     */
+    private static Cryptography cryptography;
+
+    /**
      * Use factory methods for constructing configurations.
      */
     private AppConfig() {
@@ -38,15 +57,17 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
 
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory,
-              Properties props) throws BeansException {
-         super.processProperties(beanFactory, props);
-  
-         for (Object key : props.keySet()) {
-             String keyStr = key.toString();
-             prop.put(keyStr, props.getProperty(keyStr));
-         }
-     }
-  
+            Properties props) throws BeansException {
+        for (Object key : props.keySet()) {
+            String keyStr = key.toString();
+            prop.put(keyStr, props.getProperty(keyStr));
+        }
+
+        postprocess();
+
+        super.processProperties(beanFactory, prop);
+    }
+
     /**
      * Constructor building from Spring resource.
      * 
@@ -79,6 +100,8 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         } catch (IllegalArgumentException ex) {
             throw new MalformedConfigFileException(ex);
         }
+
+        config.postprocess();
 
         return config;
     }
@@ -152,4 +175,57 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     public Properties getProperties() {
         return (Properties) prop.clone();
     }
+
+    private void postprocess() {
+        if (cryptographyEnabled == null) {
+            cryptographyEnabled = Boolean.TRUE.toString().equals(prop.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+        }
+
+        if (cryptographyEnabled) {
+            if (cryptography == null) {
+                try {
+                    cryptography = new Cryptography(prop.getProperty(ConfigProperty.CRYPTOGRAPHY_KEY_FILE.toString()));
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+
+            for (ConfigProperty configProperty : ENCRYPTED_PROPERTIES) {
+                if (prop.containsKey(configProperty.toString())) {
+                    prop.put(configProperty.toString(), cryptography.decrypt(prop.getProperty(configProperty.toString())));
+                }
+            }
+        }
+    }
+
+    /**
+     * @param input
+     *            byte array for preprocessing.
+     * @return Encrypted byte array if cryptography is enabled, input byte array otherwise.
+     */
+    public static byte[] preprocess(byte[] input) {
+        byte[] result = input;
+
+        if (cryptographyEnabled) {
+            result = cryptography.encrypt(input);
+        }
+
+        return result;
+    }
+
+    /**
+     * @param input
+     *            byte array for postprocessing.
+     * @return Decrypted byte array if cryptography is enabled, input byte array otherwise.
+     */
+    public static byte[] postprocess(byte[] input) {
+        byte[] result = input;
+
+        if (cryptographyEnabled) {
+            result = cryptography.decrypt(input);
+        }
+
+        return result;
+    }
+
 }

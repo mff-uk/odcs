@@ -22,6 +22,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -35,15 +37,20 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
+import eu.unifiedviews.commons.dao.DBPipelineView;
+import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
  * Implementation of {@link PipelineListPresenter}.
@@ -51,9 +58,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Bogo
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "PipelineList")
-public class PipelineListPresenterImpl implements PipelineListPresenter {
+public class PipelineListPresenterImpl implements PipelineListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineListPresenterImpl.class);
 
@@ -64,7 +71,13 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
     private DbPipeline dbPipeline;
 
     @Autowired
+    private DBPipelineView dbPipelineView;
+
+    @Autowired
     private PipelineAccessor pipelineAccessor;
+
+    @Autowired
+    private PipelineViewAccessor pipelineViewAccessor;
 
     @Autowired
     private PipelineListView view;
@@ -88,28 +101,58 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
     private PipelineListData dataObject;
 
-    private DbCachedSource<Pipeline> cachedSource;
+    private DbCachedSource<PipelineView> cachedSource;
 
     private RefreshManager refreshManager;
 
     private Date lastLoad = new Date(0L);
 
     /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+    
+    /**
      * Evaluates permissions of currently logged in user.
      */
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
 
+    private boolean isInitialized = false;
+
     @Override
     public Object enter() {
+        if (isInitialized) {
+            navigator = ((AppEntry) UI.getCurrent()).getNavigation();
+            addRefreshManager();
+            return view.enter(this);
+        }
+
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
+//        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
+        cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
+
         dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
 
         // prepare view
         Object viewObject = view.enter(this);
+        addRefreshManager();
 
+        // set data object
+        view.setDisplay(dataObject);
+
+        // add initial name filter
+        view.setFilter("owner.username", utils.getUserName());
+
+        isInitialized = true;
+
+        // return main component
+        return viewObject;
+    }
+
+    private void addRefreshManager() {
         refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
@@ -117,8 +160,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    if (hasModifiedExecutions) {
+                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
+                            || pipelineFacade.hasModifiedExecutions(lastLoad)
+                            || (cachedSource.size() > 0 &&
+                            pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                    if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -127,15 +173,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
                 }
             }
         });
-
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
-
-        // return main component
-        return viewObject;
+        refreshManager.triggerRefresh();
     }
 
     @Override
@@ -175,7 +213,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
     public void copyEventHandler(long id) {
         Pipeline pipeline = getLightPipeline(id);
         pipelineFacade.copyPipeline(pipeline);
-        Notification.show("Pipeline \"" + pipeline.getName() + "\" was successfully copied",
+        Notification.show(Messages.getString("PipelineListPresenterImpl.copy.successfull", pipeline.getName()),
                 Notification.Type.HUMANIZED_MESSAGE);
         refreshEventHandler();
     }
@@ -188,10 +226,10 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
             executions = pipelineFacade.getExecutions(pipeline, PipelineExecutionStatus.RUNNING);
         }
         if (!executions.isEmpty()) {
-            Notification.show("Pipeline " + pipeline.getName() + " has current(QUEUED or RUNNING) execution(s) and cannot be deleted now!", Notification.Type.WARNING_MESSAGE);
+            Notification.show(Messages.getString("PipelineListPresenterImpl.pipeline.running", pipeline.getName()), Notification.Type.WARNING_MESSAGE);
             return;
         }
-        String message = "Would you really like to delete the \"" + pipeline.getName() + "\" pipeline and all associated records (DPU instances e.g.)?";
+        String message = Messages.getString("PipelineListPresenterImpl.delete.dialog", pipeline.getName());
         List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
         if (!schedules.isEmpty()) {
             HashSet<String> usersWithSchedules = new HashSet<>();
@@ -203,24 +241,58 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
             while (it.hasNext()) {
                 users = users + ", " + it.next();
             }
-            String scheduleMessage = String.format(" This pipeline is schedulled by user(s) %s. Delete anyway?", users);
+            String scheduleMessage = Messages.getString("PipelineListPresenterImpl.pipeline.scheduled", users);
             message = message + scheduleMessage;
         }
-        ConfirmDialog.show(UI.getCurrent(), "Confirmation of deleting pipeline", message, "Delete pipeline", "Cancel", new ConfirmDialog.Listener() {
-            @Override
-            public void onClose(ConfirmDialog cd) {
-                if (cd.isConfirmed()) {
-                    pipelineFacade.delete(pipeline);
-                    refreshEventHandler();
-                }
-            }
-        });
+        ConfirmDialog.show(UI.getCurrent(),
+                Messages.getString("PipelineListPresenterImpl.delete.confirmation"), message, Messages.getString("PipelineListPresenterImpl.delete.confirmation.deleteButton"), Messages.getString("PipelineListPresenterImpl.delete.confirmation.cancelButton"), new ConfirmDialog.Listener() {
+                    @Override
+                    public void onClose(ConfirmDialog cd) {
+                        if (cd.isConfirmed()) {
+                            pipelineFacade.delete(pipeline);
+                            refreshEventHandler();
+                        }
+                    }
+                });
     }
 
     @Override
     public boolean canDeletePipeline(long pipelineId) {
-        Pipeline pipeline = cachedSource.getObject(pipelineId);
-        return permissions.hasPermission(pipeline, "delete");
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        boolean isAdmin = permissions.hasPermission(pipeline, adminPermission);
+        boolean canDelete = permissions.hasPermission(pipeline, "pipeline.delete");
+        return isAdmin || canDelete;
+    }
+
+    @Override
+    public boolean canEditPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.edit");
+    }
+
+    @Override
+    public boolean canDebugPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.runDebug");
+    }
+
+    @Override
+    public boolean canSchedulePipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.schedule");
+    }
+
+    @Override
+    public boolean canCopyPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.copy");
+    }
+
+    @Override
+    public boolean canRunPipeline(long pipelineId) {
+        Pipeline pipeline = getLightPipeline(pipelineId);
+        return permissions.hasPermission(pipeline, "pipeline.run");
     }
 
     @Override
@@ -302,6 +374,16 @@ public class PipelineListPresenterImpl implements PipelineListPresenter {
 
         UI.getCurrent().addWindow(dialog);
         dialog.bringToFront();
+    }
+
+    @Override
+    public void doAfterLogout() {
+        isInitialized = false;
+    }
+
+    @Override
+    public boolean isLayoutInitialized() {
+        return isInitialized;
     }
 
 }

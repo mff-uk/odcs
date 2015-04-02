@@ -4,6 +4,8 @@ import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
 /**
  * Simple {@link QueryFactory} for constructing RDF queries.
  * 
@@ -14,16 +16,16 @@ public class RDFQueryFactory implements QueryFactory {
     /**
      * Construct query from definition.
      * 
-     * @param qd
+     * @param queryDefinition
      *            Query definition.
      * @return Query.
      */
     @Override
-    public Query constructQuery(QueryDefinition qd) {
-        if (qd.getClass() != RDFQueryDefinition.class) {
-            throw new UnsupportedOperationException("Unsupported QueryDefinition class.");
+    public Query constructQuery(QueryDefinition queryDefinition) {
+        if (queryDefinition.getClass() != RDFQueryDefinition.class) {
+            throw new UnsupportedOperationException(Messages.getString("RDFQueryFactory.exception"));
         }
-        return new RDFQuery((RDFQueryDefinition) qd);
+        return new RDFQuery((RDFQueryDefinition) queryDefinition);
     }
 
 }

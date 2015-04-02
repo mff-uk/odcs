@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 
 /**
@@ -89,7 +90,7 @@ class OSGIModuleFacade implements ModuleFacade {
             LOG.error("Failed to load osgi framework class.", ex);
             // failed to load FrameworkFactory class
             throw new FrameworkStartFailedException(
-                    "Can't load class FrameworkFactory.", ex);
+                    Messages.getString("OSGIModuleFacade.frameworkFactory.load.problem"), ex);
         }
 
         framework = frameworkFactory.newFramework(prepareSettings());
@@ -101,7 +102,7 @@ class OSGIModuleFacade implements ModuleFacade {
             LOG.error("Failed to start OSGI framework.", ex);
             // failed to start/initiate framework
             throw new FrameworkStartFailedException(
-                    "Failed to start OSGi framework.", ex);
+                    Messages.getString("OSGIModuleFacade.osgi.load.problem"), ex);
         }
 
         try {
@@ -111,7 +112,7 @@ class OSGIModuleFacade implements ModuleFacade {
             // we have to stop framework ..
             stop();
             throw new FrameworkStartFailedException(
-                    "Failed to get OSGi context.", ex);
+                    Messages.getString("OSGIModuleFacade.context.get.fail"), ex);
         }
 
         // load resources
@@ -192,13 +193,13 @@ class OSGIModuleFacade implements ModuleFacade {
         if (container == null) {
             LOG.error("Missing bundle durign update.");
             // bundle is not loaded yet .. this should not happen
-            throw new ModuleException("No record about bundle.");
+            throw new ModuleException(Messages.getString("OSGIModuleFacade.no.record"));
         }
 
         try {
             container.update(context, createUri(directory, newName));
         } catch (BundleException e) {
-            throw new ModuleException("Failed to update bundle.", e);
+            throw new ModuleException(Messages.getString("OSGIModuleFacade.update.fail"), e);
         }
 
         // try to load main class
@@ -279,7 +280,7 @@ class OSGIModuleFacade implements ModuleFacade {
     }
 
     @Override
-    public Dictionary<String, String> getJarProperties(DPUTemplateRecord dpu) {
+    public Dictionary<String, String> getManifestHeaders(DPUTemplateRecord dpu) {
         try {
             BundleContainer container = install(dpu);
             return container.getHeaders();
@@ -448,7 +449,7 @@ class OSGIModuleFacade implements ModuleFacade {
 
         if (directory == null || fileName == null) {
             LOG.error("Can't install bundle bundle from '{}'/'{}'", directory, fileName);
-            throw new ModuleException("Missing path to bundle.");
+            throw new ModuleException(Messages.getString("OSGIModuleFacade.missing.path"));
         }
 
         // prepare uri

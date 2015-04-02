@@ -282,42 +282,53 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		writeMessage(messageLayer, 'initialized');
 
 
-		var basePath = "http://" + window.location.host + window.location.pathname;
+		var basePath = window.location.protocol + "//" + window.location.host + window.location.pathname;
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
-		var imgPath = "VAADIN/themes/UnifiedViewsTheme/img/";
-		basePath = basePath + imgPath;
+		var request = new XMLHttpRequest();
+		request.open("GET", basePath + 'frontend.theme', false);
+		request.onreadystatechange = function () {
+			var frontendTheme;
+			if (request.readyState === 4) {
+				if (request.status === 200 || request.status == 0) {
+					frontendTheme = request.responseText;
+				}
+			}
+			var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
+			basePath = basePath + imgPath;
 
-		addConnectionIcon = new Image();
-		addConnectionIcon.src = basePath + "arrow_right.png";
+			addConnectionIcon = new Image();
+			addConnectionIcon.src = basePath + "arrow_right.svg";
 
-		removeConnectionIcon = new Image();
-		removeConnectionIcon.src = basePath + "TrashFull.png";
+			removeConnectionIcon = new Image();
+			removeConnectionIcon.src = basePath + "TrashFull.svg";
 
-		debugIcon = new Image();
-		debugIcon.src = basePath + "debug.png";
+			debugIcon = new Image();
+			debugIcon.src = basePath + "debug.svg";
 
-		detailIcon = new Image();
-		detailIcon.src = basePath + "Gear.png";
+			detailIcon = new Image();
+			detailIcon.src = basePath + "Gear.svg";
 
-		formatIcon = new Image();
-		formatIcon.src = basePath + "format.png";
+			formatIcon = new Image();
+			formatIcon.src = basePath + "format.svg";
 
-		copyIcon = new Image();
-		copyIcon.src = basePath + "copy.png";
+			copyIcon = new Image();
+			copyIcon.src = basePath + "copy.svg";
 
-		distributeIcon = new Image();
-		distributeIcon.src = basePath + "distribute.png";
+			distributeIcon = new Image();
+			distributeIcon.src = basePath + "distribute.svg";
 
-		invalidIcon = new Image();
-		invalidIcon.src = basePath + "exclamation.png";
+			invalidIcon = new Image();
+			invalidIcon.src = basePath + "exclamation.svg";
 
-		tooltip = createTooltip('Tooltip');
-		dpuLayer.add(tooltip);
+			tooltip = createTooltip('Tooltip');
+			dpuLayer.add(tooltip);
 
-//		formattingActionBar = createFormattingActionBar();
-//		dpuLayer.add(formattingActionBar);
+//			formattingActionBar = createFormattingActionBar();
+//			dpuLayer.add(formattingActionBar);
+		}
+		request.send(null);
 	}
 
 	var inSetupSelectionBox = false;
@@ -571,6 +582,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			return '#CED8F6';
 		} else if (type === "LOADER") {
 			return '#CEF6D8';
+        } else if (type === "QUALITY") {
+            return '#FFFFCC';
 		} else {
 			return '#FFFFFF';
 		}
@@ -2149,6 +2162,17 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			dpu.setDraggable(draggable);
 		}
 	}
+	
+	function changeTreePosition() {
+		var tree = $(".changingposition");
+		if (tree.length === 0) {
+			return;
+		}
+		var tabSheet = $("#container").parent().parent();
+		var offset = tabSheet.offset().top;
+		tree.css("top", Math.max(0, offset));
+		tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
+	}
 
 	jQuery(document).ready(function() {
 		$(".changingposition").css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
@@ -2167,14 +2191,13 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 //		});
 
 		$(window).mousemove(function() {
-			var tree = $(".changingposition");
-			if (tree.length === 0) {
-				return;
+			changeTreePosition();
+		});
+		
+		$(document).click(function(e) {
+			if (e.button == 0 && $(".expand-minimize:hover").length != 0) {
+				setTimeout(function(){changeTreePosition()}, 100);
 			}
-			var tabSheet = $("#container").parent().parent();
-			var offset = tabSheet.offset().top;
-			tree.css("top", Math.max(0, offset));
-			tree.css("max-height", $(window).height() - 38 - Math.max(0, offset));
 		});
 
 		$(window).resize(function() {
@@ -2184,6 +2207,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			}
 			tree.css("max-height", $(window).height() - 38 - Math.max(0, $("#container").parent().parent().offset().top));
 		});
+		
+		setTimeout(function(){changeTreePosition()}, 100);
 	});
 
 }

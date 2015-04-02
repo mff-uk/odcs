@@ -16,7 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Represent settings for scheduler notification.
- * 
+ *
  * @author Maria Kukhar
  */
 @MappedSuperclass
@@ -85,7 +85,7 @@ public abstract class NotificationRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -109,7 +109,7 @@ public abstract class NotificationRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return The value of hashcode.
      */
     @Override

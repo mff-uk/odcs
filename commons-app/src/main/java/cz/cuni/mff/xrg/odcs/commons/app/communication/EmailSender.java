@@ -141,8 +141,10 @@ public class EmailSender {
         }
 
         // create message
+        String encodingOptions = "text/html; charset=UTF-8";
         Message msg = new MimeMessage(session);
         try {
+            msg.setHeader("Content-Type", encodingOptions);
             msg.setFrom(new InternetAddress(fromEmail));
             for (String email : recipients) {
                 msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
@@ -150,7 +152,7 @@ public class EmailSender {
             }
 
             msg.setSubject(subject);
-            msg.setContent(body, "text/html");
+            msg.setContent(body, encodingOptions);
             // send message
             Transport.send(msg);
         } catch (MessagingException e) {

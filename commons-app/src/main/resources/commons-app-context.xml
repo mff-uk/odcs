@@ -23,6 +23,7 @@
         <property name="url" value="${database.sql.url}"/>
         <property name="username" value="${database.sql.user}"/>
         <property name="password" value="${database.sql.password}"/>
+        <property name="maxActive" value="16" />
     </bean>
 
 
@@ -36,11 +37,6 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="emf"/>
     </bean>
-
-    <!-- Injects dependencies into aspect for fixing corrupted database sequences. -->
-    <bean id="sequenceAspect"
-          class="cz.cuni.mff.xrg.odcs.commons.app.dao.VirtuosoSequenceSanitizerAspect"
-          factory-method="aspectOf"/>
 
     <!-- support for loading DPUs -->
     <bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade"
@@ -67,6 +63,9 @@
 
     <!-- Facade for managing RDF namespace prefixes -->
     <bean id="prefixFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.NamespacePrefixFacadeImpl"/>
+    
+    <!-- Facade for managing runtime properties -->
+    <bean id="runtimePropertiesFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacadeImpl"/>
 
     <!-- Service or exploring DPUs -->
     <bean id="DPUExplorer" class="cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer"/>
@@ -83,7 +82,10 @@
     <bean id="dbScheduleNotification" class="cz.cuni.mff.xrg.odcs.commons.app.scheduling.DbScheduleNotificationImpl"/>
     <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl"/>
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl"/>
+    <bean id="dbRole" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntityImpl"/>
+    <bean id="dbOrganization" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbOrganizationImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
+    <bean id="dbRuntimeProperties" class="cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimePropertiesImpl"/>
 
     <!-- authorizator required by dao -->
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizatorImpl"/>
@@ -92,4 +94,12 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator"/>
 
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager"/>
+
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactoryImpl"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
+    <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager"/>
+    
+    <!-- DAO layer. -->
+    <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
+
 </beans>

@@ -1,27 +1,35 @@
 package cz.cuni.mff.xrg.odcs.frontend.dpu.wrap;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vaadin.ui.UI;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.ConfigException;
-import cz.cuni.mff.xrg.odcs.commons.configuration.DPUConfigObject;
-import cz.cuni.mff.xrg.odcs.commons.web.AbstractConfigDialog;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogContext;
-import cz.cuni.mff.xrg.odcs.commons.web.ConfigDialogProvider;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import eu.unifiedviews.dpu.config.DPUConfigException;
+import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
+import eu.unifiedviews.dpu.config.vaadin.ConfigDialogProvider;
+import eu.unifiedviews.dpu.config.vaadin.InitializableConfigDialog;
 
 /**
  * Class wrap {@line DPURecord} and provide functions that enable easy work with
  * configuration and configuration dialog.
- * 
+ *
  * @author Petyr
  */
 public class DPURecordWrap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DPURecordWrap.class);
 
     /**
      * Wrapped DPU.
@@ -31,53 +39,59 @@ public class DPURecordWrap {
     /**
      * DPU's configuration dialog.
      */
-    private AbstractConfigDialog<DPUConfigObject> configDialog = null;
+    private AbstractConfigDialog<?> configDialog = null;
 
     /**
      * True if represents the template.
      */
     private final boolean isTemplate;
 
+    private Locale locale;
+
+    private AppConfig appConfig;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, AppConfig appConfig) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
+        this.locale = locale;
+        this.appConfig = appConfig;
     }
 
     /**
      * Try to save configuration from {@link #configDialog} into {@link #dpuRecord}. If the {@link #configDialog} is null nothing happen.
      * This function does not save data into database.
-     * 
-     * @throws ConfigException
+     *
+     * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
-    public void saveConfig() throws ConfigException, DPUWrapException {
+    public void saveConfig() throws DPUConfigException, DPUWrapException {
         if (configDialog == null) {
             return;
         }
         try {
             final String config = configDialog.getConfig();
             dpuRecord.setRawConf(config);
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to save configuration.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.save"), e);
         }
     }
 
     /**
      * Return configuration dialog for wrapped DPU. The configuration is not
      * set. To set dialog configuration call {@link #configuredDialog}
-     * 
+     *
      * @return configuration dialog for wrapped DPU
      * @throws ModuleException
      * @throws FileNotFoundException
      */
-    public AbstractConfigDialog<DPUConfigObject> getDialog()
+    public AbstractConfigDialog<?> getDialog()
             throws ModuleException, FileNotFoundException, DPUWrapException {
         // load configuration dialog
         try {
@@ -85,7 +99,7 @@ public class DPURecordWrap {
         } catch (ModuleException | FileNotFoundException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to load dialog.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.load"), e);
         }
         return configDialog;
     }
@@ -93,19 +107,19 @@ public class DPURecordWrap {
     /**
      * If respective configuration dialog for wrapped DPU exist, then set it's
      * configuration. Otherwise do nothing.
-     * 
-     * @throws ConfigException
+     *
+     * @throws DPUConfigException
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
     public void configuredDialog()
-            throws ConfigException, DPUWrapException {
+            throws DPUConfigException, DPUWrapException {
         // set dialog configuration
         try {
             loadConfigIntoDialog();
-        } catch (ConfigException e) {
+        } catch (DPUConfigException e) {
             throw e;
         } catch (Throwable e) {
-            throw new DPUWrapException("Failed to configure dpu's dialog.", e);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.configure"), e);
         }
     }
 
@@ -115,9 +129,9 @@ public class DPURecordWrap {
      * following conditions:
      * <ul>
      * <li>DPU has configuration dialog.</li>
-     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
+     * <li>The dialog has been obtained by calling {@link #getDialog().</li> <li><li><li> The dialog has been configurated by calling {@link #configuredDialog()}</li>
      * </ul>
-     * 
+     *
      * @return True if the configuration changed.
      * @throws cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException
      */
@@ -125,19 +139,19 @@ public class DPURecordWrap {
         if (configDialog == null || !dialogConfigured) {
             return false;
         }
-        // ok we satisfy necesary conditions, we may ask the dialog 
+        // ok we satisfy necesary conditions, we may ask the dialog
         // for changes
         try {
             final boolean isChanged = configDialog.hasConfigChanged();
             return isChanged;
         } catch (Exception ex) {
-            throw new DPUWrapException("Configuration dialog throws an exception.", ex);
+            throw new DPUWrapException(Messages.getString("DPURecordWrap.exception"), ex);
         }
     }
 
     /**
      * Return description from the dialog.
-     * 
+     *
      * @return Null in case of no dialog.
      */
     public String getDescription() {
@@ -152,16 +166,17 @@ public class DPURecordWrap {
      * ({@link #configDialog} is not null) then nothing is done. If the {@link #dpuRecord} does not provide configuration dialog set {@link #configDialog} to
      * null.
      * Can possibly emit runtime exception.
-     * 
+     *
      * @throws ModuleException
      * @throws FileNotFoundException
+     * @throws DPUWrapException
      */
     @SuppressWarnings("unchecked")
-    private void loadConfigDialog() throws ModuleException, FileNotFoundException {
+    private void loadConfigDialog() throws ModuleException, FileNotFoundException, DPUWrapException {
         if (configDialog == null) {
             // continue and load the dialog
         } else {
-            // already loaded .. 
+            // already loaded ..
             return;
         }
         // first we need load instance of the DPU
@@ -169,15 +184,32 @@ public class DPURecordWrap {
         Object instance = dpuRecord.getInstance();
         // now try to load the dialog
         if (instance instanceof ConfigDialogProvider<?>) {
-            ConfigDialogProvider<DPUConfigObject> dialogProvider;
+            ConfigDialogProvider<?> dialogProvider;
             // 'unchecked casting' .. we check type in condition above
-            dialogProvider = (ConfigDialogProvider<DPUConfigObject>) instance;
+            dialogProvider = (ConfigDialogProvider<?>) instance;
+
+            try {
+                java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
+                final Object result = method.invoke(dialogProvider);
+                configDialog = (AbstractConfigDialog<?>)result;                
+            } catch (NoSuchMethodException | SecurityException ex) {
+                LOG.error("Can't get method.", ex);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                LOG.error("Can't call method.", ex);
+            }
             // get configuration dialog
-            configDialog = dialogProvider.getConfigurationDialog();
+            //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, appConfig);
                 configDialog.setContext(context);
+                if (configDialog instanceof InitializableConfigDialog) {
+                    try {
+                        ((InitializableConfigDialog) configDialog).initialize();
+                    } catch (DPUConfigException ex) {
+                        throw new DPUWrapException("Can't initialize dialog.");
+                    }
+                }
             }
         } else {
             // no configuration dialog
@@ -188,12 +220,12 @@ public class DPURecordWrap {
 
     /**
      * Try to load configuration from {@link #dpuRecord} into {@link #configDialog}. Can possibly emit runtime exception.
-     * 
-     * @throws ConfigException
+     *
+     * @throws DPUConfigException
      */
-    private void loadConfigIntoDialog() throws ConfigException {
+    private void loadConfigIntoDialog() throws DPUConfigException {
         if (configDialog == null) {
-            // no dialog .. nothing to do 
+            // no dialog .. nothing to do
             return;
         }
         // we try to configure the dialog

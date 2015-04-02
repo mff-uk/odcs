@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,14 +28,18 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
+import eu.unifiedviews.commons.dao.DBExecutionView;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
 
 /**
  * Presenter for {@link ExecutionListPresenter}.
@@ -42,14 +47,17 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
  * @author Petyr
  */
 @Component
-@Scope("prototype")
+@Scope("session")
 @Address(url = "ExecutionList")
-public class ExecutionListPresenterImpl implements ExecutionListPresenter {
+public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
 
     @Autowired
     private DbExecution dbExecution;
+
+    @Autowired
+    private DBExecutionView dbExecutionView;
 
     @Autowired
     private DbMessageRecord dbMessageRecord;
@@ -71,7 +79,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     private ExecutionListData dataObject;
 
-    private DbCachedSource<PipelineExecution> cachedSource;
+    private DbCachedSource<ExecutionView> cachedSource;
 
     private RefreshManager refreshManager;
 
@@ -79,17 +87,39 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     private ClassNavigator navigator;
 
+    private boolean isInitialized = false;
+
     @Override
     public Object enter() {
+        if (isInitialized) {
+            navigator = ((AppEntry) UI.getCurrent()).getNavigation();
+            addRefreshManager();
+            return view.enter(this);
+        }
+
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
-                utils.getPageLength());
+//        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(), utils.getPageLength());
+
+        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
+
         ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
         c.sort(new Object[] { "id" }, new boolean[] { false });
         dataObject = new ExecutionListData(c);
         // prepare view
         Object viewObject = view.enter(this);
+        addRefreshManager();
+
+        // set data object
+        view.setDisplay(dataObject);
+
+        isInitialized = true;
+
+        // return main component
+        return viewObject;
+    }
+
+    private void addRefreshManager() {
         refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
         refreshManager.addListener(RefreshManager.EXECUTION_MONITOR, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
@@ -103,26 +133,20 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
                 }
             }
         });
-
-        // set data object
-        view.setDisplay(dataObject);
-
-        // add initial name filter
-        view.setFilter("owner.username", utils.getUserName());
-
-        // return main component
-        return viewObject;
+        refreshManager.triggerRefresh();
     }
 
     @Override
     public void setParameters(Object configuration) {
         if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
+            view.resetFilters();
             int pageNumber = 0;
             Map<String, String> config = (Map<String, String>) configuration;
+            Long execId = null;
             for (Map.Entry<String, String> entry : config.entrySet()) {
                 switch (entry.getKey()) {
                     case "exec":
-                        Long execId = Long.parseLong(entry.getValue());
+                        execId = Long.parseLong(entry.getValue());
                         view.setSelectedRow(execId);
                         showDebugEventHandler(execId);
                         break;
@@ -147,26 +171,19 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
                         break;
                 }
             }
+            pageNumber = execId == null ? pageNumber : view.getExecPage(execId);
             if (pageNumber != 0) {
                 //Page number is set as last, because filtering automatically moves table to first page.
                 view.setPage(pageNumber);
             }
         }
-//		if (configuration != null && configuration.getClass() == String.class) {
-//			String strExecId = (String) configuration;
-//			try {
-//				Long execId = Long.parseLong(strExecId);
-//				view.setSelectedRow(execId);
-//				showDebugEventHandler(execId);
-//			} catch (NumberFormatException e) {
-//				//LOG.warn("Invalid parameter for execution monitor.", e);
-//			}
-//		}
     }
 
     @Override
     public void refreshEventHandler() {
-        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
+                || (cachedSource.size() > 0 &&
+                pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
@@ -177,8 +194,9 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public boolean canStopExecution(long executionId) {
-        PipelineExecution exec = cachedSource.getObject(executionId);
-        return permissionEvaluator.hasPermission(exec, "save");
+        PipelineExecution exec =
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.cancel");
     }
 
     @Override
@@ -189,9 +207,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
 
     @Override
     public void showDebugEventHandler(long executionId) {
+        if (!view.hasExecution(executionId)) {
+            return;
+        }
         PipelineExecution exec = getLightExecution(executionId);
         if (exec == null) {
-            Notification.show(String.format("Execution with ID=%d doesn't exist!", executionId), Notification.Type.ERROR_MESSAGE);
+            Notification.show(Messages.getString("ExecutionListPresenterImpl.0", executionId), Notification.Type.ERROR_MESSAGE);
             return;
         }
         view.showExecutionDetail(exec, new ExecutionDetailData(getMessageDataSource()));
@@ -280,5 +301,42 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter {
         } else {
             navigator.navigateTo(where, param.toString());
         }
+    }
+
+    @Override
+    public void doAfterLogout() {
+        isInitialized = false;
+    }
+
+    public boolean isLayoutInitialized() {
+        return isInitialized;
+    }
+
+    @Override
+    public boolean canReadLog(long executionId) {
+        PipelineExecution exec =
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.readLog");
+    }
+
+    @Override
+    public boolean canDebugData(long executionId) {
+        PipelineExecution exec =
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipelineExecution.debugData");
+    }
+
+    @Override
+    public boolean canRunPipeline(long executionId) {
+        PipelineExecution exec =
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipeline.run");
+    }
+
+    @Override
+    public boolean canDebugPipeline(long executionId) {
+        PipelineExecution exec =
+                getLightExecution(executionId);
+        return permissionEvaluator.hasPermission(exec, "pipeline.runDebug");
     }
 }

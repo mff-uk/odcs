@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Level;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.execution.ExecutionResult;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
@@ -331,7 +332,7 @@ public class Executor implements Runnable {
             while (executorThread.isAlive()) {
                 try {
                     // sleep for five seconds
-                    Thread.sleep(5000);
+                    executorThread.join(5000);
                 } catch (InterruptedException e) {
                     // request stop
                     stopExecution(executorThread, dpuExecutor);
@@ -369,14 +370,14 @@ public class Executor implements Runnable {
             ExecutionResult dpuResults = dpuExecutor.getExecResult();
             // check for corrent ending
             if (dpuResults.executionEndsProperly()) {
-                // ok eecution ends properly 
+                // ok execution ends properly
             } else {
                 // this mean that we end in non standart way ...
                 // and this is equal to the failure
                 dpuResults.failure();
                 eventPublisher.publishEvent(PipelineFailedEvent.create(
-                        "DPU execution failed",
-                        "The DPU execution thread ends in non-standart way",
+                        Messages.getString("Executor.execution.failed"),
+                        Messages.getString("Executor.execution.failed.detail"),
                         node.getDpuInstance(), execution, this));
             }
             execResult.add(dpuResults);
@@ -386,6 +387,14 @@ public class Executor implements Runnable {
         if (!executePostExecutors(dependencyGraph)) {
             // failed ..
             execResult.failure();
+        }
+
+        // make sure all logs are in database as we use them to determine
+        // pipeline state
+        try {
+            logAppender.flush();
+        } catch (Throwable e) {
+            LOG.error("logAppender.flush() throws!!!", e);
         }
 
         // all done, resolve the way of ending .. 
@@ -426,14 +435,6 @@ public class Executor implements Runnable {
         // that the execution finished ..
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
 
-        // the logs are fulshed every 4300 ms, so we wait for
-        // 5 seconds before ending
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            // ok stop waiting and end 
-        }
-
         LOG.trace("Saving pipeline chanegs into SQL ..");
 
         // save the execution
@@ -470,9 +471,9 @@ public class Executor implements Runnable {
         // set cancel flag
         dpuExecutor.cancel();
         // interrupt executorThread, and wait for it ...
-        // we do not interrupt !!! as there may
-        // be running pre-post executors
         try {
+            // TODO Petr revise core code to kame sure that it's ready to work with potential interrupt
+            executorThread.interrupt();
             executorThread.join();
         } catch (InterruptedException e) {
             // if we are interrupt stop waiting

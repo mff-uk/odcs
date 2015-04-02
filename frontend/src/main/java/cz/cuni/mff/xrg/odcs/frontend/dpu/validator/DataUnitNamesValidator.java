@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUValidatorException;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Check for duplicity in names of input and output data units.
@@ -40,12 +41,8 @@ class DataUnitNamesValidator implements DPUValidator {
         HashSet<String> names = new HashSet<>();
         for (DataUnitDescription desc : dataUnits) {
             if (names.contains(desc.getName())) {
-                final StringBuilder msg = new StringBuilder();
-                msg.append("DPU contains two data units with same name ('");
-                msg.append(desc.getName());
-                msg.append("')!");
                 // name collision
-                throw new DPUValidatorException(msg.toString());
+                throw new DPUValidatorException(Messages.getString("DataUnitNamesValidator.same.dataunit", desc.getName()));
             } else {
                 names.add(desc.getName());
             }

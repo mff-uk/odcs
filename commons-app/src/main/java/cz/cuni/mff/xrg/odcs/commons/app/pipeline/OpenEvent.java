@@ -11,7 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 /**
  * Represents a single event of opening pipeline detail in canvas by given owner
  * at given time.
- * 
+ *
  * @author Jan Vojt
  */
 @Entity
@@ -43,7 +43,7 @@ public class OpenEvent implements DataObject {
      * Timestamp when the event occurred.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "opened")
+    @Column(name = "opened", nullable = false)
     private Date timestamp;
 
     @Override
@@ -77,7 +77,7 @@ public class OpenEvent implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     * 
+     *
      * @return hashcode
      */
     @Override
@@ -95,7 +95,7 @@ public class OpenEvent implements DataObject {
     /**
      * Returns true if two objects represent the same event. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     * 
+     *
      * @param o
      * @return true if both objects represent the same event
      */

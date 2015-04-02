@@ -9,15 +9,15 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.rdf.CleverDataset;
-import cz.cuni.mff.xrg.odcs.rdf.RDFDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.help.OrderTupleQueryResult;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
+import eu.unifiedviews.helpers.dataunit.rdf.RDFHelper;
 
 /**
  * Class based on lazy evaluation to get data there are used then in methods
@@ -92,10 +92,7 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
                 TupleQuery tupleQuery = connection.prepareTupleQuery(
                         QueryLanguage.SPARQL, selectQuery);
-                CleverDataset dataSet = new CleverDataset();
-                dataSet.addDefaultGraphs(repository.getContexts());
-                dataSet.addNamedGraphs(repository.getContexts());
-                tupleQuery.setDataset(dataSet);
+                tupleQuery.setDataset(RDFHelper.getDatasetWithDefaultGraphs(repository));
 
                 TupleQueryResult result = tupleQuery.evaluate();
                 return result;
@@ -111,6 +108,9 @@ public class OrderTupleQueryResultImpl implements OrderTupleQueryResult {
 
             } catch (RepositoryException ex) {
                 logger.error("Connection to RDF repository failed. {}",
+                        ex.getMessage(), ex);
+            } catch (DataUnitException ex) {
+                logger.error("DataUnit exception. {}",
                         ex.getMessage(), ex);
             } finally {
                 if (connection != null) {

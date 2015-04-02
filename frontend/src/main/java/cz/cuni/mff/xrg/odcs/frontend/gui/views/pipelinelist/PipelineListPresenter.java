@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
+import eu.unifiedviews.commons.dao.view.PipelineView;
 
 /**
  * Interface for presenter that take care about presenting information about
@@ -43,6 +44,57 @@ public interface PipelineListPresenter extends Presenter {
      */
     public boolean canDeletePipeline(long pipelineId);
 
+    /**
+     * Tells whether user has permission to edit pipeline with given id, so
+     * we can decide whether to hide edit button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be edited
+     * @return true if user has permission to edit, false otherwise
+     */
+    public boolean canEditPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to run pipeline with given id, so
+     * we can decide whether to hide edit button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be run
+     * @return true if user has permission to run, false otherwise
+     */
+    public boolean canRunPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to debug pipeline with given id, so
+     * we can decide whether to hide debug button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be debug
+     * @return true if user has permission to debug, false otherwise
+     */
+    public boolean canDebugPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to schedule pipeline with given id, so
+     * we can decide whether to hide schedule button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be scheduled
+     * @return true if user has permission to schedule, false otherwise
+     */
+    public boolean canSchedulePipeline(long pipelineId);
+    
+    /**
+     * Tells whether user has permission to copy pipeline with given id, so
+     * we can decide whether to hide copy button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be copied
+     * @return true if user has permission to copy, false otherwise
+     */
+    public boolean canCopyPipeline(long pipelineId);
+    
+    
     /**
      * Schedule pipeline with given id.
      * 
@@ -143,14 +195,14 @@ public interface PipelineListPresenter extends Presenter {
      */
     public final class PipelineListData {
 
-        private final ReadOnlyContainer<Pipeline> container;
+        private final ReadOnlyContainer<PipelineView> container;
 
         /**
          * Gets the container.
          * 
          * @return Container.
          */
-        public ReadOnlyContainer<Pipeline> getContainer() {
+        public ReadOnlyContainer<PipelineView> getContainer() {
             return container;
         }
 
@@ -160,8 +212,14 @@ public interface PipelineListPresenter extends Presenter {
          * @param container
          *            Container to hold.
          */
-        public PipelineListData(ReadOnlyContainer<Pipeline> container) {
+        public PipelineListData(ReadOnlyContainer<PipelineView> container) {
             this.container = container;
         }
     }
+
+    /**
+     * 
+     * @return
+     */
+	public boolean isLayoutInitialized();
 }

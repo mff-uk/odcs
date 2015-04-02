@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Accessor for {@link PipelineExecution}s.
@@ -60,23 +61,23 @@ public class ExecutionAccessor implements ClassAccessor<PipelineExecution> {
     public String getColumnName(String id) {
         switch (id) {
             case "id":
-                return "Id";
+                return Messages.getString("ExecutionAccessor.id");
             case "start":
-                return "Started";
+                return Messages.getString("ExecutionAccessor.started");
             case "pipeline.name":
-                return "Pipeline";
+                return Messages.getString("ExecutionAccessor.pipeline");
             case "duration":
-                return "Duration";
+                return Messages.getString("ExecutionAccessor.duration");
             case "owner.username":
-                return "Executed by";
+                return Messages.getString("ExecutionAccessor.owner");
             case "status":
-                return "Status";
+                return Messages.getString("ExecutionAccessor.status");
             case "isDebugging":
-                return "Debug";
+                return Messages.getString("ExecutionAccessor.isDebugging");
             case "lastChange":
-                return "Last modification";
+                return Messages.getString("ExecutionAccessor.lastChange");
             case "schedule":
-                return "Sch.";
+                return Messages.getString("ExecutionAccessor.schedule");
             default:
                 return null;
         }

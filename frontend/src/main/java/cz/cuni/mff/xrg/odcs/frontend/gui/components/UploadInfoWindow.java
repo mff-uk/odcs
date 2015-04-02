@@ -1,18 +1,14 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.FinishedListener;
 import com.vaadin.ui.Upload.ProgressListener;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
-import com.vaadin.ui.Window;
+
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Dialog for uploading status. Appear automatically after file upload start.
@@ -41,13 +37,13 @@ public class UploadInfoWindow extends Window implements StartedListener,
      *            Upload component that called this method
      */
     public UploadInfoWindow(final Upload upload) {
-        super("Status");
+        super(Messages.getString("UploadInfoWindow.status"));
         this.upload = upload;
         this.state = new Label();
         this.fileName = new Label();
         this.textualProgress = new Label();
         this.progressBar = new ProgressBar();
-        cancelButton = new Button("Cancel");
+        cancelButton = new Button(Messages.getString("UploadInfoWindow.cancel"));
 
         setParameters();
     }
@@ -82,15 +78,15 @@ public class UploadInfoWindow extends Window implements StartedListener,
         cancelButton.setStyleName("small");
         stateLayout.addComponent(cancelButton);
 
-        stateLayout.setCaption("Current state");
-        state.setValue("Idle");
+        stateLayout.setCaption(Messages.getString("UploadInfoWindow.current.state"));
+        state.setValue(Messages.getString("UploadInfoWindow.idle"));
         formLayout.addComponent(stateLayout);
 
-        fileName.setCaption("File name");
+        fileName.setCaption(Messages.getString("UploadInfoWindow.file.name"));
         formLayout.addComponent(fileName);
 
         //progress indicator
-        progressBar.setCaption("Progress");
+        progressBar.setCaption(Messages.getString("UploadInfoWindow.progress"));
         progressBar.setVisible(false);
         formLayout.addComponent(progressBar);
 
@@ -111,7 +107,7 @@ public class UploadInfoWindow extends Window implements StartedListener,
      */
     @Override
     public void uploadFinished(final FinishedEvent event) {
-        state.setValue("Idle");
+        state.setValue(Messages.getString("UploadInfoWindow.upload.idle"));
         progressBar.setVisible(false);
         textualProgress.setVisible(false);
         cancelButton.setVisible(false);
@@ -134,7 +130,7 @@ public class UploadInfoWindow extends Window implements StartedListener,
         }
         textualProgress.setVisible(true);
         // updates to client
-        state.setValue("Uploading");
+        state.setValue(Messages.getString("UploadInfoWindow.uploading"));
         fileName.setValue(event.getFilename());
 
         cancelButton.setVisible(true);
@@ -153,7 +149,9 @@ public class UploadInfoWindow extends Window implements StartedListener,
     public void updateProgress(final long readBytes, final long contentLength) {
         progressBar.setValue(new Float(readBytes / (float) contentLength));
         textualProgress.setValue(
-                "Processed " + (readBytes / 1024) + " k bytes of "
-                        + (contentLength / 1024) + " k");
+                Messages.getString("UploadInfoWindow.processed", (readBytes / 1024), (contentLength / 1024)));
+        if (progressBar.getValue() == 1.0 && progressBar.getUI() != null) {
+            progressBar.getUI().setPollInterval(-1); // disabling
+        }
     }
 }

@@ -33,6 +33,8 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
+
     /**
      * @param pipeline
      * @param status
@@ -75,5 +77,22 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      * @return whether any execution was updated since given date
      */
     public boolean hasModified(Date since);
+
+    /**
+     * Checks if some of the executions were deleted
+     * <p>
+     * @param ids executions to check
+     * @return true if one or more execution were deleted
+     */
+	public boolean hasDeleted(List<Long> ids);
+
+	/**
+	 * Checks if there are executions for selected pipeline with selected statuses
+	 * 
+	 * @param pipeline for which executions we are checking
+	 * @param statuses of executions we are checking
+	 * @return true if there is at least one execution with selected statuses, false otherwise
+	 */
+    boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
 }

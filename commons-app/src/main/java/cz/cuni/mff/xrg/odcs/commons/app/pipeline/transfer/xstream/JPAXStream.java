@@ -5,14 +5,17 @@ import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 
 /**
  * Customised version of {@link XStream} for working with objects that are
  * stored in database.
  * Usage of this class require all getters and setters to respect basic
  * conventions.
- * 
+ *
  * @author Škoda Petr
  */
 public class JPAXStream extends XStream {
@@ -21,6 +24,10 @@ public class JPAXStream extends XStream {
 
     protected JPAXStream() {
         super();
+    }
+
+    protected JPAXStream(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        super(hierarchicalStreamDriver);
     }
 
     @Override
@@ -42,17 +49,29 @@ public class JPAXStream extends XStream {
         };
     }
 
-    public static JPAXStream createForPipeline() {
-        JPAXStream stream = new JPAXStream();
+    public static JPAXStream createForPipeline(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
         // setup
         ClassFilter classFilter = new ClassFilter();
         classFilter.add("org.eclipse.persistence");
         stream.filters.add(classFilter);
+
         NameFilter skipName = new NameFilter();
         skipName.add("id");
         skipName.add("_persistence_");
         skipName.add("owner");
         stream.filters.add(skipName);
+
+        AllowedFieldsFilter allowedfieldFilter = new AllowedFieldsFilter();
+        allowedfieldFilter.add(DPUTemplateRecord.class, "jarName");
+        allowedfieldFilter.add(DPUTemplateRecord.class, "name");
+        stream.filters.add(allowedfieldFilter);
+
         // this will use getters and setters for ono plain objects
         // usage of get/set will invoke jpa to load the data
         stream.registerConverter(new JavaBeanConverter(stream.getMapper()),
@@ -60,8 +79,13 @@ public class JPAXStream extends XStream {
         return stream;
     }
 
-    public static JPAXStream createForSchedule() {
-        JPAXStream stream = new JPAXStream();
+    public static JPAXStream createForSchedule(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
         // setup
         ClassFilter classFilter = new ClassFilter();
         classFilter.add("org.eclipse.persistence");
@@ -79,4 +103,29 @@ public class JPAXStream extends XStream {
         return stream;
     }
 
+    public static JPAXStream createForDPUTemplate(HierarchicalStreamDriver hierarchicalStreamDriver) {
+        JPAXStream stream;
+        if (hierarchicalStreamDriver != null) {
+            stream = new JPAXStream(hierarchicalStreamDriver);
+        } else {
+            stream = new JPAXStream();
+        }
+
+        stream.alias("template", DPUTemplateRecord.class);
+
+        // setup
+        ClassFilter classFilter = new ClassFilter();
+        classFilter.add("org.eclipse.persistence");
+        stream.filters.add(classFilter);
+        NameFilter skipName = new NameFilter();
+        skipName.add("id");
+        skipName.add("_persistence_");
+        skipName.add("owner");
+        stream.filters.add(skipName);
+        // this will use getters and setters for ono plain objects
+        // usage of get/set will invoke jpa to load the data
+        stream.registerConverter(new JavaBeanConverter(stream.getMapper()),
+                PRIORITY_VERY_LOW);
+        return stream;
+    }
 }

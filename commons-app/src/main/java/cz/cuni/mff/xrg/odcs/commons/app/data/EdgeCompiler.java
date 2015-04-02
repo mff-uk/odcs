@@ -10,6 +10,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.LogAndIgnore;
 import cz.cuni.mff.xrg.odcs.commons.app.data.handlers.StoreInvalidMappings;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -198,17 +199,24 @@ public final class EdgeCompiler {
      */
     public void createDefaultMapping(DPUExplorer dpuExplorer, Edge edge,
             DPUInstanceRecord from, DPUInstanceRecord to) {
-        List<DataUnitDescription> source = dpuExplorer.getOutputs(from);
-        List<DataUnitDescription> target = dpuExplorer.getInputs(to);
+        final List<DataUnitDescription> sourceList = dpuExplorer.getOutputs(from);
+        final List<DataUnitDescription> targetList = dpuExplorer.getInputs(to);
 
-        if (source.size() == 1 && target.size() == 1) {
-            final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
-            mapping.add(new MutablePair<>(0, 0));
-            edge.setScript(translate(mapping, source, target, null));
-        } else if (source.isEmpty() || target.isEmpty()) {
+        if (sourceList.size() == 1 && targetList.size() == 1) {
+            final DataUnitDescription source = sourceList.get(0);
+            final DataUnitDescription target = targetList.get(0);
+            // Check for type.
+            if (source.getTypeName().compareTo(target.getTypeName()) == 0) {
+                final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
+                mapping.add(new MutablePair<>(0, 0));
+                edge.setScript(translate(mapping, sourceList, targetList, null));
+            } else {
+                edge.setScript("");
+            }
+        } else if (sourceList.isEmpty() || targetList.isEmpty()) {
             // no mapping
             final List<MutablePair<Integer, Integer>> mapping = new ArrayList<>();
-            edge.setScript(translate(mapping, source, target, null));
+            edge.setScript(translate(mapping, sourceList, targetList, null));
         } else {
             edge.setScript("");
         }
@@ -281,7 +289,8 @@ public final class EdgeCompiler {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Input: %s", dpu
+                    report += "\n";
+                    report += Messages.getString("EdgeCompiler.dpu.input", dpu
                             .getName(), input.getName());
                 }
             }
@@ -302,7 +311,8 @@ public final class EdgeCompiler {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Output: %s", dpu
+                    report += "\n";
+                    report += Messages.getString("EdgeCompiler.dpu.output", dpu
                             .getName(), output.getName());
                 }
             }
