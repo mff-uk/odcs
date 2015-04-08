@@ -104,5 +104,8 @@ public class ODCSSSOApplicationServlet extends SpringVaadinServlet {
         } else {
             LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Request ({}) URI", request.getRequestURI());
+        }
     }
 }

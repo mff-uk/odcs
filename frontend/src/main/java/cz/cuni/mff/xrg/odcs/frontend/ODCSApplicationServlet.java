@@ -115,6 +115,10 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         } else {
             LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Request ({}) URI", request.getRequestURI());
+        }
+
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
         // by different thread, which will need to load security context from
