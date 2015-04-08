@@ -97,7 +97,7 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         // Do the business.
         Date start = new Date();
         int serviceId = serviceCounter++;
-        LOG.info("> service ({})", serviceId);
+        LOG.info("Request ({}) received", serviceId);
 
         // Frontend theme for pipeline canvas.
         if (request.getRequestURI().endsWith(ConfigProperty.FRONTEND_THEME.toString())) {
@@ -111,9 +111,9 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
 
         Date end = new Date();
         if (end.getTime() - start.getTime() > 1000) {
-            LOG.warn("< service ({}) in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+            LOG.warn("Request ({}) finished processing in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
         } else {
-            LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
+            LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced

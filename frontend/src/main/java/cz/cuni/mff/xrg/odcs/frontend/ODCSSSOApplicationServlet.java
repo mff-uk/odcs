@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -40,16 +41,18 @@ public class ODCSSSOApplicationServlet extends SpringVaadinServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ODCSSSOApplicationServlet.class);
 
+    private int serviceCounter = 0;
 
     @Autowired
     private AppConfig appConfig;
-    
+
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletConfig.getServletContext());
     }
+
     /**
      * Create {@link VaadinServletService} from supplied {@link DeploymentConfiguration}.
      * 
@@ -80,7 +83,11 @@ public class ODCSSSOApplicationServlet extends SpringVaadinServlet {
         // Store current HTTP request in thread-local, so Spring can access it
         // later during user login.
         RequestHolder.setRequest(request);
-
+        
+        Date start = new Date();
+        int serviceId = serviceCounter++;
+        LOG.info("Request ({}) received", serviceId);
+        
         // Frontend theme for pipeline canvas.
         if (request.getRequestURI().endsWith(ConfigProperty.FRONTEND_THEME.toString())) {
             OutputStream outputStream = response.getOutputStream();
@@ -89,6 +96,13 @@ public class ODCSSSOApplicationServlet extends SpringVaadinServlet {
             outputStream.close();
         } else {
             super.service(request, response);
+        }
+        
+        Date end = new Date();
+        if (end.getTime() - start.getTime() > 1000) {
+            LOG.warn("Request ({}) finished processing in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+        } else {
+            LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
     }
 }
