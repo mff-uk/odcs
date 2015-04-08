@@ -926,7 +926,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -1197,11 +1197,7 @@ public class PipelineEdit extends ViewComponent {
         final ShareType visibility;
         
         if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
-            if(utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))){
-                    visibility = ShareType.PUBLIC_RO;
-            }else{
                 visibility = ShareType.PRIVATE;
-            }
         }else{
             visibility = (ShareType) pipelineVisibility.getValue();
         }

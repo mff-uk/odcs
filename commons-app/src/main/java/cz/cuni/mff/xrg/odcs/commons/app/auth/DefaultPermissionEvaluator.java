@@ -28,9 +28,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  */
 public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 
+    private static final String PIPELINE_DELETE = "pipeline.delete";
+
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
     private static final String ORGANIZATION_MODE = "organization";
+    
+    private static final String USER_MODE = "user";
     
     /**
      * Application's configuration.
@@ -63,9 +67,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
         Permission foundPermission = null;
 
+        String adminPermission = this.appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            
-            String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
             
             if (ga.getAuthority().equals(adminPermission)) {
                 return true;
@@ -78,7 +82,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
             return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
 
-        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
+        if (USER_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
             return hasPermissionUser(auth, target, (String) perm, foundPermission);
 
         return false;
@@ -107,7 +111,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
                     return false;
                 } else {
                     //only owner can delete
-                    if(!"pipeline.delete".equals(requestedPerm)){
+                    if(!PIPELINE_DELETE.equals(requestedPerm)){
                         return true;
                     } else {
                         return false;
