@@ -15,12 +15,10 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>${uv-dpu-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
-			<version>${uv-dataunit-files.version}</version>
 		</dependency>
 		<dependency> <!-- dataunit project -->
 			<groupId>eu.unifiedviews</groupId>
@@ -35,23 +33,19 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.7</version>
 		</dependency>
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.7</version>
 		</dependency>
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

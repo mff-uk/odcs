@@ -14,17 +14,14 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>${uv-dpu-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
-			<version>${uv-dataunit-rdf.version}</version>
 		</dependency>
 
 		<dependency> <!-- commons project -->
@@ -44,7 +41,6 @@
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -41,43 +41,36 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>${uv-dpu-api.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-config-vaadin</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
-			<version>${uv-dataunit-rdf.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
-			<version>${uv-dataunit-files.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-relational</artifactId>
-			<version>${uv-dataunit-relational.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-helpers</artifactId>
-			<version>${uv-dataunit-helpers.version}</version>
 		</dependency>
 
 		<dependency>
@@ -113,24 +106,20 @@
 		<dependency> <!-- logback as implementation org.slf4j -->
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.7</version>
 		</dependency>
 
 		<dependency> <!-- OSGI impelemention -->
@@ -142,7 +131,6 @@
 		<dependency> <!-- apache.commons : delete folder recursive -->
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 			<type>jar</type>
 		</dependency>
 
@@ -325,7 +313,6 @@
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
 

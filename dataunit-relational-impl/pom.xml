@@ -14,12 +14,10 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>${uv-dpu-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-relational</artifactId>
-			<version>${uv-dataunit-relational.version}</version>
 		</dependency>
 
 		<dependency> <!-- dataunit base project -->
@@ -45,7 +43,6 @@
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom</artifactId>
+		<version>2.1.0-SNAPSHOT</version>
+	</parent>
+    
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
 	<version>2.1.0-SNAPSHOT</version>
@@ -15,22 +22,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
-		<uv-dpu-api.version>2.1.0-SNAPSHOT</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.1.0-SNAPSHOT</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>2.1.0-SNAPSHOT</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>2.1.0-SNAPSHOT</uv-dataunit-files.version>
-		<uv-dataunit-relational.version>2.1.0-SNAPSHOT</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.1.0-SNAPSHOT</uv-dataunit-helpers.version>
 		<dataunit.version>2.1.0-SNAPSHOT</dataunit.version>
 
-		<!-- define used vaadin version !!! do not forget to update the version
+		<!-- define used vaadin version !!! do not forget to update the version 
 		for OSGI's package export -->
 		<vaadin.version>7.3.7</vaadin.version>
-		<!-- the minimal required vaadin version The lowest Vaadin version accepted
+		<!-- the minimal required vaadin version The lowest Vaadin version accepted 
 		by DPUs. -->
 		<vaadin.version.min>7.3.7</vaadin.version.min>
-		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted
+		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted 
 		by DPUs. -->
 		<vaadin.version.max>8.0.0</vaadin.version.max>
 
@@ -76,7 +76,7 @@
 	</scm>
 
 	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role>
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
 		</roles> </developer> -->
 	</developers>
 
@@ -130,7 +130,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS
+			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS 
 			profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -173,7 +173,7 @@
 						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
-						</goals>
+						</goals>                   
 					</execution>
 				</executions>
 			</plugin>
