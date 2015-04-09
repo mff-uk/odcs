@@ -59,6 +59,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -269,7 +270,7 @@ public class PipelineEdit extends ViewComponent {
         if (this.pipeline == null) {
             return;
         } else {
-            setMode(hasPermission("pipeline.save"));
+            setMode(hasPermission(EntityPermissions.PIPELINE_SAVE));
             updateLblPipelineName();
         }
 
@@ -965,7 +966,7 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission("pipeline.save");
+        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission(EntityPermissions.PIPELINE_SAVE);
     }
 
     @Override
@@ -1023,13 +1024,13 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupButtons(boolean enabled, boolean isNew) {
-        buttonSave.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndClose.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("pipeline.save") && hasPermission("pipeline.runDebug"));
-        buttonCopy.setEnabled(!isNew && hasPermission("pipeline.copy"));
-        buttonCopyAndClose.setEnabled(!isNew && hasPermission("pipeline.copy"));
+        buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
+        buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
+        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
+        buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         // we reuse copy permision for exportPipeline
-        buttonExport.setEnabled(hasPermission("pipeline.export"));
+        buttonExport.setEnabled(hasPermission(EntityPermissions.PIPELINE_EXPORT));
     }
 
     /**

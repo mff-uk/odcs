@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -63,6 +64,7 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
+    @PreAuthorize("hasRole('pipeline.import')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
         final File tempDir;
         try {
@@ -73,6 +75,7 @@ public class ImportService {
         return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
+    @PreAuthorize("hasRole('pipeline.import')")
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
         // delete tempDirectory
@@ -227,6 +230,7 @@ public class ImportService {
             // TODO add version check here
         }
         // copy user data
+        // TODO: Add permission check for pipeline.importUserData
         if (userDataDir.exists() && importUserDataFile) {
             try {
                 final File dest = resourceManager
@@ -264,6 +268,7 @@ public class ImportService {
      * @param user
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.importScheduleRules')")
     private void importSchedules(File scheduleFile, Pipeline pipeline, User user)
             throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));

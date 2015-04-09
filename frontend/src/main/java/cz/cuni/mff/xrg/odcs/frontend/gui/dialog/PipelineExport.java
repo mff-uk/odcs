@@ -23,6 +23,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
@@ -87,21 +88,23 @@ public class PipelineExport extends Window {
         chbExportDPUData.setWidth("100%");
         chbExportDPUData.setValue(false);
 
-        if (hasPermission("pipeline.exportDpuData")) {
+        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_DPU_DATA)) {
             detailLayout.addComponent(chbExportDPUData);
         }
         chbExportJars = new CheckBox(Messages.getString("PipelineExport.jar.export"));
         chbExportJars.setWidth("100%");
         chbExportJars.setValue(false);
 
-        if (hasPermission("pipeline.exportDpuJars")) {
+        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_DPU_JARS)) {
             detailLayout.addComponent(chbExportJars);
         }
 
         chbExportSchedule = new CheckBox(Messages.getString("PipelineExport.schedule.export"));
         chbExportSchedule.setWidth("100%");
         chbExportSchedule.setValue(false);
-        detailLayout.addComponent(chbExportSchedule);
+        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_SCHEDULES)) {
+            detailLayout.addComponent(chbExportSchedule);
+        }
 
         final VerticalLayout usedJarsLayout = new VerticalLayout();
         usedJarsLayout.setWidth("100%");
