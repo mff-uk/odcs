@@ -1,36 +1,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>uv-core</artifactId>
-    <groupId>eu.unifiedviews</groupId>
-    <version>2.1.0-SNAPSHOT</version>
-  </parent>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>uv-core</artifactId>
+		<groupId>eu.unifiedviews</groupId>
+		<version>2.1.0-SNAPSHOT</version>
+	</parent>
 
-  <groupId>eu.unifiedviews</groupId>
-  <artifactId>dataunit-relational-impl</artifactId>
-  <name>dataunit-relational-impl</name>
-  
-  <dependencies>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dpu-api</artifactId>
-            <version>${uv-dpu-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>uv-dataunit-relational</artifactId>
-            <version>${uv-dataunit-relational.version}</version>
-        </dependency>
-        
-        <dependency> <!-- dataunit base project -->
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>dataunit</artifactId>
-            <!-- the version has to be specify -->
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-        
-        <!-- Internal relational database -->
+	<groupId>eu.unifiedviews</groupId>
+	<artifactId>dataunit-relational-impl</artifactId>
+	<name>dataunit-relational-impl</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dpu-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>uv-dataunit-relational</artifactId>
+		</dependency>
+
+		<dependency> <!-- dataunit base project -->
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>dataunit</artifactId>
+			<!-- the version has to be specify -->
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+
+		<!-- Internal relational database -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
@@ -42,11 +40,10 @@
 			<version>1.4.182</version>
 		</dependency>
 
-        <dependency> <!-- JUnit dependency -->
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency> <!-- JUnit dependency -->
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
