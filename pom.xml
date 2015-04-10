@@ -22,7 +22,15 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<dataunit.version>2.1.0-SNAPSHOT</dataunit.version>
+		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
+		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>${unifiedviews.helpers.dpu.version}</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
+		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
+		<uv-dataunit-helpers.version>${unifiedviews.helpers.dataunit.version}</uv-dataunit-helpers.version>
+
+		<dataunit.version>${project.version}</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
 		for OSGI's package export -->
