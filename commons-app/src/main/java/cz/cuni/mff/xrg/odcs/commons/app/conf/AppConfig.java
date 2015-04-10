@@ -27,7 +27,8 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     public static final List<ConfigProperty> ENCRYPTED_PROPERTIES = Arrays.asList(
             ConfigProperty.DATABASE_SQL_PASSWORD,
             ConfigProperty.DATABASE_RDF_PASSWORD,
-            ConfigProperty.EMAIL_PASSWORD);
+            ConfigProperty.EMAIL_PASSWORD,
+            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD);
 
     /**
      * Modifiable configuration itself.
