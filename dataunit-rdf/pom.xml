@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.0.0</version>
+		<version>2.0.1</version>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
 	<name>dataunit-rdf</name>
@@ -15,19 +15,17 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
-			<version>${uv-dataunit-files.version}</version>
 		</dependency>
-        <dependency> <!-- dataunit base project -->
-            <groupId>eu.unifiedviews</groupId>
-            <artifactId>dataunit</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
+		<dependency> <!-- dataunit base project -->
+			<groupId>eu.unifiedviews</groupId>
+			<artifactId>dataunit</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
 		<dependency> <!-- openRDF dependency -->
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-config</artifactId>
@@ -55,7 +53,6 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-model</artifactId>
-			<version>${sesame.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -127,7 +124,6 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-repository-api</artifactId>
-			<version>${sesame.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -261,7 +257,6 @@
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

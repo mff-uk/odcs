@@ -89,7 +89,9 @@ public enum ConfigProperty {
     MASTER_API_PASSWORD("master.api.password"),
 
     CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
-    CRYPTOGRAPHY_KEY_FILE("cryptography.key.file");
+    CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
+
+    DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password");
 
     private final String property;
 

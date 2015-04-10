@@ -1,37 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eu.unifiedviews</groupId>
+		<artifactId>uv-pom</artifactId>
+		<version>2.0.1</version>
+	</parent>
+    
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
 
 	<properties>
-        <project.java.source.version>1.7</project.java.source.version>
-        <project.java.target.version>1.7</project.java.target.version>
+		<project.java.source.version>1.7</project.java.source.version>
+		<project.java.target.version>1.7</project.java.target.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
-		<uv-dpu-api.version>2.0.0</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.0.0</uv-dpu-api-helpers.version>
-		<uv-dataunit-rdf.version>2.0.0</uv-dataunit-rdf.version>
-		<uv-dataunit-files.version>2.0.0</uv-dataunit-files.version>
-		<uv-dataunit-relational.version>2.0.0</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.0.0</uv-dataunit-helpers.version>
-		<dataunit.version>2.0.0</dataunit.version>
+		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
+		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
+		<uv-dpu-api-helpers.version>${unifiedviews.helpers.dpu.version}</uv-dpu-api-helpers.version>
+		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
+		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
+		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
+		<uv-dataunit-helpers.version>${unifiedviews.helpers.dataunit.version}</uv-dataunit-helpers.version>
+
+		<dataunit.version>${project.version}</dataunit.version>
 
 		<!-- define used vaadin version !!! do not forget to update the version 
-			for OSGI's package export -->
+		for OSGI's package export -->
 		<vaadin.version>7.3.7</vaadin.version>
 		<!-- the minimal required vaadin version The lowest Vaadin version accepted 
-			by DPUs. -->
+		by DPUs. -->
 		<vaadin.version.min>7.3.7</vaadin.version.min>
 		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted 
-			by DPUs. -->
+		by DPUs. -->
 		<vaadin.version.max>8.0.0</vaadin.version.max>
 
 		<!-- define output dirs -->
@@ -77,7 +85,7 @@
 
 	<developers>
 		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
-			</roles> </developer> -->
+		</roles> </developer> -->
 	</developers>
 
 	<contributors>
@@ -105,7 +113,7 @@
 			<url>http://repository.springsource.com/maven/bundles/release</url>
 		</repository>
 
-        <repository>
+		<repository>
 			<id>com.springsource.repository.bundles.external</id>
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
@@ -122,8 +130,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-                        <source>${project.java.source.version}</source>
-                        <target>${project.java.target.version}</target>
+						<source>${project.java.source.version}</source>
+						<target>${project.java.target.version}</target>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -131,7 +139,7 @@
 
 		<plugins>
 			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS 
-				profile to enable it -->
+			profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -177,49 +185,49 @@
 					</execution>
 				</executions>
 			</plugin>
-		 <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>2.3.2</version>
-		  <configuration>
-		   <showDeprecation>true</showDeprecation>
-		  </configuration>
-		 </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
-    <profiles>
-        <!-- Profile for compilation with Java 8. -->
-        <profile>
-            <id>java8</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <properties>
-                <project.java.target.version>1.8</project.java.target.version>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Do not fail compulation on Java doc errors (Java 8). -->
-                                    <additionalparam>-Xdoclint:none</additionalparam>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+	<profiles>
+		<!-- Profile for compilation with Java 8. -->
+		<profile>
+			<id>java8</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<project.java.target.version>1.8</project.java.target.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<!-- Do not fail compulation on Java doc errors (Java 8). -->
+									<additionalparam>-Xdoclint:none</additionalparam>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<!-- profile to enable integration (system) tests -->
 		<profile>
 			<id>SYSTESTS</id>

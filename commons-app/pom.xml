@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.0.0</version>
+		<version>2.0.1</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
@@ -41,43 +41,36 @@
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
-			<version>${uv-dpu-api.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-helpers</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-config-vaadin</artifactId>
-			<version>${uv-dpu-api-helpers.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
-			<version>${uv-dataunit-rdf.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-files</artifactId>
-			<version>${uv-dataunit-files.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-relational</artifactId>
-			<version>${uv-dataunit-relational.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-helpers</artifactId>
-			<version>${uv-dataunit-helpers.version}</version>
 		</dependency>
 
 		<dependency>
@@ -103,7 +96,7 @@
 			<artifactId>dataunit-file-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency> <!-- relational dataunit project -->
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>dataunit-relational-impl</artifactId>
@@ -113,24 +106,20 @@
 		<dependency> <!-- logback as implementation org.slf4j -->
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 
 		<dependency> <!-- xml object de-serialization -->
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.7</version>
 		</dependency>
 
 		<dependency> <!-- OSGI impelemention -->
@@ -142,7 +131,6 @@
 		<dependency> <!-- apache.commons : delete folder recursive -->
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 			<type>jar</type>
 		</dependency>
 
@@ -154,52 +142,52 @@
 
 		<!-- SPRING DEPENDENCIES -->
 
-		<!-- Core utilities used by other modules. Define this if you use Spring 
-			Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+		<!-- Core utilities used by other modules. Define this if you use Spring
+		Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Application Context (depends on spring-core, spring-expression, spring-aop, 
-			spring-beans) This is the central artifact for Spring's Dependency Injection 
-			Container and is generally always defined -->
+		<!-- Application Context (depends on spring-core, spring-expression, spring-aop,
+		spring-beans) This is the central artifact for Spring's Dependency Injection
+		Container and is generally always defined -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Bean Factory and JavaBeans utilities (depends on spring-core) Define 
-			this if you use Spring Bean APIs (org.springframework.beans.*) -->
+		<!-- Bean Factory and JavaBeans utilities (depends on spring-core) Define
+		this if you use Spring Bean APIs (org.springframework.beans.*) -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Transaction Management Abstraction (depends on spring-core, spring-beans, 
-			spring-aop, spring-context) Define this if you use Spring Transactions or 
-			DAO Exception Hierarchy (org.springframework.transaction.*/org.springframework.dao.*) -->
+		<!-- Transaction Management Abstraction (depends on spring-core, spring-beans,
+		spring-aop, spring-context) Define this if you use Spring Transactions or
+		DAO Exception Hierarchy (org.springframework.transaction.*/org.springframework.dao.*) -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Object-to-Relation-Mapping (ORM) integration with Hibernate, JPA, 
-			and iBatis. (depends on spring-core, spring-beans, spring-context, spring-tx) 
-			Define this if you need ORM (org.springframework.orm.*) -->
+		<!-- Object-to-Relation-Mapping (ORM) integration with Hibernate, JPA,
+		and iBatis. (depends on spring-core, spring-beans, spring-context, spring-tx)
+		Define this if you need ORM (org.springframework.orm.*) -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Support for testing Spring applications with tools such as JUnit and 
-			TestNG This artifact is generally always defined with a 'test' scope for 
-			the integration testing framework and unit testing stubs -->
+		<!-- Support for testing Spring applications with tools such as JUnit and
+		TestNG This artifact is generally always defined with a 'test' scope for
+		the integration testing framework and unit testing stubs -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -209,10 +197,10 @@
 
 		<!-- SPRING SECURITY LIBRARIES -->
 
-		<!-- Contains core authentication and access-contol classes and interfaces, 
-			remoting support and basic provisioning APIs. Required by any application 
-			which uses Spring Security. Supports standalone applications, remote clients, 
-			method (service layer) security and JDBC user provisioning. -->
+		<!-- Contains core authentication and access-contol classes and interfaces,
+		remoting support and basic provisioning APIs. Required by any application
+		which uses Spring Security. Supports standalone applications, remote clients,
+		method (service layer) security and JDBC user provisioning. -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
@@ -221,9 +209,9 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Contains filters and related web-security infrastructure code. Anything 
-			with a servlet API dependency. You'll need it if you require Spring Security 
-			web authentication services and URL-based access-control. -->
+		<!-- Contains filters and related web-security infrastructure code. Anything
+		with a servlet API dependency. You'll need it if you require Spring Security
+		web authentication services and URL-based access-control. -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
@@ -246,8 +234,8 @@
 			<version>3.0</version>
 		</dependency>
 
-		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASM, however ASM is loaded 
-			by maven automatically while ASM-UTIL is not... -->
+		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASM, however ASM is loaded
+		by maven automatically while ASM-UTIL is not... -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-util</artifactId>
@@ -257,7 +245,7 @@
 		<!-- END OF SPRING DEPENDENCIES -->
 
 		<!-- Embedded database used for testing -->
-<!-- 	<dependency>
+		<!-- 	<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.3.171</version>
@@ -269,8 +257,8 @@
 		</dependency>
 
 		<!-- EclipseLink dependencies -->
-		<!-- EclipseLink needs at least version 2.5.1 to get around bug 413084 
-			https://bugs.eclipse.org/bugs/show_bug.cgi?id=413084 -->
+		<!-- EclipseLink needs at least version 2.5.1 to get around bug 413084
+		https://bugs.eclipse.org/bugs/show_bug.cgi?id=413084 -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
@@ -325,10 +313,9 @@
 		<dependency> <!-- JUnit dependency -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -364,7 +351,7 @@
 						<configuration>
 							<tasks>
 								<java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
-									classpathref="maven.runtime.classpath" fork="true">
+									  classpathref="maven.runtime.classpath" fork="true">
 									<arg
 										line="-loglevel FINE -persistenceinfo src/main/resources target/classes target/classes" />
 								</java>
@@ -377,37 +364,37 @@
 				</executions>
 			</plugin>
 
-			<!-- AspecJ maven plugin used for compile-time bytecode weaving. Needed 
-				for aspects to work. -->
+			<!-- AspecJ maven plugin used for compile-time bytecode weaving. Needed
+			for aspects to work. -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<version>1.7</version>
 				<configuration>
-                    <source>${project.java.source.version}</source>
-                    <target>${project.java.target.version}</target>
+					<source>${project.java.source.version}</source>
+					<target>${project.java.target.version}</target>
 					<complianceLevel>${project.java.target.version}</complianceLevel>
 					<showWeaveInfo>true</showWeaveInfo>
 					<verbose>true</verbose>
 					<weaveDependencies>
-						<!-- We need to weave bytecode to EclipseLink dependency when catching 
-							exceptions thrown because corrupted sequences in db. See VirtuosoSequenceSanitizerAspect. -->
+						<!-- We need to weave bytecode to EclipseLink dependency when catching
+						exceptions thrown because corrupted sequences in db. See VirtuosoSequenceSanitizerAspect. -->
 						<weaveDependency>
 							<groupId>org.eclipse.persistence</groupId>
 							<artifactId>eclipselink</artifactId>
 						</weaveDependency>
 					</weaveDependencies>
 					<aspectLibraries>
-						<!-- Spring aspects are here so aspects defined therein are picked 
-							up by AspectJ and weaved properly (e.g. @Transactional, ...). -->
+						<!-- Spring aspects are here so aspects defined therein are picked
+						up by AspectJ and weaved properly (e.g. @Transactional, ...). -->
 						<aspectLibrary>
 							<groupId>org.springframework</groupId>
 							<artifactId>spring-aspects</artifactId>
 						</aspectLibrary>
 					</aspectLibraries>
-					<!-- This will get rid of "can't find superclass" errors when checking 
-						pointcut candidates for missing superclasses/interfaces in weaveDependencies 
-						(see above). -->
+					<!-- This will get rid of "can't find superclass" errors when checking
+					pointcut candidates for missing superclasses/interfaces in weaveDependencies
+					(see above). -->
 					<Xlint>ignore</Xlint>
 				</configuration>
 				<executions>
@@ -417,19 +404,19 @@
 						</goals>
 					</execution>
 				</executions>
-                    <dependencies>
-                        <!-- Support for Java 8 -->
-                        <dependency>
-                            <groupId>org.aspectj</groupId>
-                            <artifactId>aspectjrt</artifactId>
-                            <version>1.8.1</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.aspectj</groupId>
-                            <artifactId>aspectjtools</artifactId>
-                            <version>1.8.1</version>
-                        </dependency>
-                    </dependencies>
+				<dependencies>
+					<!-- Support for Java 8 -->
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<resources>
