@@ -23,14 +23,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.BaseTheme;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -73,9 +71,6 @@ public class DPUTree extends CustomComponent {
 
     @Autowired
     private ExportService exportService;
-
-    @Autowired
-    private Utils utils;
 
     private HorizontalLayout topLine;
 
@@ -182,7 +177,6 @@ public class DPUTree extends CustomComponent {
         buttonCreateDPU.setCaption(Messages.getString("DPUTree.create.dpu"));
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("170px");
-        buttonCreateDPU.setVisible(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
         buttonCreateDPU
                 .addClickListener(new Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -205,7 +199,6 @@ public class DPUTree extends CustomComponent {
         exportButton = new Button(Messages.getString("DPUTree.export.dpu"));
         exportButton.setHeight("25px");
         exportButton.setWidth("170px");
-        exportButton.setVisible(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
 
         exportButton.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 6941128812967827740L;
