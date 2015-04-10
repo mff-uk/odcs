@@ -9,7 +9,7 @@ delete from `runtime_properties`;
 delete from `role`;
 delete from `permission`;
 
-INSERT INTO `properties` VALUES ('UV.Core.version','001.006.000'),('UV.Plugin-DevEnv.version','001.003.000');
+INSERT INTO `properties` VALUES ('UV.Core.version','002.000.000'),('UV.Plugin-DevEnv.version','002.000.000');
 INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.com');
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
