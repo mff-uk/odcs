@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,10 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -295,42 +296,46 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         verticalLayoutData.setCaption("general");
         TabSheet.Tab dataTab = tabSheet.addTab(verticalLayoutData, Messages.getString("DPUViewImpl.general"));
+        tabSheet.setSelectedTab(dataTab);
+
         //Template Configuration tab. Contains information about configuration
         //from JAR file
-        verticalLayoutConfigure = new VerticalLayout();
+        if (this.presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT)) {
+            verticalLayoutConfigure = new VerticalLayout();
 
-        verticalLayoutConfigure.setImmediate(false);
-        verticalLayoutConfigure.setMargin(true);
-        verticalLayoutConfigure.setCaption("configuration");
-        tabSheet.addTab(verticalLayoutConfigure, Messages.getString("DPUViewImpl.template.configuration"));
-        tabSheet.setSelectedTab(dataTab);
-        if (selectedDpuWrap != null) {
-            AbstractConfigDialog<?> configDialog = null;
-            //getting configuration dialog of selected DPU Template
-            try {
-                configDialog = selectedDpuWrap.getDialog();
-            } catch (ModuleException ex) {
-                Notification.show(
-                        Messages.getString("DPUViewImpl.fileNotFound.configuration.load.fail"),
-                        ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-            } catch (FileNotFoundException ex) {
-                Notification.show(
-                        Messages.getString("DPUViewImpl.fileNotFound"),
-                        ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-            } catch (Exception ex) {
-                Notification.show(Messages.getString("DPUViewImpl.exception.configuration.fail"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
-            }
+            verticalLayoutConfigure.setImmediate(false);
+            verticalLayoutConfigure.setMargin(true);
+            verticalLayoutConfigure.setCaption("configuration");
+            tabSheet.addTab(verticalLayoutConfigure, Messages.getString("DPUViewImpl.template.configuration"));
 
-            verticalLayoutConfigure.removeAllComponents();
-            if (configDialog == null) {
-                // use some .. dummy component
-            } else {
-                // configure
-                configureDPUDialog();
-                verticalLayoutConfigure.addComponent(configDialog);
+            if (selectedDpuWrap != null) {
+                AbstractConfigDialog<?> configDialog = null;
+                //getting configuration dialog of selected DPU Template
+                try {
+                    configDialog = selectedDpuWrap.getDialog();
+                } catch (ModuleException ex) {
+                    Notification.show(
+                            Messages.getString("DPUViewImpl.fileNotFound.configuration.load.fail"),
+                            ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+                } catch (FileNotFoundException ex) {
+                    Notification.show(
+                            Messages.getString("DPUViewImpl.fileNotFound"),
+                            ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+                } catch (Exception ex) {
+                    Notification.show(Messages.getString("DPUViewImpl.exception.configuration.fail"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    LOG.error("Can't load DPU '{}'", selectedDpuWrap.getDPUTemplateRecord().getId(), ex);
+                }
+
+                verticalLayoutConfigure.removeAllComponents();
+                if (configDialog == null) {
+                    // use some .. dummy component
+                } else {
+                    // configure
+                    configureDPUDialog();
+                    verticalLayoutConfigure.addComponent(configDialog);
+                }
             }
         }
         //DPU instances tab. Contains pipelines using the given DPU.

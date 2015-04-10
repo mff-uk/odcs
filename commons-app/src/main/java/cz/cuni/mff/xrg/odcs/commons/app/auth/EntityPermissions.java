@@ -28,4 +28,6 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_EXPORT = "dpuTemplate.export";
 
+    public static final String DPU_TEMPLATE_EDIT = "dpuTemplate.edit";
+
 }
