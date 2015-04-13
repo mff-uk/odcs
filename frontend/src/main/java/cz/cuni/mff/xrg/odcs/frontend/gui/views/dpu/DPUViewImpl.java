@@ -176,7 +176,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
         buttonCreateDPU.addStyleName("v-button-primary");
-        buttonCreateDPU.setVisible(utils.hasUserAuthority("dpuTemplate.create"));
+        buttonCreateDPU.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -282,7 +282,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
                     if (isChanged() || tabname.equals("configuration")) {
-                        buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
+                        buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
                     } else {
                         buttonSaveDPU.setEnabled(false);
                     }
@@ -374,7 +374,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCopyDPU.setCaption(Messages.getString("DPUViewImpl.copy"));
         buttonCopyDPU.setHeight("25px");
         buttonCopyDPU.setWidth("100px");
-        buttonCopyDPU.setEnabled(presenter.hasPermission("dpuTemplate.copy"));
+        buttonCopyDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_COPY));
         buttonCopyDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -395,7 +395,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonDeleteDPU.setCaption(Messages.getString("DPUViewImpl.delete"));
         buttonDeleteDPU.setHeight("25px");
         buttonDeleteDPU.setWidth("100px");
-        buttonDeleteDPU.setEnabled(presenter.hasPermission("dpuTemplate.delete"));
+        buttonDeleteDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_DELETE));
         buttonDeleteDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -429,7 +429,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportDPU.setCaption(Messages.getString("DPUViewImpl.export"));
         buttonExportDPU.setHeight("25px");
         buttonExportDPU.setWidth("100px");
-        buttonExportDPU.setEnabled(presenter.hasPermission("dpuTemplate.export"));
+        buttonExportDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EXPORT));
         buttonExportDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -482,9 +482,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
+        dpuName.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
+        dpuDescription.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
@@ -498,7 +498,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void valueChange(Property.ValueChangeEvent event) {
-                    buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
+                    buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
                 }
             });
         }
@@ -556,7 +556,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
             }
         });
 
@@ -576,7 +576,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
+                buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE));
             }
         });
         dpuSettingsLayout.addComponent(dpuDescription, 1, 1);
@@ -923,15 +923,24 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         };
 
-        // add buttons to column generator
-        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.detail"), null, detailAction, detailShowCondition, new ThemeResource("icons/gear.svg"));
-        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.delete"), null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.svg"));
-        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.status"), null, new ActionColumnGenerator.Action() {
+        // prepare pipeline status button
+        ActionColumnGenerator.Action statusAction = new ActionColumnGenerator.Action() {
             @Override
             protected void action(long id) {
                 presenter.pipelineStatusEventHandler(id);
             }
-        }, new ThemeResource("icons/log.svg"));
+        };
+        ActionColumnGenerator.ButtonShowCondition statusShowCondition = new ActionColumnGenerator.ButtonShowCondition() {
+            @Override
+            public boolean show(CustomTable source, long id) {
+                return presenter.showPipelineStatusButton(id);
+            }
+        };
+
+        // add buttons to column generator
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.detail"), null, detailAction, detailShowCondition, new ThemeResource("icons/gear.svg"));
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.delete"), null, deleteAction, deleteShowCondition, new ThemeResource("icons/trash.svg"));
+        generator.addButton(Messages.getString("DPUViewImpl.actionColumn.status"), null, statusAction, statusShowCondition, new ThemeResource("icons/log.svg"));
 
         return generator;
     }

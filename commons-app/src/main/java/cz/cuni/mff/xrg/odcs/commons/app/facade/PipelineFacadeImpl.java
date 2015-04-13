@@ -79,7 +79,7 @@ class PipelineFacadeImpl implements PipelineFacade {
         newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
         return newPipeline;
@@ -114,7 +114,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
 
@@ -125,18 +125,19 @@ class PipelineFacadeImpl implements PipelineFacade {
     /**
      * Returns list of all pipelines persisted in the database for given organization.
      *
-     * @param organizationName of pipeline
+     * @param organizationName
+     *            of pipeline
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
-     * container with paging instead
+     *             container with paging instead
      */
-    
+
     @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getAllPipelines(String organizationName) {
         return pipelineDao.getPipelinesForOrganization(organizationName);
     }
-    
+
     /**
      * Returns list of all pipelines persisted in the database.
      * 
@@ -204,7 +205,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     }
 
     @PreAuthorize("hasPermission(#dpu, 'dpuTemplate.read')")
-    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
@@ -302,7 +303,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
         // Return empry list. Ie. no pipeline is open.
         return Arrays.asList();
-        
+
         // TODO Petr: UPDATE on openEvent takes too long ..
 //        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
 //        if (pipeline.getId() == null) {
@@ -371,7 +372,7 @@ class PipelineFacadeImpl implements PipelineFacade {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newExec.setOrganization(authCtx.getUser().getOrganization());
         }
         return newExec;
@@ -403,13 +404,11 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
-
     @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
     }
-
 
     /**
      * Find pipeline execution in database by ID and return it.
@@ -528,18 +527,20 @@ class PipelineFacadeImpl implements PipelineFacade {
     public boolean hasModifiedExecutions(Date lastLoad) {
         return executionDao.hasModified(lastLoad);
     }
-    
+
     /**
      * Checks if some of the executions were deleted
      * <p>
-     * @param executionIds execution to check
+     * 
+     * @param executionIds
+     *            execution to check
      * @return true if one or more execution were deleted
      */
     @Override
     public boolean hasDeletedExecutions(List<Long> executionIds) {
-    	return executionDao.hasDeleted(executionIds);
+        return executionDao.hasDeleted(executionIds);
     }
-    
+
     /**
      * Tells whether there were any changes to pipelines since the
      * last load.
@@ -550,19 +551,19 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
     @Override
     public boolean hasModifiedPipelines(Date lastLoad) {
-    	return pipelineDao.hasModified(lastLoad);
+        return pipelineDao.hasModified(lastLoad);
     }
-    
+
     /**
      * Tells whether one of pipelines was deleted
      * <p>
      * 
      * @param pipelinesIds
-     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     @Override
     public boolean hasDeletedPipelines(List<Long> pipelineIds) {
-    	return pipelineDao.hasDeletedPipelines(pipelineIds);    	
+        return pipelineDao.hasDeletedPipelines(pipelineIds);
     }
 
     /**

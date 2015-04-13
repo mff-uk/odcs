@@ -30,4 +30,14 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_EDIT = "dpuTemplate.edit";
 
+    public static final String PIPELINE_DELETE = "pipeline.delete";
+
+    public static final String PIPELINE_EXECUTION_READ = "pipelineExcecution.read";
+
+    public static final String DPU_TEMPLATE_SAVE = "dpuTemplate.save";
+
+    public static final String DPU_TEMPLATE_COPY = "dpuTemplate.copy";
+
+    public static final String DPU_TEMPLATE_DELETE = "dpuTemplate.delete";
+
 }
