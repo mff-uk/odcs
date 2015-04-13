@@ -28,14 +28,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  */
 public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 
-    private static final String PIPELINE_DELETE = "pipeline.delete";
-
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
     private static final String ORGANIZATION_MODE = "organization";
-    
+
     private static final String USER_MODE = "user";
-    
+
     /**
      * Application's configuration.
      */
@@ -57,9 +55,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
     @Override
     public boolean hasPermission(Authentication auth, Object target, Object perm) {
 
-        if(target instanceof User)
+        if (target instanceof User)
             return true;
-        
+
         // check for missing authentication context
         if (auth == null) {
             return false;
@@ -68,9 +66,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         Permission foundPermission = null;
 
         String adminPermission = this.appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-        
+
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            
+
             if (ga.getAuthority().equals(adminPermission)) {
                 return true;
             }
@@ -91,9 +89,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private boolean hasPermissionUser(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
 
-        if(target instanceof User)
+        if (target instanceof User)
             return true;
-        
+
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;
@@ -111,7 +109,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
                     return false;
                 } else {
                     //only owner can delete
-                    if(!PIPELINE_DELETE.equals(requestedPerm)){
+                    if (ShareType.PUBLIC.contains(sTarget.getShareType()) && !EntityPermissions.PIPELINE_DELETE.equals(requestedPerm)) {
                         return true;
                     } else {
                         return false;
@@ -167,18 +165,22 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             if (foundPermission != null) {
                 if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(pipelineTarget.getShareType())) {
                     return false;
-                } else {
+                    // FIXME: This condition was added to be compliant with implementation in DbAuthorizatorImpl; 
+                    // However this is still a huge hack and should be solved cleanly in both cases 
+                } else if (ShareType.PUBLIC_RO.equals(pipelineTarget.getShareType())) {
                     return true;
                 }
             }
         }
-        
+
         if (target instanceof DPUTemplateRecord) {
             DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
             if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(dpuTarget.getShareType())) {
+                // DPUTemplate is never public read/write, only private or public read-only
+                // So read-write operations can be executed only on owned DPU templates and there is no need to check if template is read-write
+                if (foundPermission.isRwOnly()) {
                     return false;
-                } else {
+                } else if (ShareType.PUBLIC.contains(dpuTarget.getShareType())) {
                     return true;
                 }
             }

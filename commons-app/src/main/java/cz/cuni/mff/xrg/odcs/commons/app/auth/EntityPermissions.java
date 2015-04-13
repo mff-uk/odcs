@@ -40,4 +40,10 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_DELETE = "dpuTemplate.delete";
 
+    public static final String DPU_TEMPLATE_SET_VISIBILITY_CREATE = "dpuTemplate.setVisibilityAtCreate";
+
+    public static final String PIPELINE_EXECUTION_READ_LOG = "pipelineExecution.readLog";
+
+    public static final Object PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
+
 }
