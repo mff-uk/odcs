@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -13,6 +11,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -70,7 +70,6 @@ public class DPUDetail extends Window {
     public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig) {
         this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
-        this.appConfig = appConfig;
         // build the layout
         build();
         // set dialog properties

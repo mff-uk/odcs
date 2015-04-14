@@ -108,10 +108,10 @@ class DPUFacadeImpl implements DPUFacade {
      * 
      * @return DPURecord list
      */
-    //@PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
+    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
     @Override
     public List<DPUTemplateRecord> getAllTemplates() {
-        return templateDao.getAllVisible(authCtx.getUser());
+        return this.templateDao.getAll();
     }
 
     /**
@@ -169,13 +169,13 @@ class DPUFacadeImpl implements DPUFacade {
     public DPUTemplateRecord getByDirectory(String jarDirectory) {
         return templateDao.getByDirectory(jarDirectory);
     }
-    
+
     @Transactional(readOnly = true)
-	@Override
+    @Override
     @PreAuthorize("hasRole('dpuTemplate.read')")
-	public DPUTemplateRecord getByJarName(String jarName) {
-		  return templateDao.getByJarName(jarName);
-	}
+    public DPUTemplateRecord getByJarName(String jarName) {
+        return templateDao.getByJarName(jarName);
+    }
 
     @Transactional(readOnly = true)
     @Override

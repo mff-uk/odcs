@@ -13,11 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -155,6 +157,7 @@ public class ImportService {
      * @return
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.import')")
     public Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
@@ -168,6 +171,7 @@ public class ImportService {
         }
     }
 
+    @PreAuthorize("hasRole('pipeline.import')")
     public List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
         XStream xStream = new XStream(new DomDriver("UTF-8"));
         xStream.alias("dpus", List.class);
@@ -230,8 +234,10 @@ public class ImportService {
             // TODO add version check here
         }
         // copy user data
-        // TODO: Add permission check for pipeline.importUserData
         if (userDataDir.exists() && importUserDataFile) {
+            if (!hasPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.data.permissions"));
+            }
             try {
                 final File dest = resourceManager
                         .getDPUDataUserDir(result, user);
@@ -356,6 +362,17 @@ public class ImportService {
 
         LOG.debug("<<< Leaving getImportedInformation: {}", result);
         return result;
+    }
+
+    private boolean hasPermission(String type) {
+        if (this.authCtx == null) {
+            return false;
+        }
+        for (GrantedAuthority ga : this.authCtx.getUser().getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
     }
 
 }

@@ -55,7 +55,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         Schedule sch = new Schedule();
         if (authCtx != null) {
             sch.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 sch.setOrganization(authCtx.getUser().getOrganization());
         }
         return sch;
@@ -129,7 +129,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
-    @PreAuthorize("hasRole('scheduleRule.delete')")
+    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.delete')")
     @Override
     public void delete(Schedule schedule) {
         scheduleDao.delete(schedule);

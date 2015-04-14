@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.auth;
 
 public class EntityPermissions {
 
+    // *********** Pipeline permissions
     public static final String PIPELINE_SAVE = "pipeline.save";
 
     public static final String PIPELINE_RUN = "pipeline.run";
@@ -24,15 +25,24 @@ public class EntityPermissions {
 
     public static final String PIPELINE_EXPORT_SCHEDULES = "pipeline.exportScheduleRules";
 
+    public static final String PIPELINE_DELETE = "pipeline.delete";
+
+    public static final String PIPELINE_EXECUTION_READ = "pipelineExcecution.read";
+
+    public static final String PIPELINE_EXECUTION_READ_LOG = "pipelineExecution.readLog";
+
+    public static final Object PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
+
+    public static final String PIPELINE_IMPORT_SCHEDULE_RULES = "pipeline.importScheduleRules";
+
+    public static final String PIPELINE_IMPORT_USER_DATA = "pipeline.importUserData";
+
+    // ************  DPUTemplate permissions
     public static final String DPU_TEMPLATE_CREATE = "dpuTemplate.create";
 
     public static final String DPU_TEMPLATE_EXPORT = "dpuTemplate.export";
 
     public static final String DPU_TEMPLATE_EDIT = "dpuTemplate.edit";
-
-    public static final String PIPELINE_DELETE = "pipeline.delete";
-
-    public static final String PIPELINE_EXECUTION_READ = "pipelineExcecution.read";
 
     public static final String DPU_TEMPLATE_SAVE = "dpuTemplate.save";
 
@@ -42,8 +52,7 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_SET_VISIBILITY_CREATE = "dpuTemplate.setVisibilityAtCreate";
 
-    public static final String PIPELINE_EXECUTION_READ_LOG = "pipelineExecution.readLog";
-
-    public static final Object PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
+    // ************* Schedule permissions
+    public static final String SCHEDULE_RULE_CREATE = "scheduleRule.create";
 
 }
