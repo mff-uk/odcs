@@ -31,7 +31,7 @@ public class EntityPermissions {
 
     public static final String PIPELINE_EXECUTION_READ_LOG = "pipelineExecution.readLog";
 
-    public static final Object PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
+    public static final String PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
 
     public static final String PIPELINE_IMPORT_SCHEDULE_RULES = "pipeline.importScheduleRules";
 

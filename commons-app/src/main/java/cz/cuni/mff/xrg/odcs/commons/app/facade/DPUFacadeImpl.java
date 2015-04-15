@@ -69,7 +69,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.copy')")
+    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy')")
     public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
         DPUTemplateRecord copy = new DPUTemplateRecord(original);
         if (authCtx != null) {
@@ -121,7 +121,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.read')")
+    @PostFilter("hasPermission(returnObject, 'dpuTemplate.read')")
     public DPUTemplateRecord getTemplate(long id) {
         return templateDao.getInstance(id);
     }
@@ -158,7 +158,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return list of child DPU templates or empty collection
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.read')")
+    @PreAuthorize("hasPermission(#parent, 'dpuTemplate.read')")
     public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
         return templateDao.getChilds(parent);
     }
