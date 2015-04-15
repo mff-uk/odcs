@@ -375,4 +375,8 @@ public class ImportService {
         return false;
     }
 
+    public AuthenticationContext getAuthContext() {
+        return this.authCtx;
+    }
+
 }
