@@ -61,6 +61,13 @@ class CleanUp implements PostExecutor {
             Map<Node, Context> contexts,
             DependencyGraph graph) {
         LOG.debug("CleanUp start .. ");
+
+        try {
+            this.relationalRepositoryManager.release(execution.getContext().getExecutionId());
+        } catch (Exception e) {
+            LOG.error("Failed to release relational repository", e);
+        }
+
         // first release contexts
         for (Context item : contexts.values()) {
             if (execution.isDebugging()) {
@@ -91,12 +98,6 @@ class CleanUp implements PostExecutor {
             } catch (RDFException ex) {
                 LOG.error("Can't delete repository.", ex);
             }
-        }
-
-        try {
-            this.relationalRepositoryManager.release(execution.getContext().getExecutionId());
-        } catch (Exception e) {
-            LOG.error("Failed to release relational repository", e);
         }
 
         // prepare execution root
