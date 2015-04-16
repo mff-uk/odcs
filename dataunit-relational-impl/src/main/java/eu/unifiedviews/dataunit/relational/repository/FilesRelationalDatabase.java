@@ -127,12 +127,17 @@ public class FilesRelationalDatabase implements ManagableRelationalRepository {
 
     private void deleteDatabaseFile() throws IOException {
         Pattern filesPattern = Pattern.compile(this.databaseFileName + ".*");
+        if (this.dataunitDirectory == null || !this.dataunitDirectory.exists()) {
+            return;
+        }
         File[] filesInDataUnitDir = this.dataunitDirectory.listFiles();
+        if (filesInDataUnitDir == null) {
+            return;
+        }
         for (File file : filesInDataUnitDir) {
             if (filesPattern.matcher(file.getName()).matches()) {
                 Files.delete(file.toPath());
             }
-            break;
         }
     }
 
