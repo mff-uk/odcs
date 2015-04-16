@@ -80,30 +80,22 @@ public class DPUResource {
         if(dpuDirName == null) {
             throw new ApiException(Response.Status.BAD_REQUEST, "Cannot process DPU name!");
         }
+
         DPUTemplateRecord dpuTemplate = dpuFacade.getByDirectory(dpuDirName);
-        if(dpuTemplate == null) { // it doesnt exists, create it
-            createDpu(dpuName, dpuDescription, shareType, jarFile);
-        } else if(force == true) { // it does exists, check force flag and replace
-            replaceDpu(dpuTemplate, jarFile);
-        } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
+        if(dpuTemplate != null) { // if DPU already exists
+            if(force) {
+                dpuManipulator.delete(dpuTemplate);
+            } else {
+                throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
+            }
         }
+
+        // actual import of DPU
+        createDpu(dpuName, dpuDescription, shareType, jarFile);
 
         // now we can delete the file
         deleteTempFile(jarFile);
         return "OK";
-    }
-
-    private void replaceDpu(DPUTemplateRecord dpuTemplate, File jarFile) {
-        try {
-            List<Pipeline> pipelines = pipelineFacade.getPipelinesUsingDPU(dpuTemplate);
-            if(!pipelines.isEmpty()) {
-                throw new ApiException(Response.Status.CONFLICT, "DPU is already used in pipelines!.");
-            }
-            dpuManipulator.replace(dpuTemplate, jarFile);
-        } catch (DPUReplaceException e) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
     }
 
     private void createDpu(String dpuName, String dpuDescription, ShareType shareType, File jarFile) {
