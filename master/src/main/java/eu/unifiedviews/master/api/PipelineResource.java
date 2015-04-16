@@ -18,6 +18,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
@@ -44,6 +46,8 @@ import eu.unifiedviews.master.model.PipelineDTO;
 @AuthenticationRequired
 public class PipelineResource {
 
+    public static final String ORGANIZATION_OWNERSHIP_TYPE = "organization";
+
     private static final Logger LOG = LoggerFactory.getLogger(PipelineResource.class);
 
     @Autowired
@@ -55,6 +59,9 @@ public class PipelineResource {
     @Autowired
     private UserFacade userFacade;
 
+    @Autowired
+    private AppConfig appConfig;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,11 +71,16 @@ public class PipelineResource {
         if(user == null) {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
         }
-        // try to get organization
-        Organization organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
-        if(organization == null) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+
+        Organization organization = null;
+        if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+            // try to get organization
+            organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
+            if(organization == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+            }
         }
+
         Pipeline pipeline = null;
         try {
             pipeline = pipelineFacade.createPipeline();
@@ -158,11 +170,16 @@ public class PipelineResource {
             if(user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
             }
-            // try to get organization
-            Organization organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
-            if(organization == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+
+            Organization organization = null;
+            if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+                // try to get organization
+                organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
+                if(organization == null) {
+                    throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
+                }
             }
+
             pipelineCopy = pipelineFacade.copyPipeline(pipeline);
             pipelineCopy.setUser(user);
             pipelineCopy.setOrganization(organization);

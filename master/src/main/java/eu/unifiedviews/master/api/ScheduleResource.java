@@ -17,6 +17,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
@@ -39,6 +41,9 @@ import eu.unifiedviews.master.model.ScheduledExecutionDTO;
 @Path("/pipelines")
 @AuthenticationRequired
 public class ScheduleResource {
+
+    public static final String ORGANIZATION_OWNERSHIP_TYPE = "organization";
+
     @Autowired
     private PipelineFacade pipelineFacade;
 
@@ -47,6 +52,9 @@ public class ScheduleResource {
 
     @Autowired
     private UserFacade userFacade;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @GET
     @Path("/{pipelineid}/schedules")
@@ -246,11 +254,16 @@ public class ScheduleResource {
             if(user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
             }
-            // try to get organization
-            Organization organization = userFacade.getOrganizationByName(scheduleToUpdate.getOrganizationExternalId());
-            if(organization == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getOrganizationExternalId()));
+
+            Organization organization = null;
+            if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+                // try to get organization
+                organization = userFacade.getOrganizationByName(scheduleToUpdate.getOrganizationExternalId());
+                if(organization == null) {
+                    throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getOrganizationExternalId()));
+                }
             }
+
             Schedule schedule = scheduleFacade.createSchedule();
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
