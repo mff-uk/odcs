@@ -24,10 +24,10 @@ public interface DbPipeline extends DbAccess<Pipeline> {
     /**
      * Return pipelines of given organization.
      *
-     * @param orgName
+     * @param organizationExternalId
      * @return pipelines of given organization
      */
-    public List<Pipeline> getPipelinesForOrganization(String orgName);
+    public List<Pipeline> getPipelinesForOrganization(String organizationExternalId);
 
     /**
      * Fetches all pipelines using given DPU template.
