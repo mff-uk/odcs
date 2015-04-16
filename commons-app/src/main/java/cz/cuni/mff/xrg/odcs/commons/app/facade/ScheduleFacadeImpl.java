@@ -49,7 +49,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return initialized Schedule
      */
-    @PreAuthorize("hasRole('scheduleRule.create')")
+    @PreAuthorize("hasRole('scheduleRule.create') and hasRole('pipeline.run')")
     @Override
     public Schedule createSchedule() {
         Schedule sch = new Schedule();

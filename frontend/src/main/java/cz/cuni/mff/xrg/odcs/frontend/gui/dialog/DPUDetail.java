@@ -11,6 +11,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -22,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -61,15 +63,18 @@ public class DPUDetail extends Window {
 
     private boolean result;
 
+    private Utils utils;
+
     /**
      * Basic constructor, takes DPUFacade. In order to generate the layout call {@link #build()}. The build function has to be called before any other
      * function.
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig) {
+    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig, Utils utils) {
         this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
+        this.utils = utils;
         // build the layout
         build();
         // set dialog properties
@@ -153,6 +158,7 @@ public class DPUDetail extends Window {
 
         btnSaveAsNew = new Button(Messages.getString("DPUDetail.saveAs"));
         btnSaveAsNew.setWidth("160px");
+        btnSaveAsNew.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE_FROM_INSTANCE));
         buttonBar.addComponent(btnSaveAsNew);
 //        buttonBar.setExpandRatio(btnSaveAsNew, 1.0f);
         buttonBar.setComponentAlignment(btnSaveAsNew, Alignment.MIDDLE_RIGHT);

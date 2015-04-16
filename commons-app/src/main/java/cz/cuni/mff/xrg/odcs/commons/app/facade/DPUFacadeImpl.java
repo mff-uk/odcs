@@ -69,7 +69,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy')")
+    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy') and hasRole('dpuTemplate.create')")
     public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
         DPUTemplateRecord copy = new DPUTemplateRecord(original);
         if (authCtx != null) {
@@ -89,7 +89,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return new DPURecord
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.create')")
+    @PreAuthorize("hasRole('dpuTemplate.createFromInstance')")
     public DPUTemplateRecord createTemplateFromInstance(DPUInstanceRecord instance) {
         DPUTemplateRecord template = new DPUTemplateRecord(instance);
         if (authCtx != null) {
@@ -132,7 +132,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @param dpu
      */
     @Transactional
-    @PreAuthorize("hasPermission(#dpu,'dpuTemplate.create')")
+    @PreAuthorize("hasPermission(#dpu,'dpuTemplate.edit')")
     @Override
     public void save(DPUTemplateRecord dpu) {
         templateDao.save(dpu);

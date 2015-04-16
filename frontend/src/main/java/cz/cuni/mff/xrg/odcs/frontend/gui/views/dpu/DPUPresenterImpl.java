@@ -269,7 +269,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public void selectDPUEventHandler(final DPUTemplateRecord dpu) {
         //if the previous selected
-        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission(EntityPermissions.DPU_TEMPLATE_SAVE)) {
+        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT)) {
 
             //open confirmation dialog
             ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.unsaved.changes"),

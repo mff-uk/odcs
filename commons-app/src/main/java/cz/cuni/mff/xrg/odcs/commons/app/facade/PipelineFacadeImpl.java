@@ -95,7 +95,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return newly copied pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'pipeline.copy')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.copy') and hasRole('pipeline.create')")
     @Override
     public Pipeline copyPipeline(Pipeline pipeline) {
 

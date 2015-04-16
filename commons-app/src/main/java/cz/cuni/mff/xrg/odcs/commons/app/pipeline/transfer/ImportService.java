@@ -66,7 +66,7 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
-    @PreAuthorize("hasRole('pipeline.import')")
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
         final File tempDir;
         try {
@@ -77,7 +77,7 @@ public class ImportService {
         return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
-    @PreAuthorize("hasRole('pipeline.import')")
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
         // delete tempDirectory

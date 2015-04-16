@@ -37,6 +37,8 @@ public class EntityPermissions {
 
     public static final String PIPELINE_IMPORT_USER_DATA = "pipeline.importUserData";
 
+    public static final String PIPELINE_DEFINE_DEPENDENCIES = "pipeline.definePipelineDependencies";
+
     // ************  DPUTemplate permissions
     public static final String DPU_TEMPLATE_CREATE = "dpuTemplate.create";
 
@@ -44,13 +46,13 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_EDIT = "dpuTemplate.edit";
 
-    public static final String DPU_TEMPLATE_SAVE = "dpuTemplate.save";
-
     public static final String DPU_TEMPLATE_COPY = "dpuTemplate.copy";
 
     public static final String DPU_TEMPLATE_DELETE = "dpuTemplate.delete";
 
     public static final String DPU_TEMPLATE_SET_VISIBILITY_CREATE = "dpuTemplate.setVisibilityAtCreate";
+
+    public static final String DPU_TEMPLATE_CREATE_FROM_INSTANCE = "dpuTemplate.createFromInstance";
 
     // ************* Schedule permissions
     public static final String SCHEDULE_RULE_CREATE = "scheduleRule.create";
