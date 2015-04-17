@@ -139,7 +139,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     
     /**
      * Returns list of all pipelines persisted in the database.
-     * 
+     *
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
      *             container with paging instead
@@ -557,7 +557,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * Tells whether one of pipelines was deleted
      * <p>
      * 
-     * @param pipelinesIds
+     * @param pipelineIds
      * @return true if one or more pipelines with provided ids were deleted, otherwise false 
      */
     @Override

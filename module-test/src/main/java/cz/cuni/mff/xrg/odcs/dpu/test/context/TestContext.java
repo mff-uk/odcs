@@ -279,8 +279,7 @@ public class TestContext implements DPUContext {
         return "test_user";
     }
 
-    @Override
-    public String getOrganization() {
+    @Override public String getOrganization() {
         return "test_organization";
     }
 }
