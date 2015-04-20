@@ -33,10 +33,16 @@ public abstract class DPURecord implements DataObject {
     private Long id;
 
     /**
-     * DPURecord name, provided by user.
+     * DPURecord name, provided by DPU, changeable by user.
      */
     @Column(name = "name")
     private String name;
+
+    /**
+     * DPURecord name shown in menus (shorter version than dpu.name), provided by DPU, changeable by user.
+     */
+    @Column(name = "menu_name")
+    private String menuName;
 
     /**
      * If true then the value of {@link #description} has been created by DPU's
@@ -97,6 +103,7 @@ public abstract class DPURecord implements DataObject {
      */
     public DPURecord(DPURecord dpuRecord) {
         this.name = dpuRecord.name;
+        this.menuName = dpuRecord.menuName;
         this.useDPUDescription = dpuRecord.useDPUDescription;
         this.description = dpuRecord.description;
         if (dpuRecord.serializedConfiguration == null) {
@@ -153,6 +160,14 @@ public abstract class DPURecord implements DataObject {
      */
     public void setDescription(String newDescription) {
         this.description = newDescription;
+    }
+
+    public String getMenuName() {
+        return menuName;
+    }
+
+    public void setMenuName(String menuName) {
+        this.menuName = menuName;
     }
 
     @Override
