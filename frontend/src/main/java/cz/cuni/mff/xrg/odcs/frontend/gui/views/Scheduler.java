@@ -29,6 +29,7 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -116,7 +117,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private AuthAwarePermissionEvaluator permissionEvaluator;
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
     private boolean isMainLayoutInitialized = false;
@@ -455,9 +456,10 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         @Override
         public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
-            Schedule schedule = scheduleFacade.getSchedule(((Integer) itemId).longValue());
-            Property propStatus = source.getItem(itemId).getItemProperty("status");
             final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
+            Schedule schedule = scheduleFacade.getSchedule(schId);
+            Property propStatus = source.getItem(itemId).getItemProperty("status");
+
             HorizontalLayout layout = new HorizontalLayout();
             layout.setSpacing(true);
 
@@ -476,7 +478,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canEnable(schedule))
+                    if (canEdit(schedule))
                         layout.addComponent(enableButton);
 
                 } //If item in the scheduler table has Enabled status, then for that item will be shown
@@ -493,7 +495,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canDisable(schedule))
+                    if (canEdit(schedule))
                         layout.addComponent(disableButton);
                 }
 
@@ -552,19 +554,11 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     }
 
     boolean canDelete(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.delete");
+        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_DELETE);
     }
 
     boolean canEdit(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.edit");
-    }
-
-    boolean canDisable(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.disable");
-    }
-
-    boolean canEnable(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.enable");
+        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_EDIT);
     }
 
     private class filterDecorator extends IntlibFilterDecorator {

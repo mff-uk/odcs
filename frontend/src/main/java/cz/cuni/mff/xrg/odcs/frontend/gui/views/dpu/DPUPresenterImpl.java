@@ -215,12 +215,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             }
         }
         // getting all Pipelines with specified DPU in it
-        List<Pipeline> pipelines;
-        if (permissions.hasPermission(dpu, EntityPermissions.DPU_TEMPLATE_DELETE)) {
-            pipelines = pipelineFacade.getAllPipelinesUsingDPU(dpu);
-        } else {
-            pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
-        }
+        List<Pipeline> pipelines = this.pipelineFacade.getPipelinesUsingDPU(dpu);
 
         pipelinesWithDPU = new HashMap<>();
         for (Pipeline pipeline : pipelines) {

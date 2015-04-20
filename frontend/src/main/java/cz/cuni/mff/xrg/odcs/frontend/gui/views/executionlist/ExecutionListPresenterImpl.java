@@ -197,7 +197,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canStopExecution(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipelineExecution.cancel");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_STOP);
     }
 
     @Override
@@ -317,14 +317,14 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canReadLog(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ_LOG);
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canDebugData(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_DEBUG_DATA);
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override

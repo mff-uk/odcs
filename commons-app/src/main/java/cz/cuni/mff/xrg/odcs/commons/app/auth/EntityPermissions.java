@@ -29,15 +29,13 @@ public class EntityPermissions {
 
     public static final String PIPELINE_EXECUTION_READ = "pipelineExcecution.read";
 
-    public static final String PIPELINE_EXECUTION_READ_LOG = "pipelineExecution.readLog";
-
-    public static final String PIPELINE_EXECUTION_DEBUG_DATA = "pipelineExecution.debugData";
-
     public static final String PIPELINE_IMPORT_SCHEDULE_RULES = "pipeline.importScheduleRules";
 
     public static final String PIPELINE_IMPORT_USER_DATA = "pipeline.importUserData";
 
     public static final String PIPELINE_DEFINE_DEPENDENCIES = "pipeline.definePipelineDependencies";
+
+    public static final String PIPELINE_EXECUTION_STOP = "pipelineExecution.stop";
 
     // ************  DPUTemplate permissions
     public static final String DPU_TEMPLATE_CREATE = "dpuTemplate.create";
@@ -56,5 +54,9 @@ public class EntityPermissions {
 
     // ************* Schedule permissions
     public static final String SCHEDULE_RULE_CREATE = "scheduleRule.create";
+
+    public static final String SCHEDULE_RULE_DELETE = "scheduleRule.delete";
+
+    public static final String SCHEDULE_RULE_EDIT = "scheduleRule.edit";
 
 }

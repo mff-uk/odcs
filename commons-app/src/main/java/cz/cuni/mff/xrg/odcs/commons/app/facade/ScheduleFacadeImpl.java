@@ -117,7 +117,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
-    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.create')")
+    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.edit') and hasPermission(#schedule.getPipeline(), 'pipeline.run')")
     @Override
     public void save(Schedule schedule) {
         scheduleDao.save(schedule);

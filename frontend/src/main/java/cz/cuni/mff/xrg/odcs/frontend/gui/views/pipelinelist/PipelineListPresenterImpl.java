@@ -26,7 +26,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -36,7 +35,6 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
@@ -68,13 +66,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private DbPipeline dbPipeline;
-
-    @Autowired
     private DBPipelineView dbPipelineView;
-
-    @Autowired
-    private PipelineAccessor pipelineAccessor;
 
     @Autowired
     private PipelineViewAccessor pipelineViewAccessor;
@@ -112,7 +104,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
      */
     @Autowired
     protected AppConfig appConfig;
-    
+
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -131,7 +123,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-//        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
         cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
 
         dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
@@ -203,7 +194,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public void refreshEventHandler() {
-        pipelineAccessor.clearExecCache();
         cachedSource.invalidate();
         dataObject.getContainer().refresh();
         view.refreshTableControls();
