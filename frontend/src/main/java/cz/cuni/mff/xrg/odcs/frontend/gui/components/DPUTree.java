@@ -310,7 +310,11 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null && second.getId() == null) {
                     return 0;
                 } else {
-                    return first.getName().compareTo(second.getName());
+                    if(isEmpty(first.getMenuName()) || isEmpty(second.getMenuName())) {
+                        return first.getName().compareTo(second.getName()); // fallback to name
+                    } else {
+                        return first.getMenuName().compareTo(second.getMenuName());
+                    }
                 }
             }
         });
