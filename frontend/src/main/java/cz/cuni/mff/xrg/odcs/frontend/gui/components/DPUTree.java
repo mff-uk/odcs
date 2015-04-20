@@ -31,6 +31,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 /**
  * Tree showing available DPUs. Contains filters by accessibility and name. It
  * is possible to make nodes draggable and to add custom click listeners.
@@ -42,6 +44,8 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 public class DPUTree extends CustomComponent {
 
     private static final long serialVersionUID = -8635330869349339394L;
+
+    public static final String MENU_NAME_PROPERTY = "menuName";
 
     VerticalLayout layoutTree;
 
@@ -275,6 +279,7 @@ public class DPUTree extends CustomComponent {
         dpuTree.setHeight("100%");
         //	dpuTree.setHeight(600, Unit.PIXELS);
         dpuTree.setStyleName("dpuTree");
+        dpuTree.setItemCaptionPropertyId(MENU_NAME_PROPERTY); // which property should be used to retrieve caption for tree item
         dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
             private static final long serialVersionUID = -3033372681114948667L;
 
@@ -289,6 +294,7 @@ public class DPUTree extends CustomComponent {
             }
         });
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
+        ((HierarchicalContainer) dpuTree.getContainerDataSource()).addContainerProperty(MENU_NAME_PROPERTY, String.class, null);
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
             private static final long serialVersionUID = -3394104490891279840L;
 
@@ -357,23 +363,34 @@ public class DPUTree extends CustomComponent {
      * @param tree
      *            {@link Tree} to fill.
      */
+    @SuppressWarnings("unchecked")
     private void fillTree(Tree tree) {
-
         tree.removeAllItems();
 
+        Item item;
         DPURecord rootExtractor = new DPUTemplateRecord(Messages.getString("DPUTree.extractors"), null);
-        tree.addItem(rootExtractor);
+        item = tree.addItem(rootExtractor);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootExtractor.getName());
+
         DPURecord rootTransformer = new DPUTemplateRecord(Messages.getString("DPUTree.transformers"), null);
-        tree.addItem(rootTransformer);
+        item = tree.addItem(rootTransformer);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootTransformer.getName());
+
         DPURecord rootLoader = new DPUTemplateRecord(Messages.getString("DPUTree.loaders"), null);
-        tree.addItem(rootLoader);
+        item = tree.addItem(rootLoader);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootLoader.getName());
+
         DPURecord rootQuality = new DPUTemplateRecord(Messages.getString("DPUTree.quality"), null);
-        tree.addItem(rootQuality);
+        item = tree.addItem(rootQuality);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootQuality.getName());
 
         List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
         for (DPUTemplateRecord dpu : dpus) {
             if (dpu.getType() != null) {
-                tree.addItem(dpu);
+                item = tree.addItem(dpu);
+                String caption = (isEmpty(dpu.getMenuName())) ? dpu.getName() : dpu.getMenuName(); // if menu name is not present, fallback to dpu name
+                item.getItemProperty(MENU_NAME_PROPERTY).setValue(caption);
+
                 DPUTemplateRecord parent = dpu.getParent();
                 if (parent != null) {
 //					DPUTemplateRecord parent = null;

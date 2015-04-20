@@ -91,7 +91,9 @@ public enum ConfigProperty {
     CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
 
-    DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password");
+    DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password"),
+
+    USE_LOCALIZED_DPU_NAME("dpu.name.localized");
 
     private final String property;
 

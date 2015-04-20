@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,6 +64,13 @@ public class DPUExplorer {
 
         // we do not know
         return null;
+    }
+
+    public Messages getMessageFromDPUBundle(Object DPUInstance) {
+        Class<?> objectClass = DPUInstance.getClass();
+        ClassLoader loader = objectClass.getClassLoader();
+        Messages messages = new Messages(LocaleHolder.getLocale(), loader);
+        return messages;
     }
 
     /**
