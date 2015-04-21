@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param pipeline
      * @return
      */
-    @PreAuthorize("hasRole('scheduleRule.read')")
+    @PostFilter("hasPermission(filterObject, 'scheduleRule.read')")
     @Override
     public List<Schedule> getSchedulesFor(Pipeline pipeline) {
         return scheduleDao.getSchedulesFor(pipeline);
@@ -93,7 +94,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return
      */
-    @PreAuthorize("hasRole('scheduleRule.read')")
+    @PostFilter("hasPermission(filterObject, 'scheduleRule.read')")
     @Override
     public List<Schedule> getAllTimeBasedNotQueuedRunning() {
         return scheduleDao.getAllTimeBasedNotQueuedRunning();
@@ -105,7 +106,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param id
      * @return
      */
-    @PreAuthorize("hasRole('scheduleRule.read')")
+    @PostAuthorize("hasPermission(returnObject, 'scheduleRule.read')")
     @Override
     public Schedule getSchedule(long id) {
         return scheduleDao.getInstance(id);
@@ -153,7 +154,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @param schedule
      */
-    @PreAuthorize("hasRole('scheduleRule.execute')")
+    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.execute')")
     @Transactional
     @Override
     public void execute(Schedule schedule) {

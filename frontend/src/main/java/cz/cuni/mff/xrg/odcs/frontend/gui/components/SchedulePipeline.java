@@ -19,29 +19,16 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.InlineDateField;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.TwinColSelect;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -153,6 +140,9 @@ public class SchedulePipeline extends Window {
     @Autowired
     private AuthenticationContext authCtx;
 
+    @Autowired
+    private AuthAwarePermissionEvaluator permissions;
+
     DbInMemorySource<Pipeline> source;
 
     DbInMemorySource<Pipeline> sourceCombo;
@@ -164,6 +154,8 @@ public class SchedulePipeline extends Window {
     private Label idLabel;
 
     private Label author;
+
+    private InMemorySource.Filter<Pipeline> canRunPipelineFilter;
 
     /**
      * The constructor should first build the main layout, set the composition
@@ -256,6 +248,7 @@ public class SchedulePipeline extends Window {
             emailNotifications.setDisableComponents();
             source.loadData(dbPipeline);
             sourceCombo.loadData(dbPipeline);
+            this.sourceCombo.filter(this.isInitialized, this.canRunPipelineFilter);
 
             if (selectPipe != null) {
                 selectPipe.setValue(null);
@@ -301,7 +294,8 @@ public class SchedulePipeline extends Window {
                     valueTol.setValue(selectedSchedule.getStrictToleranceMinutes());
                 }
                 source.loadData(dbPipeline);
-                sourceCombo.loadData(dbPipeline);
+                this.sourceCombo.loadData(this.dbPipeline);
+                this.sourceCombo.filter(this.isInitialized, this.canRunPipelineFilter);
 
             } //AFTER_PIPELINE type
             else {
@@ -313,7 +307,8 @@ public class SchedulePipeline extends Window {
                 }
                 selectPipe.setValue(afterNames);
                 source.loadData(dbPipeline);
-                sourceCombo.loadData(dbPipeline);
+                this.sourceCombo.loadData(this.dbPipeline);
+                this.sourceCombo.filter(this.isInitialized, this.canRunPipelineFilter);
                 source.hide(selectedSchedule.getPipeline().getId(), true);
 
             }
@@ -373,10 +368,13 @@ public class SchedulePipeline extends Window {
         coreLayout.setSpacing(true);
         coreLayout.setMargin(true);
 
+        this.canRunPipelineFilter = createRunPipelineFilter();
+
         source = new DbInMemorySource<>(new PipelineNameAccessor(), dbPipeline);
         container = new ReadOnlyContainer<>(source);
 
         sourceCombo = new DbInMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+        this.sourceCombo.filter(this.isInitialized, this.canRunPipelineFilter);
         containerCombo = new ReadOnlyContainer<>(sourceCombo);
 
         GridLayout layoutPipeline = new GridLayout(2, 4);
@@ -1243,5 +1241,18 @@ public class SchedulePipeline extends Window {
                 return true;
         }
         return false;
+    }
+
+    private InMemorySource.Filter<Pipeline> createRunPipelineFilter() {
+        InMemorySource.Filter<Pipeline> filter = new InMemorySource.Filter<Pipeline>() {
+
+            @Override
+            public boolean filter(Pipeline pipeline) {
+                return permissions.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN);
+            }
+
+        };
+
+        return filter;
     }
 }
