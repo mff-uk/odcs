@@ -69,7 +69,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy') and hasRole('dpuTemplate.create')")
+    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy')")
     public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
         DPUTemplateRecord copy = new DPUTemplateRecord(original);
         if (authCtx != null) {
