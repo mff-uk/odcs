@@ -37,7 +37,7 @@ public class DPUModuleManipulator {
 
     public static final String DPU_NAME_KEY = "dpu.name";
 
-    public static final String DPU_MENU_NAME_KEY = "dpu.menu.name";
+    public static final String DPU_MENU_NAME_KEY = "dpu.name.menu";
 
     @Autowired
     private DPUFacade dpuFacade;
