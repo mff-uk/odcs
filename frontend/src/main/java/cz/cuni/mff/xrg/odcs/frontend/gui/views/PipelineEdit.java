@@ -1221,8 +1221,6 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-        setupVisibilityOptions(visibility);
-
         undo.setEnabled(false);
         this.pipeline.setName(pipelineName.getValue());
         pipelineName.commit();
@@ -1233,6 +1231,8 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.commit();
 
         pipelineFacade.save(this.pipeline);
+
+        setupVisibilityOptions(visibility);
         if (doCleanup) {
             pipelineCanvas.afterSaveCleanUp();
         }

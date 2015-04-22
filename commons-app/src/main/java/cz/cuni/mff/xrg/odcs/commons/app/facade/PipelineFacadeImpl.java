@@ -172,7 +172,11 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.save')")
+    // Public writable pipeline can be saved only if user has proper permission for it 
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.save') "
+            + "AND (#pipeline.getShareType() != T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
+            + "OR (#pipeline.getShareType() == T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
+            + "AND hasRole('pipeline.setVisibilityPublicRw')))")
     @Override
     public void save(Pipeline pipeline) {
 
