@@ -18,3 +18,8 @@ DELETE FROM `permission` WHERE name = 'dpuTemplate.import';
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.createFromInstance', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
+INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name='pipeline.setVisibilityAtCreate'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name='pipeline.setVisibilityAtCreate'));

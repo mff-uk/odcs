@@ -13,7 +13,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
@@ -34,7 +33,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
     private AuthenticationContext authCtx;
 
     private static final String ORGANIZATION_MODE = "organization";
-    
+
     /**
      * Application's configuration.
      */
@@ -51,7 +50,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
         }
 
         String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-        
+
         for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
             if (adminPermission.equals(ga.getAuthority()))
                 return null;
@@ -104,7 +103,7 @@ class DbAuthorizatorImpl implements DbAuthorizator {
     }
 
     public Predicate getAuthorizationPredicateOrganization(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-        
+
         Predicate predicate = null;
 
         Organization org = authCtx.getUser().getOrganization();
@@ -114,8 +113,8 @@ class DbAuthorizatorImpl implements DbAuthorizator {
                 predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
             else
                 predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
-            
-            predicate = or(cb, predicate, cb.equal(root.get("shareType"), ShareType.PUBLIC_RO));
+
+            predicate = or(cb, predicate, cb.notEqual(root.get("shareType"), ShareType.PRIVATE));
 
             return predicate;
         }

@@ -18,7 +18,6 @@ INSERT INTO `role` VALUES (NULL,'MOD-R-PO');
 INSERT INTO `role` VALUES (NULL,'MOD-R-TRANSA'); 
 
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.delete', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
@@ -79,6 +78,12 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-PO'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityAtCreate', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
+INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipelineExecution.delete', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
