@@ -24,3 +24,11 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name='pipeline.setVisibilityAtCreate'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibilityAtCreate'));
+-- Map existing permissions to roles
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'dpuTemplate.setVisibilityAtCreate'));
