@@ -912,7 +912,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
+        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -922,8 +922,10 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RO);
         pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
-        pipelineVisibility.addItem(ShareType.PUBLIC_RW);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
+            pipelineVisibility.addItem(ShareType.PUBLIC_RW);
+            pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+        }
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
         pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -933,7 +935,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
+        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);

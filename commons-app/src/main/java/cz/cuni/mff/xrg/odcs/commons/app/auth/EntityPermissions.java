@@ -37,6 +37,10 @@ public class EntityPermissions {
 
     public static final String PIPELINE_EXECUTION_STOP = "pipelineExecution.stop";
 
+    public static final String PIPELINE_SET_VISIBILITY_AT_CREATE = "pipeline.setVisibilityAtCreate";
+
+    public static final String PIPELINE_SET_VISIBILITY_PUBLIC_RW = "pipeline.setVisibilityPublicRw";
+
     // ************  DPUTemplate permissions
     public static final String DPU_TEMPLATE_CREATE = "dpuTemplate.create";
 
