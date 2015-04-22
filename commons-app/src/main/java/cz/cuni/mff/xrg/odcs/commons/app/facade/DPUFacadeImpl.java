@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,7 +122,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PostFilter("hasPermission(returnObject, 'dpuTemplate.read')")
+    @PostAuthorize("hasPermission(returnObject, 'dpuTemplate.read')")
     public DPUTemplateRecord getTemplate(long id) {
         return templateDao.getInstance(id);
     }
