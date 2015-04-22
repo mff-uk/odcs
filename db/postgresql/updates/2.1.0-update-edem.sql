@@ -23,3 +23,18 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
+-- Map existing permissions to roles
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'pipeline.importScheduleRules'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), (select id from "permission" where name = 'dpuTemplate.setVisibilityAtCreate'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'dpuTemplate.setVisibilityAtCreate'));

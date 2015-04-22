@@ -28,11 +28,17 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.export', f
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportScheduleRules', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.import', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.importScheduleRules', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.importUserData', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.schedule', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
@@ -85,6 +91,7 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.createF
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.setVisibilityAtCreate', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.delete', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.edit', true);
