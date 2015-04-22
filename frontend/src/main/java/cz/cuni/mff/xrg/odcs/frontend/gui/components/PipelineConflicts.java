@@ -18,6 +18,9 @@ import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -58,6 +61,8 @@ public class PipelineConflicts extends Window {
      * The current pipeline.
      */
     private Pipeline pipeline;
+
+    private InMemorySource<Pipeline, DbQueryBuilder<Pipeline>, DbQuery<Pipeline>, DbQueryCount<Pipeline>> source;
 
     /**
      * Empty constructor.
@@ -101,6 +106,7 @@ public class PipelineConflicts extends Window {
             conflictsNames.add(conflictitem.getId());
         }
         selectPipe.setValue(conflictsNames);
+        this.source.loadData(this.dbPipeline);
     }
 
     /**
@@ -126,8 +132,8 @@ public class PipelineConflicts extends Window {
         mainLayout.setSpacing(true);
         mainLayout.setWidth("435px");
 
-        container = new ReadOnlyContainer<>(
-                new InMemorySource<>(new PipelineNameAccessor(), dbPipeline));
+        this.source = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
+        container = new ReadOnlyContainer<>(this.source);
 
         //Component for pipelines select
         selectPipe = new TwinColSelect();

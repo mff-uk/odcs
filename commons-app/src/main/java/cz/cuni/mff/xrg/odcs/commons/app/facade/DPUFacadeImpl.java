@@ -69,7 +69,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.copy')")
+    @PreAuthorize("hasPermission(#original, 'dpuTemplate.copy')")
     public DPUTemplateRecord createCopy(DPUTemplateRecord original) {
         DPUTemplateRecord copy = new DPUTemplateRecord(original);
         if (authCtx != null) {
@@ -89,7 +89,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return new DPURecord
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.create')")
+    @PreAuthorize("hasRole('dpuTemplate.createFromInstance')")
     public DPUTemplateRecord createTemplateFromInstance(DPUInstanceRecord instance) {
         DPUTemplateRecord template = new DPUTemplateRecord(instance);
         if (authCtx != null) {
@@ -108,10 +108,10 @@ class DPUFacadeImpl implements DPUFacade {
      * 
      * @return DPURecord list
      */
-    //@PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
+    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
     @Override
     public List<DPUTemplateRecord> getAllTemplates() {
-        return templateDao.getAllVisible(authCtx.getUser());
+        return this.templateDao.getAll();
     }
 
     /**
@@ -121,7 +121,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.read')")
+    @PostFilter("hasPermission(returnObject, 'dpuTemplate.read')")
     public DPUTemplateRecord getTemplate(long id) {
         return templateDao.getInstance(id);
     }
@@ -132,7 +132,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @param dpu
      */
     @Transactional
-    @PreAuthorize("hasPermission(#dpu,'dpuTemplate.create')")
+    @PreAuthorize("hasPermission(#dpu,'dpuTemplate.edit')")
     @Override
     public void save(DPUTemplateRecord dpu) {
         templateDao.save(dpu);
@@ -158,7 +158,7 @@ class DPUFacadeImpl implements DPUFacade {
      * @return list of child DPU templates or empty collection
      */
     @Override
-    @PreAuthorize("hasRole('dpuTemplate.read')")
+    @PreAuthorize("hasPermission(#parent, 'dpuTemplate.read')")
     public List<DPUTemplateRecord> getChildDPUs(DPUTemplateRecord parent) {
         return templateDao.getChilds(parent);
     }
@@ -169,13 +169,13 @@ class DPUFacadeImpl implements DPUFacade {
     public DPUTemplateRecord getByDirectory(String jarDirectory) {
         return templateDao.getByDirectory(jarDirectory);
     }
-    
+
     @Transactional(readOnly = true)
-	@Override
+    @Override
     @PreAuthorize("hasRole('dpuTemplate.read')")
-	public DPUTemplateRecord getByJarName(String jarName) {
-		  return templateDao.getByJarName(jarName);
-	}
+    public DPUTemplateRecord getByJarName(String jarName) {
+        return templateDao.getByJarName(jarName);
+    }
 
     @Transactional(readOnly = true)
     @Override

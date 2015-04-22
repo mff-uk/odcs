@@ -12,11 +12,14 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -63,6 +66,7 @@ public class ImportService {
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
         final File tempDir;
         try {
@@ -73,6 +77,7 @@ public class ImportService {
         return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
         // delete tempDirectory
@@ -152,6 +157,7 @@ public class ImportService {
      * @return
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.import')")
     public Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
@@ -165,6 +171,7 @@ public class ImportService {
         }
     }
 
+    @PreAuthorize("hasRole('pipeline.import')")
     public List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
         XStream xStream = new XStream(new DomDriver("UTF-8"));
         xStream.alias("dpus", List.class);
@@ -228,6 +235,9 @@ public class ImportService {
         }
         // copy user data
         if (userDataDir.exists() && importUserDataFile) {
+            if (!hasPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.data.permissions"));
+            }
             try {
                 final File dest = resourceManager
                         .getDPUDataUserDir(result, user);
@@ -264,6 +274,7 @@ public class ImportService {
      * @param user
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.importScheduleRules')")
     private void importSchedules(File scheduleFile, Pipeline pipeline, User user)
             throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
@@ -351,6 +362,21 @@ public class ImportService {
 
         LOG.debug("<<< Leaving getImportedInformation: {}", result);
         return result;
+    }
+
+    private boolean hasPermission(String type) {
+        if (this.authCtx == null) {
+            return false;
+        }
+        for (GrantedAuthority ga : this.authCtx.getUser().getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
+    }
+
+    public AuthenticationContext getAuthContext() {
+        return this.authCtx;
     }
 
 }

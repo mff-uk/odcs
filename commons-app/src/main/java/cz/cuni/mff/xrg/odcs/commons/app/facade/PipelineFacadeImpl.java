@@ -79,7 +79,7 @@ class PipelineFacadeImpl implements PipelineFacade {
         newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
         return newPipeline;
@@ -95,7 +95,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return newly copied pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline, 'pipeline.create')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.copy') and hasRole('pipeline.create')")
     @Override
     public Pipeline copyPipeline(Pipeline pipeline) {
 
@@ -114,7 +114,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
 
@@ -125,18 +125,19 @@ class PipelineFacadeImpl implements PipelineFacade {
     /**
      * Returns list of all pipelines persisted in the database for given organization.
      *
-     * @param organizationName of pipeline
+     * @param organizationName
+     *            of pipeline
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
-     * container with paging instead
+     *             container with paging instead
      */
-    
+
     @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getAllPipelines(String organizationName) {
         return pipelineDao.getPipelinesForOrganization(organizationName);
     }
-    
+
     /**
      * Returns list of all pipelines persisted in the database.
      *
@@ -204,7 +205,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     }
 
     @PreAuthorize("hasPermission(#dpu, 'dpuTemplate.read')")
-    @PostFilter("hasPermission(filterObject,'dpuTemplate.read')")
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
     @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         return pipelineDao.getPipelinesUsingDPU(dpu);
@@ -240,6 +241,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return list of private DPUs used in pipeline
      */
     @Override
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.read')")
     public List<DPUTemplateRecord> getPrivateDPUs(Pipeline pipeline) {
         List<DPUTemplateRecord> dpus = new ArrayList<>();
         for (Node node : pipeline.getGraph().getNodes()) {
@@ -302,7 +304,7 @@ class PipelineFacadeImpl implements PipelineFacade {
     public List<OpenEvent> getOpenPipelineEvents(Pipeline pipeline) {
         // Return empry list. Ie. no pipeline is open.
         return Arrays.asList();
-        
+
         // TODO Petr: UPDATE on openEvent takes too long ..
 //        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
 //        if (pipeline.getId() == null) {
@@ -335,6 +337,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *         false otherwise
      */
     @Override
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.read')")
     public boolean isUpToDate(Pipeline pipeline) {
         LOG.trace("isUpToDate({})", pipeline.getId());
         if (pipeline.getId() == null) {
@@ -365,13 +368,13 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      * @return pipeline execution of given pipeline
      */
-    @PreAuthorize("hasRole('pipeline.run')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipeline.run')")
     @Override
     public PipelineExecution createExecution(Pipeline pipeline) {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
-            if(authCtx.getUser().getOrganization() != null)
+            if (authCtx.getUser().getOrganization() != null)
                 newExec.setOrganization(authCtx.getUser().getOrganization());
         }
         return newExec;
@@ -403,13 +406,11 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
-
     @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
     }
-
 
     /**
      * Find pipeline execution in database by ID and return it.
@@ -418,7 +419,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      *            of PipelineExecution
      * @return PipelineExecution
      */
-    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @PostAuthorize("hasPermission(returnObject, 'pipelineExecution.read')")
     @Override
     public PipelineExecution getExecution(long id) {
         return executionDao.getInstance(id);
@@ -431,7 +432,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return pipeline executions
      */
     @Override
-    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline) {
         return executionDao.getAll(pipeline);
     }
@@ -446,7 +447,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @return PipelineExecutions
      */
     @Override
-    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @PreAuthorize("hasPermission(#pipeline, 'pipelineExecution.read')")
     public List<PipelineExecution> getExecutions(Pipeline pipeline, PipelineExecutionStatus status) {
         return executionDao.getAll(pipeline, status);
     }
@@ -528,18 +529,20 @@ class PipelineFacadeImpl implements PipelineFacade {
     public boolean hasModifiedExecutions(Date lastLoad) {
         return executionDao.hasModified(lastLoad);
     }
-    
+
     /**
      * Checks if some of the executions were deleted
      * <p>
-     * @param executionIds execution to check
+     * 
+     * @param executionIds
+     *            execution to check
      * @return true if one or more execution were deleted
      */
     @Override
     public boolean hasDeletedExecutions(List<Long> executionIds) {
-    	return executionDao.hasDeleted(executionIds);
+        return executionDao.hasDeleted(executionIds);
     }
-    
+
     /**
      * Tells whether there were any changes to pipelines since the
      * last load.
@@ -550,19 +553,19 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
     @Override
     public boolean hasModifiedPipelines(Date lastLoad) {
-    	return pipelineDao.hasModified(lastLoad);
+        return pipelineDao.hasModified(lastLoad);
     }
-    
+
     /**
      * Tells whether one of pipelines was deleted
      * <p>
      * 
      * @param pipelineIds
-     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     @Override
     public boolean hasDeletedPipelines(List<Long> pipelineIds) {
-    	return pipelineDao.hasDeletedPipelines(pipelineIds);    	
+        return pipelineDao.hasDeletedPipelines(pipelineIds);
     }
 
     /**
@@ -572,7 +575,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasRole('pipeline.run')")
+    @PreAuthorize("hasPermission(#exec, 'pipeline.run')")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -585,7 +588,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasRole('pipelineExecution.delete')")
+    @PreAuthorize("hasPermission(#exec, 'pipelineExecution.delete')")
     @Override
     public void delete(PipelineExecution exec) {
         executionDao.delete(exec);

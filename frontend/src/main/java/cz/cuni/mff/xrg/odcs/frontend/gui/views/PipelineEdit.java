@@ -30,35 +30,20 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -105,7 +90,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 public class PipelineEdit extends ViewComponent {
 
     private static final String ORGANIZATION_MODE = "organization";
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 
     private VerticalLayout mainLayout;
@@ -236,7 +221,7 @@ public class PipelineEdit extends ViewComponent {
 
     @Autowired
     private Utils utils;
-    
+
     /**
      * Empty constructor.
      */
@@ -269,7 +254,7 @@ public class PipelineEdit extends ViewComponent {
         if (this.pipeline == null) {
             return;
         } else {
-            setMode(hasPermission("pipeline.save"));
+            setMode(hasPermission(EntityPermissions.PIPELINE_SAVE));
             updateLblPipelineName();
         }
 
@@ -713,7 +698,8 @@ public class PipelineEdit extends ViewComponent {
                 if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
-                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"), new ConfirmDialog.Listener() {
+                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"),
+                            new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
@@ -926,7 +912,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -965,7 +951,7 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission("pipeline.save");
+        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission(EntityPermissions.PIPELINE_SAVE);
     }
 
     @Override
@@ -1023,13 +1009,13 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupButtons(boolean enabled, boolean isNew) {
-        buttonSave.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndClose.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("pipeline.save") && hasPermission("pipeline.runDebug"));
-        buttonCopy.setEnabled(!isNew && hasPermission("pipeline.copy"));
-        buttonCopyAndClose.setEnabled(!isNew && hasPermission("pipeline.copy"));
-        // we reuse copy permision for exportPipeline
-        buttonExport.setEnabled(hasPermission("pipeline.export"));
+        buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
+        buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
+        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
+        buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
+        buttonExport.setEnabled(hasPermission(EntityPermissions.PIPELINE_EXPORT));
+        buttonConflicts.setEnabled(hasPermission(EntityPermissions.PIPELINE_DEFINE_DEPENDENCIES));
     }
 
     /**
@@ -1195,17 +1181,13 @@ public class PipelineEdit extends ViewComponent {
         final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
         final ShareType visibility;
-        
+
         if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
-            if(utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))){
-                    visibility = ShareType.PUBLIC_RO;
-            }else{
-                visibility = ShareType.PRIVATE;
-            }
-        }else{
+            visibility = ShareType.PRIVATE;
+        } else {
             visibility = (ShareType) pipelineVisibility.getValue();
         }
-        
+
         if (!pipelineFacade.isUpToDate(pipeline)) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {
@@ -1221,7 +1203,8 @@ public class PipelineEdit extends ViewComponent {
         } else if (pipeline.getShareType() == ShareType.PRIVATE && ShareType.PUBLIC.contains(visibility) && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
             ConfirmDialog
                     .show(UI.getCurrent(),
-                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"), new ConfirmDialog.Listener() {
+                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"),
+                            new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
@@ -35,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -87,6 +88,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private Utils utils;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -184,7 +188,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade, appConfig);
+        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

@@ -19,6 +19,7 @@ import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -79,7 +80,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline.setCaption(Messages.getString("PipelineListViewImpl.create.pipeline"));
         btnCreatePipeline.setHeight("25px");
         btnCreatePipeline.addStyleName("v-button-primary");
-        btnCreatePipeline.setVisible(utils.hasUserAuthority("pipeline.create"));
+        btnCreatePipeline.setVisible(utils.hasUserAuthority(EntityPermissions.PIPELINE_CREATE));
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -93,7 +94,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline.setCaption(Messages.getString("PipelineListViewImpl.import.pipeline"));
         btnImportPipeline.setHeight("25px");
         btnImportPipeline.addStyleName("v-button-primary");
-        btnImportPipeline.setVisible(utils.hasUserAuthority("pipeline.import"));
+        btnImportPipeline.setVisible(utils.hasUserAuthority(EntityPermissions.PIPELINE_IMPORT));
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override

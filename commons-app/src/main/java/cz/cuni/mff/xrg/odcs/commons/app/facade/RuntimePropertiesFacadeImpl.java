@@ -1,13 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimeProperties;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 
@@ -32,12 +30,14 @@ public class RuntimePropertiesFacadeImpl implements RuntimePropertiesFacade {
         return runtimePropertiesDao.getByName(name);
     }
 
+    @PreAuthorize("hasRole('runtimeProperties.edit')")
     @Transactional
     @Override
     public void save(RuntimeProperty property) {
         runtimePropertiesDao.save(property);
     }
 
+    @PreAuthorize("hasRole('runtimeProperties.edit')")
     @Transactional
     @Override
     public void delete(RuntimeProperty property) {

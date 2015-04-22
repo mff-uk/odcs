@@ -11,8 +11,6 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,10 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService;
@@ -44,6 +45,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -58,6 +60,9 @@ public class DPUCreate extends Window {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private Utils utils;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -706,11 +711,13 @@ public class DPUCreate extends Window {
         dpuName.setValue("");
         dpuDescription.setValue("");
         groupVisibility.setValue(ShareType.PUBLIC_RO);
+        groupVisibility.setEnabled(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
         uploadFile.setReadOnly(false);
         uploadFile.setValue("");
         uploadFile.setReadOnly(true);
         // clean zip version
         groupVisibilityZip.setValue(ShareType.PUBLIC_RO);
+        groupVisibilityZip.setEnabled(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
         uploadFileZip.setReadOnly(false);
         uploadFileZip.setValue("");
         uploadFileZip.setReadOnly(true);
