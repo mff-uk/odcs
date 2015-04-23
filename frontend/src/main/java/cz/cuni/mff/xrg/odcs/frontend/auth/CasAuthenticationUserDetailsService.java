@@ -21,7 +21,7 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private String orgAttributeName = "Subject.UPVSIdentityID";
+    private String subjectAttributeName = "Subject.UPVSIdentityID";
 
     private String roleAttributeName = "SPR.Roles";
 
@@ -42,9 +42,9 @@ public class CasAuthenticationUserDetailsService extends
 
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-        String organization = attributes.get(this.orgAttributeName) != null ? attributes.get(this.orgAttributeName).toString() : null;
-        if (organization != null) {
-            username = organization;
+        String subject = attributes.get(this.subjectAttributeName) != null ? attributes.get(this.subjectAttributeName).toString() : null;
+        if (subject != null) {
+            username = subject;
         }
 
         List<String> roles = new ArrayList<>();
@@ -83,8 +83,8 @@ public class CasAuthenticationUserDetailsService extends
         return user;
     }
 
-    public void setOrgAttributeName(String orgAttributeName) {
-        this.orgAttributeName = orgAttributeName;
+    public void setSubjectAttributeName(String subjectAttributeName) {
+        this.subjectAttributeName = subjectAttributeName;
     }
 
     public void setRoleAttributeName(String roleAttributeName) {
