@@ -42,6 +42,10 @@ public class CasAuthenticationUserDetailsService extends
 
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+        String organization = attributes.get(this.orgAttributeName) != null ? attributes.get(this.orgAttributeName).toString() : null;
+        if (organization != null) {
+            username = organization;
+        }
 
         List<String> roles = new ArrayList<>();
         Object roleAttributes = attributes.get(roleAttributeName);
