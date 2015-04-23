@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
@@ -23,7 +22,6 @@ public class CasAuthenticationUserDetailsService extends
             .getLogger(CasAuthenticationUserDetailsService.class);
 
     private String orgAttributeName = "Subject.UPVSIdentityID";
-
 
     private String roleAttributeName = "SPR.Roles";
 
@@ -54,8 +52,6 @@ public class CasAuthenticationUserDetailsService extends
                 roles.addAll((List) roleAttributes);
         }
 
-        String organization = attributes.get(orgAttributeName) != null ? attributes.get(orgAttributeName).toString() : null;
-
         User user = userFacade.getUserByExtId(username);
 
         if (user == null) {
@@ -80,15 +76,6 @@ public class CasAuthenticationUserDetailsService extends
 
         userFacade.saveNoAuth(user);
 
-        if (organization != null) {
-            Organization o = userFacade.getOrganizationByName(organization);
-            if (o == null) {
-                o = new Organization();
-                o.setName(organization);
-                userFacade.save(o);
-            }
-            user.setOrganization(o);
-        }
         return user;
     }
 

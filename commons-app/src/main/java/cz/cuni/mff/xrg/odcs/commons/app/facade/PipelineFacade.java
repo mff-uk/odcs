@@ -43,15 +43,6 @@ public interface PipelineFacade extends Facade {
     Pipeline copyPipeline(Pipeline pipeline);
 
     /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationName
-     *            of pipeline
-     * @return list of pipelines
-     */
-    List<Pipeline> getAllPipelines(String organizationName);
-
-    /**
      * Returns list of all pipelines persisted in the database.
      *
      * @return list of pipelines

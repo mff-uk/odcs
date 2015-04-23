@@ -77,9 +77,6 @@ public class ExecutionView implements DataObject {
     @Column(name = "owner_name")
     private String ownerName;
 
-    @Column(name = "org_name")
-    private String orgName;
-
     /**
      * True if pipeline should or has been stopped on user request.
      */
@@ -179,14 +176,6 @@ public class ExecutionView implements DataObject {
 
     public void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
     }
 
     /**

@@ -61,7 +61,6 @@ CREATE TABLE `dpu_template`
   `config_valid` boolean NOT NULL,
 -- DPUTemplateRecord
   `user_id` INTEGER,
-  `organization_id` INTEGER,
   `visibility` SMALLINT,
   `type` SMALLINT,
   `jar_directory` VARCHAR(255),
@@ -72,7 +71,6 @@ CREATE TABLE `dpu_template`
 CREATE INDEX `ix_DPU_TEMPLATE_jar_directory` ON `dpu_template` (`jar_directory`);
 CREATE INDEX `ix_DPU_TEMPLATE_parent_id` ON `dpu_template` (`parent_id`);
 CREATE INDEX `ix_DPU_TEMPLATE_user_id` ON `dpu_template` (`user_id`);
-CREATE INDEX `ix_DPU_TEMPLATE_organization_id` ON `dpu_template` (`organization_id`);
 CREATE INDEX `ix_DPU_TEMPLATE_visibility` ON `dpu_template` (`visibility`);
 
 CREATE TABLE `exec_dataunit_info`
@@ -136,7 +134,6 @@ CREATE TABLE `exec_pipeline`
   `stop` boolean,
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
-  `organization_id` INTEGER,
  `order_number` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -148,7 +145,6 @@ CREATE INDEX `ix_EXEC_PIPELINE_debug_mode` ON `exec_pipeline` (`debug_mode`);
 CREATE INDEX `ix_EXEC_PIPELINE_context_id` ON `exec_pipeline` (`context_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_schedule_id` ON `exec_pipeline` (`schedule_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `exec_pipeline` (`owner_id`);
-CREATE INDEX `ix_EXEC_PIPELINE_organization_id` ON `exec_pipeline` (`organization_id`);
 
 
 CREATE TABLE `exec_schedule`
@@ -157,7 +153,6 @@ CREATE TABLE `exec_schedule`
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
-  `organization_id` INTEGER,
  `just_once` boolean,
   `enabled` boolean,
   `type` SMALLINT,
@@ -173,7 +168,6 @@ CREATE TABLE `exec_schedule`
 -- composite index to optimize fetching schedules following pipeline
 CREATE INDEX `ix_EXEC_SCHEDULE_pipeline_id_type` ON `exec_schedule` (`pipeline_id`, `type`);
 CREATE INDEX `ix_EXEC_SCHEDULE_user_id` ON `exec_schedule` (`user_id`);
-CREATE INDEX `ix_EXEC_SCHEDULE_organization_id` ON `exec_schedule` (`organization_id`);
 CREATE INDEX `ix_EXEC_SCHEDULE_enabled` ON `exec_schedule` (`enabled`);
 CREATE INDEX `ix_EXEC_SCHEDULE_type` ON `exec_schedule` (`type`);
 
@@ -190,13 +184,11 @@ CREATE TABLE `ppl_model`
   `name` VARCHAR(1024),
   `description` TEXT,
   `user_id` INTEGER,
-  `organization_id` INTEGER,
  `visibility` SMALLINT,
   `last_change` DATETIME,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_PPL_MODEL_user_id` ON `ppl_model` (`user_id`);
-CREATE INDEX `ix_PPL_MODEL_organization_id` ON `ppl_model` (`organization_id`);
 
 CREATE TABLE `ppl_ppl_conflicts`
 (
@@ -299,16 +291,6 @@ CREATE TABLE `sch_usr_notification_email`
   PRIMARY KEY (`notification_id`, `email_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_SCH_USR_NOTIFICATION_EMAIL_email_id` ON `sch_usr_notification_email` (`email_id`);
-
-
-CREATE TABLE `organization`
-(
-  `id` INTEGER AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-CREATE INDEX `ix_organization_name` ON `organization` (`name`);
 
 CREATE TABLE `usr_user`
 (
@@ -463,11 +445,6 @@ ADD FOREIGN KEY (`owner_id`)
     REFERENCES `usr_user` (`id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE `exec_pipeline`
-ADD FOREIGN KEY (`organization_id`)
-    REFERENCES `organization` (`id`)
-	ON UPDATE CASCADE ON DELETE CASCADE;
-
 -- Table `exec_schedule`
 ALTER TABLE `exec_schedule`
 ADD FOREIGN KEY (`pipeline_id`)
@@ -477,11 +454,6 @@ ADD FOREIGN KEY (`pipeline_id`)
 ALTER TABLE `exec_schedule`
 ADD FOREIGN KEY (`user_id`)
     REFERENCES `usr_user` (`id`)
-	ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE `exec_schedule`
-ADD FOREIGN KEY (`organization_id`)
-    REFERENCES `organization` (`id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 -- Table `exec_schedule_after`
@@ -500,11 +472,6 @@ ADD FOREIGN KEY (`pipeline_id`)
 ALTER TABLE `ppl_model`
 ADD FOREIGN KEY (`user_id`)
     REFERENCES `usr_user` (`id`)
-	ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE `ppl_model`
-ADD FOREIGN KEY (`organization_id`)
-    REFERENCES `organization` (`id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 -- This constraint is only limited to first 255 characters in column. Larger constraint is only
@@ -673,17 +640,13 @@ FROM `exec_pipeline` AS exec
 WHERE t_end = (SELECT max(t_end) FROM `exec_pipeline` AS lastExec WHERE exec.pipeline_id = lastExec.pipeline_id);
 
 CREATE VIEW `pipeline_view` AS
-SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, org.name 
-AS org_name , ppl.visibility AS visibility FROM `ppl_model` AS ppl
+SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, ppl.visibility AS visibility FROM `ppl_model` AS ppl
 LEFT JOIN `exec_last_view` AS exec ON exec.pipeline_id = ppl.id
-LEFT JOIN `usr_user` AS usr ON ppl.user_id = usr.id
-left JOIN `organization` as org ON ppl.organization_id = org.id;
+LEFT JOIN `usr_user` AS usr ON ppl.user_id = usr.id;
 
 CREATE VIEW `exec_view` AS
 SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
-exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change,
-org.name AS org_name
+exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change
 FROM `exec_pipeline` AS exec
 LEFT JOIN `ppl_model` AS ppl ON ppl.id = exec.pipeline_id
-LEFT JOIN `usr_user` AS owner ON owner.id = exec.owner_id
-left JOIN `organization` as org ON exec.organization_id = org.id;
+LEFT JOIN `usr_user` AS owner ON owner.id = exec.owner_id;

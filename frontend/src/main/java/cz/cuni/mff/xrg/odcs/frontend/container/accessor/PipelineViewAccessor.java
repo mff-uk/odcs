@@ -10,7 +10,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -26,8 +25,6 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
-    private static final String SHARE_MODE_ORG = "organization";
-    
     @Autowired
     AppConfig appConfig;
 
@@ -114,10 +111,7 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                     return null;
                 }
             case "createdBy":
-                if(SHARE_MODE_ORG.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-                    return object.getOrgName() + " (" + object.getUsrName() + ")";
-                else
-                    return object.getUsrName();
+                return object.getUsrName();
             default:
                 return null;
         }

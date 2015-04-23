@@ -24,16 +24,12 @@ public class PipelineExecutionDTOConverter {
             } else {
                 dto.setSchedule(null);
             }
-            if(execution.getOwner() != null) {
+            if (execution.getOwner() != null) {
                 dto.setUserExternalId(execution.getOwner().getExternalIdentifier());
             } else {
                 dto.setUserExternalId(null);
             }
-            if(execution.getOrganization() != null) {
-                dto.setOrganizationExternalId(execution.getOrganization().getName());
-            } else {
-                dto.setOrganizationExternalId(null);
-            }
+
             dto.setStop(execution.getStop());
             dto.setLastChange(ConvertUtils.dateToString(execution.getLastChange()));
         }

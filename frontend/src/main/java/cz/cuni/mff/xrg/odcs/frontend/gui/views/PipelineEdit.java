@@ -46,7 +46,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -88,8 +87,6 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 @Scope("prototype")
 @Address(url = "PipelineEdit")
 public class PipelineEdit extends ViewComponent {
-
-    private static final String ORGANIZATION_MODE = "organization";
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 
@@ -1184,10 +1181,11 @@ public class PipelineEdit extends ViewComponent {
 
         final ShareType visibility;
 
-        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
-            visibility = ShareType.PRIVATE;
-        } else {
+        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             visibility = (ShareType) pipelineVisibility.getValue();
+
+        } else {
+            visibility = ShareType.PRIVATE;
         }
 
         if (!pipelineFacade.isUpToDate(pipeline)) {

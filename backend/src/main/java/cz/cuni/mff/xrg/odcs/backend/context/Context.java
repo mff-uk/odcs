@@ -253,15 +253,6 @@ public class Context implements DPUContext {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }
 
-    public String getOrganization() {
-        String organization = null;
-        if (this.contextInfo.getExecution().getOrganization() != null) {
-            organization = this.contextInfo.getExecution().getOrganization().getName();
-        }
-
-        return organization;
-    }
-
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
 
     @Override

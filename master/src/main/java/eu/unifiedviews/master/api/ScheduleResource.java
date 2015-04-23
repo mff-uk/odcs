@@ -17,20 +17,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ScheduleDTOConverter;
 import eu.unifiedviews.master.converter.ScheduledExecutionDTOConverter;
 import eu.unifiedviews.master.model.ApiException;
@@ -41,8 +39,6 @@ import eu.unifiedviews.master.model.ScheduledExecutionDTO;
 @Path("/pipelines")
 @AuthenticationRequired
 public class ScheduleResource {
-
-    public static final String ORGANIZATION_OWNERSHIP_TYPE = "organization";
 
     @Autowired
     private PipelineFacade pipelineFacade;
@@ -250,18 +246,9 @@ public class ScheduleResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             // try to get user
-            User user =  userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
-            if(user == null) {
+            User user = userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
+            if (user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
-            }
-
-            Organization organization = null;
-            if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
-                // try to get organization
-                organization = userFacade.getOrganizationByName(scheduleToUpdate.getOrganizationExternalId());
-                if(organization == null) {
-                    throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getOrganizationExternalId()));
-                }
             }
 
             Schedule schedule = scheduleFacade.createSchedule();
@@ -271,7 +258,6 @@ public class ScheduleResource {
             schedule.setPipeline(pipeline);
             schedule.setType(scheduleToUpdate.getScheduleType());
             schedule.setOwner(user);
-            schedule.setOrganization(organization);
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();

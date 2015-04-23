@@ -2,7 +2,6 @@ package eu.unifiedviews.master.model;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 public class PipelineScheduleDTO {
@@ -31,8 +30,6 @@ public class PipelineScheduleDTO {
     private Long scheduledJobsPriority;
 
     private String userExternalId;
-
-    private String organizationExternalId;
 
     public Long getId() {
         return id;
@@ -130,14 +127,6 @@ public class PipelineScheduleDTO {
         this.userExternalId = userExternalId;
     }
 
-    public String getOrganizationExternalId() {
-        return organizationExternalId;
-    }
-
-    public void setOrganizationExternalId(String organizationExternalId) {
-        this.organizationExternalId = organizationExternalId;
-    }
-
     public Long getScheduledJobsPriority() {
         return scheduledJobsPriority;
     }
@@ -146,7 +135,8 @@ public class PipelineScheduleDTO {
         this.scheduledJobsPriority = scheduledJobsPriority;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "PipelineScheduleDTO{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
@@ -161,7 +151,6 @@ public class PipelineScheduleDTO {
                 ", periodUnit='" + periodUnit + '\'' +
                 ", scheduledJobsPriority=" + scheduledJobsPriority +
                 ", userExternalId='" + userExternalId + '\'' +
-                ", organizationExternalId='" + organizationExternalId + '\'' +
                 '}';
     }
 }

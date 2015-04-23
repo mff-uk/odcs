@@ -79,8 +79,6 @@ class PipelineFacadeImpl implements PipelineFacade {
         newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
         return newPipeline;
     }
@@ -114,28 +112,10 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newPipeline.setOrganization(authCtx.getUser().getOrganization());
         }
 
         save(newPipeline);
         return newPipeline;
-    }
-
-    /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationName
-     *            of pipeline
-     * @return list of pipelines
-     * @deprecated performance intensive for many pipelines in DB, use lazy
-     *             container with paging instead
-     */
-
-    @PostFilter("hasPermission(filterObject,'pipeline.read')")
-    @Override
-    public List<Pipeline> getAllPipelines(String organizationName) {
-        return pipelineDao.getPipelinesForOrganization(organizationName);
     }
 
     /**
@@ -378,8 +358,6 @@ class PipelineFacadeImpl implements PipelineFacade {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newExec.setOrganization(authCtx.getUser().getOrganization());
         }
         return newExec;
     }

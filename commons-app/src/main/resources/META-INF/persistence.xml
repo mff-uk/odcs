@@ -25,7 +25,6 @@
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.User</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.Permission</class>
-        <class>cz.cuni.mff.xrg.odcs.commons.app.user.Organization</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord</class>
         <!-- View classes. -->

@@ -11,11 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Permission;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -29,10 +26,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator {
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
-
-    private static final String ORGANIZATION_MODE = "organization";
-
-    private static final String USER_MODE = "user";
 
     /**
      * Application's configuration.
@@ -77,13 +70,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
-        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-            return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
-
-        if (USER_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-            return hasPermissionUser(auth, target, (String) perm, foundPermission);
-
-        return false;
+        return hasPermissionUser(auth, target, (String) perm, foundPermission);
 
     }
 
@@ -114,74 +101,6 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
                     } else {
                         return false;
                     }
-                }
-            }
-        }
-
-        // Pipeline execution actions are always viewable if
-        // pipeline itself is viewable
-        if (target instanceof PipelineExecution) {
-            Pipeline pipe = ((PipelineExecution) target).getPipeline();
-            boolean viewPipe = hasPermission(pipe, requestedPerm);
-            if (viewPipe) {
-                // user has permission to view pipeline
-                // for this execution -> allow to see execution as well
-                return true;
-            }
-        }
-
-        // in other cases be restrictive
-        LOG.debug("Method hasPermission refused access for object <{}> and permission <{}>.",
-                target, requestedPerm);
-        return false;
-    }
-
-    private boolean hasPermissionOrganization(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
-
-        User user = (User) auth.getPrincipal();
-
-        if (target instanceof OrganizationSharedEntity) {
-            OrganizationSharedEntity oTarget = (OrganizationSharedEntity) target;
-            Organization organization = oTarget.getOrganization();
-
-            if (organization != null) {
-                if (user.getOrganization().getName().equals(organization.getName())) {
-                    return true;
-                }
-            }
-        }
-
-        // entity owner is almighty
-        if (target instanceof OwnedEntity) {
-            OwnedEntity oTarget = (OwnedEntity) target;
-            User owner = oTarget.getOwner();
-            if (owner != null && auth.getName().equals(owner.getUsername())) {
-                return true;
-            }
-        }
-
-        if (target instanceof Pipeline) {
-            Pipeline pipelineTarget = (Pipeline) target;
-            if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(pipelineTarget.getShareType())) {
-                    return false;
-                    // FIXME: This condition was added to be compliant with implementation in DbAuthorizatorImpl; 
-                    // However this is still a huge hack and should be solved cleanly in both cases 
-                } else if (ShareType.PUBLIC_RO.equals(pipelineTarget.getShareType())) {
-                    return true;
-                }
-            }
-        }
-
-        if (target instanceof DPUTemplateRecord) {
-            DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
-            if (foundPermission != null) {
-                // DPUTemplate is never public read/write, only private or public read-only
-                // So read-write operations can be executed only on owned DPU templates and there is no need to check if template is read-write
-                if (foundPermission.isRwOnly()) {
-                    return false;
-                } else if (ShareType.PUBLIC.contains(dpuTarget.getShareType())) {
-                    return true;
                 }
             }
         }
