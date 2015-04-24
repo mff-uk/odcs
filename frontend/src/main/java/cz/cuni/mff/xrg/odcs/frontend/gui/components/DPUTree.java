@@ -24,13 +24,13 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -75,7 +75,7 @@ public class DPUTree extends CustomComponent {
     private ExportService exportService;
 
     @Autowired
-    private Utils utils;
+    private PermissionUtils permissionUtils;
 
     private HorizontalLayout topLine;
 
@@ -453,8 +453,8 @@ public class DPUTree extends CustomComponent {
     }
 
     private void setButtonsVisible() {
-        this.buttonCreateDPU.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
-        this.exportButton.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
+        this.buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
+        this.exportButton.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
     }
 
     @Override

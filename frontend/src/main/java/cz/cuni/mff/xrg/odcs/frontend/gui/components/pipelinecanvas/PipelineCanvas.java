@@ -18,6 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
@@ -35,7 +36,6 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -90,7 +90,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     private AppConfig appConfig;
 
     @Autowired
-    private Utils utils;
+    private PermissionUtils permissionUtils;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -188,7 +188,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils);
+        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.permissionUtils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

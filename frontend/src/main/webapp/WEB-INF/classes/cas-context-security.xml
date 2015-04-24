@@ -103,4 +103,6 @@
 		class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
 		<b:property name="invalidateHttpSession" value="true" />
 	</b:bean>
+	<b:bean id="permissionUtils" 
+		class="cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils"/>
 </b:beans>

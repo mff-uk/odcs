@@ -20,6 +20,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -60,6 +61,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     private Button btnImportPipeline;
 
     @Autowired
+    private PermissionUtils permissionUtils;
+
+    @Autowired
     private Utils utils;
 
     private void buildPage(final PipelineListPresenter presenter) {
@@ -80,7 +84,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnCreatePipeline.setCaption(Messages.getString("PipelineListViewImpl.create.pipeline"));
         btnCreatePipeline.setHeight("25px");
         btnCreatePipeline.addStyleName("v-button-primary");
-        btnCreatePipeline.setVisible(utils.hasUserAuthority(EntityPermissions.PIPELINE_CREATE));
+        btnCreatePipeline.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_CREATE));
         btnCreatePipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -94,7 +98,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         btnImportPipeline.setCaption(Messages.getString("PipelineListViewImpl.import.pipeline"));
         btnImportPipeline.setHeight("25px");
         btnImportPipeline.addStyleName("v-button-primary");
-        btnImportPipeline.setVisible(utils.hasUserAuthority(EntityPermissions.PIPELINE_IMPORT));
+        btnImportPipeline.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_IMPORT));
         btnImportPipeline.addClickListener(new ClickListener() {
 
             @Override
@@ -124,7 +128,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
         mainLayout.addComponent(tablePipelines);
         mainLayout.addComponent(tablePipelines.createControls());
-        tablePipelines.setPageLength(utils.getPageLength());
+        tablePipelines.setPageLength(this.utils.getPageLength());
         tablePipelines.setColumnCollapsingAllowed(true);
 
         // add column

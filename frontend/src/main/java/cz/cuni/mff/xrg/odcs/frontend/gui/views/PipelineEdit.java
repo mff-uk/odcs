@@ -41,9 +41,9 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
@@ -200,12 +200,6 @@ public class PipelineEdit extends ViewComponent {
     private AuthenticationContext authCtx;
 
     /**
-     * Evaluates permissions of currently logged in user.
-     */
-    @Autowired
-    private AuthAwarePermissionEvaluator permissions;
-
-    /**
      * Access to the application context in order to provide possiblity to
      * create dialogs. TODO: This is give us more power then we need, we should
      * use some dialog factory instead.
@@ -217,7 +211,7 @@ public class PipelineEdit extends ViewComponent {
     private ExportService exportService;
 
     @Autowired
-    private Utils utils;
+    private PermissionUtils permissionUtils;
 
     /**
      * Empty constructor.
@@ -469,7 +463,7 @@ public class PipelineEdit extends ViewComponent {
                 if (canvasMode.equals(STANDARD_MODE)) {
                     return;
                 }
-                Transferable t = (Transferable) event.getTransferable();
+                Transferable t = event.getTransferable();
                 DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
                 MouseEventDetails mouse = details.getMouseEvent();
 
@@ -835,7 +829,7 @@ public class PipelineEdit extends ViewComponent {
      * @return If the user has given permission
      */
     public boolean hasPermission(String type) {
-        return permissions.hasPermission(pipeline, type);
+        return this.permissionUtils.hasPermission(pipeline, type);
     }
 
     private void setDetailState(boolean expand) {
@@ -909,7 +903,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -919,7 +913,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RO);
         pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
-        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
             pipelineVisibility.addItem(ShareType.PUBLIC_RW);
             pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
         }
@@ -932,7 +926,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
@@ -1181,7 +1175,7 @@ public class PipelineEdit extends ViewComponent {
 
         final ShareType visibility;
 
-        if (utils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
             visibility = (ShareType) pipelineVisibility.getValue();
 
         } else {

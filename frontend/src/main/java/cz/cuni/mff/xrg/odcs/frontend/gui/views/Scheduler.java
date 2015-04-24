@@ -28,8 +28,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -113,10 +113,10 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private Utils utils;
+    private PermissionUtils permissionUtils;
 
     @Autowired
-    private AuthAwarePermissionEvaluator permissionEvaluator;
+    private Utils utils;
 
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
@@ -190,7 +190,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         Button addRuleButton = new Button();
         addRuleButton.setCaption(Messages.getString("Scheduler.add.rule"));
         addRuleButton.addStyleName("v-button-primary");
-        addRuleButton.setVisible(utils.hasUserAuthority("scheduleRule.create"));
+        addRuleButton.setVisible(this.permissionUtils.hasUserAuthority("scheduleRule.create"));
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     @Override
@@ -342,7 +342,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     result.getContainerProperty(id, "rule").setValue(
                             Messages.getString("Scheduler.run.on") + df.format(item.getFirstExecution()));
                 } else {
-                    if (item.getPeriod().equals((Integer) 1)) {
+                    if (item.getPeriod().equals(1)) {
                         result.getContainerProperty(id, "rule").setValue(
                                 Messages.getString("Scheduler.run.on")
                                         + df.format(item.getFirstExecution())
@@ -554,11 +554,11 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     }
 
     boolean canDelete(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_DELETE);
+        return this.permissionUtils.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_DELETE);
     }
 
     boolean canEdit(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_EDIT);
+        return this.permissionUtils.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_EDIT);
     }
 
     private class filterDecorator extends IntlibFilterDecorator {

@@ -26,9 +26,9 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -141,7 +141,7 @@ public class SchedulePipeline extends Window {
     private AuthenticationContext authCtx;
 
     @Autowired
-    private AuthAwarePermissionEvaluator permissions;
+    private PermissionUtils permissionUtils;
 
     DbInMemorySource<Pipeline> source;
 
@@ -1248,7 +1248,7 @@ public class SchedulePipeline extends Window {
 
             @Override
             public boolean filter(Pipeline pipeline) {
-                return permissions.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN);
+                return permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN);
             }
 
         };
