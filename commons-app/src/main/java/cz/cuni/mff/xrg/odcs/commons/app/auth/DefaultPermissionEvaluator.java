@@ -92,7 +92,7 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
             if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
+                if (foundPermission.isWrite() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                     return false;
                 } else {
                     //only owner can delete

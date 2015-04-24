@@ -28,7 +28,7 @@ public class Permission implements GrantedAuthority {
     private String name;
 
     @Column
-    private boolean rwOnly;
+    private boolean write;
 
     public Long getId() {
         return id;
@@ -46,12 +46,12 @@ public class Permission implements GrantedAuthority {
         this.name = name;
     }
 
-    public boolean isRwOnly() {
-        return rwOnly;
+    public boolean isWrite() {
+        return write;
     }
 
-    public void setRwOnly(boolean rwOnly) {
-        this.rwOnly = rwOnly;
+    public void setWrite(boolean write) {
+        this.write = write;
     }
 
     @Override
