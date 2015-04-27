@@ -69,8 +69,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private VerticalLayout usersLayout;
 
-    private VerticalLayout pipelinesLayout;
-
     private VerticalLayout tabsLayout;
 
     private VerticalLayout runtimePropsLayout;
@@ -80,8 +78,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button accountButton;
 
     private Button usersButton;
-
-    private Button pipelinesButton;
 
     private Button runtimePropsButton;
 
@@ -201,14 +197,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         usersLayout = usersList.buildUsersListLayout();
         usersLayout.setStyleName("settings");
 
-        //layout for Delete debug resources
-        pipelinesLayout = new VerticalLayout();
-        pipelinesLayout.setMargin(true);
-        pipelinesLayout.setSpacing(true);
-        pipelinesLayout.setImmediate(true);
-        pipelinesLayout.setStyleName("settings");
-        pipelinesLayout.setWidth("100%");
-
         //layout for Namespace Prefixes
 //		prefixesLayout = new VerticalLayout();
 //		prefixesLayout.setImmediate(true);
@@ -293,35 +281,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         });
         tabsLayout.addComponent(usersButton);
         tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
-
-        //Delete debug resources tab
-        pipelinesButton = new NativeButton(Messages.getString("Settings.delete.resources"));
-        pipelinesButton.setHeight("40px");
-        pipelinesButton.setWidth("250px");
-        pipelinesButton.setStyleName("multiline");
-
-        pipelinesButton.addClickListener(new ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                //if before click was pushed My account tab
-                if (shownTab.equals(accountButton)) {
-                    myAccountSaveConfirmation(pipelinesButton, pipelinesLayout);
-                } else {
-                    //if before click was pushed Schedule notification tab
-                    if (shownTab.equals(notificationsButton)) {
-                        notificationSaveConfirmation(pipelinesButton,
-                                pipelinesLayout);
-                    } else {
-                        buttonPush(pipelinesButton, pipelinesLayout);
-                    }
-
-                }
-            }
-        });
-        tabsLayout.addComponent(pipelinesButton);
-        tabsLayout.setComponentAlignment(pipelinesButton, Alignment.TOP_RIGHT);
 
         //Namespace prefixes tab
 //		prefixesButton = new NativeButton("Namespace Prefixes");
@@ -778,7 +737,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         accountButton.setStyleName("multiline");
         usersButton.setStyleName("multiline");
-        pipelinesButton.setStyleName("multiline");
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
         runtimePropsButton.setStyleName("multiline");
