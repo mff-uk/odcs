@@ -20,8 +20,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
@@ -78,7 +78,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
      * Evaluates permissions of currently logged in user.
      */
     @Autowired
-    private AuthAwarePermissionEvaluator permissions;
+    private PermissionUtils permissionUtils;
 
     private DPUTemplateRecord selectedDpu = null;
 
@@ -299,7 +299,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
     @Override
     public boolean hasPermission(String type) {
-        return permissions.hasPermission(selectedDpu, type);
+        return permissionUtils.hasPermission(selectedDpu, type);
     }
 
     /**
@@ -423,21 +423,21 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
         String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
 
-        boolean isAdmin = permissions.hasPermission(pipe, adminPermission);
-        boolean canDelete = permissions.hasPermission(pipe, EntityPermissions.PIPELINE_DELETE);
+        boolean isAdmin = permissionUtils.hasPermission(pipe, adminPermission);
+        boolean canDelete = permissionUtils.hasPermission(pipe, EntityPermissions.PIPELINE_DELETE);
         return isAdmin || canDelete;
     }
 
     @Override
     public boolean showPipelineDetailButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, EntityPermissions.PIPELINE_READ);
+        return permissionUtils.hasPermission(pipe, EntityPermissions.PIPELINE_READ);
     }
 
     @Override
     public boolean showPipelineStatusButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, EntityPermissions.PIPELINE_EXECUTION_READ);
+        return permissionUtils.hasPermission(pipe, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
