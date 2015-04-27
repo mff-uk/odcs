@@ -11,6 +11,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Information about executed pipeline and its states.
@@ -114,6 +115,10 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = true)
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * No-arg constructor for JPA
@@ -409,6 +414,14 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     public void setOrderNumber(Long order) {
         this.orderNumber = order;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

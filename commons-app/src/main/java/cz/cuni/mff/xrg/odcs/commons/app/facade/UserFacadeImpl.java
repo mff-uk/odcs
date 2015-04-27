@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbUserActor;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
 /**
@@ -34,6 +36,9 @@ class UserFacadeImpl implements UserFacade {
 
     @Autowired
     private DbRoleEntity roleDao;
+
+    @Autowired
+    private DbUserActor actorDao;
 
     /**
      * Factory for a new User.
@@ -186,6 +191,16 @@ class UserFacadeImpl implements UserFacade {
     @Override
     public void delete(RoleEntity role) {
         roleDao.delete(role);
+    }
+
+    @Override
+    public UserActor getUserActorByExternalId(String externalId) {
+        return this.actorDao.getUserActorByExternalId(externalId);
+    }
+
+    @Override
+    public void save(UserActor userActor) {
+        this.actorDao.save(userActor);
     }
 
 }

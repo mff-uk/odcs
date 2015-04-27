@@ -79,6 +79,9 @@ class PipelineFacadeImpl implements PipelineFacade {
         newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newPipeline.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
         return newPipeline;
     }
@@ -112,6 +115,9 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newPipeline.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
 
         save(newPipeline);
@@ -358,6 +364,9 @@ class PipelineFacadeImpl implements PipelineFacade {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newExec.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
         return newExec;
     }

@@ -77,6 +77,9 @@ public class ExecutionView implements DataObject {
     @Column(name = "owner_name")
     private String ownerName;
 
+    @Column(name = "user_actor_name")
+    private String userActorName;
+
     /**
      * True if pipeline should or has been stopped on user request.
      */
@@ -90,6 +93,7 @@ public class ExecutionView implements DataObject {
     @Column(name = "t_last_change")
     private Date lastChange;
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -176,6 +180,14 @@ public class ExecutionView implements DataObject {
 
     public void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
+    }
+
+    public String getUserActorName() {
+        return this.userActorName;
+    }
+
+    public void setUserActorName(String userActorName) {
+        this.userActorName = userActorName;
     }
 
     /**

@@ -14,6 +14,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 public class CasAuthenticationUserDetailsService extends
         AbstractCasAssertionUserDetailsService {
@@ -21,9 +22,13 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private String subjectAttributeName = "Subject.UPVSIdentityID";
-
     private String roleAttributeName = "SPR.Roles";
+
+    private String actorIdAttributeName = "Actor.UPVSIdentityID";
+
+    private String actorNameAttributeName = "Actor.FormattedName";
+
+    private String fullNameAttributeName = "Subject.FormattedName";
 
     private UserFacade userFacade;
 
@@ -42,10 +47,6 @@ public class CasAuthenticationUserDetailsService extends
 
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
-        String subject = attributes.get(this.subjectAttributeName) != null ? attributes.get(this.subjectAttributeName).toString() : null;
-        if (subject != null) {
-            username = subject;
-        }
 
         List<String> roles = new ArrayList<>();
         Object roleAttributes = attributes.get(roleAttributeName);
@@ -60,6 +61,10 @@ public class CasAuthenticationUserDetailsService extends
 
         if (user == null) {
             user = userFacade.createUser(username, "*****", new EmailAddress(username + "@nomail.com"));
+            String userFullName = attributes.get(this.fullNameAttributeName) != null ? attributes.get(this.fullNameAttributeName).toString() : null;
+            if (userFullName != null) {
+                user.setFullName(userFullName);
+            }
             user.setExternalIdentifier(username);
             user.setTableRows(20);
         }
@@ -80,14 +85,32 @@ public class CasAuthenticationUserDetailsService extends
 
         userFacade.saveNoAuth(user);
 
+        String actorId = attributes.get(this.actorIdAttributeName) != null ? attributes.get(this.actorIdAttributeName).toString() : null;
+        if (actorId != null) {
+            UserActor actor = this.userFacade.getUserActorByExternalId(actorId);
+            if (actor == null) {
+                actor = new UserActor();
+                String actorName = attributes.get(this.actorNameAttributeName).toString();
+                actor.setName(actorName);
+                actor.setExternalId(actorId);
+                this.userFacade.save(actor);
+            }
+            user.setUserActor(actor);
+        }
+
         return user;
     }
 
-    public void setSubjectAttributeName(String subjectAttributeName) {
-        this.subjectAttributeName = subjectAttributeName;
+    public void setFullNameAttributeName(String fullNameAttributeName) {
+        this.fullNameAttributeName = fullNameAttributeName;
     }
 
     public void setRoleAttributeName(String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
     }
+
+    public void setActorNameAttributeName(String actorNameAttributeName) {
+        this.actorNameAttributeName = actorNameAttributeName;
+    }
+
 }

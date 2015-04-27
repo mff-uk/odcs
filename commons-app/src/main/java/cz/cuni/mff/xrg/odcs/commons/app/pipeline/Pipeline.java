@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer
@@ -61,6 +62,10 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * Public vs private shareType.
@@ -268,6 +273,14 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      */
     public void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

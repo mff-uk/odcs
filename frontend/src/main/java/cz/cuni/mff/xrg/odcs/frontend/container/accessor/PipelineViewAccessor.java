@@ -89,19 +89,19 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     }
 
     @Override
-    public Object getValue(PipelineView object, String id) {
+    public Object getValue(PipelineView pipeline, String id) {
         switch (id) {
             case "id":
-                return object.getId();
+                return pipeline.getId();
             case "name":
-                String name = object.getName();
+                String name = pipeline.getName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
             case "duration":
-                return DecorationHelper.formatDuration(object.getDuration());
+                return DecorationHelper.formatDuration(pipeline.getDuration());
             case "lastExecTime":
-                return object.getStart();
+                return pipeline.getStart();
             case "lastExecStatus":
-                final PipelineExecutionStatus type = object.getStatus();
+                final PipelineExecutionStatus type = pipeline.getStatus();
                 if (type != null) {
                     ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
                     Embedded emb = new Embedded(type.name(), img);
@@ -111,7 +111,10 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                     return null;
                 }
             case "createdBy":
-                return object.getUsrName();
+                if (pipeline.getUserActorName() != null) {
+                    return pipeline.getUsrName() + " (" + pipeline.getUserActorName() + ")";
+                }
+                return pipeline.getUsrName();
             default:
                 return null;
         }

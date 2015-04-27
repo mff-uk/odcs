@@ -13,6 +13,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.
@@ -115,6 +116,10 @@ public class Schedule implements OwnedEntity, DataObject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * If true then pipeline can be run only at most +10 minutes from scheduled
@@ -412,6 +417,14 @@ public class Schedule implements OwnedEntity, DataObject {
 
     public void setPriority(Long priority) {
         this.priority = priority;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

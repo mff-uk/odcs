@@ -82,6 +82,9 @@ public class User implements UserDetails, DataObject {
     @Column(table = "usr_extuser", name = "id_extuser")
     private String externalIdentifier;
 
+    @Transient
+    private UserActor userActor;
+
     /**
      * Empty constructor required by JPA.
      */
@@ -314,6 +317,14 @@ public class User implements UserDetails, DataObject {
 
     public void setExternalIdentifier(String externalIdentifier) {
         this.externalIdentifier = externalIdentifier;
+    }
+
+    public void setUserActor(UserActor actor) {
+        this.userActor = actor;
+    }
+
+    public UserActor getUserActor() {
+        return this.userActor;
     }
 
     /**

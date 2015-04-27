@@ -66,6 +66,9 @@ public class PipelineView implements Serializable, DataObject {
     @Column(name = "visibility")
     private ShareType shareType;
 
+    @Column(name = "user_actor_name")
+    private String userActorName;
+
     @Override
     public Long getId() {
         return id;
@@ -124,6 +127,14 @@ public class PipelineView implements Serializable, DataObject {
         } else {
             return end.getTime() - start.getTime();
         }
+    }
+
+    public String getUserActorName() {
+        return this.userActorName;
+    }
+
+    public void setUserActorName(String userActorName) {
+        this.userActorName = userActorName;
     }
 
 }

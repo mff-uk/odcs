@@ -5,6 +5,7 @@ import java.util.List;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Facade for managing persisted User entities.
@@ -101,4 +102,19 @@ public interface UserFacade extends Facade {
      * @param user
      */
     void delete(RoleEntity role);
+
+    /**
+     * Get user actor by external id
+     * 
+     * @param externalId
+     * @return
+     */
+    UserActor getUserActorByExternalId(String externalId);
+
+    /**
+     * Save user actor into database
+     * 
+     * @param userActor
+     */
+    void save(UserActor userActor);
 }
