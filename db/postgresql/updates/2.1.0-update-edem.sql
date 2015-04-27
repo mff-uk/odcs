@@ -50,7 +50,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='MOD
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;
-ALTER TABLE dpu_template DROP COLUMN organization_id;
 ALTER TABLE exec_pipeline DROP COLUMN organization_id;
 ALTER TABLE exec_schedule DROP COLUMN organization_id;
 ALTER TABLE ppl_model DROP COLUMN organization_id;

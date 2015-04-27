@@ -37,10 +37,9 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Adm
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;
-ALTER TABLE dpu_template DROP COLUMN organization_id;
-ALTER TABLE dpu_template DROP COLUMN exec_pipeline;
-ALTER TABLE dpu_template DROP COLUMN exec_schedule;
-ALTER TABLE dpu_template DROP COLUMN ppl_model;
+ALTER TABLE exec_pipeline DROP COLUMN organization_id;
+ALTER TABLE exec_schedule DROP COLUMN organization_id;
+ALTER TABLE ppl_model DROP COLUMN organization_id;
 DROP TABLE organization;
 
 CREATE VIEW "pipeline_view" AS
