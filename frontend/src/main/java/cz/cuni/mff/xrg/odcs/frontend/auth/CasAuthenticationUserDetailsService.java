@@ -30,6 +30,8 @@ public class CasAuthenticationUserDetailsService extends
 
     private String fullNameAttributeName = "Subject.FormattedName";
 
+    private String subjectIdAttributeName = "Subject.UPVSIdentityID";
+
     private UserFacade userFacade;
 
     /**
@@ -47,6 +49,12 @@ public class CasAuthenticationUserDetailsService extends
 
         String username = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
+        // FIXME: this is temporal solution; In the future, subject Id should be sent by CAS in username
+        // Currently Actor ID is sent in username CAS parameter
+        String subjectId = attributes.get(this.subjectIdAttributeName) != null ? attributes.get(this.subjectIdAttributeName).toString() : null;
+        if (subjectId != null) {
+            username = subjectId;
+        }
 
         List<String> roles = new ArrayList<>();
         Object roleAttributes = attributes.get(roleAttributeName);
@@ -73,10 +81,7 @@ public class CasAuthenticationUserDetailsService extends
 
         for (String rolename : roles) {
             if (rolename != null) {
-                //TODO nevieme to inak otestit
-                if ("MOD-R-DATA".equals(rolename))
-                    rolename = "MOD-R-PO";
-                RoleEntity role = userFacade.getRoleByName(rolename);
+                RoleEntity role = this.userFacade.getRoleByName(rolename);
                 if (role != null) {
                     user.addRole(role);
                 }
@@ -111,6 +116,10 @@ public class CasAuthenticationUserDetailsService extends
 
     public void setActorNameAttributeName(String actorNameAttributeName) {
         this.actorNameAttributeName = actorNameAttributeName;
+    }
+
+    public void setSubjectIdAttributeName(String subjectIdAttributeName) {
+        this.subjectIdAttributeName = subjectIdAttributeName;
     }
 
 }

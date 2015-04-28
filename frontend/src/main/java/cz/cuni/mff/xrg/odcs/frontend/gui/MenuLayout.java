@@ -234,7 +234,7 @@ public class MenuLayout extends CustomComponent {
      * Refresh user bar.
      */
     public void refreshUserBar() {
-        userName.setValue(authCtx.getUsername());
+        userName.setValue(getDisplayUserName());
         logOutButton.setVisible(authCtx.isAuthenticated());
     }
 

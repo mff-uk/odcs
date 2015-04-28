@@ -971,7 +971,7 @@ public class PipelineEdit extends ViewComponent {
         Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
         pipelineName.setValue(copiedPipeline.getName());
         setIdLabel(copiedPipeline.getId());
-        author.setValue(copiedPipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(copiedPipeline));
         pipeline = copiedPipeline;
         finishSavePipeline(false, ShareType.PRIVATE, "reload");
         setMode(true);
@@ -1112,7 +1112,7 @@ public class PipelineEdit extends ViewComponent {
             return null;
         }
         setIdLabel(pipeline.getId());
-        author.setValue(pipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(this.pipeline));
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
         pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
         pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
@@ -1146,7 +1146,7 @@ public class PipelineEdit extends ViewComponent {
             pipeline.setShareType(ShareType.PRIVATE);
             pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
             setIdLabel(null);
-            author.setValue(authCtx.getUsername());
+            author.setValue(getPipelineAuthorName(this.pipeline));
             pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
             pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
             setupButtons(false);
@@ -1326,7 +1326,7 @@ public class PipelineEdit extends ViewComponent {
     private void refreshPipeline() {
         pipeline = pipelineFacade.getPipeline(pipeline.getId());
         setIdLabel(pipeline.getId());
-        author.setValue(pipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(this.pipeline));
         pipelineCanvas.showPipeline(pipeline);
     }
 
@@ -1413,6 +1413,22 @@ public class PipelineEdit extends ViewComponent {
         if (this.pipeline == null) {
         } else {
             lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail") + this.pipeline.getName() + "' <h3>");
+        }
+    }
+
+    private String getPipelineAuthorName(Pipeline pipeline) {
+        if (pipeline != null) {
+            String ownerDisplayName = (pipeline.getOwner().getFullName() != null) ? pipeline.getOwner().getFullName() : pipeline.getOwner().getUsername();
+            if (pipeline.getActor() != null) {
+                return ownerDisplayName + " (" + pipeline.getActor().getName() + ")";
+            }
+            return ownerDisplayName;
+        } else {
+            String ownerDisplayName = (this.authCtx.getUser().getFullName() != null) ? this.authCtx.getUser().getFullName() : this.authCtx.getUsername();
+            if (this.authCtx.getUser().getUserActor() != null) {
+                return ownerDisplayName + " (" + this.authCtx.getUser().getUserActor().getName() + ")";
+            }
+            return ownerDisplayName;
         }
     }
 
