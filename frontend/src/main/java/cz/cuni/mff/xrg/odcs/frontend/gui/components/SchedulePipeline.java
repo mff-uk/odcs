@@ -232,7 +232,7 @@ public class SchedulePipeline extends Window {
             selectSch = null;
             scheduleDescription.setValue("");
             setIdValue(null);
-            author.setValue(authCtx.getUsername());
+            this.author.setValue(getScheduleAuthorDisplayName(selectedSchedule));
             comboPipeline.setValue(null);
             scheduleType.setValue(ScheduleType.PERIODICALLY);
             date.setValue(new Date());
@@ -263,7 +263,7 @@ public class SchedulePipeline extends Window {
             comboPipeline.setValue(selectedSchedule.getPipeline().getId());
             //setting scheduling rule type
             scheduleType.setValue(selectedSchedule.getType());
-            author.setValue(selectedSchedule.getOwner().getUsername());
+            this.author.setValue(getScheduleAuthorDisplayName(selectedSchedule));
             //PERIODICALLY type
             if (selectedSchedule.getType().equals(ScheduleType.PERIODICALLY)) {
                 //setting the date
@@ -1254,5 +1254,21 @@ public class SchedulePipeline extends Window {
         };
 
         return filter;
+    }
+
+    private String getScheduleAuthorDisplayName(Schedule schedule) {
+        if (schedule != null) {
+            String ownerDisplayName = (schedule.getOwner().getFullName() != null) ? schedule.getOwner().getFullName() : schedule.getOwner().getUsername();
+            if (schedule.getActor() != null) {
+                return ownerDisplayName + " (" + schedule.getActor().getName() + ")";
+            }
+            return ownerDisplayName;
+        } else {
+            String ownerDisplayName = (this.authCtx.getUser().getFullName() != null) ? this.authCtx.getUser().getFullName() : this.authCtx.getUsername();
+            if (this.authCtx.getUser().getUserActor() != null) {
+                return ownerDisplayName + " (" + this.authCtx.getUser().getUserActor().getName() + ")";
+            }
+            return ownerDisplayName;
+        }
     }
 }

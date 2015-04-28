@@ -78,6 +78,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     private static final int COLUMN_DURATION_WIDTH = 170;
 
+    private static final int COLUMN_SCHEDULED_BY_WIDTH = 250;
+
     private VerticalLayout mainLayout;
 
     /**
@@ -88,10 +90,11 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     private IndexedContainer tableData;
 
     static String[] visibleCols = new String[] { "commands", "status", "pipeline", "rule",
-            "last", "next", "duration" };
+            "last", "next", "duration", "scheduledBy" };
 
     static String[] headers = new String[] { Messages.getString("Scheduler.actions"), Messages.getString("Scheduler.status"), Messages.getString("Scheduler.pipeline"), Messages.getString("Scheduler.rule"),
-            Messages.getString("Scheduler.last"), Messages.getString("Scheduler.next"), Messages.getString("Scheduler.last.runTime") };
+            Messages.getString("Scheduler.last"), Messages.getString("Scheduler.next"), Messages.getString("Scheduler.last.runTime"),
+            Messages.getString("Scheduler.scheduled.by") };
 
     int style = DateFormat.MEDIUM;
 
@@ -243,6 +246,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         schedulerTable.setColumnWidth("last", COLUMN_TIME_WIDTH);
         schedulerTable.setColumnWidth("next", COLUMN_TIME_WIDTH);
         schedulerTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
+        schedulerTable.setColumnWidth("scheduledBy", COLUMN_SCHEDULED_BY_WIDTH);
         schedulerTable.setColumnAlignment("status", CustomTable.Align.CENTER);
 
         //Debug column. Contains debug icons.
@@ -293,6 +297,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
      *            List of {@link Schedule}.
      * @return result IndexedContainer with data for {@link #schedulerTable}.
      */
+    @SuppressWarnings("unchecked")
     public IndexedContainer getTableData(List<Schedule> data) {
 
         IndexedContainer result = new IndexedContainer();
@@ -335,6 +340,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             }
 
             result.getContainerProperty(id, "status").setValue(item.isEnabled());
+            result.getContainerProperty(id, "scheduledBy").setValue(getScheduledByDisplayName(item));
 
             if (item.getType().equals(ScheduleType.PERIODICALLY)) {
                 DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
@@ -401,6 +407,14 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         return result;
 
+    }
+
+    private String getScheduledByDisplayName(Schedule schedule) {
+        String ownerDisplayName = (schedule.getOwner().getFullName() != null) ? schedule.getOwner().getFullName() : schedule.getOwner().getUsername();
+        if (schedule.getActor() != null) {
+            return ownerDisplayName + " (" + schedule.getActor().getName() + ")";
+        }
+        return ownerDisplayName;
     }
 
     /**
