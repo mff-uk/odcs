@@ -1,5 +1,7 @@
 package eu.unifiedviews.master.api;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -29,6 +32,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ConvertUtils;
 import eu.unifiedviews.master.converter.PipelineDTOConverter;
@@ -70,9 +74,13 @@ public class PipelineResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
+            final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
             pipeline.setUser(user);
+            if (actor != null) {
+                pipeline.setActor(actor);
+            }
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
-            pipelineFacade.save(pipeline);
+            this.pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
             throw ex;
         } catch (RuntimeException exception) {
@@ -83,10 +91,15 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<PipelineDTO> getPipelines() {
+    public List<PipelineDTO> getPipelines(@QueryParam("userExternalId") String userExternalId) {
         List<Pipeline> pipelines = null;
         try {
-            pipelines = pipelineFacade.getAllPipelines();
+            if (isNotEmpty(userExternalId)) {
+                pipelines = this.pipelineFacade.getAllPipelines(userExternalId);
+            } else {
+                pipelines = this.pipelineFacade.getAllPipelines();
+            }
+
             if (pipelines == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "PipelineFacade returned null!");
             }
@@ -143,10 +156,15 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
             }
 
-            pipelineCopy = pipelineFacade.copyPipeline(pipeline);
+            final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
+            pipelineCopy = this.pipelineFacade.copyPipeline(pipeline);
             pipelineCopy.setUser(user);
+            pipelineCopy.setUser(user);
+            if (actor != null) {
+                pipelineCopy.setActor(actor);
+            }
             pipelineCopy = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipelineCopy);
-            pipelineFacade.save(pipelineCopy);
+            this.pipelineFacade.save(pipelineCopy);
         } catch (ApiException ex) {
             throw ex;
         } catch (RuntimeException exception) {

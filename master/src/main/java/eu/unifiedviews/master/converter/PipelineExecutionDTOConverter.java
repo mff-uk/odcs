@@ -29,6 +29,9 @@ public class PipelineExecutionDTOConverter {
             } else {
                 dto.setUserExternalId(null);
             }
+            if (execution.getActor() != null) {
+                dto.setUserActorExternalId(execution.getActor().getExternalId());
+            }
 
             dto.setStop(execution.getStop());
             dto.setLastChange(ConvertUtils.dateToString(execution.getLastChange()));

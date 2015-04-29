@@ -31,6 +31,8 @@ public class PipelineScheduleDTO {
 
     private String userExternalId;
 
+    private String userActorExternalId;
+
     public Long getId() {
         return id;
     }
@@ -135,6 +137,14 @@ public class PipelineScheduleDTO {
         this.scheduledJobsPriority = scheduledJobsPriority;
     }
 
+    public String getUserActorExternalId() {
+        return this.userActorExternalId;
+    }
+
+    public void setUserActorExternalId(String userActorExternalId) {
+        this.userActorExternalId = userActorExternalId;
+    }
+
     @Override
     public String toString() {
         return "PipelineScheduleDTO{" +
@@ -149,8 +159,9 @@ public class PipelineScheduleDTO {
                 ", justOnce=" + justOnce +
                 ", period=" + period +
                 ", periodUnit='" + periodUnit + '\'' +
-                ", scheduledJobsPriority=" + scheduledJobsPriority +
+                ", scheduledJobsPriority=" + scheduledJobsPriority + '\'' +
                 ", userExternalId='" + userExternalId + '\'' +
+                ", userActorExternalId='" + this.userActorExternalId +
                 '}';
     }
 }

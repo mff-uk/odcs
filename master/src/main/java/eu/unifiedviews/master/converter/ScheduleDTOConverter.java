@@ -35,6 +35,9 @@ public class ScheduleDTOConverter {
             } else {
                 dto.setUserExternalId(null);
             }
+            if (schedule.getActor() != null) {
+                dto.setUserActorExternalId(schedule.getActor().getExternalId());
+            }
 
             dto.setScheduleType(schedule.getType());
             Set<Pipeline> pipelines = schedule.getAfterPipelines();

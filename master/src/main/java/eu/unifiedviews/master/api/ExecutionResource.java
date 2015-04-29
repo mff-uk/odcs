@@ -26,6 +26,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
 import eu.unifiedviews.master.converter.PipelineExecutionEventDTOConverter;
@@ -190,8 +191,13 @@ public class ExecutionResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", newExecution.getUserExternalId()));
             }
 
+            UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
+
             execution = pipelineFacade.createExecution(pipeline);
             execution.setOwner(user);
+            if (actor != null) {
+                execution.setActor(actor);
+            }
             execution.setDebugging(newExecution.isDebugging());
             execution.setOrderNumber(1L);
 //            PipelineExecutionDTOConverter.createPipelineExecution(newExecution, pipeline);

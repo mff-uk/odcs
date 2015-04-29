@@ -20,6 +20,9 @@ public class PipelineDTOConverter {
             } else {
                 dto.setUserExternalId(null);
             }
+            if (pipeline.getActor() != null) {
+                dto.setUserActorExternalId(pipeline.getActor().getExternalId());
+            }
         }
         return dto;
     }

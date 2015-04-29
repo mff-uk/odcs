@@ -623,4 +623,10 @@ class PipelineFacadeImpl implements PipelineFacade {
     public boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
         return executionDao.hasWithStatus(pipeline, statuses);
     }
+
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @Override
+    public List<Pipeline> getAllPipelines(String externalUserId) {
+        return this.pipelineDao.getPipelinesForUser(externalUserId);
+    }
 }

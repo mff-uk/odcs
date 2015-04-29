@@ -56,4 +56,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     public boolean hasDeletedPipelines(List<Long> pipelinesIds);
+
+    /**
+     * Fetches all pipelines for given user (user is owner of the pipelines)
+     * 
+     * @param externalUserId
+     *            User ID
+     * @return List of pipelines
+     */
+    public List<Pipeline> getPipelinesForUser(String externalUserId);
 }

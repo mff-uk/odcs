@@ -50,6 +50,15 @@ public interface PipelineFacade extends Facade {
     List<Pipeline> getAllPipelines();
 
     /**
+     * Returns list of all pipelines for given user
+     * 
+     * @param externalUserId
+     *            User ID
+     * @return List of pipelines
+     */
+    List<Pipeline> getAllPipelines(String externalUserId);
+
+    /**
      * Find pipeline in database by ID and return it.
      * 
      * @param id
@@ -161,6 +170,7 @@ public interface PipelineFacade extends Facade {
      * @deprecated performance intensive for many pipeline executions, use
      *             container with paging support instead
      */
+    @Deprecated
     List<PipelineExecution> getAllExecutions();
 
     /**

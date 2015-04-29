@@ -28,6 +28,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ScheduleDTOConverter;
 import eu.unifiedviews.master.converter.ScheduledExecutionDTOConverter;
@@ -251,6 +252,8 @@ public class ScheduleResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
             }
 
+            UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
+
             Schedule schedule = scheduleFacade.createSchedule();
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
@@ -258,6 +261,9 @@ public class ScheduleResource {
             schedule.setPipeline(pipeline);
             schedule.setType(scheduleToUpdate.getScheduleType());
             schedule.setOwner(user);
+            if (actor != null) {
+                schedule.setActor(actor);
+            }
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
