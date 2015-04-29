@@ -111,13 +111,18 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                     return null;
                 }
             case "createdBy":
-                if (pipeline.getUserActorName() != null) {
-                    return pipeline.getUsrName() + " (" + pipeline.getUserActorName() + ")";
-                }
-                return pipeline.getUsrName();
+                return getPipelineCreatedByDisplayName(pipeline);
             default:
                 return null;
         }
+    }
+
+    private String getPipelineCreatedByDisplayName(PipelineView pipeline) {
+        String pipelineOwnerName = (pipeline.getUsrFullName() != null) ? pipeline.getUsrFullName() : pipeline.getUsrName();
+        if (pipeline.getUserActorName() != null) {
+            return pipelineOwnerName + " (" + pipeline.getUserActorName() + ")";
+        }
+        return pipelineOwnerName;
     }
 
     @Override

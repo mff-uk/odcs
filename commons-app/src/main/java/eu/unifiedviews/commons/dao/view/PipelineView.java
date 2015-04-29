@@ -53,6 +53,9 @@ public class PipelineView implements Serializable, DataObject {
     @Column(name = "usr_name")
     private String usrName;
 
+    @Column(name = "usr_full_name")
+    private String usrFullName;
+
     /**
      * Status of last pipeline execution.
      */
@@ -135,6 +138,14 @@ public class PipelineView implements Serializable, DataObject {
 
     public void setUserActorName(String userActorName) {
         this.userActorName = userActorName;
+    }
+
+    public String getUsrFullName() {
+        return this.usrFullName;
+    }
+
+    public void setUsrFullName(String usrFullName) {
+        this.usrFullName = usrFullName;
     }
 
 }

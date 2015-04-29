@@ -90,16 +90,16 @@ ADD FOREIGN KEY ("user_actor_id")
 
 -- Recreate views
 CREATE VIEW "pipeline_view" AS
-SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, ppl.visibility AS visibility,
-actor.name AS user_actor_name FROM "ppl_model" AS ppl
+SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, usr.full_name as usr_full_name, 
+ppl.visibility AS visibility, actor.name AS user_actor_name FROM "ppl_model" AS ppl
 LEFT JOIN "exec_last_view" AS exec ON exec.pipeline_id = ppl.id
 LEFT JOIN "usr_user" AS usr ON ppl.user_id = usr.id 
 LEFT JOIN "user_actor" AS actor ON ppl.user_actor_id = actor.id;
 
 CREATE VIEW "exec_view" AS
 SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
-exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, exec.stop AS stop, exec.t_last_change AS t_last_change, actor.name AS user_actor_name
-FROM "exec_pipeline" AS exec
+exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, owner.full_name AS owner_full_name, exec.stop AS stop, exec.t_last_change AS t_last_change, 
+actor.name AS user_actor_name FROM "exec_pipeline" AS exec
 LEFT JOIN "ppl_model" AS ppl ON ppl.id = exec.pipeline_id
 LEFT JOIN "usr_user" AS owner ON owner.id = exec.owner_id
-LEFT JOIN "user_actor" AS actor ON actor.id = exec.actor_id;
+LEFT JOIN "user_actor" AS actor ON actor.id = exec.user_actor_id;

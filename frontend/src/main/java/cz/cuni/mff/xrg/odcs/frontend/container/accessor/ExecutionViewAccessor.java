@@ -98,10 +98,7 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
                 String name = execution.getPipelineName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
             case "ownerName":
-                if (execution.getUserActorName() != null) {
-                    return execution.getOwnerName() + " (" + execution.getUserActorName() + ")";
-                }
-                return execution.getOwnerName();
+                return getPipelineCreatedByDisplayName(execution);
             case "duration":
                 return execution.getDuration();
             case "status":
@@ -116,6 +113,14 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
             default:
                 return null;
         }
+    }
+
+    private String getPipelineCreatedByDisplayName(ExecutionView execution) {
+        String executionOwnerName = (execution.getOwnerFullName() != null) ? execution.getOwnerFullName() : execution.getOwnerName();
+        if (execution.getUserActorName() != null) {
+            return executionOwnerName + " (" + execution.getUserActorName() + ")";
+        }
+        return executionOwnerName;
     }
 
     @Override

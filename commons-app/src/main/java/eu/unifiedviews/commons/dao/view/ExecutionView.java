@@ -77,6 +77,9 @@ public class ExecutionView implements DataObject {
     @Column(name = "owner_name")
     private String ownerName;
 
+    @Column(name = "owner_full_name")
+    private String ownerFullName;
+
     @Column(name = "user_actor_name")
     private String userActorName;
 
@@ -188,6 +191,14 @@ public class ExecutionView implements DataObject {
 
     public void setUserActorName(String userActorName) {
         this.userActorName = userActorName;
+    }
+
+    public String getOwnerFullName() {
+        return this.ownerFullName;
+    }
+
+    public void setOwnerFullName(String ownerFullName) {
+        this.ownerFullName = ownerFullName;
     }
 
     /**
