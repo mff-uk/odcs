@@ -100,6 +100,7 @@ public final class openrdf {
                     + "org.openrdf.rio.trig,"
                     + "org.openrdf.rio.trix,"
                     + "org.openrdf.rio.turtle,"
+                    + "org.openrdf.rio.jsonld,"
                     + "org.openrdf.runtime,"
                     + "org.openrdf.sail,"
                     + "org.openrdf.sail.config,"
