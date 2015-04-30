@@ -122,4 +122,8 @@ public class CasAuthenticationUserDetailsService extends
         this.subjectIdAttributeName = subjectIdAttributeName;
     }
 
+    public void setActorIdAttributeName(String actorIdAttributeName) {
+        this.actorIdAttributeName = actorIdAttributeName;
+    }
+
 }

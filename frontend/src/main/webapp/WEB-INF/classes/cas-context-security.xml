@@ -21,6 +21,11 @@
 			<b:bean
 				class="cz.cuni.mff.xrg.odcs.frontend.auth.CasAuthenticationUserDetailsService">
 				<b:constructor-arg ref="userFacade" />
+				<b:property name="subjectIdAttributeName" value="${cas.subjectIdAttributeName}" />
+				<b:property name="fullNameAttributeName" value="${cas.fullNameAttributeName}" />
+				<b:property name="roleAttributeName" value="${cas.roleAttributeName}" />
+				<b:property name="actorIdAttributeName" value="${cas.actorIdAttributeName}" />
+				<b:property name="actorNameAttributeName" value="${cas.actorNameAttributeName}" />
 			</b:bean>
 
 		</b:property>
