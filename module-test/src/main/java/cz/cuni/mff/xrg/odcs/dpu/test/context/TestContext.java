@@ -276,4 +276,9 @@ public class TestContext implements DPUContext {
         return "test_user";
     }
 
+    @Override
+    public String getPipelineOwnerActorId() {
+        return "test_actor_id";
+    }
+
 }

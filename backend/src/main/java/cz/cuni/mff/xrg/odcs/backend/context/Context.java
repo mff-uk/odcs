@@ -249,8 +249,14 @@ public class Context implements DPUContext {
         return dpuInstance.getTemplate().getJarDirectory();
     }
 
+    @Override
     public String getPipelineOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineOwnerActorId() {
+        return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
