@@ -175,6 +175,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         pipelineExec.setSilentMode(false);
         // set user .. copy owner of schedule
         pipelineExec.setOwner(schedule.getOwner());
+        pipelineExec.setActor(schedule.getActor());
 
         Long epoch = (long) System.currentTimeMillis();
         Long orderNumber = schedule.getPriority();
