@@ -1,3 +1,5 @@
+-- Drop unused user-role mapping table
+DROP TABLE IF EXISTS "usr_user_role";
 -- Update permission table
 ALTER TABLE permission RENAME COLUMN rwonly TO write;
 -- Permission changes
