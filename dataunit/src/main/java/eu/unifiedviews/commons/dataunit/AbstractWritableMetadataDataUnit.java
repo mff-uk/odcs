@@ -36,8 +36,6 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
 
 /**
- *
- *
  * @author Michal Klempa
  * @author Škoda Petr
  */
@@ -105,7 +103,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     final AtomicInteger entryCounter = new AtomicInteger(0);
 
     /**
-     *Services from core.
+     * Services from core.
      */
     protected final CoreServiceBus coreServices;
 
@@ -358,22 +356,22 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     }
 
     /**
-     * 
      * @return New unique URI for an entry.
      */
     protected URI creatEntitySubject() {
         return connectionSource.getValueFactory().createURI(
-                    writeContext
-                    + "/entry/"
-                    + Integer.toString(entryCounter.incrementAndGet()));
+                writeContext
+                        + "/entry/"
+                        + Integer.toString(entryCounter.incrementAndGet()));
     }
 
     /**
      * Create a new entry.
-     *
+     * 
      * @param entrySubject
      * @param symbolicName
-     * @param connection   Connection used to add data. Will not be closed.
+     * @param connection
+     *            Connection used to add data. Will not be closed.
      * @return Subject of the new entry.
      * @throws org.openrdf.repository.RepositoryException
      * @throws DataUnitException
@@ -423,7 +421,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     /**
      * Check for duplicity for entry in given graphs.
-     *
+     * 
      * @param graphs
      */
     private void checkForDuplicitEntries(Set<URI> graphs) throws DataUnitException {
@@ -457,7 +455,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                             final BindingSet bindingSet = result.next();
                             final String symbolicName = bindingSet.getValue(SYMBOLIC_NAME_BINDING).stringValue();
                             containDuplicity = true;
-                            LOG.error("Duplicity entry found for symbollic name: %s", symbolicName);
+                            LOG.error("Duplicate entry found for symbolic name: {}", symbolicName);
                         }
                     } catch (QueryEvaluationException ex) {
                         throw new DataUnitException(ex);
@@ -483,14 +481,15 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     /**
      * Read and return value of a single object.
-     *
+     * 
      * @param connection
      * @param subject
      * @param predicate
      * @param graph
      * @return Result of given query.
      * @throws RepositoryException
-     * @throws DataUnitException   In case that there is more than one object.
+     * @throws DataUnitException
+     *             In case that there is more than one object.
      */
     private Value getSingleObject(RepositoryConnection connection, URI subject, URI predicate, URI graph)
             throws RepositoryException, DataUnitException {
