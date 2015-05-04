@@ -120,6 +120,20 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
             }
         });
         topLine.addComponent(buttonDeleteFilters);
+        
+        Button btnClearSort = new Button(Messages.getString("PipelineListViewImpl.clear.sort"));
+        btnClearSort.setHeight("25px");
+        btnClearSort.addStyleName("v-button-primary");
+        btnClearSort.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                tablePipelines.setSortContainerPropertyId(null);; // deselect column
+                tablePipelines.sort(new Object[] { "id" }, new boolean[] { false });
+            }
+        });
+        topLine.addComponent(btnClearSort);
 
         mainLayout.addComponent(topLine);
 
