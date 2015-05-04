@@ -212,6 +212,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-jsonld</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-runtime</artifactId>
 			<version>${sesame.version}</version>
 			<type>jar</type>
