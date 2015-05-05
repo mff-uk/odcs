@@ -258,8 +258,7 @@ INSERT INTO `permission` VALUES (NULL, 'userNotificationSettings.createPipelineE
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 
-INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='admin'), 'admin');
-INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='user'), 'user');
+INSERT INTO `usr_extuser` SELECT id, username FROM `usr_user`;
 
 DELETE FROM `usr_user_role`;
 INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='Administrator'));
