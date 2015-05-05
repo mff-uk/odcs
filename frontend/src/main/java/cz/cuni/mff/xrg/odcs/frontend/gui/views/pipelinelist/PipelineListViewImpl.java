@@ -48,7 +48,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
 
     private static final int COLUMN_DURATION_WIDTH = 180;
 
-    private static final int COLUMN_CREATEDBY_WIDTH = 120;
+    private static final int COLUMN_CREATEDBY_WIDTH = 250;
 
     private static final int COLUMN_TIME_WIDTH = 180;
 
