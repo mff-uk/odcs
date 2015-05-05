@@ -290,8 +290,13 @@ public class MenuLayout extends CustomComponent {
     }
 
     private String getDisplayUserName() {
-        if (this.authCtx.getUser() != null && this.authCtx.getUser().getUserActor() != null) {
-            return this.authCtx.getUser().getUserActor().getName();
+        
+        if (this.authCtx.getUser() != null) {
+            String userName = (this.authCtx.getUser().getFullName() != null) ? this.authCtx.getUser().getFullName() : this.authCtx.getUsername();
+            if (this.authCtx.getUser().getUserActor() != null) {
+                return userName + " (" + this.authCtx.getUser().getUserActor().getName() + ")";
+            }
+            return userName;
         }
 
         return this.authCtx.getUsername();
