@@ -948,6 +948,7 @@ public class SchedulePipeline extends Window {
         intervalOption.addItem(PeriodUnit.MONTH);
         intervalOption.setItemCaption(PeriodUnit.MONTH, Messages.getString("SchedulePipeline.every.month"));
         intervalOption.addItem("every");
+        intervalOption.setItemCaption("every", Messages.getString("SchedulePipeline.every"));
         intervalOption.setValue(PeriodUnit.DAY);
         intervalOption.addValueChangeListener(new ValueChangeListener() {
             /**
