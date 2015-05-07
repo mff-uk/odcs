@@ -345,8 +345,8 @@ CREATE TABLE `usr_extuser` (
 CREATE TABLE `user_actor`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `id_extuser` VARCHAR(256) NOT NULL,
-  `name` VARCHAR(256) NOT NULL,
+  `id_extuser` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`id_extuser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

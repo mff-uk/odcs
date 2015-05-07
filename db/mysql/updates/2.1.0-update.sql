@@ -36,26 +36,30 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importUserData'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importUserData'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'dpuTemplate.setVisibilityAtCreate'));
--- Organizations removed
--- TODO: fix dropping of constraints, does not work for MySQL, only for Postgres
+-- Organizations removed, actor added
 DROP VIEW `pipeline_view`;
 DROP VIEW `exec_view`;
 
 CREATE TABLE `user_actor`
 (
-  `id` INTEGER,
-  `id_extuser` VARCHAR(256) NOT NULL,
-  `name` VARCHAR(256) NOT NULL,
+  `id` INTEGER AUTO_INCREMENT,
+  `id_extuser` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`id_extuser`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `exec_schedule` DROP FOREIGN KEY `exec_schedule_ibfk_3`;
 ALTER TABLE `exec_schedule` DROP COLUMN organization_id;
 ALTER TABLE exec_schedule ADD COLUMN user_actor_id INTEGER;
 CREATE INDEX `ix_EXEC_SCHEDULE_user_actor_id` ON `exec_schedule` (`user_actor_id`);
+
+ALTER TABLE `exec_pipeline` DROP FOREIGN KEY `exec_pipeline_ibfk_6`;
 ALTER TABLE `exec_pipeline` DROP COLUMN organization_id;
 ALTER TABLE exec_pipeline ADD COLUMN user_actor_id INTEGER;
 CREATE INDEX `ix_EXEC_PIPELINE_actor_id` ON `exec_pipeline` (`user_actor_id`);
+
+ALTER TABLE `ppl_model` DROP FOREIGN KEY `ppl_model_ibfk_2`;
 ALTER TABLE `ppl_model` DROP COLUMN organization_id;
 ALTER TABLE ppl_model ADD COLUMN user_actor_id INTEGER;
 CREATE INDEX `ix_PPL_MODEL_user_actor_id` ON `ppl_model` (`user_actor_id`);
@@ -63,21 +67,24 @@ DROP TABLE `organization`;
 
 -- Constraints
 ALTER TABLE `exec_pipeline`
-ADD FOREIGN KEY (`user_actor_id`)
+ADD CONSTRAINT `exec_pipeline_ibfk_6`
+	FOREIGN KEY (`user_actor_id`)
     REFERENCES `user_actor` (`id`)
     ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE `exec_schedule`
-ADD FOREIGN KEY (`user_actor_id`)
+ADD CONSTRAINT `exec_schedule_ibfk_3`
+	FOREIGN KEY (`user_actor_id`)
     REFERENCES `user_actor` (`id`)
     ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE `ppl_model`
-ADD FOREIGN KEY (`user_actor_id`)
+ADD CONSTRAINT `ppl_model_ibfk_2`
+	FOREIGN KEY (`user_actor_id`)
     REFERENCES `user_actor` (`id`)
     ON UPDATE CASCADE ON DELETE CASCADE;
 
-
+-- Recreate views
 CREATE VIEW `pipeline_view` AS
 SELECT ppl.id AS id, ppl.name AS name, exec.t_start AS t_start, exec.t_end AS t_end, exec.status AS status, usr.username as usr_name, usr.full_name as usr_full_name,
 ppl.visibility AS visibility, actor.name AS user_actor_name FROM `ppl_model` AS ppl
