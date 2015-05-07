@@ -5,6 +5,10 @@ import org.springframework.security.core.GrantedAuthority;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
+/**
+ * Permission evaluator helper bean provides methods for checking user permissions on entities and user authorities
+ * Should be used instead of {@link AuthAwarePermissionEvaluator} as it also provides method for checking user authorities
+ */
 public class PermissionUtils {
 
     @Autowired
@@ -13,10 +17,27 @@ public class PermissionUtils {
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
 
+    /**
+     * This method is used to check given permission for specific entity
+     * 
+     * @param target
+     *            Entity to check permission for
+     * @param perm
+     *            Permission to check for entity
+     * @return True if user has permission for given entity, False otherwise
+     */
     public boolean hasPermission(Object target, Object perm) {
         return this.permissions.hasPermission(target, perm);
     }
 
+    /**
+     * This method is used to check if user has specific authority (permission) in general,
+     * with no connection to any specific entity.
+     * 
+     * @param authority
+     *            User authority to check
+     * @return True if user has given permission, False otherwise
+     */
     public boolean hasUserAuthority(String authority) {
         if (authority == null)
             return false;
