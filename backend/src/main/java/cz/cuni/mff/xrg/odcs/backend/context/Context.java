@@ -256,7 +256,10 @@ public class Context implements DPUContext {
 
     @Override
     public String getPipelineOwnerActorId() {
-        return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
+        if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
+            return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
+        }
+        return null;
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
