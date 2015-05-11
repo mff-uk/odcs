@@ -766,7 +766,7 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                final PipelineExport dialog = new PipelineExport(exportService, pipeline, authCtx);
+                final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
             }

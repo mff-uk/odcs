@@ -372,6 +372,13 @@ CREATE TABLE "user_role_permission" (
   PRIMARY KEY ("role_id","permission_id")
 );
 
+CREATE TABLE "usr_user_role"
+(
+  "user_id" INTEGER NOT NULL,
+  "role_id" INTEGER NOT NULL,
+  PRIMARY KEY ("user_id", "role_id")
+);
+
 CREATE TABLE "usr_extuser" (
   "id_usr" INTEGER NOT NULL,
   "id_extuser" varchar(256) NOT NULL,

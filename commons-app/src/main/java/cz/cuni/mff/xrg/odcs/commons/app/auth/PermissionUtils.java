@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.commons.app.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
@@ -16,6 +18,9 @@ public class PermissionUtils {
 
     @Autowired
     private AuthAwarePermissionEvaluator permissions;
+
+    @Autowired
+    private AppConfig appConfig;
 
     /**
      * This method is used to check given permission for specific entity
@@ -41,8 +46,11 @@ public class PermissionUtils {
     public boolean hasUserAuthority(String authority) {
         if (authority == null)
             return false;
+
+        String adminPermission = this.appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+
         for (GrantedAuthority ga : getUser().getAuthorities()) {
-            if (authority.equals(ga.getAuthority())) {
+            if (adminPermission.equals(ga.getAuthority()) || authority.equals(ga.getAuthority())) {
                 return true;
             }
         }

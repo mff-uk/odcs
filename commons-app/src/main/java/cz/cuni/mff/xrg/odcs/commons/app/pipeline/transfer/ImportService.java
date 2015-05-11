@@ -13,14 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -64,7 +65,13 @@ public class ImportService {
     private AuthenticationContext authCtx;
 
     @Autowired
+    private PermissionUtils permissionUtils;
+
+    @Autowired
     private DPUModuleManipulator moduleManipulator;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
@@ -233,7 +240,7 @@ public class ImportService {
         }
         // copy user data
         if (userDataDir.exists() && importUserDataFile) {
-            if (!hasPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
+            if (!hasUserPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
                 throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.data.permissions"));
             }
             try {
@@ -362,19 +369,8 @@ public class ImportService {
         return result;
     }
 
-    private boolean hasPermission(String type) {
-        if (this.authCtx == null) {
-            return false;
-        }
-        for (GrantedAuthority ga : this.authCtx.getUser().getAuthorities()) {
-            if (type.equals(ga.getAuthority()))
-                return true;
-        }
-        return false;
-    }
-
-    public AuthenticationContext getAuthContext() {
-        return this.authCtx;
+    public boolean hasUserPermission(String permission) {
+        return this.permissionUtils.hasUserAuthority(permission);
     }
 
 }
