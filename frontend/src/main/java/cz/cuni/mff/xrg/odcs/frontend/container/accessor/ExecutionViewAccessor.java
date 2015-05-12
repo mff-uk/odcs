@@ -115,9 +115,10 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
         }
     }
 
-    private String getPipelineCreatedByDisplayName(ExecutionView execution) {
-        String executionOwnerName = (execution.getOwnerFullName() != null) ? execution.getOwnerFullName() : execution.getOwnerName();
-        if (execution.getUserActorName() != null) {
+    private static String getPipelineCreatedByDisplayName(ExecutionView execution) {
+        String executionOwnerName = (execution.getOwnerFullName() != null && !execution.getOwnerFullName().equals(""))
+                ? execution.getOwnerFullName() : execution.getOwnerName();
+        if (execution.getUserActorName() != null && !execution.getUserActorName().equals("")) {
             return executionOwnerName + " (" + execution.getUserActorName() + ")";
         }
         return executionOwnerName;

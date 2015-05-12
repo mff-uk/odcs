@@ -418,8 +418,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     }
 
-    private String getScheduledByDisplayName(Schedule schedule) {
-        String ownerDisplayName = (schedule.getOwner().getFullName() != null) ? schedule.getOwner().getFullName() : schedule.getOwner().getUsername();
+    private static String getScheduledByDisplayName(Schedule schedule) {
+        String ownerDisplayName = (schedule.getOwner().getFullName() != null && !schedule.getOwner().getFullName().equals(""))
+                ? schedule.getOwner().getFullName() : schedule.getOwner().getUsername();
         if (schedule.getActor() != null) {
             return ownerDisplayName + " (" + schedule.getActor().getName() + ")";
         }

@@ -117,9 +117,10 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
         }
     }
 
-    private String getPipelineCreatedByDisplayName(PipelineView pipeline) {
-        String pipelineOwnerName = (pipeline.getUsrFullName() != null) ? pipeline.getUsrFullName() : pipeline.getUsrName();
-        if (pipeline.getUserActorName() != null) {
+    private static String getPipelineCreatedByDisplayName(PipelineView pipeline) {
+        String pipelineOwnerName = (pipeline.getUsrFullName() != null && !pipeline.getUsrFullName().equals(""))
+                ? pipeline.getUsrFullName() : pipeline.getUsrName();
+        if (pipeline.getUserActorName() != null && !pipeline.getUserActorName().equals("")) {
             return pipelineOwnerName + " (" + pipeline.getUserActorName() + ")";
         }
         return pipelineOwnerName;
