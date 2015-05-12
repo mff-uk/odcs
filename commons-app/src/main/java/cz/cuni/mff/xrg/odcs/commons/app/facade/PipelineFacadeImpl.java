@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +107,7 @@ class PipelineFacadeImpl implements PipelineFacade {
         String nName;
         int no = 1;
         do {
-            nName = "Copy #" + (no++) + " of " + oName;
+            nName = Messages.getString("PipelineFacadeImpl.pipeline.copy", no++, oName);
         } while (hasPipelineWithName(nName, null));
 
         newPipeline.setName(StringUtils.abbreviate(nName, LenghtLimits.PIPELINE_NAME));

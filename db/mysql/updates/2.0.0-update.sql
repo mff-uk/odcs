@@ -90,7 +90,7 @@ ADD CONSTRAINT `usr_user_role_ibfk_2`
   REFERENCES `role` (`id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
-
+  
 DROP VIEW IF EXISTS `exec_last_view`;
 CREATE VIEW `exec_last_view` AS
 SELECT id, pipeline_id, t_end, t_start, status
@@ -258,13 +258,10 @@ INSERT INTO `permission` VALUES (NULL, 'userNotificationSettings.createPipelineE
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 
-INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='admin'), 'admin');
-INSERT INTO `usr_extuser` VALUES ((select id from usr_user where username='user'), 'user');
+INSERT INTO `usr_extuser` SELECT id, username FROM `usr_user`;
 
-DELETE FROM `usr_user_role`;
-INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='Administrator'));
-INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='admin'),(select id from role where name='User'));
-INSERT INTO `usr_user_role` VALUES ((select id from usr_user where username='user'),(select id from role where name='User'));
+UPDATE `usr_user_role` SET role_id=2 WHERE role_id=1;
+UPDATE `usr_user_role` SET role_id=1 WHERE role_id=0;
 
 -- Update version.
 UPDATE `properties` SET `value` = '002.000.000' WHERE `key` = 'UV.Core.version';
