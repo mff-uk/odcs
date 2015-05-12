@@ -172,7 +172,7 @@ public class DPUModuleManipulator {
             dpuMenuName = dpuName;
         }
         if(useLocalizedDpuName()){
-            eu.unifiedviews.helpers.dpu.localization.Messages messages = dpuExplorer.getMessageFromDPUBundle(dpuObject);
+            eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
             if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
                 dpuName = messages.getString(DPU_NAME_KEY);
             }

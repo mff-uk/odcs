@@ -66,13 +66,6 @@ public class DPUExplorer {
         return null;
     }
 
-    public Messages getMessageFromDPUBundle(Object DPUInstance) {
-        Class<?> objectClass = DPUInstance.getClass();
-        ClassLoader loader = objectClass.getClassLoader();
-        Messages messages = new Messages(LocaleHolder.getLocale(), loader);
-        return messages;
-    }
-
     /**
      * Return content of manifest for given bundle that is stored in DPU's
      * directory. This method does not load DPU into system. The description is

@@ -744,6 +744,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if (selectedDpuWrap != null
                 && selectedDpuWrap.getDPUTemplateRecord().getId() != null) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
+            if(selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
+                // same field is used to edit menu name. Only applied to templates with parents
+                selectedDpuWrap.getDPUTemplateRecord().setMenuName(dpuName.getValue().trim());
+            }
 
             if (dpuDescription.getValue() == null ||
                     dpuDescription.getValue().isEmpty()) {

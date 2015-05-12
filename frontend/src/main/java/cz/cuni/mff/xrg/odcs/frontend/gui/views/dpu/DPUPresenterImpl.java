@@ -142,6 +142,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
 
         DPUTemplateRecord copyDpuTemplate = dpuFacade.createCopy(selectedDpu);
         copyDpuTemplate.setName(nameOfDpuCopy);
+        copyDpuTemplate.setMenuName(nameOfDpuCopy);
         if (selectedDpu.getParent() != null)
             copyDpuTemplate.setParent(selectedDpu.getParent());
         else
