@@ -63,9 +63,6 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Autowired
     private ClassNavigatorHolder navigatorHolder;
 
-    @Autowired
-    private AppConfig appConfig;
-
     private RefreshManager refreshManager;
 
     private String storedNavigation = null;
@@ -85,11 +82,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
-        // Retrieve Locale from Runtime properties, and set it in LocaleHolders
-        Locale locale = Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE));
-        LocaleHolder.setLocale(locale);
-        DataunitLocaleHolder.setLocale(locale);
-
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
         main.build();
