@@ -413,4 +413,9 @@ public class Context implements DPUContext {
     public Long getDpuInstanceId() {
         return dpuInstance.getId();
     }
+
+    @Override
+    public String getOrganization() {
+        return "";
+    }
 }

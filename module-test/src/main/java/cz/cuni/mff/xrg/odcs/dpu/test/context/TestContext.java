@@ -281,4 +281,9 @@ public class TestContext implements DPUContext {
         return "test_actor_id";
     }
 
+    @Override
+    public String getOrganization() {
+        return "pipeline_owner_org";
+    }
+
 }
