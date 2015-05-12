@@ -1,5 +1,3 @@
--- Drop unused tables
-DROP TABLE IF EXISTS `usr_user_role`;
 -- Update permission table
 ALTER TABLE `permission` CHANGE `rwonly` `write` boolean;
 -- Permission changes

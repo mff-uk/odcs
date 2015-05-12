@@ -68,7 +68,8 @@ public class User implements UserDetails, DataObject {
     /**
      * User roles representing sets of privileges.
      */
-    @Transient
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usr_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
     private Set<RoleEntity> roles = new HashSet<>();
 
     /**

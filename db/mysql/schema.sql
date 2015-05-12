@@ -336,6 +336,13 @@ CREATE TABLE `user_role_permission` (
   PRIMARY KEY (`role_id`,`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `usr_user_role`
+(
+  `user_id` INTEGER NOT NULL,
+  `role_id` INTEGER NOT NULL,
+  PRIMARY KEY (`user_id`, `role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `usr_extuser` (
   `id_usr` INTEGER NOT NULL,
   `id_extuser` varchar(255) NOT NULL,
@@ -597,6 +604,18 @@ ALTER TABLE `usr_user`
 ADD FOREIGN KEY (`email_id`)
     REFERENCES `sch_email` (`id`)
 	ON UPDATE CASCADE ON DELETE SET NULL;
+
+-- Table `usr_user_role`
+ALTER TABLE `usr_user_role`
+ADD FOREIGN KEY (`user_id`)
+    REFERENCES `usr_user` (`id`)
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- Table `usr_user_role`
+ALTER TABLE `usr_user_role`
+ADD FOREIGN KEY (`role_id`)
+    REFERENCES `role` (`id`)
+	ON UPDATE CASCADE ON DELETE CASCADE;
 
 -- Table `ppl_open_event`
 ALTER TABLE `ppl_open_event`
