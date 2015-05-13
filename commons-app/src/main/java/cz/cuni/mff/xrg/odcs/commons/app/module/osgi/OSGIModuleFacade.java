@@ -331,15 +331,23 @@ class OSGIModuleFacade implements ModuleFacade {
             try {
                 BundleContainer container = install(dpu);
 
-                if(dpu.getParent() == null) { // we only rewrite first level templates
+                if (dpu.getParent() == null) { // we only rewrite first level templates
                     if (useLocalizedDPUnames) {
                         String fullMainClassName = container.getMainClassName();
                         Object dpuInstance = container.loadClass(fullMainClassName);
                         eu.unifiedviews.helpers.dpu.localization.Messages messages = getMessageFromDPUInstance(dpuInstance);
-                        if (!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                        if (messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                            //in this case getString() returns the key, because there is no value for the given key
+                            LOG.warn("Missing key {} in the resource bundle", DPU_NAME_KEY);
+                            LOG.warn("Localized name for dpu {} was not set", dpu.getJarPath());
+                        } else {
                             dpu.setName(messages.getString(DPU_NAME_KEY));
                         }
-                        if (!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                        if (messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                            //in this case getString() returns the key, because there is no value for the given key
+                            LOG.warn("Missing key {} in the resource bundle", DPU_MENU_NAME_KEY);
+                            LOG.warn("Localized menu name for dpu {} was not set", dpu.getJarPath());
+                        } else {
                             dpu.setMenuName(messages.getString(DPU_MENU_NAME_KEY));
                         }
                     } else {
