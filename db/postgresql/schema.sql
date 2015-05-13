@@ -640,6 +640,18 @@ ADD FOREIGN KEY ("email_id")
     REFERENCES "sch_email" ("id")
 	ON UPDATE CASCADE ON DELETE SET NULL;
 
+
+-- Table "usr_user_role"
+ALTER TABLE "usr_user_role"
+ADD FOREIGN KEY ("user_id")
+    REFERENCES "usr_user" ("id")
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE "usr_user_role"
+ADD FOREIGN KEY ("role_id")
+    REFERENCES "role" ("id")
+	ON UPDATE CASCADE ON DELETE CASCADE;
+
   ALTER TABLE "user_role_permission"
   ADD FOREIGN KEY ("permission_id") 
   	REFERENCES "permission" ("id") 

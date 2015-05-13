@@ -75,6 +75,7 @@ public class CasAuthenticationUserDetailsService extends
             }
             user.setExternalIdentifier(username);
             user.setTableRows(20);
+            this.userFacade.saveNoAuth(user);
         }
 
         user.getRoles().clear();
@@ -87,8 +88,6 @@ public class CasAuthenticationUserDetailsService extends
                 }
             }
         }
-
-        userFacade.saveNoAuth(user);
 
         String actorId = attributes.get(this.actorIdAttributeName) != null ? attributes.get(this.actorIdAttributeName).toString() : null;
         if (actorId != null) {
