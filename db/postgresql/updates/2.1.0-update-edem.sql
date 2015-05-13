@@ -17,6 +17,10 @@ DELETE FROM permission WHERE name = 'pipelineExecution.readLog';
 DELETE FROM permission WHERE name = 'pipelineExecution.sparqlDpuInputOutputData';
 DELETE FROM permission WHERE name = 'scheduleRule.disable';
 DELETE FROM permission WHERE name = 'scheduleRule.enable';
+DELETE FROM permission WHERE name = 'role.create';
+DELETE FROM permission WHERE name = 'role.edit';
+DELETE FROM permission WHERE name = 'role.read';
+DELETE FROM permission WHERE name = 'role.delete';
 UPDATE permission SET write = true WHERE name = 'scheduleRule.execute';
 DELETE FROM permission WHERE name = 'deleteDebugResources';
 DELETE FROM permission WHERE name = 'dpuTemplate.save';
@@ -41,6 +45,21 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), (select id from "permission" where name = 'pipeline.importUserData'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'pipeline.importUserData'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'dpuTemplate.setVisibilityAtCreate'));
+-- Remove permissions for eDemo roles
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.export') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.export') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportDpuData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportDpuData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportDpuJars') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportDpuJars') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportScheduleRules') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.exportScheduleRules') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.import') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.import') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importScheduleRules') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importScheduleRules') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;
