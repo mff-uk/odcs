@@ -22,15 +22,15 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private String roleAttributeName = "SPR.Roles";
+    private String roleAttributeName;
 
-    private String actorIdAttributeName = "Actor.UPVSIdentityID";
+    private String actorIdAttributeName;
 
-    private String actorNameAttributeName = "Actor.FormattedName";
+    private String actorNameAttributeName;
 
-    private String fullNameAttributeName = "Subject.FormattedName";
+    private String fullNameAttributeName;
 
-    private String subjectIdAttributeName = "Subject.UPVSIdentityID";
+    private String userNameAttributeName;
 
     private UserFacade userFacade;
 
@@ -51,9 +51,9 @@ public class CasAuthenticationUserDetailsService extends
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
         // FIXME: this is temporal solution; In the future, subject Id should be sent by CAS in username
         // Currently Actor ID is sent in username CAS parameter
-        String subjectId = attributes.get(this.subjectIdAttributeName) != null ? attributes.get(this.subjectIdAttributeName).toString() : null;
-        if (subjectId != null) {
-            username = subjectId;
+        String userNameFromAttributes = attributes.get(this.userNameAttributeName) != null ? attributes.get(this.userNameAttributeName).toString() : null;
+        if (userNameFromAttributes != null) {
+            username = userNameFromAttributes;
         }
 
         List<String> roles = new ArrayList<>();
@@ -117,8 +117,8 @@ public class CasAuthenticationUserDetailsService extends
         this.actorNameAttributeName = actorNameAttributeName;
     }
 
-    public void setSubjectIdAttributeName(String subjectIdAttributeName) {
-        this.subjectIdAttributeName = subjectIdAttributeName;
+    public void setUserNameAttributeName(String userNameAttributeName) {
+        this.userNameAttributeName = userNameAttributeName;
     }
 
     public void setActorIdAttributeName(String actorIdAttributeName) {
