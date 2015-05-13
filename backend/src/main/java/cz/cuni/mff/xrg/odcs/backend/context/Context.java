@@ -255,6 +255,11 @@ public class Context implements DPUContext {
     }
 
     @Override
+    public String getOrganization() {
+        return "";
+    }
+
+    @Override
     public String getPipelineOwnerActorId() {
         if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
             return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
@@ -414,8 +419,4 @@ public class Context implements DPUContext {
         return dpuInstance.getId();
     }
 
-    @Override
-    public String getOrganization() {
-        return "";
-    }
 }
