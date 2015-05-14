@@ -32,9 +32,9 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
     private final List<String> visible = Arrays.asList("name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
 
-    private final List<String> sortable = Arrays.asList("name");
+    private final List<String> sortable = Arrays.asList("name", "createdBy");
 
-    private final List<String> filterable = Arrays.asList("name");
+    private final List<String> filterable = Arrays.asList("name", "createdBy");
 
     private final List<String> toFetch = new LinkedList<>();
 
