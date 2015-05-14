@@ -142,12 +142,21 @@ public class UVCasAuthenticationProvider implements AuthenticationProvider, Init
      */
     private String getServiceUrl(Authentication authentication) {
         String serviceUrl;
-        
-        if(authentication.getDetails() instanceof UVAuthenticationDetails){
+
+        if (authentication.getDetails() instanceof UVAuthenticationDetails) {
+
             String scheme = ((UVAuthenticationDetails) authentication.getDetails()).getScheme();
             String forwardedHost = ((UVAuthenticationDetails) authentication.getDetails()).getForwardedHost();
-            String host = ((UVAuthenticationDetails) authentication.getDetails()).getHost();
-            serviceUrl = scheme != null ? scheme : "http" + "://" + forwardedHost != null ? forwardedHost : host + serviceProperties.getService();  
+            String host = ((UVAuthenticationDetails) authentication.getDetails()).getHost() != null ? ((UVAuthenticationDetails) authentication.getDetails()).getHost() : "http";
+
+            String resultingHost = null;
+
+            if (forwardedHost != null)
+                resultingHost = forwardedHost;
+            else if (host != null)
+                resultingHost = host;
+
+            serviceUrl = scheme + "://" + resultingHost + serviceProperties.getService();
         } else if (authentication.getDetails() instanceof ServiceAuthenticationDetails) {
             serviceUrl = ((ServiceAuthenticationDetails) authentication.getDetails()).getServiceUrl();
         } else if (serviceProperties == null) {

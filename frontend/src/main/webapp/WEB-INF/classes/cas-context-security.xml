@@ -68,7 +68,7 @@
 
 	<b:bean id="casEntryPoint"
 		class="cz.cuni.mff.xrg.odcs.frontend.auth.UVCasAuthenticationEntryPoint"
-		p:serviceProperties-ref="serviceProperties" p:loginUrl="${cas.login.url}" />
+		p:serviceProperties-ref="serviceProperties" p:loginUrl="${cas.login.url}" p:behindProxy="${behindProxy}"/>
 
 	<b:bean id="casFilter"
 		class="org.springframework.security.cas.web.CasAuthenticationFilter"
@@ -88,7 +88,9 @@
 		</b:property>
 		<b:property name="authenticationDetailsSource">
 			<b:bean
-				class="cz.cuni.mff.xrg.odcs.frontend.auth.UVWebAuthenticationDetailsSource"/>
+				class="cz.cuni.mff.xrg.odcs.frontend.auth.UVWebAuthenticationDetailsSource">
+				<b:property name="behindProxy" value="${behindProxy}"/>
+			</b:bean>
 		</b:property>
 	</b:bean>
 

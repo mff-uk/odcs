@@ -21,9 +21,12 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 public class UVCasAuthenticationEntryPoint extends CasAuthenticationEntryPoint {
 
     private static final String HTTP_HEADER_FORWARDED_HOST = "X-Forwarded-Host";
+
     private static final String HTTP_HEADER_HOST = "Host";
+
     private static final String HTTP_HEADER_SCHEME = "Scheme";
 
+    private boolean behindProxy = false;
 
     /**
      * Constructs a new Service Url. The default implementation relies on the CAS client to do the bulk of the work.
@@ -36,15 +39,33 @@ public class UVCasAuthenticationEntryPoint extends CasAuthenticationEntryPoint {
      */
 
     protected String createServiceUrl(final HttpServletRequest request, final HttpServletResponse response) {
-        String forwardedHost = request.getHeader(HTTP_HEADER_FORWARDED_HOST);
-        String host = request.getHeader(HTTP_HEADER_HOST);
-        String scheme = request.getHeader(HTTP_HEADER_SCHEME);
 
-        
-        String serviceUrl = scheme != null ? scheme : "http" + "://" + forwardedHost != null ? forwardedHost : host + this.getServiceProperties().getService();  
-        
-        //request.getRemoteHost()
-                
+        String serviceUrl = null;
+
+        if (behindProxy) {
+
+            String forwardedHost = request.getHeader(HTTP_HEADER_FORWARDED_HOST);
+            String host = request.getHeader(HTTP_HEADER_HOST);
+            String scheme = request.getHeader(HTTP_HEADER_SCHEME) != null ? request.getHeader(HTTP_HEADER_SCHEME) : "http";
+
+            String resultingHost = null;
+
+            if (forwardedHost != null)
+                resultingHost = forwardedHost;
+            else if (host != null)
+                resultingHost = host;
+
+            serviceUrl = scheme + "://" + resultingHost + this.getServiceProperties().getService();
+        }
+        else
+            serviceUrl = this.getServiceProperties().getService();
+
         return CommonUtils.constructServiceUrl(null, response, serviceUrl, null, this.getServiceProperties().getArtifactParameter(), this.getEncodeServiceUrlWithSessionId());
     }
+
+    public void setBehindProxy(boolean behindProxy) {
+        this.behindProxy = behindProxy;
+    }
+    
+    
 }
