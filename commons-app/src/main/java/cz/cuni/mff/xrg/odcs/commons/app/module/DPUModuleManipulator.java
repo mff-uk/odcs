@@ -112,6 +112,8 @@ public class DPUModuleManipulator {
             newTemplate.setParent(parent);
             isChild = true;
         } else {
+            // we need dpu template to work wit DPUs
+            newTemplate = this.dpuFacade.createTemplate(name, null);
             prepareDirectory(newDPUDir);
 
             // copy
@@ -128,9 +130,6 @@ public class DPUModuleManipulator {
                 // failed to copy file
                 throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.create.fail"));
             }
-
-            // we need dpu template to work wit DPUs
-            newTemplate = dpuFacade.createTemplate(name, null);
         }
 
         newTemplate.setJarDirectory(newDpuDirName);
