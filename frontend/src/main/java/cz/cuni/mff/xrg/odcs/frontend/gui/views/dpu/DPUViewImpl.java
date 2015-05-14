@@ -302,6 +302,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         verticalLayoutConfigure.setImmediate(false);
         verticalLayoutConfigure.setMargin(true);
         verticalLayoutConfigure.setCaption("configuration");
+        verticalLayoutConfigure.setSizeFull();
         tabSheet.addTab(verticalLayoutConfigure, Messages.getString("DPUViewImpl.template.configuration"));
         tabSheet.setSelectedTab(dataTab);
         if (selectedDpuWrap != null) {
@@ -331,6 +332,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 // configure
                 configureDPUDialog();
                 verticalLayoutConfigure.addComponent(configDialog);
+                configDialog.setHeight(100, Unit.PERCENTAGE);
+                verticalLayoutConfigure.setExpandRatio(configDialog, 1f);
             }
         }
         //DPU instances tab. Contains pipelines using the given DPU.
