@@ -277,7 +277,7 @@ public class TestContext implements DPUContext {
     }
 
     @Override
-    public String getPipelineOwnerActorId() {
+    public String getPipelineExecutorActorExternalId() {
         return "test_actor_id";
     }
 

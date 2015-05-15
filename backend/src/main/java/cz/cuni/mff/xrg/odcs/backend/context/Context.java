@@ -260,7 +260,7 @@ public class Context implements DPUContext {
     }
 
     @Override
-    public String getPipelineOwnerActorId() {
+    public String getPipelineExecutorActorExternalId() {
         if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
             return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
         }
