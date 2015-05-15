@@ -156,6 +156,10 @@ public class UVCasAuthenticationProvider implements AuthenticationProvider, Init
             else if (host != null)
                 resultingHost = host;
 
+            if(resultingHost == null){
+                throw new IllegalStateException("if behindProxy=true please ensure that required headers are sent!");
+            }
+            
             serviceUrl = scheme + "://" + resultingHost + serviceProperties.getService();
         } else if (authentication.getDetails() instanceof ServiceAuthenticationDetails) {
             serviceUrl = ((ServiceAuthenticationDetails) authentication.getDetails()).getServiceUrl();
