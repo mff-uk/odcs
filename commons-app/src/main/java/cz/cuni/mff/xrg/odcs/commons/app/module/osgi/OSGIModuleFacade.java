@@ -330,33 +330,36 @@ class OSGIModuleFacade implements ModuleFacade {
         for (DPUTemplateRecord dpu : dpus) {
             try {
                 BundleContainer container = install(dpu);
-
                 if (dpu.getParent() == null) { // we only rewrite first level templates
+                    Dictionary<String, String> headers = container.getHeaders();
+                    String dpuManifestName = headers.get(DPU_NAME);
+                    dpuManifestName = StringUtils.abbreviate(dpuManifestName, LenghtLimits.DPU_NAME); // limit length
                     if (useLocalizedDPUnames) {
-                        String fullMainClassName = container.getMainClassName();
-                        Object dpuInstance = container.loadClass(fullMainClassName);
+                        Object dpuInstance = container.loadClass(container.getMainClassName());
                         eu.unifiedviews.helpers.dpu.localization.Messages messages = getMessageFromDPUInstance(dpuInstance);
+                        // try to get dpu name from messages bundle
                         if (messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
-                            //in this case getString() returns the key, because there is no value for the given key
+                            // in this case getString() returns the key, because there is no value for the given key
                             LOG.warn("Missing key {} in the resource bundle", DPU_NAME_KEY);
                             LOG.warn("Localized name for dpu {} was not set", dpu.getJarPath());
+                            // fallback to manifest name
+                            dpu.setName(dpuManifestName);
                         } else {
                             dpu.setName(messages.getString(DPU_NAME_KEY));
                         }
+                        // try to get dpu menu name from messages bundle
                         if (messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
-                            //in this case getString() returns the key, because there is no value for the given key
+                            // in this case getString() returns the key, because there is no value for the given key
                             LOG.warn("Missing key {} in the resource bundle", DPU_MENU_NAME_KEY);
                             LOG.warn("Localized menu name for dpu {} was not set", dpu.getJarPath());
+                            // fallback to manifest name
+                            dpu.setMenuName(dpuManifestName);
                         } else {
                             dpu.setMenuName(messages.getString(DPU_MENU_NAME_KEY));
                         }
-                    } else {
-                        Dictionary<String, String> headers = container.getHeaders();
-                        String dpuName = headers.get(DPU_NAME);
-                        // check for length
-                        dpuName = StringUtils.abbreviate(dpuName, LenghtLimits.DPU_NAME);
-                        dpu.setName(dpuName);
-                        dpu.setMenuName(dpuName);
+                    } else { // localized names feature turned-off or missing
+                        dpu.setName(dpuManifestName);
+                        dpu.setMenuName(dpuManifestName);
                     }
                     // save changes to DB
                     dpuTemplateDao.save(dpu);
