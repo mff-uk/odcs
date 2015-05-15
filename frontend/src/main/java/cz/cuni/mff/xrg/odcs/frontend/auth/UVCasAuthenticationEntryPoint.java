@@ -55,6 +55,10 @@ public class UVCasAuthenticationEntryPoint extends CasAuthenticationEntryPoint {
             else if (host != null)
                 resultingHost = host;
 
+            if(resultingHost == null){
+                throw new IllegalStateException("if behindProxy=true please ensure that either header " + HTTP_HEADER_FORWARDED_HOST + " or " + HTTP_HEADER_HOST + " is sent!");
+            }
+            
             serviceUrl = scheme + "://" + resultingHost + this.getServiceProperties().getService();
         }
         else
