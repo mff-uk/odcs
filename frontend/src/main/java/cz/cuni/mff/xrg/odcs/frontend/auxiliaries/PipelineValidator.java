@@ -3,12 +3,12 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.vaadin.AbstractConfigDialog;
 
@@ -34,6 +35,9 @@ public class PipelineValidator {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private Utils utils;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineValidator.class);
 
@@ -86,7 +90,8 @@ public class PipelineValidator {
     public boolean checkDPUValidity(DPUInstanceRecord dpu) {
         LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
 
-        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                appConfig, this.utils.getUser());
 
         // load instance
         AbstractConfigDialog<?> confDialog;
