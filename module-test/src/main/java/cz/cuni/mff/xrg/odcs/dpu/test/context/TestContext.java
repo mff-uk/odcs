@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -279,7 +278,13 @@ public class TestContext implements DPUContext {
         return "test_user";
     }
 
-    @Override public String getOrganization() {
+    @Override
+    public String getOrganization() {
         return "test_organization";
+    }
+
+    @Override
+    public String getPipelineExecutorActorExternalId() {
+        return "test_user_actor_id";
     }
 }
