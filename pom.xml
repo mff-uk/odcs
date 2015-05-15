@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>2.0.1</version>
+		<version>2.1.0-SNAPSHOT</version>
 	</parent>
-    
+
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.0.1</version>
+	<version>2.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -24,21 +24,21 @@
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>${unifiedviews.helpers.dpu.version}</uv-dpu-api-helpers.version>
+		<uv-dpu-api-helpers.version>2.0.2-SNAPSHOT</uv-dpu-api-helpers.version>		
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>${unifiedviews.helpers.dataunit.version}</uv-dataunit-helpers.version>
+		<uv-dataunit-helpers.version>2.0.2-SNAPSHOT</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
 
-		<!-- define used vaadin version !!! do not forget to update the version 
+		<!-- define used vaadin version !!! do not forget to update the version
 		for OSGI's package export -->
 		<vaadin.version>7.3.7</vaadin.version>
-		<!-- the minimal required vaadin version The lowest Vaadin version accepted 
+		<!-- the minimal required vaadin version The lowest Vaadin version accepted
 		by DPUs. -->
 		<vaadin.version.min>7.3.7</vaadin.version.min>
-		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted 
+		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted
 		by DPUs. -->
 		<vaadin.version.max>8.0.0</vaadin.version.max>
 
@@ -53,7 +53,7 @@
 		<!-- other third party libraries versions -->
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.0.13</logback.version>
-		<sesame.version>2.7.13</sesame.version>
+		<sesame.version>2.8.1</sesame.version>
 	</properties>
 
 	<modules>
@@ -84,7 +84,7 @@
 	</scm>
 
 	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role>
 		</roles> </developer> -->
 	</developers>
 
@@ -99,6 +99,21 @@
 			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
 		</contributor>
 	</contributors>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>eu.unifiedviews</groupId>
+				<artifactId>uv-dataunit-helpers</artifactId>
+				<version>${uv-dpu-api-helpers.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.unifiedviews</groupId>
+				<artifactId>uv-dpu-helpers</artifactId>
+				<version>${uv-dpu-api-helpers.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -138,7 +153,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS 
+			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS
 			profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -181,7 +196,7 @@
 						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
-						</goals>                   
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

@@ -1,20 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.vaadin.dialogs.ConfirmDialog;
-
-import ru.xpoft.vaadin.VaadinView;
-
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -22,15 +7,21 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CustomTable;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -45,6 +36,18 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.vaadin.dialogs.ConfirmDialog;
+import ru.xpoft.vaadin.VaadinView;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * GUI for Scheduler page which opens from the main menu. Contains table with
@@ -116,7 +119,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private AuthAwarePermissionEvaluator permissionEvaluator;
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
     private boolean isMainLayoutInitialized = false;
@@ -336,29 +339,36 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             result.getContainerProperty(id, "status").setValue(item.isEnabled());
 
             if (item.getType().equals(ScheduleType.PERIODICALLY)) {
-                DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+                DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
                 if (item.isJustOnce()) {
                     result.getContainerProperty(id, "rule").setValue(
-                            Messages.getString("Scheduler.run.on") + df.format(item.getFirstExecution()));
+                            Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution())));
                 } else {
                     if (item.getPeriod().equals((Integer) 1)) {
                         result.getContainerProperty(id, "rule").setValue(
-                                Messages.getString("Scheduler.run.on")
-                                        + df.format(item.getFirstExecution())
+                                Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution()))
                                         + Messages.getString("Scheduler.and.repeat")
                                         + " "
                                         + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
-                                                .toLowerCase()));
-                    } else {
+                                        .toLowerCase() + ".one"));
+                    } else if(item.getPeriod() <= 4) {
                         result.getContainerProperty(id, "rule").setValue(
-                                Messages.getString("Scheduler.run.on")
-                                        + df.format(item.getFirstExecution())
+                                Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution()))
                                         + Messages.getString("Scheduler.and.repeat")
                                         + " "
                                         + item.getPeriod().toString()
                                         + " "
                                         + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
-                                                .toLowerCase() + "s"));
+                                        .toLowerCase() + ".lte.four"));
+                    }else {
+                        result.getContainerProperty(id, "rule").setValue(
+                                Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution()))
+                                        + Messages.getString("Scheduler.and.repeat")
+                                        + " "
+                                        + item.getPeriod().toString()
+                                        + " "
+                                        + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
+                                        .toLowerCase() + ".more"));
                     }
                 }
             } else {
@@ -455,9 +465,10 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         @Override
         public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
-            Schedule schedule = scheduleFacade.getSchedule(((Integer) itemId).longValue());
-            Property propStatus = source.getItem(itemId).getItemProperty("status");
             final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
+            Schedule schedule = scheduleFacade.getSchedule(schId);
+            Property propStatus = source.getItem(itemId).getItemProperty("status");
+
             HorizontalLayout layout = new HorizontalLayout();
             layout.setSpacing(true);
 
@@ -476,7 +487,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canEnable(schedule))
+                    if (canEdit(schedule))
                         layout.addComponent(enableButton);
 
                 } //If item in the scheduler table has Enabled status, then for that item will be shown
@@ -493,7 +504,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canDisable(schedule))
+                    if (canEdit(schedule))
                         layout.addComponent(disableButton);
                 }
 
@@ -552,19 +563,11 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     }
 
     boolean canDelete(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.delete");
+        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_DELETE);
     }
 
     boolean canEdit(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.edit");
-    }
-
-    boolean canDisable(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.disable");
-    }
-
-    boolean canEnable(Schedule schedule) {
-        return permissionEvaluator.hasPermission(schedule, "scheduleRule.enable");
+        return permissionEvaluator.hasPermission(schedule, EntityPermissions.SCHEDULE_RULE_EDIT);
     }
 
     private class filterDecorator extends IntlibFilterDecorator {

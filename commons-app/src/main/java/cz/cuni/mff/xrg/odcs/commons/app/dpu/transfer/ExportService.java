@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -42,6 +43,7 @@ public class ExportService {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
+    @PreAuthorize("hasRole('dpuTemplate.export')")
     public File exportDPUs(List<DPUTemplateRecord> dpusToExport) throws ExportException {
 
         checkAuth(getAuthCtx());

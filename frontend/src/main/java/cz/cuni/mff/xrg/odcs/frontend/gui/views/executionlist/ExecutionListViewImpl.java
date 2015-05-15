@@ -520,10 +520,13 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     @Override
                     public void itemClick(ItemClickEvent event) {
                         ValueItem item = (ValueItem) event.getItem();
+                        boolean isDebug = (boolean) item.getItemProperty("isDebugging").getValue();
                         final long executionId = item.getId();
-                        changeURI(executionId);
-                        // set debug
-                        presenter.showDebugEventHandler(executionId);
+                        if ((isDebug && presenter.canDebugData(executionId)) || (!isDebug && presenter.canReadLog(executionId))) {
+                            changeURI(executionId);
+                            // set debug
+                            presenter.showDebugEventHandler(executionId);
+                        }
                     }
                 });
 

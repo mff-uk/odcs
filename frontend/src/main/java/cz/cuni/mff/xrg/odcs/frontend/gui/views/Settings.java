@@ -22,21 +22,9 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
@@ -81,8 +69,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private VerticalLayout usersLayout;
 
-    private VerticalLayout pipelinesLayout;
-
     private VerticalLayout tabsLayout;
 
     private VerticalLayout runtimePropsLayout;
@@ -92,8 +78,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button accountButton;
 
     private Button usersButton;
-
-    private Button pipelinesButton;
 
     private Button runtimePropsButton;
 
@@ -213,14 +197,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         usersLayout = usersList.buildUsersListLayout();
         usersLayout.setStyleName("settings");
 
-        //layout for Delete debug resources
-        pipelinesLayout = new VerticalLayout();
-        pipelinesLayout.setMargin(true);
-        pipelinesLayout.setSpacing(true);
-        pipelinesLayout.setImmediate(true);
-        pipelinesLayout.setStyleName("settings");
-        pipelinesLayout.setWidth("100%");
-
         //layout for Namespace Prefixes
 //		prefixesLayout = new VerticalLayout();
 //		prefixesLayout.setImmediate(true);
@@ -305,36 +281,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         });
         tabsLayout.addComponent(usersButton);
         tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
-
-        //Delete debug resources tab
-        pipelinesButton = new NativeButton(Messages.getString("Settings.delete.resources"));
-        pipelinesButton.setHeight("40px");
-        pipelinesButton.setWidth("250px");
-        pipelinesButton.setStyleName("multiline");
-        pipelinesButton.setVisible(hasPermission("deleteDebugResources"));
-
-        pipelinesButton.addClickListener(new ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                //if before click was pushed My account tab
-                if (shownTab.equals(accountButton)) {
-                    myAccountSaveConfirmation(pipelinesButton, pipelinesLayout);
-                } else {
-                    //if before click was pushed Schedule notification tab
-                    if (shownTab.equals(notificationsButton)) {
-                        notificationSaveConfirmation(pipelinesButton,
-                                pipelinesLayout);
-                    } else {
-                        buttonPush(pipelinesButton, pipelinesLayout);
-                    }
-
-                }
-            }
-        });
-        tabsLayout.addComponent(pipelinesButton);
-        tabsLayout.setComponentAlignment(pipelinesButton, Alignment.TOP_RIGHT);
 
         //Namespace prefixes tab
 //		prefixesButton = new NativeButton("Namespace Prefixes");
@@ -791,7 +737,6 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         accountButton.setStyleName("multiline");
         usersButton.setStyleName("multiline");
-        pipelinesButton.setStyleName("multiline");
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
         runtimePropsButton.setStyleName("multiline");

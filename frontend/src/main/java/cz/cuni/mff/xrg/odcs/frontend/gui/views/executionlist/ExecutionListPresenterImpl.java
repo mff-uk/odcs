@@ -18,6 +18,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -196,7 +197,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canStopExecution(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipelineExecution.cancel");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_STOP);
     }
 
     @Override
@@ -316,27 +317,27 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canReadLog(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipelineExecution.readLog");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canDebugData(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipelineExecution.debugData");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canRunPipeline(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipeline.run");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_RUN);
     }
 
     @Override
     public boolean canDebugPipeline(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, "pipeline.runDebug");
+        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 }

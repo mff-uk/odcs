@@ -21,6 +21,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
@@ -72,7 +73,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
      */
     @Autowired
     protected AppConfig appConfig;
-    
+
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -125,7 +126,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
         List<DPUTemplateRecord> allDpus = dpuFacade.getAllTemplates();
         while (found) {
             found = false;
-            nameOfDpuCopy = Messages.getString("DPUPresenterImpl.copy.of") + selectedDpu.getName();
+            nameOfDpuCopy = Messages.getString("DPUPresenterImpl.copy.of") + " " + selectedDpu.getName();
             if (i > 1) {
                 nameOfDpuCopy = nameOfDpuCopy + " " + i;
             }
@@ -215,12 +216,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             }
         }
         // getting all Pipelines with specified DPU in it
-        List<Pipeline> pipelines;
-        if (permissions.hasPermission(dpu, "pipeline.delete")) {
-            pipelines = pipelineFacade.getAllPipelinesUsingDPU(dpu);
-        } else {
-            pipelines = pipelineFacade.getPipelinesUsingDPU(dpu);
-        }
+        List<Pipeline> pipelines = this.pipelineFacade.getPipelinesUsingDPU(dpu);
 
         pipelinesWithDPU = new HashMap<>();
         for (Pipeline pipeline : pipelines) {
@@ -269,7 +265,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public void selectDPUEventHandler(final DPUTemplateRecord dpu) {
         //if the previous selected
-        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission("pipeline.save")) {
+        if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT)) {
 
             //open confirmation dialog
             ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.unsaved.changes"),
@@ -425,18 +421,24 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public boolean showPipelineDeleteButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        
+
         String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-        
+
         boolean isAdmin = permissions.hasPermission(pipe, adminPermission);
-        boolean canDelete = permissions.hasPermission(pipe, "pipeline.delete");
+        boolean canDelete = permissions.hasPermission(pipe, EntityPermissions.PIPELINE_DELETE);
         return isAdmin || canDelete;
     }
 
     @Override
     public boolean showPipelineDetailButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        return permissions.hasPermission(pipe, "pipeline.view");
+        return permissions.hasPermission(pipe, EntityPermissions.PIPELINE_READ);
+    }
+
+    @Override
+    public boolean showPipelineStatusButton(long pipelineId) {
+        Pipeline pipe = getPipeline(pipelineId);
+        return permissions.hasPermission(pipe, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override

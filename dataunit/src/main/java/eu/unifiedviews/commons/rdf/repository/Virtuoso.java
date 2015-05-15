@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 
+import org.openrdf.IsolationLevel;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -197,6 +198,11 @@ class Virtuoso implements ManagableRepository {
         }
 
         @Override
+        public void begin(IsolationLevel level) throws RepositoryException {
+            // Ignore as it's not supported by Virutoso.
+        }
+
+        @Override
         public void commit() throws RepositoryException {
             // Ignore as it's not suported by Virtuoso.
         }
@@ -298,6 +304,16 @@ class Virtuoso implements ManagableRepository {
         @Override
         public void clearNamespaces() throws RepositoryException {
             connection.clearNamespaces();
+        }
+
+        @Override
+        public void setIsolationLevel(IsolationLevel il) throws IllegalStateException {
+            connection.setIsolationLevel(il);
+        }
+
+        @Override
+        public IsolationLevel getIsolationLevel() {
+            return connection.getIsolationLevel();
         }
     
     }

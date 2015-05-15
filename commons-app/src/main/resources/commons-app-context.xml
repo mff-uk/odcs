@@ -102,4 +102,5 @@
     <!-- DAO layer. -->
     <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
 
+    <context:component-scan base-package="eu.unifiedviews.audit" />
 </beans>

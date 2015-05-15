@@ -262,6 +262,12 @@ public class Context implements DPUContext {
         return organization;
     }
 
+    // FIXME: Just dummy implementation to be able to compile with UV plugins V2.1.0 
+    @Override
+    public String getPipelineExecutorActorExternalId() {
+        return null;
+    }
+
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
 
     @Override
