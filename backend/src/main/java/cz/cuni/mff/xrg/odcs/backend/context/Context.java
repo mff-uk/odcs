@@ -250,6 +250,11 @@ public class Context implements DPUContext {
     }
 
     @Override
+    public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getPipeline().getOwner().getUsername();
+    }
+
+    @Override
     public String getPipelineExecutorUserName() {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }

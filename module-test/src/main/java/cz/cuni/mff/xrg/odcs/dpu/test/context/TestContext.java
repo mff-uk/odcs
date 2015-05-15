@@ -273,6 +273,10 @@ public class TestContext implements DPUContext {
         return environment;
     }
 
+    public String getPipelineOwner() {
+        return "test_user";
+    }
+
     @Override
     public String getOrganization() {
         return "test_organization";
@@ -280,11 +284,11 @@ public class TestContext implements DPUContext {
 
     @Override
     public String getPipelineExecutorUserName() {
-        return "test_user";
+        return "test_user_executor";
     }
 
     @Override
     public String getPipelineExecutorUserExternalId() {
-        return "test_user_id";
+        return "test_user_executor_id";
     }
 }
