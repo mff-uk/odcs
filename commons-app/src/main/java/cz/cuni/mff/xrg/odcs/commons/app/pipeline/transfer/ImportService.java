@@ -64,7 +64,7 @@ public class ImportService {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
-    @Autowired
+    @Autowired(required = false)
     private PermissionUtils permissionUtils;
 
     @Autowired
@@ -370,7 +370,10 @@ public class ImportService {
     }
 
     public boolean hasUserPermission(String permission) {
-        return this.permissionUtils.hasUserAuthority(permission);
+        if (this.permissionUtils != null) {
+            return this.permissionUtils.hasUserAuthority(permission);
+        }
+        return false;
     }
 
 }
