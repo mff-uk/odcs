@@ -1,5 +1,7 @@
 -- Update permission table
 ALTER TABLE `permission` CHANGE `rwonly` `write` boolean;
+-- Admin does not have any permissions besides administrator permission
+DELETE FROM `user_role_permission` WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
 -- Permission changes
 INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
@@ -14,6 +16,10 @@ DELETE FROM `permission` WHERE name = 'pipelineExecution.readLog';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.sparqlDpuInputOutputData';
 DELETE FROM `permission` WHERE name = 'scheduleRule.disable';
 DELETE FROM `permission` WHERE name = 'scheduleRule.enable';
+DELETE FROM `permission` WHERE name = 'role.create';
+DELETE FROM `permission` WHERE name = 'role.edit';
+DELETE FROM `permission` WHERE name = 'role.read';
+DELETE FROM `permission` WHERE name = 'role.delete';
 UPDATE `permission` SET `write` = true WHERE name = 'scheduleRule.execute';
 DELETE FROM `permission` WHERE name = 'deleteDebugResources';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.save';

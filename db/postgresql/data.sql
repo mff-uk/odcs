@@ -85,10 +85,6 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.login', false)
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.read', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.delete', true);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'role.create', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'role.edit', true);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'role.read', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'role.delete', true);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.create', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.copy', false);
