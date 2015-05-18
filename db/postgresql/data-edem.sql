@@ -106,6 +106,7 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.setVisibility', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.delete', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));

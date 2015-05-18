@@ -68,6 +68,7 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.create'
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.createFromInstance', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.setVisibility', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.delete', true);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.edit', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));

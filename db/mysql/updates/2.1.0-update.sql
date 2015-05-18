@@ -34,6 +34,7 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.exportScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importUserData'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'dpuTemplate.setVisibility'));
 -- Organizations removed, actor added
 DROP VIEW `pipeline_view`;
 DROP VIEW `exec_view`;

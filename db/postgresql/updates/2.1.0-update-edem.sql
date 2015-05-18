@@ -46,6 +46,7 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='MOD
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importUserData'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), (select id from "permission" where name = 'pipeline.importUserData'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'pipeline.importUserData'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'dpuTemplate.setVisibility'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name = 'dpuTemplate.setVisibility'));
 -- Remove permissions for eDemo roles
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.export') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
