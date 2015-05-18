@@ -52,7 +52,7 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_DELETE = "dpuTemplate.delete";
 
-    public static final String DPU_TEMPLATE_SET_VISIBILITY_CREATE = "dpuTemplate.setVisibilityAtCreate";
+    public static final String DPU_TEMPLATE_SET_VISIBILITY = "dpuTemplate.setVisibility";
 
     public static final String DPU_TEMPLATE_CREATE_FROM_INSTANCE = "dpuTemplate.createFromInstance";
 

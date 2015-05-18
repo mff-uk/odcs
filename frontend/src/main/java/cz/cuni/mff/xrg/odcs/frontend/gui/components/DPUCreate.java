@@ -711,13 +711,13 @@ public class DPUCreate extends Window {
         dpuName.setValue("");
         dpuDescription.setValue("");
         groupVisibility.setValue(ShareType.PUBLIC_RO);
-        groupVisibility.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
+        groupVisibility.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFile.setReadOnly(false);
         uploadFile.setValue("");
         uploadFile.setReadOnly(true);
         // clean zip version
         groupVisibilityZip.setValue(ShareType.PUBLIC_RO);
-        groupVisibilityZip.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
+        groupVisibilityZip.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFileZip.setReadOnly(false);
         uploadFileZip.setValue("");
         uploadFileZip.setReadOnly(true);

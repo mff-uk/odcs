@@ -9,6 +9,7 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.schedule';
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.runDebug';
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.run';
+UPDATE `permission` SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.readEvent';
@@ -39,7 +40,7 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Adm
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importUserData'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importUserData'));
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'dpuTemplate.setVisibilityAtCreate'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'dpuTemplate.setVisibility'));
 -- Organizations removed, actor added
 DROP VIEW `pipeline_view`;
 DROP VIEW `exec_view`;

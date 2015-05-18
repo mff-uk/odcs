@@ -8,6 +8,7 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 UPDATE permission SET write = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET write = true WHERE name = 'pipeline.runDebug';
 UPDATE permission SET write = true WHERE name = 'pipeline.run';
+UPDATE permission SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 DELETE FROM permission WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM permission WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM permission WHERE name = 'pipelineExecution.readEvent';
