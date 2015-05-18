@@ -9,7 +9,7 @@ delete from `runtime_properties`;
 delete from `role`;
 delete from `permission`;
 
-INSERT INTO `properties` VALUES ('UV.Core.version','002.000.000'),('UV.Plugin-DevEnv.version','002.000.000');
+INSERT INTO `properties` VALUES ('UV.Core.version','002.001.000'),('UV.Plugin-DevEnv.version','002.001.000');
 INSERT INTO `sch_email` VALUES (NULL,'admin@example.com'),(NULL,'user@example.com');
 
 INSERT INTO `role` VALUES (NULL, 'Administrator');
@@ -45,9 +45,9 @@ INSERT INTO `permission` VALUES (NULL, 'pipeline.exportDpuData', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.exportDpuJars', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityAtCreate', false);
+INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibility', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', false);
+INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipelineExecution.delete', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));

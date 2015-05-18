@@ -373,7 +373,7 @@ public class ImportService {
         if (this.permissionUtils != null) {
             return this.permissionUtils.hasUserAuthority(permission);
         }
-        return false;
+        return true;
     }
 
 }

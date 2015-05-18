@@ -4,12 +4,12 @@ ALTER TABLE `permission` CHANGE `rwonly` `write` boolean;
 DELETE FROM `user_role_permission` WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
 -- Permission changes
 INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
+UPDATE `permission` SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
+UPDATE `permission` SET name = 'pipeline.setVisibility', `write` = true WHERE name = 'pipeline.setVisibilityAtCreate';
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.schedule';
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.runDebug';
 UPDATE `permission` SET `write` = true WHERE name = 'pipeline.run';
-UPDATE `permission` SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.readEvent';
@@ -26,21 +26,14 @@ DELETE FROM `permission` WHERE name = 'deleteDebugResources';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.save';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.import';
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.createFromInstance', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
-INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
+INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name='pipeline.setVisibilityAtCreate'));
-INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name='pipeline.setVisibilityAtCreate'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name='pipeline.setVisibility'));
 -- Map existing permissions to roles
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.exportScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.exportScheduleRules'));
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importUserData'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importUserData'));
-INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'dpuTemplate.setVisibility'));
 -- Organizations removed, actor added
 DROP VIEW `pipeline_view`;
 DROP VIEW `exec_view`;

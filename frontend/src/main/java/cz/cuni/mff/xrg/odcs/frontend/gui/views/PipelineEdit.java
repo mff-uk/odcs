@@ -903,7 +903,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -926,7 +926,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
@@ -1175,7 +1175,7 @@ public class PipelineEdit extends ViewComponent {
 
         final ShareType visibility;
 
-        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_AT_CREATE)) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             visibility = (ShareType) pipelineVisibility.getValue();
 
         } else {

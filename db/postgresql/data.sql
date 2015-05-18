@@ -6,7 +6,7 @@ delete from "sch_usr_notification";
 delete from "sch_usr_notification_email";
 delete from "usr_user";
 delete from "runtime_properties";
-INSERT INTO "properties" VALUES ('UV.Core.version','002.000.000'),('UV.Plugin-DevEnv.version','002.000.000');
+INSERT INTO "properties" VALUES ('UV.Core.version','002.001.000'),('UV.Plugin-DevEnv.version','002.001.000');
 INSERT INTO "sch_email" VALUES (nextval('seq_sch_email'),'admin@example.com'),(nextval('seq_sch_email'),'user@example.com');
 INSERT INTO "role" VALUES (nextval('seq_role'), 'Administrator'),(nextval('seq_role'),'User'); 
 
@@ -40,7 +40,7 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuD
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.exportDpuJars', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibilityAtCreate', true);
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibility', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));

@@ -9,6 +9,7 @@ UPDATE permission SET write = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET write = true WHERE name = 'pipeline.runDebug';
 UPDATE permission SET write = true WHERE name = 'pipeline.run';
 UPDATE permission SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
+UPDATE permission SET name = 'pipeline.setVisibility', write = true WHERE name = 'pipeline.setVisibilityAtCreate'; 
 DELETE FROM permission WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM permission WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM permission WHERE name = 'pipelineExecution.readEvent';
@@ -28,7 +29,7 @@ INSERT INTO permission VALUES (nextval('seq_permission'), 'dpuTemplate.createFro
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibilityAtCreate'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibility'));
 -- Map existing permissions to roles
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.importScheduleRules'));

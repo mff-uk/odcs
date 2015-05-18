@@ -11,6 +11,7 @@ UPDATE permission SET write = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET write = true WHERE name = 'pipeline.runDebug';
 UPDATE permission SET write = true WHERE name = 'pipeline.run';
 UPDATE permission SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
+UPDATE permission SET name = 'pipeline.setVisibility', write = true WHERE name = 'pipeline.setVisibilityAtCreate';
 DELETE FROM permission WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM permission WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM permission WHERE name = 'pipelineExecution.readEvent';
@@ -32,8 +33,8 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='MOD
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibilityAtCreate'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name='pipeline.setVisibilityAtCreate'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibility'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name='pipeline.setVisibility'));
 DELETE FROM "user_role_permission" WHERE role_id = (select id from "role" where name='MOD-R-TRANSA') AND permission_id = (select id from "permission" where name='administrator');
 -- Map existing permissions to roles
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));
