@@ -202,7 +202,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         }
 
         // initialize localization: retrieve property and set it in LocaleHolders
-        Locale locale = Locale.forLanguageTag(this.getString(ConfigProperty.LOCALE));
+        Locale locale = Locale.forLanguageTag(prop.getProperty(ConfigProperty.LOCALE.toString(), "en_US"));
         LocaleHolder.setLocale(locale);
         DataunitLocaleHolder.setLocale(locale);
         LOG.log(Level.INFO, "Using locale: " + LocaleHolder.getLocale());
