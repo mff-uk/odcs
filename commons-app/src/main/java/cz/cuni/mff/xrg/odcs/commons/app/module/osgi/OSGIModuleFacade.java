@@ -1,15 +1,17 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -20,11 +22,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DbDPUTemplateRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
-import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OSGI based implementation of {@link ModuleFacade}.
@@ -38,6 +43,12 @@ class OSGIModuleFacade implements ModuleFacade {
      * Logger class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(OSGIModuleFacade.class);
+
+    private static final String DPU_NAME = "Bundle-Name";
+
+    public static final String DPU_NAME_KEY = "dpu.name";
+
+    public static final String DPU_MENU_NAME_KEY = "dpu.name.menu";
 
     /**
      * OSGi framework class.
@@ -68,6 +79,9 @@ class OSGIModuleFacade implements ModuleFacade {
      */
     @Autowired
     private DbDPUTemplateRecord dpuTemplateDao;
+
+    @Autowired
+    private AppConfig appConfig;
 
     /**
      * Store directories for bundle which are currently being updated.
@@ -151,6 +165,14 @@ class OSGIModuleFacade implements ModuleFacade {
         String fullMainClassName = container.getMainClassName();
         // load and return
         return container.loadClass(fullMainClassName);
+    }
+
+    @Override
+    public eu.unifiedviews.helpers.dpu.localization.Messages getMessageFromDPUInstance(Object DPUInstance) {
+        Class<?> objectClass = DPUInstance.getClass();
+        ClassLoader loader = objectClass.getClassLoader();
+        eu.unifiedviews.helpers.dpu.localization.Messages messages = new eu.unifiedviews.helpers.dpu.localization.Messages(LocaleHolder.getLocale(), loader);
+        return messages;
     }
 
     @Override
@@ -298,9 +320,50 @@ class OSGIModuleFacade implements ModuleFacade {
 
     @Override
     public void preLoadDPUs(List<DPUTemplateRecord> dpus) {
+        boolean useLocalizedDPUnames = false;
+        try {
+            useLocalizedDPUnames = appConfig.getBoolean(ConfigProperty.USE_LOCALIZED_DPU_NAME);
+        } catch (MissingConfigPropertyException e) {
+            // property is missing, default value: false remains
+        }
+
         for (DPUTemplateRecord dpu : dpus) {
             try {
-                install(dpu);
+                BundleContainer container = install(dpu);
+                if (dpu.getParent() == null) { // we only rewrite first level templates
+                    Dictionary<String, String> headers = container.getHeaders();
+                    String dpuManifestName = headers.get(DPU_NAME);
+                    dpuManifestName = StringUtils.abbreviate(dpuManifestName, LenghtLimits.DPU_NAME); // limit length
+                    if (useLocalizedDPUnames) {
+                        Object dpuInstance = container.loadClass(container.getMainClassName());
+                        eu.unifiedviews.helpers.dpu.localization.Messages messages = getMessageFromDPUInstance(dpuInstance);
+                        // try to get dpu name from messages bundle
+                        if (messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                            // in this case getString() returns the key, because there is no value for the given key
+                            LOG.warn("Missing key {} in the resource bundle", DPU_NAME_KEY);
+                            LOG.warn("Localized name for dpu {} was not set", dpu.getJarPath());
+                            // fallback to manifest name
+                            dpu.setName(dpuManifestName);
+                        } else {
+                            dpu.setName(messages.getString(DPU_NAME_KEY));
+                        }
+                        // try to get dpu menu name from messages bundle
+                        if (messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                            // in this case getString() returns the key, because there is no value for the given key
+                            LOG.warn("Missing key {} in the resource bundle", DPU_MENU_NAME_KEY);
+                            LOG.warn("Localized menu name for dpu {} was not set", dpu.getJarPath());
+                            // fallback to manifest name
+                            dpu.setMenuName(dpuManifestName);
+                        } else {
+                            dpu.setMenuName(messages.getString(DPU_MENU_NAME_KEY));
+                        }
+                    } else { // localized names feature turned-off or missing
+                        dpu.setName(dpuManifestName);
+                        dpu.setMenuName(dpuManifestName);
+                    }
+                    // save changes to DB
+                    dpuTemplateDao.save(dpu);
+                }
             } catch (ModuleException e) {
                 LOG.warn("Failed to pre-load dpu: {}", dpu.getJarPath(), e);
             }

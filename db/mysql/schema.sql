@@ -38,6 +38,7 @@ CREATE TABLE `dpu_instance`
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(1024),
+  `menu_name` VARCHAR(255),
   `use_dpu_description` boolean,
   `description` TEXT,
   `configuration` LONGBLOB,
@@ -54,6 +55,7 @@ CREATE TABLE `dpu_template`
 -- DPURecord
   `id` INTEGER AUTO_INCREMENT,
   `name` VARCHAR(1024),
+  `menu_name` VARCHAR(255),
   `use_dpu_description` boolean,
   `description` TEXT,  
   `configuration` LONGBLOB,

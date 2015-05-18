@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -197,6 +200,12 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
                 }
             }
         }
+
+        // initialize localization: retrieve property and set it in LocaleHolders
+        Locale locale = Locale.forLanguageTag(prop.getProperty(ConfigProperty.LOCALE.toString(), "en_US"));
+        LocaleHolder.setLocale(locale);
+        DataunitLocaleHolder.setLocale(locale);
+        LOG.log(Level.INFO, "Using locale: " + LocaleHolder.getLocale());
     }
 
     /**
