@@ -194,6 +194,9 @@ public class AppEntry extends com.vaadin.ui.UI {
                     getMain().refreshUserBar();
                     return false;
                 }
+                if (authCtx.isAuthenticated()) {
+                    main.refreshMenuButtons();
+                }
                 setNavigationHistory(event);
 
                 refreshManager.removeListener(RefreshManager.EXECUTION_MONITOR);

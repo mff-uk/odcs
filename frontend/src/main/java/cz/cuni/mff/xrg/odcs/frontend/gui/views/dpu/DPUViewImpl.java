@@ -144,7 +144,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        if (!presenter.isLayoutInitialized()) {
+        if (!presenter.isLayoutInitialized() && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SHOW_SCREEN)) {
             buildMainLayout();
         }
 

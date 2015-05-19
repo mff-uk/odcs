@@ -56,6 +56,8 @@ public class EntityPermissions {
 
     public static final String DPU_TEMPLATE_CREATE_FROM_INSTANCE = "dpuTemplate.createFromInstance";
 
+    public static final String DPU_TEMPLATE_SHOW_SCREEN = "dpuTemplate.showScreen";
+
     // ************* Schedule permissions
     public static final String SCHEDULE_RULE_CREATE = "scheduleRule.create";
 

@@ -15,6 +15,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
@@ -63,6 +65,9 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     protected AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Used layout.
@@ -246,6 +251,19 @@ public class MenuLayout extends CustomComponent {
     public void refreshBackendStatus(boolean isRunning) {
         backendStatus.setDescription(isRunning ? Messages.getString("MenuLayout.backend.online") : Messages.getString("MenuLayout.backend.offline"));
         backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.svg" : "icons/offline.svg"));
+    }
+
+    public void refreshMenuButtons() {
+        if (!this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SHOW_SCREEN)) {
+            if (this.menuItems.containsKey("DPURecord")) {
+                this.menuBar.removeItem(this.menuItems.remove("DPURecord"));
+            }
+        } else {
+            if (!this.menuItems.containsKey("DPURecord")) {
+                this.menuItems.put("DPURecord", this.menuBar.addItem(Messages.getString("MenuLayout.dpuTemplates"),
+                        new NavigateToCommand(DPUPresenterImpl.class, this.navigator)));
+            }
+        }
     }
 
     /**

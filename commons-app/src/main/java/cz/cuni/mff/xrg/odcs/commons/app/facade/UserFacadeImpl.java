@@ -72,7 +72,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all users persisted in database
      */
-    @PostFilter("hasPermission(filterObject, 'user.read')")
+    @PostFilter("hasPermission(filterObject, 'user.management')")
     @Override
     public List<User> getAllUsers() {
         return userDao.getAll();
@@ -83,7 +83,7 @@ class UserFacadeImpl implements UserFacade {
      *            primary key
      * @return user with given id or <code>null<code>
      */
-    @PostAuthorize("hasPermission(returnObject, 'user.read')")
+    @PostAuthorize("hasPermission(returnObject, 'user.management')")
     @Override
     public User getUser(long id) {
         return userDao.getInstance(id);
@@ -129,7 +129,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasRole('user.create')")
+    @PreAuthorize("hasRole('user.management')")
     @Override
     public void save(User user) {
         userDao.save(user);
@@ -152,7 +152,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'user.delete')")
+    @PreAuthorize("hasPermission(#user, 'user.management')")
     @Override
     public void delete(User user) {
         userDao.delete(user);

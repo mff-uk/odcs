@@ -23,6 +23,11 @@ DELETE FROM permission WHERE name = 'role.create';
 DELETE FROM permission WHERE name = 'role.edit';
 DELETE FROM permission WHERE name = 'role.read';
 DELETE FROM permission WHERE name = 'role.delete';
+DELETE FROM permission WHERE name = 'user.create';
+DELETE FROM permission WHERE name = 'user.edit';
+DELETE FROM permission WHERE name = 'user.login';
+DELETE FROM permission WHERE name = 'user.read';
+DELETE FROM permission WHERE name = 'user.delete';
 UPDATE permission SET write = true WHERE name = 'scheduleRule.execute';
 DELETE FROM permission WHERE name = 'deleteDebugResources';
 DELETE FROM permission WHERE name = 'dpuTemplate.save';
@@ -35,6 +40,10 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibil
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name='pipeline.setVisibility'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), (select id from "permission" where name='pipeline.setVisibility'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.showScreen', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
+INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 DELETE FROM "user_role_permission" WHERE role_id = (select id from "role" where name='MOD-R-TRANSA') AND permission_id = (select id from "permission" where name='administrator');
 -- Map existing permissions to roles
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), (select id from "permission" where name = 'pipeline.exportScheduleRules'));

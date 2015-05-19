@@ -78,14 +78,9 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.copy', 
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.read', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.showScreen', false);
+INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.management', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.create', false);
-INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.edit', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.login', false);
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.read', false);
-INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'user.delete', true);
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.create', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.copy', false);
