@@ -314,7 +314,7 @@ CREATE INDEX `ix_USR_USER_email_id` ON `usr_user` (`email_id`);
 CREATE TABLE `permission` (
   `id` INTEGER AUTO_INCREMENT,
   `name` varchar(142) NOT NULL,
-  `write` boolean,
+  `sharedEntityInstanceWriteRequired` boolean,
   PRIMARY KEY (`id`),
   UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

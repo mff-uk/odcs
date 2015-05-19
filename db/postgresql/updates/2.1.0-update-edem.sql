@@ -1,5 +1,5 @@
 -- Update permission table
-ALTER TABLE permission RENAME COLUMN rwonly TO write;
+ALTER TABLE permission RENAME COLUMN rwonly TO sharedEntityInstanceWriteRequired;
 -- Admin does not have any permissions besides administrator permission
 DELETE FROM "user_role_permission" WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
 -- Permission changes
@@ -7,11 +7,11 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.definePipe
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
-UPDATE permission SET write = true WHERE name = 'pipeline.schedule';
-UPDATE permission SET write = true WHERE name = 'pipeline.runDebug';
-UPDATE permission SET write = true WHERE name = 'pipeline.run';
+UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.schedule';
+UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.runDebug';
+UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.run';
 UPDATE permission SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
-UPDATE permission SET name = 'pipeline.setVisibility', write = true WHERE name = 'pipeline.setVisibilityAtCreate';
+UPDATE permission SET name = 'pipeline.setVisibility', sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.setVisibilityAtCreate';
 DELETE FROM permission WHERE name = 'pipelineExecution.downloadAllLogs';
 DELETE FROM permission WHERE name = 'pipelineExecution.readDpuInputOutputData';
 DELETE FROM permission WHERE name = 'pipelineExecution.readEvent';
@@ -28,7 +28,7 @@ DELETE FROM permission WHERE name = 'user.edit';
 DELETE FROM permission WHERE name = 'user.login';
 DELETE FROM permission WHERE name = 'user.read';
 DELETE FROM permission WHERE name = 'user.delete';
-UPDATE permission SET write = true WHERE name = 'scheduleRule.execute';
+UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'scheduleRule.execute';
 DELETE FROM permission WHERE name = 'deleteDebugResources';
 DELETE FROM permission WHERE name = 'dpuTemplate.save';
 DELETE FROM permission WHERE name = 'dpuTemplate.import';
