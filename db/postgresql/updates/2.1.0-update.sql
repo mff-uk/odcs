@@ -2,6 +2,16 @@
 ALTER TABLE permission RENAME COLUMN rwonly TO sharedEntityInstanceWriteRequired;
 -- Admin does not have any permissions besides administrator permission
 DELETE FROM "user_role_permission" WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
+-- Update version.
+UPDATE "properties" SET "value" = '002.001.000' WHERE "key" = 'UV.Core.version';
+UPDATE "properties" SET "value" = '002.000.000' WHERE "key" = 'UV.Plugin-DevEnv.version';
+
+-- Add new columns
+ALTER TABLE "dpu_instance"
+ADD COLUMN "menu_name" VARCHAR(255);
+ALTER TABLE "dpu_template"
+ADD COLUMN "menu_name" VARCHAR(255);
+
 -- Permission changes
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies', true;
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));

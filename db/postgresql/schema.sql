@@ -60,6 +60,7 @@ CREATE TABLE "dpu_instance"
 -- DPURecord
   "id" INTEGER,
   "name" VARCHAR(1024),
+  "menu_name" VARCHAR(255),
   "use_dpu_description" boolean,
   "description" TEXT,
   "configuration" BYTEA,
@@ -76,6 +77,7 @@ CREATE TABLE "dpu_template"
 -- DPURecord
   "id" INTEGER,
   "name" VARCHAR(1024),
+  "menu_name" VARCHAR(255),
   "use_dpu_description" boolean,
   "description" TEXT,  
   "configuration" BYTEA,
