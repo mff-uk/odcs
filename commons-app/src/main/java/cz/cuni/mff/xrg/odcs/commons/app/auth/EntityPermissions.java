@@ -3,11 +3,13 @@ package cz.cuni.mff.xrg.odcs.commons.app.auth;
 public class EntityPermissions {
 
     // *********** Pipeline permissions
-    public static final String PIPELINE_SAVE = "pipeline.save";
+    public static final String PIPELINE_EDIT = "pipeline.edit";
 
     public static final String PIPELINE_RUN = "pipeline.run";
 
     public static final String PIPELINE_RUN_DEBUG = "pipeline.runDebug";
+
+    public static final String PIPELINE_SCHEDULE = "pipeline.schedule";
 
     public static final String PIPELINE_READ = "pipeline.read";
 

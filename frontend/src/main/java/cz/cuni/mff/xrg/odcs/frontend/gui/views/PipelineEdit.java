@@ -245,7 +245,7 @@ public class PipelineEdit extends ViewComponent {
         if (this.pipeline == null) {
             return;
         } else {
-            setMode(hasPermission(EntityPermissions.PIPELINE_SAVE));
+            setMode(hasPermission(EntityPermissions.PIPELINE_EDIT));
             updateLblPipelineName();
         }
 
@@ -944,7 +944,9 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission(EntityPermissions.PIPELINE_SAVE);
+        return (pipelineName.isModified() || pipelineDescription.isModified() 
+                || pipelineCanvas.isModified() || pipelineVisibility.isModified()) 
+                && hasPermission(EntityPermissions.PIPELINE_EDIT);
     }
 
     @Override
@@ -1002,9 +1004,9 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupButtons(boolean enabled, boolean isNew) {
-        buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
-        buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE));
-        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_SAVE) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
+        buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
+        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
         buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonExport.setEnabled(hasPermission(EntityPermissions.PIPELINE_EXPORT));

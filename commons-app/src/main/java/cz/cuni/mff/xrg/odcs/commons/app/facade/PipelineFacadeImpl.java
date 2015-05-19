@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -160,7 +160,7 @@ class PipelineFacadeImpl implements PipelineFacade {
      */
     @Transactional
     // Public writable pipeline can be saved only if user has proper permission for it 
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.save') "
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.edit') "
             + "AND (#pipeline.getShareType() != T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
             + "OR (#pipeline.getShareType() == T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
             + "AND hasRole('pipeline.setVisibilityPublicRw')))")

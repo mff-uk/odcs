@@ -13,7 +13,7 @@ ALTER TABLE `dpu_template` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL
 
 INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
-UPDATE `permission` SET name = 'dpuTemplate.setVisibility' WHERE name = 'dpuTemplate.setVisibilityAtCreate';
+UPDATE `permission` SET name = 'dpuTemplate.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 UPDATE `permission` SET name = 'pipeline.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.setVisibilityAtCreate';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.schedule';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.runDebug';
@@ -34,6 +34,7 @@ DELETE FROM `permission` WHERE name = 'user.edit';
 DELETE FROM `permission` WHERE name = 'user.login';
 DELETE FROM `permission` WHERE name = 'user.read';
 DELETE FROM `permission` WHERE name = 'user.delete';
+DELETE FROM `permission` WHERE name = 'pipeline.save';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'scheduleRule.execute';
 DELETE FROM `permission` WHERE name = 'deleteDebugResources';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.save';

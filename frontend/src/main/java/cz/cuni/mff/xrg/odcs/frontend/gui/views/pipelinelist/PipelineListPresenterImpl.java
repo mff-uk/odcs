@@ -21,6 +21,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -258,31 +259,31 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     @Override
     public boolean canEditPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissionUtils.hasPermission(pipeline, "pipeline.edit");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_EDIT);
     }
 
     @Override
     public boolean canDebugPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissionUtils.hasPermission(pipeline, "pipeline.runDebug");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 
     @Override
     public boolean canSchedulePipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissionUtils.hasPermission(pipeline, "pipeline.schedule");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_SCHEDULE);
     }
 
     @Override
     public boolean canCopyPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissionUtils.hasPermission(pipeline, "pipeline.copy");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_COPY);
     }
 
     @Override
     public boolean canRunPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissionUtils.hasPermission(pipeline, "pipeline.run");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN);
     }
 
     @Override

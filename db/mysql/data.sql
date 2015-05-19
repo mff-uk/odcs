@@ -19,8 +19,6 @@ INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.delete', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `permission` VALUES (NULL, 'pipeline.save', true);
-INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.edit', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
@@ -72,7 +70,7 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.create', false);
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.createFromInstance', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.setVisibility', false);
+INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.setVisibility', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.delete', true);
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.edit', true);
