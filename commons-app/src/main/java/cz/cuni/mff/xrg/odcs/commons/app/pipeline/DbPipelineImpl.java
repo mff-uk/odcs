@@ -84,7 +84,7 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 
     @Override
     public List<Pipeline> getPipelinesForUser(String userExternalId) {
-        final String queryStr = "SELECT e FROM Pipeline e WHERE e.actor.externalId = :ouserExternalId";
+        final String queryStr = "SELECT e FROM Pipeline e WHERE e.owner.externalIdentifier = :userExternalId";
         TypedQuery<Pipeline> query = createTypedQuery(queryStr);
         query.setParameter("userExternalId", userExternalId);
         return executeList(query);
