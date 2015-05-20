@@ -255,12 +255,12 @@ public class Context implements DPUContext {
     }
 
     @Override
-    public String getPipelineExecutorUserName() {
+    public String getPipelineExecutionOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }
 
     @Override
-    public String getPipelineExecutorUserExternalId() {
+    public String getPipelineExecutionOwnerExternalId() {
         return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
     }
 
@@ -275,7 +275,7 @@ public class Context implements DPUContext {
 
     // FIXME: Just dummy implementation to be able to compile with UV plugins V2.1.0 
     @Override
-    public String getPipelineExecutorActorExternalId() {
+    public String getPipelineExecutionActorExternalId() {
         return null;
     }
 
