@@ -41,6 +41,10 @@ public class Utils {
         return user == null ? "" : user.getUsername();
     }
 
+    public User getUser() {
+        return this.authCtx.getUser();
+    }
+
     /**
      * Get default max length of column.
      * 

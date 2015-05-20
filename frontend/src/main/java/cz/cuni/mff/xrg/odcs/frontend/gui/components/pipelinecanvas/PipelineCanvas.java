@@ -36,6 +36,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -91,6 +92,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private PermissionUtils permissionUtils;
+
+    @Autowired
+    private Utils utils;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -188,7 +192,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.permissionUtils);
+        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils, this.permissionUtils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

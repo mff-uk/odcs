@@ -251,16 +251,25 @@ public class Context implements DPUContext {
 
     @Override
     public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getPipeline().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineExecutionOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }
 
     @Override
+    public String getPipelineExecutionOwnerExternalId() {
+        return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
+    }
+
     public String getOrganization() {
         return "";
     }
 
     @Override
-    public String getPipelineExecutorActorExternalId() {
+    public String getPipelineExecutionActorExternalId() {
         if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
             return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
         }

@@ -24,6 +24,7 @@ import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUInstanceWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUConfigHolder;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DPUGeneralDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.rdf.exceptions.SPARQLValidationException;
 import eu.unifiedviews.dpu.config.DPUConfigException;
@@ -65,15 +66,18 @@ public class DPUDetail extends Window {
 
     private PermissionUtils permissionUtils;
 
+    private Utils utils;
+
     /**
      * Basic constructor, takes DPUFacade. In order to generate the layout call {@link #build()}. The build function has to be called before any other
      * function.
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig, PermissionUtils permissionUtils) {
+    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig, Utils utils, PermissionUtils permissionUtils) {
         this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
+        this.utils = utils;
         this.permissionUtils = permissionUtils;
         // build the layout
         build();
@@ -210,7 +214,8 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                appConfig, this.utils.getUser());
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

@@ -46,6 +46,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -63,6 +64,9 @@ public class DPUCreate extends Window {
 
     @Autowired
     private PermissionUtils permissionUtils;
+
+    @Autowired
+    private Utils utils;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -567,7 +571,8 @@ public class DPUCreate extends Window {
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                this.appConfig, this.utils.getUser());
 
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
@@ -592,7 +597,8 @@ public class DPUCreate extends Window {
         DPUTemplateWrap dpuWrap;
         String name = dpuName.isValid() ? dpuName.getValue() : null;
 
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                appConfig, this.utils.getUser());
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
