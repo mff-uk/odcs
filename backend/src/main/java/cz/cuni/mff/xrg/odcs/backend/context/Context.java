@@ -249,8 +249,19 @@ public class Context implements DPUContext {
         return dpuInstance.getTemplate().getJarDirectory();
     }
 
+    @Override
     public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getPipeline().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineExecutionOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineExecutionOwnerExternalId() {
+        return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
     }
 
     public String getOrganization() {
@@ -264,7 +275,7 @@ public class Context implements DPUContext {
 
     // FIXME: Just dummy implementation to be able to compile with UV plugins V2.1.0 
     @Override
-    public String getPipelineExecutorActorExternalId() {
+    public String getPipelineExecutionActorExternalId() {
         return null;
     }
 
