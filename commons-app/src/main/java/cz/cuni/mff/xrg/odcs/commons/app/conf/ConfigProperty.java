@@ -88,6 +88,11 @@ public enum ConfigProperty {
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
 
     DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password"),
+    DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalToCkan.secret.token"),
+    DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalDiffToCkan.secret.token"),
+    DPU_UV_L_RDF_TO_CKAN_SECRET_TOKEN("dpu.uv-l-rdfToCkan.secret.token"),
+    DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN("dpu.uv-l-filesToCkan.secret.token"),
+    DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD("dpu.l-rdfToVirtuoso.password"),
 
     USE_LOCALIZED_DPU_NAME("dpu.name.localized");
 
