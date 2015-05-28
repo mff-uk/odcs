@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,7 +191,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      */
     public void init() {
         detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils);
-        getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight, LocaleHolder.getLocale().getLanguage());
+
+        getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight,
+                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME));
     }
 
     /**

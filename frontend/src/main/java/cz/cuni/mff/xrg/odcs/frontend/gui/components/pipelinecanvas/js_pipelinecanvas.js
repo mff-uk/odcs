@@ -85,8 +85,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	/** Registering RPC for calls from server-side**/
 	this.registerRpc({
-		init: function(width, height, locale) {
-			init(width, height, locale);
+		init: function(width, height, locale, frontendTheme) {
+			init(width, height, locale, frontendTheme);
 		},
 		addNode: function(dpuId, name, description, type, x, y, isNew) {
 			addDpu(dpuId, name, description, type, x, y, isNew);
@@ -186,7 +186,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
      * @param {int} height canvas height
      * @param lang UI language
      * */
-	function init(width, height, language) {
+	function init(width, height, language, frontendTheme) {
 		if (stage === null) {
 			stage = new Kinetic.Stage({
 				container: 'container',
@@ -287,49 +287,37 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
-		var request = new XMLHttpRequest();
-		request.open("GET", basePath + 'frontend.theme', false);
-		request.onreadystatechange = function () {
-			var frontendTheme;
-			if (request.readyState === 4) {
-				if (request.status === 200 || request.status == 0) {
-					frontendTheme = request.responseText;
-				}
-			}
-			var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
-			basePath = basePath + imgPath;
 
-			addConnectionIcon = new Image();
-			addConnectionIcon.src = basePath + "arrow_right.svg";
+        var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
+        basePath = basePath + imgPath;
 
-			removeConnectionIcon = new Image();
-			removeConnectionIcon.src = basePath + "TrashFull.svg";
+        addConnectionIcon = new Image();
+        addConnectionIcon.src = basePath + "arrow_right.svg";
 
-			debugIcon = new Image();
-			debugIcon.src = basePath + "debug.svg";
+        removeConnectionIcon = new Image();
+        removeConnectionIcon.src = basePath + "TrashFull.svg";
 
-			detailIcon = new Image();
-			detailIcon.src = basePath + "Gear.svg";
+        debugIcon = new Image();
+        debugIcon.src = basePath + "debug.svg";
 
-			formatIcon = new Image();
-			formatIcon.src = basePath + "format.svg";
+        detailIcon = new Image();
+        detailIcon.src = basePath + "Gear.svg";
 
-			copyIcon = new Image();
-			copyIcon.src = basePath + "copy.svg";
+        formatIcon = new Image();
+        formatIcon.src = basePath + "format.svg";
 
-			distributeIcon = new Image();
-			distributeIcon.src = basePath + "distribute.svg";
+        copyIcon = new Image();
+        copyIcon.src = basePath + "copy.svg";
 
-			invalidIcon = new Image();
-			invalidIcon.src = basePath + "exclamation.svg";
+        distributeIcon = new Image();
+        distributeIcon.src = basePath + "distribute.svg";
 
-			tooltip = createTooltip('Tooltip');
-			dpuLayer.add(tooltip);
+        invalidIcon = new Image();
+        invalidIcon.src = basePath + "exclamation.svg";
 
-//			formattingActionBar = createFormattingActionBar();
-//			dpuLayer.add(formattingActionBar);
-		}
-		request.send(null);
+        tooltip = createTooltip('Tooltip');
+        dpuLayer.add(tooltip);
+
 
         loadBundles(language);
 
