@@ -52,7 +52,7 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
      * @param height
      *            Default height of the canvas
      */
-    public void init(int width, int height);
+    public void init(int width, int height, String language);
 
     /**
      * Updates information of given node's DPUInstance.

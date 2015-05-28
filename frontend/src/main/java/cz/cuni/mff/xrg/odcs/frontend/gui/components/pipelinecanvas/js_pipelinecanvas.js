@@ -85,8 +85,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	/** Registering RPC for calls from server-side**/
 	this.registerRpc({
-		init: function(width, height) {
-			init(width, height);
+		init: function(width, height, locale) {
+			init(width, height, locale);
 		},
 		addNode: function(dpuId, name, description, type, x, y, isNew) {
 			addDpu(dpuId, name, description, type, x, y, isNew);
@@ -179,13 +179,14 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	var visibleActionBar = null;
 
-	/** 
-	 * Init function which builds entire stage for pipeline 
-	 * 
-	 * @param {int} width canvas width
-	 * @param {int} height canvas height
-	 * */
-	function init(width, height) {
+    /**
+     * Init function which builds entire stage for pipeline
+     *
+     * @param {int} width canvas width
+     * @param {int} height canvas height
+     * @param lang UI language
+     * */
+	function init(width, height, language) {
 		if (stage === null) {
 			stage = new Kinetic.Stage({
 				container: 'container',
@@ -329,7 +330,19 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 //			dpuLayer.add(formattingActionBar);
 		}
 		request.send(null);
+
+        loadBundles(language);
+
 	}
+
+    function loadBundles(language) {
+        $.i18n.properties({
+            name: 'messages',
+            path: 'VAADIN/js-msgs/',
+            mode: 'both',
+            language: language
+        });
+    }
 
 	var inSetupSelectionBox = false;
 	function setupSelectionBox() {
@@ -758,7 +771,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseenter', function(evt) {
-			activateTooltip('Create new edge');
+			activateTooltip(msgs.pipelinecanvas.edge.create);
 			evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseleave', function(evt) {
@@ -791,7 +804,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseenter', function(evt) {
-			activateTooltip('Show detail');
+			activateTooltip(msgs.pipelinecanvas.dpu.detail);
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseleave', function(evt) {
@@ -825,7 +838,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseenter', function(evt) {
-			activateTooltip('Remove DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.remove);
 			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseleave', function(evt) {
@@ -858,7 +871,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseenter', function(evt) {
-			activateTooltip('Debug to this DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.debug);
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseleave', function(evt) {
@@ -890,7 +903,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdFormat.on('mouseenter', function(evt) {
-			activateTooltip('DPU layout formatting');
+			activateTooltip(msgs.pipelinecanvas.dpu.layout);
 			evt.cancelBubble = true;
 		});
 		cmdFormat.on('mouseleave', function(evt) {
@@ -922,7 +935,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseenter', function(evt) {
-			activateTooltip('Copy DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.copy);
 			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseleave', function(evt) {
@@ -1760,7 +1773,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdName.on('mouseenter', function() {
-			activateTooltip('Set name of DataUnit.');
+			activateTooltip(msgs.pipelinecanvas.edge.edit);
 		});
 		cmdName.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -1786,7 +1799,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDelete.on('mouseenter', function() {
-			activateTooltip('Remove the edge');
+			activateTooltip(msgs.pipelinecanvas.edge.remove);
 		});
 		cmdDelete.on('mouseleave', function(evt) {
 			deactivateTooltip();
