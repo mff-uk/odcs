@@ -10,7 +10,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -26,8 +25,6 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
-    private static final String SHARE_MODE_ORG = "organization";
-    
     @Autowired
     AppConfig appConfig;
 
@@ -92,19 +89,19 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     }
 
     @Override
-    public Object getValue(PipelineView object, String id) {
+    public Object getValue(PipelineView pipeline, String id) {
         switch (id) {
             case "id":
-                return object.getId();
+                return pipeline.getId();
             case "name":
-                String name = object.getName();
+                String name = pipeline.getName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
             case "duration":
-                return DecorationHelper.formatDuration(object.getDuration());
+                return DecorationHelper.formatDuration(pipeline.getDuration());
             case "lastExecTime":
-                return object.getStart();
+                return pipeline.getStart();
             case "lastExecStatus":
-                final PipelineExecutionStatus type = object.getStatus();
+                final PipelineExecutionStatus type = pipeline.getStatus();
                 if (type != null) {
                     ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
                     Embedded emb = new Embedded(type.name(), img);
@@ -114,13 +111,19 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                     return null;
                 }
             case "createdBy":
-                if(SHARE_MODE_ORG.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-                    return object.getOrgName() + " (" + object.getUsrName() + ")";
-                else
-                    return object.getUsrName();
+                return getPipelineCreatedByDisplayName(pipeline);
             default:
                 return null;
         }
+    }
+
+    private static String getPipelineCreatedByDisplayName(PipelineView pipeline) {
+        String pipelineOwnerName = (pipeline.getUsrFullName() != null && !pipeline.getUsrFullName().equals(""))
+                ? pipeline.getUsrFullName() : pipeline.getUsrName();
+        if (pipeline.getUserActorName() != null && !pipeline.getUserActorName().equals("")) {
+            return pipelineOwnerName + " (" + pipeline.getUserActorName() + ")";
+        }
+        return pipelineOwnerName;
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
@@ -88,6 +89,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     @Autowired
     private Utils utils;
@@ -188,7 +192,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils);
+        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils, this.permissionUtils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

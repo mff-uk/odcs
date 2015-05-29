@@ -10,14 +10,14 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.DbOrganization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbUserActor;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
 /**
@@ -38,7 +38,7 @@ class UserFacadeImpl implements UserFacade {
     private DbRoleEntity roleDao;
 
     @Autowired
-    private DbOrganization organizationDao;
+    private DbUserActor actorDao;
 
     /**
      * Factory for a new User.
@@ -72,7 +72,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all users persisted in database
      */
-    @PostFilter("hasPermission(filterObject, 'user.read')")
+    @PostFilter("hasPermission(filterObject, 'user.management')")
     @Override
     public List<User> getAllUsers() {
         return userDao.getAll();
@@ -83,7 +83,7 @@ class UserFacadeImpl implements UserFacade {
      *            primary key
      * @return user with given id or <code>null<code>
      */
-    @PostAuthorize("hasPermission(returnObject, 'user.read')")
+    @PostAuthorize("hasPermission(returnObject, 'user.management')")
     @Override
     public User getUser(long id) {
         return userDao.getInstance(id);
@@ -129,7 +129,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasRole('user.create')")
+    @PreAuthorize("hasRole('user.management')")
     @Override
     public void save(User user) {
         userDao.save(user);
@@ -152,7 +152,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'user.delete')")
+    @PreAuthorize("hasPermission(#user, 'user.management')")
     @Override
     public void delete(User user) {
         userDao.delete(user);
@@ -194,13 +194,13 @@ class UserFacadeImpl implements UserFacade {
     }
 
     @Override
-    public Organization getOrganizationByName(String name) {
-        return organizationDao.getOrganizationByName(name);
+    public UserActor getUserActorByExternalId(String externalId) {
+        return this.actorDao.getUserActorByExternalId(externalId);
     }
 
-    @Transactional
     @Override
-    public void save(Organization o) {
-        organizationDao.save(o);
+    public void save(UserActor userActor) {
+        this.actorDao.save(userActor);
     }
+
 }

@@ -13,9 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +25,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
 import eu.unifiedviews.master.converter.PipelineExecutionEventDTOConverter;
 import eu.unifiedviews.master.model.ApiException;
@@ -186,18 +186,18 @@ public class ExecutionResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             // try to get user
-            User user =  userFacade.getUserByExtId(newExecution.getUserExternalId());
-            if(user == null) {
+            User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
+            if (user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", newExecution.getUserExternalId()));
             }
-            // try to get organization
-            Organization organization = userFacade.getOrganizationByName(newExecution.getOrganizationExternalId());
-            if(organization == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", newExecution.getOrganizationExternalId()));
-            }
+
+            UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
+
             execution = pipelineFacade.createExecution(pipeline);
             execution.setOwner(user);
-            execution.setOrganization(organization);
+            if (actor != null) {
+                execution.setActor(actor);
+            }
             execution.setDebugging(newExecution.isDebugging());
             execution.setOrderNumber(1L);
 //            PipelineExecutionDTOConverter.createPipelineExecution(newExecution, pipeline);

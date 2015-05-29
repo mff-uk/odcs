@@ -3,31 +3,15 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Information about executed pipeline and its states.
@@ -38,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  */
 @Entity
 @Table(name = "exec_pipeline")
-public class PipelineExecution implements OwnedEntity, DataObject, OrganizationSharedEntity {
+public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
      * Unique id of pipeline execution.
@@ -133,8 +117,8 @@ public class PipelineExecution implements OwnedEntity, DataObject, OrganizationS
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * No-arg constructor for JPA
@@ -385,14 +369,6 @@ public class PipelineExecution implements OwnedEntity, DataObject, OrganizationS
         return owner;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
     /**
      * Stop pipeline execution.
      */
@@ -438,6 +414,14 @@ public class PipelineExecution implements OwnedEntity, DataObject, OrganizationS
 
     public void setOrderNumber(Long order) {
         this.orderNumber = order;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

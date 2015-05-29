@@ -105,7 +105,6 @@ CREATE TABLE `EXEC_PIPELINE`
   `id` INTEGER AUTO_INCREMENT,
   `status` INTEGER,
   `pipeline_id` INTEGER,
-  `organization_id` INTEGER,
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
@@ -116,6 +115,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `stop` SMALLINT,
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
+  `user_actor_id` INTEGER,
   PRIMARY KEY (`id`)
 );
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `EXEC_PIPELINE` (`status`);
@@ -131,10 +131,10 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `organization_id` INTEGER,
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
+  `user_actor_id` INTEGER,
   `just_once` SMALLINT,
   `enabled` SMALLINT,
   `type` SMALLINT,
@@ -166,7 +166,7 @@ CREATE TABLE `PPL_MODEL`
   `name` VARCHAR(1024),
   `description` TEXT,
   `user_id` INTEGER,
-  `organization_id` INTEGER,
+  `user_actor_id` INTEGER,
   `visibility` SMALLINT,
   `last_change` DATETIME,
   PRIMARY KEY (`id`)
@@ -292,6 +292,15 @@ CREATE TABLE `USR_USER_ROLE`
   `role_id` INTEGER NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)
 );
+
+CREATE TABLE `user_actor`
+(
+  `id` INTEGER AUTO_INCREMENT,
+  `id_extuser` VARCHAR(256) NOT NULL,
+  `name` VARCHAR(256) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE (`id_extuser`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE SEQUENCE `seq_rdf_ns_prefix` START WITH 100;
 CREATE TABLE `RDF_NS_PREFIX`
