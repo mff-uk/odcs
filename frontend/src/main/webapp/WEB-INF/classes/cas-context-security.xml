@@ -15,7 +15,7 @@
 	</authentication-manager>
 
 	<b:bean id="authenticationProvider"
-		class="org.springframework.security.cas.authentication.CasAuthenticationProvider"
+		class="cz.cuni.mff.xrg.odcs.frontend.auth.UVCasAuthenticationProvider"
 		p:serviceProperties-ref="serviceProperties" p:key="casAuthProviderKey">
 		<b:property name="authenticationUserDetailsService">
 			<b:bean
@@ -72,8 +72,8 @@
 	</b:bean>
 
 	<b:bean id="casEntryPoint"
-		class="org.springframework.security.cas.web.CasAuthenticationEntryPoint"
-		p:serviceProperties-ref="serviceProperties" p:loginUrl="${cas.login.url}" />
+		class="cz.cuni.mff.xrg.odcs.frontend.auth.UVCasAuthenticationEntryPoint"
+		p:serviceProperties-ref="serviceProperties" p:loginUrl="${cas.login.url}" p:behindProxy="${cas.behindProxy}"/>
 
 	<b:bean id="casFilter"
 		class="org.springframework.security.cas.web.CasAuthenticationFilter"
@@ -90,6 +90,12 @@
 			<b:bean
 				class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler"
 				p:defaultTargetUrl="/" p:alwaysUseDefaultTargetUrl="true" />
+		</b:property>
+		<b:property name="authenticationDetailsSource">
+			<b:bean
+				class="cz.cuni.mff.xrg.odcs.frontend.auth.UVWebAuthenticationDetailsSource">
+				<b:property name="behindProxy" value="${cas.behindProxy}"/>
+			</b:bean>
 		</b:property>
 	</b:bean>
 
