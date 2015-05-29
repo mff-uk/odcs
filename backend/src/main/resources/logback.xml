@@ -13,7 +13,7 @@
     <logger name="httpclient.wire.header" level="WARN"/>
     <logger name="httpclient.wire.content" level="WARN"/>
 
-    <root level="ALL">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 
