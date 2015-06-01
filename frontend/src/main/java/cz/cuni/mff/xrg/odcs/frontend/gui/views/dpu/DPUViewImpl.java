@@ -21,6 +21,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -127,6 +128,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private Panel dpuTreePanel;
 
     @Autowired
+    private PermissionUtils permissionUtils;
+
+    @Autowired
     private Utils utils;
 
     /**
@@ -140,7 +144,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         this.presenter = presenter;
         setupResizeListener();
 
-        if (!presenter.isLayoutInitialized()) {
+        if (!presenter.isLayoutInitialized() && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SHOW_SCREEN)) {
             buildMainLayout();
         }
 
@@ -176,7 +180,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
         buttonCreateDPU.addStyleName("v-button-primary");
-        buttonCreateDPU.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
+        buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -305,6 +309,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         verticalLayoutConfigure.setImmediate(false);
         verticalLayoutConfigure.setMargin(true);
         verticalLayoutConfigure.setCaption("configuration");
+        verticalLayoutConfigure.setSizeFull();
         tabSheet.addTab(verticalLayoutConfigure, Messages.getString("DPUViewImpl.template.configuration"));
 
         if (selectedDpuWrap != null) {
@@ -334,6 +339,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 // configure
                 configureDPUDialog();
                 verticalLayoutConfigure.addComponent(configDialog);
+                configDialog.setHeight(100, Unit.PERCENTAGE);
+                verticalLayoutConfigure.setExpandRatio(configDialog, 1f);
             }
         }
         //DPU instances tab. Contains pipelines using the given DPU.
@@ -581,6 +588,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         //Visibility of DPU Template: label & OptionGroup
         Label visibilityLabel = new Label(Messages.getString("DPUViewImpl.visibility"));
+        visibilityLabel.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         dpuSettingsLayout.addComponent(visibilityLabel, 0, 2);
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
@@ -588,6 +596,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         groupVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         groupVisibility.addItem(ShareType.PUBLIC_RO);
         groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
+        groupVisibility.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
 
         // JAR path of DPU Template.
@@ -747,6 +756,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if (selectedDpuWrap != null
                 && selectedDpuWrap.getDPUTemplateRecord().getId() != null) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
+            if(selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
+                // same field is used to edit menu name. Only applied to templates with parents
+                selectedDpuWrap.getDPUTemplateRecord().setMenuName(dpuName.getValue().trim());
+            }
 
             if (dpuDescription.getValue() == null ||
                     dpuDescription.getValue().isEmpty()) {
@@ -776,7 +789,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                    appConfig, this.utils.getUser());
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
             }

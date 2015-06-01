@@ -56,8 +56,9 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         Schedule sch = new Schedule();
         if (authCtx != null) {
             sch.setOwner(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                sch.setOrganization(authCtx.getUser().getOrganization());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                sch.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
         return sch;
     }
@@ -174,6 +175,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
         pipelineExec.setSilentMode(false);
         // set user .. copy owner of schedule
         pipelineExec.setOwner(schedule.getOwner());
+        pipelineExec.setActor(schedule.getActor());
 
         Long epoch = (long) System.currentTimeMillis();
         Long orderNumber = schedule.getPriority();

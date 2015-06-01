@@ -5,6 +5,7 @@ import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import eu.unifiedviews.helpers.dpu.localization.Messages;
 
 /**
  * Provide interface for manipulation with DPU's instances.
@@ -22,6 +23,13 @@ public interface ModuleFacade {
      * @throws ModuleException
      */
     Object getInstance(DPUTemplateRecord dpu) throws ModuleException;
+
+    /**
+     * Return eu.unifiedviews.helpers.dpu.localization.Messages for given DPU instance.
+     * @param DPUInstance Instance of DPU
+     * @return Messages resource bundle from DPU
+     */
+    Messages getMessageFromDPUInstance(Object DPUInstance);
 
     /**
      * Unload the given {@link DPUTemplateRecord} instance bundle.

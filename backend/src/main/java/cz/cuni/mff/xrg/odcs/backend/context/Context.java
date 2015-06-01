@@ -249,17 +249,31 @@ public class Context implements DPUContext {
         return dpuInstance.getTemplate().getJarDirectory();
     }
 
+    @Override
     public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getPipeline().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineExecutionOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }
 
-    public String getOrganization() {
-        String organization = null;
-        if (this.contextInfo.getExecution().getOrganization() != null) {
-            organization = this.contextInfo.getExecution().getOrganization().getName();
-        }
+    @Override
+    public String getPipelineExecutionOwnerExternalId() {
+        return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
+    }
 
-        return organization;
+    public String getOrganization() {
+        return "";
+    }
+
+    @Override
+    public String getPipelineExecutionActorExternalId() {
+        if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
+            return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
+        }
+        return null;
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
@@ -413,4 +427,5 @@ public class Context implements DPUContext {
     public Long getDpuInstanceId() {
         return dpuInstance.getId();
     }
+
 }

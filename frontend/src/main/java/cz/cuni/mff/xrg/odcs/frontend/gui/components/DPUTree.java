@@ -24,14 +24,16 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
  * Tree showing available DPUs. Contains filters by accessibility and name. It
@@ -44,6 +46,8 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 public class DPUTree extends CustomComponent {
 
     private static final long serialVersionUID = -8635330869349339394L;
+
+    public static final String MENU_NAME_PROPERTY = "menuName";
 
     VerticalLayout layoutTree;
 
@@ -75,7 +79,7 @@ public class DPUTree extends CustomComponent {
     private ExportService exportService;
 
     @Autowired
-    private Utils utils;
+    private PermissionUtils permissionUtils;
 
     private HorizontalLayout topLine;
 
@@ -280,6 +284,7 @@ public class DPUTree extends CustomComponent {
         dpuTree.setHeight("100%");
         //	dpuTree.setHeight(600, Unit.PIXELS);
         dpuTree.setStyleName("dpuTree");
+        dpuTree.setItemCaptionPropertyId(MENU_NAME_PROPERTY); // which property should be used to retrieve caption for tree item
         dpuTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
             private static final long serialVersionUID = -3033372681114948667L;
 
@@ -294,6 +299,7 @@ public class DPUTree extends CustomComponent {
             }
         });
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setIncludeParentsWhenFiltering(true);
+        ((HierarchicalContainer) dpuTree.getContainerDataSource()).addContainerProperty(MENU_NAME_PROPERTY, String.class, null);
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
             private static final long serialVersionUID = -3394104490891279840L;
 
@@ -309,7 +315,11 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null && second.getId() == null) {
                     return 0;
                 } else {
-                    return first.getName().compareTo(second.getName());
+                    if(isEmpty(first.getMenuName()) || isEmpty(second.getMenuName())) {
+                        return first.getName().compareTo(second.getName()); // fallback to name
+                    } else {
+                        return first.getMenuName().compareTo(second.getMenuName());
+                    }
                 }
             }
         });
@@ -363,23 +373,34 @@ public class DPUTree extends CustomComponent {
      * @param tree
      *            {@link Tree} to fill.
      */
+    @SuppressWarnings("unchecked")
     private void fillTree(Tree tree) {
-
         tree.removeAllItems();
 
+        Item item;
         DPURecord rootExtractor = new DPUTemplateRecord(Messages.getString("DPUTree.extractors"), null);
-        tree.addItem(rootExtractor);
+        item = tree.addItem(rootExtractor);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootExtractor.getName());
+
         DPURecord rootTransformer = new DPUTemplateRecord(Messages.getString("DPUTree.transformers"), null);
-        tree.addItem(rootTransformer);
+        item = tree.addItem(rootTransformer);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootTransformer.getName());
+
         DPURecord rootLoader = new DPUTemplateRecord(Messages.getString("DPUTree.loaders"), null);
-        tree.addItem(rootLoader);
+        item = tree.addItem(rootLoader);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootLoader.getName());
+
         DPURecord rootQuality = new DPUTemplateRecord(Messages.getString("DPUTree.quality"), null);
-        tree.addItem(rootQuality);
+        item = tree.addItem(rootQuality);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootQuality.getName());
 
         List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
         for (DPUTemplateRecord dpu : dpus) {
             if (dpu.getType() != null) {
-                tree.addItem(dpu);
+                item = tree.addItem(dpu);
+                String caption = (isEmpty(dpu.getMenuName())) ? dpu.getName() : dpu.getMenuName(); // if menu name is not present, fallback to dpu name
+                item.getItemProperty(MENU_NAME_PROPERTY).setValue(caption);
+
                 DPUTemplateRecord parent = dpu.getParent();
                 if (parent != null) {
 //					DPUTemplateRecord parent = null;
@@ -453,8 +474,8 @@ public class DPUTree extends CustomComponent {
     }
 
     private void setButtonsVisible() {
-        this.buttonCreateDPU.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
-        this.exportButton.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
+        this.buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
+        this.exportButton.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
     }
 
     @Override

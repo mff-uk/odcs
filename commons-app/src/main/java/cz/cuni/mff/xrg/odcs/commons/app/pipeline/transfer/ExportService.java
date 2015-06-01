@@ -26,6 +26,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
@@ -59,6 +60,9 @@ public class ExportService {
 
     @Autowired(required = false)
     private AuthenticationContext authCtx;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Create a temp file and exportPipeline pipeline into it.
@@ -447,6 +451,10 @@ public class ExportService {
 
         LOG.debug("<<< Leaving getDpusInformation: {}", dpusInformation);
         return dpusInformation;
+    }
+
+    public boolean hasUserPermission(String permission) {
+        return this.permissionUtils.hasUserAuthority(permission);
     }
 
 }

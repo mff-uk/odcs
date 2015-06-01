@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Wrap {@link DPUTemplateRecord} to made work with configuration and
@@ -23,8 +24,8 @@ public class DPUTemplateWrap extends DPURecordWrap {
      *
      * @param dpuTemplate
      */
-    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale, AppConfig appConfig) {
-        super(dpuTemplate, true, locale, appConfig);
+    public DPUTemplateWrap(DPUTemplateRecord dpuTemplate, Locale locale, AppConfig appConfig, User user) {
+        super(dpuTemplate, true, locale, appConfig, user);
         this.dpuTemplate = dpuTemplate;
     }
 

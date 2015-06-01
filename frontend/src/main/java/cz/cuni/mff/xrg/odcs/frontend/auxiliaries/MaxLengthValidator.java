@@ -40,6 +40,9 @@ public final class MaxLengthValidator implements Validator {
      */
     @Override
     public void validate(Object value) throws InvalidValueException {
+        if (value == null) {
+            return;
+        }
         if (value.getClass() == String.class) {
             String stringValue = (String) value;
             if (stringValue.length() > maxLength) {

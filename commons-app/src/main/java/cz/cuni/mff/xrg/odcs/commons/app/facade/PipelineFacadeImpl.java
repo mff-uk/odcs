@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbOpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -80,8 +80,9 @@ class PipelineFacadeImpl implements PipelineFacade {
         newPipeline.setShareType(ShareType.PRIVATE);
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newPipeline.setOrganization(authCtx.getUser().getOrganization());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newPipeline.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
         return newPipeline;
     }
@@ -115,28 +116,13 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         if (authCtx != null) {
             newPipeline.setUser(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newPipeline.setOrganization(authCtx.getUser().getOrganization());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newPipeline.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
 
         save(newPipeline);
         return newPipeline;
-    }
-
-    /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationName
-     *            of pipeline
-     * @return list of pipelines
-     * @deprecated performance intensive for many pipelines in DB, use lazy
-     *             container with paging instead
-     */
-
-    @PostFilter("hasPermission(filterObject,'pipeline.read')")
-    @Override
-    public List<Pipeline> getAllPipelines(String organizationName) {
-        return pipelineDao.getPipelinesForOrganization(organizationName);
     }
 
     /**
@@ -173,7 +159,11 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param pipeline
      */
     @Transactional
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.save')")
+    // Public writable pipeline can be saved only if user has proper permission for it 
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.edit') "
+            + "AND (#pipeline.getShareType() != T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
+            + "OR (#pipeline.getShareType() == T(cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType).PUBLIC_RW "
+            + "AND hasRole('pipeline.setVisibilityPublicRw')))")
     @Override
     public void save(Pipeline pipeline) {
 
@@ -375,8 +365,9 @@ class PipelineFacadeImpl implements PipelineFacade {
         PipelineExecution newExec = new PipelineExecution(pipeline);
         if (authCtx != null) {
             newExec.setOwner(authCtx.getUser());
-            if (authCtx.getUser().getOrganization() != null)
-                newExec.setOrganization(authCtx.getUser().getOrganization());
+            if (this.authCtx.getUser().getUserActor() != null) {
+                newExec.setActor(this.authCtx.getUser().getUserActor());
+            }
         }
         return newExec;
     }
@@ -632,5 +623,11 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
         return executionDao.hasWithStatus(pipeline, statuses);
+    }
+
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @Override
+    public List<Pipeline> getAllPipelines(String externalUserId) {
+        return this.pipelineDao.getPipelinesForUser(externalUserId);
     }
 }

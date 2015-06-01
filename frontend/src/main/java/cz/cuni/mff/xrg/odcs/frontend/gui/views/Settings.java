@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.GrantedAuthority;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -28,6 +27,7 @@ import com.vaadin.ui.Button.ClickListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
@@ -112,6 +112,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private RuntimePropertiesFacade runtimePropertiesFacade;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Currently logged in user.
@@ -992,11 +995,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * @return If the user has given permission
      */
     public boolean hasPermission(String type) {
-        for (GrantedAuthority ga : loggedUser.getAuthorities()) {
-            if (type.equals(ga.getAuthority()))
-                return true;
-        }
-        return false;
+        return this.permissionUtils.hasUserAuthority(type);
     }
 
     @Override

@@ -25,9 +25,9 @@
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.User</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.Permission</class>
-        <class>cz.cuni.mff.xrg.odcs.commons.app.user.Organization</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord</class>
+        <class>cz.cuni.mff.xrg.odcs.commons.app.user.UserActor</class>
         <!-- View classes. -->
         <class>eu.unifiedviews.commons.dao.view.PipelineView</class>
         <class>eu.unifiedviews.commons.dao.view.ExecutionView</class>
