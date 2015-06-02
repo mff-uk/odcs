@@ -96,6 +96,6 @@ INSERT INTO "usr_user" VALUES (nextval('seq_usr_user'),'user',2,'100000:3069f208
 INSERT INTO "usr_extuser" VALUES (currval('seq_usr_user'), 'user');
 INSERT INTO "sch_usr_notification" VALUES (nextval('seq_sch_notification'),1,1,1),(nextval('seq_sch_notification'),2,1,1);
 INSERT INTO "sch_usr_notification_email" VALUES (1,1),(2,2);
-INSERT INTO "usr_user_role" VALUES (1,1),(1,2),(2,1);
+INSERT INTO "usr_user_role" VALUES (1,1),(1,2),(2,2);
 INSERT INTO "runtime_properties" ("id", "name", "value") VALUES (nextval('seq_runtime_properties'), 'backend.scheduledPipelines.limit', '5');
 INSERT INTO "runtime_properties" ("id", "name", "value") VALUES (nextval('seq_runtime_properties'), 'run.now.pipeline.priority', '1');
