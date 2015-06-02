@@ -1,5 +1,5 @@
 -- Update permission table
-ALTER TABLE `permission` CHANGE `rwonly` `sharedEntityInstanceWriteRequired` boolean;
+ALTER TABLE `permission` CHANGE `rwonly` `sharedentityinstancewriterequired` boolean;
 -- Admin does not have any permissions besides administrator permission
 DELETE FROM `user_role_permission` WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
 -- Permission changes
