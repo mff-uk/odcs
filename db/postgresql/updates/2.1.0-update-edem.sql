@@ -46,7 +46,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='MOD
 INSERT INTO permission VALUES (nextval('seq_permission'), 'dpuTemplate.createFromInstance', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.setVisibilityPublicRw', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
@@ -54,7 +53,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.showScreen', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 DELETE FROM "user_role_permission" WHERE role_id = (select id from "role" where name='MOD-R-TRANSA') AND permission_id = (select id from "permission" where name='administrator');
 
@@ -92,6 +90,8 @@ DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permis
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importScheduleRules') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.copy') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.create') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;
