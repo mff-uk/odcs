@@ -155,7 +155,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @param schedule
      */
-    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.execute')")
+    @PreAuthorize("hasPermission(#schedule.getPipeline(), 'pipeline.run')")
     @Transactional
     @Override
     public void execute(Schedule schedule) {
