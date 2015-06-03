@@ -129,7 +129,7 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasRole('user.management')")
+    @PreAuthorize("hasPermission(#user, 'user.management')")
     @Override
     public void save(User user) {
         userDao.save(user);
