@@ -65,6 +65,7 @@ public enum ConfigProperty {
     EMAIL_SMTP_PORT("email.smtp.port"),
     EMAIL_SMTP_TLS("email.smtp.tls"),
     EMAIL_FROM_EMAIL("email.from"),
+    EMAIL_FROM_NAME("email.from.name"),
     EMAIL_AUTHORIZATION("email.authorization"),
     EMAIL_USERNAME("email.username"),
     EMAIL_PASSWORD("email.password"),
