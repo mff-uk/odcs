@@ -1,7 +1,5 @@
 -- Update permission table
 ALTER TABLE `permission` CHANGE `rwonly` `sharedentityinstancewriterequired` boolean;
--- Admin does not have any permissions besides administrator permission
-DELETE FROM `user_role_permission` WHERE role_id = (SELECT id FROM role WHERE name = 'Administrator') AND permission_id != (SELECT id FROM permission WHERE name = 'administrator');
 -- Permission changes
 -- Update version.
 UPDATE `properties` SET `value` = '002.001.000' WHERE `key` = 'UV.Core.version';
@@ -11,8 +9,7 @@ UPDATE `properties` SET `value` = '002.000.000' WHERE `key` = 'UV.Plugin-DevEnv.
 ALTER TABLE `dpu_instance` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 ALTER TABLE `dpu_template` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 
-INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
+
 UPDATE `permission` SET name = 'dpuTemplate.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 UPDATE `permission` SET name = 'pipeline.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.setVisibilityAtCreate';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.schedule';
@@ -39,17 +36,29 @@ UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 
 DELETE FROM `permission` WHERE name = 'deleteDebugResources';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.save';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.import';
+-- Insert new permissions
+INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.createFromInstance', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.setVisibilityPublicRw', true);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.showScreen', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name='pipeline.setVisibility'));
 -- Map existing permissions to roles
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name='pipeline.setVisibility'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name='pipeline.setVisibility'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.exportScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.exportScheduleRules'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importScheduleRules'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'pipeline.importUserData'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'pipeline.importUserData'));
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (select id from `permission` where name = 'dpuTemplate.setVisibility'));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (select id from `permission` where name = 'dpuTemplate.setVisibility'));
 -- Organizations removed, actor added
 DROP VIEW `pipeline_view`;

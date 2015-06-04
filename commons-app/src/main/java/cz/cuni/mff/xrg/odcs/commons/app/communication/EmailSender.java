@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.commons.app.communication;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -14,10 +15,10 @@ import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 
 /**
  * Enable clients to send email. The functionality can be set that the {@link EmailSender} silently ignore send request.
@@ -26,7 +27,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
  */
 public class EmailSender {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
     /**
      * If false outcoming email are silently dropped.
@@ -52,6 +53,11 @@ public class EmailSender {
      * From email address.
      */
     private String fromEmail;
+
+    /**
+     * From displayed name
+     */
+    private String fromName;
 
     /**
      * Use authentication?
@@ -84,6 +90,12 @@ public class EmailSender {
             this.useTLS = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TLS);
             this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
             this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
+
+            try {
+                this.fromName = appConfig.getString(ConfigProperty.EMAIL_FROM_NAME);
+            } catch (MissingConfigPropertyException ignore) {
+                // optional parameter - backward compatible
+            }
 
             if (this.authentication) {
                 // get data for authentication
@@ -145,7 +157,7 @@ public class EmailSender {
         Message msg = new MimeMessage(session);
         try {
             msg.setHeader("Content-Type", encodingOptions);
-            msg.setFrom(new InternetAddress(fromEmail));
+            msg.setFrom(new InternetAddress(this.fromEmail, this.fromName));
             for (String email : recipients) {
                 msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
                         email));
@@ -155,10 +167,11 @@ public class EmailSender {
             msg.setContent(body, encodingOptions);
             // send message
             Transport.send(msg);
-        } catch (MessagingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             LOG.error("Failed to send email.", e);
             return false;
         }
+
         LOG.debug("Email has been send");
         return true;
     }
