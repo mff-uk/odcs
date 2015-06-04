@@ -17,8 +17,8 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -76,7 +76,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     private Utils utils;
 
     @Autowired
-    private AuthAwarePermissionEvaluator permissionEvaluator;
+    private PermissionUtils permissionUtils;
 
     private ExecutionListData dataObject;
 
@@ -197,7 +197,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canStopExecution(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_STOP);
+        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_STOP);
     }
 
     @Override
@@ -309,6 +309,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         isInitialized = false;
     }
 
+    @Override
     public boolean isLayoutInitialized() {
         return isInitialized;
     }
@@ -317,27 +318,27 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canReadLog(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
+        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canDebugData(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
+        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canRunPipeline(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_RUN);
+        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN);
     }
 
     @Override
     public boolean canDebugPipeline(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionEvaluator.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
+        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 }

@@ -2,7 +2,6 @@ package eu.unifiedviews.master.model;
 
 import java.util.List;
 
-import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
 public class PipelineScheduleDTO {
@@ -32,7 +31,7 @@ public class PipelineScheduleDTO {
 
     private String userExternalId;
 
-    private String organizationExternalId;
+    private String userActorExternalId;
 
     public Long getId() {
         return id;
@@ -130,14 +129,6 @@ public class PipelineScheduleDTO {
         this.userExternalId = userExternalId;
     }
 
-    public String getOrganizationExternalId() {
-        return organizationExternalId;
-    }
-
-    public void setOrganizationExternalId(String organizationExternalId) {
-        this.organizationExternalId = organizationExternalId;
-    }
-
     public Long getScheduledJobsPriority() {
         return scheduledJobsPriority;
     }
@@ -146,7 +137,16 @@ public class PipelineScheduleDTO {
         this.scheduledJobsPriority = scheduledJobsPriority;
     }
 
-    @Override public String toString() {
+    public String getUserActorExternalId() {
+        return this.userActorExternalId;
+    }
+
+    public void setUserActorExternalId(String userActorExternalId) {
+        this.userActorExternalId = userActorExternalId;
+    }
+
+    @Override
+    public String toString() {
         return "PipelineScheduleDTO{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
@@ -159,9 +159,9 @@ public class PipelineScheduleDTO {
                 ", justOnce=" + justOnce +
                 ", period=" + period +
                 ", periodUnit='" + periodUnit + '\'' +
-                ", scheduledJobsPriority=" + scheduledJobsPriority +
+                ", scheduledJobsPriority=" + scheduledJobsPriority + '\'' +
                 ", userExternalId='" + userExternalId + '\'' +
-                ", organizationExternalId='" + organizationExternalId + '\'' +
+                ", userActorExternalId='" + this.userActorExternalId +
                 '}';
     }
 }

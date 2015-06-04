@@ -22,14 +22,6 @@ public interface DbPipeline extends DbAccess<Pipeline> {
     public List<Pipeline> getAll();
 
     /**
-     * Return pipelines of given organization.
-     *
-     * @param organizationExternalId
-     * @return pipelines of given organization
-     */
-    public List<Pipeline> getPipelinesForOrganization(String organizationExternalId);
-
-    /**
      * Fetches all pipelines using given DPU template.
      * 
      * @param dpu
@@ -64,4 +56,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     public boolean hasDeletedPipelines(List<Long> pipelinesIds);
+
+    /**
+     * Fetches all pipelines for given user (user is owner of the pipelines)
+     * 
+     * @param externalUserId
+     *            User ID
+     * @return List of pipelines
+     */
+    public List<Pipeline> getPipelinesForUser(String externalUserId);
 }

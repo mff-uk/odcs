@@ -65,6 +65,7 @@ public enum ConfigProperty {
     EMAIL_SMTP_PORT("email.smtp.port"),
     EMAIL_SMTP_TLS("email.smtp.tls"),
     EMAIL_FROM_EMAIL("email.from"),
+    EMAIL_FROM_NAME("email.from.name"),
     EMAIL_AUTHORIZATION("email.authorization"),
     EMAIL_USERNAME("email.username"),
     EMAIL_PASSWORD("email.password"),
@@ -79,11 +80,7 @@ public enum ConfigProperty {
     CAS_LOGIN_URL("cas.login.url"),
     CAS_LOGOUT_URL("cas.logout.url"),
 
-    OWNERSHIP_TYPE("ownership.type"),
-
     ADMIN_PERMISSION("admin.permission"),
-
-    DEFAULT_ORGANIZATION("organization"),
 
     MASTER_API_USER("master.api.user"),
     MASTER_API_PASSWORD("master.api.password"),
@@ -92,6 +89,11 @@ public enum ConfigProperty {
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
 
     DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password"),
+    DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalToCkan.secret.token"),
+    DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalDiffToCkan.secret.token"),
+    DPU_UV_L_RDF_TO_CKAN_SECRET_TOKEN("dpu.uv-l-rdfToCkan.secret.token"),
+    DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN("dpu.uv-l-filesToCkan.secret.token"),
+    DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD("dpu.l-rdfToVirtuoso.password"),
 
     USE_LOCALIZED_DPU_NAME("dpu.name.localized");
 

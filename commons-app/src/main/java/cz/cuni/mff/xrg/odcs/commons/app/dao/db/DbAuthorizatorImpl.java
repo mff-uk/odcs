@@ -13,11 +13,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import eu.unifiedviews.commons.dao.view.ExecutionView;
 import eu.unifiedviews.commons.dao.view.PipelineView;
@@ -33,8 +30,6 @@ class DbAuthorizatorImpl implements DbAuthorizator {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
-    private static final String ORGANIZATION_MODE = "organization";
-    
     /**
      * Application's configuration.
      */
@@ -43,24 +38,20 @@ class DbAuthorizatorImpl implements DbAuthorizator {
 
     @Override
     public Predicate getAuthorizationPredicate(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-        boolean ownedByOrganization = ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE));
 
-        if (authCtx == null) {
+        if (this.authCtx == null) {
             // no athorization
             return null;
         }
 
         String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-        
+
         for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
             if (adminPermission.equals(ga.getAuthority()))
                 return null;
         }
 
-        if (ownedByOrganization)
-            return getAuthorizationPredicateOrganization(cb, root, entityClass);
-        else
-            return getAuthorizationPredicateUser(cb, root, entityClass);
+        return getAuthorizationPredicateUser(cb, root, entityClass);
     }
 
     public Predicate getAuthorizationPredicateUser(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
@@ -93,51 +84,6 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             subPredicate = and(cb, subPredicate, cb.notEqual(root.get("shareType"), ShareType.PRIVATE));
 
             predicate = or(cb, predicate, subPredicate);
-        }
-
-        // PipelineExecution is also viewable whenever its Pipeline is viewable
-        if (PipelineExecution.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, getAuthorizationPredicate(cb, root.get("pipeline"), Pipeline.class));
-        }
-
-        return predicate;
-    }
-
-    public Predicate getAuthorizationPredicateOrganization(CriteriaBuilder cb, Path<?> root, Class<?> entityClass) {
-        
-        Predicate predicate = null;
-
-        Organization org = authCtx.getUser().getOrganization();
-
-        if (PipelineView.class.isAssignableFrom(entityClass)) {
-            if (org != null)
-                predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
-            else
-                predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
-            
-            predicate = or(cb, predicate, cb.equal(root.get("shareType"), ShareType.PUBLIC_RO));
-
-            return predicate;
-        }
-
-        if (ExecutionView.class.isAssignableFrom(entityClass)) {
-            if (org != null)
-                predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
-            else
-                predicate = or(cb, predicate, cb.equal(root.get("ownerName"), authCtx.getUser().getUsername()));
-
-            return predicate;
-        }
-
-        //check either user or his organization
-        if (OrganizationSharedEntity.class.isAssignableFrom(entityClass)) {
-            if (org != null) {
-                predicate = or(cb, predicate, cb.equal(root.get(ORGANIZATION_MODE), org));
-            } else {
-                predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
-            }
-        } else if (OwnedEntity.class.isAssignableFrom(entityClass)) {
-            predicate = or(cb, predicate, cb.equal(root.get("owner"), authCtx.getUser()));
         }
 
         // PipelineExecution is also viewable whenever its Pipeline is viewable

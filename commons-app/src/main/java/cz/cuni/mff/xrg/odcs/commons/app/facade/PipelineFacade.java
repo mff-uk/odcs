@@ -43,20 +43,20 @@ public interface PipelineFacade extends Facade {
     Pipeline copyPipeline(Pipeline pipeline);
 
     /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationName
-     *            of pipeline
-     * @return list of pipelines
-     */
-    List<Pipeline> getAllPipelines(String organizationName);
-
-    /**
      * Returns list of all pipelines persisted in the database.
      *
      * @return list of pipelines
      */
     List<Pipeline> getAllPipelines();
+
+    /**
+     * Returns list of all pipelines for given user
+     * 
+     * @param externalUserId
+     *            User ID
+     * @return List of pipelines
+     */
+    List<Pipeline> getAllPipelines(String externalUserId);
 
     /**
      * Find pipeline in database by ID and return it.
@@ -170,6 +170,7 @@ public interface PipelineFacade extends Facade {
      * @deprecated performance intensive for many pipeline executions, use
      *             container with paging support instead
      */
+    @Deprecated
     List<PipelineExecution> getAllExecutions();
 
     /**

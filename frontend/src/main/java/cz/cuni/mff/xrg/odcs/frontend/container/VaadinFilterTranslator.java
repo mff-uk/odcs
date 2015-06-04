@@ -3,7 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.container;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
@@ -23,8 +22,6 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.InvalidConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
 
@@ -142,8 +139,11 @@ class VaadinFilterTranslator implements FilterTranslator {
 
         if (filter instanceof SimpleStringFilter) {
             final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
-            final Expression<String> property = (Expression) getPropertyPath(
+            Expression<String> property = (Expression) getPropertyPath(
                     root, simpleStringFilter.getPropertyId());
+            if (simpleStringFilter.isIgnoreCase()) {
+                property = cb.lower(property);
+            }
             return cb.like(property, String.format(
                     SQL_LIKE_ARGUMENT,
                     simpleStringFilter.getFilterString()

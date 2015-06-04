@@ -10,7 +10,7 @@ public class PipelineDTO {
 
     private String userExternalId;
 
-    private String organizationExternalId;
+    private String userActorExternalId;
 
     public Long getId() {
         return id;
@@ -44,21 +44,22 @@ public class PipelineDTO {
         this.userExternalId = userExternalId;
     }
 
-    public String getOrganizationExternalId() {
-        return organizationExternalId;
+    public String getUserActorExternalId() {
+        return this.userActorExternalId;
     }
 
-    public void setOrganizationExternalId(String organizationExternalId) {
-        this.organizationExternalId = organizationExternalId;
+    public void setUserActorExternalId(String userActorExternalId) {
+        this.userActorExternalId = userActorExternalId;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "PipelineDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", userActorExternalId='" + this.userActorExternalId + '\'' +
                 ", userExternalId=" + userExternalId +
-                ", organizationExternalId='" + organizationExternalId + '\'' +
                 '}';
     }
 }

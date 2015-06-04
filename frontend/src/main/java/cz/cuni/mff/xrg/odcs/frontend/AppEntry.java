@@ -3,12 +3,11 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import java.util.Locale;
 import java.util.Map;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.access.AccessDeniedException;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 
@@ -27,7 +26,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -141,12 +141,18 @@ public class AppEntry extends com.vaadin.ui.UI {
                         return;
                     }
 
-                    // Display the error message in a custom fashion
-                    //String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
-                    //Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
-                    Notification.show(Messages.getString("AppEntry.unexpected.error"), Messages.getString("AppEntry.unexpected.error.description"), Type.ERROR_MESSAGE);
-                    // and log ...
-                    LOG.error("Uncaught exception", cause);
+                    if (cause instanceof AccessDeniedException) {
+                        Notification.show(Messages.getString("AppEntry.permission.denied"), Messages.getString("AppEntry.permission.denied.description"), Type.ERROR_MESSAGE);
+                        LOG.error("Permission denied", cause);
+                    } else {
+                        // Display the error message in a custom fashion
+                        //String text = String.format("Exception: %s, Source: %s", cause.getClass().getName(), cause.getStackTrace().length > 0 ? cause.getStackTrace()[0].toString() : "unknown");
+                        //Notification.show(cause.getMessage(), text, Type.ERROR_MESSAGE);
+                        Notification.show(Messages.getString("AppEntry.unexpected.error"), Messages.getString("AppEntry.unexpected.error.description"), Type.ERROR_MESSAGE);
+                        // and log ...
+                        LOG.error("Uncaught exception", cause);
+                    }
+
                 } else {
                     // Do the default error handling (optional)
                     doDefault(event);
@@ -179,6 +185,9 @@ public class AppEntry extends com.vaadin.ui.UI {
                     navigatorHolder.navigateTo(Login.class);
                     getMain().refreshUserBar();
                     return false;
+                }
+                if (authCtx.isAuthenticated()) {
+                    main.refreshMenuButtons();
                 }
                 setNavigationHistory(event);
 

@@ -8,21 +8,18 @@ import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
@@ -47,12 +44,6 @@ public class PipelineExport extends Window {
 
     private CheckBox chbExportSchedule;
 
-    private Label usedJarsLabel;
-
-    private Label usedJarsText;
-
-    private AuthenticationContext authCtx;
-
     /**
      * Export service.
      */
@@ -63,10 +54,9 @@ public class PipelineExport extends Window {
      */
     private Pipeline pipeline;
 
-    public PipelineExport(ExportService exportService, Pipeline pipeline, AuthenticationContext authCtx) {
+    public PipelineExport(ExportService exportService, Pipeline pipeline) {
         this.exportService = exportService;
         this.pipeline = pipeline;
-        this.authCtx = authCtx;
         init();
     }
 
@@ -88,21 +78,21 @@ public class PipelineExport extends Window {
         chbExportDPUData.setWidth("100%");
         chbExportDPUData.setValue(false);
 
-        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_DPU_DATA)) {
+        if (this.exportService.hasUserPermission(EntityPermissions.PIPELINE_EXPORT_DPU_DATA)) {
             detailLayout.addComponent(chbExportDPUData);
         }
         chbExportJars = new CheckBox(Messages.getString("PipelineExport.jar.export"));
         chbExportJars.setWidth("100%");
         chbExportJars.setValue(false);
 
-        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_DPU_JARS)) {
+        if (this.exportService.hasUserPermission(EntityPermissions.PIPELINE_EXPORT_DPU_JARS)) {
             detailLayout.addComponent(chbExportJars);
         }
 
         chbExportSchedule = new CheckBox(Messages.getString("PipelineExport.schedule.export"));
         chbExportSchedule.setWidth("100%");
         chbExportSchedule.setValue(false);
-        if (hasPermission(EntityPermissions.PIPELINE_EXPORT_SCHEDULES)) {
+        if (this.exportService.hasUserPermission(EntityPermissions.PIPELINE_EXPORT_SCHEDULES)) {
             detailLayout.addComponent(chbExportSchedule);
         }
 
@@ -169,14 +159,14 @@ public class PipelineExport extends Window {
                 try {
                     pplFile = exportService.exportPipeline(pipeline, setting);
                 } catch (ExportException ex) {
-                    LOG.error("Faield to export pipeline", ex);
+                    LOG.error("Failed to export pipeline", ex);
                     Notification.show(Messages.getString("PipelineExport.export.fail"), Notification.Type.ERROR_MESSAGE);
                     return null;
                 }
                 try {
                     return new FileInputStream(pplFile);
                 } catch (FileNotFoundException ex) {
-                    LOG.error("Faield to load file with pipeline", ex);
+                    LOG.error("Failed to load file with pipeline", ex);
                     Notification.show(Messages.getString("PipelineExport.export.fail2"), Notification.Type.ERROR_MESSAGE);
                     return null;
                 }
@@ -185,20 +175,4 @@ public class PipelineExport extends Window {
         });
         fileDownloader.extend(btnExport);
     }
-
-    /**
-     * Check for permission.
-     * 
-     * @param type
-     *            Required permission.
-     * @return If the user has given permission
-     */
-    public boolean hasPermission(String type) {
-        for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
-            if (type.equals(ga.getAuthority()))
-                return true;
-        }
-        return false;
-    }
-
 }

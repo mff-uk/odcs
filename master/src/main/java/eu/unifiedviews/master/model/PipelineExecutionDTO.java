@@ -23,7 +23,7 @@ public class PipelineExecutionDTO {
 
     private String userExternalId;
 
-    private String organizationExternalId;
+    private String userActorExternalId;
 
     public Long getId() {
         return id;
@@ -105,15 +105,16 @@ public class PipelineExecutionDTO {
         this.userExternalId = userExternalId;
     }
 
-    public String getOrganizationExternalId() {
-        return organizationExternalId;
+    public String getUserActorExternalId() {
+        return this.userActorExternalId;
     }
 
-    public void setOrganizationExternalId(String organizationExternalId) {
-        this.organizationExternalId = organizationExternalId;
+    public void setUserActorExternalId(String userActorExternalId) {
+        this.userActorExternalId = userActorExternalId;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "PipelineExecutionDTO{" +
                 "id=" + id +
                 ", status=" + status +
@@ -124,8 +125,8 @@ public class PipelineExecutionDTO {
                 ", schedule=" + schedule +
                 ", stop=" + stop +
                 ", lastChange='" + lastChange + '\'' +
-                ", userExternalId=" + userExternalId +
-                ", organizationExternalId='" + organizationExternalId + '\'' +
+                ", userExternalId=" + userExternalId + '\'' +
+                ", userActorExternalId=" + this.userActorExternalId +
                 '}';
     }
 }

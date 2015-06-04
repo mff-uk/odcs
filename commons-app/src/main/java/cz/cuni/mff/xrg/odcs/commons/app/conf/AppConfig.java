@@ -31,7 +31,12 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
             ConfigProperty.DATABASE_SQL_PASSWORD,
             ConfigProperty.DATABASE_RDF_PASSWORD,
             ConfigProperty.EMAIL_PASSWORD,
-            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD);
+            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD,
+            ConfigProperty.DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD);
 
     /**
      * Modifiable configuration itself.
