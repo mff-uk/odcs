@@ -9,6 +9,9 @@ UPDATE `properties` SET `value` = '002.000.000' WHERE `key` = 'UV.Plugin-DevEnv.
 ALTER TABLE `dpu_instance` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 ALTER TABLE `dpu_template` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 
+-- full name for user is now mandatory parameter - copy username if missing
+UPDATE `usr_user` SET `full_name` = `username` WHERE `full_name` IS NULL;
+ALTER TABLE `usr_user` MODIFY `full_name` VARCHAR(55) NOT NULL;
 
 UPDATE `permission` SET name = 'dpuTemplate.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 UPDATE `permission` SET name = 'pipeline.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.setVisibilityAtCreate';

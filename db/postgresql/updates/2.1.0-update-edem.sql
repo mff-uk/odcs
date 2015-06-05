@@ -12,6 +12,10 @@ ADD COLUMN "menu_name" VARCHAR(255);
 ALTER TABLE "dpu_template"
 ADD COLUMN "menu_name" VARCHAR(255);
 
+-- full name for user is now mandatory parameter - copy username if missing
+UPDATE usr_user SET full_name = username WHERE full_name IS NULL;
+ALTER TABLE usr_user ALTER COLUMN full_name SET NOT NULL;
+
 -- Permission changes
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
