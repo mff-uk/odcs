@@ -1,13 +1,11 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Embedded;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -25,16 +23,28 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
+    public static final String COLUMN_ID = "id";
+
+    public static final String COLUMN_NAME = "name";
+
+    public static final String COLUMN_CREATED_BY = "usrFullName";
+
+    public static final String COLUMN_DURATION = "duration";
+
+    public static final String COLUMN_START = "start";
+
+    public static final String COLUMN_STATUS = "status";
+
     @Autowired
     AppConfig appConfig;
 
-    private final List<String> all = Arrays.asList("id", "name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
+    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_DURATION, COLUMN_START, COLUMN_STATUS);
 
-    private final List<String> visible = Arrays.asList("name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
+    private final List<String> visible = Arrays.asList(COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_START, COLUMN_DURATION, COLUMN_STATUS);
 
-    private final List<String> sortable = Arrays.asList("name");
+    private final List<String> sortable = Arrays.asList(COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_START, COLUMN_STATUS);
 
-    private final List<String> filterable = Arrays.asList("name");
+    private final List<String> filterable = Arrays.asList(COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_START, COLUMN_STATUS);
 
     private final List<String> toFetch = new LinkedList<>();
 
@@ -71,17 +81,17 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     @Override
     public String getColumnName(String id) {
         switch (id) {
-            case "id":
+            case COLUMN_ID:
                 return Messages.getString("PipelineViewAccessor.id");
-            case "name":
+            case COLUMN_NAME:
                 return Messages.getString("PipelineViewAccessor.name");
-            case "duration":
+            case COLUMN_DURATION:
                 return Messages.getString("PipelineViewAccessor.lastRun");
-            case "lastExecTime":
+            case COLUMN_START:
                 return Messages.getString("PipelineViewAccessor.lastExecution");
-            case "lastExecStatus":
+            case COLUMN_STATUS:
                 return Messages.getString("PipelineViewAccessor.lastStatus");
-            case "createdBy":
+            case COLUMN_CREATED_BY:
                 return Messages.getString("PipelineViewAccessor.createdBy");
             default:
                 return id;
@@ -91,26 +101,18 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     @Override
     public Object getValue(PipelineView pipeline, String id) {
         switch (id) {
-            case "id":
+            case COLUMN_ID:
                 return pipeline.getId();
-            case "name":
+            case COLUMN_NAME:
                 String name = pipeline.getName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
-            case "duration":
+            case COLUMN_DURATION:
                 return DecorationHelper.formatDuration(pipeline.getDuration());
-            case "lastExecTime":
+            case COLUMN_START:
                 return pipeline.getStart();
-            case "lastExecStatus":
-                final PipelineExecutionStatus type = pipeline.getStatus();
-                if (type != null) {
-                    ThemeResource img = DecorationHelper.getIconForExecutionStatus(type);
-                    Embedded emb = new Embedded(type.name(), img);
-                    emb.setDescription(type.name());
-                    return emb;
-                } else {
-                    return null;
-                }
-            case "createdBy":
+            case COLUMN_STATUS:
+                return pipeline.getStatus();
+            case COLUMN_CREATED_BY:
                 return getPipelineCreatedByDisplayName(pipeline);
             default:
                 return null;
@@ -129,15 +131,16 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
     @Override
     public Class<?> getType(String id) {
         switch (id) {
-            case "id":
+            case COLUMN_ID:
                 return Integer.class;
-            case "name":
-            case "duration":
-            case "lastExecTime":
+            case COLUMN_NAME:
+            case COLUMN_DURATION:
                 return String.class;
-            case "lastExecStatus":
-                return Embedded.class;
-            case "createdBy":
+            case COLUMN_START:
+                return Timestamp.class;
+            case COLUMN_STATUS:
+                return PipelineExecutionStatus.class;
+            case COLUMN_CREATED_BY:
                 return String.class;
             default:
                 return null;
