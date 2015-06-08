@@ -37,13 +37,19 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
 
     public static final String COLUMN_EXECUTED_BY = "ownerFullName";
 
-    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_START, COLUMN_PIPELINE_NAME, COLUMN_DURATION, COLUMN_STATUS, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_PIPELINE_ID, COLUMN_EXECUTED_BY);
+    public static final String COLUMN_ACTOR_NAME = "userActorName";
 
-    private final List<String> visible = Arrays.asList(COLUMN_STATUS, COLUMN_PIPELINE_NAME, COLUMN_START, COLUMN_DURATION, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_START, COLUMN_PIPELINE_NAME, COLUMN_DURATION,
+            COLUMN_STATUS, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_PIPELINE_ID, COLUMN_EXECUTED_BY, COLUMN_ACTOR_NAME);
 
-    private final List<String> sortable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+    private final List<String> visible = Arrays.asList(COLUMN_STATUS, COLUMN_PIPELINE_NAME, COLUMN_START, COLUMN_DURATION,
+            COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
 
-    private final List<String> filterable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+    private final List<String> sortable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING,
+            COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+
+    private final List<String> filterable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING,
+            COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
 
     private final List<String> toFetch = new LinkedList<>();
 

@@ -35,10 +35,13 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
     public static final String COLUMN_STATUS = "status";
 
+    public static final String COLUMN_ACTOR_NAME = "userActorName";
+
     @Autowired
     AppConfig appConfig;
 
-    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_DURATION, COLUMN_START, COLUMN_STATUS);
+    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_DURATION,
+            COLUMN_START, COLUMN_STATUS, COLUMN_ACTOR_NAME);
 
     private final List<String> visible = Arrays.asList(COLUMN_NAME, COLUMN_CREATED_BY, COLUMN_START, COLUMN_DURATION, COLUMN_STATUS);
 

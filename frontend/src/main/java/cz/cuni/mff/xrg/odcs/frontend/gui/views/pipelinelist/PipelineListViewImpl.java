@@ -5,21 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.paged.PagedFilterTable;
 import org.tepi.filtertable.paged.PagedTableChangeEvent;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
@@ -183,9 +181,9 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         tablePipelines.setVisibleColumns();
 
         tablePipelines.setFilterBarVisible(true);
-//        tablePipelines.setFilterGenerator(createFilterGenerator());
+        tablePipelines.setFilterGenerator(createFilterGenerator());
         tablePipelines.setFilterDecorator(new FilterDecorator());
-//        tablePipelines.setFilterLayout();
+        tablePipelines.setFilterLayout();
         tablePipelines.setSelectable(true);
         tablePipelines.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
@@ -328,6 +326,46 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
     @Override
     public void refreshTableControls() {
         tablePipelines.setCurrentPage(tablePipelines.getCurrentPage());
+    }
+
+    private static FilterGenerator createFilterGenerator() {
+        return new FilterGenerator() {
+            private static final long serialVersionUID = 4526398226598396388L;
+
+            @Override
+            public Container.Filter generateFilter(Object propertyId, Object value) {
+                if (PipelineViewAccessor.COLUMN_CREATED_BY.equals(propertyId)) {
+                    String val = (String) value;
+                    SimpleStringFilter fullNameFilter = new SimpleStringFilter(PipelineViewAccessor.COLUMN_CREATED_BY, val, true, false);
+                    SimpleStringFilter actorNameFilter = new SimpleStringFilter(PipelineViewAccessor.COLUMN_ACTOR_NAME, val, true, false);
+                    return new Or(fullNameFilter, actorNameFilter);
+                }
+                return null;
+            }
+
+            @Override
+            public Container.Filter generateFilter(Object propertyId, Field<?> originatingField) {
+                return null;
+            }
+
+            @Override
+            public AbstractField<?> getCustomFilterComponent(Object propertyId) {
+                return null;
+            }
+
+            @Override
+            public void filterRemoved(Object propertyId) {
+            }
+
+            @Override
+            public void filterAdded(Object propertyId, Class<? extends Container.Filter> filterType, Object value) {
+            }
+
+            @Override
+            public Container.Filter filterGeneratorFailed(Exception reason, Object propertyId, Object value) {
+                return null;
+            }
+        };
     }
 
     /**

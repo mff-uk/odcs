@@ -20,6 +20,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.IsNull;
 import com.vaadin.data.util.filter.Not;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Page;
@@ -447,6 +449,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     } else {
                         return new Not(new IsNull(propertyId));
                     }
+                } else if (ExecutionViewAccessor.COLUMN_EXECUTED_BY.equals(propertyId)) {
+                    String val = (String) value;
+                    SimpleStringFilter fullNameFilter = new SimpleStringFilter(ExecutionViewAccessor.COLUMN_EXECUTED_BY, val, true, false);
+                    SimpleStringFilter actorNameFilter = new SimpleStringFilter(ExecutionViewAccessor.COLUMN_ACTOR_NAME, val, true, false);
+                    return new Or(fullNameFilter, actorNameFilter);
                 }
                 return null;
             }
