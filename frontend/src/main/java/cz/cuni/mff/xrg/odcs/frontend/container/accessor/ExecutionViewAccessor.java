@@ -86,33 +86,42 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     }
 
     @Override
-    public Object getValue(ExecutionView object, String id) {
+    public Object getValue(ExecutionView execution, String id) {
         switch (id) {
             case "id":
-                return object.getId();
+                return execution.getId();
             case "start":
-                return object.getStart();
+                return execution.getStart();
             case "pipelineId":
-                return object.getPipelineId();
+                return execution.getPipelineId();
             case "pipelineName":
-                String name = object.getPipelineName();
+                String name = execution.getPipelineName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
             case "ownerName":
-                return object.getOwnerName();
+                return getPipelineCreatedByDisplayName(execution);
             case "duration":
-                return object.getDuration();
+                return execution.getDuration();
             case "status":
-                PipelineExecutionStatus status = object.getStatus();
-                return object.isStop() && status == PipelineExecutionStatus.RUNNING ? PipelineExecutionStatus.CANCELLING : status;
+                PipelineExecutionStatus status = execution.getStatus();
+                return execution.isStop() && status == PipelineExecutionStatus.RUNNING ? PipelineExecutionStatus.CANCELLING : status;
             case "isDebugging":
-                return object.isDebugging();
+                return execution.isDebugging();
             case "lastChange":
-                return object.getLastChange();
+                return execution.getLastChange();
             case "schedule":
-                return object.getSchedule() != null;
+                return execution.getSchedule() != null;
             default:
                 return null;
         }
+    }
+
+    private static String getPipelineCreatedByDisplayName(ExecutionView execution) {
+        String executionOwnerName = (execution.getOwnerFullName() != null && !execution.getOwnerFullName().equals(""))
+                ? execution.getOwnerFullName() : execution.getOwnerName();
+        if (execution.getUserActorName() != null && !execution.getUserActorName().equals("")) {
+            return executionOwnerName + " (" + execution.getUserActorName() + ")";
+        }
+        return executionOwnerName;
     }
 
     @Override

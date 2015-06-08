@@ -6,24 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +16,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer
@@ -49,7 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 @XmlRootElement
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEntity, Serializable, DataObject {
+public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataObject {
 
     /**
      * Unique ID for each pipeline
@@ -82,8 +64,8 @@ public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEn
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * Public vs private shareType.
@@ -242,14 +224,6 @@ public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEn
         return owner;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
     /**
      * Returns the set of pipeline conflicts.
      *
@@ -299,6 +273,14 @@ public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEn
      */
     public void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

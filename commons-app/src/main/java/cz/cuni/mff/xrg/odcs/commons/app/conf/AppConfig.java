@@ -31,7 +31,12 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
             ConfigProperty.DATABASE_SQL_PASSWORD,
             ConfigProperty.DATABASE_RDF_PASSWORD,
             ConfigProperty.EMAIL_PASSWORD,
-            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD);
+            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD,
+            ConfigProperty.DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD);
 
     /**
      * Modifiable configuration itself.
@@ -46,7 +51,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     /**
      * Determines whether cryptography is enabled or not.
      */
-    private static Boolean cryptographyEnabled;
+    private static Boolean cryptographyEnabled = Boolean.FALSE;
 
     /**
      * Cryptography instance;
@@ -181,8 +186,11 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     }
 
     private void postprocess() {
-        if (cryptographyEnabled == null) {
-            cryptographyEnabled = Boolean.TRUE.toString().equals(prop.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+        // get cryptography configuration
+        try {
+            cryptographyEnabled = getBoolean(ConfigProperty.CRYPTOGRAPHY_ENABLED);
+        } catch (MissingConfigPropertyException e) {
+            // default value is false, we are safe
         }
 
         if (cryptographyEnabled) {

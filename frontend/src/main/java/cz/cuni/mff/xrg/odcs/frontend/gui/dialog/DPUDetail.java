@@ -12,6 +12,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -63,6 +64,8 @@ public class DPUDetail extends Window {
 
     private boolean result;
 
+    private PermissionUtils permissionUtils;
+
     private Utils utils;
 
     /**
@@ -71,10 +74,11 @@ public class DPUDetail extends Window {
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig, Utils utils) {
+    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig, Utils utils, PermissionUtils permissionUtils) {
         this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
         this.utils = utils;
+        this.permissionUtils = permissionUtils;
         // build the layout
         build();
         // set dialog properties
@@ -158,7 +162,7 @@ public class DPUDetail extends Window {
 
         btnSaveAsNew = new Button(Messages.getString("DPUDetail.saveAs"));
         btnSaveAsNew.setWidth("160px");
-        btnSaveAsNew.setVisible(utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE_FROM_INSTANCE));
+        btnSaveAsNew.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE_FROM_INSTANCE));
         buttonBar.addComponent(btnSaveAsNew);
 //        buttonBar.setExpandRatio(btnSaveAsNew, 1.0f);
         buttonBar.setComponentAlignment(btnSaveAsNew, Alignment.MIDDLE_RIGHT);

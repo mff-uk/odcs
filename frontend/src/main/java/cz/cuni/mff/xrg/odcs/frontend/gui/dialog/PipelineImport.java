@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.ui.*;
 
@@ -232,10 +231,10 @@ public class PipelineImport extends Window {
         checkBoxesLayout.setWidth("100%");
         checkBoxesLayout.setMargin(true);
         this.chbImportSchedule.setEnabled(false);
-        this.chbImportSchedule.setVisible(hasPermission(EntityPermissions.PIPELINE_IMPORT_SCHEDULE_RULES)
-                && hasPermission(EntityPermissions.SCHEDULE_RULE_CREATE));
+        this.chbImportSchedule.setVisible(this.importService.hasUserPermission(EntityPermissions.PIPELINE_IMPORT_SCHEDULE_RULES)
+                && this.importService.hasUserPermission(EntityPermissions.SCHEDULE_RULE_CREATE));
         this.chbImportDPUData.setEnabled(false);
-        this.chbImportDPUData.setVisible(hasPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA));
+        this.chbImportDPUData.setVisible(this.importService.hasUserPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA));
         checkBoxesLayout.addComponent(chbImportSchedule);
         checkBoxesLayout.setComponentAlignment(chbImportSchedule, Alignment.MIDDLE_LEFT);
         checkBoxesLayout.addComponent(chbImportDPUData);
@@ -333,17 +332,6 @@ public class PipelineImport extends Window {
      */
     public Pipeline getImportedPipeline() {
         return importedPipeline;
-    }
-
-    private boolean hasPermission(String type) {
-        if (this.importService.getAuthContext() == null) {
-            return false;
-        }
-        for (GrantedAuthority ga : this.importService.getAuthContext().getUser().getAuthorities()) {
-            if (type.equals(ga.getAuthority()))
-                return true;
-        }
-        return false;
     }
 
 }

@@ -46,26 +46,22 @@ public class TestContext implements DPUContext {
     private boolean publishedError = false;
 
     /**
-     * Working directory, if null then the working subdirectory in
-     * {@link #rootDirectory} is used.
+     * Working directory, if null then the working subdirectory in {@link #rootDirectory} is used.
      */
     private File workingDirectory = null;
 
     /**
-     * Result directory, if null then the result subdirectory in
-     * {@link #rootDirectory} is used.
+     * Result directory, if null then the result subdirectory in {@link #rootDirectory} is used.
      */
     private File resultDirectory = null;
 
     /**
-     * Global DPU directory, if null then the global subdirectory in
-     * {@link #rootDirectory} is used.
+     * Global DPU directory, if null then the global subdirectory in {@link #rootDirectory} is used.
      */
     private File globalDirectory = null;
 
     /**
-     * User DPU directory, if null then the user subdirectory in
-     * {@link #rootDirectory} is used.
+     * User DPU directory, if null then the user subdirectory in {@link #rootDirectory} is used.
      */
     private File userDirectory = null;
 
@@ -210,14 +206,16 @@ public class TestContext implements DPUContext {
     }
 
     /**
-     * @param lastExecution Date of last execution.
+     * @param lastExecution
+     *            Date of last execution.
      */
     public void setLastExecution(Date lastExecution) {
         this.lastExecution = lastExecution;
     }
 
     /**
-     * @param jarPath Path to the jar file.
+     * @param jarPath
+     *            Path to the jar file.
      */
     public void setJarPath(String jarPath) {
         this.jarPath = jarPath;

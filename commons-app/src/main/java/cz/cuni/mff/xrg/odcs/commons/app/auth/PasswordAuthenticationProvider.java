@@ -15,9 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
@@ -29,8 +27,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(PasswordAuthenticationProvider.class);
-
-    private static final String ORG_MODE = "organization";
 
     private final UserFacade userFacade;
 
@@ -82,26 +78,9 @@ public class PasswordAuthenticationProvider extends AbstractUserDetailsAuthentic
     protected UserDetails retrieveUser(String username,
             UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 
-        User user = userFacade.getUserByUsername(authentication.getName());
+        User user = this.userFacade.getUserByUsername(authentication.getName());
         if (user == null) {
             throw new BadCredentialsException(username);
-        }
-
-        String defaultOrganization = null;
-        if (ORG_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
-            defaultOrganization = appConfig.getString(ConfigProperty.DEFAULT_ORGANIZATION);
-        }
-
-        Organization o = null;
-
-        if (defaultOrganization!=null && !defaultOrganization.isEmpty()) {
-            o = userFacade.getOrganizationByName(defaultOrganization);
-            if (o == null) {
-                o = new Organization();
-                o.setName(defaultOrganization);
-                userFacade.save(o);
-            }
-            user.setOrganization(o);
         }
 
         return user;

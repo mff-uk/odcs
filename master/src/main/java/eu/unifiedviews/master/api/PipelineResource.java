@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -18,14 +17,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import eu.unifiedviews.master.converter.ConvertUtils;
-import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -34,9 +25,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
+import eu.unifiedviews.master.converter.ConvertUtils;
 import eu.unifiedviews.master.converter.PipelineDTOConverter;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineDTO;
@@ -45,8 +43,6 @@ import eu.unifiedviews.master.model.PipelineDTO;
 @Path("/pipelines")
 @AuthenticationRequired
 public class PipelineResource {
-
-    public static final String ORGANIZATION_OWNERSHIP_TYPE = "organization";
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineResource.class);
 
@@ -67,18 +63,9 @@ public class PipelineResource {
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
         // try to get user
-        User user =  userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
-        if(user == null) {
+        User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+        if (user == null) {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
-        }
-
-        Organization organization = null;
-        if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
-            // try to get organization
-            organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
-            if(organization == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
-            }
         }
 
         Pipeline pipeline = null;
@@ -87,10 +74,13 @@ public class PipelineResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
+            final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
             pipeline.setUser(user);
-            pipeline.setOrganization(organization);
+            if (actor != null) {
+                pipeline.setActor(actor);
+            }
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
-            pipelineFacade.save(pipeline);
+            this.pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
             throw ex;
         } catch (RuntimeException exception) {
@@ -101,20 +91,15 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-
-    public List<PipelineDTO> getPipelines(@QueryParam("organizationExternalId") String organizationExternalId) {
+    public List<PipelineDTO> getPipelines(@QueryParam("userExternalId") String userExternalId) {
         List<Pipeline> pipelines = null;
         try {
-            if(isNotEmpty(organizationExternalId)){
-                try {
-                    pipelines = pipelineFacade.getAllPipelines(organizationExternalId);
-                } catch (NumberFormatException e) {
-                    // if organizationExternalId cannot be parsed return no results
-                    return new ArrayList<>();
-                }
+            if (isNotEmpty(userExternalId)) {
+                pipelines = this.pipelineFacade.getAllPipelines(userExternalId);
             } else {
-                pipelines = pipelineFacade.getAllPipelines();
+                pipelines = this.pipelineFacade.getAllPipelines();
             }
+
             if (pipelines == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "PipelineFacade returned null!");
             }
@@ -166,25 +151,20 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
             }
             // try to get user
-            User user =  userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
-            if(user == null) {
+            User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+            if (user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
             }
 
-            Organization organization = null;
-            if(ORGANIZATION_OWNERSHIP_TYPE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
-                // try to get organization
-                organization = userFacade.getOrganizationByName(pipelineDTO.getOrganizationExternalId());
-                if(organization == null) {
-                    throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Pipeline could not be created.", pipelineDTO.getOrganizationExternalId()));
-                }
-            }
-
-            pipelineCopy = pipelineFacade.copyPipeline(pipeline);
+            final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
+            pipelineCopy = this.pipelineFacade.copyPipeline(pipeline);
             pipelineCopy.setUser(user);
-            pipelineCopy.setOrganization(organization);
+            pipelineCopy.setUser(user);
+            if (actor != null) {
+                pipelineCopy.setActor(actor);
+            }
             pipelineCopy = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipelineCopy);
-            pipelineFacade.save(pipelineCopy);
+            this.pipelineFacade.save(pipelineCopy);
         } catch (ApiException ex) {
             throw ex;
         } catch (RuntimeException exception) {

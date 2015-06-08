@@ -265,17 +265,14 @@ public class Context implements DPUContext {
     }
 
     public String getOrganization() {
-        String organization = null;
-        if (this.contextInfo.getExecution().getOrganization() != null) {
-            organization = this.contextInfo.getExecution().getOrganization().getName();
-        }
-
-        return organization;
+        return "";
     }
 
-    // FIXME: Just dummy implementation to be able to compile with UV plugins V2.1.0 
     @Override
     public String getPipelineExecutionActorExternalId() {
+        if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
+            return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
+        }
         return null;
     }
 
@@ -430,4 +427,5 @@ public class Context implements DPUContext {
     public Long getDpuInstanceId() {
         return dpuInstance.getId();
     }
+
 }

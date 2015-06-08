@@ -9,22 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
@@ -73,6 +65,9 @@ public class MenuLayout extends CustomComponent {
      */
     @Autowired
     protected AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Used layout.
@@ -129,7 +124,8 @@ public class MenuLayout extends CustomComponent {
         backendStatus.setWidth("16px");
         backendStatus.setHeight("16px");
 
-        userName = new Label(authCtx.getUsername());
+        final String userDisplayName = getDisplayUserName();
+        userName = new Label(userDisplayName);
         userName.setIcon(new ThemeResource("img/user.svg"));
         userName.setWidth("150px");
         userName.addStyleName("username");
@@ -243,7 +239,7 @@ public class MenuLayout extends CustomComponent {
      * Refresh user bar.
      */
     public void refreshUserBar() {
-        userName.setValue(authCtx.getUsername());
+        userName.setValue(getDisplayUserName());
         logOutButton.setVisible(authCtx.isAuthenticated());
     }
 
@@ -255,6 +251,19 @@ public class MenuLayout extends CustomComponent {
     public void refreshBackendStatus(boolean isRunning) {
         backendStatus.setDescription(isRunning ? Messages.getString("MenuLayout.backend.online") : Messages.getString("MenuLayout.backend.offline"));
         backendStatus.setSource(new ThemeResource(isRunning ? "icons/online.svg" : "icons/offline.svg"));
+    }
+
+    public void refreshMenuButtons() {
+        if (!this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SHOW_SCREEN)) {
+            if (this.menuItems.containsKey("DPURecord")) {
+                this.menuBar.removeItem(this.menuItems.remove("DPURecord"));
+            }
+        } else {
+            if (!this.menuItems.containsKey("DPURecord")) {
+                this.menuItems.put("DPURecord", this.menuBar.addItem(Messages.getString("MenuLayout.dpuTemplates"),
+                        new NavigateToCommand(DPUPresenterImpl.class, this.navigator)));
+            }
+        }
     }
 
     /**
@@ -296,6 +305,20 @@ public class MenuLayout extends CustomComponent {
         if (activeMenu != null) {
             activeMenu.setChecked(true);
         }
+    }
+
+    private String getDisplayUserName() {
+
+        if (this.authCtx.getUser() != null) {
+            String userName = (this.authCtx.getUser().getFullName() != null && !this.authCtx.getUser().getFullName().equals(""))
+                    ? this.authCtx.getUser().getFullName() : this.authCtx.getUsername();
+            if (this.authCtx.getUser().getUserActor() != null) {
+                return userName + " (" + this.authCtx.getUser().getUserActor().getName() + ")";
+            }
+            return userName;
+        }
+
+        return this.authCtx.getUsername();
     }
 
     /**

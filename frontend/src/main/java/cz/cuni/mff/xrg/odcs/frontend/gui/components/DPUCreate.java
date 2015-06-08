@@ -29,6 +29,7 @@ import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -60,6 +61,9 @@ public class DPUCreate extends Window {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     @Autowired
     private Utils utils;
@@ -713,13 +717,13 @@ public class DPUCreate extends Window {
         dpuName.setValue("");
         dpuDescription.setValue("");
         groupVisibility.setValue(ShareType.PUBLIC_RO);
-        groupVisibility.setEnabled(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
+        groupVisibility.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFile.setReadOnly(false);
         uploadFile.setValue("");
         uploadFile.setReadOnly(true);
         // clean zip version
         groupVisibilityZip.setValue(ShareType.PUBLIC_RO);
-        groupVisibilityZip.setEnabled(this.utils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY_CREATE));
+        groupVisibilityZip.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFileZip.setReadOnly(false);
         uploadFileZip.setValue("");
         uploadFileZip.setReadOnly(true);
