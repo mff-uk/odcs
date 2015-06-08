@@ -520,7 +520,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         executionTable.setPageLength(utils.getPageLength());
 
         executionTable.setFilterGenerator(createFilterGenerator());
-        executionTable.setFilterDecorator(new filterDecorator());
+        executionTable.setFilterDecorator(new FilterDecorator());
         executionTable.setFilterBarVisible(true);
 
         executionTable.addItemClickListener(
@@ -689,7 +689,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
      * 
      * @author Bogo
      */
-    class filterDecorator extends IntlibFilterDecorator {
+    class FilterDecorator extends IntlibFilterDecorator {
 
         @Override
         public String getEnumFilterDisplayName(Object propertyId, Object value) {
