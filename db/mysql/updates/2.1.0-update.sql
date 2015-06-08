@@ -9,8 +9,7 @@ UPDATE `properties` SET `value` = '002.000.000' WHERE `key` = 'UV.Plugin-DevEnv.
 ALTER TABLE `dpu_instance` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 ALTER TABLE `dpu_template` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 
-INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
-INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
+
 UPDATE `permission` SET name = 'dpuTemplate.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 UPDATE `permission` SET name = 'pipeline.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.setVisibilityAtCreate';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.schedule';
@@ -38,6 +37,10 @@ UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 
 DELETE FROM `permission` WHERE name = 'deleteDebugResources';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.save';
 DELETE FROM `permission` WHERE name = 'dpuTemplate.import';
+-- Insert new permissions
+INSERT INTO `permission` VALUES (NULL, 'pipeline.definePipelineDependencies', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
+INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.createFromInstance', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM `permission`));

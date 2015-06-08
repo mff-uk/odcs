@@ -111,7 +111,8 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='Use
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.read', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
-INSERT INTO `permission` VALUES (nextval('seq_permission'), 'dpuTemplate.showScreen', false);
+INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.showScreen', false);
+INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'user.management', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));

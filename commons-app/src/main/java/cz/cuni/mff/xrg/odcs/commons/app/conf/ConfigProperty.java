@@ -65,6 +65,7 @@ public enum ConfigProperty {
     EMAIL_SMTP_PORT("email.smtp.port"),
     EMAIL_SMTP_TLS("email.smtp.tls"),
     EMAIL_FROM_EMAIL("email.from"),
+    EMAIL_FROM_NAME("email.from.name"),
     EMAIL_AUTHORIZATION("email.authorization"),
     EMAIL_USERNAME("email.username"),
     EMAIL_PASSWORD("email.password"),
@@ -94,7 +95,9 @@ public enum ConfigProperty {
     DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN("dpu.uv-l-filesToCkan.secret.token"),
     DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD("dpu.l-rdfToVirtuoso.password"),
 
-    USE_LOCALIZED_DPU_NAME("dpu.name.localized");
+    USE_LOCALIZED_DPU_NAME("dpu.name.localized"),
+
+    FRONTEND_INITIAL_PAGE("frontend.initial.page");
 
     private final String property;
 

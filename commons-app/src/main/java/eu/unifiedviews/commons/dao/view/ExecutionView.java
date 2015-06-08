@@ -49,7 +49,7 @@ public class ExecutionView implements DataObject {
      * Run in debug mode?
      */
     @Column(name = "debug_mode")
-    private boolean debugging;
+    private boolean isDebugging;
 
     /**
      * Timestamp when this execution started, or null.
@@ -130,11 +130,11 @@ public class ExecutionView implements DataObject {
     }
 
     public boolean isDebugging() {
-        return debugging;
+        return isDebugging;
     }
 
     public void setDebugging(boolean isDebugging) {
-        this.debugging = isDebugging;
+        this.isDebugging = isDebugging;
     }
 
     public Date getStart() {
