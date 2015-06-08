@@ -22,6 +22,7 @@ DELETE FROM `permission` WHERE name = 'pipelineExecution.readLog';
 DELETE FROM `permission` WHERE name = 'pipelineExecution.sparqlDpuInputOutputData';
 DELETE FROM `permission` WHERE name = 'scheduleRule.disable';
 DELETE FROM `permission` WHERE name = 'scheduleRule.enable';
+DELETE FROM `permission` WHERE name = 'scheduleRule.execute';
 DELETE FROM `permission` WHERE name = 'role.create';
 DELETE FROM `permission` WHERE name = 'role.edit';
 DELETE FROM `permission` WHERE name = 'role.read';

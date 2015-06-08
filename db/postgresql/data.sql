@@ -81,9 +81,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='Use
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'scheduleRule.read', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'scheduleRule.execute', true);
-INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'scheduleRule.setPriority', true);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
