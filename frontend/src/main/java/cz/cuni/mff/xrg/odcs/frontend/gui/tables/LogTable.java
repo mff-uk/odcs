@@ -40,7 +40,7 @@ public class LogTable extends CustomComponent {
 
     private int iconHeight;
 
-	private VerticalLayout mainLayout;
+    private VerticalLayout mainLayout;
 
     private IntlibPagedTable table;
 
@@ -322,6 +322,7 @@ public class LogTable extends CustomComponent {
                 @Override
                 public void windowClose(Window.CloseEvent e) {
                     detail = null;
+                    table.select(table.getNullSelectionItemId());
                 }
             });
             detail = detailWindow;
