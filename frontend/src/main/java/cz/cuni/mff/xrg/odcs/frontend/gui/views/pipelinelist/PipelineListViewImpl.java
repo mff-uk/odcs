@@ -387,34 +387,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         public Resource getEnumFilterIcon(Object propertyId, Object value) {
             if (propertyId.equals(PipelineViewAccessor.COLUMN_STATUS)) {
                 PipelineExecutionStatus type = (PipelineExecutionStatus) value;
-                ThemeResource img = null;
-                switch (type) {
-                    case FINISHED_SUCCESS:
-                        img = new ThemeResource("icons/ok.png");
-                        break;
-                    case FINISHED_WARNING:
-                        img = new ThemeResource("icons/warning.png");
-                        break;
-                    case FAILED:
-                        img = new ThemeResource("icons/error.png");
-                        break;
-                    case RUNNING:
-                        img = new ThemeResource("icons/running.png");
-                        break;
-                    case QUEUED:
-                        img = new ThemeResource("icons/queued.png");
-                        break;
-                    case CANCELLED:
-                        img = new ThemeResource("icons/cancelled.png");
-                        break;
-                    case CANCELLING:
-                        img = new ThemeResource("icons/cancelling.png");
-                        break;
-                    default:
-                        //no icon
-                        break;
-                }
-                return img;
+                return DecorationHelper.getIconForExecutionStatus(type);
             }
             return super.getEnumFilterIcon(propertyId, value);
         }
