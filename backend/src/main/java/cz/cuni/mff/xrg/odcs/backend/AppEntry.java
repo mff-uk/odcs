@@ -9,6 +9,7 @@ import org.h2.store.Data;
 import org.h2.store.fs.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -207,42 +208,47 @@ public class AppEntry {
         // initialise
         initSpring();
 
-        // initialize locale settings from DB, so we need spring first
-        initLocale();
+        try {
+            // initialize locale settings from DB, so we need spring first
+            initLocale();
 
-        // the log back is not initialised here .. 
-        // we add file appender
-        initLogbackAppender(context.getBean(AppConfig.class));
+            // the log back is not initialised here ..
+            // we add file appender
+            initLogbackAppender(context.getBean(AppConfig.class));
 
-        // the sql appender cooperate with spring, so we need spring first
-        initLogbackSqlAppender();
+            // the sql appender cooperate with spring, so we need spring first
+            initLogbackSqlAppender();
 
-        // Initialize DPUs by preloading all thier JAR bundles
-        // TODO use lazyloading instead of preload?
-        ModuleFacade modules = context.getBean(ModuleFacade.class);
-        modules.preLoadAllDPUs();
+            // Initialize DPUs by preloading all thier JAR bundles
+            // TODO use lazyloading instead of preload?
+            ModuleFacade modules = context.getBean(ModuleFacade.class);
+            modules.preLoadAllDPUs();
 
-        // try to get application-lock 
-        // we construct lock key based on port		
-        final StringBuilder lockKey = new StringBuilder();
-        lockKey.append("INTLIB_");
-        lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
-        if (!AppLock.setLock(lockKey.toString())) {
-            // another application is already running
-            LOG.info("Another instance of ODCleanStore is probably running.");
-            context.close();
-            return;
-        }
-
-        // print some information ..
-        LOG.info("Running ...");
-
-        // infinite loop
-        while (true) {
-            try {
-                Thread.sleep(1000 * 60);
-            } catch (InterruptedException ex) {
+            // try to get application-lock
+            // we construct lock key based on port
+            final StringBuilder lockKey = new StringBuilder();
+            lockKey.append("INTLIB_");
+            lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
+            if (!AppLock.setLock(lockKey.toString())) {
+                // another application is already running
+                LOG.info("Another instance of ODCleanStore is probably running.");
+                context.close();
+                return;
             }
+
+            // print some information ..
+            LOG.info("Running ...");
+
+            // infinite loop
+            while (true) {
+                try {
+                    Thread.sleep(1000 * 60);
+                } catch (InterruptedException ex) {
+                }
+            }
+        } catch (Exception e) {
+            context.close();
+            LOG.error("Failed to initialize UnifiedViews backend.", e);
         }
     }
 

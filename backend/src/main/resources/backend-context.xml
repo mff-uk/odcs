@@ -24,7 +24,11 @@
     <!-- Used for asynch calls even for scheduled functions. -->
     <task:executor id="taskExecutor" pool-size="8"/>
     <!-- Used for Scheduled tasks.-->
-    <task:scheduler id="taskScheduler" pool-size="8"/>
+    <bean id="taskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="8" />
+        <property name="waitForTasksToCompleteOnShutdown" value="false" />
+        <property name="daemon" value="true" />
+    </bean>
 
     <!-- Define aspects for managing DB reconnects. -->
     <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect"/>
