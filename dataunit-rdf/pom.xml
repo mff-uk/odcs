@@ -250,7 +250,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.1.4.RELEASE</version>
+			<version>${org.springframework.version}</version>
 			<scope>compile</scope>
 		</dependency>
 

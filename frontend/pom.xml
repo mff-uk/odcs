@@ -92,13 +92,13 @@
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>confirmdialog</artifactId>
-			<version>2.0.4</version>
+			<version>${confirmdialog.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>filteringtable</artifactId>
-			<version>0.9.11.v7</version>
+			<version>${filteringtable.version}</version>
 		</dependency>
 
 		<dependency>
@@ -114,19 +114,19 @@
 		<dependency>
 			<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
 			<artifactId>vaadin-lazyquerycontainer</artifactId>
-			<version>2.0.9</version>
+			<version>${lazyquerycontainer.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>refresher</artifactId>
-			<version>1.2.1.7</version>
+			<version>${refresher.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ru.xpoft.vaadin</groupId>
 			<artifactId>spring-vaadin-integration</artifactId>
-			<version>2.0.1</version>
+			<version>${vaadin.spring.version}</version>
 		</dependency>
 
 		<!-- Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
@@ -154,7 +154,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
+			<version>${servlet.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -173,7 +173,7 @@
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-core</artifactId>
-			<version>3.3.3</version>
+			<version>${cas.client.version}</version>
 		</dependency>
 
 		<dependency>
@@ -185,7 +185,7 @@
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
-			<version>1.4.0</version>
+			<version>${commons.validator.version}</version>
 		</dependency>
 
 	</dependencies>

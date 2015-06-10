@@ -32,28 +32,11 @@
 
 		<dataunit.version>${project.version}</dataunit.version>
 
-		<!-- define used vaadin version !!! do not forget to update the version
-		for OSGI's package export -->
-		<vaadin.version>7.3.7</vaadin.version>
-		<!-- the minimal required vaadin version The lowest Vaadin version accepted
-		by DPUs. -->
-		<vaadin.version.min>7.3.7</vaadin.version.min>
-		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted
-		by DPUs. -->
-		<vaadin.version.max>8.0.0</vaadin.version.max>
-
 		<!-- define output dirs -->
 		<project.output.lib>target/lib/</project.output.lib>
 		<project.output.lib.backend>target/lib/backend/</project.output.lib.backend>
 		<project.output.dpu>target/dpu/</project.output.dpu>
 		<skipTests>false</skipTests>
-		<!-- spring version -->
-		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
-		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
-		<!-- other third party libraries versions -->
-		<slf4j.version>1.7.7</slf4j.version>
-		<logback.version>1.0.13</logback.version>
-		<sesame.version>2.8.1</sesame.version>
 	</properties>
 
 	<modules>

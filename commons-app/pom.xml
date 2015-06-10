@@ -125,7 +125,7 @@
 		<dependency> <!-- OSGI impelemention -->
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.9.0.v20130305-2200</version>
+			<version>${eclipse.osgi.version}</version>
 		</dependency>
 
 		<dependency> <!-- apache.commons : delete folder recursive -->
@@ -137,7 +137,7 @@
 		<dependency> <!-- email sending -->
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4</version>
+			<version>${javax.mail.version}</version>
 		</dependency>
 
 		<!-- SPRING DEPENDENCIES -->
@@ -231,7 +231,7 @@
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
-			<version>3.0</version>
+			<version>${cglib.version}</version>
 		</dependency>
 
 		<!-- ASM depends on ASM-UTIL, CGLIB depends on ASM, however ASM is loaded
@@ -239,7 +239,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-util</artifactId>
-			<version>4.0</version>
+			<version>${asm.util.version}</version>
 		</dependency>
 
 		<!-- END OF SPRING DEPENDENCIES -->
@@ -253,7 +253,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.182</version>
+			<version>${h2.version}</version>
 		</dependency>
 
 		<!-- EclipseLink dependencies -->
@@ -262,25 +262,25 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
-			<version>2.5.1</version>
+			<version>${eclipselink.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
-			<version>2.1.0</version>
+			<version>${javax.persistence.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<version>${commons.lang.version}</version>
 		</dependency>
 
 
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.6</version>
+			<version>${mysql.jdbc.version}</version>
 		</dependency>
 
 		<!-- Aspect Oriented Programming with AspectJ -->
@@ -300,13 +300,13 @@
 			<artifactId>commons-dbcp</artifactId>
 			<groupId>commons-dbcp</groupId>
 			<type>jar</type>
-			<version>1.4</version>
+			<version>${commons.dpcp.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.8.4</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -319,13 +319,13 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.3-1102-jdbc41</version>
+			<version>${postgres.jdbc.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.jasypt</groupId>
 			<artifactId>jasypt</artifactId>
-			<version>1.9.2</version>
+			<version>${jasypt.version}</version>
 		</dependency>
 	</dependencies>
 
