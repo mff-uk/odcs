@@ -38,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Service for importing pipelines exported by {@link ExportService}.
@@ -97,6 +98,7 @@ public class ImportService {
         if (user == null) {
             throw new ImportException(Messages.getString("ImportService.pipeline.unknown.user"));
         }
+        final UserActor actor = this.authCtx.getUser().getUserActor();
         // unpack
         Pipeline pipe;
         try {
@@ -104,6 +106,7 @@ public class ImportService {
 
             pipe = loadPipeline(tempDirectory);
             pipe.setUser(user);
+            pipe.setActor(actor);
             pipe.setShareType(ShareType.PRIVATE);
 
             // TODO skoda: Check for DPU versions here and warn in case of problems
