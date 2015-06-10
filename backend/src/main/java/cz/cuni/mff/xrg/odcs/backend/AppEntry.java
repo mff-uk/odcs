@@ -231,7 +231,7 @@ public class AppEntry {
             lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
             if (!AppLock.setLock(lockKey.toString())) {
                 // another application is already running
-                LOG.info("Another instance of ODCleanStore is probably running.");
+                LOG.info("Another instance of UnifiedViews is probably running.");
                 context.close();
                 return;
             }
