@@ -304,6 +304,7 @@ public class PipelineListViewImpl extends CustomComponent implements PipelineLis
         if (!presenter.isLayoutInitialized()) {
             buildPage(presenter);
         }
+        this.tablePipelines.select(this.tablePipelines.getNullSelectionItemId());
 
         return this;
     }

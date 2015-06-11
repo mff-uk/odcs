@@ -108,7 +108,17 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             buildPage(presenter);
         }
         debugView.restore();
+        hideDebugWindow();
+
         return this;
+    }
+
+    private void hideDebugWindow() {
+        this.monitorTable.select(this.monitorTable.getNullSelectionItemId());
+        this.hsplit.setSecondComponent(null);
+        this.hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+        this.hsplit.setLocked(true);
+        this.debugView.setExecution(null, null);
     }
 
     @Override
