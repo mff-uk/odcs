@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
 @AuthenticationRequired
 public class DPUResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DPUResource.class);
-
     @Autowired
     private DPUFacade dpuFacade;
 
@@ -47,12 +45,13 @@ public class DPUResource {
     @Autowired
     private DPUModuleManipulator dpuManipulator;
 
+    private static final Logger LOG = LoggerFactory.getLogger(DPUResource.class);
+
     @POST
     @Path("/dpu/jar")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public String importJarDpu(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @QueryParam("name") String dpuName, @QueryParam("description") String dpuDescription, @QueryParam("visibility") String visibility, @QueryParam("force") boolean force) {
-        LOG.debug("Importing dpu file: {}, name: {}, description: {}, visibility: {}, force?: {}", contentDispositionHeader.getFileName(), dpuName, dpuDescription, visibility, force);
         // parse input steam to file, located in temporary directory
         File jarFile;
         try {
@@ -77,26 +76,29 @@ public class DPUResource {
             }
         }
 
+        // check if DPU already exists in UV
         String dpuDirName = getDirectoryName(jarFile.getName());
         if(dpuDirName == null) {
-            LOG.error("Exception at processing dpu name.");
             throw new ApiException(Response.Status.BAD_REQUEST, "Cannot process DPU name!");
         }
-
-        // check if DPU already exists in UV
         DPUTemplateRecord dpuTemplate = dpuFacade.getByDirectory(dpuDirName);
-        if(dpuTemplate != null) {
-            LOG.debug("DPU already exists!");
-            if(force) {
-                LOG.debug("Force flag detected. Deleting old DPU.");
-                dpuManipulator.delete(dpuTemplate);
-            } else {
-                throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
+        if(dpuTemplate == null) { // it doesnt exists, create it
+            createDpu(dpuName, dpuDescription, shareType, jarFile);
+        } else if(force == true) { // it does exists, check force flag and replace
+            if(StringUtils.isNotEmpty(dpuName)) {
+                dpuTemplate.setName(dpuName);
             }
+            if(StringUtils.isNotEmpty(dpuDescription)) {
+                dpuTemplate.setDescription(dpuDescription);
+            }
+            if(StringUtils.isNotEmpty(visibility)) {
+                dpuTemplate.setShareType(shareType);
+            }
+            replaceDpu(dpuTemplate, jarFile);
+        } else {
+            throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
         }
-        LOG.debug("Creating DPU...");
-        createDpu(dpuName, dpuDescription, shareType, jarFile);
-        LOG.debug("DPU successfully imported.");
+
         // now we can delete the file
         deleteTempFile(jarFile);
         return "OK";
