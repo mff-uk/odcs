@@ -22,45 +22,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
-		<!-- 3rd party libraries -->
-		<!-- Vaadin -->
-		<confirmdialog.version>2.0.4</confirmdialog.version>
-        <filteringtable.version>0.9.11.v7</filteringtable.version>
-        <lazyquerycontainer.version>2.0.9</lazyquerycontainer.version>
-        <refresher.version>1.2.1.7</refresher.version>
-        <vaadin.spring.version>2.0.1</vaadin.spring.version>
-		
-		<!-- spring version -->
-        <org.springframework.version>3.1.4.RELEASE</org.springframework.version>
-        <org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
-		
-		<!-- other third party libraries versions -->
-		<commons.dpcp.version>1.4</commons.dpcp.version>
-        <commons.dbcp2.version>2.0.1</commons.dbcp2.version>
-        <commons.cli.version>1.2</commons.cli.version>
-        <commons.lang.version>3.1</commons.lang.version>
-        <commons.validator.version>1.4.0</commons.validator.version>
-        <h2.version>1.4.182</h2.version>
-        <httpclient.osgi.version>4.3.3</httpclient.osgi.version>
-        <httpcore.osgi.version>4.3.2</httpcore.osgi.version>
-        <osgi.version>4.3.1</osgi.version>
-        <jsch.version>0.1.49_1</jsch.version>
-        <xml.apis.version>1.4.01</xml.apis.version>
-        <mockito.version>1.8.4</mockito.version>
-        <eclipse.osgi.version>3.9.0.v20130305-2200</eclipse.osgi.version>
-        <javax.mail.version>1.4</javax.mail.version>
-        <cglib.version>3.0</cglib.version>
-        <asm.util.version>4.0</asm.util.version>
-        <eclipselink.version>2.5.1</eclipselink.version>
-        <mysql.jdbc.version>5.1.6</mysql.jdbc.version>
-        <javax.persistence.version>2.1.0</javax.persistence.version>
-        <postgres.jdbc.version>9.3-1102-jdbc41</postgres.jdbc.version>
-        <jasypt.version>1.9.2</jasypt.version>
-        <servlet.api.version>3.0.1</servlet.api.version>
-        <cas.client.version>3.3.3</cas.client.version>
-        <jersey.version>2.13</jersey.version>
-        <virtuoso.sesame.version>1.21-7-develop-SNAPSHOT</virtuoso.sesame.version> <!-- 1.18-7-develop-SNAPSHOT -->
-        <virtuoso.jdbc.version>3.76-7-develop-SNAPSHOT</virtuoso.jdbc.version> <!-- 3.74-7-develop-SNAPSHOT -->
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
@@ -71,6 +32,46 @@
 		<uv-dataunit-helpers.version>2.1.0-SNAPSHOT</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
+		
+		<!-- 3rd party libraries -->
+		<!-- Vaadin -->
+		<confirmdialog.version>2.0.4</confirmdialog.version>
+		<filteringtable.version>0.9.11.v7</filteringtable.version>
+		<lazyquerycontainer.version>2.0.9</lazyquerycontainer.version>
+		<refresher.version>1.2.1.7</refresher.version>
+		<vaadin.spring.version>2.0.1</vaadin.spring.version>
+		
+		<!-- spring version -->
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
+		
+		<!-- other third party libraries versions -->
+		<commons.dpcp.version>1.4</commons.dpcp.version>
+		<commons.dbcp2.version>2.0.1</commons.dbcp2.version>
+		<commons.cli.version>1.2</commons.cli.version>
+		<commons.lang.version>3.1</commons.lang.version>
+		<commons.validator.version>1.4.0</commons.validator.version>
+		<h2.version>1.4.182</h2.version>
+		<httpclient.osgi.version>4.3.3</httpclient.osgi.version>
+		<httpcore.osgi.version>4.3.2</httpcore.osgi.version>
+		<osgi.version>4.3.1</osgi.version>
+		<jsch.version>0.1.49_1</jsch.version>
+		<xml.apis.version>1.4.01</xml.apis.version>
+		<mockito.version>1.8.4</mockito.version>
+		<eclipse.osgi.version>3.9.0.v20130305-2200</eclipse.osgi.version>
+		<javax.mail.version>1.4</javax.mail.version>
+		<cglib.version>3.0</cglib.version>
+		<asm.util.version>4.0</asm.util.version>
+		<eclipselink.version>2.5.1</eclipselink.version>
+		<mysql.jdbc.version>5.1.6</mysql.jdbc.version>
+		<javax.persistence.version>2.1.0</javax.persistence.version>
+		<postgres.jdbc.version>9.3-1102-jdbc41</postgres.jdbc.version>
+		<jasypt.version>1.9.2</jasypt.version>
+		<servlet.api.version>3.0.1</servlet.api.version>
+		<cas.client.version>3.3.3</cas.client.version>
+		<jersey.version>2.13</jersey.version>
+		<virtuoso.sesame.version>1.21-7-develop-SNAPSHOT</virtuoso.sesame.version> <!-- 1.18-7-develop-SNAPSHOT -->
+		<virtuoso.jdbc.version>3.76-7-develop-SNAPSHOT</virtuoso.jdbc.version> <!-- 3.74-7-develop-SNAPSHOT -->
 
 		<!-- define output dirs -->
 		<project.output.lib>target/lib/</project.output.lib>
