@@ -298,7 +298,7 @@ public class MenuLayout extends CustomComponent {
 
                 @Override
                 public void menuSelected(MenuItem selectedItem) {
-                    Page.getCurrent().open(externalLinkURL, null);
+                    Page.getCurrent().open(externalLinkURL, "_blank", false);
 
                 }
             });
