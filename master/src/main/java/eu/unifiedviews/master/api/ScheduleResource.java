@@ -17,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -246,7 +247,12 @@ public class ScheduleResource {
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
             }
-            schedule.setOwner(userFacade.getUser(1L));
+            // try to get user
+            User user = userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
+            if (user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
+            }
+            schedule.setOwner(user);
             schedule.setPipeline(pipeline);
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {

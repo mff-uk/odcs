@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,7 +185,12 @@ public class ExecutionResource {
             }
 
             execution = pipelineFacade.createExecution(pipeline);
-            execution.setOwner(userFacade.getUser(1L));
+            // try to get user
+            User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
+            if (user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Execution could not be created.", newExecution.getUserExternalId()));
+            }
+            execution.setOwner(user);
 
             execution.setDebugging(newExecution.isDebugging());
             execution.setOrderNumber(1L);
