@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
@@ -288,6 +289,25 @@ public class MenuLayout extends CustomComponent {
         menuItems.put("ExecutionList", menuBar.addItem(Messages.getString("MenuLayout.executionMonitor"), new NavigateToCommand(ExecutionListPresenterImpl.class, navigator)));
         menuItems.put("Scheduler", menuBar.addItem(Messages.getString("MenuLayout.scheduler"), new NavigateToCommand(Scheduler.class, navigator)));
         menuItems.put("Administrator", menuBar.addItem(Messages.getString("MenuLayout.settings"), new NavigateToCommand(Settings.class, navigator)));
+
+        try {
+            final String externalLinkName = this.appConfig.getString(ConfigProperty.EXTERNAL_MENU_LINK_NAME);
+            final String externalLinkURL = this.appConfig.getString(ConfigProperty.EXTERNAL_MENU_LINK_URL);
+
+            MenuItem item = this.menuBar.addItem(externalLinkName, new Command() {
+
+                @Override
+                public void menuSelected(MenuItem selectedItem) {
+                    Page.getCurrent().open(externalLinkURL, null);
+
+                }
+            });
+            item.setStyleName("menu-external-link");
+            this.menuItems.put("External", item);
+
+        } catch (MissingConfigPropertyException e) {
+            // ignore, optional configuration
+        }
     }
 
     /**
