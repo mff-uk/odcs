@@ -342,7 +342,7 @@ CREATE TABLE "usr_user"
   "username" VARCHAR(256) NOT NULL,
   "email_id" INTEGER,
   "u_password" CHAR(256) NOT NULL,
-  "full_name" VARCHAR(256),
+  "full_name" VARCHAR(256) NOT NULL,
   "table_rows" INTEGER,
   PRIMARY KEY ("id"),
   UNIQUE ("username")

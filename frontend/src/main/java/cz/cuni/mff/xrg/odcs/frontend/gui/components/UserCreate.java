@@ -100,7 +100,7 @@ public class UserCreate extends Window {
         mainLayout.setImmediate(false);
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
-        mainLayout.setWidth("380px");
+        mainLayout.setWidth("425px");
 
         users = userFacade.getAllUsers();
 
@@ -114,6 +114,16 @@ public class UserCreate extends Window {
         userFullName.setNullRepresentation("");
         userFullName.addValidator(new MaxLengthValidator(
                 LenghtLimits.USER_FULLNAME));
+        userFullName.addValidator(new Validator() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                if (value == null || value.getClass() != String.class || ((String) value).isEmpty()) {
+                    throw new InvalidValueException(Messages.getString("UserCreate.full.empty"));
+                }
+            }
+        });
 
         userDetailsLayout.addComponent(new Label(Messages.getString("UserCreate.full.user.name")), 0, 0);
         userDetailsLayout.addComponent(userFullName, 1, 0);

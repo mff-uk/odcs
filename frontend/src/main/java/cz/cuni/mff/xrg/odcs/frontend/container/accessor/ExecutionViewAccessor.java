@@ -19,13 +19,37 @@ import eu.unifiedviews.commons.dao.view.ExecutionView;
  */
 public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
 
-    private final List<String> all = Arrays.asList("id", "start", "pipelineName", "duration", "status", "isDebugging", "schedule", "pipelineId", "ownerName");
+    public static final String COLUMN_ID = "id";
 
-    private final List<String> visible = Arrays.asList("status", "pipelineName", "start", "duration", "isDebugging", "schedule", "ownerName");
+    public static final String COLUMN_START = "start";
 
-    private final List<String> sortable = Arrays.asList("pipelineName", "status", "start", "isDebugging", "schedule", "ownerName");
+    public static final String COLUMN_PIPELINE_NAME = "pipelineName";
 
-    private final List<String> filterable = Arrays.asList("pipelineName", "status", "start", "isDebugging", "schedule", "ownerName");
+    public static final String COLUMN_DURATION = "duration";
+
+    public static final String COLUMN_STATUS = "status";
+
+    public static final String COLUMN_DEBUGGING = "isDebugging";
+
+    public static final String COLUMN_SCHEDULE = "schedule";
+
+    public static final String COLUMN_PIPELINE_ID = "pipelineId";
+
+    public static final String COLUMN_EXECUTED_BY = "ownerFullName";
+
+    public static final String COLUMN_ACTOR_NAME = "userActorName";
+
+    private final List<String> all = Arrays.asList(COLUMN_ID, COLUMN_START, COLUMN_PIPELINE_NAME, COLUMN_DURATION,
+            COLUMN_STATUS, COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_PIPELINE_ID, COLUMN_EXECUTED_BY, COLUMN_ACTOR_NAME);
+
+    private final List<String> visible = Arrays.asList(COLUMN_STATUS, COLUMN_PIPELINE_NAME, COLUMN_START, COLUMN_DURATION,
+            COLUMN_DEBUGGING, COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+
+    private final List<String> sortable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING,
+            COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
+
+    private final List<String> filterable = Arrays.asList(COLUMN_PIPELINE_NAME, COLUMN_STATUS, COLUMN_START, COLUMN_DEBUGGING,
+            COLUMN_SCHEDULE, COLUMN_EXECUTED_BY);
 
     private final List<String> toFetch = new LinkedList<>();
 
@@ -62,23 +86,23 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     @Override
     public String getColumnName(String id) {
         switch (id) {
-            case "id":
+            case COLUMN_ID:
                 return Messages.getString("ExecutionViewAccessor.id");
-            case "start":
+            case COLUMN_START:
                 return Messages.getString("ExecutionViewAccessor.started");
-            case "pipelineName":
+            case COLUMN_PIPELINE_NAME:
                 return Messages.getString("ExecutionViewAccessor.pipeline");
-            case "duration":
+            case COLUMN_DURATION:
                 return Messages.getString("ExecutionViewAccessor.duration");
-            case "ownerName":
+            case COLUMN_EXECUTED_BY:
                 return Messages.getString("ExecutionViewAccessor.owner");
-            case "status":
+            case COLUMN_STATUS:
                 return Messages.getString("ExecutionViewAccessor.status");
-            case "isDebugging":
+            case COLUMN_DEBUGGING:
                 return Messages.getString("ExecutionViewAccessor.isDebugging");
             case "lastChange":
                 return Messages.getString("ExecutionViewAccessor.lastChange");
-            case "schedule":
+            case COLUMN_SCHEDULE:
                 return Messages.getString("ExecutionViewAccessor.schedule");
             default:
                 return null;
@@ -88,27 +112,27 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     @Override
     public Object getValue(ExecutionView execution, String id) {
         switch (id) {
-            case "id":
+            case COLUMN_ID:
                 return execution.getId();
-            case "start":
+            case COLUMN_START:
                 return execution.getStart();
-            case "pipelineId":
+            case COLUMN_PIPELINE_ID:
                 return execution.getPipelineId();
-            case "pipelineName":
+            case COLUMN_PIPELINE_NAME:
                 String name = execution.getPipelineName();
                 return name.length() > Utils.getColumnMaxLenght() ? name.substring(0, Utils.getColumnMaxLenght() - 3) + "..." : name;
-            case "ownerName":
+            case COLUMN_EXECUTED_BY:
                 return getPipelineCreatedByDisplayName(execution);
-            case "duration":
+            case COLUMN_DURATION:
                 return execution.getDuration();
-            case "status":
+            case COLUMN_STATUS:
                 PipelineExecutionStatus status = execution.getStatus();
                 return execution.isStop() && status == PipelineExecutionStatus.RUNNING ? PipelineExecutionStatus.CANCELLING : status;
-            case "isDebugging":
+            case COLUMN_DEBUGGING:
                 return execution.isDebugging();
             case "lastChange":
                 return execution.getLastChange();
-            case "schedule":
+            case COLUMN_SCHEDULE:
                 return execution.getSchedule() != null;
             default:
                 return null;
@@ -127,24 +151,24 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
     @Override
     public Class<?> getType(String id) {
         switch (id) {
-            case "id":
-            case "pipelineId":
+            case COLUMN_ID:
+            case COLUMN_PIPELINE_ID:
                 return Long.class;
-            case "start":
+            case COLUMN_START:
                 return Timestamp.class;
-            case "pipelineName":
+            case COLUMN_PIPELINE_NAME:
                 return String.class;
-            case "duration":
+            case COLUMN_DURATION:
                 return Long.class;
-            case "status":
+            case COLUMN_STATUS:
                 return PipelineExecutionStatus.class;
-            case "isDebugging":
+            case COLUMN_DEBUGGING:
                 return Boolean.class;
             case "lastChange":
                 return Timestamp.class;
-            case "schedule":
+            case COLUMN_SCHEDULE:
                 return Boolean.class;
-            case "ownerName":
+            case COLUMN_EXECUTED_BY:
                 return String.class;
             default:
                 return null;
