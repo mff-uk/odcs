@@ -1144,7 +1144,3 @@ span.v-inline-datefield-calendarpanel-month{
 .v-tree-node[aria-selected="true"] > .v-tree-node-caption > div > span {
 	background-color: rgb(205, 205, 205);	
 }
-
-.v-menubar-menuitem-menu-external-link{
-    background: #5D2725 !important;
-}

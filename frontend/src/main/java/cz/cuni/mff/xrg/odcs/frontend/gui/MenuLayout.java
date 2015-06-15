@@ -302,7 +302,6 @@ public class MenuLayout extends CustomComponent {
 
                 }
             });
-            item.setStyleName("menu-external-link");
             item.setIcon(new ThemeResource("icons/external_link.png"));
             this.menuItems.put("External", item);
 
