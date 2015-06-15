@@ -10,6 +10,10 @@ ADD COLUMN "menu_name" VARCHAR(255);
 ALTER TABLE "dpu_template"
 ADD COLUMN "menu_name" VARCHAR(255);
 
+-- full name for user is now mandatory parameter - copy username if missing
+UPDATE usr_user SET full_name = username WHERE full_name IS NULL;
+ALTER TABLE usr_user ALTER COLUMN full_name SET NOT NULL;
+
 -- Permission changes
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.runDebug';

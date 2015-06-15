@@ -20,6 +20,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.IsNull;
 import com.vaadin.data.util.filter.Not;
+import com.vaadin.data.util.filter.Or;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Page;
@@ -34,6 +36,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.ActionColumnGenerator.Action;
@@ -52,6 +55,8 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 @Component
 @Scope("prototype")
 public class ExecutionListViewImpl extends CustomComponent implements ExecutionListPresenter.ExecutionListView {
+
+    private static final String COLUMN_ACTIONS = "actions";
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListViewImpl.class);
 
@@ -237,7 +242,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             @Override
             public void buttonClick(ClickEvent event) {
                 monitorTable.setSortContainerPropertyId(null);; // deselect column
-                monitorTable.sort(new Object[] { "id" }, new boolean[] { false });
+                monitorTable.sort(new Object[] { ExecutionViewAccessor.COLUMN_ID }, new boolean[] { false });
             }
         });
         topLine.addComponent(btnClearSort);
@@ -282,11 +287,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
             public boolean show(CustomTable source, long id) {
-                Property propStatus = source.getItem(id).getItemProperty("status");
+                Property propStatus = source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS);
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-                boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
+                boolean isDebug = (boolean) source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_DEBUGGING).getValue();
                 // ...
-                
+
                 boolean canReadLog = presenter.canReadLog(id);
                 return !isDebug && status != PipelineExecutionStatus.QUEUED && canReadLog;
             }
@@ -302,9 +307,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
             public boolean show(CustomTable source, long id) {
-                Property propStatus = source.getItem(id).getItemProperty("status");
+                Property propStatus = source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS);
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
-                boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
+                boolean isDebug = (boolean) source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_DEBUGGING).getValue();
                 // ...
                 boolean canDebug = presenter.canDebugData(id);
                 return isDebug && status != PipelineExecutionStatus.QUEUED && canDebug;
@@ -319,7 +324,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
             public boolean show(CustomTable source, long id) {
-                Property propStatus = source.getItem(id).getItemProperty("status");
+                Property propStatus = source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS);
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
 
                 boolean stoppableStatus = status == PipelineExecutionStatus.QUEUED
@@ -339,7 +344,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
             public boolean show(CustomTable source, long id) {
-                Property propStatus = source.getItem(id).getItemProperty("status");
+                Property propStatus = source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS);
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 // ...
                 boolean canRunPipeline = presenter.canRunPipeline(id);
@@ -356,7 +361,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         }, new ActionColumnGenerator.ButtonShowCondition() {
             @Override
             public boolean show(CustomTable source, long id) {
-                Property propStatus = source.getItem(id).getItemProperty("status");
+                Property propStatus = source.getItem(id).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS);
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 // ...
                 boolean canDebugPipeline = presenter.canDebugPipeline(id);
@@ -446,7 +451,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         return new FilterGenerator() {
             @Override
             public Container.Filter generateFilter(Object propertyId, Object value) {
-                if ("schedule".equals(propertyId)) {
+                if (ExecutionViewAccessor.COLUMN_SCHEDULE.equals(propertyId)) {
                     boolean val = (boolean) value;
 
                     if (!val) {
@@ -454,6 +459,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     } else {
                         return new Not(new IsNull(propertyId));
                     }
+                } else if (ExecutionViewAccessor.COLUMN_EXECUTED_BY.equals(propertyId)) {
+                    String val = (String) value;
+                    SimpleStringFilter fullNameFilter = new SimpleStringFilter(ExecutionViewAccessor.COLUMN_EXECUTED_BY, val, true, false);
+                    SimpleStringFilter actorNameFilter = new SimpleStringFilter(ExecutionViewAccessor.COLUMN_ACTOR_NAME, val, true, false);
+                    return new Or(fullNameFilter, actorNameFilter);
                 }
                 return null;
             }
@@ -465,7 +475,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
             @Override
             public AbstractField<?> getCustomFilterComponent(Object propertyId) {
-                if ("schedule".equals(propertyId)) {
+                if (ExecutionViewAccessor.COLUMN_SCHEDULE.equals(propertyId)) {
                     ComboBox comboScheduled = new ComboBox();
                     comboScheduled.addItem(true);
                     ThemeResource iconScheduled = new ThemeResource("icons/scheduled.png");
@@ -504,23 +514,23 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         executionTable.setImmediate(true);
         executionTable.setColumnCollapsingAllowed(true);
 
-        executionTable.setColumnWidth("schedule", COLUMN_SCHEDULE_WIDTH);
-        executionTable.setColumnWidth("status", COLUMN_STATUS_WIDTH);
-        executionTable.setColumnWidth("isDebugging", COLUMN_DEBUG_WIDTH);
-        executionTable.setColumnWidth("duration", COLUMN_DURATION_WIDTH);
-        executionTable.setColumnWidth("start", COLUMN_START_WIDTH);
+        executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_SCHEDULE, COLUMN_SCHEDULE_WIDTH);
+        executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_STATUS, COLUMN_STATUS_WIDTH);
+        executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_DEBUGGING, COLUMN_DEBUG_WIDTH);
+        executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_DURATION, COLUMN_DURATION_WIDTH);
+        executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_START, COLUMN_START_WIDTH);
 
         //Suitable if no more than 3 buttons are available at the same time, which is true in current version.
-        executionTable.setColumnWidth("actions", COLUMN_ACTIONS_WIDTH);
-        executionTable.setColumnAlignment("schedule", CustomTable.Align.CENTER);
-        executionTable.setColumnAlignment("isDebugging", CustomTable.Align.CENTER);
-        executionTable.setColumnAlignment("status", CustomTable.Align.CENTER);
-        executionTable.setColumnAlignment("duration", CustomTable.Align.RIGHT);
+        executionTable.setColumnWidth(COLUMN_ACTIONS, COLUMN_ACTIONS_WIDTH);
+        executionTable.setColumnAlignment(ExecutionViewAccessor.COLUMN_SCHEDULE, CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment(ExecutionViewAccessor.COLUMN_DEBUGGING, CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment(ExecutionViewAccessor.COLUMN_STATUS, CustomTable.Align.CENTER);
+        executionTable.setColumnAlignment(ExecutionViewAccessor.COLUMN_DURATION, CustomTable.Align.RIGHT);
         executionTable.setSortEnabled(true);
         executionTable.setPageLength(utils.getPageLength());
 
         executionTable.setFilterGenerator(createFilterGenerator());
-        executionTable.setFilterDecorator(new filterDecorator());
+        executionTable.setFilterDecorator(new FilterDecorator());
         executionTable.setFilterBarVisible(true);
 
         executionTable.addItemClickListener(
@@ -530,7 +540,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     @Override
                     public void itemClick(ItemClickEvent event) {
                         ValueItem item = (ValueItem) event.getItem();
-                        boolean isDebug = (boolean) item.getItemProperty("isDebugging").getValue();
+                        boolean isDebug = (boolean) item.getItemProperty(ExecutionViewAccessor.COLUMN_DEBUGGING).getValue();
                         final long executionId = item.getId();
                         if ((isDebug && presenter.canDebugData(executionId)) || (!isDebug && presenter.canReadLog(executionId))) {
                             changeURI(executionId);
@@ -540,7 +550,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                     }
                 });
 
-        executionTable.addGeneratedColumn("pipelineName", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn(ExecutionViewAccessor.COLUMN_PIPELINE_NAME, new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
                 final Button btnEdit = new Button();
@@ -573,7 +583,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         });
 
         //Status column. Contains status icons.
-        executionTable.addGeneratedColumn("status", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn(ExecutionViewAccessor.COLUMN_STATUS, new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(CustomTable source, Object itemId,
                     Object columnId) {
@@ -591,7 +601,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         });
 
         //Debug column. Contains debug icons.
-        executionTable.addGeneratedColumn("isDebugging", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn(ExecutionViewAccessor.COLUMN_DEBUGGING, new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(CustomTable source, Object itemId,
                     Object columnId) {
@@ -608,14 +618,14 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
             }
         });
 
-        executionTable.addGeneratedColumn("duration", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn(ExecutionViewAccessor.COLUMN_DURATION, new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(CustomTable source, Object itemId, Object columnId) {
                 long duration = (long) source.getItem(itemId).getItemProperty(columnId).getValue();
                 //It is refreshed only upon change in db, so for running pipeline it is not refreshed
-                PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty("status").getValue();
+                PipelineExecutionStatus status = (PipelineExecutionStatus) source.getItem(itemId).getItemProperty(ExecutionViewAccessor.COLUMN_STATUS).getValue();
                 if (duration == -1 && (status == RUNNING || status == PipelineExecutionStatus.CANCELLING)) {
-                    Date start = (Date) source.getItem(itemId).getItemProperty("start").getValue();
+                    Date start = (Date) source.getItem(itemId).getItemProperty(ExecutionViewAccessor.COLUMN_START).getValue();
                     if (start != null) {
                         duration = (new Date()).getTime() - start.getTime();
                         Label durationLabel = new Label(DecorationHelper.formatDuration(duration));
@@ -628,7 +638,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 return DecorationHelper.formatDuration(duration);
             }
         });
-        executionTable.addGeneratedColumn("schedule", new CustomTable.ColumnGenerator() {
+        executionTable.addGeneratedColumn(ExecutionViewAccessor.COLUMN_SCHEDULE, new CustomTable.ColumnGenerator() {
             @Override
             public Object generateCell(CustomTable source, Object itemId, Object columnId) {
                 boolean isScheduled = (boolean) source.getItem(itemId).getItemProperty(columnId).getValue();
@@ -638,8 +648,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         });
 
         // add generated columns to the executionTable
-        executionTable.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
-        executionTable.setColumnHeader("actions", Messages.getString("ExecutionListViewImpl.actions"));
+        executionTable.addGeneratedColumn(COLUMN_ACTIONS, 0, createColumnGenerator(presenter));
+        executionTable.setColumnHeader(COLUMN_ACTIONS, Messages.getString("ExecutionListViewImpl.actions"));
         executionTable.setVisibleColumns();
         executionTable.addListener(new PagedFilterTable.PageChangeListener() {
             @Override
@@ -689,11 +699,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
      * 
      * @author Bogo
      */
-    class filterDecorator extends IntlibFilterDecorator {
+    class FilterDecorator extends IntlibFilterDecorator {
 
         @Override
         public String getEnumFilterDisplayName(Object propertyId, Object value) {
-            if (propertyId.equals("status")) {
+            if (propertyId.equals(ExecutionViewAccessor.COLUMN_STATUS)) {
                 return ((PipelineExecutionStatus) value).name();
             }
             return super.getEnumFilterDisplayName(propertyId, value);
@@ -701,43 +711,16 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         @Override
         public Resource getEnumFilterIcon(Object propertyId, Object value) {
-            if (propertyId.equals("status")) {
+            if (propertyId.equals(ExecutionViewAccessor.COLUMN_STATUS)) {
                 PipelineExecutionStatus type = (PipelineExecutionStatus) value;
-                ThemeResource img = null;
-                switch (type) {
-                    case FINISHED_SUCCESS:
-                        img = new ThemeResource("icons/ok.png");
-                        break;
-                    case FINISHED_WARNING:
-                        img = new ThemeResource("icons/warning.png");
-                        break;
-                    case FAILED:
-                        img = new ThemeResource("icons/error.png");
-                        break;
-                    case RUNNING:
-                        img = new ThemeResource("icons/running.png");
-                        break;
-                    case QUEUED:
-                        img = new ThemeResource("icons/queued.png");
-                        break;
-                    case CANCELLED:
-                        img = new ThemeResource("icons/cancelled.png");
-                        break;
-                    case CANCELLING:
-                        img = new ThemeResource("icons/cancelling.png");
-                        break;
-                    default:
-                        //no icon
-                        break;
-                }
-                return img;
+                return DecorationHelper.getIconForExecutionStatus(type);
             }
             return super.getEnumFilterIcon(propertyId, value);
         }
 
         @Override
         public String getBooleanFilterDisplayName(Object propertyId, boolean value) {
-            if (propertyId.equals("isDebugging")) {
+            if (propertyId.equals(ExecutionViewAccessor.COLUMN_DEBUGGING)) {
                 if (value) {
                     return Messages.getString("ExecutionListViewImpl.debug");
                 } else {
@@ -749,7 +732,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         @Override
         public Resource getBooleanFilterIcon(Object propertyId, boolean value) {
-            if (propertyId.equals("isDebugging")) {
+            if (propertyId.equals(ExecutionViewAccessor.COLUMN_DEBUGGING)) {
                 if (value) {
                     return new ThemeResource("icons/debug.png");
                 } else {

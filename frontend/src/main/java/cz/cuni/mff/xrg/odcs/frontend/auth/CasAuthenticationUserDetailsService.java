@@ -72,6 +72,8 @@ public class CasAuthenticationUserDetailsService extends
             String userFullName = attributes.get(this.fullNameAttributeName) != null ? attributes.get(this.fullNameAttributeName).toString() : null;
             if (userFullName != null) {
                 user.setFullName(userFullName);
+            } else {
+                user.setFullName(username);
             }
             user.setExternalIdentifier(username);
             user.setTableRows(20);
