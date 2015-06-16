@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineStarted;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -50,42 +51,57 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
      *            Notification settings.
      * @param emailsToAdd
      */
-    private void add(Set<String> emails,
+    private static void add(ApplicationEvent event, Set<String> emails,
             PipelineExecution execution,
             NotificationRecord notification,
             Set<EmailAddress> emailsToAdd) {
-        switch (execution.getStatus()) {
-            case FINISHED_SUCCESS:
-            case FINISHED_WARNING:
-                switch (notification.getTypeSuccess()) {
-                    case INSTANT: // add email
-                        for (EmailAddress email : emailsToAdd) {
-                            emails.add(email.toString());
-                        }
-                        return;
-                    case DAILY:
-                        // we do not send now ... will be send in daily report
-                    case NO_REPORT:
-                        return;
-                }
-                break;
-            case FAILED:
-            case CANCELLED:
-                switch (notification.getTypeError()) {
-                    case INSTANT: // add email
-                        for (EmailAddress email : emailsToAdd) {
-                            emails.add(email.toString());
-                        }
-                        return;
-                    case DAILY:
-                        // we do not send now ... will be send in daily report
-                    case NO_REPORT:
-                        return;
-                }
-                break;
-            default:
-                LOG.warn("Unexpected execution status '{}' ", execution.getStatus());
-                return;
+        if (event instanceof PipelineFinished) {
+            switch (execution.getStatus()) {
+                case FINISHED_SUCCESS:
+                case FINISHED_WARNING:
+                    switch (notification.getTypeSuccess()) {
+                        case INSTANT: // add email
+                            for (EmailAddress email : emailsToAdd) {
+                                emails.add(email.toString());
+                            }
+                            return;
+                        case DAILY:
+                            // we do not send now ... will be send in daily report
+                        case NO_REPORT:
+                            return;
+                    }
+                    break;
+                case FAILED:
+                case CANCELLED:
+                    switch (notification.getTypeError()) {
+                        case INSTANT: // add email
+                            for (EmailAddress email : emailsToAdd) {
+                                emails.add(email.toString());
+                            }
+                            return;
+                        case DAILY:
+                            // we do not send now ... will be send in daily report
+                        case NO_REPORT:
+                            return;
+                    }
+                    break;
+                default:
+                    LOG.warn("Unexpected execution status '{}' ", execution.getStatus());
+                    return;
+            }
+
+        } else if (event instanceof PipelineStarted) {
+            switch (notification.getTypeStarted()) {
+                case INSTANT:
+                    for (EmailAddress email : emailsToAdd) {
+                        emails.add(email.toString());
+                    }
+                    return;
+                case DAILY:
+                case NO_REPORT:
+                    return;
+            }
+
         }
     }
 
@@ -96,15 +112,30 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
      * @param schedule
      * @return
      */
-    private String subjectInstant(PipelineExecution execution, Schedule schedule) {
-        return Messages.getString("InstantReport.execution.report", execution.getPipeline().getName(), execution.getStart().toString());
+    private static String subjectInstantStarted(PipelineExecution execution, Schedule schedule) {
+        return Messages.getString("InstantReport.execution.started.report", execution.getPipeline().getName(), execution.getStart().toString());
+    }
+
+    /**
+     * Prepare subject for email that inform about single execution.
+     * 
+     * @param execution
+     * @param schedule
+     * @return
+     */
+    private static String subjectInstantEnded(PipelineExecution execution, Schedule schedule) {
+        return Messages.getString("InstantReport.execution.ended.report", execution.getPipeline().getName(), execution.getStart().toString());
     }
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof PipelineFinished) {
-            PipelineFinished pipelineFinishedEvent = (PipelineFinished) event;
-            PipelineExecution execution = pipelineFinishedEvent.getExecution();
+        if (event instanceof PipelineFinished || event instanceof PipelineStarted) {
+            PipelineExecution execution = null;
+            if (event instanceof PipelineFinished) {
+                execution = ((PipelineFinished) event).getExecution();
+            } else if (event instanceof PipelineStarted) {
+                execution = ((PipelineStarted) event).getExecution();
+            }
             Schedule schedule = execution.getSchedule();
             // pipeline finished has been scheduled?
             if (schedule == null) {
@@ -118,24 +149,21 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
                 if (schedule.getNotification() == null) {
                     if (schedule.getOwner() == null) {
                         // there is no owner to use to send email .. 
-                        LOG.warn("Missing owner for schedule id: {}",
-                                schedule.getId()
-                                );
+                        LOG.warn("Missing owner for schedule id: {}", schedule.getId());
                         return;
                     }
 
                     if (schedule.getOwner().getNotification() == null) {
                         // there is no rule to use to send email .. 
-                        LOG.warn("Missing notificaiton rule for schedule id: {}",
-                                schedule.getId());
+                        LOG.warn("Missing notificaiton rule for schedule id: {}", schedule.getId());
                         return;
                     }
 
-                    add(emails, execution, schedule.getOwner().getNotification(),
+                    add(event, emails, execution, schedule.getOwner().getNotification(),
                             schedule.getOwner().getNotification().getEmails());
                 } else {
                     LOG.debug("Using schedule's settings for email");
-                    add(emails, execution, schedule.getNotification(),
+                    add(event, emails, execution, schedule.getNotification(),
                             schedule.getNotification().getEmails());
                 }
 
@@ -146,8 +174,16 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
                     return;
                 }
 
-                final String subject = subjectInstant(execution, schedule);
-                final String body = emailBuilder.build(execution, schedule);
+                String subject = null;
+                String body = null;
+                if (event instanceof PipelineFinished) {
+                    subject = subjectInstantEnded(execution, schedule);
+                    body = this.emailBuilder.buildExecutionFinishedMail(execution, schedule);
+                } else if (event instanceof PipelineStarted) {
+                    subject = subjectInstantStarted(execution, schedule);
+                    body = this.emailBuilder.buildExecutionStartedMail(execution, schedule);
+                }
+
                 // create list of recipients
                 ArrayList<String> recipients = new ArrayList<>();
                 recipients.addAll(emails);

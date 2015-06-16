@@ -27,10 +27,14 @@ public class EmailNotifications {
 
     private int noError = 0;
 
+    private int noStarted = 0;
+
 //	public EmailComponent shEmail;
     private OptionGroup errorExec;
 
     private OptionGroup successfulExec;
+
+    private OptionGroup startedExec;
 
     /**
      * Parent component.
@@ -54,10 +58,51 @@ public class EmailNotifications {
         emailNotificationsLayout.setSpacing(true);
         emailNotificationsLayout.setImmediate(true);
 
-        GridLayout notifycationLayout = new GridLayout(2, 2);
+        GridLayout notifycationLayout = new GridLayout(3, 3);
         notifycationLayout.setSpacing(true);
 
-        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.successful")), 0, 0);
+        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.started")), 0, 0);
+        this.startedExec = new OptionGroup();
+        this.startedExec.setImmediate(true);
+        this.startedExec.addItem(NotificationRecordType.INSTANT);
+        this.startedExec.addItem(NotificationRecordType.DAILY);
+        this.startedExec.addItem(NotificationRecordType.NO_REPORT);
+        this.startedExec.setValue(NotificationRecordType.NO_REPORT);
+        this.startedExec.setItemCaption(NotificationRecordType.INSTANT, Messages.getString("EmailNotifications.instant"));
+        this.startedExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report"));
+        this.startedExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report.default"));
+        this.startedExec.addValueChangeListener(new ValueChangeListener() {
+            private static final long serialVersionUID = 1L;
+
+            @SuppressWarnings("unqualified-field-access")
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if (parentComponentUs != null && parentComponentUs.buttonNotificationBar != null) {
+                    parentComponentUs.buttonNotificationBar.setEnabled(true);
+                }
+
+                if (event.getProperty().getValue().equals(NotificationRecordType.NO_REPORT)) {
+                    noStarted = 1;
+                    if ((noStarted == 1) && (noError == 1) && (noSuccessful == 1)) {
+                        if (parentComponentSh != null) {
+                            parentComponentSh.getEmailLayout().setEnabled(false);
+                        }
+                    }
+
+                } else {
+                    noStarted = 0;
+                    if (parentComponentSh != null) {
+                        parentComponentSh.getEmailLayout().setEnabled(true);
+                    }
+
+                }
+
+            }
+        });
+        notifycationLayout.addComponent(this.startedExec, 1, 0);
+        emailNotificationsLayout.addComponent(notifycationLayout);
+
+        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.successful")), 0, 1);
         successfulExec = new OptionGroup();
         successfulExec.setImmediate(true);
         successfulExec.addItem(NotificationRecordType.INSTANT);
@@ -65,8 +110,8 @@ public class EmailNotifications {
         successfulExec.addItem(NotificationRecordType.NO_REPORT);
         successfulExec.setValue(NotificationRecordType.DAILY);
         successfulExec.setItemCaption(NotificationRecordType.INSTANT, Messages.getString("EmailNotifications.instant"));
-        successfulExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report"));
-        successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report.default"));
+        successfulExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report.default"));
+        successfulExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report"));
 
         successfulExec.addValueChangeListener(new ValueChangeListener() {
             private static final long serialVersionUID = 1L;
@@ -100,10 +145,10 @@ public class EmailNotifications {
             }
         });
 
-        notifycationLayout.addComponent(successfulExec, 1, 0);
+        notifycationLayout.addComponent(successfulExec, 1, 1);
         emailNotificationsLayout.addComponent(notifycationLayout);
 
-        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.error")), 0, 1);
+        notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.error")), 0, 2);
         errorExec = new OptionGroup();
         errorExec.setImmediate(true);
         errorExec.setImmediate(true);
@@ -112,7 +157,7 @@ public class EmailNotifications {
         errorExec.addItem(NotificationRecordType.NO_REPORT);
         errorExec.setValue(NotificationRecordType.INSTANT);
         errorExec.setItemCaption(NotificationRecordType.INSTANT, Messages.getString("EmailNotifications.instant.default"));
-        errorExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report.default"));
+        errorExec.setItemCaption(NotificationRecordType.DAILY, Messages.getString("EmailNotifications.bulk.report"));
         errorExec.setItemCaption(NotificationRecordType.NO_REPORT, Messages.getString("EmailNotifications.no.report"));
 
         errorExec.addValueChangeListener(new ValueChangeListener() {
@@ -147,7 +192,7 @@ public class EmailNotifications {
             }
         });
 
-        notifycationLayout.addComponent(errorExec, 1, 1);
+        notifycationLayout.addComponent(errorExec, 1, 2);
         emailNotificationsLayout.addComponent(notifycationLayout);
 
         return emailNotificationsLayout;
@@ -159,6 +204,7 @@ public class EmailNotifications {
      * @param notification
      */
     public void setUserNotificatonRecord(UserNotificationRecord notification) {
+        notification.setTypeStarted((NotificationRecordType) this.startedExec.getValue());
         notification.setTypeError((NotificationRecordType) errorExec.getValue());
         notification.setTypeSuccess((NotificationRecordType) successfulExec.getValue());
     }
@@ -166,14 +212,15 @@ public class EmailNotifications {
     /**
      * Set notification record for schedule.
      * 
-     * @param notofication
+     * @param notification
      * @param schedule
      */
-    public void setScheduleNotificationRecord(ScheduleNotificationRecord notofication, Schedule schedule) {
+    public void setScheduleNotificationRecord(ScheduleNotificationRecord notification, Schedule schedule) {
 
-        notofication.setSchedule(schedule);
-        notofication.setTypeError((NotificationRecordType) errorExec.getValue());
-        notofication.setTypeSuccess((NotificationRecordType) successfulExec.getValue());
+        notification.setSchedule(schedule);
+        notification.setTypeStarted((NotificationRecordType) this.startedExec.getValue());
+        notification.setTypeError((NotificationRecordType) errorExec.getValue());
+        notification.setTypeSuccess((NotificationRecordType) successfulExec.getValue());
 
     }
 
@@ -188,6 +235,7 @@ public class EmailNotifications {
         ScheduleNotificationRecord notification = schedule.getNotification();
 
         if (notification != null) {
+            this.startedExec.setValue(notification.getTypeStarted());
             errorExec.setValue(notification.getTypeError());
             successfulExec.setValue(notification.getTypeSuccess());
         }
@@ -204,6 +252,7 @@ public class EmailNotifications {
         UserNotificationRecord notification = user.getNotification();
 
         if (notification != null) {
+            this.startedExec.setValue(notification.getTypeStarted());
             errorExec.setValue(notification.getTypeError());
             successfulExec.setValue(notification.getTypeSuccess());
 
@@ -215,7 +264,7 @@ public class EmailNotifications {
      * Get default notification record for schedules.
      */
     public void getDefaultScheduleNotificationRecord() {
-
+        this.startedExec.setValue(NotificationRecordType.NO_REPORT);
         errorExec.setValue(NotificationRecordType.INSTANT);
         successfulExec.setValue(NotificationRecordType.DAILY);
 
