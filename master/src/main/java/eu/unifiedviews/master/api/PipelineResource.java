@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,12 @@ public class PipelineResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
             }
-            pipeline.setUser(userFacade.getUser(1L));
+            // try to get user
+            User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+            if (user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+            }
+            pipeline.setUser(user);
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
             pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
