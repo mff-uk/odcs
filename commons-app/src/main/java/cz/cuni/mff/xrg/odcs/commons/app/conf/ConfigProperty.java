@@ -97,7 +97,9 @@ public enum ConfigProperty {
 
     USE_LOCALIZED_DPU_NAME("dpu.name.localized"),
 
-    FRONTEND_INITIAL_PAGE("frontend.initial.page");
+    FRONTEND_INITIAL_PAGE("frontend.initial.page"),
+    EXTERNAL_MENU_LINK_NAME("external.menu.link.name"),
+    EXTERNAL_MENU_LINK_URL("external.menu.link.url");
 
     private final String property;
 
