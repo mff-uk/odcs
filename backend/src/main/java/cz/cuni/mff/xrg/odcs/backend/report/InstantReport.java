@@ -113,7 +113,8 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
      * @return
      */
     private static String subjectInstantStarted(PipelineExecution execution, Schedule schedule) {
-        return Messages.getString("InstantReport.execution.started.report", execution.getPipeline().getName(), execution.getStart().toString());
+        return Messages.getString("InstantReport.execution.started.report", execution.getPipeline().getName(),
+                EmailUtils.formatDate(execution.getStart()));
     }
 
     /**
@@ -124,7 +125,8 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
      * @return
      */
     private static String subjectInstantEnded(PipelineExecution execution, Schedule schedule) {
-        return Messages.getString("InstantReport.execution.ended.report", execution.getPipeline().getName(), execution.getStart().toString());
+        return Messages.getString("InstantReport.execution.ended.report", execution.getPipeline().getName(),
+                EmailUtils.formatDate(execution.getStart()));
     }
 
     @Override

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,6 +45,8 @@ class DailyReport {
     @Autowired
     private DbExecution dbExecution;
 
+    private static Logger LOG = LoggerFactory.getLogger(DailyReport.class);
+
     /**
      * Get executions for lest 24 hours and based on the notifications settings
      * send daily reports.
@@ -51,6 +55,7 @@ class DailyReport {
     @Async
     @Scheduled(cron = "0 0 0 * * *")
     public void execute() {
+        LOG.info("Going to check and send daily reports if configured");
         // today    
         Calendar date = Calendar.getInstance();
         // reset hour, minutes, seconds and millis
@@ -63,15 +68,33 @@ class DailyReport {
         date.add(Calendar.DAY_OF_MONTH, -1);
         Date start = date.getTime();
 
+        LOG.info("Going to send configured started executions reports");
+        sendDailyReportForStartedExecutions(start, end);
+        LOG.info("Started executions reports sent");
+
+        LOG.info("Going to send configured finished executions reports");
+        sendDailyReportForFinishedExecutions(start, end);
+        LOG.info("Finished executions reports sent");
+    }
+
+    /**
+     * Sends mail with list of all finished executions during last day
+     * 
+     * @param start
+     *            Send report for all executions finished after this time
+     * @param end
+     *            Send report for all executions finished before this time
+     */
+    private void sendDailyReportForFinishedExecutions(Date start, Date end) {
         // list of executions
-        List<PipelineExecution> executions = getExecutions(start, end);
+        List<PipelineExecution> executions = getExecutionsEndedLastDay(start, end);
         // store emails to send on
         Map<EmailAddress, List<PipelineExecution>> toSend = new HashMap<>();
 
         final String subject = Messages.getString("DailyReport.report");
 
         for (PipelineExecution exec : executions) {
-            Set<EmailAddress> recipients = getRecipients(exec);
+            Set<EmailAddress> recipients = getRecipients(exec, ReportType.FINISHED_EXECUTIONS);
             if (recipients == null || recipients.isEmpty()) {
                 // skip
             } else {
@@ -91,9 +114,48 @@ class DailyReport {
 
         // in toSend we hava data to send, so .. let's ge to the work
         for (EmailAddress email : toSend.keySet()) {
-            String body = emailBuilder.build(toSend.get(email));
+            String body = emailBuilder.buildFinishedExecutionsMail(toSend.get(email));
             // send email
             emailSender.send(subject, body, email.toString());
+        }
+    }
+
+    /**
+     * Sends mail with list of all started executions during last day
+     * 
+     * @param start
+     *            Send report for all executions started after this time
+     * @param end
+     *            Send report for all executions started before this time
+     */
+    private void sendDailyReportForStartedExecutions(Date start, Date end) {
+        List<PipelineExecution> executions = getExecutionsStartedLastDay(start, end);
+        Map<EmailAddress, List<PipelineExecution>> toSend = new HashMap<>();
+
+        final String subject = Messages.getString("DailyReport.started.report");
+
+        for (PipelineExecution exec : executions) {
+            Set<EmailAddress> recipients = getRecipients(exec, ReportType.STARTED_EXECUTIONS);
+            if (recipients == null || recipients.isEmpty()) {
+                // skip
+            } else {
+                for (EmailAddress email : recipients) {
+                    if (toSend.containsKey(email)) {
+                        // ok, record exist .. 
+                    } else {
+                        // create new list
+                        toSend.put(email, new LinkedList<PipelineExecution>());
+                    }
+                    // add to the list
+                    toSend.get(email).add(exec);
+                }
+            }
+        }
+
+        for (EmailAddress email : toSend.keySet()) {
+            String body = this.emailBuilder.buildStartedExecutionsMail(toSend.get(email));
+            // send email
+            this.emailSender.send(subject, body, email.toString());
         }
     }
 
@@ -104,7 +166,7 @@ class DailyReport {
      * @param end
      * @return
      */
-    private List<PipelineExecution> getExecutions(Date start, Date end) {
+    private List<PipelineExecution> getExecutionsEndedLastDay(Date start, Date end) {
         // we need only executions that has been scheduled
         DbQueryBuilder<PipelineExecution> builder = dbExecution.createQueryBuilder();
         builder.addFilter(Compare.greaterEqual("end", start));
@@ -114,13 +176,29 @@ class DailyReport {
     }
 
     /**
+     * Return executions that has been started in (date, data + 24h).
+     * 
+     * @param start
+     * @param end
+     * @return
+     */
+    private List<PipelineExecution> getExecutionsStartedLastDay(Date start, Date end) {
+        // we need only executions that has been scheduled
+        DbQueryBuilder<PipelineExecution> builder = this.dbExecution.createQueryBuilder();
+        builder.addFilter(Compare.greaterEqual("start", start));
+        builder.addFilter(Compare.less("start", end));
+        // end get queries
+        return this.dbExecution.executeList(builder.getQuery());
+    }
+
+    /**
      * Return list of email on which send information about this execution. The
      * list can be empty or null if the email should not be sent.
      * 
      * @param execution
      * @return
      */
-    private Set<EmailAddress> getRecipients(PipelineExecution execution) {
+    private static Set<EmailAddress> getRecipients(PipelineExecution execution, ReportType reportType) {
         // just for sure check, that it has been sheduled
         if (execution.getSchedule() == null) {
             return null;
@@ -130,7 +208,7 @@ class DailyReport {
         ScheduleNotificationRecord scheduleNotification = execution.getSchedule().getNotification();
         if (scheduleNotification != null) {
             // use schedule notification
-            if (report(scheduleNotification, execution.getStatus())) {
+            if (report(scheduleNotification, execution.getStatus(), reportType)) {
                 return scheduleNotification.getEmails();
             }
         }
@@ -142,7 +220,7 @@ class DailyReport {
 
         UserNotificationRecord userNotification = execution.getOwner().getNotification();
         if (userNotification != null) {
-            if (report(userNotification, execution.getStatus())) {
+            if (report(userNotification, execution.getStatus(), reportType)) {
                 return userNotification.getEmails();
             }
         }
@@ -158,27 +236,36 @@ class DailyReport {
      * @param status
      * @return
      */
-    private boolean report(NotificationRecord notification,
-            PipelineExecutionStatus status) {
-        switch (status) {
-            case CANCELLED:
-                return false;
-            case CANCELLING:
-                return false;
-            case FAILED:
-                // return true if use daily report
-                return notification.getTypeError() == NotificationRecordType.DAILY;
-            case FINISHED_SUCCESS:
-            case FINISHED_WARNING:
-                // return trye if use daily report
-                return notification.getTypeSuccess() == NotificationRecordType.DAILY;
-            case QUEUED:
-                return false;
-            case RUNNING:
-                return false;
-            default:
-                return false;
+    private static boolean report(NotificationRecord notification,
+            PipelineExecutionStatus status, ReportType reportType) {
+        if (reportType == ReportType.STARTED_EXECUTIONS) {
+            return notification.getTypeStarted() == NotificationRecordType.DAILY;
+        } else {
+            switch (status) {
+                case CANCELLED:
+                    return false;
+                case CANCELLING:
+                    return false;
+                case FAILED:
+                    // return true if use daily report
+                    return notification.getTypeError() == NotificationRecordType.DAILY;
+                case FINISHED_SUCCESS:
+                case FINISHED_WARNING:
+                    // return trye if use daily report
+                    return notification.getTypeSuccess() == NotificationRecordType.DAILY;
+                case QUEUED:
+                    return false;
+                case RUNNING:
+                    return false;
+                default:
+                    return false;
+            }
         }
+    }
+
+    private static enum ReportType {
+        STARTED_EXECUTIONS,
+        FINISHED_EXECUTIONS;
     }
 
 }

@@ -43,9 +43,9 @@ class InstantReportEmailBuilder {
 
         addCommonMailBody(body, execution, schedule);
 
-        body.append(Messages.getString("InstantReportEmailBuilder.execution.ends", execution.getEnd().toString()));
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.ends", EmailUtils.formatDate(execution.getEnd())));
         body.append("<br/>");
-        body.append(Messages.getString("InstantReportEmailBuilder.execution.result", execution.getStatus()));
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.result", EmailUtils.getStatusAsString(execution.getStatus())));
         body.append("<br/>");
 
         addExecutionLink(body, execution, schedule);
@@ -82,20 +82,17 @@ class InstantReportEmailBuilder {
 
             // name
             body.append("<td>");
-            if (message.getDpuInstance() == null) {
-                // no dpu ..
-            } else {
-                // add the dpu name ..
+            if (message.getDpuInstance() != null) {
                 body.append(message.getDpuInstance().getName());
             }
             body.append("</td>");
             // time
             body.append("<td>");
-            body.append(message.getTime());
+            body.append(EmailUtils.formatDate(message.getTime()));
             body.append("</td>");
             // type
             body.append("<td>");
-            body.append(message.getType().toString());
+            body.append(EmailUtils.getMessageTypeAsString(message.getType()));
             body.append("</td>");
             // short message			
             body.append("<td>");
@@ -123,9 +120,9 @@ class InstantReportEmailBuilder {
         body.append("<br/>");
         body.append(Messages.getString("InstantReportEmailBuilder.execution", execution.getId().toString()));
         body.append("<br/>");
-        body.append(Messages.getString("InstantReportEmailBuilder.execution.owner", getDisplayedExecutionOwner(execution)));
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.owner", EmailUtils.getDisplayedExecutionOwner(execution)));
         body.append("<br/>");
-        body.append(Messages.getString("InstantReportEmailBuilder.execution.starts", execution.getStart().toString()));
+        body.append(Messages.getString("InstantReportEmailBuilder.execution.starts", EmailUtils.formatDate(execution.getStart())));
         body.append("<br/>");
     }
 
@@ -147,18 +144,6 @@ class InstantReportEmailBuilder {
         } catch (MissingConfigPropertyException e) {
             // no name is presented
         }
-    }
-
-    private static String getDisplayedExecutionOwner(PipelineExecution execution) {
-        StringBuilder displayedName = new StringBuilder();
-        displayedName.append(execution.getOwner().getFullName());
-        if (execution.getActor() != null) {
-            displayedName.append(" (");
-            displayedName.append(execution.getActor().getName());
-            displayedName.append(")");
-        }
-
-        return displayedName.toString();
     }
 
 }
