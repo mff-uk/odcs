@@ -383,6 +383,17 @@ public class DPUModuleManipulator {
         dpu.setJarDescription(jarDescription);
         dpu.setJarName(newDpuName);
 
+        // if dpu localized names are used, there could be a name change, therefore reload it from bundle
+        if(useLocalizedDpuName()){
+            eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(newDpuInstance);
+            if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                dpu.setName(messages.getString(DPU_NAME_KEY));
+            }
+            if(!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                dpu.setMenuName(messages.getString(DPU_MENU_NAME_KEY));
+            }
+        }
+
         // validate
         if (validators != null) {
             try {

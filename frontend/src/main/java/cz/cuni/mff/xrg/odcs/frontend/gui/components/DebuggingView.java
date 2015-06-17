@@ -343,9 +343,13 @@ public class DebuggingView extends CustomComponent {
     }
 
     private void setExecution(PipelineExecution execution, DPUInstanceRecord instance, boolean checkRedundancy) {
+        if (execution == null) {
+            return;
+        }
+
         if (checkRedundancy) {
-            if (execution == null || (execution.equals(this.pipelineExec)
-                    && (instance == null || instance.equals(this.debugDpu)))) {
+            if (execution.equals(this.pipelineExec)
+                    && (instance == null || instance.equals(this.debugDpu))) {
                 //Already set
                 return;
             }
