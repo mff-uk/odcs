@@ -41,7 +41,7 @@ class DailyReportEmailBuilder {
         body.append("</tr>");
 
         for (PipelineExecution exec : executions) {
-            body.append("<tr>");
+            body.append(EmailUtils.getTableRowHTMLStartTag(exec.getStatus()));
             // pipeline
             body.append("<td>");
             body.append(exec.getPipeline().getName());
@@ -105,7 +105,7 @@ class DailyReportEmailBuilder {
         body.append("</tr>");
 
         for (PipelineExecution exec : executions) {
-            body.append("<tr>");
+            body.append(EmailUtils.getTableRowHTMLStartTag(exec.getStatus()));
             // pipeline
             body.append("<td>");
             body.append(exec.getPipeline().getName());

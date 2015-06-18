@@ -9,8 +9,10 @@ import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
@@ -23,10 +25,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 class InstantReportEmailBuilder {
 
     @Autowired
-    private DPUFacade dpuFacade;
+    private AppConfig config;
 
     @Autowired
-    private AppConfig config;
+    private DbMessageRecord dbMessageRecord;
 
     public String buildExecutionStartedMail(PipelineExecution execution, Schedule schedule) {
         StringBuilder body = new StringBuilder();
@@ -52,7 +54,7 @@ class InstantReportEmailBuilder {
 
         body.append("<br/><br/>");
         // append messages
-        final List<MessageRecord> messages = dpuFacade.getAllDPURecords(execution);
+        final List<MessageRecord> messages = getMessagesForExecution(execution);
         body.append("<b>");
         body.append(Messages.getString("InstantReportEmailBuilder.published.messages"));
         body.append("</b> <br/>");
@@ -144,6 +146,14 @@ class InstantReportEmailBuilder {
         } catch (MissingConfigPropertyException e) {
             // no name is presented
         }
+    }
+
+    private List<MessageRecord> getMessagesForExecution(PipelineExecution execution) {
+        DbQueryBuilder<MessageRecord> query = this.dbMessageRecord.createQueryBuilder();
+        query.addFilter(Compare.equal("execution", execution));
+        query.sort("id", true);
+
+        return this.dbMessageRecord.executeList(query.getQuery());
     }
 
 }

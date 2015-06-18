@@ -70,4 +70,21 @@ public class EmailUtils {
         }
     }
 
+    public static String getTableRowHTMLStartTag(PipelineExecutionStatus status) {
+        switch (status) {
+            case FAILED:
+                return "<tr bgcolor=\"#FFE0E0\">";
+            case CANCELLED:
+            case CANCELLING:
+            case FINISHED_WARNING:
+                return "<tr bgcolor=\"#FFFFA0\">";
+            case FINISHED_SUCCESS:
+            case QUEUED:
+            case RUNNING:
+            default:
+                return "<tr bgcolor=\"#E0E0FF\">";
+
+        }
+    }
+
 }
