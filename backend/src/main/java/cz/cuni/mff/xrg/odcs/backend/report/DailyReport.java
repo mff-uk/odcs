@@ -68,13 +68,17 @@ class DailyReport {
         date.add(Calendar.DAY_OF_MONTH, -1);
         Date start = date.getTime();
 
-        LOG.info("Going to send configured started executions reports");
-        sendDailyReportForStartedExecutions(start, end);
-        LOG.info("Started executions reports sent");
+        try {
+            LOG.info("Going to send configured started executions reports");
+            sendDailyReportForStartedExecutions(start, end);
+            LOG.info("Started executions reports sent");
 
-        LOG.info("Going to send configured finished executions reports");
-        sendDailyReportForFinishedExecutions(start, end);
-        LOG.info("Finished executions reports sent");
+            LOG.info("Going to send configured finished executions reports");
+            sendDailyReportForFinishedExecutions(start, end);
+            LOG.info("Finished executions reports sent");
+        } catch (Exception e) {
+            LOG.error("Failed to send daily report", e);
+        }
     }
 
     /**
@@ -199,29 +203,33 @@ class DailyReport {
      * @return
      */
     private static Set<EmailAddress> getRecipients(PipelineExecution execution, ReportType reportType) {
-        // just for sure check, that it has been sheduled
+        // For non scheduled executions, check user settings if non-scheduled executions should be reported
         if (execution.getSchedule() == null) {
-            return null;
-        }
-
-        // try schedule specific notificaiton settings
-        ScheduleNotificationRecord scheduleNotification = execution.getSchedule().getNotification();
-        if (scheduleNotification != null) {
-            // use schedule notification
-            if (report(scheduleNotification, execution.getStatus(), reportType)) {
-                return scheduleNotification.getEmails();
+            if (execution.getOwner() != null) {
+                UserNotificationRecord userNotification = execution.getOwner().getNotification();
+                if (userNotification != null && userNotification.isReportNotScheduled()) {
+                    if (report(userNotification, execution.getStatus(), reportType)) {
+                        return userNotification.getEmails();
+                    }
+                }
             }
-        }
+        } else {
+            // try schedule specific notification settings
+            ScheduleNotificationRecord scheduleNotification = execution.getSchedule().getNotification();
+            if (scheduleNotification != null) {
+                // use schedule notification
+                if (report(scheduleNotification, execution.getStatus(), reportType)) {
+                    return scheduleNotification.getEmails();
+                }
+            }
 
-        if (execution.getOwner() == null) {
-            // no owner, we can't use his settings
-            return null;
-        }
-
-        UserNotificationRecord userNotification = execution.getOwner().getNotification();
-        if (userNotification != null) {
-            if (report(userNotification, execution.getStatus(), reportType)) {
-                return userNotification.getEmails();
+            if (execution.getOwner() != null) {
+                UserNotificationRecord userNotification = execution.getOwner().getNotification();
+                if (userNotification != null) {
+                    if (report(userNotification, execution.getStatus(), reportType)) {
+                        return userNotification.getEmails();
+                    }
+                }
             }
         }
 

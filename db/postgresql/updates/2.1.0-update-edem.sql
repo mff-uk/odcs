@@ -16,12 +16,13 @@ ALTER TABLE usr_user ALTER COLUMN full_name SET NOT NULL;
 
 -- Email notifications
 ALTER TABLE "sch_sch_notification"
-ADD COLUMN "type_started" SMALLINT;
-UPDATE "sch_sch_notification" SET type_started = 2 WHERE type_started IS NULL;
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
 
 ALTER TABLE "sch_usr_notification"
-ADD COLUMN "type_started" SMALLINT;
-UPDATE "sch_usr_notification" SET type_started = 2 WHERE type_started IS NULL;
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "report_not_scheduled" boolean DEFAULT false;
 
 -- Permission changes
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.schedule';

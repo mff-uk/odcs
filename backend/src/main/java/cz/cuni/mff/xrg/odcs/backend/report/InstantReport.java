@@ -132,47 +132,55 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof PipelineFinished || event instanceof PipelineStarted) {
-            PipelineExecution execution = null;
-            if (event instanceof PipelineFinished) {
-                execution = ((PipelineFinished) event).getExecution();
-            } else if (event instanceof PipelineStarted) {
-                execution = ((PipelineStarted) event).getExecution();
-            }
-            Schedule schedule = execution.getSchedule();
-            // pipeline finished has been scheduled?
-            if (schedule == null) {
-                // we ignore non scheduled executions
-            } else {
+            try {
+                PipelineExecution execution = null;
+                if (event instanceof PipelineFinished) {
+                    execution = ((PipelineFinished) event).getExecution();
+                } else if (event instanceof PipelineStarted) {
+                    execution = ((PipelineStarted) event).getExecution();
+                }
+                Schedule schedule = execution.getSchedule();
+
                 // create list with recipients
                 Set<String> emails = new HashSet<>();
 
-                // use Schedule notification if available
-                // otherwise use setting from user
-                if (schedule.getNotification() == null) {
-                    if (schedule.getOwner() == null) {
-                        // there is no owner to use to send email .. 
-                        LOG.warn("Missing owner for schedule id: {}", schedule.getId());
-                        return;
+                // check if send mail also for non scheduled executions
+                if (schedule == null) {
+                    if (execution.getOwner() != null && execution.getOwner().getNotification() != null) {
+                        if (execution.getOwner().getNotification().isReportNotScheduled()) {
+                            add(event, emails, execution, execution.getOwner().getNotification(),
+                                    execution.getOwner().getNotification().getEmails());
+                        }
                     }
+                } else { // email notifications for scheduled executions
+                    // use Schedule notification if available
+                    // otherwise use setting from user
+                    if (schedule.getNotification() == null) {
+                        if (schedule.getOwner() == null) {
+                            // there is no owner to use to send email .. 
+                            LOG.warn("Missing owner for schedule id: {}", schedule.getId());
+                            return;
+                        }
 
-                    if (schedule.getOwner().getNotification() == null) {
-                        // there is no rule to use to send email .. 
-                        LOG.warn("Missing notificaiton rule for schedule id: {}", schedule.getId());
-                        return;
+                        if (schedule.getOwner().getNotification() == null) {
+                            // there is no rule to use to send email .. 
+                            LOG.warn("Missing notificaiton rule for schedule id: {}", schedule.getId());
+                            return;
+                        }
+
+                        add(event, emails, execution, schedule.getOwner().getNotification(),
+                                schedule.getOwner().getNotification().getEmails());
+                    } else {
+                        LOG.debug("Using schedule's settings for email");
+                        add(event, emails, execution, schedule.getNotification(),
+                                schedule.getNotification().getEmails());
                     }
-
-                    add(event, emails, execution, schedule.getOwner().getNotification(),
-                            schedule.getOwner().getNotification().getEmails());
-                } else {
-                    LOG.debug("Using schedule's settings for email");
-                    add(event, emails, execution, schedule.getNotification(),
-                            schedule.getNotification().getEmails());
                 }
 
                 if (emails.isEmpty()) {
                     // no one to send the email
-                    LOG.debug("There is no addres to which send email for schedule id: {}",
-                            schedule.getId());
+                    LOG.debug("There is no addres to which send email for execution id: {}",
+                            execution.getId());
                     return;
                 }
 
@@ -195,7 +203,9 @@ class InstantReport implements ApplicationListener<ApplicationEvent> {
                             , email);
                 }
 
-                emailSender.send(subject, body, recipients);
+                this.emailSender.send(subject, body, recipients);
+            } catch (Exception e) {
+                LOG.error("Failed to send instant email report", e);
             }
         }
     }

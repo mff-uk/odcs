@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
@@ -35,6 +36,8 @@ public class EmailNotifications {
     private OptionGroup successfulExec;
 
     private OptionGroup startedExec;
+
+    private CheckBox nonScheduledExecutionReports;
 
     /**
      * Parent component.
@@ -100,7 +103,6 @@ public class EmailNotifications {
             }
         });
         notifycationLayout.addComponent(this.startedExec, 1, 0);
-        emailNotificationsLayout.addComponent(notifycationLayout);
 
         notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.successful")), 0, 1);
         successfulExec = new OptionGroup();
@@ -144,9 +146,7 @@ public class EmailNotifications {
 
             }
         });
-
         notifycationLayout.addComponent(successfulExec, 1, 1);
-        emailNotificationsLayout.addComponent(notifycationLayout);
 
         notifycationLayout.addComponent(new Label(Messages.getString("EmailNotifications.error")), 0, 2);
         errorExec = new OptionGroup();
@@ -195,6 +195,25 @@ public class EmailNotifications {
         notifycationLayout.addComponent(errorExec, 1, 2);
         emailNotificationsLayout.addComponent(notifycationLayout);
 
+        if (this.parentComponentUs != null) {
+            this.nonScheduledExecutionReports = new CheckBox();
+            this.nonScheduledExecutionReports.setCaption(Messages.getString("EmailNotifications.manual"));
+            this.nonScheduledExecutionReports.addValueChangeListener(new ValueChangeListener() {
+
+                private static final long serialVersionUID = 1L;
+
+                @SuppressWarnings("unqualified-field-access")
+                @Override
+                public void valueChange(ValueChangeEvent event) {
+                    if (parentComponentUs.buttonNotificationBar != null) {
+                        parentComponentUs.buttonNotificationBar.setEnabled(true);
+                    }
+                }
+            });
+            emailNotificationsLayout.addComponent(this.nonScheduledExecutionReports);
+
+        }
+
         return emailNotificationsLayout;
     }
 
@@ -207,6 +226,7 @@ public class EmailNotifications {
         notification.setTypeStarted((NotificationRecordType) this.startedExec.getValue());
         notification.setTypeError((NotificationRecordType) errorExec.getValue());
         notification.setTypeSuccess((NotificationRecordType) successfulExec.getValue());
+        notification.setReportNotScheduled(this.nonScheduledExecutionReports.getValue());
     }
 
     /**
@@ -236,8 +256,8 @@ public class EmailNotifications {
 
         if (notification != null) {
             this.startedExec.setValue(notification.getTypeStarted());
-            errorExec.setValue(notification.getTypeError());
-            successfulExec.setValue(notification.getTypeSuccess());
+            this.errorExec.setValue(notification.getTypeError());
+            this.successfulExec.setValue(notification.getTypeSuccess());
         }
 
     }
@@ -253,8 +273,9 @@ public class EmailNotifications {
 
         if (notification != null) {
             this.startedExec.setValue(notification.getTypeStarted());
-            errorExec.setValue(notification.getTypeError());
-            successfulExec.setValue(notification.getTypeSuccess());
+            this.errorExec.setValue(notification.getTypeError());
+            this.successfulExec.setValue(notification.getTypeSuccess());
+            this.nonScheduledExecutionReports.setValue(notification.isReportNotScheduled());
 
         }
 
@@ -265,8 +286,11 @@ public class EmailNotifications {
      */
     public void getDefaultScheduleNotificationRecord() {
         this.startedExec.setValue(NotificationRecordType.NO_REPORT);
-        errorExec.setValue(NotificationRecordType.INSTANT);
-        successfulExec.setValue(NotificationRecordType.DAILY);
+        this.errorExec.setValue(NotificationRecordType.INSTANT);
+        this.successfulExec.setValue(NotificationRecordType.DAILY);
+        if (this.nonScheduledExecutionReports != null) {
+            this.nonScheduledExecutionReports.setValue(false);
+        }
 
     }
 
@@ -274,7 +298,7 @@ public class EmailNotifications {
      * Disable components.
      */
     public void setDisableComponents() {
-
+        startedExec.setEnabled(false);
         successfulExec.setEnabled(false);
         errorExec.setEnabled(false);
         parentComponentSh.getEmailLayout().setEnabled(false);
@@ -286,7 +310,7 @@ public class EmailNotifications {
      * Enables components in email notifications.
      */
     public void setEnableComponents() {
-
+        startedExec.setEnabled(true);
         successfulExec.setEnabled(true);
         errorExec.setEnabled(true);
         parentComponentSh.getEmailLayout().setEnabled(true);

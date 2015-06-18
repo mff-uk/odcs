@@ -12,12 +12,13 @@ ADD COLUMN "menu_name" VARCHAR(255);
 
 -- Email notifications
 ALTER TABLE "sch_sch_notification"
-ADD COLUMN "type_started" SMALLINT;
-UPDATE "sch_sch_notification" SET type_started = 2 WHERE type_started IS NULL;
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
 
 ALTER TABLE "sch_usr_notification"
-ADD COLUMN "type_started" SMALLINT;
-UPDATE "sch_usr_notification" SET type_started = 2 WHERE type_started IS NULL;
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "report_not_scheduled" boolean DEFAULT false;
 
 -- full name for user is now mandatory parameter - copy username if missing
 UPDATE usr_user SET full_name = username WHERE full_name IS NULL;
