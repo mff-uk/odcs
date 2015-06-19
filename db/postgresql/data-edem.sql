@@ -134,7 +134,6 @@ INSERT INTO "user_role_permission" values((select id from "role" where name='MOD
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.export', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
-INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-PO'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'dpuTemplate.copy', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
