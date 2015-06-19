@@ -20,6 +20,8 @@ UPDATE `sch_sch_notification` SET type_started = 2 WHERE type_started IS NULL;
 ALTER TABLE `sch_usr_notification` ADD COLUMN `type_started` SMALLINT;
 UPDATE `sch_usr_notification` SET type_started = 2 WHERE type_started IS NULL;
 
+ALTER TABLE `sch_usr_notification` ADD COLUMN `report_not_scheduled` boolean DEFAULT false;
+
 UPDATE `permission` SET name = 'dpuTemplate.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'dpuTemplate.setVisibilityAtCreate';
 UPDATE `permission` SET name = 'pipeline.setVisibility', `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.setVisibilityAtCreate';
 UPDATE `permission` SET `sharedEntityInstanceWriteRequired` = true WHERE name = 'pipeline.schedule';

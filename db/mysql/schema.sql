@@ -274,6 +274,7 @@ CREATE TABLE `sch_usr_notification`
   `type_success` SMALLINT,
   `type_error` SMALLINT,
   `type_started` SMALLINT,
+  `report_not_scheduled` BOOLEAN DEFAULT false,
   PRIMARY KEY (`id`),
   UNIQUE (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
