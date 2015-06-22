@@ -13,9 +13,15 @@ public class ApiException extends WebApplicationException {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiException.class);
 
-    public ApiException(Status status, String message) {
+    public ApiException(Status status, String error) {
         super(Response.status(status)
-                .entity(new ErrorResponse(message)).type(MediaType.APPLICATION_JSON_TYPE).build());
-        LOG.debug("API exception raised: status: {}, message: {}", status, message);
+                .entity(new ErrorResponse(error, "")).type(MediaType.APPLICATION_JSON_TYPE).build());
+        LOG.error("API exception raised: status: {}, message: {}", status, error, this);
+    }
+
+    public ApiException(Status status, String error, String message) {
+        super(Response.status(status)
+                .entity(new ErrorResponse(error, message)).type(MediaType.APPLICATION_JSON_TYPE).build());
+        LOG.error("API exception raised: status: {}, error: {}, message: {}", status, error, message, this);
     }
 }

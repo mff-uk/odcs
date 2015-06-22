@@ -1,14 +1,17 @@
 package eu.unifiedviews.master.model;
 
 public class ErrorResponse {
+
     private String error;
+
+    private String message;
 
     public ErrorResponse() {
     }
 
-    public ErrorResponse(String error) {
-        super();
+    public ErrorResponse(String error, String message) {
         this.error = error;
+        this.message = message;
     }
 
     public String getError() {
@@ -19,4 +22,18 @@ public class ErrorResponse {
         this.error = error;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override public String toString() {
+        return "ErrorResponse{" +
+                "error='" + error + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

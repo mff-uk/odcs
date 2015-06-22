@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.unifiedviews.master.i18n.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -62,6 +63,11 @@ public class PipelineResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
+        // validate pipeline name length
+        if(pipelineDTO.getName().length() > 1024) {
+            throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()), Messages.getString("pipeline.name.length.exceeded"));
+        }
+
         // try to get user
         User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
         if (user == null) {
@@ -71,15 +77,19 @@ public class PipelineResource {
         Pipeline pipeline = null;
         try {
             pipeline = pipelineFacade.createPipeline();
-            if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline could not be created."));
-            }
             final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
             pipeline.setUser(user);
             if (actor != null) {
                 pipeline.setActor(actor);
             }
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
+
+            // check if pipeline with the same name already exists
+            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), pipeline);
+            if(alreadyExists) {
+                throw new ApiException(Response.Status.CONFLICT, String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()), Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()));
+            }
+
             this.pipelineFacade.save(pipeline);
         } catch (ApiException ex) {
             throw ex;
