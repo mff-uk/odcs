@@ -1,3 +1,9 @@
+-- Update permissions - delete all current permissions and insert latest version
+DELETE FROM `user_role_permission`;
+DELETE FROM `permission`;
+ALTER TABLE `permission` AUTO_INCREMENT = 1;
+
+-- Insert permissions
 INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.delete', true);
