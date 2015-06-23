@@ -102,10 +102,6 @@ public class DPUCreate extends Window {
         fl = aFl;
     }
 
-    private TextField dpuName;
-
-    private TextArea dpuDescription;
-
     private OptionGroup groupVisibility;
 
     private OptionGroup groupVisibilityZip;
@@ -225,29 +221,6 @@ public class DPUCreate extends Window {
         return dpuDescription;
     }
 
-    private TextField createDpuName() {
-        TextField dpuName = new TextField();
-        dpuName.setImmediate(true);
-        dpuName.setWidth("310px");
-        dpuName.setHeight("-1px");
-        //settings of mandatory
-        dpuName.addValidator(new Validator() {
-            private static final long serialVersionUID = -4660159520157051764L;
-
-            @Override
-            public void validate(Object value) throws Validator.InvalidValueException {
-                if (value.getClass() == String.class
-                        && !((String) value).isEmpty()) {
-                    return;
-                }
-                throw new Validator.InvalidValueException(Messages.getString("DPUCreate.name.filled"));
-
-            }
-        });
-        dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
-        return dpuName;
-    }
-
     public com.vaadin.ui.Component createJarTab() {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("dpuDetailMainLayout");
@@ -257,20 +230,6 @@ public class DPUCreate extends Window {
         dpuGeneralSettingsLayout.setSpacing(true);
         dpuGeneralSettingsLayout.setWidth("400px");
         dpuGeneralSettingsLayout.setHeight("200px");
-
-        //Name of DPU Template: label & TextField
-        Label nameLabel = new Label(Messages.getString("DPUCreate.name"));
-        nameLabel.setImmediate(false);
-        nameLabel.setWidth("-1px");
-        nameLabel.setHeight("-1px");
-        dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
-
-        dpuName = createDpuName();
-        dpuName.setInputPrompt(Messages.getString("DPUCreate.prompt"));
-        dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
-
-        //Description of DPU Template: label & TextArea
-        dpuDescription = createDpuDescription(dpuGeneralSettingsLayout, 1);
 
         //Visibility of DPU Template: label & OptionGroup
         groupVisibility = createVisibilityOption(dpuGeneralSettingsLayout, 2);
@@ -595,14 +554,13 @@ public class DPUCreate extends Window {
 
     private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
-        String name = dpuName.isValid() ? dpuName.getValue() : null;
+        String name = null;
 
         dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
                 appConfig, this.utils.getUser());
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
-        dpuTemplate.setDescription(dpuDescription.getValue());
         dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
         dpuFacade.save(dpuTemplate);
     }
@@ -714,8 +672,6 @@ public class DPUCreate extends Window {
      * Reset the component to empty values.
      */
     public void initClean() {
-        dpuName.setValue("");
-        dpuDescription.setValue("");
         groupVisibility.setValue(ShareType.PUBLIC_RO);
         groupVisibility.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFile.setReadOnly(false);
