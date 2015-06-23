@@ -1414,7 +1414,7 @@ public class PipelineEdit extends ViewComponent {
     private void updateLblPipelineName() {
         if (this.pipeline == null) {
         } else {
-            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail") + this.pipeline.getName() + "' <h3>");
+            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", this.pipeline.getName()));
         }
     }
 

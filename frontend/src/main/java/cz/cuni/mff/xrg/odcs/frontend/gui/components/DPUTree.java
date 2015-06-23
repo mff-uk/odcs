@@ -1,5 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +34,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-
-import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
  * Tree showing available DPUs. Contains filters by accessibility and name. It
@@ -185,7 +185,7 @@ public class DPUTree extends CustomComponent {
         buttonCreateDPU = new Button();
         buttonCreateDPU.setCaption(Messages.getString("DPUTree.create.dpu"));
         buttonCreateDPU.setHeight("25px");
-        buttonCreateDPU.setWidth("170px");
+        buttonCreateDPU.setWidth("180px");
         buttonCreateDPU
                 .addClickListener(new Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -207,7 +207,7 @@ public class DPUTree extends CustomComponent {
 
         exportButton = new Button(Messages.getString("DPUTree.export.dpu"));
         exportButton.setHeight("25px");
-        exportButton.setWidth("170px");
+        exportButton.setWidth("180px");
 
         exportButton.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 6941128812967827740L;
@@ -315,7 +315,7 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null && second.getId() == null) {
                     return 0;
                 } else {
-                    if(isEmpty(first.getMenuName()) || isEmpty(second.getMenuName())) {
+                    if (isEmpty(first.getMenuName()) || isEmpty(second.getMenuName())) {
                         return first.getName().compareTo(second.getName()); // fallback to name
                     } else {
                         return first.getMenuName().compareTo(second.getMenuName());

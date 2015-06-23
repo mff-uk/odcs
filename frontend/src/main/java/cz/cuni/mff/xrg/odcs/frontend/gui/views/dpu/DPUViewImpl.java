@@ -178,7 +178,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         Button buttonCreateDPU = new Button();
         buttonCreateDPU.setCaption(Messages.getString("DPUViewImpl.create.template"));
         buttonCreateDPU.setHeight("25px");
-        buttonCreateDPU.setWidth("150px");
+        buttonCreateDPU.setWidth("160px");
         buttonCreateDPU.addStyleName("v-button-primary");
         buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
