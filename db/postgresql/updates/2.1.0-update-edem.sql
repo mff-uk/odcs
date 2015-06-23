@@ -107,6 +107,7 @@ DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permis
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.copy') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.create') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.export') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;

@@ -51,8 +51,12 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
      *            Default width of the canvas
      * @param height
      *            Default height of the canvas
+     * @param language
+     *            language in which should be canvas displayed
+     * @param frontendTheme
+     *            frontend theme name
      */
-    public void init(int width, int height);
+    public void init(int width, int height, String language, String frontendTheme);
 
     /**
      * Updates information of given node's DPUInstance.

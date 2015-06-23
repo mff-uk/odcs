@@ -85,8 +85,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	/** Registering RPC for calls from server-side**/
 	this.registerRpc({
-		init: function(width, height) {
-			init(width, height);
+		init: function(width, height, locale, frontendTheme) {
+			init(width, height, locale, frontendTheme);
 		},
 		addNode: function(dpuId, name, description, type, x, y, isNew) {
 			addDpu(dpuId, name, description, type, x, y, isNew);
@@ -179,13 +179,14 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	var visibleActionBar = null;
 
-	/** 
-	 * Init function which builds entire stage for pipeline 
-	 * 
-	 * @param {int} width canvas width
-	 * @param {int} height canvas height
-	 * */
-	function init(width, height) {
+    /**
+     * Init function which builds entire stage for pipeline
+     *
+     * @param {int} width canvas width
+     * @param {int} height canvas height
+     * @param lang UI language
+     * */
+	function init(width, height, language, frontendTheme) {
 		if (stage === null) {
 			stage = new Kinetic.Stage({
 				container: 'container',
@@ -286,50 +287,50 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 		if (basePath.charAt(basePath.length - 1) !== '/') {
 			basePath = basePath + '/';
 		}
-		var request = new XMLHttpRequest();
-		request.open("GET", basePath + 'frontend.theme', false);
-		request.onreadystatechange = function () {
-			var frontendTheme;
-			if (request.readyState === 4) {
-				if (request.status === 200 || request.status == 0) {
-					frontendTheme = request.responseText;
-				}
-			}
-			var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
-			basePath = basePath + imgPath;
 
-			addConnectionIcon = new Image();
-			addConnectionIcon.src = basePath + "arrow_right.svg";
+        var imgPath = 'VAADIN/themes/' + frontendTheme + '/img/';
+        basePath = basePath + imgPath;
 
-			removeConnectionIcon = new Image();
-			removeConnectionIcon.src = basePath + "TrashFull.svg";
+        addConnectionIcon = new Image();
+        addConnectionIcon.src = basePath + "arrow_right.svg";
 
-			debugIcon = new Image();
-			debugIcon.src = basePath + "debug.svg";
+        removeConnectionIcon = new Image();
+        removeConnectionIcon.src = basePath + "TrashFull.svg";
 
-			detailIcon = new Image();
-			detailIcon.src = basePath + "Gear.svg";
+        debugIcon = new Image();
+        debugIcon.src = basePath + "debug.svg";
 
-			formatIcon = new Image();
-			formatIcon.src = basePath + "format.svg";
+        detailIcon = new Image();
+        detailIcon.src = basePath + "Gear.svg";
 
-			copyIcon = new Image();
-			copyIcon.src = basePath + "copy.svg";
+        formatIcon = new Image();
+        formatIcon.src = basePath + "format.svg";
 
-			distributeIcon = new Image();
-			distributeIcon.src = basePath + "distribute.svg";
+        copyIcon = new Image();
+        copyIcon.src = basePath + "copy.svg";
 
-			invalidIcon = new Image();
-			invalidIcon.src = basePath + "exclamation.svg";
+        distributeIcon = new Image();
+        distributeIcon.src = basePath + "distribute.svg";
 
-			tooltip = createTooltip('Tooltip');
-			dpuLayer.add(tooltip);
+        invalidIcon = new Image();
+        invalidIcon.src = basePath + "exclamation.svg";
 
-//			formattingActionBar = createFormattingActionBar();
-//			dpuLayer.add(formattingActionBar);
-		}
-		request.send(null);
+        tooltip = createTooltip('Tooltip');
+        dpuLayer.add(tooltip);
+
+
+        loadBundles(language);
+
 	}
+
+    function loadBundles(language) {
+        $.i18n.properties({
+            name: 'messages',
+            path: 'VAADIN/js-msgs/',
+            mode: 'both',
+            language: language
+        });
+    }
 
 	var inSetupSelectionBox = false;
 	function setupSelectionBox() {
@@ -758,7 +759,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseenter', function(evt) {
-			activateTooltip('Create new edge');
+			activateTooltip(msgs.pipelinecanvas.edge.create);
 			evt.cancelBubble = true;
 		});
 		cmdConnection.on('mouseleave', function(evt) {
@@ -791,7 +792,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseenter', function(evt) {
-			activateTooltip('Show detail');
+			activateTooltip(msgs.pipelinecanvas.dpu.detail);
 			evt.cancelBubble = true;
 		});
 		cmdDetail.on('mouseleave', function(evt) {
@@ -825,7 +826,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseenter', function(evt) {
-			activateTooltip('Remove DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.remove);
 			evt.cancelBubble = true;
 		});
 		cmdRemove.on('mouseleave', function(evt) {
@@ -858,7 +859,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseenter', function(evt) {
-			activateTooltip('Debug to this DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.debug);
 			evt.cancelBubble = true;
 		});
 		cmdDebug.on('mouseleave', function(evt) {
@@ -890,7 +891,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdFormat.on('mouseenter', function(evt) {
-			activateTooltip('DPU layout formatting');
+			activateTooltip(msgs.pipelinecanvas.dpu.layout);
 			evt.cancelBubble = true;
 		});
 		cmdFormat.on('mouseleave', function(evt) {
@@ -922,7 +923,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseenter', function(evt) {
-			activateTooltip('Copy DPU');
+			activateTooltip(msgs.pipelinecanvas.dpu.copy);
 			evt.cancelBubble = true;
 		});
 		cmdCopy.on('mouseleave', function(evt) {
@@ -1760,7 +1761,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdName.on('mouseenter', function() {
-			activateTooltip('Set name of DataUnit.');
+			activateTooltip(msgs.pipelinecanvas.edge.edit);
 		});
 		cmdName.on('mouseleave', function(evt) {
 			deactivateTooltip();
@@ -1786,7 +1787,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		cmdDelete.on('mouseenter', function() {
-			activateTooltip('Remove the edge');
+			activateTooltip(msgs.pipelinecanvas.edge.remove);
 		});
 		cmdDelete.on('mouseleave', function(evt) {
 			deactivateTooltip();
