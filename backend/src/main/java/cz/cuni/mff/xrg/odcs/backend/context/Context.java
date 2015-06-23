@@ -264,6 +264,7 @@ public class Context implements DPUContext {
         return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
     }
 
+    @Override
     public String getOrganization() {
         return "";
     }
@@ -302,6 +303,10 @@ public class Context implements DPUContext {
             PrintWriter pw = new PrintWriter(sw);
             exception.printStackTrace(pw);
             fullMessage = fullMessage + "<br/><br/>Exception:<br/>" + sw.toString();
+        }
+        //cut short message to 128 characters
+        if (shortMessage != null && shortMessage.length() > 128) {
+            shortMessage = shortMessage.substring(0, 125) + "...";
         }
         eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
                 type, this, this));
