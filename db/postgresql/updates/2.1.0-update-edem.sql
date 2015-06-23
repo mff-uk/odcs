@@ -14,6 +14,16 @@ ADD COLUMN "menu_name" VARCHAR(255);
 UPDATE usr_user SET full_name = username WHERE full_name IS NULL;
 ALTER TABLE usr_user ALTER COLUMN full_name SET NOT NULL;
 
+-- Email notifications
+ALTER TABLE "sch_sch_notification"
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "report_not_scheduled" boolean DEFAULT false;
+
 -- Permission changes
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.runDebug';

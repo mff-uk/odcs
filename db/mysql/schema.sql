@@ -262,6 +262,7 @@ CREATE TABLE `sch_sch_notification`
   `schedule_id` INTEGER NOT NULL,
   `type_success` SMALLINT,
   `type_error` SMALLINT,
+  `type_started` SMALLINT,
   PRIMARY KEY (`id`),
   UNIQUE (`schedule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -272,6 +273,8 @@ CREATE TABLE `sch_usr_notification`
   `user_id` INTEGER NOT NULL,
   `type_success` SMALLINT,
   `type_error` SMALLINT,
+  `type_started` SMALLINT,
+  `report_not_scheduled` BOOLEAN DEFAULT false,
   PRIMARY KEY (`id`),
   UNIQUE (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
