@@ -9,6 +9,15 @@ UPDATE `properties` SET `value` = '002.001.000' WHERE `key` = 'UV.Plugin-DevEnv.
 ALTER TABLE `dpu_instance` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 ALTER TABLE `dpu_template` ADD COLUMN `menu_name` VARCHAR(255) NULL DEFAULT NULL;
 
+-- Email notifications
+ALTER TABLE `sch_sch_notification` ADD COLUMN `type_started` SMALLINT;
+UPDATE `sch_sch_notification` SET type_started = 2 WHERE type_started IS NULL;
+
+ALTER TABLE `sch_usr_notification` ADD COLUMN `type_started` SMALLINT;
+UPDATE `sch_usr_notification` SET type_started = 2 WHERE type_started IS NULL;
+
+ALTER TABLE `sch_usr_notification` ADD COLUMN `report_not_scheduled` boolean DEFAULT false;
+
 -- full name for user is now mandatory parameter - copy username if missing
 UPDATE `usr_user` SET `full_name` = `username` WHERE `full_name` IS NULL;
 ALTER TABLE `usr_user` MODIFY `full_name` VARCHAR(55) NOT NULL;

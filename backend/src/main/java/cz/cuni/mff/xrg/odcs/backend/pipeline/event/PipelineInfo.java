@@ -15,6 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
  */
 public class PipelineInfo extends PipelineEvent {
 
+    private static final long serialVersionUID = 4944203292802753371L;
+
     private static final Logger LOG = LoggerFactory
             .getLogger(PipelineInfo.class);
 
@@ -46,17 +48,6 @@ public class PipelineInfo extends PipelineEvent {
             Object source) {
         LOG.info("Execution continue");
         return new PipelineInfo(execution, source, Messages.getString("PipelineInfo.continue"), "");
-    }
-
-    public static PipelineInfo createStart(PipelineExecution execution,
-            Object source) {
-        // prepare message
-        final String msgShort = Messages.getString("PipelineInfo.starting", execution.getId());
-        final String msgLong = Messages.getString("PipelineInfo.starting.detail",
-                execution.getId(), execution.getPipeline().getName());
-        LOG.info(msgLong);
-        return new PipelineInfo(execution, source,
-                msgShort, msgLong);
     }
 
 }
