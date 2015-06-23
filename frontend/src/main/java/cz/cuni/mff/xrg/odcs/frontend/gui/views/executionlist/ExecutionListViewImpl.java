@@ -513,6 +513,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         executionTable.setHeight("100%");
         executionTable.setImmediate(true);
         executionTable.setColumnCollapsingAllowed(true);
+        executionTable.setNullSelectionAllowed(false);
 
         executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_SCHEDULE, COLUMN_SCHEDULE_WIDTH);
         executionTable.setColumnWidth(ExecutionViewAccessor.COLUMN_STATUS, COLUMN_STATUS_WIDTH);

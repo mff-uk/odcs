@@ -14,6 +14,16 @@ ADD COLUMN "menu_name" VARCHAR(255);
 UPDATE usr_user SET full_name = username WHERE full_name IS NULL;
 ALTER TABLE usr_user ALTER COLUMN full_name SET NOT NULL;
 
+-- Email notifications
+ALTER TABLE "sch_sch_notification"
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "type_started" SMALLINT DEFAULT 2;
+
+ALTER TABLE "sch_usr_notification"
+ADD COLUMN "report_not_scheduled" boolean DEFAULT false;
+
 -- Permission changes
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.schedule';
 UPDATE permission SET sharedEntityInstanceWriteRequired = true WHERE name = 'pipeline.runDebug';
@@ -97,6 +107,7 @@ DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permis
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'pipeline.importUserData') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.copy') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
 DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.create') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-TRANSA');
+DELETE FROM "user_role_permission" WHERE permission_id = (SELECT id FROM "permission" WHERE name = 'dpuTemplate.export') AND role_id = (SELECT id FROM "role" WHERE name = 'MOD-R-PO');
 -- Organizations removed
 DROP VIEW pipeline_view;
 DROP VIEW exec_view;

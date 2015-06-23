@@ -27,7 +27,7 @@ import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineStarted;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -280,6 +280,7 @@ public class Executor implements Runnable {
      * Run the execution.
      */
     private void execute() {
+        LOG.info("execute() start of # {}", this.execution.getId());
         // get dependency graph
         DependencyGraph dependencyGraph = prepareDependencyGraph();
 
@@ -423,7 +424,9 @@ public class Executor implements Runnable {
         }
         MDC.put(Log.MDC_EXECUTION_KEY_NAME, executionId);
 
-        eventPublisher.publishEvent(PipelineInfo.createStart(execution, this));
+        LOG.debug("Before publishing PipelineStarted event");
+        eventPublisher.publishEvent(new PipelineStarted(this.execution, this));
+        LOG.debug("After publishing PipelineStarted event");
 
         // execute the pipeline it self
         execute();

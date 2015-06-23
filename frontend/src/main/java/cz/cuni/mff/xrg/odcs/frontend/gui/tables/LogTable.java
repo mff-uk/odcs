@@ -94,6 +94,7 @@ public class LogTable extends CustomComponent {
         table.setImmediate(true);
         table.setSizeFull();
         table.setColumnCollapsingAllowed(true);
+        this.table.setNullSelectionAllowed(false);
 
         table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override

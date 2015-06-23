@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -29,6 +30,9 @@ public class UserNotificationRecord extends NotificationRecord {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(name = "report_not_scheduled")
+    private boolean reportNotScheduled;
 
     /**
      * E-mails the notification will be sent to.
@@ -70,6 +74,14 @@ public class UserNotificationRecord extends NotificationRecord {
     @Override
     public void removeEmail(EmailAddress email) {
         this.emails.remove(email);
+    }
+
+    public boolean isReportNotScheduled() {
+        return this.reportNotScheduled;
+    }
+
+    public void setReportNotScheduled(boolean reportNotScheduled) {
+        this.reportNotScheduled = reportNotScheduled;
     }
 
 }

@@ -671,6 +671,9 @@ public class SchedulePipeline extends Window {
 
                     }
 
+                    ScheduledJobsPriority job = (ScheduledJobsPriority) priorityComboBox.getValue();
+                    Long priority = job.getValue();
+                    schedule.setPriority(priority);
                     // store scheduling rule record to DB
                     scheduleFacade.save(schedule);
                     Notification.show(Messages.getString("SchedulePipeline.save.success", schedule.getPipeline().getName()), Notification.Type.HUMANIZED_MESSAGE);
