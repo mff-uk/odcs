@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
@@ -8,7 +7,7 @@
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
-	<description></description>
+	<description />
 
 	<!-- Shared version number properties -->
 	<properties>
@@ -350,10 +349,8 @@
 						<phase>process-classes</phase>
 						<configuration>
 							<tasks>
-								<java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
-									  classpathref="maven.runtime.classpath" fork="true">
-									<arg
-										line="-loglevel FINE -persistenceinfo src/main/resources target/classes target/classes" />
+								<java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave" classpathref="maven.runtime.classpath" fork="true">
+									<arg line="-loglevel FINE -persistenceinfo src/main/resources target/classes target/classes" />
 								</java>
 							</tasks>
 						</configuration>
