@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS `permission`;
 DROP TABLE IF EXISTS `usr_extuser`;
 DROP TABLE IF EXISTS `usr_user_role`;
 DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `user_actor`;
 DROP TABLE IF EXISTS `usr_user`;
 DROP TABLE IF EXISTS `organization`;
 DROP TABLE IF EXISTS `sch_email`;
