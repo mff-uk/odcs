@@ -100,20 +100,16 @@ public class DPUModuleManipulator {
         File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
 
+        DPUTemplateRecord parent = null;
+        
         DPUTemplateRecord newTemplate;
         boolean isChild = false;
         if (newDPUDir.exists()) {
-            DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
+            parent = dpuFacade.getByJarName(newDpuFileName);
 
             if (parent == null) {
                 throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.different.version", newDpuFileName));
             }
-
-//            TODO do we need it ?
-//            DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(name);
-//            if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
-//                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, name));
-//            }
 
             newTemplate = dpuFacade.createTemplate(null, null);
             newTemplate.setParent(parent);
@@ -163,6 +159,15 @@ public class DPUModuleManipulator {
         String dpuName, dpuMenuName;
         dpuName = dpuExplorer.getBundleName(newTemplate);
         dpuMenuName = dpuName;
+        
+        if (dpuName == null || (parent != null && parent.getName().equals(dpuName))) { // the same jarFileName and name
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", dpuName, newDpuFileName));
+        }
+
+        DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(dpuName);
+        if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName));
+        }
 
         if(useLocalizedDpuName()){
             eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
@@ -174,6 +179,7 @@ public class DPUModuleManipulator {
             }
         }
 
+        
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
