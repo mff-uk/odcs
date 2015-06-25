@@ -65,6 +65,7 @@ class UserFacadeImpl implements UserFacade {
         notify.addEmail(email);
         notify.setTypeError(NotificationRecordType.INSTANT);
         notify.setTypeSuccess(NotificationRecordType.DAILY);
+        notify.setTypeStarted(NotificationRecordType.NO_REPORT);
 
         return user;
     }
