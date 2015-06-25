@@ -65,6 +65,11 @@
 			<param-value>cz.cuni.mff.xrg.odcs.frontend.AppEntry</param-value>
 		</init-param>
 		<init-param>
+			<description>Vaadin UI Provider</description>
+			<param-name>UIProvider</param-name>
+			<param-value>cz.cuni.mff.xrg.odcs.frontend.UnifiedViewsUIProvider</param-value>
+		</init-param>
+		<init-param>
 			<param-name>widgetset</param-name>
 			<param-value>cz.cuni.mff.xrg.odcs.frontend.AppWidgetSet</param-value>
 		</init-param>
