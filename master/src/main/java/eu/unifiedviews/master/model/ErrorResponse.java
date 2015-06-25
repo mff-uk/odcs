@@ -2,38 +2,38 @@ package eu.unifiedviews.master.model;
 
 public class ErrorResponse {
 
-    private String error;
+    private String errorMessage;
 
-    private String message;
+    private String technicalMessage;
 
     public ErrorResponse() {
     }
 
-    public ErrorResponse(String error, String message) {
-        this.error = error;
-        this.message = message;
+    public ErrorResponse(String errorMessage, String technicalMessage) {
+        this.errorMessage = errorMessage;
+        this.technicalMessage = technicalMessage;
     }
 
-    public String getError() {
-        return error;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public String getMessage() {
-        return message;
+    public String getTechnicalMessage() {
+        return technicalMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setTechnicalMessage(String technicalMessage) {
+        this.technicalMessage = technicalMessage;
     }
 
     @Override public String toString() {
         return "ErrorResponse{" +
-                "error='" + error + '\'' +
-                ", message='" + message + '\'' +
+                "errorMessage='" + errorMessage + '\'' +
+                ", technicalMessage='" + technicalMessage + '\'' +
                 '}';
     }
 }

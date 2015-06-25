@@ -19,7 +19,7 @@ public class MasterExceptionMapper implements ExceptionMapper<Throwable> {
      * response. Throwing a runtime exception results in a
      * {@link Response.Status#INTERNAL_SERVER_ERROR} response.
      *
-     * @param exception the exception to map to a response.
+     * @param throwable the throwable to map to a response.
      * @return a response mapped from the supplied exception.
      */
     @Override
@@ -31,12 +31,11 @@ public class MasterExceptionMapper implements ExceptionMapper<Throwable> {
         // uncomment this part, if you want to send whole stacktrace
         //StringWriter errorStackTrace = new StringWriter();
         //throwable.printStackTrace(new PrintWriter(errorStackTrace));
-        //response.setError(errorStackTrace.toString());
+        //response.setTechnicalMessage(errorStackTrace.toString());
 
         // send just original throwable message
-        response.setError(throwable.getMessage());
-
-        response.setMessage(Messages.getString("general.exception"));
+        response.setErrorMessage(Messages.getString("general.exception"));
+        response.setTechnicalMessage(throwable.getMessage());
 
         int statusCode = determineHttpStatus(throwable);
         return Response.status(statusCode)
