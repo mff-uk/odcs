@@ -56,22 +56,19 @@ public class PipelineResource {
     @Autowired
     private UserFacade userFacade;
 
-    @Autowired
-    private AppConfig appConfig;
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
         // validate pipeline name length
         if(pipelineDTO.getName().length() > 1024) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()), Messages.getString("pipeline.name.length.exceeded"));
+            throw new ApiException(Response.Status.BAD_REQUEST,  Messages.getString("pipeline.name.length.exceeded"), String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()));
         }
 
         // try to get user
         User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
         if (user == null) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
         }
 
         Pipeline pipeline = null;
@@ -87,14 +84,14 @@ public class PipelineResource {
             // check if pipeline with the same name already exists
             boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), pipeline);
             if(alreadyExists) {
-                throw new ApiException(Response.Status.CONFLICT, String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()), Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()));
+                throw new ApiException(Response.Status.CONFLICT, Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()), String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()));
             }
 
             this.pipelineFacade.save(pipeline);
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.general.error"), e.getMessage());
         }
         return PipelineDTOConverter.convert(pipeline);
     }
@@ -111,12 +108,12 @@ public class PipelineResource {
             }
 
             if (pipelines == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "PipelineFacade returned null!");
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), String.format("null pipelines returned. There is probably a problem with database."));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), e.getMessage());
         }
 
         return PipelineDTOConverter.convert(pipelines);
@@ -128,17 +125,17 @@ public class PipelineResource {
     public PipelineDTO getPipeline(@PathParam("pipelineid") String id) {
         Pipeline pipeline = null;
         if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", id));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", id), String.format("ID=%s is not valid pipeline ID", id));
         }
         try {
             pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), e.getMessage());
         }
 
         return PipelineDTOConverter.convert(pipeline);
@@ -152,18 +149,18 @@ public class PipelineResource {
         Pipeline pipeline = null;
         Pipeline pipelineCopy = null;
         if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", id));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", id), String.format("ID=%s is not valid pipeline ID", id));
         }
         try {
             // try to get pipeline
             pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             // try to get user
             User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
             if (user == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
             }
 
             final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
@@ -175,10 +172,10 @@ public class PipelineResource {
             }
             pipelineCopy = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipelineCopy);
             this.pipelineFacade.save(pipelineCopy);
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.general.error"), e.getMessage());
         }
         return PipelineDTOConverter.convert(pipelineCopy);
     }
@@ -194,12 +191,9 @@ public class PipelineResource {
         try {
             pipelineFile = ConvertUtils.inputStreamToFile(inputStream, contentDispositionHeader.getFileName());
             importedPipeline = importService.importPipeline(pipelineFile, importUserData, importSchedule);
-        } catch (IOException e) {
-            LOG.error("Exception at reading input stream", e);
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-        } catch (ImportException e) {
+        } catch (IOException | ImportException e) {
             LOG.error("Exception at importing pipeline", e);
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.import.general.error"), e.getMessage());
         }
         return PipelineDTOConverter.convert(importedPipeline);
     }
