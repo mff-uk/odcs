@@ -99,15 +99,7 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         int serviceId = serviceCounter++;
         LOG.info("Request ({}) received", serviceId);
 
-        // Frontend theme for pipeline canvas.
-        if (request.getRequestURI().endsWith(ConfigProperty.FRONTEND_THEME.toString())) {
-            OutputStream outputStream = response.getOutputStream();
-            outputStream.write(appConfig.getString(ConfigProperty.FRONTEND_THEME).getBytes("utf8"));
-            outputStream.flush();
-            outputStream.close();
-        } else {
-            super.service(request, response);
-        }
+        super.service(request, response);
 
         Date end = new Date();
         if (end.getTime() - start.getTime() > 1000) {

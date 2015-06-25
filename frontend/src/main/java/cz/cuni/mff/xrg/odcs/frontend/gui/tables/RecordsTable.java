@@ -80,6 +80,7 @@ public class RecordsTable extends CustomComponent {
         messageTable.setFilterGenerator(createFilterGenerator(dpuSelector));
         messageTable.setFilterLayout();
         messageTable.setFilterBarVisible(true);
+        this.messageTable.setNullSelectionAllowed(false);
         messageTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
                     @Override

@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS `permission`;
 DROP TABLE IF EXISTS `usr_extuser`;
 DROP TABLE IF EXISTS `usr_user_role`;
 DROP TABLE IF EXISTS `role`;
+DROP TABLE IF EXISTS `user_actor`;
 DROP TABLE IF EXISTS `usr_user`;
 DROP TABLE IF EXISTS `organization`;
 DROP TABLE IF EXISTS `sch_email`;
@@ -262,6 +263,7 @@ CREATE TABLE `sch_sch_notification`
   `schedule_id` INTEGER NOT NULL,
   `type_success` SMALLINT,
   `type_error` SMALLINT,
+  `type_started` SMALLINT,
   PRIMARY KEY (`id`),
   UNIQUE (`schedule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -272,6 +274,8 @@ CREATE TABLE `sch_usr_notification`
   `user_id` INTEGER NOT NULL,
   `type_success` SMALLINT,
   `type_error` SMALLINT,
+  `type_started` SMALLINT,
+  `report_not_scheduled` BOOLEAN DEFAULT false,
   PRIMARY KEY (`id`),
   UNIQUE (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

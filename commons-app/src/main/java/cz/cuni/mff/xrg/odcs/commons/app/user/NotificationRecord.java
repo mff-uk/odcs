@@ -45,6 +45,13 @@ public abstract class NotificationRecord implements DataObject {
     private NotificationRecordType typeError;
 
     /**
+     * Type of notification in case of started execution
+     */
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type_started")
+    private NotificationRecordType typeStarted;
+
+    /**
      * Empty constructor. Used by JPA. Do not use otherwise.
      */
     public NotificationRecord() {
@@ -80,6 +87,14 @@ public abstract class NotificationRecord implements DataObject {
 
     public void setTypeError(NotificationRecordType typeError) {
         this.typeError = typeError;
+    }
+
+    public NotificationRecordType getTypeStarted() {
+        return this.typeStarted;
+    }
+
+    public void setTypeStarted(NotificationRecordType typeStarted) {
+        this.typeStarted = typeStarted;
     }
 
     /**
