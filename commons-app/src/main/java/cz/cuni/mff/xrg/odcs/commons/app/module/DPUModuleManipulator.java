@@ -87,8 +87,8 @@ public class DPUModuleManipulator {
                     Messages.getString("DPUModuleManipulator.dpu.load.fail"));
         }
         if (!sourceFile.exists()) {
-            LOG.error("Unable to find dpu: " + name);
-            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + name);
+            LOG.error("Unable to find dpu: " + sourceFile.getName());
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + sourceFile.getName());
         }
 
         // get directory name and also validate the DPU's file name
@@ -100,32 +100,26 @@ public class DPUModuleManipulator {
         File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
 
+        DPUTemplateRecord parent = null;
+        
         DPUTemplateRecord newTemplate;
         boolean isChild = false;
         if (newDPUDir.exists()) {
-            DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
+            parent = dpuFacade.getByJarName(newDpuFileName);
 
             if (parent == null) {
                 throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.different.version", newDpuFileName));
             }
 
-            if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
-                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", name, newDpuFileName));
-            }
-
-            DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(name);
-            if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
-                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, name));
-            }
-
-            newTemplate = dpuFacade.createTemplate(name, null);
+            newTemplate = dpuFacade.createTemplate(null, null);
             newTemplate.setParent(parent);
             isChild = true;
         } else {
             // we need dpu template to work wit DPUs
-            newTemplate = this.dpuFacade.createTemplate(name, null);
+            newTemplate = this.dpuFacade.createTemplate(null, null);
             prepareDirectory(newDPUDir);
 
+            
             // copy
             try {
                 FileUtils.copyFile(sourceFile, newDPUFile);
@@ -163,13 +157,18 @@ public class DPUModuleManipulator {
 
         final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
         String dpuName, dpuMenuName;
-        if( name == null) {
-            dpuName = dpuExplorer.getBundleName(newTemplate);
-            dpuMenuName = dpuName;
-        } else {
-            dpuName = name;
-            dpuMenuName = dpuName;
+        dpuName = dpuExplorer.getBundleName(newTemplate);
+        dpuMenuName = dpuName;
+        
+        if (dpuName == null || (parent != null && parent.getName().equals(dpuName))) { // the same jarFileName and name
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", dpuName, newDpuFileName));
         }
+
+        DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(dpuName);
+        if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName));
+        }
+
         if(useLocalizedDpuName()){
             eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
             if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
@@ -180,6 +179,7 @@ public class DPUModuleManipulator {
             }
         }
 
+        
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
