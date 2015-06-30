@@ -72,7 +72,7 @@ public class ExportService {
      * @return File with exportPipelineed pipeline.
      * @throws ExportException
      */
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.export')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public File exportPipeline(Pipeline pipeline, ExportSetting setting) throws ExportException {
         final File tempDir;
         try {
@@ -107,7 +107,7 @@ public class ExportService {
      * @param authCtx
      * @throws ExportException
      */
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.export')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting, AuthenticationContext authCtx)
             throws ExportException {
 
