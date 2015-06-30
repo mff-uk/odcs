@@ -832,6 +832,10 @@ public class PipelineEdit extends ViewComponent {
         return this.permissionUtils.hasPermission(pipeline, type);
     }
 
+    private boolean hasRole(String type) {
+        return this.permissionUtils.hasUserAuthority(type);
+    }
+
     private void setDetailState(boolean expand) {
         isExpanded = expand;
         btnMinimize.setVisible(expand);
@@ -1009,7 +1013,7 @@ public class PipelineEdit extends ViewComponent {
         buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
         buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
-        buttonExport.setEnabled(hasPermission(EntityPermissions.PIPELINE_EXPORT));
+        buttonExport.setEnabled(hasRole(EntityPermissions.PIPELINE_EXPORT) && hasPermission(EntityPermissions.PIPELINE_EXPORT));
         buttonConflicts.setEnabled(hasPermission(EntityPermissions.PIPELINE_DEFINE_DEPENDENCIES));
     }
 
