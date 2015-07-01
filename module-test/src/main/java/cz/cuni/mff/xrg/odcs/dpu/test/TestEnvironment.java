@@ -473,10 +473,11 @@ public class TestEnvironment {
         List<AnnotationContainer<DataUnit.AsOutput>> outputAnnotations = AnnotationGetter
                 .getAnnotations(dpuInstance, DataUnit.AsOutput.class);
         for (AnnotationContainer<DataUnit.AsOutput> item : outputAnnotations) {
+
             ManagableDataUnit dataUnit = getOutputDataUnit(item.getField(),
                     item.annotation.name());
             item.getField().set(dpuInstance, dataUnit);
-            if (dataUnit == null) {
+            if (dataUnit == null && !item.getAnnotation().optional()) {
                 throw new Exception("Can not bind 'null' to output DataUnit: "
                         + item.getAnnotation().name());
             }
