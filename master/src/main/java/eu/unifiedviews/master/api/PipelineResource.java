@@ -19,6 +19,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import eu.unifiedviews.master.i18n.Messages;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -63,7 +64,7 @@ public class PipelineResource {
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineDTO createPipeline(PipelineDTO pipelineDTO) {
         // validate pipeline name length
-        if(pipelineDTO.getName().length() > 1024) {
+        if(pipelineDTO.getName().length() > LenghtLimits.PIPELINE_NAME) {
             throw new ApiException(Response.Status.BAD_REQUEST,  Messages.getString("pipeline.name.length.exceeded"), String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()));
         }
 
@@ -155,7 +156,7 @@ public class PipelineResource {
         }
 
         // validate pipeline name length
-        if (pipelineDTO.getName().length() > 1024) {
+        if (pipelineDTO.getName().length() > LenghtLimits.PIPELINE_NAME) {
             throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.name.length.exceeded"), String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()));
         }
 
