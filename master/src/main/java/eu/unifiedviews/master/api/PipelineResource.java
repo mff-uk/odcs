@@ -67,15 +67,20 @@ public class PipelineResource {
         if(pipelineDTO.getName().length() > LenghtLimits.PIPELINE_NAME) {
             throw new ApiException(Response.Status.BAD_REQUEST,  Messages.getString("pipeline.name.length.exceeded"), String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()));
         }
-
-        // try to get user
-        User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
-        if (user == null) {
-            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
-        }
-
         Pipeline pipeline = null;
         try {
+            // check if pipeline with the same name already exists
+            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), null);
+            if(alreadyExists) {
+                throw new ApiException(Response.Status.CONFLICT, Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()), String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()));
+            }
+
+            // try to get user
+            User user = userFacade.getUserByExtId(pipelineDTO.getUserExternalId());
+            if (user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
+            }
+
             pipeline = pipelineFacade.createPipeline();
             final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
             pipeline.setUser(user);
@@ -83,12 +88,6 @@ public class PipelineResource {
                 pipeline.setActor(actor);
             }
             pipeline = PipelineDTOConverter.convertFromDTO(pipelineDTO, pipeline);
-
-            // check if pipeline with the same name already exists
-            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), pipeline);
-            if(alreadyExists) {
-                throw new ApiException(Response.Status.CONFLICT, Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()), String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()));
-            }
 
             this.pipelineFacade.save(pipeline);
         } catch (ApiException e) {
@@ -173,7 +172,7 @@ public class PipelineResource {
             }
 
             // check if pipeline with the same name already exists
-            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), pipeline);
+            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), null);
             if(alreadyExists) {
                 throw new ApiException(Response.Status.CONFLICT, Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()), String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()));
             }
