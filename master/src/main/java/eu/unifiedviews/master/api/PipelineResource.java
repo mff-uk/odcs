@@ -153,6 +153,12 @@ public class PipelineResource {
         if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
             throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", id), String.format("ID=%s is not valid pipeline ID", id));
         }
+
+        // validate pipeline name length
+        if (pipelineDTO.getName().length() > 1024) {
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.name.length.exceeded"), String.format("Pipeline length cannot exceed 1024 characters! Actual is %d", pipelineDTO.getName().length()));
+        }
+
         try {
             // try to get pipeline
             pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
@@ -165,9 +171,14 @@ public class PipelineResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", pipelineDTO.getUserExternalId()));
             }
 
+            // check if pipeline with the same name already exists
+            boolean alreadyExists = pipelineFacade.hasPipelineWithName(pipelineDTO.getName(), pipeline);
+            if(alreadyExists) {
+                throw new ApiException(Response.Status.CONFLICT, Messages.getString("pipeline.name.duplicate", pipelineDTO.getName()), String.format("Pipeline with name '%s' already exists. Pipeline cannot be created!", pipelineDTO.getName()));
+            }
+
             final UserActor actor = this.userFacade.getUserActorByExternalId(pipelineDTO.getUserActorExternalId());
             pipelineCopy = this.pipelineFacade.copyPipeline(pipeline);
-            pipelineCopy.setUser(user);
             pipelineCopy.setUser(user);
             if (actor != null) {
                 pipelineCopy.setActor(actor);
