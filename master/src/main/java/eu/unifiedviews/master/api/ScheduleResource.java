@@ -37,6 +37,8 @@ import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineScheduleDTO;
 import eu.unifiedviews.master.model.ScheduledExecutionDTO;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 @Component
 @Path("/pipelines")
 @AuthenticationRequired
@@ -66,8 +68,8 @@ public class ScheduleResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             schedules = scheduleFacade.getSchedulesFor(pipeline);
-            if (schedules == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.schedule.general.error"), String.format("null pipeline schedule returned. There is probably a problem with database."));
+            if (isEmpty(schedules)) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.get.schedule.general.error"), String.format("null pipeline schedule returned. There is probably a problem with database."));
             }
         } catch (ApiException e) {
             throw e;

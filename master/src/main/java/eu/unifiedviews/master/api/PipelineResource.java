@@ -1,10 +1,12 @@
 package eu.unifiedviews.master.api;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -108,7 +110,7 @@ public class PipelineResource {
             }
 
             if (pipelines == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), String.format("null pipelines returned. There is probably a problem with database."));
+                pipelines = new ArrayList<>();
             }
         } catch (ApiException e) {
             throw e;

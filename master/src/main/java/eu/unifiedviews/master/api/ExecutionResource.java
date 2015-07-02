@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -33,6 +34,8 @@ import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineExecutionDTO;
 import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Component
 @Path("/pipelines")
@@ -60,7 +63,7 @@ public class ExecutionResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
-            if (executions == null) {
+            if (isEmpty(executions)) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.execution.not.found"), String.format("null pipeline executions for pipeline with ID=%s!", id));
             }
             return PipelineExecutionDTOConverter.convert(executions);
@@ -92,7 +95,7 @@ public class ExecutionResource {
             set.add(PipelineExecutionStatus.FAILED);
             execution = pipelineFacade.getLastExec(pipeline, set);
             if (execution == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.execution.not.found"), String.format("null pipeline executions for pipeline with ID=%s!", id));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.execution.not.found"), String.format("null pipeline executions for pipeline with ID=%s!", id));
             }
         } catch (ApiException e) {
             throw e;
