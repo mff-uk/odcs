@@ -4,7 +4,7 @@
 -- ##############################################################
 
 -- Execute update script
-\ir 2.1.0-update-core.sql
+\ir 2.1.0-core.sql
 
 -- Execute permissions script
-\ir ../data-permissions-edem.sql
+\ir 2.1.0-permissions-edem.sql
