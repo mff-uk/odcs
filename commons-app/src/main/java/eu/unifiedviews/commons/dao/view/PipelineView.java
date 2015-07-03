@@ -53,8 +53,8 @@ public class PipelineView implements Serializable, DataObject {
     @Column(name = "usr_name")
     private String usrName;
 
-    @Column(name = "org_name")
-    private String orgName;
+    @Column(name = "usr_full_name")
+    private String usrFullName;
 
     /**
      * Status of last pipeline execution.
@@ -68,6 +68,9 @@ public class PipelineView implements Serializable, DataObject {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "visibility")
     private ShareType shareType;
+
+    @Column(name = "user_actor_name")
+    private String userActorName;
 
     @Override
     public Long getId() {
@@ -118,14 +121,6 @@ public class PipelineView implements Serializable, DataObject {
         this.usrName = usrName;
     }
 
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
     /**
      * @return Duration of last pipeline execution, -1 if no such execution exists.
      */
@@ -135,6 +130,22 @@ public class PipelineView implements Serializable, DataObject {
         } else {
             return end.getTime() - start.getTime();
         }
+    }
+
+    public String getUserActorName() {
+        return this.userActorName;
+    }
+
+    public void setUserActorName(String userActorName) {
+        this.userActorName = userActorName;
+    }
+
+    public String getUsrFullName() {
+        return this.usrFullName;
+    }
+
+    public void setUsrFullName(String usrFullName) {
+        this.usrFullName = usrFullName;
     }
 
 }

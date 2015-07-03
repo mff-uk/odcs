@@ -20,11 +20,13 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
@@ -59,6 +61,9 @@ public class ExportService {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
+    @Autowired
+    private PermissionUtils permissionUtils;
+
     /**
      * Create a temp file and exportPipeline pipeline into it.
      *
@@ -67,6 +72,7 @@ public class ExportService {
      * @return File with exportPipelineed pipeline.
      * @throws ExportException
      */
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public File exportPipeline(Pipeline pipeline, ExportSetting setting) throws ExportException {
         final File tempDir;
         try {
@@ -101,6 +107,7 @@ public class ExportService {
      * @param authCtx
      * @throws ExportException
      */
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting, AuthenticationContext authCtx)
             throws ExportException {
 
@@ -210,6 +217,7 @@ public class ExportService {
      * @param zipStream
      * @throws ExportException
      */
+    @PreAuthorize("hasRole('pipeline.exportScheduleRules')")
     private void saveSchedule(Pipeline pipeline, ZipOutputStream zipStream)
             throws ExportException {
         final XStream xStream = JPAXStream.createForSchedule(new DomDriver(XML_ENCODING));
@@ -232,6 +240,7 @@ public class ExportService {
      * @param zipStream
      * @throws ExportException
      */
+    @PreAuthorize("hasRole('pipeline.exportDpuJars')")
     private void saveDPUJar(DPUTemplateRecord template,
             ZipOutputStream zipStream)
             throws ExportException {
@@ -267,6 +276,7 @@ public class ExportService {
      * @param zipStream
      * @throws ExportException
      */
+    @PreAuthorize("hasRole('pipeline.exportDpuData')")
     private void saveDPUDataUser(DPUTemplateRecord template, User user,
             ZipOutputStream zipStream) throws ExportException {
         final File source;
@@ -289,6 +299,7 @@ public class ExportService {
      * @param zipStream
      * @throws ExportException
      */
+    @PreAuthorize("hasRole('pipeline.exportDpuData')")
     private void saveDPUDataGlobal(DPUTemplateRecord template,
             ZipOutputStream zipStream) throws ExportException {
         final File source;
@@ -440,6 +451,10 @@ public class ExportService {
 
         LOG.debug("<<< Leaving getDpusInformation: {}", dpusInformation);
         return dpusInformation;
+    }
+
+    public boolean hasUserPermission(String permission) {
+        return this.permissionUtils.hasUserAuthority(permission);
     }
 
 }

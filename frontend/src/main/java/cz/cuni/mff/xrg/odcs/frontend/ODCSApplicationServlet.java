@@ -97,24 +97,20 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         // Do the business.
         Date start = new Date();
         int serviceId = serviceCounter++;
-        LOG.info("> service ({})", serviceId);
+        LOG.info("Request ({}) received", serviceId);
 
-        // Frontend theme for pipeline canvas.
-        if (request.getRequestURI().endsWith(ConfigProperty.FRONTEND_THEME.toString())) {
-            OutputStream outputStream = response.getOutputStream();
-            outputStream.write(appConfig.getString(ConfigProperty.FRONTEND_THEME).getBytes("utf8"));
-            outputStream.flush();
-            outputStream.close();
-        } else {
-            super.service(request, response);
-        }
+        super.service(request, response);
 
         Date end = new Date();
         if (end.getTime() - start.getTime() > 1000) {
-            LOG.warn("< service ({}) in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+            LOG.warn("Request ({}) finished processing in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
         } else {
-            LOG.info("< service ({}) in: {} ms", serviceId, end.getTime() - start.getTime());
+            LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Request ({}) URI", request.getRequestURI());
+        }
+
         // We remove the request from the thread local, there's no reason
         // to keep it once the work is done. Next request might be serviced
         // by different thread, which will need to load security context from

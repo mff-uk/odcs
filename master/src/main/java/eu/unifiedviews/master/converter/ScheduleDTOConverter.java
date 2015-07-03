@@ -24,11 +24,21 @@ public class ScheduleDTOConverter {
             Date nextExecution = schedule.getNextExecutionTimeInfo();
             dto.setNextExecution(ConvertUtils.dateToString(nextExecution));
             dto.setPeriod(schedule.getPeriod());
+            dto.setScheduledJobsPriority(schedule.getPriority());
             if (schedule.getPeriodUnit() != null) {
                 dto.setPeriodUnit(schedule.getPeriodUnit().toString());
             } else {
                 dto.setPeriodUnit(null);
             }
+            if (schedule.getOwner() != null) {
+                dto.setUserExternalId(schedule.getOwner().getExternalIdentifier());
+            } else {
+                dto.setUserExternalId(null);
+            }
+            if (schedule.getActor() != null) {
+                dto.setUserActorExternalId(schedule.getActor().getExternalId());
+            }
+
             dto.setScheduleType(schedule.getType());
             Set<Pipeline> pipelines = schedule.getAfterPipelines();
             List<Long> pipelineIds = null;

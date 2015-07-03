@@ -28,7 +28,7 @@ public class Permission implements GrantedAuthority {
     private String name;
 
     @Column
-    private boolean rwOnly;
+    private boolean sharedEntityInstanceWriteRequired;
 
     public Long getId() {
         return id;
@@ -46,12 +46,12 @@ public class Permission implements GrantedAuthority {
         this.name = name;
     }
 
-    public boolean isRwOnly() {
-        return rwOnly;
+    public boolean isSharedEntityInstanceWriteRequired() {
+        return this.sharedEntityInstanceWriteRequired;
     }
 
-    public void setRwOnly(boolean rwOnly) {
-        this.rwOnly = rwOnly;
+    public void setSharedEntityInstanceWriteRequired(boolean sharedEntityInstanceWriteRequired) {
+        this.sharedEntityInstanceWriteRequired = sharedEntityInstanceWriteRequired;
     }
 
     @Override

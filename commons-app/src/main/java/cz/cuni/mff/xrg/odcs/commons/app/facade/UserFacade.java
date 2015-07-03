@@ -3,9 +3,9 @@ package cz.cuni.mff.xrg.odcs.commons.app.facade;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Facade for managing persisted User entities.
@@ -103,7 +103,18 @@ public interface UserFacade extends Facade {
      */
     void delete(RoleEntity role);
 
-    Organization getOrganizationByName(String name);
+    /**
+     * Get user actor by external id
+     * 
+     * @param externalId
+     * @return
+     */
+    UserActor getUserActorByExternalId(String externalId);
 
-    void save(Organization o);
+    /**
+     * Save user actor into database
+     * 
+     * @param userActor
+     */
+    void save(UserActor userActor);
 }

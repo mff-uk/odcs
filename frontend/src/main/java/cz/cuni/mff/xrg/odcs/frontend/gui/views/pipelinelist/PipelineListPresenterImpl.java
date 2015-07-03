@@ -21,12 +21,12 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -36,7 +36,6 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
@@ -68,13 +67,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private DbPipeline dbPipeline;
-
-    @Autowired
     private DBPipelineView dbPipelineView;
-
-    @Autowired
-    private PipelineAccessor pipelineAccessor;
 
     @Autowired
     private PipelineViewAccessor pipelineViewAccessor;
@@ -112,12 +105,12 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
      */
     @Autowired
     protected AppConfig appConfig;
-    
+
     /**
      * Evaluates permissions of currently logged in user.
      */
     @Autowired
-    private AuthAwarePermissionEvaluator permissions;
+    private PermissionUtils permissionUtils;
 
     private boolean isInitialized = false;
 
@@ -131,7 +124,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
         // prepare data object
-//        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
         cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
 
         dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
@@ -203,7 +195,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public void refreshEventHandler() {
-        pipelineAccessor.clearExecCache();
         cachedSource.invalidate();
         dataObject.getContainer().refresh();
         view.refreshTableControls();
@@ -260,39 +251,39 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     public boolean canDeletePipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
         String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-        boolean isAdmin = permissions.hasPermission(pipeline, adminPermission);
-        boolean canDelete = permissions.hasPermission(pipeline, "pipeline.delete");
+        boolean isAdmin = permissionUtils.hasPermission(pipeline, adminPermission);
+        boolean canDelete = permissionUtils.hasPermission(pipeline, "pipeline.delete");
         return isAdmin || canDelete;
     }
 
     @Override
     public boolean canEditPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissions.hasPermission(pipeline, "pipeline.edit");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_EDIT);
     }
 
     @Override
     public boolean canDebugPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissions.hasPermission(pipeline, "pipeline.runDebug");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 
     @Override
     public boolean canSchedulePipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissions.hasPermission(pipeline, "pipeline.schedule");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_SCHEDULE);
     }
 
     @Override
     public boolean canCopyPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissions.hasPermission(pipeline, "pipeline.copy");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_COPY);
     }
 
     @Override
     public boolean canRunPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return permissions.hasPermission(pipeline, "pipeline.run");
+        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN);
     }
 
     @Override

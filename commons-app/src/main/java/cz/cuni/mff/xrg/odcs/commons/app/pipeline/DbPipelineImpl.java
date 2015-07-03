@@ -32,14 +32,6 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
     }
 
     @Override
-    public List<Pipeline> getPipelinesForOrganization(String orgName) {
-        final String queryStr = "SELECT e FROM Pipeline e WHERE e.organization.name = :orgName";
-        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
-        query.setParameter("orgName", orgName);
-        return executeList(query);
-    }
-
-    @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         final String stringQuery = "SELECT e FROM Pipeline e"
                 + " LEFT JOIN e.graph g"
@@ -67,7 +59,7 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
                 + " FROM Pipeline e";
 
         TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
-        Date lastModified = (Date) query.getSingleResult();
+        Date lastModified = query.getSingleResult();
 
         if (lastModified == null) {
             // there are no executions in DB
@@ -86,7 +78,15 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
                 + " WHERE e.id IN :ids";
         TypedQuery<Long> query = createCountTypedQuery(stringQuery);
         query.setParameter("ids", pipelinesIds);
-        Long number = (Long) query.getSingleResult();
+        Long number = query.getSingleResult();
         return !number.equals((long) pipelinesIds.size());
+    }
+
+    @Override
+    public List<Pipeline> getPipelinesForUser(String userExternalId) {
+        final String queryStr = "SELECT e FROM Pipeline e WHERE e.owner.externalIdentifier = :userExternalId";
+        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
+        query.setParameter("userExternalId", userExternalId);
+        return executeList(query);
     }
 }

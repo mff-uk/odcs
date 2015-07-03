@@ -43,22 +43,20 @@ public interface PipelineFacade extends Facade {
     Pipeline copyPipeline(Pipeline pipeline);
 
     /**
-     * Returns list of all pipelines persisted in the database for given organization.
-     *
-     * @param organizationName
-     *            of pipeline
-     * @return list of pipelines
-     * @deprecated performance intensive for many pipelines in DB, use lazy
-     *             container with paging instead
-     */
-    List<Pipeline> getAllPipelines(String organizationName);
-
-    /**
      * Returns list of all pipelines persisted in the database.
-     * 
+     *
      * @return list of pipelines
      */
     List<Pipeline> getAllPipelines();
+
+    /**
+     * Returns list of all pipelines for given user
+     * 
+     * @param externalUserId
+     *            User ID
+     * @return List of pipelines
+     */
+    List<Pipeline> getAllPipelines(String externalUserId);
 
     /**
      * Find pipeline in database by ID and return it.
@@ -172,6 +170,7 @@ public interface PipelineFacade extends Facade {
      * @deprecated performance intensive for many pipeline executions, use
      *             container with paging support instead
      */
+    @Deprecated
     List<PipelineExecution> getAllExecutions();
 
     /**
@@ -282,7 +281,7 @@ public interface PipelineFacade extends Facade {
      * Tells whether one of pipelines was deleted
      * <p>
      * 
-     * @param pipelinesIds
+     * @param pipelineIds
      * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     public boolean hasDeletedPipelines(List<Long> pipelineIds);

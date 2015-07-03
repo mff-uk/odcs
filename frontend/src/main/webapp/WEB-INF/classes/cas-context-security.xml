@@ -21,6 +21,11 @@
 			<b:bean
 				class="cz.cuni.mff.xrg.odcs.frontend.auth.CasAuthenticationUserDetailsService">
 				<b:constructor-arg ref="userFacade" />
+				<b:property name="userNameAttributeName" value="${cas.attributeName.userName}" />
+				<b:property name="fullNameAttributeName" value="${cas.attributeName.fullName}" />
+				<b:property name="roleAttributeName" value="${cas.attributeName.role}" />
+				<b:property name="actorIdAttributeName" value="${cas.attributeName.actorId}" />
+				<b:property name="actorNameAttributeName" value="${cas.attributeName.actorName}" />
 			</b:bean>
 
 		</b:property>
@@ -109,4 +114,6 @@
 		class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
 		<b:property name="invalidateHttpSession" value="true" />
 	</b:bean>
+	<b:bean id="permissionUtils" 
+		class="cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils"/>
 </b:beans>

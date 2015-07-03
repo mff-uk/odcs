@@ -83,7 +83,7 @@
     <bean id="dbUserNotification" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserNotificationRecordImpl"/>
     <bean id="dbUser" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserImpl"/>
     <bean id="dbRole" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntityImpl"/>
-    <bean id="dbOrganization" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbOrganizationImpl"/>
+    <bean id="dbUserActor" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserActorImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
     <bean id="dbRuntimeProperties" class="cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimePropertiesImpl"/>
 
@@ -102,4 +102,5 @@
     <!-- DAO layer. -->
     <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
 
+    <context:component-scan base-package="eu.unifiedviews.audit" />
 </beans>

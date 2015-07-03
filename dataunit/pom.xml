@@ -1,9 +1,9 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.0.3</version>
+		<version>2.1.0</version>
 	</parent>
 	<artifactId>dataunit</artifactId>
 	<description>Base project for new DataUnit's implementations.</description>
@@ -212,6 +212,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-jsonld</artifactId>
+			<version>${sesame.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-runtime</artifactId>
 			<version>${sesame.version}</version>
 			<type>jar</type>
@@ -250,12 +256,12 @@
 		<dependency>
 			<groupId>eu.comsode</groupId>
 			<artifactId>com.openlinksw.virtuoso.virt_sesame2</artifactId>
-			<version>1.21-7-develop-SNAPSHOT</version> <!-- 1.18-7-develop-SNAPSHOT -->
+			<version>${virtuoso.sesame.version}</version> 
 		</dependency>
 		<dependency>
 			<groupId>eu.comsode</groupId>
 			<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
-			<version>3.76-7-develop-SNAPSHOT</version> <!-- 3.74-7-develop-SNAPSHOT -->
+			<version>${virtuoso.jdbc.version}</version>
 		</dependency>
 	</dependencies>
 </project>

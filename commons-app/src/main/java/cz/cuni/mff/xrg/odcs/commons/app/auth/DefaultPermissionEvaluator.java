@@ -11,11 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Permission;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -30,8 +27,6 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
-    private static final String ORGANIZATION_MODE = "organization";
-    
     /**
      * Application's configuration.
      */
@@ -53,9 +48,9 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
     @Override
     public boolean hasPermission(Authentication auth, Object target, Object perm) {
 
-        if(target instanceof User)
+        if (target instanceof User)
             return true;
-        
+
         // check for missing authentication context
         if (auth == null) {
             return false;
@@ -63,10 +58,10 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
         Permission foundPermission = null;
 
+        String adminPermission = this.appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            
-            String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
-            
+
             if (ga.getAuthority().equals(adminPermission)) {
                 return true;
             }
@@ -75,21 +70,15 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
-        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-            return hasPermissionOrganization(auth, target, (String) perm, foundPermission);
-
-        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)))
-            return hasPermissionUser(auth, target, (String) perm, foundPermission);
-
-        return false;
+        return hasPermissionUser(auth, target, (String) perm, foundPermission);
 
     }
 
     private boolean hasPermissionUser(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
 
-        if(target instanceof User)
+        if (target instanceof User)
             return true;
-        
+
         // entity owner is almighty
         if (target instanceof OwnedEntity) {
             OwnedEntity oTarget = (OwnedEntity) target;
@@ -103,79 +92,15 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         if (target instanceof SharedEntity) {
             SharedEntity sTarget = (SharedEntity) target;
             if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
+                if (foundPermission.isSharedEntityInstanceWriteRequired() && !ShareType.PUBLIC_RW.equals(sTarget.getShareType())) {
                     return false;
                 } else {
                     //only owner can delete
-                    if(!"pipeline.delete".equals(requestedPerm)){
+                    if (ShareType.PUBLIC.contains(sTarget.getShareType()) && !EntityPermissions.PIPELINE_DELETE.equals(requestedPerm)) {
                         return true;
                     } else {
                         return false;
                     }
-                }
-            }
-        }
-
-        // Pipeline execution actions are always viewable if
-        // pipeline itself is viewable
-        if (target instanceof PipelineExecution) {
-            Pipeline pipe = ((PipelineExecution) target).getPipeline();
-            boolean viewPipe = hasPermission(pipe, requestedPerm);
-            if (viewPipe) {
-                // user has permission to view pipeline
-                // for this execution -> allow to see execution as well
-                return true;
-            }
-        }
-
-        // in other cases be restrictive
-        LOG.debug("Method hasPermission refused access for object <{}> and permission <{}>.",
-                target, requestedPerm);
-        return false;
-    }
-
-    private boolean hasPermissionOrganization(Authentication auth, Object target, String requestedPerm, Permission foundPermission) {
-
-        User user = (User) auth.getPrincipal();
-
-        if (target instanceof OrganizationSharedEntity) {
-            OrganizationSharedEntity oTarget = (OrganizationSharedEntity) target;
-            Organization organization = oTarget.getOrganization();
-
-            if (organization != null) {
-                if (user.getOrganization().getName().equals(organization.getName())) {
-                    return true;
-                }
-            }
-        }
-
-        // entity owner is almighty
-        if (target instanceof OwnedEntity) {
-            OwnedEntity oTarget = (OwnedEntity) target;
-            User owner = oTarget.getOwner();
-            if (owner != null && auth.getName().equals(owner.getUsername())) {
-                return true;
-            }
-        }
-
-        if (target instanceof Pipeline) {
-            Pipeline pipelineTarget = (Pipeline) target;
-            if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(pipelineTarget.getShareType())) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        }
-        
-        if (target instanceof DPUTemplateRecord) {
-            DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
-            if (foundPermission != null) {
-                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(dpuTarget.getShareType())) {
-                    return false;
-                } else {
-                    return true;
                 }
             }
         }

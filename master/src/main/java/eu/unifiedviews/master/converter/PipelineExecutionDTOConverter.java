@@ -24,6 +24,15 @@ public class PipelineExecutionDTOConverter {
             } else {
                 dto.setSchedule(null);
             }
+            if (execution.getOwner() != null) {
+                dto.setUserExternalId(execution.getOwner().getExternalIdentifier());
+            } else {
+                dto.setUserExternalId(null);
+            }
+            if (execution.getActor() != null) {
+                dto.setUserActorExternalId(execution.getActor().getExternalId());
+            }
+
             dto.setStop(execution.getStop());
             dto.setLastChange(ConvertUtils.dateToString(execution.getLastChange()));
         }

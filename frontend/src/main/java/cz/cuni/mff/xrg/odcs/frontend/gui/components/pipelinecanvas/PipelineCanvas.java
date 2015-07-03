@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
@@ -35,7 +37,9 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator.PipelineValid
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.DPUDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 
 /**
  * Component for visualization of the pipeline.
@@ -45,7 +49,7 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 @Component
 @Scope("prototype")
 @SuppressWarnings("serial")
-@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.5.4.min.js", "jquery-2.0.0.min.js" })
+@JavaScript({ "js_pipelinecanvas.js", "kinetic-v4.5.4.min.js", "jquery-2.0.0.min.js", "jquery.i18n.properties.js" })
 public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     final int DPU_WIDTH = 120;
@@ -87,6 +91,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
+
+    @Autowired
+    private Utils utils;
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineCanvas.class);
 
@@ -184,8 +194,9 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade, appConfig);
-        getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
+        detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils, this.permissionUtils);
+        getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight,
+                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME));
     }
 
     /**

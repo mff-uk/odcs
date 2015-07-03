@@ -17,18 +17,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ScheduleDTOConverter;
 import eu.unifiedviews.master.converter.ScheduledExecutionDTOConverter;
 import eu.unifiedviews.master.model.ApiException;
@@ -39,6 +40,7 @@ import eu.unifiedviews.master.model.ScheduledExecutionDTO;
 @Path("/pipelines")
 @AuthenticationRequired
 public class ScheduleResource {
+
     @Autowired
     private PipelineFacade pipelineFacade;
 
@@ -46,10 +48,10 @@ public class ScheduleResource {
     private ScheduleFacade scheduleFacade;
 
     @Autowired
-    private DPUFacade dpuFacade;
+    private UserFacade userFacade;
 
     @Autowired
-    private UserFacade userFacade;
+    private AppConfig appConfig;
 
     @GET
     @Path("/{pipelineid}/schedules")
@@ -239,21 +241,29 @@ public class ScheduleResource {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         try {
+            // try to get pipeline
             Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
-            }
-            Schedule schedule = scheduleFacade.createSchedule();
-            if (schedule == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
             }
             // try to get user
             User user = userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
             if (user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
             }
-            schedule.setOwner(user);
+
+            UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
+
+            Schedule schedule = scheduleFacade.createSchedule();
+            if (schedule == null) {
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
+            }
             schedule.setPipeline(pipeline);
+            schedule.setType(scheduleToUpdate.getScheduleType());
+            schedule.setOwner(user);
+            if (actor != null) {
+                schedule.setActor(actor);
+            }
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
@@ -266,6 +276,7 @@ public class ScheduleResource {
                     }
                 }
             }
+            schedule.setPriority(scheduleToUpdate.getScheduledJobsPriority());
             ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
             scheduleFacade.save(schedule);
             return ScheduleDTOConverter.convertToDTO(schedule);

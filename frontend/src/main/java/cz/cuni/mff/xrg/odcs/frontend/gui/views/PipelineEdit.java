@@ -30,38 +30,22 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.GridLayout.OutOfBoundsException;
 import com.vaadin.ui.GridLayout.OverlapsException;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.BaseTheme;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
@@ -104,8 +88,6 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 @Address(url = "PipelineEdit")
 public class PipelineEdit extends ViewComponent {
 
-    private static final String ORGANIZATION_MODE = "organization";
-    
     private static final Logger LOG = LoggerFactory.getLogger(PipelineEdit.class);
 
     private VerticalLayout mainLayout;
@@ -218,12 +200,6 @@ public class PipelineEdit extends ViewComponent {
     private AuthenticationContext authCtx;
 
     /**
-     * Evaluates permissions of currently logged in user.
-     */
-    @Autowired
-    private AuthAwarePermissionEvaluator permissions;
-
-    /**
      * Access to the application context in order to provide possiblity to
      * create dialogs. TODO: This is give us more power then we need, we should
      * use some dialog factory instead.
@@ -235,8 +211,8 @@ public class PipelineEdit extends ViewComponent {
     private ExportService exportService;
 
     @Autowired
-    private Utils utils;
-    
+    private PermissionUtils permissionUtils;
+
     /**
      * Empty constructor.
      */
@@ -269,7 +245,7 @@ public class PipelineEdit extends ViewComponent {
         if (this.pipeline == null) {
             return;
         } else {
-            setMode(hasPermission("pipeline.save"));
+            setMode(hasPermission(EntityPermissions.PIPELINE_EDIT));
             updateLblPipelineName();
         }
 
@@ -487,7 +463,7 @@ public class PipelineEdit extends ViewComponent {
                 if (canvasMode.equals(STANDARD_MODE)) {
                     return;
                 }
-                Transferable t = (Transferable) event.getTransferable();
+                Transferable t = event.getTransferable();
                 DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
                 MouseEventDetails mouse = details.getMouseEvent();
 
@@ -713,7 +689,8 @@ public class PipelineEdit extends ViewComponent {
                 if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
-                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"), new ConfirmDialog.Listener() {
+                            Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"),
+                            new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
@@ -789,7 +766,7 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                final PipelineExport dialog = new PipelineExport(exportService, pipeline, authCtx);
+                final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
             }
@@ -852,7 +829,11 @@ public class PipelineEdit extends ViewComponent {
      * @return If the user has given permission
      */
     public boolean hasPermission(String type) {
-        return permissions.hasPermission(pipeline, type);
+        return this.permissionUtils.hasPermission(pipeline, type);
+    }
+
+    private boolean hasRole(String type) {
+        return this.permissionUtils.hasUserAuthority(type);
     }
 
     private void setDetailState(boolean expand) {
@@ -926,7 +907,7 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
-        if (!ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
@@ -936,8 +917,10 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
         pipelineVisibility.addItem(ShareType.PUBLIC_RO);
         pipelineVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
-        pipelineVisibility.addItem(ShareType.PUBLIC_RW);
-        pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
+            pipelineVisibility.addItem(ShareType.PUBLIC_RW);
+            pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+        }
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
         pipelineVisibility.addValueChangeListener(new Property.ValueChangeListener() {
@@ -947,7 +930,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
@@ -965,7 +948,9 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() || pipelineCanvas.isModified() || pipelineVisibility.isModified()) && hasPermission("pipeline.save");
+        return (pipelineName.isModified() || pipelineDescription.isModified() 
+                || pipelineCanvas.isModified() || pipelineVisibility.isModified()) 
+                && hasPermission(EntityPermissions.PIPELINE_EDIT);
     }
 
     @Override
@@ -992,7 +977,7 @@ public class PipelineEdit extends ViewComponent {
         Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
         pipelineName.setValue(copiedPipeline.getName());
         setIdLabel(copiedPipeline.getId());
-        author.setValue(copiedPipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(copiedPipeline));
         pipeline = copiedPipeline;
         finishSavePipeline(false, ShareType.PRIVATE, "reload");
         setMode(true);
@@ -1023,13 +1008,13 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private void setupButtons(boolean enabled, boolean isNew) {
-        buttonSave.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndClose.setEnabled(enabled && hasPermission("pipeline.save"));
-        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission("pipeline.save") && hasPermission("pipeline.runDebug"));
-        buttonCopy.setEnabled(!isNew && hasPermission("pipeline.copy"));
-        buttonCopyAndClose.setEnabled(!isNew && hasPermission("pipeline.copy"));
-        // we reuse copy permision for exportPipeline
-        buttonExport.setEnabled(hasPermission("pipeline.export"));
+        buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
+        buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
+        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
+        buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
+        buttonExport.setEnabled(hasRole(EntityPermissions.PIPELINE_EXPORT) && hasPermission(EntityPermissions.PIPELINE_EXPORT));
+        buttonConflicts.setEnabled(hasPermission(EntityPermissions.PIPELINE_DEFINE_DEPENDENCIES));
     }
 
     /**
@@ -1133,7 +1118,7 @@ public class PipelineEdit extends ViewComponent {
             return null;
         }
         setIdLabel(pipeline.getId());
-        author.setValue(pipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(this.pipeline));
         pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
         pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
         pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
@@ -1167,7 +1152,7 @@ public class PipelineEdit extends ViewComponent {
             pipeline.setShareType(ShareType.PRIVATE);
             pipelineName.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getName()));
             setIdLabel(null);
-            author.setValue(authCtx.getUsername());
+            author.setValue(getPipelineAuthorName(this.pipeline));
             pipelineDescription.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getDescription()));
             pipelineVisibility.setPropertyDataSource(new ObjectProperty<>(this.pipeline.getShareType()));
             setupButtons(false);
@@ -1195,17 +1180,14 @@ public class PipelineEdit extends ViewComponent {
         final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
         final ShareType visibility;
-        
-        if (ORGANIZATION_MODE.equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
-            if(utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))){
-                    visibility = ShareType.PUBLIC_RO;
-            }else{
-                visibility = ShareType.PRIVATE;
-            }
-        }else{
+
+        if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             visibility = (ShareType) pipelineVisibility.getValue();
+
+        } else {
+            visibility = ShareType.PRIVATE;
         }
-        
+
         if (!pipelineFacade.isUpToDate(pipeline)) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {
@@ -1221,7 +1203,8 @@ public class PipelineEdit extends ViewComponent {
         } else if (pipeline.getShareType() == ShareType.PRIVATE && ShareType.PUBLIC.contains(visibility) && !pipelineFacade.getPrivateDPUs(pipeline).isEmpty()) {
             ConfirmDialog
                     .show(UI.getCurrent(),
-                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"), new ConfirmDialog.Listener() {
+                            Messages.getString("PipelineEdit.pipeline.save.public"), Messages.getString("PipelineEdit.pipeline.save.public.description"), Messages.getString("PipelineEdit.pipeline.save.public.save"), Messages.getString("PipelineEdit.pipeline.save.public.cancel"),
+                            new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
@@ -1236,8 +1219,6 @@ public class PipelineEdit extends ViewComponent {
     }
 
     private boolean finishSavePipeline(boolean doCleanup, ShareType visibility, String successAction) {
-        setupVisibilityOptions(visibility);
-
         undo.setEnabled(false);
         this.pipeline.setName(pipelineName.getValue());
         pipelineName.commit();
@@ -1248,6 +1229,8 @@ public class PipelineEdit extends ViewComponent {
         pipelineVisibility.commit();
 
         pipelineFacade.save(this.pipeline);
+
+        setupVisibilityOptions(visibility);
         if (doCleanup) {
             pipelineCanvas.afterSaveCleanUp();
         }
@@ -1349,7 +1332,7 @@ public class PipelineEdit extends ViewComponent {
     private void refreshPipeline() {
         pipeline = pipelineFacade.getPipeline(pipeline.getId());
         setIdLabel(pipeline.getId());
-        author.setValue(pipeline.getOwner().getUsername());
+        author.setValue(getPipelineAuthorName(this.pipeline));
         pipelineCanvas.showPipeline(pipeline);
     }
 
@@ -1435,7 +1418,23 @@ public class PipelineEdit extends ViewComponent {
     private void updateLblPipelineName() {
         if (this.pipeline == null) {
         } else {
-            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail") + this.pipeline.getName() + "' <h3>");
+            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", this.pipeline.getName()));
+        }
+    }
+
+    private String getPipelineAuthorName(Pipeline pipeline) {
+        if (pipeline != null) {
+            String ownerDisplayName = (pipeline.getOwner().getFullName() != null) ? pipeline.getOwner().getFullName() : pipeline.getOwner().getUsername();
+            if (pipeline.getActor() != null) {
+                return ownerDisplayName + " (" + pipeline.getActor().getName() + ")";
+            }
+            return ownerDisplayName;
+        } else {
+            String ownerDisplayName = (this.authCtx.getUser().getFullName() != null) ? this.authCtx.getUser().getFullName() : this.authCtx.getUsername();
+            if (this.authCtx.getUser().getUserActor() != null) {
+                return ownerDisplayName + " (" + this.authCtx.getUser().getUserActor().getName() + ")";
+            }
+            return ownerDisplayName;
         }
     }
 

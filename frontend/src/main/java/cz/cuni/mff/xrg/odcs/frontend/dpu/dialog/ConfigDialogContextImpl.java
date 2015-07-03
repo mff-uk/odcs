@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.dpu.config.vaadin.ConfigDialogContext;
 
 /**
@@ -23,14 +24,16 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
 
     protected AppConfig appConfig;
 
+    private User loggedUser;
+
     /**
      * Constructor.
-     *
      */
-    public ConfigDialogContextImpl(boolean isTemplate, Locale locale, AppConfig appConfig) {
+    public ConfigDialogContextImpl(boolean isTemplate, Locale locale, AppConfig appConfig, User loggedUser) {
         this.isTemplate = isTemplate;
         this.locale = locale;
         this.appConfig = appConfig;
+        this.loggedUser = loggedUser;
     }
 
     @Override
@@ -50,6 +53,16 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
             result.put((String) entry.getKey(), (String) entry.getValue());
         }
         return result;
+    }
+
+    @Override
+    public String getUserExternalId() {
+        return this.loggedUser.getExternalIdentifier();
+    }
+
+    @Override
+    public Long getUserId() {
+        return this.loggedUser.getId();
     }
 
 }

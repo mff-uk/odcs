@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -28,7 +31,12 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
             ConfigProperty.DATABASE_SQL_PASSWORD,
             ConfigProperty.DATABASE_RDF_PASSWORD,
             ConfigProperty.EMAIL_PASSWORD,
-            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD);
+            ConfigProperty.DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD,
+            ConfigProperty.DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_FILES_TO_CKAN_SECRET_TOKEN,
+            ConfigProperty.DPU_UV_L_RDF_TO_VIRTUOSO_PASSWORD);
 
     /**
      * Modifiable configuration itself.
@@ -43,7 +51,7 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     /**
      * Determines whether cryptography is enabled or not.
      */
-    private static Boolean cryptographyEnabled;
+    private static Boolean cryptographyEnabled = Boolean.FALSE;
 
     /**
      * Cryptography instance;
@@ -178,8 +186,11 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
     }
 
     private void postprocess() {
-        if (cryptographyEnabled == null) {
-            cryptographyEnabled = Boolean.TRUE.toString().equals(prop.get(ConfigProperty.CRYPTOGRAPHY_ENABLED.toString()));
+        // get cryptography configuration
+        try {
+            cryptographyEnabled = getBoolean(ConfigProperty.CRYPTOGRAPHY_ENABLED);
+        } catch (MissingConfigPropertyException e) {
+            // default value is false, we are safe
         }
 
         if (cryptographyEnabled) {
@@ -197,6 +208,12 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
                 }
             }
         }
+
+        // initialize localization: retrieve property and set it in LocaleHolders
+        Locale locale = Locale.forLanguageTag(prop.getProperty(ConfigProperty.LOCALE.toString(), "en_US"));
+        LocaleHolder.setLocale(locale);
+        DataunitLocaleHolder.setLocale(locale);
+        LOG.log(Level.INFO, "Using locale: " + LocaleHolder.getLocale());
     }
 
     /**

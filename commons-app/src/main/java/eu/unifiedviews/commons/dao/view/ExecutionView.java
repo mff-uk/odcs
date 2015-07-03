@@ -49,7 +49,7 @@ public class ExecutionView implements DataObject {
      * Run in debug mode?
      */
     @Column(name = "debug_mode")
-    private boolean debugging;
+    private boolean isDebugging;
 
     /**
      * Timestamp when this execution started, or null.
@@ -77,8 +77,11 @@ public class ExecutionView implements DataObject {
     @Column(name = "owner_name")
     private String ownerName;
 
-    @Column(name = "org_name")
-    private String orgName;
+    @Column(name = "owner_full_name")
+    private String ownerFullName;
+
+    @Column(name = "user_actor_name")
+    private String userActorName;
 
     /**
      * True if pipeline should or has been stopped on user request.
@@ -93,6 +96,7 @@ public class ExecutionView implements DataObject {
     @Column(name = "t_last_change")
     private Date lastChange;
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -126,11 +130,11 @@ public class ExecutionView implements DataObject {
     }
 
     public boolean isDebugging() {
-        return debugging;
+        return isDebugging;
     }
 
     public void setDebugging(boolean isDebugging) {
-        this.debugging = isDebugging;
+        this.isDebugging = isDebugging;
     }
 
     public Date getStart() {
@@ -181,12 +185,20 @@ public class ExecutionView implements DataObject {
         this.lastChange = lastChange;
     }
 
-    public String getOrgName() {
-        return orgName;
+    public String getUserActorName() {
+        return this.userActorName;
     }
 
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
+    public void setUserActorName(String userActorName) {
+        this.userActorName = userActorName;
+    }
+
+    public String getOwnerFullName() {
+        return this.ownerFullName;
+    }
+
+    public void setOwnerFullName(String ownerFullName) {
+        this.ownerFullName = ownerFullName;
     }
 
     /**

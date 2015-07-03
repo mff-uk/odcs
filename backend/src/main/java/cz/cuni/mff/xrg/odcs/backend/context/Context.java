@@ -249,17 +249,32 @@ public class Context implements DPUContext {
         return dpuInstance.getTemplate().getJarDirectory();
     }
 
+    @Override
     public String getPipelineOwner() {
+        return this.contextInfo.getExecution().getPipeline().getOwner().getUsername();
+    }
+
+    @Override
+    public String getPipelineExecutionOwner() {
         return this.contextInfo.getExecution().getOwner().getUsername();
     }
 
-    public String getOrganization() {
-        String organization = null;
-        if (this.contextInfo.getExecution().getOrganization() != null) {
-            organization = this.contextInfo.getExecution().getOrganization().getName();
-        }
+    @Override
+    public String getPipelineExecutionOwnerExternalId() {
+        return this.contextInfo.getExecution().getOwner().getExternalIdentifier();
+    }
 
-        return organization;
+    @Override
+    public String getOrganization() {
+        return "";
+    }
+
+    @Override
+    public String getPipelineExecutionActorExternalId() {
+        if (this.contextInfo.getExecution().getOwner().getUserActor() != null) {
+            return this.contextInfo.getExecution().getOwner().getUserActor().getExternalId();
+        }
+        return null;
     }
 
     // - - - - - - - - - - ProcessingContext - - - - - - - - - - //
@@ -288,6 +303,10 @@ public class Context implements DPUContext {
             PrintWriter pw = new PrintWriter(sw);
             exception.printStackTrace(pw);
             fullMessage = fullMessage + "<br/><br/>Exception:<br/>" + sw.toString();
+        }
+        //cut short message to 128 characters
+        if (shortMessage != null && shortMessage.length() > 128) {
+            shortMessage = shortMessage.substring(0, 125) + "...";
         }
         eventPublisher.publishEvent(new DPUMessage(shortMessage, fullMessage,
                 type, this, this));
@@ -413,4 +432,5 @@ public class Context implements DPUContext {
     public Long getDpuInstanceId() {
         return dpuInstance.getId();
     }
+
 }

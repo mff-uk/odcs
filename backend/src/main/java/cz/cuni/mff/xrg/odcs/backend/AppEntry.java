@@ -189,16 +189,6 @@ public class AppEntry {
         logbackLogger.addAppender(sqlAppender);
     }
 
-    private void initLocale() {
-        // retrieve app config
-        AppConfig appConfig = context.getBean(AppConfig.class);
-        Locale locale = Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE));
-        // set retrieved locale to LocaleHolders
-        LocaleHolder.setLocale(locale);
-        DataunitLocaleHolder.setLocale(locale);
-        LOG.info("Using locale: " + LocaleHolder.getLocale());
-    }
-
     /**
      * Main execution method.
      * 
@@ -209,8 +199,6 @@ public class AppEntry {
         initSpring();
 
         try {
-            // initialize locale settings from DB, so we need spring first
-            initLocale();
 
             // the log back is not initialised here ..
             // we add file appender

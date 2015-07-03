@@ -6,12 +6,14 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.dialog.ConfigDialogContextImpl;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
@@ -50,16 +52,19 @@ public class DPURecordWrap {
 
     private AppConfig appConfig;
 
+    private User loggedUser;
+
     /**
      * True if the {@link #configuredDialog()} has been called.
      */
     private boolean dialogConfigured = false;
 
-    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, AppConfig appConfig) {
+    protected DPURecordWrap(DPURecord dpuRecord, boolean isTemplate, Locale locale, AppConfig appConfig, User user) {
         this.dpuRecord = dpuRecord;
         this.isTemplate = isTemplate;
         this.locale = locale;
         this.appConfig = appConfig;
+        this.loggedUser = user;
     }
 
     /**
@@ -191,7 +196,7 @@ public class DPURecordWrap {
             try {
                 java.lang.reflect.Method method = dialogProvider.getClass().getMethod("getConfigurationDialog");
                 final Object result = method.invoke(dialogProvider);
-                configDialog = (AbstractConfigDialog<?>)result;                
+                configDialog = (AbstractConfigDialog<?>) result;
             } catch (NoSuchMethodException | SecurityException ex) {
                 LOG.error("Can't get method.", ex);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -201,7 +206,7 @@ public class DPURecordWrap {
             //configDialog = (AbstractConfigDialog<?>)dialogProvider.getConfigurationDialog();
             if (configDialog != null) {
                 // setup the dialog
-                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, appConfig);
+                final ConfigDialogContext context = new ConfigDialogContextImpl(isTemplate, locale, appConfig, loggedUser);
                 configDialog.setContext(context);
                 if (configDialog instanceof InitializableConfigDialog) {
                     try {

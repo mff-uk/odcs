@@ -128,6 +128,17 @@ public interface DPUPresenter extends Presenter {
     public boolean showPipelineDetailButton(long pipelineId);
 
     /**
+     * Decides whether to show pipeline status button in the listing
+     * of pipelines using given DPU template.
+     * 
+     * @param pipelineId
+     *            ID of the pipeline to display detail of
+     * @return true if user has permission to view executions of given pipeline,
+     *         false otherwise
+     */
+    public boolean showPipelineStatusButton(long pipelineId);
+
+    /**
      * View interface for DPU.
      */
     public interface DPUView {
@@ -167,15 +178,15 @@ public interface DPUPresenter extends Presenter {
 
         /**
          * Removes pipeline form *DPU instances* table (doesn't delete from db)
+         * 
          * @param id
          */
-		void removePipelineFromTable(long id);
+        void removePipelineFromTable(long id);
 
     }
 
     /**
-     * 
      * @return
      */
-	public boolean isLayoutInitialized();
+    public boolean isLayoutInitialized();
 }

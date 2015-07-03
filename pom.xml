@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>2.0.1</version>
+		<version>2.1.0</version>
 	</parent>
-    
+
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.0.3</version>
+	<version>2.1.0</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -22,38 +21,62 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>${unifiedviews.helpers.dpu.version}</uv-dpu-api-helpers.version>
+		<uv-dpu-api-helpers.version>2.1.0</uv-dpu-api-helpers.version>		
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>${unifiedviews.helpers.dataunit.version}</uv-dataunit-helpers.version>
+		<uv-dataunit-helpers.version>2.1.0</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
 
-		<!-- define used vaadin version !!! do not forget to update the version 
-		for OSGI's package export -->
-		<vaadin.version>7.3.7</vaadin.version>
-		<!-- the minimal required vaadin version The lowest Vaadin version accepted 
-		by DPUs. -->
-		<vaadin.version.min>7.3.7</vaadin.version.min>
-		<!-- max vaadin version accepted be DPUs The highest Vaadin version accepted 
-		by DPUs. -->
-		<vaadin.version.max>8.0.0</vaadin.version.max>
+		<!-- 3rd party libraries -->
+		<!-- Vaadin -->
+		<confirmdialog.version>2.0.4</confirmdialog.version>
+		<filteringtable.version>0.9.11.v7</filteringtable.version>
+		<lazyquerycontainer.version>2.0.9</lazyquerycontainer.version>
+		<refresher.version>1.2.1.7</refresher.version>
+		<vaadin.spring.version>2.0.1</vaadin.spring.version>
+
+		<!-- spring version -->
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
+		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
+
+		<!-- other third party libraries versions -->
+		<commons.dpcp.version>1.4</commons.dpcp.version>
+		<commons.dbcp2.version>2.0.1</commons.dbcp2.version>
+		<commons.cli.version>1.2</commons.cli.version>
+		<commons.lang.version>3.1</commons.lang.version>
+		<commons.validator.version>1.4.0</commons.validator.version>
+		<h2.version>1.4.182</h2.version>
+		<httpclient.osgi.version>4.3.3</httpclient.osgi.version>
+		<httpcore.osgi.version>4.3.2</httpcore.osgi.version>
+		<osgi.version>4.3.1</osgi.version>
+		<jsch.version>0.1.49_1</jsch.version>
+		<xml.apis.version>1.4.01</xml.apis.version>
+		<mockito.version>1.8.4</mockito.version>
+		<eclipse.osgi.version>3.9.0.v20130305-2200</eclipse.osgi.version>
+		<javax.mail.version>1.4</javax.mail.version>
+		<cglib.version>3.0</cglib.version>
+		<asm.util.version>4.0</asm.util.version>
+		<eclipselink.version>2.5.1</eclipselink.version>
+		<mysql.jdbc.version>5.1.6</mysql.jdbc.version>
+		<javax.persistence.version>2.1.0</javax.persistence.version>
+		<postgres.jdbc.version>9.3-1102-jdbc41</postgres.jdbc.version>
+		<jasypt.version>1.9.2</jasypt.version>
+		<servlet.api.version>3.0.1</servlet.api.version>
+		<cas.client.version>3.3.3</cas.client.version>
+		<jersey.version>2.13</jersey.version>
+		<virtuoso.sesame.version>1.21-7-develop-SNAPSHOT</virtuoso.sesame.version> <!-- 1.18-7-develop-SNAPSHOT -->
+		<virtuoso.jdbc.version>3.76-7-develop-SNAPSHOT</virtuoso.jdbc.version> <!-- 3.74-7-develop-SNAPSHOT -->
 
 		<!-- define output dirs -->
 		<project.output.lib>target/lib/</project.output.lib>
 		<project.output.lib.backend>target/lib/backend/</project.output.lib.backend>
 		<project.output.dpu>target/dpu/</project.output.dpu>
 		<skipTests>false</skipTests>
-		<!-- spring version -->
-		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
-		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
-		<!-- other third party libraries versions -->
-		<slf4j.version>1.7.7</slf4j.version>
-		<logback.version>1.0.13</logback.version>
-		<sesame.version>2.7.13</sesame.version>
 	</properties>
 
 	<modules>
@@ -84,7 +107,7 @@
 	</scm>
 
 	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> 
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role>
 		</roles> </developer> -->
 	</developers>
 
@@ -99,6 +122,21 @@
 			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
 		</contributor>
 	</contributors>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>eu.unifiedviews</groupId>
+				<artifactId>uv-dataunit-helpers</artifactId>
+				<version>${uv-dpu-api-helpers.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.unifiedviews</groupId>
+				<artifactId>uv-dpu-helpers</artifactId>
+				<version>${uv-dpu-api-helpers.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -138,7 +176,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS 
+			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS
 			profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -181,7 +219,7 @@
 						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
-						</goals>                   
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
@@ -193,6 +231,20 @@
 					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>external.atlassian.jgitflow</groupId>
+				<artifactId>jgitflow-maven-plugin</artifactId>
+				<version>1.0-m4.3</version>
+				<configuration>
+					<flowInitContext>
+						<releaseBranchPrefix>UV_v</releaseBranchPrefix>
+						<versionTagPrefix>UV_v</versionTagPrefix>
+					</flowInitContext>
+					<allowSnapshots>true</allowSnapshots>
+					<noDeploy>true</noDeploy>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +35,10 @@ public class DPUModuleManipulator {
     private static final Logger LOG = LoggerFactory
             .getLogger(DPUModuleManipulator.class);
 
+    public static final String DPU_NAME_KEY = "dpu.name";
+
+    public static final String DPU_MENU_NAME_KEY = "dpu.name.menu";
+
     @Autowired
     private DPUFacade dpuFacade;
 
@@ -43,6 +50,9 @@ public class DPUModuleManipulator {
 
     @Autowired
     private ModuleChangeNotifier notifier;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @Autowired(required = false)
     private List<DPUValidator> validators;
@@ -77,8 +87,8 @@ public class DPUModuleManipulator {
                     Messages.getString("DPUModuleManipulator.dpu.load.fail"));
         }
         if (!sourceFile.exists()) {
-            LOG.error("Unable to find dpu: " + name);
-            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + name);
+            LOG.error("Unable to find dpu: " + sourceFile.getName());
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + sourceFile.getName());
         }
 
         // get directory name and also validate the DPU's file name
@@ -90,30 +100,26 @@ public class DPUModuleManipulator {
         File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
 
+        DPUTemplateRecord parent = null;
+        
         DPUTemplateRecord newTemplate;
         boolean isChild = false;
         if (newDPUDir.exists()) {
-            DPUTemplateRecord parent = dpuFacade.getByJarName(newDpuFileName);
+            parent = dpuFacade.getByJarName(newDpuFileName);
 
             if (parent == null) {
                 throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.different.version", newDpuFileName));
             }
 
-            if (name == null || parent.getName().equals(name)) { // the same jarFileName and name
-                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", name, newDpuFileName));
-            }
-
-            DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(name);
-            if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
-                throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, name));
-            }
-
-            newTemplate = dpuFacade.createTemplate(name, null);
+            newTemplate = dpuFacade.createTemplate(null, null);
             newTemplate.setParent(parent);
             isChild = true;
         } else {
+            // we need dpu template to work wit DPUs
+            newTemplate = this.dpuFacade.createTemplate(null, null);
             prepareDirectory(newDPUDir);
 
+            
             // copy
             try {
                 FileUtils.copyFile(sourceFile, newDPUFile);
@@ -128,9 +134,6 @@ public class DPUModuleManipulator {
                 // failed to copy file
                 throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.create.fail"));
             }
-
-            // we need dpu template to work wit DPUs
-            newTemplate = dpuFacade.createTemplate(name, null);
         }
 
         newTemplate.setJarDirectory(newDpuDirName);
@@ -153,13 +156,30 @@ public class DPUModuleManipulator {
         }
 
         final String jarDescription = dpuExplorer.getJarDescription(newTemplate);
-        String dpuName;
-        if (name == null) {
-            dpuName = dpuExplorer.getBundleName(newTemplate);
-        } else {
-            dpuName = name;
+        String dpuName, dpuMenuName;
+        dpuName = dpuExplorer.getBundleName(newTemplate);
+        dpuMenuName = dpuName;
+        
+        if (dpuName == null || (parent != null && parent.getName().equals(dpuName))) { // the same jarFileName and name
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", dpuName, newDpuFileName));
         }
 
+        DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(dpuName);
+        if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName));
+        }
+
+        if(useLocalizedDpuName()){
+            eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
+            if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                dpuName = messages.getString(DPU_NAME_KEY);
+            }
+            if(!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                dpuMenuName = messages.getString(DPU_MENU_NAME_KEY);
+            }
+        }
+
+        
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
@@ -182,6 +202,7 @@ public class DPUModuleManipulator {
         newTemplate.setType(dpuType);
         newTemplate.setDescription("");
         newTemplate.setName(dpuName);
+        newTemplate.setMenuName(dpuMenuName);
         newTemplate.setJarDescription(jarDescription);
         newTemplate.setShareType(ShareType.PRIVATE);
 
@@ -361,6 +382,17 @@ public class DPUModuleManipulator {
         final String jarDescription = dpuExplorer.getJarDescription(dpu);
         dpu.setJarDescription(jarDescription);
         dpu.setJarName(newDpuName);
+
+        // if dpu localized names are used, there could be a name change, therefore reload it from bundle
+        if(useLocalizedDpuName()){
+            eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(newDpuInstance);
+            if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                dpu.setName(messages.getString(DPU_NAME_KEY));
+            }
+            if(!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                dpu.setMenuName(messages.getString(DPU_MENU_NAME_KEY));
+            }
+        }
 
         // validate
         if (validators != null) {
@@ -549,4 +581,16 @@ public class DPUModuleManipulator {
         originalDpuBackUp.delete();
     }
 
+    /**
+     * Returns true if localized dpu names should be used.
+     *
+     * @return value of ConfigProperty.USE_LOCALIZED_DPU_NAME or false if value is missing
+     */
+    private boolean useLocalizedDpuName() {
+        try {
+            return appConfig.getBoolean(ConfigProperty.USE_LOCALIZED_DPU_NAME);
+        } catch(MissingConfigPropertyException e) {
+            return false;
+        }
+    }
 }

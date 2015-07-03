@@ -11,7 +11,6 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
@@ -81,6 +80,7 @@ public class RecordsTable extends CustomComponent {
         messageTable.setFilterGenerator(createFilterGenerator(dpuSelector));
         messageTable.setFilterLayout();
         messageTable.setFilterBarVisible(true);
+        this.messageTable.setNullSelectionAllowed(false);
         messageTable.addItemClickListener(
                 new ItemClickEvent.ItemClickListener() {
                     @Override
@@ -239,6 +239,7 @@ public class RecordsTable extends CustomComponent {
             detailWindow.addCloseListener(new Window.CloseListener() {
                 @Override
                 public void windowClose(Window.CloseEvent e) {
+                    messageTable.select(messageTable.getNullSelectionItemId());
                     detail = null;
                 }
             });

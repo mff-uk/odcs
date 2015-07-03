@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.*;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
@@ -48,9 +49,9 @@ public class PipelineImport extends Window {
 
     private Panel panelMissingDpus = new Panel();
 
-    private CheckBox chbExportDPUData = new CheckBox(Messages.getString("PipelineImport.import.usersData"));
+    private CheckBox chbImportDPUData = new CheckBox(Messages.getString("PipelineImport.import.usersData"));
 
-    private CheckBox chbExportSchedule = new CheckBox(Messages.getString("PipelineImport.import.schedule"));
+    private CheckBox chbImportSchedule = new CheckBox(Messages.getString("PipelineImport.import.schedule"));
 
     /**
      * Receive uploaded file.
@@ -175,19 +176,19 @@ public class PipelineImport extends Window {
                     usedDpus = result.getUsedDpus();
                     missingDpus = result.getMissingDpus();
 
-                    chbExportDPUData.setValue(false);
-                    chbExportSchedule.setValue(false);
+                    chbImportDPUData.setValue(false);
+                    chbImportSchedule.setValue(false);
 
                     if (result.isUserDataFile()) {
-                        chbExportDPUData.setEnabled(true);
+                        chbImportDPUData.setEnabled(true);
                     } else {
-                        chbExportDPUData.setEnabled(false);
+                        chbImportDPUData.setEnabled(false);
                     }
 
                     if (result.isScheduleFile()) {
-                        chbExportSchedule.setEnabled(true);
+                        chbImportSchedule.setEnabled(true);
                     } else {
-                        chbExportSchedule.setEnabled(false);
+                        chbImportSchedule.setEnabled(false);
                     }
 
                     if (usedDpus == null) {
@@ -229,12 +230,15 @@ public class PipelineImport extends Window {
         final HorizontalLayout checkBoxesLayout = new HorizontalLayout();
         checkBoxesLayout.setWidth("100%");
         checkBoxesLayout.setMargin(true);
-        chbExportSchedule.setEnabled(false);
-        chbExportDPUData.setEnabled(false);
-        checkBoxesLayout.addComponent(chbExportSchedule);
-        checkBoxesLayout.setComponentAlignment(chbExportSchedule, Alignment.MIDDLE_LEFT);
-        checkBoxesLayout.addComponent(chbExportDPUData);
-        checkBoxesLayout.setComponentAlignment(chbExportDPUData, Alignment.MIDDLE_RIGHT);
+        this.chbImportSchedule.setEnabled(false);
+        this.chbImportSchedule.setVisible(this.importService.hasUserPermission(EntityPermissions.PIPELINE_IMPORT_SCHEDULE_RULES)
+                && this.importService.hasUserPermission(EntityPermissions.SCHEDULE_RULE_CREATE));
+        this.chbImportDPUData.setEnabled(false);
+        this.chbImportDPUData.setVisible(this.importService.hasUserPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA));
+        checkBoxesLayout.addComponent(chbImportSchedule);
+        checkBoxesLayout.setComponentAlignment(chbImportSchedule, Alignment.MIDDLE_LEFT);
+        checkBoxesLayout.addComponent(chbImportDPUData);
+        checkBoxesLayout.setComponentAlignment(chbImportDPUData, Alignment.MIDDLE_RIGHT);
 
         final VerticalLayout usedJarsLayout = new VerticalLayout();
         usedJarsLayout.setWidth("100%");
@@ -284,7 +288,7 @@ public class PipelineImport extends Window {
                     // import
                     final File zipFile = fileUploadReceiver.getFile();
                     try {
-                        importedPipeline = importService.importPipeline(zipFile, chbExportDPUData.getValue(), chbExportSchedule.getValue());
+                        importedPipeline = importService.importPipeline(zipFile, chbImportDPUData.getValue(), chbImportSchedule.getValue());
                         close();
                     } catch (ImportException | IOException ex) {
                         LOG.error("Import failed.", ex);

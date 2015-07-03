@@ -244,8 +244,7 @@ INSERT INTO "permission" VALUES (nextval('seq_permission'), 'userNotificationSet
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='User'), currval('seq_permission'));
 
-INSERT INTO "usr_extuser" VALUES ((select id from "usr_user" where username='admin'), 'admin');
-INSERT INTO "usr_extuser" VALUES ((select id from "usr_user" where username='user'), 'user');
+INSERT INTO "usr_extuser" SELECT id, username FROM "usr_user";
 
 update "usr_user_role" set role_id=2 where role_id=1;
 update "usr_user_role" set role_id=1 where role_id=0;

@@ -33,10 +33,16 @@ public abstract class DPURecord implements DataObject {
     private Long id;
 
     /**
-     * DPURecord name, provided by user.
+     * DPURecord name, provided by DPU, changeable by user.
      */
     @Column(name = "name")
     private String name;
+
+    /**
+     * DPURecord name shown in menus (shorter version than dpu.name), provided by DPU, changeable by user.
+     */
+    @Column(name = "menu_name")
+    private String menuName;
 
     /**
      * If true then the value of {@link #description} has been created by DPU's
@@ -97,6 +103,7 @@ public abstract class DPURecord implements DataObject {
      */
     public DPURecord(DPURecord dpuRecord) {
         this.name = dpuRecord.name;
+        this.menuName = dpuRecord.menuName;
         this.useDPUDescription = dpuRecord.useDPUDescription;
         this.description = dpuRecord.description;
         if (dpuRecord.serializedConfiguration == null) {
@@ -155,6 +162,14 @@ public abstract class DPURecord implements DataObject {
         this.description = newDescription;
     }
 
+    public String getMenuName() {
+        return menuName;
+    }
+
+    public void setMenuName(String menuName) {
+        this.menuName = menuName;
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -203,7 +218,7 @@ public abstract class DPURecord implements DataObject {
         // the null configuratino is not supported by virtuoso jdbc driver
         String configuration;
         try {
-            configuration = new String(serializedConfiguration, "UTF-8");
+            configuration = new String(AppConfig.postprocess(serializedConfiguration), "UTF-8");
         } catch (UnsupportedEncodingException ex) {
             throw new RuntimeException(ex);
         }
@@ -222,7 +237,7 @@ public abstract class DPURecord implements DataObject {
     public void setRawConf(String conf) {
         // workaround for null configurations
         try {
-            serializedConfiguration = StringUtils.defaultString(conf, NULL_CONFIG).getBytes("UTF-8");
+            serializedConfiguration = AppConfig.preprocess(StringUtils.defaultString(conf, NULL_CONFIG).getBytes("UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             throw new RuntimeException(ex);
         }
@@ -303,30 +318,4 @@ public abstract class DPURecord implements DataObject {
     public String toString() {
         return name;
     }
-
-    @PrePersist
-    private void prePersist() {
-        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
-    }
-
-    @PostPersist
-    private void postPersist() {
-        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
-    }
-
-    @PreUpdate
-    private void preUpdate() {
-        serializedConfiguration = AppConfig.preprocess(serializedConfiguration);
-    }
-
-    @PostUpdate
-    private void postUpdate() {
-        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
-    }
-
-    @PostLoad
-    private void postLoad() {
-        serializedConfiguration = AppConfig.postprocess(serializedConfiguration);
-    }
-
 }

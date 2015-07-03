@@ -11,8 +11,6 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,11 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.StartedListener;
 import com.vaadin.ui.Upload.SucceededEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService;
@@ -44,6 +46,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -58,6 +61,12 @@ public class DPUCreate extends Window {
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
+
+    @Autowired
+    private Utils utils;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -92,10 +101,6 @@ public class DPUCreate extends Window {
     public static void setFl(int aFl) {
         fl = aFl;
     }
-
-    private TextField dpuName;
-
-    private TextArea dpuDescription;
 
     private OptionGroup groupVisibility;
 
@@ -216,29 +221,6 @@ public class DPUCreate extends Window {
         return dpuDescription;
     }
 
-    private TextField createDpuName() {
-        TextField dpuName = new TextField();
-        dpuName.setImmediate(true);
-        dpuName.setWidth("310px");
-        dpuName.setHeight("-1px");
-        //settings of mandatory
-        dpuName.addValidator(new Validator() {
-            private static final long serialVersionUID = -4660159520157051764L;
-
-            @Override
-            public void validate(Object value) throws Validator.InvalidValueException {
-                if (value.getClass() == String.class
-                        && !((String) value).isEmpty()) {
-                    return;
-                }
-                throw new Validator.InvalidValueException(Messages.getString("DPUCreate.name.filled"));
-
-            }
-        });
-        dpuName.addValidator(new MaxLengthValidator(LenghtLimits.DPU_NAME));
-        return dpuName;
-    }
-
     public com.vaadin.ui.Component createJarTab() {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("dpuDetailMainLayout");
@@ -248,20 +230,6 @@ public class DPUCreate extends Window {
         dpuGeneralSettingsLayout.setSpacing(true);
         dpuGeneralSettingsLayout.setWidth("400px");
         dpuGeneralSettingsLayout.setHeight("200px");
-
-        //Name of DPU Template: label & TextField
-        Label nameLabel = new Label(Messages.getString("DPUCreate.name"));
-        nameLabel.setImmediate(false);
-        nameLabel.setWidth("-1px");
-        nameLabel.setHeight("-1px");
-        dpuGeneralSettingsLayout.addComponent(nameLabel, 0, 0);
-
-        dpuName = createDpuName();
-        dpuName.setInputPrompt(Messages.getString("DPUCreate.prompt"));
-        dpuGeneralSettingsLayout.addComponent(dpuName, 1, 0);
-
-        //Description of DPU Template: label & TextArea
-        dpuDescription = createDpuDescription(dpuGeneralSettingsLayout, 1);
 
         //Visibility of DPU Template: label & OptionGroup
         groupVisibility = createVisibilityOption(dpuGeneralSettingsLayout, 2);
@@ -562,7 +530,8 @@ public class DPUCreate extends Window {
         }
 
         DPUTemplateWrap dpuWrap;
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(jarFile, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                this.appConfig, this.utils.getUser());
 
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
@@ -585,13 +554,13 @@ public class DPUCreate extends Window {
 
     private void importDPU(File fileEntry) throws DPUCreateException {
         DPUTemplateWrap dpuWrap;
-        String name = dpuName.isValid() ? dpuName.getValue() : null;
+        String name = null;
 
-        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)), appConfig);
+        dpuWrap = new DPUTemplateWrap(dpuManipulator.create(fileEntry, name), Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)),
+                appConfig, this.utils.getUser());
         // set additional variables
         dpuTemplate = dpuWrap.getDPUTemplateRecord();
         // now we know all, we can update the DPU template
-        dpuTemplate.setDescription(dpuDescription.getValue());
         dpuTemplate.setShareType((ShareType) groupVisibility.getValue());
         dpuFacade.save(dpuTemplate);
     }
@@ -703,14 +672,14 @@ public class DPUCreate extends Window {
      * Reset the component to empty values.
      */
     public void initClean() {
-        dpuName.setValue("");
-        dpuDescription.setValue("");
         groupVisibility.setValue(ShareType.PUBLIC_RO);
+        groupVisibility.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFile.setReadOnly(false);
         uploadFile.setValue("");
         uploadFile.setReadOnly(true);
         // clean zip version
         groupVisibilityZip.setValue(ShareType.PUBLIC_RO);
+        groupVisibilityZip.setEnabled(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
         uploadFileZip.setReadOnly(false);
         uploadFileZip.setValue("");
         uploadFileZip.setReadOnly(true);

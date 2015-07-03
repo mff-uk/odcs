@@ -5,33 +5,15 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.StringUtils;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.
@@ -40,7 +22,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEntity {
+public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * Unique ID for each plan.
@@ -136,8 +118,8 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * If true then pipeline can be run only at most +10 minutes from scheduled
@@ -377,14 +359,6 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
         this.owner = owner;
     }
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
     /**
      * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
      *
@@ -443,6 +417,14 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
 
     public void setPriority(Long priority) {
         this.priority = priority;
+    }
+
+    public UserActor getActor() {
+        return this.actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 
     /**

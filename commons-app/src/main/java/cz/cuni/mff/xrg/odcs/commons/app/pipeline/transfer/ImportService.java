@@ -12,12 +12,16 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -34,6 +38,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 
 /**
  * Service for importing pipelines exported by {@link ExportService}.
@@ -60,9 +65,16 @@ public class ImportService {
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
+    @Autowired(required = false)
+    private PermissionUtils permissionUtils;
+
     @Autowired
     private DPUModuleManipulator moduleManipulator;
 
+    @Autowired
+    private AppConfig appConfig;
+
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
         final File tempDir;
         try {
@@ -73,6 +85,7 @@ public class ImportService {
         return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
     }
 
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
         // delete tempDirectory
@@ -85,6 +98,7 @@ public class ImportService {
         if (user == null) {
             throw new ImportException(Messages.getString("ImportService.pipeline.unknown.user"));
         }
+        final UserActor actor = this.authCtx.getUser().getUserActor();
         // unpack
         Pipeline pipe;
         try {
@@ -92,8 +106,7 @@ public class ImportService {
 
             pipe = loadPipeline(tempDirectory);
             pipe.setUser(user);
-            if (user.getOrganization() != null)
-                pipe.setOrganization(user.getOrganization());
+            pipe.setActor(actor);
             pipe.setShareType(ShareType.PRIVATE);
 
             // TODO skoda: Check for DPU versions here and warn in case of problems
@@ -152,6 +165,7 @@ public class ImportService {
      * @return
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.import')")
     public Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
@@ -165,6 +179,7 @@ public class ImportService {
         }
     }
 
+    @PreAuthorize("hasRole('pipeline.import')")
     public List<DpuItem> loadUsedDpus(File baseDir) throws ImportException {
         XStream xStream = new XStream(new DomDriver("UTF-8"));
         xStream.alias("dpus", List.class);
@@ -228,6 +243,9 @@ public class ImportService {
         }
         // copy user data
         if (userDataDir.exists() && importUserDataFile) {
+            if (!hasUserPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.data.permissions"));
+            }
             try {
                 final File dest = resourceManager
                         .getDPUDataUserDir(result, user);
@@ -264,6 +282,7 @@ public class ImportService {
      * @param user
      * @throws ImportException
      */
+    @PreAuthorize("hasRole('pipeline.importScheduleRules')")
     private void importSchedules(File scheduleFile, Pipeline pipeline, User user)
             throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
@@ -351,6 +370,13 @@ public class ImportService {
 
         LOG.debug("<<< Leaving getImportedInformation: {}", result);
         return result;
+    }
+
+    public boolean hasUserPermission(String permission) {
+        if (this.permissionUtils != null) {
+            return this.permissionUtils.hasUserAuthority(permission);
+        }
+        return true;
     }
 
 }
