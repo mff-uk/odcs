@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.qos.logback.classic.Level;
@@ -20,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,
  * as these should be created immutable by backend only.
- * 
+ *
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
@@ -32,7 +31,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return true if there exist logs with given level for given dpu instance
      * of given pipeline execution.
-     * 
+     *
      * @param exec
      * @param level
      * @return
@@ -50,7 +49,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return list of all usable log's levels without aggregations. Ordered
      * descending by priority.
-     * 
+     *
      * @return
      */
     @Override
@@ -107,5 +106,11 @@ class LogFacadeImpl implements LogFacade {
         } else {
             return new ByteArrayInputStream(sb.toString().getBytes());
         }
+    }
+
+    @Override
+    public void deleteLogs(PipelineExecution execution) {
+        logDao.delete(execution);
+
     }
 }

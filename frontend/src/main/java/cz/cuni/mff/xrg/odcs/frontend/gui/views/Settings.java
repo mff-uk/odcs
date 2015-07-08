@@ -1,13 +1,25 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -30,9 +42,16 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -51,7 +70,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * GUI for Settings page which opens from the main menu. For User role it
  * contains Email notifications form. For Administrator role it contains extra
  * functionality: Users list, Prune execution records, Release locked pipelines
- * 
+ *
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
@@ -60,6 +79,9 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private static final long serialVersionUID = 1L;
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(
+            Settings.class);
 
     private GridLayout mainLayout;
 
@@ -73,6 +95,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private VerticalLayout runtimePropsLayout;
 
+    private VerticalLayout manageDebugAndWorkDataLayout;
+
     private Button notificationsButton;
 
     private Button accountButton;
@@ -80,6 +104,12 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     private Button usersButton;
 
     private Button runtimePropsButton;
+
+    private Button manageDebugAndWorkDataButton;
+
+    private Label lblStatus;
+
+    private TextField txtDaysCount;
 
     private Button shownTab = null;
 
@@ -115,6 +145,15 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     @Autowired
     private PermissionUtils permissionUtils;
+
+    @Autowired
+    private PipelineFacade pipelineFacade;
+
+    @Autowired
+    private LogFacade logFacade;
+
+    @Autowired
+    private ResourceManager resourceManager;
 
     /**
      * Currently logged in user.
@@ -343,6 +382,36 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.addComponent(runtimePropsButton);
         tabsLayout.setComponentAlignment(runtimePropsButton, Alignment.TOP_RIGHT);
 
+        // Manage debug and working data
+        manageDebugAndWorkDataLayout = createDebugAndWorkDataLayout();
+
+        manageDebugAndWorkDataButton = new NativeButton(Messages.getString("Settings.manage.debugAndWorkingData"));
+        manageDebugAndWorkDataButton.setHeight("40px");
+        manageDebugAndWorkDataButton.setWidth("250px");
+        manageDebugAndWorkDataButton.setStyleName("multiline");
+        manageDebugAndWorkDataButton.setVisible(hasPermission("manageDebugAndWorkingData"));
+
+        manageDebugAndWorkDataButton.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if (shownTab.equals(accountButton)) {
+                    myAccountSaveConfirmation(manageDebugAndWorkDataButton, manageDebugAndWorkDataLayout);
+                } else {
+                    //if before click was pushed Schedule notification tab
+                    if (shownTab.equals(notificationsButton)) {
+                        notificationSaveConfirmation(runtimePropsButton,
+                                runtimePropsLayout);
+                    } else {
+                        buttonPush(manageDebugAndWorkDataButton, manageDebugAndWorkDataLayout);
+                    }
+                }
+            }
+        });
+        tabsLayout.addComponent(manageDebugAndWorkDataButton);
+        tabsLayout.setComponentAlignment(manageDebugAndWorkDataButton, Alignment.TOP_RIGHT);
+
         shownTab = accountButton;
         mainLayout.addComponent(tabsLayout, 0, 0);
         mainLayout.addComponent(accountLayout, 1, 0);
@@ -391,7 +460,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                             prop.setName(name);
                             prop.setValue(value);
                             toSave.put(name, prop);
-                        } else if (!prop.getValue().equals(value)) { // value changed 
+                        } else if (!prop.getValue().equals(value)) { // value changed
                             prop.setValue(value);
                             toSave.put(name, prop);
                         } else { // else value didnt change
@@ -545,7 +614,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Validates and return the TextField.value
-     * 
+     *
      * @param layout
      *            GridLayout
      * @param column
@@ -572,7 +641,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     /**
      * Building Schedule notifications layout. Appear after pushing Schedule
      * notifications tab
-     * 
+     *
      * @return notificationsLayout Layout with components of Schedule
      *         notifications.
      */
@@ -599,7 +668,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building My account layout. Appear after pushing My account tab
-     * 
+     *
      * @return accountLayout Layout with components of My account.
      */
     private VerticalLayout buildMyAccountLayout() {
@@ -661,7 +730,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building layout with button Save for saving My account tab
-     * 
+     *
      * @return buttonBar Layout with button
      */
     private HorizontalLayout buildButtonMyAccountBar() {
@@ -695,7 +764,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building layout with button Save for saving notifications
-     * 
+     *
      * @return buttonBar Layout with button
      */
     private HorizontalLayout buildButtonNotificationBar() {
@@ -730,7 +799,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Showing active tab.
-     * 
+     *
      * @param pressedButton
      *            Tab that was pressed.
      * @param layoutShow
@@ -743,6 +812,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         //prefixesButton.setStyleName("multiline");
         notificationsButton.setStyleName("multiline");
         runtimePropsButton.setStyleName("multiline");
+        manageDebugAndWorkDataButton.setStyleName("multiline");
 
         shownTab = pressedButton;
         shownTab.setStyleName("selectedtab");
@@ -797,10 +867,12 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         userFacade.save(loggedUser);
         Notification.show(Messages.getString("Settings.myAccout.successfull"),
                 Notification.Type.HUMANIZED_MESSAGE);
-        if (buttonNotificationBar != null)
+        if (buttonNotificationBar != null) {
             buttonNotificationBar.setEnabled(false);
-        if (buttonMyAccountBar != null)
+        }
+        if (buttonMyAccountBar != null) {
             buttonMyAccountBar.setEnabled(false);
+        }
 
         if (shownTab.equals(accountButton)) {
             accountLayout = buildMyAccountLayout();
@@ -815,7 +887,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * tab and push anoter tab. User can save changes or discard. After that
      * will be shown another selected tab. If there was no changes, a
      * confirmation window will not be shown.
-     * 
+     *
      * @param pressedButton
      *            New tab that was push.
      * @param layoutShow
@@ -856,7 +928,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * notifications tab and push anoter tab. User can save changes or discard.
      * After that will be shown another selected tab. If there was no changes, a
      * confirmation window will not be shown.
-     * 
+     *
      * @param pressedButton
      *            New tab that was push.
      * @param layoutShow
@@ -989,7 +1061,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Check for permission.
-     * 
+     *
      * @param type
      *            Required permission.
      * @return If the user has given permission
@@ -1001,5 +1073,128 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     @Override
     public void doAfterLogout() {
         isMainLayoutInitialized = false;
+    }
+
+    private VerticalLayout createDebugAndWorkDataLayout() {
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setSpacing(true);
+        layout.setMargin(false);
+
+        GridLayout gl = new GridLayout(2, 1);
+        HorizontalLayout firstLine = new HorizontalLayout();
+
+        Label lblDaysCount = new Label(Messages.getString("Settings.manage.debugAndWorkingData.txtDaysCount"));
+        txtDaysCount = new TextField();
+        txtDaysCount.setWidth("30");
+        Label lblDays = new Label(Messages.getString("Settings.manage.debugAndWorkingData.lblDays"));
+        Button btnDelete = new Button(Messages.getString("Settings.manage.debugAndWorkingData.btnDelete"));
+
+        firstLine.addComponent(lblDaysCount);
+        firstLine.addComponent(txtDaysCount);
+        firstLine.addComponent(lblDays);
+        gl.addComponent(firstLine, 0, 0);
+        gl.addComponent(btnDelete, 1, 0);
+
+        VerticalLayout secondLine = new VerticalLayout();
+        secondLine.setWidth("100%");
+
+        lblStatus = new Label(Messages.getString("Settings.manage.debugAndWorkingData.lblStatus"));
+        lblStatus.setImmediate(true);
+        secondLine.addComponent(lblStatus);
+        btnDelete.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                UI.getCurrent().setPollInterval(1000);
+                lblStatus.setValue(Messages.getString("Settings.manage.debugAndWorkingData.lblStatus.running"));
+
+                PipelineExecutionDeleterThread deleteThread = new PipelineExecutionDeleterThread(authCtx.getAuthentication());
+
+                ExecutorService pool = Executors.newSingleThreadExecutor();
+                pool.submit(deleteThread);
+                pool.shutdown();
+            }
+        });
+
+        layout.addComponent(gl);
+        layout.addComponent(secondLine);
+
+        return layout;
+    }
+
+    private void deleteDirectory(File directory) {
+        Path rootWorkingDir;
+        Path dirToDelete = Paths.get(directory.getAbsolutePath());
+        try {
+            rootWorkingDir = Paths.get(resourceManager.getRootRepositoriesDir().getParent());
+            while (dirToDelete.startsWith(rootWorkingDir) && !rootWorkingDir.equals(dirToDelete.getParent())) {
+                dirToDelete = dirToDelete.getParent();
+            }
+        } catch (MissingResourceException ex) {
+            LOG.warn("Error getting parent working directory of: " + directory.getAbsolutePath(), ex);
+        }
+        File toDel = dirToDelete.toFile();
+        if (toDel.exists()) {
+            try {
+                FileUtils.deleteDirectory(toDel);
+            } catch (IOException ex) {
+                LOG.error("Error deleting working directory.", ex);
+                Notification.show(Messages.getString("Settings.manage.debugAndWorkingData.WDdelErr"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    class PipelineExecutionDeleterThread implements Runnable {
+        Authentication authentication;
+
+        PipelineExecutionDeleterThread(Authentication auth) {
+            authentication = auth;
+        }
+
+        @Override
+        public void run() {
+            try {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                List<PipelineExecution> finishedPipelineExecutions = pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLED);
+                finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FAILED));
+                finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_SUCCESS));
+                finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_WARNING));
+                for (PipelineExecution fpe : finishedPipelineExecutions) {
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    java.util.Calendar now = java.util.Calendar.getInstance();
+                    now.add(java.util.Calendar.HOUR, -24 * Integer.parseInt(txtDaysCount.getValue()));
+                    cal.setTime(fpe.getEnd());
+                    if (cal.before(now)) {
+                        for (Node node : fpe.getPipeline().getGraph().getNodes()) {
+                            try {
+                                final File executionDir = resourceManager.getDataUnitWorkingDir(fpe, node.getDpuInstance());
+                                deleteDirectory(executionDir);
+                            } catch (MissingResourceException ex) {
+                                LOG.warn("No resources to delete for Pipeline execution id: " + Long.toString(fpe.getId()), ex);
+                            }
+                        }
+                        logFacade.deleteLogs(fpe);
+                        pipelineFacade.delete(fpe);
+                    }
+                }
+            } catch (Exception ex) {
+                LOG.warn("Can't delete working directory.", ex);
+                Notification.show(Messages.getString("Settings.manage.debugAndWorkingData.WDdelErr"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+            } finally {
+                UI.getCurrent().access(new Runnable() {
+                    @Override
+                    public void run() {
+                        UI.getCurrent().setPollInterval(-1);
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String currentDatetime = dateFormat.format(new Date());
+                        lblStatus.setValue(Messages.getString("Settings.manage.debugAndWorkingData.lblStatus.done") + " (" + currentDatetime + ")");
+                    }
+                });
+            }
+
+        }
     }
 }
