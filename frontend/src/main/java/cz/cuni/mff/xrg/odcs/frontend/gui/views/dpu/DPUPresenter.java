@@ -6,6 +6,7 @@ import com.vaadin.data.util.IndexedContainer;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
+import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 
 /**
@@ -21,7 +22,7 @@ public interface DPUPresenter extends Presenter {
      * @param dpuWrap
      *            DPU to save.
      */
-    public void saveDPUEventHandler(DPUTemplateWrap dpuWrap);
+    public boolean saveDPUEventHandler(DPUTemplateWrap dpuWrap);
 
     /**
      * Select given DPU.
@@ -29,7 +30,7 @@ public interface DPUPresenter extends Presenter {
      * @param dpu
      *            DPU to select.
      */
-    public void selectDPUEventHandler(DPUTemplateRecord dpu);
+    public void selectDPUEventHandler(DPUTemplateRecord dpu, Object oldValue);
 
     /**
      * Open dialog for creating new DPU.
@@ -155,7 +156,7 @@ public interface DPUPresenter extends Presenter {
          * Refresh view.
          */
         public void refresh();
-
+        void treeSetValue(Object oldValue);
         /**
          * Select DPU.
          * 
@@ -169,12 +170,12 @@ public interface DPUPresenter extends Presenter {
          * 
          * @return If the view has changes.
          */
-        public boolean isChanged();
+        public boolean isChanged() throws DPUWrapException;
 
         /**
          * Save selected DPU.
          */
-        public void saveDPUTemplate();
+        public boolean saveDPUTemplate();
 
         /**
          * Removes pipeline form *DPU instances* table (doesn't delete from db)
