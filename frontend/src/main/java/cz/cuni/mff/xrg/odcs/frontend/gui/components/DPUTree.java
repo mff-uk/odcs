@@ -82,7 +82,8 @@ public class DPUTree extends CustomComponent {
     private HorizontalLayout topLine;
 
     private Window.CloseListener createDPUCloseListener;
-
+    
+    private boolean isValid = true;
     /**
      * Creates new DPUTree.
      */
@@ -277,7 +278,24 @@ public class DPUTree extends CustomComponent {
         layoutTree.setExpandRatio(filterBar, 0.05f);
 
         // DPURecord tree 
-        dpuTree = new Tree();
+        dpuTree = new Tree() {
+            public void setValue(Object newValue) throws Property.ReadOnlyException {
+                if (isValid) {
+                    super.setValue(newValue);
+                } else {
+                    isValid = true;
+                }
+            };
+            
+            @Override
+            protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws com.vaadin.data.Property.ReadOnlyException {
+                if (isValid) {
+                    super.setValue(newValue, repaintIsNotNeeded);
+                } else {
+                    isValid = true;
+                }
+            }
+        };
         dpuTree.setImmediate(true);
         dpuTree.setHeight("100%");
         //	dpuTree.setHeight(600, Unit.PIXELS);
@@ -310,7 +328,7 @@ public class DPUTree extends CustomComponent {
             public int compare(Object itemId1, Object itemId2) {
                 DPUTemplateRecord first = (DPUTemplateRecord) itemId1;
                 DPUTemplateRecord second = (DPUTemplateRecord) itemId2;
-                if(first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
+                if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
                 }
                 return first.getMenuName().compareTo(second.getMenuName());
@@ -350,6 +368,16 @@ public class DPUTree extends CustomComponent {
     public void addItemClickListener(
             ItemClickEvent.ItemClickListener itemClickListener) {
         dpuTree.addItemClickListener(itemClickListener);
+    }
+
+    public void setValue(Object newValue) {
+        dpuTree.select(null);
+        dpuTree.select(newValue);
+        isValid=false;
+    }
+
+    public Object getValue() {
+        return dpuTree.getValue();
     }
 
     /**
@@ -398,17 +426,17 @@ public class DPUTree extends CustomComponent {
     }
 
     private void addDPUToTree(DPUTemplateRecord dpu, Tree tree, DPURecord rootExtractor, DPURecord rootTransformer, DPURecord rootLoader, DPURecord rootQuality) {
-        if(dpu.getType() == null) { // we ignore DPU's without type
+        if (dpu.getType() == null) { // we ignore DPU's without type
             return;
         }
-        if(tree.containsId(dpu)) { // if DPU is already in tree, ignore it
+        if (tree.containsId(dpu)) { // if DPU is already in tree, ignore it
             return;
         }
         Item item = tree.addItem(dpu);
         item.getItemProperty(MENU_NAME_PROPERTY).setValue(dpu.getMenuName());
 
         DPUTemplateRecord parent = dpu.getParent();
-        if(parent != null) {
+        if (parent != null) {
             addDPUToTree(parent, tree, rootExtractor, rootTransformer, rootLoader, rootQuality); // we must ensure that parent is already in tree before we set it as parent to tree
             tree.setParent(dpu, parent);
         } else {
