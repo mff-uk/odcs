@@ -135,6 +135,8 @@ public class PipelineEdit extends ViewComponent {
      */
     public final static String DEVELOP_MODE = "develop_mode";
 
+    private static final int MAX_NAME_LENGTH_DISPLAYED = 60;
+
     private String canvasMode = DEVELOP_MODE;
 
     private Tab standardTab;
@@ -1418,8 +1420,15 @@ public class PipelineEdit extends ViewComponent {
     private void updateLblPipelineName() {
         if (this.pipeline == null) {
         } else {
-            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", this.pipeline.getName()));
+            lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", getShortName(this.pipeline.getName(), MAX_NAME_LENGTH_DISPLAYED)));
         }
+    }
+    
+    private String getShortName(String name, int maxLength) {
+        if (name == null || name.length() < maxLength) {
+            return name;
+        }
+        return name.subSequence(0, maxLength) + "...";
     }
 
     private String getPipelineAuthorName(Pipeline pipeline) {
