@@ -65,6 +65,7 @@ public class JPAXStream extends XStream {
         skipName.add("id");
         skipName.add("_persistence_");
         skipName.add("owner");
+        skipName.add("organization");
         stream.filters.add(skipName);
 
         AllowedFieldsFilter allowedfieldFilter = new AllowedFieldsFilter();
