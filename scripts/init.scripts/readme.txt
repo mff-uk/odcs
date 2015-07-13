@@ -8,9 +8,10 @@ Please read the configuration files and set the variables according your environ
 Installation steps for unifiedviews-backend:
 unifiedviews-backend is needed to be placed into the /etc/init.d/
 
-We suggest to place run_unifiedviews_backend into the folder /usr/sbin/ and unifiedviews.conf into the /etc/unifiedviews/.
+The script run_unifiedviews_backend is expected to be in folder /usr/sbin/. If you need to change it, please update "unifiedviews_backend" correspondingly. 
 
-The configuration script "unifiedviews.conf" is expected to be in :"/etc/unifiedviews/unifiedviews.conf". If you need to change that, please adjust run_unifiedviews_backend and unifiedviews-backend correspondingly.
+The configuration script unifiedviews.conf is expected to be in /etc/unifiedviews/. If you need to change that, please adjust "run_unifiedviews_backend" and "unifiedviews-backend" correspondingly.
+
 
 cp run_unifiedviews_backend /usr/sbin/
 # allow execution
