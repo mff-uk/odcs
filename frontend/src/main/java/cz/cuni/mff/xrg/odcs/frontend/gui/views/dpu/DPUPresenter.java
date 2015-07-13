@@ -21,6 +21,7 @@ public interface DPUPresenter extends Presenter {
      * 
      * @param dpuWrap
      *            DPU to save.
+     * @return true when succesful, false otherwise
      */
     public boolean saveDPUEventHandler(DPUTemplateWrap dpuWrap);
 
@@ -29,6 +30,8 @@ public interface DPUPresenter extends Presenter {
      * 
      * @param dpu
      *            DPU to select.
+     * @param oldValue
+     *            the value which is currently selected (to prevent out navigation if we are unable to select new value, e.g. configuration invalid).
      */
     public void selectDPUEventHandler(DPUTemplateRecord dpu, Object oldValue);
 
@@ -156,7 +159,15 @@ public interface DPUPresenter extends Presenter {
          * Refresh view.
          */
         public void refresh();
+
+        /**
+         * Instruct tree component to select provided DPU (old value usually, when cancelling out navigation)
+         * 
+         * @param oldValue
+         *            the DPU instance/template to be selected by tree component
+         */
         void treeSetValue(Object oldValue);
+
         /**
          * Select DPU.
          * 
@@ -168,12 +179,16 @@ public interface DPUPresenter extends Presenter {
         /**
          * Check if the view has changes.
          * 
-         * @return If the view has changes.
+         * @return true If the view has changes.
+         * @throws DPUWrapException
+         *             when configuration entered at the moment is invalid and the comparison for changes cannot be done
          */
         public boolean isChanged() throws DPUWrapException;
 
         /**
          * Save selected DPU.
+         * 
+         * @return true when succesful, false otherwise
          */
         public boolean saveDPUTemplate();
 

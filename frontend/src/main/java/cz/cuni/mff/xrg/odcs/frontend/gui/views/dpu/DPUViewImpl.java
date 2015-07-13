@@ -725,9 +725,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         try {
             configChanged = selectedDpuWrap.hasConfigChanged();
         } catch (DPUWrapException e) {
-
             throw e;
-//            return true;
         }
 
         DPUTemplateRecord selectedDpu = selectedDpuWrap.getDPUTemplateRecord();
