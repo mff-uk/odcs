@@ -17,6 +17,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -36,12 +37,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineNameAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.InMemorySource;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbInMemorySource;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 
 /**
  * Dialog for the scheduling rule creation. Designed for setting the description
@@ -166,6 +169,12 @@ public class SchedulePipeline extends Window {
         this.setResizable(false);
         this.setModal(true);
         this.setCaption(Messages.getString("SchedulePipeline.schedule"));
+        this.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(CloseEvent e) {
+                resetURL();
+            }
+        });
     }
 
     /**
@@ -691,6 +700,7 @@ public class SchedulePipeline extends Window {
 
                     }
                 }
+                resetURL();
                 close();
 
             }
@@ -706,6 +716,7 @@ public class SchedulePipeline extends Window {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                resetURL();
                 close();
 
             }
@@ -1266,4 +1277,22 @@ public class SchedulePipeline extends Window {
             comboPipeline.setEnabled(false);
         }
     }
+
+    public void enableComboPipeline() {
+        if (!comboPipeline.isEnabled()) {
+            comboPipeline.setEnabled(true);
+        }
+    }
+
+    private void resetURL() {
+        String uriFragment = Page.getCurrent().getUriFragment();
+        if (uriFragment.contains("New/")) {
+            uriFragment = uriFragment.replace("New/", "");
+        }
+        ParametersHandler handler = new ParametersHandler(uriFragment);
+        handler.removeParameter("schedule");
+        handler.removeParameter("pipeline");
+        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+    }
+
 }

@@ -478,6 +478,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
             schedule = scheduleFacade.getSchedule(id);
         }
         schedulePipeline.setSelectedSchedule(schedule);
+        schedulePipeline.enableComboPipeline();
         if (pipelineId != null) {
             schedulePipeline.setPipeline(pipelineId);
         }
@@ -556,6 +557,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
                 @Override
                 public void buttonClick(ClickEvent event) {
                     showSchedulePipeline(schId, null);
+                    changeURI(schId);
                 }
             });
             if (canEdit(schedule)) {
@@ -671,31 +673,6 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
         });
         refreshManager.triggerRefresh();
 
-//        if (isMainLayoutInitialized) {
-//            navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-//            addRefreshManager();
-//            return view.enter(this);
-//        }
-//
-//        navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-//        // prepare data object
-////        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(), utils.getPageLength());
-//
-//        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
-//
-//        ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
-//        c.sort(new Object[] { "id" }, new boolean[] { false });
-//        dataObject = new ExecutionListData(c);
-//        // prepare view
-//        Object viewObject = view.enter(this);
-//        addRefreshManager();
-//
-//        // set data object
-//        view.setDisplay(dataObject);
-//
-//        isMainLayoutInitialized = true;
-
-        // return main component
         return this;
     }
 
@@ -739,19 +716,6 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
                         LOG.debug("Scheduler refreshed.");
                         refreshManager.triggerRefresh();
                         break;
-//                    case "id":
-//                        view.setFilter(entry.getKey(), ParametersHandler.getInterval(entry.getValue()));
-//                        break;
-//                    case "status":
-//                        view.setFilter(entry.getKey(), PipelineExecutionStatus.valueOf(entry.getValue()));
-//                        break;
-//                    case "isDebugging":
-//                    case "schedule":
-//                        view.setFilter(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
-//                        break;
-//                    case "start":
-//                        view.setFilter(entry.getKey(), ParametersHandler.getDateInterval(entry.getValue()));
-//                        break;
                     default:
                         schedulerTable.setFilterFieldValue(entry.getKey(), entry.getValue());
                         break;
@@ -791,7 +755,6 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
             Notification.show(Messages.getString("Scheduler.0", scheduleId), Notification.Type.ERROR_MESSAGE);
             return;
         }
-//        view.showExecutionDetail(exec, new ExecutionDetailData(getMessageDataSource()));
         showSchedulePipeline(scheduleId, null);
     }
 
