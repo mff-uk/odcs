@@ -1,4 +1,4 @@
-The files: unifiedviews_backend, run_unifiedviews_backend, unifiedviews.conf are init.d script for linux.
+The files: unifiedviews-backend, run_unifiedviews_backend, unifiedviews.conf are init.d script for linux.
 virtuoso is init.d script for linux. It's just a light version.
 The scripts were inspirited by tomcat6 
 
