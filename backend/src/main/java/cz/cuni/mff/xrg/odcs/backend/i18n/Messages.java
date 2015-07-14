@@ -2,9 +2,10 @@ package cz.cuni.mff.xrg.odcs.backend.i18n;
 
 import java.text.MessageFormat;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 
 /**
  * Class responsible for retrieving internationalized messages.
@@ -43,6 +44,7 @@ public class Messages {
     private static ReloadableResourceBundleMessageSource initializeResourceBundle() {
         ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
         ms.setDefaultEncoding("UTF-8");
+        ms.setFallbackToSystemLocale(false);
         ms.setBasename("classpath:" + BUNDLE_NAME);
         return ms;
     }

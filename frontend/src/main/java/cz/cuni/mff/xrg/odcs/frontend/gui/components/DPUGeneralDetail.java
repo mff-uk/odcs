@@ -250,6 +250,7 @@ public class DPUGeneralDetail extends CustomComponent {
 //		}
 
         dpu.setName(dpuName.getValue().trim());
+        dpu.setMenuName(dpuName.getValue().trim());
     }
 
     /**
