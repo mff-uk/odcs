@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
+import javax.activity.InvalidActivityException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -236,8 +238,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void itemClick(final ItemClickEvent event) {
+                    Object oldValue = dpuTree.getValue();
                     if (event.getItemId().getClass() == DPUTemplateRecord.class) {
-                        presenter.selectDPUEventHandler((DPUTemplateRecord) event.getItemId());
+                        presenter.selectDPUEventHandler((DPUTemplateRecord) event.getItemId(), oldValue);
                     }
                 }
             });
@@ -256,6 +259,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         dpuLayout.setExpandRatio(layoutInfo, 1.0f);
 
         return dpuLayout;
+    }
+
+    public void treeSetValue(Object oldValue) {
+        dpuTree.setValue(oldValue);
     }
 
     /**
@@ -285,10 +292,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
-                    if (isChanged() || tabname.equals("configuration")) {
+                    try {
+                        if (isChanged() || tabname.equals("configuration")) {
+                            buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+                        } else {
+                            buttonSaveDPU.setEnabled(false);
+                        }
+                    } catch (DPUWrapException ex) {
                         buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
-                    } else {
-                        buttonSaveDPU.setEnabled(false);
                     }
                 }
             }
@@ -457,15 +468,16 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                saveDPUTemplate();
-                //refresh data in dialog and dpu tree
-                dpuTree.refresh();
-                setGeneralTabValues();
-                if (!"configuration".equals(tabname)) {
-                    buttonSaveDPU.setEnabled(false);
+                if (saveDPUTemplate()) {
+                    //refresh data in dialog and dpu tree
+                    dpuTree.refresh();
+                    setGeneralTabValues();
+                    if (!"configuration".equals(tabname)) {
+                        buttonSaveDPU.setEnabled(false);
+                    }
+                    // refresh configuration
+                    configureDPUDialog();
                 }
-                // refresh configuration
-                configureDPUDialog();
             }
         });
         buttonDpuBar.addComponent(buttonSaveDPU);
@@ -705,7 +717,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     }
 
     @Override
-    public boolean isChanged() {
+    public boolean isChanged() throws DPUWrapException {
         if (selectedDpuWrap == null) {
             return false;
         }
@@ -713,12 +725,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         try {
             configChanged = selectedDpuWrap.hasConfigChanged();
         } catch (DPUWrapException e) {
-            Notification.show(
-                    Messages.getString("DPUViewImpl.dpu.configuration.changes"),
-                    e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            LOG.error("hasConfigChanged() throws for DPU '{}'",
-                    selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-            return true;
+            throw e;
         }
 
         DPUTemplateRecord selectedDpu = selectedDpuWrap.getDPUTemplateRecord();
@@ -746,17 +753,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
      * Store DPU Template record to DB
      */
     @Override
-    public void saveDPUTemplate() {
+    public boolean saveDPUTemplate() {
         //control of the validity of Name field.
         if (!validate()) {
             //Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
-            return;
+            return false;
         }
         //saving Name, Description and Visibility
         if (selectedDpuWrap != null
                 && selectedDpuWrap.getDPUTemplateRecord().getId() != null) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
-            if(selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
+            if (selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
                 // same field is used to edit menu name. Only applied to templates with parents
                 selectedDpuWrap.getDPUTemplateRecord().setMenuName(dpuName.getValue().trim());
             }
@@ -780,7 +787,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             selectedDpuWrap.getDPUTemplateRecord()
                     .setShareType((ShareType) groupVisibility
                             .getValue());
-            presenter.saveDPUEventHandler(selectedDpuWrap);
+            return presenter.saveDPUEventHandler(selectedDpuWrap);
+        } else {
+            throw new IllegalStateException();
         }
     }
 

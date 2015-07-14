@@ -2,9 +2,10 @@ package eu.unifiedviews.dataunit.rdf.impl.i18n;
 
 import java.text.MessageFormat;
 
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+
+import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 
 /**
  * Class responsible for retrieving internationalized messages.
@@ -43,6 +44,7 @@ public class Messages {
     private static ReloadableResourceBundleMessageSource initializeResourceBundle() {
         ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
         ms.setDefaultEncoding("UTF-8");
+        ms.setFallbackToSystemLocale(false);
         ms.setBasename("classpath:" + BUNDLE_NAME);
         return ms;
     }

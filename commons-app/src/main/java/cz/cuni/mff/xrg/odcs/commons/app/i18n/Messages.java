@@ -45,6 +45,7 @@ public class Messages {
     private static ReloadableResourceBundleMessageSource initializeResourceBundle() {
         ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
         ms.setDefaultEncoding("UTF-8");
+        ms.setFallbackToSystemLocale(false);
         ms.setBasename("classpath:" + BUNDLE_NAME);
         return ms;
     }
