@@ -1,5 +1,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 
@@ -8,8 +11,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DataUnitSelector.SelectionChangedEvent;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Component for browsing results of {@link PipelineExecution}.
@@ -25,6 +28,8 @@ public class Browse extends CustomComponent {
     private PipelineExecution execution;
 
     private QueryView queryView;
+
+    private static Logger LOG = LoggerFactory.getLogger(Browse.class);
 
     /**
      * Constructor.
@@ -83,19 +88,28 @@ public class Browse extends CustomComponent {
             return;
         }
         if (info.getType() == ManagableDataUnit.Type.FILES) {
-            if (queryView.getClass() == RDFQueryView.class) {
+            if (queryView.getClass() != FileQueryView.class) {
                 mainLayout.removeComponent(queryView);
                 queryView = new FileQueryView();
                 mainLayout.addComponent(queryView);
             }
-        } else {
-            if (queryView.getClass() == FileQueryView.class) {
+        } else if (info.getType() == ManagableDataUnit.Type.RDF) {
+            if (queryView.getClass() != RDFQueryView.class) {
                 mainLayout.removeComponent(queryView);
                 queryView = new RDFQueryView();
                 queryView.setExecutionInfo(getExecutionInfo(execution));
                 mainLayout.addComponent(queryView);
             }
-
+        } else if (info.getType() == ManagableDataUnit.Type.RELATIONAL) {
+            if (this.queryView.getClass() != RelationalQueryView.class) {
+                this.mainLayout.removeComponent(this.queryView);
+                this.queryView = new RelationalQueryView();
+                this.queryView.setExecutionInfo(getExecutionInfo(this.execution));
+                this.mainLayout.addComponent(this.queryView);
+            }
+        } else {
+            LOG.error("Unknown data unit type {}, unable to create query view");
+            return;
         }
     }
 
