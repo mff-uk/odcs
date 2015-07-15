@@ -41,6 +41,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
@@ -334,13 +335,13 @@ public class DPUCreate extends Window {
                     String msg = Messages.getString("DPUCreate.load.failed") + sourceFile.getName();
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
-                    cleanup(tmpDir);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 } catch (ImportException e) {
                     String msg = Messages.getString("DPUCreate.load.failed.list");
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
-                    cleanup(tmpDir);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 }
 
@@ -348,7 +349,7 @@ public class DPUCreate extends Window {
                     String msg = Messages.getString("DPUCreate.jars.empty") + sourceFile.getName();
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                     LOG.error(msg);
-                    cleanup(tmpDir);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 }
 
@@ -379,7 +380,7 @@ public class DPUCreate extends Window {
                     showResultExceptions(caughtExceptions);
                 }
 
-                cleanup(tmpDir);
+                ResourceManager.cleanupQuietly(tmpDir);
                 // and at the end we can close the dialog ..
                 close();
             }
@@ -392,29 +393,11 @@ public class DPUCreate extends Window {
      * 
      * @param filesOrDirs
      */
-    private static void cleanup(File... filesOrDirs) {
-        for (File file : filesOrDirs) {
-            if (file == null || !file.exists()) {
-                continue;
-            }
-            
-            LOG.debug("Cleaning up file / dir: " + file);
-            if (!FileUtils.deleteQuietly(file)) {
-                LOG.warn("Failed to delete temp directory.");
-            }
-        }
-    }
-    
-    /**
-     * Deletes quietly files or directories (without throwing exception if failed)
-     * 
-     * @param filesOrDirs
-     */
     private static void cleanup(FileUploadReceiver... filesOrDirs) {
         File file;
         for (FileUploadReceiver receiver : filesOrDirs) {
             file = receiver.getPath() != null ? receiver.getPath().toFile() : null; 
-            cleanup(file);
+            ResourceManager.cleanupQuietly(file);
         }
     }
 
@@ -514,7 +497,7 @@ public class DPUCreate extends Window {
                     Notification.show(Messages.getString("DPUCreate.create.failed"),
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
-                    cleanup(sourceFile);
+                    ResourceManager.cleanupQuietly(sourceFile);
                     return;
                 }
                 close();
