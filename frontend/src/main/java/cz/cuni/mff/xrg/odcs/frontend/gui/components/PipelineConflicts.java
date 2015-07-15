@@ -14,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -134,6 +135,10 @@ public class PipelineConflicts extends Window {
 
         this.source = new InMemorySource<>(new PipelineNameAccessor(), dbPipeline);
         container = new ReadOnlyContainer<>(this.source);
+
+        Label description = new Label();
+        description.setValue(Messages.getString("PipelineConflicts.description"));
+        this.mainLayout.addComponent(description);
 
         //Component for pipelines select
         selectPipe = new TwinColSelect();
