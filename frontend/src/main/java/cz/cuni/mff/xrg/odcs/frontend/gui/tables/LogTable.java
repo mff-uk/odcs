@@ -1,11 +1,13 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.util.HtmlUtils;
 import org.tepi.filtertable.FilterGenerator;
@@ -180,7 +182,7 @@ public class LogTable extends CustomComponent {
         table.setSortEnabled(false);
         table.setFilterBarVisible(true);
         table.setPageLength(pageLenght);
-        
+
         Button download = new Button(Messages.getString("DebuggingView.download"));
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
             @Override
@@ -200,11 +202,20 @@ public class LogTable extends CustomComponent {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                try {
+                    File fileToDownload = File.createTempFile("aaa", "bbb");
+                    FileUtils.write(fileToDownload, "AAAAA");
+                    return new DeletingFileInputStream(fileToDownload);
+                } catch (IOException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                }
                 return null;
             }
         });
         fileDownloader.extend(download);
-        
+
         // add to the main layout
         mainLayout.addComponent(table);
         mainLayout.addComponent(table.createControls());
