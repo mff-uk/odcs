@@ -184,7 +184,10 @@ public class IntlibPagedTable extends PagedFilterTable {
         totalRecords.addStyleName("pagedtable-label");
         recordsStats.addComponent(totalRecords);
         recordsStats.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        recordsStats.setWidth(null);
+        recordsStats.setSpacing(true);
 
+        controlBar.addComponent(new HorizontalLayout());
         controlBar.addComponent(pageManagement);
         controlBar.addComponent(recordsStats);
         controlBar.setComponentAlignment(pageManagement,
