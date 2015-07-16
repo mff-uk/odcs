@@ -1,14 +1,15 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.web.util.HtmlUtils;
 import org.tepi.filtertable.FilterGenerator;
 import org.tepi.filtertable.datefilter.DateInterval;
@@ -192,24 +193,36 @@ public class LogTable extends CustomComponent {
 
             @Override
             public InputStream getStream() {
-                String s = "";
+
+                File fileToDownload;
                 try {
-                    for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
-                        Item item = table.getItem(i.next());
-                        s += item.getItemProperty("Timestamp") + "\n";
+                    fileToDownload = File.createTempFile("tempfile", "temp");
+                    try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileToDownload), "UTF-8")) {
+                        for (Iterator<?> i = table.getContainerDataSource().getItemIds().iterator(); i.hasNext();) {
+                            StringBuilder sb = new StringBuilder();
+                            Item item = table.getItem(i.next());
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("dpu").getValue()));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("timestamp").getValue()));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(String.valueOf(Level.toLevel(String.valueOf(item.getItemProperty("logLevel").getValue()))));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("message").getValue()));
+                            sb.append('\"');
+                            sb.append('\n');
+                            writer.append(sb.toString());
+                        }
+                        return new DeletingFileInputStream(fileToDownload);
                     }
-                    return IOUtils.toInputStream(s, "UTF-8");
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-
-                try {
-                    File fileToDownload = File.createTempFile("aaa", "bbb");
-                    FileUtils.write(fileToDownload, "AAAAA");
-                    return new DeletingFileInputStream(fileToDownload);
-                } catch (IOException ex) {
-                    // TODO Auto-generated catch block
-                    ex.printStackTrace();
                 }
                 return null;
             }
