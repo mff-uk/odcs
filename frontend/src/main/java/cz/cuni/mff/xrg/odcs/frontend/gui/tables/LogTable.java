@@ -190,12 +190,11 @@ public class LogTable extends CustomComponent {
 
             @Override
             public InputStream getStream() {
-                table.getContainerDataSource();
                 String s = "";
                 try {
                     for (Iterator<?> i = table.getItemIds().iterator(); i.hasNext();) {
                         Item item = table.getItem(i.next());
-
+                        s += item.getItemProperty("Timestamp") + "\n";
                     }
                     return IOUtils.toInputStream(s, "UTF-8");
                 } catch (IOException e) {
