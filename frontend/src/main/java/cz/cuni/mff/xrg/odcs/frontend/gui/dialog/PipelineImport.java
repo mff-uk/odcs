@@ -69,7 +69,7 @@ public class PipelineImport extends Window {
      * Service used to import pipelines.
      */
     private final ImportService importService;
-
+    
     public PipelineImport(ImportService importService) {
         super(Messages.getString("PipelineImport.pipeline.import"));
         this.importService = importService;
@@ -131,7 +131,7 @@ public class PipelineImport extends Window {
 
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
-                cleanupQuietly(fileUploadReceiver);
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
                 
                 String ext = FilenameUtils.getExtension(event.getFilename());
                 missingDpusTable.removeAllItems();
@@ -338,15 +338,10 @@ public class PipelineImport extends Window {
 
             @Override
             public void windowClose(CloseEvent e) {
-                cleanupQuietly(fileUploadReceiver);
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
                 close();
             }
         });
-    }
-    
-    private void cleanupQuietly(FileUploadReceiver receiver) {
-        File file = receiver.getPath() != null ? receiver.getPath().toFile() : null;
-        ResourceManager.cleanupQuietly(file);
     }
 
     /**

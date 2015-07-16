@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +39,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
@@ -66,6 +65,9 @@ public class DPUCreate extends Window {
 
     @Autowired
     private Utils utils;
+    
+    @Autowired
+    private ResourceManager resourceManager;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -324,8 +326,7 @@ public class DPUCreate extends Window {
                 File tmpDir = null;
                 
                 try {
-                    Path tmpPath = Files.createTempDirectory("dir");
-                    tmpDir = tmpPath.toFile();
+                    tmpDir = resourceManager.getNewImportTempDir();
                     ZipCommons.unpack(sourceFile, tmpDir);
                     String[] extensions = { "jar" };
                     dpus = FileUtils.listFiles(tmpDir, extensions, true);
@@ -339,6 +340,12 @@ public class DPUCreate extends Window {
                     return;
                 } catch (ImportException e) {
                     String msg = Messages.getString("DPUCreate.load.failed.list");
+                    LOG.error(msg);
+                    Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    ResourceManager.cleanupQuietly(tmpDir);
+                    return;
+                } catch (MissingResourceException e) {
+                    String msg = Messages.getString("DPUCreate.temp.dir.fail");
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     ResourceManager.cleanupQuietly(tmpDir);
@@ -394,10 +401,8 @@ public class DPUCreate extends Window {
      * @param filesOrDirs
      */
     private static void cleanup(FileUploadReceiver... filesOrDirs) {
-        File file;
         for (FileUploadReceiver receiver : filesOrDirs) {
-            file = receiver.getPath() != null ? receiver.getPath().toFile() : null; 
-            ResourceManager.cleanupQuietly(file);
+            ResourceManager.cleanupQuietly(receiver.getParentDir());
         }
     }
 

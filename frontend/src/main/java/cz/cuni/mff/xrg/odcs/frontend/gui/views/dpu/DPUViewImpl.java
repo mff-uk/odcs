@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import javax.activity.InvalidActivityException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +77,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private TextArea dpuDescription; // description of selected DPU Template
 
-    private Upload reloadFile; // button for reload JAR file
+    private Upload replaceFile; // button for reload JAR file
 
     private FileUploadReceiver fileUploadReceiver;
 
@@ -134,7 +132,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private Utils utils;
-
+    
     /**
      * Constructor.
      */
@@ -629,13 +627,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         //reload JAR file button
         fileUploadReceiver = new FileUploadReceiver();
-        reloadFile = new Upload(null, fileUploadReceiver);
-        reloadFile.setImmediate(true);
-        reloadFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
-        reloadFile.addStyleName("horizontalgroup");
-        reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
-        reloadFile.addStartedListener(new Upload.StartedListener() {
+        replaceFile = new Upload(null, fileUploadReceiver);
+        replaceFile.setImmediate(true);
+        replaceFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
+        replaceFile.addStyleName("horizontalgroup");
+        replaceFile.setHeight("40px");
+        replaceFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        replaceFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then
              * an upload status window with upload progress bar will be shown.
@@ -651,7 +649,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 String jar = "jar";
 
                 if (!jar.equals(extension)) {
-                    reloadFile.interruptUpload();
+                    replaceFile.interruptUpload();
                     errorExtension = true;
                     Notification.show(Messages.getString("DPUViewImpl.file.not.jar"), Notification.Type.ERROR_MESSAGE);
                     return;
@@ -664,7 +662,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         });
 
-        reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
+        replaceFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -676,7 +674,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         }));
 
-        reloadFile.addFailedListener(new Upload.FailedListener() {
+        replaceFile.addFailedListener(new Upload.FailedListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -691,10 +689,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         });
 
         // Upload status window
-        uploadInfoWindow = new UploadInfoWindow(reloadFile);
+        uploadInfoWindow = new UploadInfoWindow(replaceFile);
 
         jarPathLayout.addComponent(jarPath);
-        jarPathLayout.addComponent(reloadFile);
+        jarPathLayout.addComponent(replaceFile);
         dpuSettingsLayout.addComponent(jarPathLayout, 1, 3);
 
         // Description of JAR of DPU Template.
@@ -809,7 +807,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             dpuLayout.setExpandRatio(dpuDetailLayout, 5);
 
             // show/hide replace button
-            reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
+            replaceFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
 
             setGeneralTabValues();
             //Otherwise, the information layout will be shown.

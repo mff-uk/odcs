@@ -28,6 +28,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DeletingFileInputStream;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -164,7 +165,7 @@ public class PipelineExport extends Window {
                     return null;
                 }
                 try {
-                    return new FileInputStream(pplFile);
+                    return new DeletingFileInputStream(pplFile);
                 } catch (FileNotFoundException ex) {
                     LOG.error("Failed to load file with pipeline", ex);
                     Notification.show(Messages.getString("PipelineExport.export.fail2"), Notification.Type.ERROR_MESSAGE);
