@@ -188,7 +188,7 @@ public class LogTable extends CustomComponent {
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
             @Override
             public String getFilename() {
-                return "log.txt";
+                return "log.csv";
             }
 
             @Override
