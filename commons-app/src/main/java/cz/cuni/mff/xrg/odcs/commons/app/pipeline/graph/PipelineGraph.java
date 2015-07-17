@@ -312,13 +312,17 @@ public class PipelineGraph implements DataObject {
      * @param newY
      *            The value of Y point of node
      */
-    public void moveNode(int dpuId, int newX, int newY) {
+    public boolean moveNode(int dpuId, int newX, int newY) {
         Node node = getNodeById(dpuId);
         if (node == null) {
             throw new IllegalArgumentException(
                     "Node with supplied id was not found!");
         }
+        if ((node.getPosition().getX() == newX)&&(node.getPosition().getY() == newY)) {
+            return false;
+        }
         node.setPosition(new Position(newX, newY));
+        return true;
     }
 
     /**
