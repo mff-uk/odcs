@@ -688,7 +688,6 @@ public class PipelineEdit extends ViewComponent {
         buttonCopyAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                if (isModified())
                 if (isModified()||!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
