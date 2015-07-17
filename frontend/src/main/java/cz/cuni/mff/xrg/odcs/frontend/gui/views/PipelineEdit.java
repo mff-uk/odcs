@@ -664,7 +664,7 @@ public class PipelineEdit extends ViewComponent {
             @Override
             public void buttonClick(ClickEvent event) {
                 // save current pipeline
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified()||!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(UI.getCurrent(),
                             Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
                                 @Override
@@ -688,7 +688,8 @@ public class PipelineEdit extends ViewComponent {
         buttonCopyAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified())
+                if (isModified()||!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
                             Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"),
