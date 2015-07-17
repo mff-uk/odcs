@@ -165,10 +165,6 @@ class PipelineFacadeImpl implements PipelineFacade {
             + "AND hasRole('pipeline.setVisibilityPublicRw')))")
     @Override
     public void save(Pipeline pipeline) {
-        if (pipeline.getGraph().getNodes().isEmpty()) {
-            throw new IllegalArgumentException("Pipeline to copy has no DPUs");
-        }
-        
         // If pipeline is public, we need to make sure
         // all DPU templates used in this pipeline are
         // public as well.
