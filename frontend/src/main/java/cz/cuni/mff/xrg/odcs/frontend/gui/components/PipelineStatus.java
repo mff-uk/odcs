@@ -12,7 +12,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,6 +23,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
@@ -108,7 +108,7 @@ public class PipelineStatus extends Window {
             }
         }
         if (maxDate != null) {
-            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
             lastRunTimeStr = df.format(maxDate);
         } else {
             lastRunTimeStr = "";

@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -26,8 +25,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -41,7 +38,6 @@ import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -82,6 +78,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
+        this.setLocale(LocaleHolder.getLocale());
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
         main.build();
