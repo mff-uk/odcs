@@ -24,6 +24,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.DPUConfigurable;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 /**
  * Class provide one-place access to create/update/delete actions for DPUs. It
  * takes care about functionality connected with {@link DPUFacade} as well with {@link ModuleFacade}.
@@ -169,17 +171,23 @@ public class DPUModuleManipulator {
             throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName));
         }
 
-        if(useLocalizedDpuName()){
-            eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
-            if(!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
-                dpuName = messages.getString(DPU_NAME_KEY);
-            }
-            if(!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
-                dpuMenuName = messages.getString(DPU_MENU_NAME_KEY);
+        if(isNotEmpty(name)) {
+            dpuName  = name;
+            dpuMenuName = name;
+        } else {
+            if (useLocalizedDpuName()) {
+                eu.unifiedviews.helpers.dpu.localization.Messages messages = moduleFacade.getMessageFromDPUInstance(dpuObject);
+                if (!messages.getString(DPU_NAME_KEY).equals(DPU_NAME_KEY)) {
+                    dpuName = messages.getString(DPU_NAME_KEY);
+                }
+                if (!messages.getString(DPU_MENU_NAME_KEY).equals(DPU_MENU_NAME_KEY)) {
+                    dpuMenuName = messages.getString(DPU_MENU_NAME_KEY);
+                }
             }
         }
 
-        
+
+
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
         if (dpuType == null) {
