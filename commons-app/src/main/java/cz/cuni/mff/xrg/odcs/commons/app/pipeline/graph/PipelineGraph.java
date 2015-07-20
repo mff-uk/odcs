@@ -318,7 +318,7 @@ public class PipelineGraph implements DataObject {
             throw new IllegalArgumentException(
                     "Node with supplied id was not found!");
         }
-        if ((node.getPosition().getX() == newX)&&(node.getPosition().getY() == newY)) {
+        if ((node.getPosition() != null)&&(node.getPosition().getX() == newX)&&(node.getPosition().getY() == newY)) {
             return false;
         }
         node.setPosition(new Position(newX, newY));
