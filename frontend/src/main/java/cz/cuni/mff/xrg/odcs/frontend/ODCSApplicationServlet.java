@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 
 import javax.servlet.ServletConfig;
@@ -27,9 +26,9 @@ import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinServletService;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.LocalizedSystemMessagesProvider;
 
 /**
  * Customized servlet implementation to provide access to original {@link HttpServletRequest} across application.
@@ -51,6 +50,12 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         super.init(servletConfig);
 
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletConfig.getServletContext());
+    }
+
+    @Override
+    protected void servletInitialized() throws ServletException {
+        super.servletInitialized();
+        getService().setSystemMessagesProvider(new LocalizedSystemMessagesProvider());
     }
 
     /**
