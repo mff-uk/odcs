@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import javax.activity.InvalidActivityException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
@@ -134,6 +134,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private Utils utils;
+
+    private boolean configLoaded = false;
 
     /**
      * Constructor.
@@ -347,13 +349,27 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             if (configDialog == null) {
                 // use some .. dummy component
             } else {
-                // configure
-                configureDPUDialog();
+                // add configuration dialog
                 verticalLayoutConfigure.addComponent(configDialog);
                 configDialog.setHeight(100, Unit.PERCENTAGE);
                 verticalLayoutConfigure.setExpandRatio(configDialog, 1f);
             }
         }
+        
+        configLoaded = false;
+        // configure = lazy loading of abstract dialog tab
+        tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+            private static final long serialVersionUID = -92412994696665593L;
+
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                if (!configLoaded && event.getTabSheet().getSelectedTab().equals(verticalLayoutConfigure)) {
+                    configureDPUDialog();
+                    configLoaded = true;
+                }
+            }
+        });
+        
         //DPU instances tab. Contains pipelines using the given DPU.
         verticalLayoutInstances = buildVerticalLayoutInstances();
 
