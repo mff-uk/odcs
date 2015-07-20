@@ -40,6 +40,7 @@ public class ZipCommons {
                 IOUtils.closeQuietly(out);
             }
         }
+        zipFile.close();
 
         LOG.debug("<<< Leaving unpack");
     }
