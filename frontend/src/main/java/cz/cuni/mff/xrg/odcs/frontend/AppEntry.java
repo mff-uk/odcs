@@ -186,7 +186,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
             @Override
             public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-                main.setActiveMenuItem(event.getViewName());
             }
         });
 
@@ -235,6 +234,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                                     }
                                 }
                             }, true);
+                    main.setActiveMenuItem(null);
                     return false;
                 } else {
                     return true;
@@ -244,6 +244,7 @@ public class AppEntry extends com.vaadin.ui.UI {
             @Override
             public void afterViewChange(ViewChangeEvent event) {
                 pendingViewAndParameters = null;
+                main.setActiveMenuItem(event.getViewName());
             }
         });
 
