@@ -124,7 +124,7 @@ public class PipelineExport extends Window {
         Button btnExport = new Button(Messages.getString("PipelineExport.export"));
         buttonLayout.addComponent(btnExport);
         buttonLayout.setComponentAlignment(btnExport, Alignment.MIDDLE_LEFT);
-        Button btnCancel = new Button(Messages.getString("PipelineExport.close"), new Button.ClickListener() {
+        final Button btnCancel = new Button(Messages.getString("PipelineExport.close"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -164,6 +164,7 @@ public class PipelineExport extends Window {
                     return null;
                 }
                 try {
+                    btnCancel.click();
                     return new FileInputStream(pplFile);
                 } catch (FileNotFoundException ex) {
                     LOG.error("Failed to load file with pipeline", ex);
