@@ -768,6 +768,10 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+                if (pipeline.getId() == null) { // its new, not yet saved pipeline
+                    Notification.show(Messages.getString("PipelineEdit.export.fail.not.saved"), Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
