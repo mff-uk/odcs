@@ -120,6 +120,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         this.setStyleName("pipelineContainer");
 
         registerRpc(new PipelineCanvasServerRpc() {
+            
             @Override
             public void onDetailRequested(int dpuId) {
                 Node node = graph.getNodeById(dpuId);
@@ -150,9 +151,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
             @Override
             public void onDpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
                 //storeHistoryGraph();
-                isModified = true;
-                fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
                 dpuMoved(dpuId, newX, newY, autoAction);
+                fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
             }
 
             @Override
@@ -462,7 +462,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * @param autoAction
      */
     private void dpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
-        graph.moveNode(dpuId, newX, newY);
+        isModified = graph.moveNode(dpuId, newX, newY);
         if (!autoAction) {
             checkForResize(newX, newY);
         }

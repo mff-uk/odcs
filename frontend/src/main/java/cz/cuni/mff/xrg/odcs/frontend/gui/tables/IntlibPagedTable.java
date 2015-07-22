@@ -23,6 +23,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
@@ -54,7 +55,7 @@ public class IntlibPagedTable extends PagedFilterTable {
      * @return layout with table controls.
      */
     public HorizontalLayout createControls() {
-
+        this.setLocale(LocaleHolder.getLocale());
         Label pageLabel = new Label(Messages.getString("IntlibPagedTable.page"), ContentMode.HTML);
         final TextField currentPageTextField = new TextField();
         currentPageTextField.setValue(String.valueOf(getCurrentPage()));

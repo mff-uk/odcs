@@ -10,6 +10,7 @@
     <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="ignoreResourceNotFound" value="true"/>
+        <property name ="fileEncoding" value="UTF-8"/>
         <property name="locations">
             <list>
                 <value>file:${configFileLocation}</value>
