@@ -709,6 +709,7 @@ public class PipelineEdit extends ViewComponent {
                                     if (cd.isConfirmed()) {
                                         savePipelineAsNew();
                                         paralelInfoLayout.setVisible(false);
+                                        closeView();
                                     }
                                 }
                             });
