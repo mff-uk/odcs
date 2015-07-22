@@ -768,6 +768,10 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+                if (pipeline.getId() == null) { // its new, not yet saved pipeline
+                    Notification.show(Messages.getString("PipelineEdit.export.fail.not.saved"), Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
@@ -909,11 +913,21 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
+        visibilityLabel.setWidth("-1px");
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
+        HorizontalLayout pipelineVisibilityLayout = new HorizontalLayout();
+
+        Embedded visibilityHelp = new Embedded();
+        visibilityHelp.setHeight("16px");
+        visibilityHelp.setWidth("16px");
+        visibilityHelp.setSource(new ThemeResource("img/question_red.png"));
+        visibilityHelp.setDescription(Messages.getString("PipelineEdit.visibility.help.public"));
+
         pipelineVisibility = new OptionGroup();
+        pipelineVisibility.setWidth("-1px");
         pipelineVisibility.addStyleName("horizontalgroup");
         pipelineVisibility.addItem(ShareType.PRIVATE);
         pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
@@ -922,6 +936,7 @@ public class PipelineEdit extends ViewComponent {
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
             pipelineVisibility.addItem(ShareType.PUBLIC_RW);
             pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+            visibilityHelp.setDescription(Messages.getString("PipelineEdit.visibility.help.public.rw"));
         }
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
@@ -931,10 +946,13 @@ public class PipelineEdit extends ViewComponent {
                 setupButtons(true);
             }
         });
+        pipelineVisibilityLayout.addComponent(pipelineVisibility);
+        pipelineVisibilityLayout.addComponent(visibilityHelp);
 
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
-            pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
+            pipelineSettingsLayout.addComponent(pipelineVisibilityLayout, 1, 2);
         }
+
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
 
         author = new Label();

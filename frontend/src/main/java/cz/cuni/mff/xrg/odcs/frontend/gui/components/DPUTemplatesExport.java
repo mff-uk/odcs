@@ -108,6 +108,15 @@ public class DPUTemplatesExport extends Window {
                 checkAll(false);
             }
         }));
+        
+        final Button closeButton = new Button(Messages.getString("DPUTemplatesExport.cancel"), new Button.ClickListener() {
+            private static final long serialVersionUID = 1404822664816505889L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                close();
+            }
+        });
 
         Button exportButton = new Button(Messages.getString("DPUTemplatesExport.export"));
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
@@ -125,6 +134,7 @@ public class DPUTemplatesExport extends Window {
                     return null;
                 }
                 try {
+                    closeButton.click();
                     return new DeletingFileInputStream(fileToExport);
                 } catch (FileNotFoundException e) {
                     LOG.error("Failed to export templates.", e);
@@ -140,14 +150,7 @@ public class DPUTemplatesExport extends Window {
         });
         fileDownloader.extend(exportButton);
         buttons.addComponent(exportButton);
-        buttons.addComponent(new Button(Messages.getString("DPUTemplatesExport.cancel"), new Button.ClickListener() {
-            private static final long serialVersionUID = 1404822664816505889L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                close();
-            }
-        }));
+        buttons.addComponent(closeButton);
         mainLayout.addComponent(buttons);
         mainLayout.setComponentAlignment(buttons, Alignment.BOTTOM_LEFT);
 
