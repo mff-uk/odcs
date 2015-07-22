@@ -1023,9 +1023,6 @@ public class PipelineEdit extends ViewComponent {
         if (!validate()) {
             return false;
         }
-        if (!pipelineCanvas.validateGraph()) {
-            return false;
-        }
 
         pipeline.setName(pipelineName.getValue());
         pipelineCanvas.saveGraph(pipeline);
@@ -1230,9 +1227,6 @@ public class PipelineEdit extends ViewComponent {
      */
     protected boolean savePipeline(final String successAction) {
         if (!validate()) {
-            return false;
-        }
-        if (!pipelineCanvas.validateGraph()) {
             return false;
         }
 
