@@ -663,8 +663,20 @@ public class PipelineEdit extends ViewComponent {
         buttonCopy.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                // save current pipeline
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified()) {
+                    ConfirmDialog.show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copy.unsaved"), Messages.getString("PipelineEdit.copy.unsaved.description"),
+                            Messages.getString("PipelineEdit.copy.unsaved.copyAnyway"), Messages.getString("PipelineEdit.copy.unsaved.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        savePipelineAsNew();
+                                        paralelInfoLayout.setVisible(false);
+                                    }
+                                }
+                            });
+                    // save current pipeline
+                } else if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(UI.getCurrent(),
                             Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
                                 @Override
@@ -688,7 +700,21 @@ public class PipelineEdit extends ViewComponent {
         buttonCopyAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified()) {
+                    ConfirmDialog.show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copyClose.unsaved"), Messages.getString("PipelineEdit.copyClose.unsaved.description"),
+                            Messages.getString("PipelineEdit.copyClose.unsaved.copyAnyway"), Messages.getString("PipelineEdit.copyClose.unsaved.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        savePipelineAsNew();
+                                        paralelInfoLayout.setVisible(false);
+                                        closeView();
+                                    }
+                                }
+                            });
+                    // save current pipeline
+                } else if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
                             Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"),
@@ -968,8 +994,8 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() 
-                || pipelineCanvas.isModified() || pipelineVisibility.isModified()) 
+        return (pipelineName.isModified() || pipelineDescription.isModified()
+                || pipelineCanvas.isModified() || pipelineVisibility.isModified())
                 && hasPermission(EntityPermissions.PIPELINE_EDIT);
     }
 
@@ -1441,7 +1467,7 @@ public class PipelineEdit extends ViewComponent {
             lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", getShortName(this.pipeline.getName(), MAX_NAME_LENGTH_DISPLAYED)));
         }
     }
-    
+
     private String getShortName(String name, int maxLength) {
         if (name == null || name.length() < maxLength) {
             return name;
