@@ -1,5 +1,19 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import ru.xpoft.vaadin.VaadinView;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -7,16 +21,12 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CustomTable;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -36,18 +46,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.vaadin.dialogs.ConfirmDialog;
-import ru.xpoft.vaadin.VaadinView;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 /**
  * GUI for Scheduler page which opens from the main menu. Contains table with
@@ -303,6 +301,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     public IndexedContainer getTableData(List<Schedule> data) {
 
         IndexedContainer result = new IndexedContainer();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
 
         for (String p : visibleCols) {
             // setting type of columns
@@ -345,7 +344,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             result.getContainerProperty(id, "scheduledBy").setValue(getScheduledByDisplayName(item));
 
             if (item.getType().equals(ScheduleType.PERIODICALLY)) {
-                DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
+
                 if (item.isJustOnce()) {
                     result.getContainerProperty(id, "rule").setValue(
                             Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution())));

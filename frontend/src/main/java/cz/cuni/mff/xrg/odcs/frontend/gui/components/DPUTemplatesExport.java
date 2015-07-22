@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -109,6 +108,15 @@ public class DPUTemplatesExport extends Window {
                 checkAll(false);
             }
         }));
+        
+        final Button closeButton = new Button(Messages.getString("DPUTemplatesExport.cancel"), new Button.ClickListener() {
+            private static final long serialVersionUID = 1404822664816505889L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                close();
+            }
+        });
 
         Button exportButton = new Button(Messages.getString("DPUTemplatesExport.export"));
         FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
@@ -126,7 +134,8 @@ public class DPUTemplatesExport extends Window {
                     return null;
                 }
                 try {
-                    return new FileInputStream(fileToExport);
+                    closeButton.click();
+                    return new DeletingFileInputStream(fileToExport);
                 } catch (FileNotFoundException e) {
                     LOG.error("Failed to export templates.", e);
                     Notification.show(Messages.getString("DPUTemplatesExport.export.fail.fileNotFound"), e.getMessage(), Notification.Type.ERROR_MESSAGE);
@@ -141,14 +150,7 @@ public class DPUTemplatesExport extends Window {
         });
         fileDownloader.extend(exportButton);
         buttons.addComponent(exportButton);
-        buttons.addComponent(new Button(Messages.getString("DPUTemplatesExport.cancel"), new Button.ClickListener() {
-            private static final long serialVersionUID = 1404822664816505889L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                close();
-            }
-        }));
+        buttons.addComponent(closeButton);
         mainLayout.addComponent(buttons);
         mainLayout.setComponentAlignment(buttons, Alignment.BOTTOM_LEFT);
 

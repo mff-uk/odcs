@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 
 public class ConvertUtils {
@@ -36,7 +37,7 @@ public class ConvertUtils {
             try {
                 result = df.parse(strDate);
             } catch (ParseException e) {
-                throw new ApiException(Response.Status.BAD_REQUEST, String.format("Problem parsing date=%s. Correct date format is: %s", strDate, DATE_FORMAT));
+                throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("date.parse.error"), String.format("Problem parsing date=%s. Correct date format is: %s", strDate, DATE_FORMAT));
             }
         }
         return result;

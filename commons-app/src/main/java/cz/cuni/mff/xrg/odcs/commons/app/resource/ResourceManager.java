@@ -3,7 +3,10 @@ package cz.cuni.mff.xrg.odcs.commons.app.resource;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -23,6 +26,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.User;
  * @author Škoda Petr
  */
 public class ResourceManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
 
     /**
      * Name of sub-directory for shared DPU's data.
@@ -325,4 +330,16 @@ public class ResourceManager {
         return newFile;
     }
 
+    public static void cleanupQuietly(File... filesToCleanup) {
+        for (File file : filesToCleanup) {
+            if (file == null || !file.exists()) {
+                continue;
+            }
+            
+            LOG.debug("Cleaning up file / dir: " + file);
+            if (!FileUtils.deleteQuietly(file)) {
+                LOG.warn("Failed to delete temp directory.");
+            }
+        }
+    }
 }
