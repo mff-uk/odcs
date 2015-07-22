@@ -1144,3 +1144,7 @@ span.v-inline-datefield-calendarpanel-month{
 .v-tree-node[aria-selected="true"] > .v-tree-node-caption > div > span {
 	background-color: rgb(205, 205, 205);	
 }
+
+.dpu-error-label{
+	color:#bd0a26;
+}
