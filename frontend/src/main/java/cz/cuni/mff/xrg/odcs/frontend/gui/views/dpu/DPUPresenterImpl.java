@@ -244,7 +244,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     }
 
     /**
-     * Reload DPU. The new DPU's jar file is accessible through the {@link FileUploadReceiver#path}. The current DPU, which is being replaced
+     * Reload DPU. The new DPU's jar file is accessible through the {@link FileUploadReceiver#getFile()}. The current DPU, which is being replaced
      * , is assumed to be stored in {@link selectedDpu}.
      */
     private void copyToTarget(File newJar, DPUTemplateRecord dpu) {
