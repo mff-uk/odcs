@@ -3,8 +3,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
-import javax.activity.InvalidActivityException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +97,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private TabSheet tabSheet;
 
     private OptionGroup groupVisibility; // Visibility of DPU Template: public or private
+
+    private Embedded groupVisibilityHelp;
 
     private HorizontalLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
 
@@ -507,9 +507,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
             groupVisibility.setValue(selecteDpuVisibility);
             groupVisibility.setEnabled(false);
+            groupVisibilityHelp.setEnabled(false);
         } else {
             groupVisibility.setValue(selecteDpuVisibility);
             groupVisibility.setEnabled(true);
+            groupVisibilityHelp.setEnabled(true);
             groupVisibility.addValueChangeListener(new Property.ValueChangeListener() {
                 private static final long serialVersionUID = 1L;
 
@@ -601,7 +603,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //Visibility of DPU Template: label & OptionGroup
         Label visibilityLabel = new Label(Messages.getString("DPUViewImpl.visibility"));
         visibilityLabel.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
+        visibilityLabel.setWidth("-1px");
         dpuSettingsLayout.addComponent(visibilityLabel, 0, 2);
+
+        HorizontalLayout visibilityLayout = new HorizontalLayout();
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
         groupVisibility.addItem(ShareType.PRIVATE);
@@ -609,7 +614,16 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         groupVisibility.addItem(ShareType.PUBLIC_RO);
         groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         groupVisibility.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
-        dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
+        visibilityLayout.addComponent(groupVisibility);
+
+        groupVisibilityHelp = new Embedded();
+        groupVisibilityHelp.setHeight("16px");
+        groupVisibilityHelp.setWidth("16px");
+        groupVisibilityHelp.setSource(new ThemeResource("img/question_red.png"));
+        groupVisibilityHelp.setDescription(Messages.getString("DPUViewImpl.visibility.help.public"));
+        visibilityLayout.addComponent(groupVisibilityHelp);
+
+        dpuSettingsLayout.addComponent(visibilityLayout, 1, 2);
 
         // JAR path of DPU Template.
         HorizontalLayout jarPathLayout = new HorizontalLayout();

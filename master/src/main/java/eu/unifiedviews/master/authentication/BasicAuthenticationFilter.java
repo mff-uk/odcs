@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import org.glassfish.jersey.internal.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +55,12 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
      *
      * @param requestContext request context.
      * @throws java.io.IOException if an I/O exception occurs.
-     * @see PreMatching
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String authorization = requestContext.getHeaderString("authorization");
         if(!isAuthorizationValid(authorization)) {
-            throw new ApiException(Response.Status.UNAUTHORIZED, "Request is not authorized!");
+            throw new ApiException(Response.Status.UNAUTHORIZED, Messages.getString("unauthorized.request"), "Basic authentication from request header is missing or incorrect.");
         }
     }
 

@@ -1097,3 +1097,7 @@ span.v-inline-datefield-calendarpanel-month{
 .v-checkbox label{
     margin-top:3px;
 }
+
+.dpu-error-label{
+	color:red;
+}

@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import java.text.Collator;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
@@ -319,6 +321,8 @@ public class DPUTree extends CustomComponent {
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
             private static final long serialVersionUID = -3394104490891279840L;
 
+            private Collator collator = Collator.getInstance(LocaleHolder.getLocale());
+
             @Override
             public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
                 //Ignore
@@ -331,7 +335,7 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
                 }
-                return first.getMenuName().compareTo(second.getMenuName());
+                return collator.compare(first.getMenuName(), second.getMenuName());
             }
         });
 
