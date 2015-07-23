@@ -265,7 +265,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     @Override
     public boolean canDebugPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
+        return this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG) &&
+                this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 
     @Override

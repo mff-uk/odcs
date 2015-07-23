@@ -567,7 +567,8 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasPermission(#exec, 'pipeline.run')")
+    @PreAuthorize("hasPermission(#exec, 'pipeline.run') "
+            + "AND (!#exec.isDebugging() OR (#exec.isDebugging() AND hasRole('pipeline.runDebug')))")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());

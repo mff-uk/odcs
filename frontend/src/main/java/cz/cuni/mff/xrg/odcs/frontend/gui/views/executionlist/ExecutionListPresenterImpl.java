@@ -339,6 +339,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     public boolean canDebugPipeline(long executionId) {
         PipelineExecution exec =
                 getLightExecution(executionId);
-        return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
+        return this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG)
+                && this.permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 }
