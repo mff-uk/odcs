@@ -198,6 +198,7 @@ public class LogTable extends CustomComponent {
                 try {
                     fileToDownload = File.createTempFile("tempfile", "temp");
                     try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileToDownload), "UTF-8")) {
+                        writer.append("\"DPU\",\"Timestamp\",\"Log Level\",\"Message\"\n");
                         for (Iterator<?> i = table.getContainerDataSource().getItemIds().iterator(); i.hasNext();) {
                             StringBuilder sb = new StringBuilder();
                             Item item = table.getItem(i.next());
@@ -210,7 +211,7 @@ public class LogTable extends CustomComponent {
                             sb.append('\"');
                             sb.append(',');
                             sb.append('\"');
-                            sb.append(String.valueOf(Level.toLevel(String.valueOf(item.getItemProperty("logLevel").getValue()))));
+                            sb.append(Level.toLevel(Integer.parseInt(String.valueOf(item.getItemProperty("logLevel").getValue()))));
                             sb.append('\"');
                             sb.append(',');
                             sb.append('\"');
