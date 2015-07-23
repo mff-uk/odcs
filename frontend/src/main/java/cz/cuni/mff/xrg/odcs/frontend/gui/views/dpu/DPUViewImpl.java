@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
@@ -30,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -702,9 +704,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             @Override
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 uploadInfoWindow.close();
+                // we have to remember the dir here, because we loose it after the
+                // presenter.dpuUploadedEventHandler is called (view is refreshed)
+                File tmpDirToCleanUp = fileUploadReceiver.getParentDir();
                 if (!errorExtension) {
                     presenter.dpuUploadedEventHandler(fileUploadReceiver.getFile());
                 }
+                ResourceManager.cleanupQuietly(tmpDirToCleanUp);
             }
         }));
 
@@ -719,6 +725,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 }
 
                 Notification.show(Messages.getString("DPUViewImpl.uploding.failed", event.getFilename()), Notification.Type.ERROR_MESSAGE);
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
             }
         });
 
