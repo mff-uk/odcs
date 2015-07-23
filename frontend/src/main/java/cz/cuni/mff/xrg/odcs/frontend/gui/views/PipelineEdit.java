@@ -1058,6 +1058,7 @@ public class PipelineEdit extends ViewComponent {
         buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
         buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT)
                 && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG) && hasRole(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonSaveAndCloseAndDebug.setVisible(hasRole(EntityPermissions.PIPELINE_RUN_DEBUG));
         buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonExport.setEnabled(hasRole(EntityPermissions.PIPELINE_EXPORT) && hasPermission(EntityPermissions.PIPELINE_EXPORT));
