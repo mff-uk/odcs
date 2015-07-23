@@ -1,19 +1,18 @@
-/*******************************************************************************
- * This file is part of UnifiedViews.
+/**
+ * Timeago is a jQuery plugin that makes it easy to support automatically
+ * updating fuzzy timestamps (e.g. "4 minutes ago" or "about 1 day ago").
  *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * @name timeago
+ * @version 1.0.2
+ * @requires jQuery v1.2.3+
+ * @author Ryan McGeary
+ * @license MIT License - http://www.opensource.org/licenses/mit-license.php
  *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * For usage and examples, visit:
+ * http://timeago.yarp.com/
  *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ * Copyright (c) 2008-2013, Ryan McGeary (ryan -[at]- mcgeary [*dot*] org)
+ */
 
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
