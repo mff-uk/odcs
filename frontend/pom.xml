@@ -333,6 +333,17 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
+
+		<pluginRepository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<dependencyManagement>
