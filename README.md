@@ -22,34 +22,22 @@ Please see https://grips.semantic-web.at/display/UDDOC/Installation+Guide
 Licenses
 -------
 
-The following modules of the software are licensed under GNU Lesser General Public License, Version 3, https://www.gnu.org/licenses/lgpl-3.0.txt:
- 
-  * commons
-  * commons-module
-  * commons-web
-  * dataunit-rdf
-  * dataunit-file
-  * ontology
-  * module-test
-  * module-base
-
-
 The following modules of the software are licensed under GNU General Public License, Version 3, https://www.gnu.org/licenses/gpl-3.0.txt:
-
-  * commons-app
-  * frontend
+ 
   * backend
+  * commons-app
   * dataunit
+  * dataunit-file
   * dataunit-file-impl
+  * dataunit-rdf
   * dataunit-rdf-impl
-  * RDF_File_Extractor
-  * RDF_File_Loader 
-  * SPARQL_Extractor 
-  * SPARQL_Loader 
-  * SPARQL_Transformer
-  * RDF_Data_Validator 
-  * Silk_Linker_Extractor
-
+  * dataunit-relational-impl
+  * frontend
+  * lib
+  * lib-core
+  * master
+  * module-test
+  
 For details, please see the particular module. 
 
  
