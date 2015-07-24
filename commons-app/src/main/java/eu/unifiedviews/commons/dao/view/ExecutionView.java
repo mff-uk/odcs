@@ -96,6 +96,9 @@ public class ExecutionView implements DataObject {
     @Column(name = "t_last_change")
     private Date lastChange;
 
+    @Column(name = "backend_id")
+    private String backendId;
+
     @Override
     public Long getId() {
         return id;
@@ -199,6 +202,14 @@ public class ExecutionView implements DataObject {
 
     public void setOwnerFullName(String ownerFullName) {
         this.ownerFullName = ownerFullName;
+    }
+
+    public String getBackendId() {
+        return this.backendId;
+    }
+
+    public void setBackendId(String backendId) {
+        this.backendId = backendId;
     }
 
     /**

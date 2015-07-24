@@ -13,8 +13,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -28,9 +32,15 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private AppConfig appConfig;
+
+    @Autowired
+    private ExecutionFacade executionFacade;
+
     /**
      * Schedule facade.
      */
@@ -40,10 +50,18 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
     @Autowired
     private PipelineFacade pipelineFacade;
 
+    private String backendID;
+
     @PostConstruct
+    private void init() {
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+        initialCheck();
+
+    }
+
     private void initialCheck() {
         // do initial run-after check 
-        scheduleFacade.executeFollowers();
+        this.scheduleFacade.executeFollowers();
     }
 
     /**
@@ -76,9 +94,15 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
      */
     @Async
     @Scheduled(fixedDelay = 30000)
+    @Transactional
     protected synchronized void timeBasedCheck() {
         LOG.trace("onTimeCheck started");
         // check DB for pipelines based on time scheduling
+        boolean lockOwned = this.executionFacade.obtainLockAndUpdateTimestamp(this.backendID);
+        if (!lockOwned) {
+            LOG.info("Database backend locked not obtained, going to sleep before trying again");
+            return;
+        }
         Date now = new Date();
         // get all pipelines that are time based
         List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotQueuedRunning();

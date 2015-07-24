@@ -18,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
@@ -26,6 +28,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -40,8 +43,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 public class Engine implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
+
     private static final Integer DEFAULT_LIMIT_SHEDULED_PPL = 2;
+
     public Integer numberOfRunningJobs = 0;
+
     private final Object LockRunningJobs = new Object();
 
     /**
@@ -67,12 +73,15 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
      */
     @Autowired
     protected PipelineFacade pipelineFacade;
-    
+
     /**
      * Runtime properties facade.
      */
     @Autowired
     protected RuntimePropertiesFacade runtimePropertiesFacade;
+
+    @Autowired
+    protected ExecutionFacade executionFacade;
 
     /**
      * Thread pool.
@@ -89,6 +98,11 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
      */
     protected Boolean startUpDone;
 
+    /**
+     * Backend identifier
+     */
+    private String backendID;
+
     @PostConstruct
     private void propertySetter() {
         this.executorService = Executors.newCachedThreadPool();
@@ -102,6 +116,9 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
         if (workingDirectory.isDirectory()) {
             workingDirectory.mkdirs();
         }
+
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+        LOG.info("Backend ID: {}", this.backendID);
     }
 
     /**
@@ -124,6 +141,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     @Async
     @Scheduled(fixedDelay = 20000)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     protected void checkJobs() {
         synchronized (LockRunningJobs) {
             LOG.debug(">>> Entering checkJobs()");
@@ -133,10 +151,15 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
                 startUp();
                 return;
             }
+            boolean lockOwned = this.executionFacade.obtainLockAndUpdateTimestamp(this.backendID);
+            if (!lockOwned) {
+                LOG.info("Database backend lock not obtained, going to sleep before trying again");
+                return;
+            }
 
             Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
             LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
-            
+
             List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
@@ -170,7 +193,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             return DEFAULT_LIMIT_SHEDULED_PPL;
         }
         try {
-            return Integer.parseInt(limit.getValue());  
+            return Integer.parseInt(limit.getValue());
         } catch (NumberFormatException e) {
             LOG.error("Value not a number of RuntimeProperty: " + ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES.toString()
                     + ", error: " + e.getMessage());
@@ -194,8 +217,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
         ExecutionSanitizer sanitizer = beanFactory.getBean(ExecutionSanitizer.class);
 
         // list executions
-        List<PipelineExecution> running = pipelineFacade
-                .getAllExecutions(PipelineExecutionStatus.RUNNING);
+        List<PipelineExecution> running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING, this.backendID);
         for (PipelineExecution execution : running) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
             // hanging pipeline ..

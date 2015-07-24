@@ -59,7 +59,6 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         return executeList(query);
     }
 
-
     @Override
     public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status) {
         final String stringQuery = "SELECT e FROM PipelineExecution e"
@@ -67,6 +66,16 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
         query.setParameter("pipe", pipeline);
         query.setParameter("status", status);
+        return executeList(query);
+    }
+
+    @Override
+    public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID) {
+        final String stringQuery = "SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status AND e.backendId = :backend";
+        TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
+        query.setParameter("status", status);
+        query.setParameter("backend", backendID);
         return executeList(query);
     }
 
@@ -116,17 +125,17 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 
     @Override
     public boolean hasDeleted(List<Long> ids) {
-    	if (ids == null || ids.isEmpty()) {
-			return false;
-		}
-    	final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
-    			+ " WHERE e.id IN :ids";
-    	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
-    	query.setParameter("ids", ids);
-    	Long number = (Long) query.getSingleResult();
-    	return !number.equals((long)ids.size());
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
+                + " WHERE e.id IN :ids";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("ids", ids);
+        Long number = (Long) query.getSingleResult();
+        return !number.equals((long) ids.size());
     }
-    
+
     @Override
     public boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
         final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"

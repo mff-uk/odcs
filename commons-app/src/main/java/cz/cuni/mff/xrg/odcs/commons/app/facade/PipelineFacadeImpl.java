@@ -398,6 +398,10 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
+    public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAll(status, backendID);
+    }
+
     @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {

@@ -120,6 +120,9 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @JoinColumn(name = "user_actor_id")
     private UserActor actor;
 
+    @Column(name = "backend_id")
+    private String backendId;
+
     /**
      * No-arg constructor for JPA
      */
@@ -422,6 +425,14 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     public void setActor(UserActor actor) {
         this.actor = actor;
+    }
+
+    public String getBackendId() {
+        return this.backendId;
+    }
+
+    public void setBackendId(String backendId) {
+        this.backendId = backendId;
     }
 
     /**

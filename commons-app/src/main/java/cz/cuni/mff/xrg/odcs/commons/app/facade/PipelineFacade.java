@@ -184,6 +184,15 @@ public interface PipelineFacade extends Facade {
     List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
 
     /**
+     * Fetches all executions with given status and backend ID
+     * 
+     * @param status
+     * @param backendID
+     * @return list of executions
+     */
+    List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID);
+
+    /**
      * Find pipeline execution in database by ID and return it.
      * 
      * @param id
