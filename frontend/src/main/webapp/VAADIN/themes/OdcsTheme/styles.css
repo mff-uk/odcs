@@ -235,3 +235,7 @@ overflow: auto !important;
 .clickable-table-cell {
 	cursor: pointer;
 }
+
+.dpu-error-label{
+	color:red;
+}

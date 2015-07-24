@@ -2,7 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import ch.qos.logback.classic.Level;
 
@@ -15,6 +14,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -34,7 +34,7 @@ public class LogMessageDetail extends Window {
     private final Label sourceContent = new Label();
 
     private final DateFormat df =
-            DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+            DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
 
     /**
      * Constructor with Record to show.
