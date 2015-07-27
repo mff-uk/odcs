@@ -18,6 +18,7 @@ public enum ConfigProperty {
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
     BACKEND_TAKEOVER_TIME_LIMIT("backend.takeover.time.limit"),
     BACKEND_ID("backend.id"),
+    BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),

@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.server;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
@@ -27,6 +29,7 @@ public class ExecutionServer implements Serializable, DataObject {
     @SequenceGenerator(name = "seq_backend_servers", allocationSize = 1)
     private Long id;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_update")
     private Date lastUpdate;
 

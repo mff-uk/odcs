@@ -14,6 +14,9 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
@@ -23,8 +26,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
 
@@ -47,6 +50,9 @@ class ExecutionSanitizer {
     @Autowired
     private ResourceManager resourceManager;
 
+    @Autowired
+    private AppConfig appConfig;
+
     /**
      * Fix possible problems with given execution. Logs of this method are
      * logged with the execution id of given {@link PipelineExecution} Method does not save the changes into database! So called must secure
@@ -57,16 +63,25 @@ class ExecutionSanitizer {
     public void sanitize(PipelineExecution execution) {
         // check for flags
         if (execution.getStop()) {
-            sanitizeCancelling(execution);
+            sanitizeCancellingRunning(execution);
             return;
         }
 
         switch (execution.getStatus()) {
             case CANCELLING:
-                sanitizeCancelling(execution);
+                sanitizeCancellingRunning(execution);
                 return;
             case RUNNING:
-                sanitizeRunning(execution);
+                boolean restartRunning = true;
+                try {
+                    restartRunning = this.appConfig.getBoolean(ConfigProperty.BACKEND_STARTUP_RESTART_RUNNING);
+                } catch (MissingConfigPropertyException ignore) {
+                    /* ignore exception*/}
+                if (restartRunning) {
+                    restartRunning(execution);
+                } else {
+                    sanitizeCancellingRunning(execution);
+                }
                 return;
             default:
                 // do nothing with such pipeline .. 
@@ -79,8 +94,8 @@ class ExecutionSanitizer {
      * 
      * @param execution
      */
-    private void sanitizeRunning(PipelineExecution execution) {
-        eventPublisher.publishEvent(new PipelineRestart(execution, this));
+    private void restartRunning(PipelineExecution execution) {
+        this.eventPublisher.publishEvent(new PipelineRestart(execution, this));
 
         // set state back to scheduled
         execution.setStatus(PipelineExecutionStatus.QUEUED);
@@ -91,7 +106,7 @@ class ExecutionSanitizer {
      * 
      * @param execution
      */
-    private void sanitizeCancelling(PipelineExecution execution) {
+    private void sanitizeCancellingRunning(PipelineExecution execution) {
         // publish event about this .. 
         eventPublisher.publishEvent(new PipelineSanitized(execution, this));
 
@@ -117,7 +132,12 @@ class ExecutionSanitizer {
             // this means that the execution does not run at all
         }
         // set canceled state
-        execution.setStatus(PipelineExecutionStatus.CANCELLED);
+        if (execution.getStatus() == PipelineExecutionStatus.CANCELLING) {
+            execution.setStatus(PipelineExecutionStatus.CANCELLED);
+        } else if (execution.getStatus() == PipelineExecutionStatus.RUNNING) {
+            execution.setStatus(PipelineExecutionStatus.FAILED);
+        }
+
         execution.setEnd(now);
     }
 

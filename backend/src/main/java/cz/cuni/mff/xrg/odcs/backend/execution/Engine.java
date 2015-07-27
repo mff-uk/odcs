@@ -101,7 +101,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     /**
      * Backend identifier
      */
-    private String backendID;
+    protected String backendID;
 
     @PostConstruct
     private void propertySetter() {
