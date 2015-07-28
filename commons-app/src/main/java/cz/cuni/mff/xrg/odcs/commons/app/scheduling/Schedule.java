@@ -368,6 +368,8 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
+
+        if (owner != null) owner.getSchedules().add(this);
     }
 
     /**
