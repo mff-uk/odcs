@@ -386,34 +386,38 @@ public class ExportService {
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", DpuItem.class);
 
-        File serializedTarget;
+        File serializedTarget = null;
         try {
-            serializedTarget = File.createTempFile("temp", ".tmp");
-        } catch (IOException ex2) {
-            throw new ExportException(Messages.getString("ExportService.error"), ex2);
-        }
-        try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
-            xStream.toXML(dpus, foutStream);
-        } catch (IOException ex1) {
-            throw new ExportException(Messages.getString("ExportService.error"), ex1);
-        }
-
-        byte[] buffer = new byte[4096];
-        try {
-            final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
-            zipStream.putNextEntry(ze);
-
-            // move jar file into the zip file
-            try (FileInputStream in = new FileInputStream(serializedTarget)) {
-                int len;
-                while ((len = in.read(buffer)) > 0) {
-                    zipStream.write(buffer, 0, len);
-                }
+            try {
+                serializedTarget = File.createTempFile("temp", ".tmp");
+            } catch (IOException ex2) {
+                throw new ExportException(Messages.getString("ExportService.error"), ex2);
             }
-        } catch (IOException ex) {
-            throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
+            try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
+                xStream.toXML(dpus, foutStream);
+            } catch (IOException ex1) {
+                throw new ExportException(Messages.getString("ExportService.error"), ex1);
+            }
+            
+            byte[] buffer = new byte[4096];
+            try {
+                final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
+                zipStream.putNextEntry(ze);
+                
+                // move jar file into the zip file
+                try (FileInputStream in = new FileInputStream(serializedTarget)) {
+                    int len;
+                    while ((len = in.read(buffer)) > 0) {
+                        zipStream.write(buffer, 0, len);
+                    }
+                }
+            } catch (IOException ex) {
+                throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
+            }
+            LOG.debug("<<< Leaving saveDpusInfo()");
+        } finally {
+            ResourceManager.cleanupQuietly(serializedTarget);
         }
-        LOG.debug("<<< Leaving saveDpusInfo()");
     }
 
     public TreeSet<DpuItem> getDpusInformation(Pipeline pipeline) {

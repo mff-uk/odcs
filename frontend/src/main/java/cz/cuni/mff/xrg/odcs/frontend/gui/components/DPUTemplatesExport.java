@@ -1,7 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -136,7 +135,7 @@ public class DPUTemplatesExport extends Window {
                 }
                 try {
                     closeButton.click();
-                    return new FileInputStream(fileToExport);
+                    return new DeletingFileInputStream(fileToExport);
                 } catch (FileNotFoundException e) {
                     LOG.error("Failed to export templates.", e);
                     Notification.show(Messages.getString("DPUTemplatesExport.export.fail.fileNotFound"), e.getMessage(), Notification.Type.ERROR_MESSAGE);

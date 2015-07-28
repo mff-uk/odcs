@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,43 +22,52 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
  * @author Maria Kukhar
  */
 public class FileUploadReceiver implements Receiver {
+    private static final long serialVersionUID = -7085312769546042292L;
 
-    private Logger logger = LoggerFactory.getLogger(FileUploadReceiver.class);
+    private Logger LOG = LoggerFactory.getLogger(FileUploadReceiver.class);
 
     private File file;
 
-    private Path path;
-
+    private File parentDir;
+    
     /**
-     * return an OutputStream
      * 
+     * @param filename
      * @param MIMEType
+     * @return
      */
     @Override
     public OutputStream receiveUpload(final String filename,
             final String MIMEType) {
-
         try {
             //create template directory
-            path = Files.createTempDirectory("jarDPU");
-        } catch (IOException ex) {
-            logger.debug("", ex);
+            parentDir = Files.createTempDirectory("jarDPU").toFile();
+        } catch (IOException e) {
+            String message = Messages.getString("FileUploadReceiver.temp.dir.fail");
+            LOG.error(message);
+            Notification.show(message, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            return null;
         }
 
         try {
-            file = new File("/" + path + "/" + filename);
+            file = new File(parentDir, filename);
+            file.createNewFile();
             FileOutputStream fstream = new FileOutputStream(file);
-
             return fstream;
-
         } catch (FileNotFoundException e) {
-            new Notification(Messages.getString("FileUploadReceiver.file.open"), e.getMessage(),
-                    Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+            String msg = Messages.getString("FileUploadReceiver.file.open");
+            LOG.error(msg);
+            new Notification(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
+            return null;
+        } catch (IOException e) {
+            String msg = Messages.getString("FileUploadReceiver.file.create.fail");
+            LOG.error(msg);
+            Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
             return null;
         }
 
     }
-
+    
     /**
      * Get uploaded file.
      * 
@@ -70,11 +78,11 @@ public class FileUploadReceiver implements Receiver {
     }
 
     /**
-     * Get path to file.
+     * Get parent dir.
      * 
-     * @return path to file
+     * @return parent directory
      */
-    public Path getPath() {
-        return path;
+    public File getParentDir() {
+        return parentDir;
     }
 }
