@@ -249,6 +249,21 @@ public class DatabaseConstraintsTest {
     }
 
     @Test
+    public void ON_DELETE_user_actor_DELETE_exec_pipeline() {
+        Assert.fail();
+    }
+
+    @Test
+    public void ON_DELETE_user_actor_DELETE_exec_schedule() {
+        Assert.fail();
+    }
+
+    @Test
+    public void ON_DELETE_user_actor_DELETE_ppl_model() {
+        Assert.fail();
+    }
+
+    @Test
     public void ON_DELETE_ppl_model_DELETE_exec_schedule() {
         new DeleteConstraintTest() {
 
