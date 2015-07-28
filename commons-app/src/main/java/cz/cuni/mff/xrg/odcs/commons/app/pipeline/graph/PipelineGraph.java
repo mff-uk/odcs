@@ -2,6 +2,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 
 import javax.persistence.*;
@@ -302,13 +303,17 @@ public class PipelineGraph implements DataObject {
      * @param newY
      *            The value of Y point of node
      */
-    public void moveNode(int dpuId, int newX, int newY) {
+    public boolean moveNode(int dpuId, int newX, int newY) {
         Node node = getNodeById(dpuId);
         if (node == null) {
             throw new IllegalArgumentException(
                     "Node with supplied id was not found!");
         }
+        if ((node.getPosition() != null)&&(node.getPosition().getX() == newX)&&(node.getPosition().getY() == newY)) {
+            return false;
+        }
         node.setPosition(new Position(newX, newY));
+        return true;
     }
 
     /**
@@ -345,24 +350,24 @@ public class PipelineGraph implements DataObject {
 
         // Rules validation with corresponding error messages.
         if (from.equals(to)) {
-            return "Loops are not allowed!";
+            return Messages.getString("PipelineGraph.validation.loops");
         }
         //Same edge check
         if (sameEdgeExists(from, to)) {
-            return "Same edge already exists in graph!";
+            return Messages.getString("PipelineGraph.validation.exists");
         }
 
         //Same edge, other direction check
         for (Edge e : edges) {
             if (e.getFrom().equals(to) && e.getTo().equals(from)) {
-                return "Two-way edges are not allowed!";
+                return Messages.getString("PipelineGraph.validation.twoway");
             }
         }
 
         //Cycle check
         Edge newEdge = new Edge(from, to);
         if (newEdgeCreateCycle(newEdge)) {
-            return "Cycles are not allowed!";
+            return Messages.getString("PipelineGraph.validation.cycles");
         }
 
         return null;

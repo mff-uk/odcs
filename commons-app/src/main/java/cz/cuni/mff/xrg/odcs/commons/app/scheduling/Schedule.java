@@ -1,38 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
@@ -48,7 +21,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEntity {
+public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * Unique ID for each plan.
@@ -144,8 +117,8 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "user_actor_id")
+    private UserActor actor;
 
     /**
      * If true then pipeline can be run only at most +10 minutes from scheduled
@@ -395,16 +368,6 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
      */
     public void setOwner(User owner) {
         this.owner = owner;
-
-        if (owner != null) owner.getSchedules().add(this);
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     /**
@@ -513,5 +476,13 @@ public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEnti
 
     public void setPipelineExecutions(Set<PipelineExecution> pipelineExecutions) {
         this.pipelineExecutions = pipelineExecutions;
+    }
+
+    public UserActor getActor() {
+        return actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
     }
 }

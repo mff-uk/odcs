@@ -1,23 +1,5 @@
 package eu.unifiedviews.master.api;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -34,8 +16,16 @@ import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineExecutionDTO;
 import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Component
 @Path("/pipelines")
@@ -63,7 +53,7 @@ public class ExecutionResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
-            if (isEmpty(executions)) {
+            if (executions == null || executions.isEmpty()) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.execution.not.found"), String.format("null pipeline executions for pipeline with ID=%s!", id));
             }
             return PipelineExecutionDTOConverter.convert(executions);
