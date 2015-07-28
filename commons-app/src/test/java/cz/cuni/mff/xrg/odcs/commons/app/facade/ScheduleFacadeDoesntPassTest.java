@@ -294,6 +294,7 @@ public class ScheduleFacadeDoesntPassTest {
         PipelineExecution pipelineExecution = executions.get(0);
         pipelineExecution.setStatus(PipelineExecutionStatus.FINISHED_SUCCESS);
         pipelineExecution.setEnd(new Date());
+        pipelineExecution.setBackendId("TestBackend");
         pipelineFacade.save(pipelineExecution);
 
         Schedule schedule2 = scheduleFacade.createSchedule();
@@ -303,7 +304,7 @@ public class ScheduleFacadeDoesntPassTest {
         schedule2.setEnabled(true);
         scheduleFacade.save(schedule2);
 
-        scheduleFacade.executeFollowers();
+        scheduleFacade.executeFollowers("TestBackend");
         List<PipelineExecution> executions2 = pipelineFacade.getExecutions(pipeline2);
         assertNotNull(executions2);
         assertFalse(executions2.isEmpty());

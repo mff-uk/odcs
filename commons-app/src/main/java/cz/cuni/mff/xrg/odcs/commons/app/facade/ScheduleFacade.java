@@ -86,11 +86,12 @@ public interface ScheduleFacade extends Facade {
     void execute(Schedule schedule);
 
     /**
-     * Check for all schedule that run after some execution and run them if all
-     * the the pre-runs has been executed. The call of this function may be
-     * expensive as it check for all runAfter based pipelines.
+     * Checks all schedule that run after some execution and run them if all the pre-runs
+     * have been executed by this backend node
+     * 
+     * @param backendID
      */
-    void executeFollowers();
+    void executeFollowers(String backendID);
 
     /**
      * Executes all pipelines scheduled to follow given pipeline.

@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
@@ -141,7 +140,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     @Async
     @Scheduled(fixedDelay = 20000)
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     protected void checkJobs() {
         synchronized (LockRunningJobs) {
             LOG.debug(">>> Entering checkJobs()");
@@ -160,7 +159,9 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
             LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
 
-            List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
+            LOG.debug("Going to find all QUEUED executions");
+            List<PipelineExecution> jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
+            LOG.debug("Found {} executions planned for execution", jobs.size());
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
                 if (job.getOrderNumber() == ScheduledJobsPriority.IGNORE.getValue()) {
@@ -232,8 +233,8 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
         }
 
-        List<PipelineExecution> cancelling = pipelineFacade
-                .getAllExecutions(PipelineExecutionStatus.CANCELLING);
+        List<PipelineExecution> cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING,
+                this.backendID);
 
         for (PipelineExecution execution : cancelling) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());

@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -44,7 +43,7 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     @Override
     public boolean obtainLockAndUpdateTimestamp(String backendId) {
         boolean hasLock = false;
@@ -56,6 +55,7 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
                 Long limitDateTime = System.currentTimeMillis() - (this.backendTakoverLimit * 1000);
                 Date limitDate = new Date(limitDateTime);
                 if (server.getLastUpdate().before(limitDate)) { // owning server has not notified itself longer than a limit, taking over the lock
+                    LOG.info("Lock owning backend ({}) has not notified itself longer than a limit, taking over the lock", server.getBackendId());
                     server.setBackendId(backendId);
                     server.setLastUpdate(new Date());
                     hasLock = true;
@@ -66,10 +66,11 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
                 hasLock = true;
             }
         } else { // no backend has run yet
-            LOG.debug("No backend has ever run with this database, acquiring lock for {}", backendId);
+            LOG.info("No backend has ever run with this database, acquiring lock for {}", backendId);
             server = new ExecutionServer();
             server.setBackendId(backendId);
             server.setLastUpdate(new Date());
+            server.setId(1L);
             hasLock = true;
         }
         this.dbExecutionServer.save(server);

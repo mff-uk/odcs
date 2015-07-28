@@ -57,4 +57,8 @@ public class ExecutionServer implements Serializable, DataObject {
         this.backendId = backendId;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

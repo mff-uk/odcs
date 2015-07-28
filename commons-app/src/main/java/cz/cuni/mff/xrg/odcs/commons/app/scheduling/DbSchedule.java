@@ -70,4 +70,14 @@ public interface DbSchedule extends DbAccess<Schedule> {
      */
     public List<Date> getLastExecForRunAfter(Schedule schedule);
 
+    /**
+     * Return times of last executions (or null if there has been no successful
+     * execution) of run-after pipelines for runAfter base schedule.
+     * 
+     * @param schedule
+     * @param backendID
+     * @return list of timestamps
+     */
+    public List<Date> getLastExecForRunAfter(Schedule schedule, String backendID);
+
 }

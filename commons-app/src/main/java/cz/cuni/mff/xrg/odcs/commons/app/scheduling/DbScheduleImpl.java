@@ -105,4 +105,25 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
         return Collections.checkedList(query.getResultList(), Date.class);
     }
 
+    @Override
+    public List<Date> getLastExecForRunAfter(Schedule schedule, String backendId) {
+        final String stringQuery = "SELECT max(exec.end)"
+                + " FROM Schedule schedule"
+                + " JOIN schedule.afterPipelines pipeline"
+                + " JOIN PipelineExecution exec ON exec.pipeline = pipeline"
+                + " WHERE schedule.id = :schedule AND exec.status IN :status AND exec.backendId = :backendId"
+                + " GROUP BY pipeline.id";
+
+        Set<PipelineExecutionStatus> statuses = new HashSet<>();
+        statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+        statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
+
+        TypedQuery<Date> query = this.em.createQuery(stringQuery, Date.class);
+        query.setParameter("schedule", schedule.getId());
+        query.setParameter("status", statuses);
+        query.setParameter("backendId", backendId);
+
+        return Collections.checkedList(query.getResultList(), Date.class);
+    }
+
 }

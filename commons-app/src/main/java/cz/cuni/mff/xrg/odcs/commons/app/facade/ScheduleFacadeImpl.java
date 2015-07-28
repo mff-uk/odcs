@@ -203,10 +203,10 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      */
     @Transactional
     @Override
-    public void executeFollowers() {
-        List<Schedule> toRun = scheduleDao.getActiveRunAfterBased();
+    public void executeFollowers(String backendID) {
+        List<Schedule> toRun = this.scheduleDao.getActiveRunAfterBased();
         // filter those that should not run
-        toRun = filterActiveRunAfter(toRun);
+        toRun = filterActiveRunAfter(toRun, backendID);
         // and execute
         for (Schedule schedule : toRun) {
             execute(schedule);
@@ -237,10 +237,24 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      */
     @PreAuthorize("hasRole('scheduleRule.read')")
     private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
+        return filterActiveRunAfter(candidates, null);
+    }
+
+    /**
+     * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE} and that should be executed (all their {@link Schedule#afterPipelines
+     *         after-pipeline} executions finished).
+     */
+    @PreAuthorize("hasRole('scheduleRule.read')")
+    private List<Schedule> filterActiveRunAfter(List<Schedule> candidates, String backendID) {
         List<Schedule> result = new LinkedList<>();
 
         for (Schedule schedule : candidates) {
-            List<Date> times = scheduleDao.getLastExecForRunAfter(schedule);
+            List<Date> times = null;
+            if (backendID != null) {
+                times = this.scheduleDao.getLastExecForRunAfter(schedule, backendID);
+            } else {
+                times = this.scheduleDao.getLastExecForRunAfter(schedule);
+            }
             boolean execute = true;
             for (Date item : times) {
                 if (item == null) {
