@@ -15,11 +15,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
 import eu.unifiedviews.commons.dao.view.PipelineView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
+import org.springframework.stereotype.Component;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import java.util.List;
 /**
  * @author Bogo
  */
+@Component
 public class PipelineHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineHelper.class);
@@ -44,6 +47,27 @@ public class PipelineHelper {
     @Autowired
     private RuntimePropertiesFacade runtimePropertyFacade;
 
+    public List<ExecutionView> getExecutionViews() {
+        List<ExecutionView> executionViews = new ArrayList<>();
+
+        for (PipelineExecution execution : pipelineFacade.getAllExecutions()) {
+            executionViews.add(new ExecutionView(execution.getId(),
+                    execution.getStatus(),
+                    execution.getPipeline().getId(),
+                    execution.getPipeline().getName(),
+                    execution.isDebugging(),
+                    execution.getStart(),
+                    execution.getEnd(),
+                    execution.getSchedule().getId(),
+                    execution.getOwner().getUsername(),
+                    execution.getOwner().getFullName(),
+                    execution.getActor().getName(),
+                    execution.getStop(),
+                    execution.getLastChange()));
+        }
+
+        return executionViews;
+    }
 
     public List<PipelineView> getPipelineViews() {
         List<PipelineView> pipelineViews = new ArrayList<>();
@@ -141,9 +165,6 @@ public class PipelineHelper {
 
     /**
      * Computes order position using runtime property
-     * 
-     * @param epoch
-     * @return
      */
     private Long getOrderPosition() {
         Long epoch = (long) System.currentTimeMillis();

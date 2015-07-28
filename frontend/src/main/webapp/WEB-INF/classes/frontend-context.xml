@@ -80,7 +80,6 @@
     <!-- sessions scope -->
     <bean id="ui" class="cz.cuni.mff.xrg.odcs.frontend.AppEntry" scope="prototype"/>
 
-    <bean id="pipelineHelper" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper"/>
     <bean id="pipelineValidator" class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineValidator"/>
 
     <!-- provide access to the navigator, the navigagtor must be set into holder vefore it's first use -->
