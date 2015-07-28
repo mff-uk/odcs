@@ -282,6 +282,12 @@
 			<version>${mysql.jdbc.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+
 		<!-- Aspect Oriented Programming with AspectJ -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
