@@ -1,18 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import javax.persistence.*;
 
 /**
  * An abstract representation of an email address.
@@ -33,6 +26,14 @@ public class EmailAddress implements Comparable<Object>, DataObject {
      */
     @Column(name = "email")
     private String email;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    @PreRemove
+    public void preRemove() {
+        user.setEmail(null);
+    }
 
     /**
      * Default constructor for JPA.
@@ -107,4 +108,11 @@ public class EmailAddress implements Comparable<Object>, DataObject {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

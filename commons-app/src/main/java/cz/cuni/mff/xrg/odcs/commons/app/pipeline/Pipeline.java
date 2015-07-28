@@ -6,7 +6,24 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,9 +33,20 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer
@@ -31,7 +59,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 @XmlRootElement
 @Entity
 @Table(name = "ppl_model")
-public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataObject {
+public class Pipeline implements OwnedEntity, SharedEntity, OrganizationSharedEntity, Serializable, DataObject {
 
     /**
      * Unique ID for each pipeline
@@ -64,8 +92,8 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_actor_id")
-    private UserActor actor;
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     /**
      * Public vs private shareType.
@@ -91,6 +119,15 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_change")
     private Date lastChange;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<PipelineExecution> executions = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<Schedule> schedules = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<OpenEvent> openEvents = new HashSet<>();
 
     /**
      * Default constructor for JPA
@@ -212,6 +249,8 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      */
     public void setUser(User owner) {
         this.owner = owner;
+
+        if (owner != null) owner.getPipelines().add(this);
     }
 
     /**
@@ -222,6 +261,14 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Override
     public User getOwner() {
         return owner;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     /**
@@ -275,14 +322,6 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
         this.lastChange = lastChange;
     }
 
-    public UserActor getActor() {
-        return this.actor;
-    }
-
-    public void setActor(UserActor actor) {
-        this.actor = actor;
-    }
-
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
@@ -323,4 +362,27 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
         return hash;
     }
 
+    public Set<PipelineExecution> getExecutions() {
+        return executions;
+    }
+
+    public void setExecutions(Set<PipelineExecution> executions) {
+        this.executions = executions;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public Set<OpenEvent> getOpenEvents() {
+        return openEvents;
+    }
+
+    public void setOpenEvents(Set<OpenEvent> openEvents) {
+        this.openEvents = openEvents;
+    }
 }

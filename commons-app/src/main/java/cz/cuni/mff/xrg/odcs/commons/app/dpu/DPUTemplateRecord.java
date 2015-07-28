@@ -1,22 +1,16 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import java.io.File;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+
+import javax.persistence.*;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Representation of template for creating {@link DPUInstanceRecord}s. The
@@ -80,9 +74,22 @@ public class DPUTemplateRecord extends DPURecord
     @JoinColumn(name = "parent_id", nullable = true)
     private DPUTemplateRecord parent;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<DPUTemplateRecord> children = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "template", orphanRemoval = true)
+    private Set<DPUInstanceRecord> derivedDPUs = new HashSet<>();
+
+    @PreRemove
+    public void preRemove() {
+        for (DPUTemplateRecord dpuTemplateRecord : children) {
+            dpuTemplateRecord.setParent(null);
+        }
+    }
 
     /**
      * Empty ctor for JPA.
@@ -119,10 +126,12 @@ public class DPUTemplateRecord extends DPURecord
             jarDirectory = dpu.jarDirectory;
             jarName = dpu.jarName;
             jarDescription = dpu.jarDescription;
-        } else {
+        }
+        else {
             jarDirectory = null;
             jarName = null;
             jarDescription = null;
+            parent.getChildren().add(this);
         }
     }
 
@@ -194,8 +203,6 @@ public class DPUTemplateRecord extends DPURecord
         if (parent == null) {
             // top level DPU
             this.jarDescription = jarDescription;
-        } else {
-            // ignore ..
         }
     }
 
@@ -234,12 +241,9 @@ public class DPUTemplateRecord extends DPURecord
             jarName = this.getParent().jarName;
             jarDescription = this.getParent().jarDescription;
             type = this.getParent().type;
-        } else {
-            // null -> null = no change, we preserve our data
-            // not null -> not null = no change, as we have nulls before and now
         }
-
-        this.parent = newParent;
+        parent = newParent;
+        if (parent != null) parent.getChildren().add(this);
     }
 
     /**
@@ -314,8 +318,6 @@ public class DPUTemplateRecord extends DPURecord
         if (parent == null) {
             // top level DPU
             this.jarDirectory = jarDirectory;
-        } else {
-            // ignore ..
         }
     }
 
@@ -341,8 +343,6 @@ public class DPUTemplateRecord extends DPURecord
         if (parent == null) {
             // top level DPU
             this.jarName = jarName;
-        } else {
-            // ignore ..
         }
     }
 
@@ -353,4 +353,19 @@ public class DPUTemplateRecord extends DPURecord
         return parent == null;
     }
 
+    public Set<DPUInstanceRecord> getDerivedDPUs() {
+        return derivedDPUs;
+    }
+
+    public void setDerivedDPUs(Set<DPUInstanceRecord> derivedDPUs) {
+        this.derivedDPUs = derivedDPUs;
+    }
+
+    public Set<DPUTemplateRecord> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<DPUTemplateRecord> children) {
+        this.children = children;
+    }
 }

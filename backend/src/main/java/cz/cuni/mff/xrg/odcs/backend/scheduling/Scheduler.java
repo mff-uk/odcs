@@ -1,23 +1,19 @@
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Take care about execution of scheduled plans.
@@ -28,17 +24,11 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
     /**
      * Schedule facade.
      */
     @Autowired
     private ScheduleFacade scheduleFacade;
-
-    @Autowired
-    private PipelineFacade pipelineFacade;
 
     @PostConstruct
     private void initialCheck() {

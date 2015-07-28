@@ -1,17 +1,15 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.*;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represent a single message created during DPURecord execution.
@@ -49,13 +47,13 @@ public class MessageRecord implements DataObject {
      * DPURecord which emitted the message.
      */
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "dpu_id", nullable = true)
+    @JoinColumn(name = "dpu_id")
     private DPUInstanceRecord dpuInstance;
 
     /**
      * Pipeline execution during which message was emitted.
      */
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "execution_id")
     private PipelineExecution execution;
 
@@ -101,10 +99,13 @@ public class MessageRecord implements DataObject {
             String fullMessage) {
         this.time = time;
         this.type = type;
-        this.dpuInstance = dpuInstance;
         this.execution = execution;
         this.shortMessage = StringUtils.abbreviate(shortMessage, LenghtLimits.SHORT_MESSAGE);
         this.fullMessage = fullMessage;
+        this.dpuInstance = dpuInstance;
+
+        if (dpuInstance != null) dpuInstance.getMessageRecords().add(this);
+        if (execution != null) execution.getMessages().add(this);
     }
 
     @Override

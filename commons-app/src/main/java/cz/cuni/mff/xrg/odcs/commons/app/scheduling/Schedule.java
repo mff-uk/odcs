@@ -5,15 +5,41 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.
@@ -22,7 +48,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
  */
 @Entity
 @Table(name = "exec_schedule")
-public class Schedule implements OwnedEntity, DataObject {
+public class Schedule implements OwnedEntity, DataObject, OrganizationSharedEntity {
 
     /**
      * Unique ID for each plan.
@@ -118,8 +144,8 @@ public class Schedule implements OwnedEntity, DataObject {
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_actor_id")
-    private UserActor actor;
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     /**
      * If true then pipeline can be run only at most +10 minutes from scheduled
@@ -136,6 +162,16 @@ public class Schedule implements OwnedEntity, DataObject {
 
     @Column(name = "priority")
     private Long priority;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<PipelineExecution> pipelineExecutions = new HashSet<>();
+
+    @PreRemove
+    public void preRemove() {
+        for (PipelineExecution pipelineExecution : pipelineExecutions) {
+            pipelineExecution.setSchedule(null);
+        }
+    }
 
     /**
      * Empty constructor. Used by JPA. Do not use otherwise.
@@ -171,6 +207,8 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
+
+        if (pipeline != null) pipeline.getSchedules().add(this);
     }
 
     /**
@@ -357,6 +395,16 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
+
+        if (owner != null) owner.getSchedules().add(this);
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     /**
@@ -419,14 +467,6 @@ public class Schedule implements OwnedEntity, DataObject {
         this.priority = priority;
     }
 
-    public UserActor getActor() {
-        return this.actor;
-    }
-
-    public void setActor(UserActor actor) {
-        this.actor = actor;
-    }
-
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
@@ -467,4 +507,11 @@ public class Schedule implements OwnedEntity, DataObject {
         return hash;
     }
 
+    public Set<PipelineExecution> getPipelineExecutions() {
+        return pipelineExecutions;
+    }
+
+    public void setPipelineExecutions(Set<PipelineExecution> pipelineExecutions) {
+        this.pipelineExecutions = pipelineExecutions;
+    }
 }

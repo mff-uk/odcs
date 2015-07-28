@@ -11,6 +11,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 /**
  * Represent imported DPU in database.

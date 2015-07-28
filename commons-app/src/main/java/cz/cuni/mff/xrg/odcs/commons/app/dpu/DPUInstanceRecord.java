@@ -1,14 +1,14 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represent the DPU instance pipeline placement in DB.
@@ -32,6 +32,15 @@ public class DPUInstanceRecord extends DPURecord {
      */
     @Column(name = "use_template_config")
     private boolean useTemplateConfig;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MessageRecord> messageRecords = new HashSet<>();
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Node node;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ProcessingUnitInfo> processingUnitInfos = new HashSet<>();
 
     /**
      * Empty constructor because of JPA.
@@ -126,5 +135,29 @@ public class DPUInstanceRecord extends DPURecord {
     @Override
     public String getJarPath() {
         return template.getJarPath();
+    }
+
+    public Set<MessageRecord> getMessageRecords() {
+        return messageRecords;
+    }
+
+    public void setMessageRecords(Set<MessageRecord> messageRecords) {
+        this.messageRecords = messageRecords;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
+    public Set<ProcessingUnitInfo> getProcessingUnitInfos() {
+        return processingUnitInfos;
+    }
+
+    public void setProcessingUnitInfos(Set<ProcessingUnitInfo> processingUnitInfos) {
+        this.processingUnitInfos = processingUnitInfos;
     }
 }

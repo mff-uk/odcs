@@ -1,19 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import eu.unifiedviews.dataunit.DataUnit;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Edge represents oriented connection between nodes of the graph.
@@ -92,9 +83,10 @@ public class Edge implements DataObject {
      * @param script
      */
     public Edge(Node from, Node to, String script) {
-        this.from = from;
-        this.to = to;
         this.script = script;
+
+        setFrom(from);
+        setTo(to);
     }
 
     /**
@@ -106,6 +98,8 @@ public class Edge implements DataObject {
 
     public void setFrom(Node from) {
         this.from = from;
+
+        if (from != null) from.getStartNodeOfEdges().add(this);
     }
 
     /**
@@ -117,6 +111,8 @@ public class Edge implements DataObject {
 
     public void setTo(Node to) {
         this.to = to;
+
+        if (to != null) to.getEndNodeOfEdges().add(this);
     }
 
     /**
@@ -135,6 +131,8 @@ public class Edge implements DataObject {
      */
     public void setGraph(PipelineGraph graph) {
         this.graph = graph;
+
+        if (graph != null) graph.getEdges().add(this);
     }
 
     @Override

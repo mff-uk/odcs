@@ -85,10 +85,15 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @MapKeyJoinColumn(name = "dpu_instance_id", referencedColumnName = "id")
     @JoinColumn(name = "exec_context_pipeline_id")
     private Map<DPUInstanceRecord, ProcessingUnitInfo> contexts;
+
+    @PreRemove
+    public void preRemove() {
+        execution.setContext(null);
+    }
 
     /**
      * Empty constructor for JPA.
@@ -122,6 +127,7 @@ public class ExecutionContextInfo implements DataObject {
             // unknown context -> add
             ProcessingUnitInfo pui = new ProcessingUnitInfo();
             contexts.put(dpuInstance, pui);
+            dpuInstance.getProcessingUnitInfos().add(pui);
         }
         // return data
         return contexts.get(dpuInstance);

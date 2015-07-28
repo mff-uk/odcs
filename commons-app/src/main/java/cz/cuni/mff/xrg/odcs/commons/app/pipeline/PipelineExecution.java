@@ -7,11 +7,18 @@ import javax.persistence.*;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Information about executed pipeline and its states.
@@ -116,6 +123,9 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @JoinColumn(name = "owner_id", nullable = true)
     private User owner;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<MessageRecord> messages = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_actor_id")
     private UserActor actor;
@@ -136,11 +146,11 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public PipelineExecution(Pipeline pipeline) {
         this.status = PipelineExecutionStatus.QUEUED;
-        this.pipeline = pipeline;
         this.isDebugging = false;
         this.schedule = null;
         this.silentMode = true;
         this.stop = false;
+        setPipeline(pipeline);
 
         // Execution context is obligatory, so that we do not need to check for
         // nulls everywhere. A new execution has an empty context.
@@ -193,6 +203,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
+
+        if (pipeline != null) pipeline.getExecutions().add(this);
     }
 
     /**
@@ -273,6 +285,10 @@ public class PipelineExecution implements OwnedEntity, DataObject {
         return context;
     }
 
+    public void setContext(ExecutionContextInfo context) {
+        this.context = context;
+    }
+
     /**
      * Returns schedule that planned this execution. Null for execution created
      * by user.
@@ -294,6 +310,10 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
+
+        if (schedule != null) {
+            schedule.getPipelineExecutions().add(this);
+        }
     }
 
     /**
@@ -336,6 +356,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setDebugNode(Node debugNode) {
         this.debugNode = debugNode;
+
+        if (debugNode != null) debugNode.getExecutions().add(this);
     }
 
     /**
@@ -357,6 +379,8 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
+
+        if (owner != null) owner.getExecutions().add(this);
     }
 
     /**
@@ -463,4 +487,13 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
         return Objects.equals(this.id, other.id);
     }
+
+    public Set<MessageRecord> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<MessageRecord> messages) {
+        this.messages = messages;
+    }
+
 }

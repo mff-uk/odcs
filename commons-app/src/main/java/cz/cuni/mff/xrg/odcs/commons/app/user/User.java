@@ -1,12 +1,19 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,6 +72,15 @@ public class User implements UserDetails, DataObject {
     @Column(name = "table_rows")
     private Integer tableRows;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    private Set<PipelineExecution> executions = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    private Set<Schedule> schedules = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    private Set<Pipeline> pipelines = new HashSet<>();
+
     /**
      * User roles representing sets of privileges.
      */
@@ -76,8 +92,11 @@ public class User implements UserDetails, DataObject {
      * User notification settings used as a default for execution schedules.
      * Overridden by specific settings in {@link ScheduleNotificationRecord}.
      */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserNotificationRecord notification;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<OpenEvent> openEvents = new HashSet<>();
 
     @Column(table = "usr_extuser", name = "id_extuser")
     private String externalIdentifier;
@@ -128,6 +147,7 @@ public class User implements UserDetails, DataObject {
      */
     public void setEmail(EmailAddress newEmail) {
         email = newEmail;
+        if (email != null) email.setUser(this);
     }
 
     /**
@@ -367,4 +387,35 @@ public class User implements UserDetails, DataObject {
         return hash;
     }
 
+    public Set<PipelineExecution> getExecutions() {
+        return executions;
+    }
+
+    public void setExecutions(Set<PipelineExecution> executions) {
+        this.executions = executions;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public Set<Pipeline> getPipelines() {
+        return pipelines;
+    }
+
+    public void setPipelines(Set<Pipeline> pipelines) {
+        this.pipelines = pipelines;
+    }
+
+    public Set<OpenEvent> getOpenEvents() {
+        return openEvents;
+    }
+
+    public void setOpenEvents(Set<OpenEvent> openEvents) {
+        this.openEvents = openEvents;
+    }
 }

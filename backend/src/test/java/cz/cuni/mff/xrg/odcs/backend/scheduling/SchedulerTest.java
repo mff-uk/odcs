@@ -6,6 +6,13 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import cz.cuni.mff.xrg.odcs.backend.execution.EngineMock;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +21,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.backend.execution.EngineMock;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import java.util.Calendar;
 
 import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(locations = { "classpath:backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,7 +69,6 @@ public class SchedulerTest {
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
         engine.doCheck();
-
     }
 
     @Test
@@ -75,8 +77,6 @@ public class SchedulerTest {
         Pipeline ppl = pipelineFacade.createPipeline();
         pipelineFacade.save(ppl);
 
-        Schedule schedule = createSchedule(2, ppl);
-        Schedule schedule2 = createSchedule(3, ppl);
         Schedule schedule3 = createSchedule(4, ppl);
         Schedule schedule4 = createSchedule(5, ppl);
 
