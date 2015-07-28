@@ -678,12 +678,19 @@ public class DatabaseConstraintsTest {
         em.persist(usr_user);
         em.getTransaction().commit();
 
+        int usersBeforeEmailRemoval = getTableEntries(User.class, em).size();
+        int emailsBeforeEmailRemoval = getTableEntries(EmailAddress.class, em).size();
+
         em.getTransaction().begin();
         em.remove(sch_email);
         em.getTransaction().commit();
 
-        Assert.assertEquals(1, getTableEntries(User.class, em).size());
-        Assert.assertEquals(0, getTableEntries(EmailAddress.class, em).size());
+        Assert.assertEquals(usersBeforeEmailRemoval, getTableEntries(User.class, em).size());
+        Assert.assertEquals(emailsBeforeEmailRemoval - 1, getTableEntries(EmailAddress.class, em).size());
+
+        em.getTransaction().begin();
+        em.refresh(usr_user);
+        Assert.assertNull(usr_user.getEmail());
     }
 
     @Test
