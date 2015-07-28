@@ -51,17 +51,18 @@ public class PipelineHelper {
         List<ExecutionView> executionViews = new ArrayList<>();
 
         for (PipelineExecution execution : pipelineFacade.getAllExecutions()) {
-            executionViews.add(new ExecutionView(execution.getId(),
+            executionViews.add(new ExecutionView(
+                    execution.getId(),
                     execution.getStatus(),
                     execution.getPipeline().getId(),
                     execution.getPipeline().getName(),
                     execution.isDebugging(),
                     execution.getStart(),
                     execution.getEnd(),
-                    execution.getSchedule().getId(),
+                    execution.getSchedule() != null ? execution.getSchedule().getId() : null,
                     execution.getOwner().getUsername(),
                     execution.getOwner().getFullName(),
-                    execution.getActor().getName(),
+                    execution.getActor() != null ? execution.getActor().getName() : null,
                     execution.getStop(),
                     execution.getLastChange()));
         }
@@ -167,7 +168,7 @@ public class PipelineHelper {
      * Computes order position using runtime property
      */
     private Long getOrderPosition() {
-        Long epoch = (long) System.currentTimeMillis();
+        Long epoch = System.currentTimeMillis();
         Long priority = DEFAULT_ORDER_POSITION;
 
         // checking format of value

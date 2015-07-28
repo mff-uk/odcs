@@ -173,6 +173,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
+            executionViewSource.setDataItems(pipelineHelper.getExecutionViews());
             dataObject.getContainer().refresh();
         }
     }

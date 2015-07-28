@@ -180,14 +180,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
     }
 
-    private void updatePipelineViewSource() {
-        pipelineViewSource.setDataItems(pipelineHelper.getPipelineViews());
-    }
-
     @Override
     public void refreshEventHandler() {
-        updatePipelineViewSource();
-
+        pipelineViewSource.setDataItems(pipelineHelper.getPipelineViews());
         dataObject.getContainer().refresh();
         view.refreshTableControls();
     }
