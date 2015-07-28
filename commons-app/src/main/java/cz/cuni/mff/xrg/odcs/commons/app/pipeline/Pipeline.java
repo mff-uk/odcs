@@ -355,5 +355,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     public void setActor(UserActor actor) {
         this.actor = actor;
+
+        if (actor != null) actor.getPipelines().add(this);
     }
 }

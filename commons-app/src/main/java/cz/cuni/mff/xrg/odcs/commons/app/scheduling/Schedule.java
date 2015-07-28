@@ -484,5 +484,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     public void setActor(UserActor actor) {
         this.actor = actor;
+
+        if (actor != null) actor.getSchedules().add(this);
     }
 }

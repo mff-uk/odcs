@@ -1,14 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_actor")
@@ -26,6 +24,12 @@ public class UserActor implements DataObject {
 
     @Column
     private String name;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)
+    private Set<Schedule> schedules = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)
+    private Set<Pipeline> pipelines = new HashSet<>();
 
     @Override
     public Long getId() {
@@ -52,4 +56,19 @@ public class UserActor implements DataObject {
         this.id = id;
     }
 
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public Set<Pipeline> getPipelines() {
+        return pipelines;
+    }
+
+    public void setPipelines(Set<Pipeline> pipelines) {
+        this.pipelines = pipelines;
+    }
 }

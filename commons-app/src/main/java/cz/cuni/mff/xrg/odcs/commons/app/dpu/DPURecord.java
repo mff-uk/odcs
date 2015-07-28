@@ -1,12 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Objects;
-
-import javax.persistence.*;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
@@ -70,14 +63,6 @@ public abstract class DPURecord implements DataObject {
     private byte[] serializedConfiguration = NULL_CONFIG.getBytes();
 
     /**
-     * If true configuration is in valid state.
-     * TODO: Remove as it's not used
-     */
-    @Deprecated
-    @Column(name = "config_valid", nullable = false)
-    private boolean configValid;
-
-    /**
      * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
      */
     @Transient
@@ -118,7 +103,6 @@ public abstract class DPURecord implements DataObject {
             this.serializedConfiguration = dpuRecord.serializedConfiguration
                     .clone();
         }
-        this.configValid = dpuRecord.configValid;
     }
 
     /**

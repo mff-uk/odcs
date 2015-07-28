@@ -19,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import org.apache.commons.io.input.CharSequenceInputStream;
 import org.h2.tools.Server;
@@ -193,37 +194,7 @@ public class DatabaseConstraintsTest {
     }
 
     @Test
-    public void ON_DELETE_organization_DELETE_exec_pipeline() {
-        Assert.fail();
-    }
-
-    @Test
-    public void ON_DELETE_organization_DELETE_exec_schedule() {
-        Assert.fail();
-    }
-
-    @Test
-    public void ON_DELETE_organization_DELETE_ppl_model() {
-        Assert.fail();
-    }
-
-    @Test
     public void ON_DELETE_role_DELETE_usr_user_role() {
-        Assert.fail();
-    }
-
-    @Test
-    public void pipeline_view_REFLECTS_CHANGES() {
-        Assert.fail();
-    }
-
-    @Test
-    public void exec_view_REFLECTS_CHANGES() {
-        Assert.fail();
-    }
-
-    @Test
-    public void exec_last_view_REFLECTS_CHANGES() {
         Assert.fail();
     }
 
@@ -250,17 +221,72 @@ public class DatabaseConstraintsTest {
 
     @Test
     public void ON_DELETE_user_actor_DELETE_exec_pipeline() {
-        Assert.fail();
+        new DeleteConstraintTest() {
+
+            @Override
+            Object createReferencedInstance(EntityManager em) {
+                em.getTransaction().begin();
+                UserActor actor = new UserActor();
+                Pipeline pipeline = new Pipeline();
+                Schedule schedule = new Schedule();
+
+                schedule.setPipeline(pipeline);
+                schedule.setActor(actor);
+
+                em.persist(pipeline);
+                em.persist(actor);
+                em.persist(schedule);
+
+                em.getTransaction().commit();
+                return actor;
+            }
+
+        }.ensureReferencingInstanceDelete(Schedule.class, UserActor.class);
     }
 
     @Test
     public void ON_DELETE_user_actor_DELETE_exec_schedule() {
-        Assert.fail();
+        new DeleteConstraintTest() {
+
+            @Override
+            Object createReferencedInstance(EntityManager em) {
+                em.getTransaction().begin();
+                UserActor actor = new UserActor();
+                Pipeline pipeline = new Pipeline();
+                Schedule schedule = new Schedule();
+                schedule.setPipeline(pipeline);
+                schedule.setActor(actor);
+
+                em.persist(pipeline);
+                em.persist(actor);
+                em.persist(schedule);
+
+                em.getTransaction().commit();
+                return actor;
+            }
+
+        }.ensureReferencingInstanceDelete(Schedule.class, UserActor.class);
     }
 
     @Test
     public void ON_DELETE_user_actor_DELETE_ppl_model() {
-        Assert.fail();
+        new DeleteConstraintTest() {
+
+            @Override
+            Object createReferencedInstance(EntityManager em) {
+                em.getTransaction().begin();
+                Pipeline pipeline = new Pipeline();
+                UserActor actor = new UserActor();
+                pipeline.setActor(actor);
+
+                em.persist(pipeline);
+                em.persist(actor);
+                em.getTransaction().commit();
+
+                return actor;
+            }
+
+        }.ensureReferencingInstanceDelete(Pipeline.class, UserActor.class);
     }
 
     @Test
