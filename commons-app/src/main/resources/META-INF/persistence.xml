@@ -46,7 +46,7 @@
             <!-- Aditional performance monitor. -->
             <property name="eclipselink.session.customizer" value="cz.cuni.mff.xrg.odcs.commons.app.PerformanceSessionCustomizer"/>
 
-            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
 
