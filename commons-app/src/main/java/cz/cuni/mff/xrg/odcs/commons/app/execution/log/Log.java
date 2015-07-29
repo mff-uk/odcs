@@ -1,18 +1,12 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Represents log message loaded from database.
@@ -37,7 +31,8 @@ public class Log implements DataObject {
      * Primary key of message stored in database.
      */
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_logging")
+    @SequenceGenerator(name = "seq_logging", allocationSize = 1)
     private Long id;
 
     /**
