@@ -13,11 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-helpers</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dataunit-files</artifactId>
+			<artifactId>uv-dpu-api</artifactId>
 		</dependency>
 		<dependency> <!-- dataunit base project -->
 			<groupId>eu.unifiedviews</groupId>
