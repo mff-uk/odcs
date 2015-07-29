@@ -24,11 +24,6 @@
 			<artifactId>dataunit</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency> <!-- file dataunit project -->
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>dataunit-file</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
