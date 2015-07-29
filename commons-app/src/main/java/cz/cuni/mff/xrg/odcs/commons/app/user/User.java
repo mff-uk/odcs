@@ -17,15 +17,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.*;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-
 /**
  * Holds user data (his account).
  *
@@ -84,8 +75,10 @@ public class User implements UserDetails, DataObject {
     /**
      * User roles representing sets of privileges.
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usr_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usr_user_role",
+            joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
     private Set<RoleEntity> roles = new HashSet<>();
 
     /**
@@ -201,6 +194,8 @@ public class User implements UserDetails, DataObject {
      */
     public void addRole(RoleEntity role) {
         roles.add(role);
+
+        if (role != null) role.getUsers().add(this);
     }
 
     /**

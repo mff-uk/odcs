@@ -1,21 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 @Entity
 @Table(name = "role")
@@ -38,9 +27,20 @@ public class RoleEntity implements DataObject {
 	private String name;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_role_permission", joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "permission_id", referencedColumnName = "id") })
-
+	@JoinTable(name = "user_role_permission",
+			joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") },
+			inverseJoinColumns = { @JoinColumn(name = "permission_id", referencedColumnName = "id") })
 	private Set<Permission> permissions = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy="roles")
+	private Set<User> users = new HashSet<>();
+
+	@PreRemove
+	public void preRemove() {
+		for (User user : users) {
+			user.getRoles().remove(this);
+		}
+	}
 
 	public Long getId() {
 		return id;
@@ -71,4 +71,11 @@ public class RoleEntity implements DataObject {
 		return this.getName();
 	}
 
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
 }

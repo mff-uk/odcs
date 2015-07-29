@@ -17,10 +17,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.user.*;
 import org.apache.commons.io.input.CharSequenceInputStream;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
@@ -195,7 +192,31 @@ public class DatabaseConstraintsTest {
 
     @Test
     public void ON_DELETE_role_DELETE_usr_user_role() {
-        Assert.fail();
+
+        EntityManager em = factory.createEntityManager();
+
+        em.getTransaction().begin();
+        RoleEntity role = new RoleEntity();
+        User user = new User();
+        user.getRoles().add(role);
+
+        em.persist(user);
+        em.persist(role);
+        em.getTransaction().commit();
+
+        int usersBeforeRoleRemoval = getTableEntries(User.class, em).size();
+        int rolesBeforeRoleRemoval = getTableEntries(RoleEntity.class, em).size();
+
+        em.getTransaction().begin();
+        em.remove(role);
+        em.getTransaction().commit();
+
+        Assert.assertEquals(usersBeforeRoleRemoval, getTableEntries(User.class, em).size());
+        Assert.assertEquals(rolesBeforeRoleRemoval - 1, getTableEntries(RoleEntity.class, em).size());
+
+        em.getTransaction().begin();
+        em.refresh(user);
+        Assert.assertTrue(user.getRoles().isEmpty());
     }
 
     @Test
