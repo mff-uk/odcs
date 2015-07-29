@@ -26,7 +26,7 @@ public class RoleEntity implements DataObject {
 	@Column
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role_permission",
 			joinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") },
 			inverseJoinColumns = { @JoinColumn(name = "permission_id", referencedColumnName = "id") })
@@ -60,6 +60,13 @@ public class RoleEntity implements DataObject {
 
 	public Set<Permission> getPermissions() {
 		return permissions;
+	}
+
+	public void addPermission(Permission permission) {
+		if (permission != null) {
+			permissions.add(permission);
+			permission.getRoles().add(this);
+		}
 	}
 
 	public void setPermissions(Set<Permission> permissions) {

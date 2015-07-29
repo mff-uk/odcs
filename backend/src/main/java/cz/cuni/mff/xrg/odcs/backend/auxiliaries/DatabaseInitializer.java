@@ -9,6 +9,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Component
 public class DatabaseInitializer {
@@ -17,6 +19,8 @@ public class DatabaseInitializer {
 
     @Autowired
     private JpaTransactionManager jpaTransactionManager;
+
+    private Collection<Permission> permissions= new ArrayList<>();
 
     /**
      * Initialization with ..well.. initial data. This is done here because it should be independent from the used
@@ -131,7 +135,13 @@ public class DatabaseInitializer {
         em.persist(prop3);
         em.persist(adminRole);
         em.persist(userRole);
+
+        for (Permission permission : permissions) {
+            em.persist(permission);
+        }
+
         em.getTransaction().commit();
+
     }
 
     private void addNewPermissionToRoles(String permissionName, RoleEntity... roles) {
@@ -139,8 +149,10 @@ public class DatabaseInitializer {
         permission.setName(permissionName);
 
         for (RoleEntity role : roles) {
-            role.getPermissions().add(permission);
+            role.addPermission(permission);
         }
+
+        permissions.add(permission);
     }
 
     private boolean isInitialized() {

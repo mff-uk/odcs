@@ -273,13 +273,11 @@ public class User implements UserDetails, DataObject {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<Permission> permissions = new ArrayList<>();
+        Collection<Permission> permissions = new HashSet<>();
         for (RoleEntity role : getRoles()) {
             if (role.getPermissions() != null) {
                 for (Permission p : role.getPermissions()) {
-                    if (!permissions.contains(p)) {
-                        permissions.add(p);
-                    }
+                    permissions.add(p);
                 }
             }
         }
