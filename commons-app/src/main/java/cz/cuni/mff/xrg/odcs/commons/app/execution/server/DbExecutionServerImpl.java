@@ -14,7 +14,7 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implemen
     }
 
     @Override
-    public ExecutionServer getExecutionServerSingleActive() {
+    public ExecutionServer getExecutionServerSingleActiveForLock() {
         final String stringQuery = "SELECT * FROM backend_servers WHERE id = 1 FOR UPDATE";
         Object result = null;
         try {
@@ -41,6 +41,11 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implemen
     public List<ExecutionServer> getAllExecutionServers() {
         final String queryStr = "SELECT e FROM ExecutionServer e";
         return executeList(queryStr);
+    }
+
+    @Override
+    public ExecutionServer getExecutionServerSingleActive() {
+        return getInstance(1L);
     }
 
 }

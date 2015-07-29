@@ -7,6 +7,11 @@ public interface ExecutionFacade extends Facade {
     /**
      * @return
      */
+    ExecutionServer getExecutionServerSingleActiveForLock();
+
+    /**
+     * @return
+     */
     ExecutionServer getExecutionServerSingleActive();
 
     /**
@@ -27,5 +32,7 @@ public interface ExecutionFacade extends Facade {
      * @return
      */
     ExecutionServer getExecutionServer(String backendId);
+
+    boolean checkAnyBackendActive();
 
 }

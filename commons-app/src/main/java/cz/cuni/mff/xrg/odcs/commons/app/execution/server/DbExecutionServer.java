@@ -9,10 +9,12 @@ public interface DbExecutionServer extends DbAccess<ExecutionServer> {
     /**
      * @return
      */
-    ExecutionServer getExecutionServerSingleActive();
+    ExecutionServer getExecutionServerSingleActiveForLock();
 
     ExecutionServer getExecutionServer(String backendId);
 
     List<ExecutionServer> getAllExecutionServers();
+
+    ExecutionServer getExecutionServerSingleActive();
 
 }

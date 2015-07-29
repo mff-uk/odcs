@@ -135,11 +135,11 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     /**
      * Check database for new task (PipelineExecutions to run). Can run
-     * concurrently. Check database every 20 seconds.
+     * concurrently. Check database every 2 seconds.
      */
 
     @Async
-    @Scheduled(fixedDelay = 20000)
+    @Scheduled(fixedDelay = 2000)
     @Transactional
     protected void checkJobs() {
         synchronized (LockRunningJobs) {
