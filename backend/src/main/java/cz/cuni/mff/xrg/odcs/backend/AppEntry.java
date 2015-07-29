@@ -1,18 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend;
 
-import java.io.File;
-import java.util.Locale;
-
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
-import org.h2.store.Data;
-import org.h2.store.fs.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -21,6 +8,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
+import cz.cuni.mff.xrg.odcs.backend.auxiliaries.DatabaseInitializer;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
@@ -28,38 +16,38 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
+import org.h2.store.fs.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
 
 /**
  * Backend entry point.
  * 
  * @author Petyr
  */
+@Component
 public class AppEntry {
 
-    /**
-     * Path to the spring configuration file.
-     */
     private final static String SPRING_CONFIG_FILE = "backend-context.xml";
-
-    /**
-     * Logger class.
-     */
     private static final Logger LOG = LoggerFactory.getLogger(AppEntry.class);
 
-    /**
-     * Spring context.
-     */
-    private AbstractApplicationContext context = null;
+    @Autowired
+    private AppConfig appConfig;
 
-    /**
-     * Initialise spring and load configuration.
-     */
-    private void initSpring() {
-        // load spring
-        context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
-        context.registerShutdownHook();
-    }
+    @Autowired
+    private ModuleFacade moduleFacade;
+
+    @Autowired
+    private SqlAppender sqlAppender;
+
+    @Autowired
+    private DatabaseInitializer databaseInitializer;
 
     private RollingFileAppender createAppender(LoggerContext loggerContext,
             String logDirectory, String logFile, int logHistory) {
@@ -105,7 +93,7 @@ public class AppEntry {
         return rfAppender;
     }
 
-    private void initLogbackAppender(AppConfig appConfig) {
+    private void initLogbackAppender() {
         // default values
         String logDirectory = "";
         int logHistory = 14;
@@ -171,7 +159,6 @@ public class AppEntry {
 
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-        SqlAppender sqlAppender = context.getBean(SqlAppender.class);
         sqlAppender.setContext(loggerContext);
 
         MdcExecutionLevelFilter mdcLevelFilter = new MdcExecutionLevelFilter();
@@ -189,62 +176,52 @@ public class AppEntry {
         logbackLogger.addAppender(sqlAppender);
     }
 
-    /**
-     * Main execution method.
-     * 
-     * @param args
-     */
-    private void run(String[] args) {
-        // initialise
-        initSpring();
+    private void run() {
+        // the log back is not initialised here ..
+        // we add file appender
+        initLogbackAppender();
 
-        try {
+        // the sql appender cooperate with spring, so we need spring first
+        initLogbackSqlAppender();
 
-            // the log back is not initialised here ..
-            // we add file appender
-            initLogbackAppender(context.getBean(AppConfig.class));
+        // Initialize DPUs by preloading all thier JAR bundles
+        // TODO use lazyloading instead of preload?
+        moduleFacade.preLoadAllDPUs();
 
-            // the sql appender cooperate with spring, so we need spring first
-            initLogbackSqlAppender();
+        // try to get application-lock
+        // we construct lock key based on port
+        final StringBuilder lockKey = new StringBuilder();
+        lockKey.append("INTLIB_");
+        lockKey.append(appConfig.getInteger(ConfigProperty.BACKEND_PORT));
+        if (!AppLock.setLock(lockKey.toString())) {
+            // another application is already running
+            LOG.info("Another instance of UnifiedViews is probably running.");
+            return;
+        }
 
-            // Initialize DPUs by preloading all thier JAR bundles
-            // TODO use lazyloading instead of preload?
-            ModuleFacade modules = context.getBean(ModuleFacade.class);
-            modules.preLoadAllDPUs();
+        databaseInitializer.initialize();
 
-            // try to get application-lock
-            // we construct lock key based on port
-            final StringBuilder lockKey = new StringBuilder();
-            lockKey.append("INTLIB_");
-            lockKey.append(context.getBean(AppConfig.class).getInteger(ConfigProperty.BACKEND_PORT));
-            if (!AppLock.setLock(lockKey.toString())) {
-                // another application is already running
-                LOG.info("Another instance of UnifiedViews is probably running.");
-                context.close();
-                return;
+        // print some information ..
+        LOG.info("Running ...");
+
+        // infinite loop
+        while (true) {
+            try {
+                Thread.sleep(1000 * 60);
+            } catch (InterruptedException ex) {
             }
-
-            // print some information ..
-            LOG.info("Running ...");
-
-            // infinite loop
-            while (true) {
-                try {
-                    Thread.sleep(1000 * 60);
-                } catch (InterruptedException ex) {
-                }
-            }
-        } catch (Exception e) {
-            context.close();
-            LOG.error("Failed to initialize UnifiedViews backend.", e);
         }
     }
 
     public static void main(String[] args) {
-        AppEntry app = new AppEntry();
-        app.run(args);
+        AbstractApplicationContext context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
+        context.registerShutdownHook();
+
+        AppEntry appEntry = context.getBean(AppEntry.class);
+        appEntry.run();
 
         LOG.info("Closing application ...");
+        context.close();
     }
 
 }

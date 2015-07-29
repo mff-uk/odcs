@@ -34,7 +34,9 @@ public class DatabaseInitializer {
         EmailAddress userEmailAddress = new EmailAddress("user@example.com");
 
         RoleEntity adminRole = new RoleEntity();
+        adminRole.setName("Administrator");
         RoleEntity userRole = new RoleEntity();
+        userRole.setName("User");
 
         User admin = new User();
         admin.setFullName("John Admin");
@@ -42,7 +44,7 @@ public class DatabaseInitializer {
         admin.setTableRows(20);
         admin.setUsername("admin");
         admin.setEmail(adminEmailAddress);
-        admin.getRoles().add(adminRole);
+        admin.addRole(adminRole);
 
         User user = new User();
         user.setFullName("John User");
@@ -50,7 +52,7 @@ public class DatabaseInitializer {
         user.setTableRows(20);
         user.setUsername("user");
         user.setEmail(userEmailAddress);
-        user.getRoles().add(userRole);
+        user.addRole(userRole);
 
         UserNotificationRecord userNotificationRecordAdmin = new UserNotificationRecord();
         userNotificationRecordAdmin.setUser(admin);
@@ -74,6 +76,48 @@ public class DatabaseInitializer {
         prop3.setName("locale");
         prop3.setValue("en");
 
+        addNewPermissionToRoles("Administrator", adminRole);
+        addNewPermissionToRoles("pipeline.delete", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.edit", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.definePipelineDependencies", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.export", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.exportScheduleRules", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.import", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.importScheduleRules", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.importUserData", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.schedule", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.read", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.runDebug", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.exportDpuData", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.exportDpuJars", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.setVisibility", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.setVisibilityPublicRw", adminRole, userRole);
+        addNewPermissionToRoles("pipelineExecution.delete", adminRole, userRole);
+        addNewPermissionToRoles("pipelineExecution.stop", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.run", adminRole, userRole);
+        addNewPermissionToRoles("pipelineExecution.read", adminRole, userRole);
+        addNewPermissionToRoles("scheduleRule.create", adminRole, userRole);
+        addNewPermissionToRoles("scheduleRule.delete", adminRole, userRole);
+        addNewPermissionToRoles("scheduleRule.edit", adminRole, userRole);
+        addNewPermissionToRoles("scheduleRule.read", adminRole, userRole);
+        addNewPermissionToRoles("scheduleRule.setPriority", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.create", adminRole);
+        addNewPermissionToRoles("dpuTemplate.createFromInstance", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.setVisibility", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.delete", adminRole);
+        addNewPermissionToRoles("dpuTemplate.edit", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.export", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.copy", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.read", adminRole, userRole);
+        addNewPermissionToRoles("dpuTemplate.showScreen", adminRole, userRole);
+        addNewPermissionToRoles("user.management", adminRole);
+        addNewPermissionToRoles("pipeline.create", adminRole, userRole);
+        addNewPermissionToRoles("pipeline.copy", adminRole, userRole);
+        addNewPermissionToRoles("runtimeProperties.edit", adminRole);
+        addNewPermissionToRoles("userNotificationSettings.editEmailGlobal", adminRole, userRole);
+        addNewPermissionToRoles("userNotificationSettings.editNotificationFrequency", adminRole, userRole);
+        addNewPermissionToRoles("userNotificationSettings.createPipelineExecutionSettings", adminRole, userRole);
+
         EntityManager em = jpaTransactionManager.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         em.persist(adminEmailAddress);
@@ -88,6 +132,15 @@ public class DatabaseInitializer {
         em.persist(adminRole);
         em.persist(userRole);
         em.getTransaction().commit();
+    }
+
+    private void addNewPermissionToRoles(String permissionName, RoleEntity... roles) {
+        Permission permission = new Permission();
+        permission.setName(permissionName);
+
+        for (RoleEntity role : roles) {
+            role.getPermissions().add(permission);
+        }
     }
 
     private boolean isInitialized() {
