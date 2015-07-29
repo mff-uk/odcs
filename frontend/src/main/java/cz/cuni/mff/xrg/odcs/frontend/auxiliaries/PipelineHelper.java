@@ -84,7 +84,7 @@ public class PipelineHelper {
         // run immediately - set higher priority
         pipelineExec.setOrderNumber(orderPosition);
         this.pipelineFacade.save(pipelineExec);
-        if (this.executionFacade.checkAnyBackendActive()) {
+        if (!this.executionFacade.checkAnyBackendActive()) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineHelper.backend.offline.dialog.name"),
                     Messages.getString("PipelineHelper.backend.offline.dialog.message"),
