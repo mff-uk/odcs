@@ -9,6 +9,7 @@ import org.openrdf.query.TupleQueryResult;
  * 
  * @author tomasknap
  */
+@Deprecated
 public interface OrderTupleQueryResult extends TupleQueryResult {
 
     /**

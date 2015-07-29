@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.rdf.help.TripleProblem;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public interface DataValidator {
 
     /**

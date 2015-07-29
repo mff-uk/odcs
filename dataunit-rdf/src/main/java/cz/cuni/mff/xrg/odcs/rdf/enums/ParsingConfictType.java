@@ -6,6 +6,7 @@ package cz.cuni.mff.xrg.odcs.rdf.enums;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public enum ParsingConfictType {
 
     /**

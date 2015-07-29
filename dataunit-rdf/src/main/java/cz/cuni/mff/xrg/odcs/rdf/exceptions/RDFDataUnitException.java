@@ -7,6 +7,7 @@ import eu.unifiedviews.dataunit.DataUnitException;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class RDFDataUnitException extends DataUnitException {
 
     /**

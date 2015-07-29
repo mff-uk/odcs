@@ -8,6 +8,7 @@ import eu.unifiedviews.dataunit.DataUnitException;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class InvalidQueryException extends DataUnitException {
 
     /**

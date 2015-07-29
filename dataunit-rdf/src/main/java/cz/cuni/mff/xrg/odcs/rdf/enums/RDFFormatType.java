@@ -14,6 +14,7 @@ import org.openrdf.rio.RDFFormat;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public enum RDFFormatType {
 
     /**
