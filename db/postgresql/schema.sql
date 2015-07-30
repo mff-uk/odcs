@@ -191,6 +191,7 @@ CREATE INDEX "ix_EXEC_PIPELINE_context_id" ON "exec_pipeline" ("context_id");
 CREATE INDEX "ix_EXEC_PIPELINE_schedule_id" ON "exec_pipeline" ("schedule_id");
 CREATE INDEX "ix_EXEC_PIPELINE_owner_id" ON "exec_pipeline" ("owner_id");
 CREATE INDEX "ix_EXEC_PIPELINE_user_actor_id" ON "exec_pipeline" ("user_actor_id");
+CREATE INDEX "ix_EXEC_PIPELINE_backend_id" ON "exec_pipeline" ("backend_id");
 
 CREATE SEQUENCE "seq_exec_schedule" START 1;
 CREATE TABLE "exec_schedule"
