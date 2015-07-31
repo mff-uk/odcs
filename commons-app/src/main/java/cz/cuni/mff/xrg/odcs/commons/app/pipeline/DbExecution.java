@@ -35,6 +35,8 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
 
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
 
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID);
+
     public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID);
 
     /**
@@ -100,5 +102,9 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      * @return true if there is at least one execution with selected statuses, false otherwise
      */
     boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
+
+    int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit);
+
+    int allocateQueuedExecutionsForBackendIgnorePriority(String backendID);
 
 }

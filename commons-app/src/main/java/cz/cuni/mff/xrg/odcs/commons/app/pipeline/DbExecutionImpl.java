@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
  * @author Petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
-class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecution {
+class DbExecutionImpl extends DbAccessBase<PipelineExecution>implements DbExecution {
 
     protected DbExecutionImpl() {
         super(PipelineExecution.class);
@@ -56,6 +56,18 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
         query.setParameter("limited_priority", ScheduledJobsPriority.IGNORE.getValue());
         query.setParameter("status", status);
+        return executeList(query);
+    }
+
+    @Override
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID) {
+        final String stringQuery = "SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status and e.backendId = :backendId and e.orderNumber >= :limited_priority "
+                + "order by e.orderNumber ASC , e.id ASC";
+        TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
+        query.setParameter("limited_priority", ScheduledJobsPriority.IGNORE.getValue());
+        query.setParameter("status", status);
+        query.setParameter("backendId", backendID);
         return executeList(query);
     }
 
@@ -146,5 +158,24 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         query.setParameter("statuses", statuses);
         Long count = (Long) query.getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
+        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
+                + " WHERE id IN (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d "
+                + " AND e.order_number > %d"
+                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE)";
+        String query = String.format(queryStr, backendID, 0, ScheduledJobsPriority.IGNORE.getValue(), limit);
+        return this.em.createNativeQuery(query).executeUpdate();
+    }
+
+    @Override
+    public int allocateQueuedExecutionsForBackendIgnorePriority(String backendID) {
+        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
+                + " WHERE id IN (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + " AND e.order_number = %d FOR UPDATE)";
+        String query = String.format(queryStr, backendID, 0, ScheduledJobsPriority.IGNORE.getValue());
+        return this.em.createNativeQuery(query).executeUpdate();
     }
 }

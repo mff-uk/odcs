@@ -337,4 +337,8 @@ public interface PipelineFacade extends Facade {
      */
     boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
+    int allocateQueuedExecutionsForBackend(String backendID, int limit);
+
+    List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID);
+
 }

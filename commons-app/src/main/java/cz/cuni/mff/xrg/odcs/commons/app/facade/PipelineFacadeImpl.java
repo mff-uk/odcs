@@ -346,8 +346,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         Date lastChange = dbPipeline.getLastChange();
         Date myLastChange = pipeline.getLastChange();
-        return lastChange == null ? true :
-                myLastChange == null ? false : !lastChange.after(myLastChange);
+        return lastChange == null ? true : myLastChange == null ? false : !lastChange.after(myLastChange);
     }
 
     /* ******************** Methods for managing PipelineExecutions ********* */
@@ -398,6 +397,8 @@ class PipelineFacadeImpl implements PipelineFacade {
         return executionDao.getAll(status);
     }
 
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
     public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID) {
         return this.executionDao.getAll(status, backendID);
     }
@@ -406,6 +407,12 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
+    }
+
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
+    public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAllByPriorityLimited(status, backendID);
     }
 
     /**
@@ -633,5 +640,15 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public List<Pipeline> getAllPipelines(String externalUserId) {
         return this.pipelineDao.getPipelinesForUser(externalUserId);
+    }
+
+    @Override
+    @Transactional
+    public int allocateQueuedExecutionsForBackend(String backendID, int limit) {
+        int allocated = 0;
+        allocated += this.executionDao.allocateQueuedExecutionsForBackendByPriority(backendID, limit);
+        allocated += this.executionDao.allocateQueuedExecutionsForBackendIgnorePriority(backendID);
+
+        return allocated;
     }
 }

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -33,11 +34,6 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
 
     private static final int BACKEND_ALIVE_DEFAULT_LIMIT = 20;
 
-    @Override
-    public ExecutionServer getExecutionServerSingleActiveForLock() {
-        return this.dbExecutionServer.getExecutionServerSingleActiveForLock();
-    }
-
     @PostConstruct
     public void init() {
         try {
@@ -53,71 +49,54 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
         }
     }
 
-    @Transactional
-    @Override
-    public boolean obtainLockAndUpdateTimestamp(String backendId) {
-        boolean hasLock = false;
-        ExecutionServer server = getExecutionServerSingleActiveForLock();
-        if (server != null) {
-            LOG.debug("Backend server entry already in database, going to check lock");
-            if (!backendId.equals(server.getBackendId())) { // this server does not own the lock
-                LOG.debug("This backend ({}) does not own the lock, going to check timestamp", backendId);
-                Long limitDateTime = System.currentTimeMillis() - (this.backendTakoverLimit * 1000);
-                Date limitDate = new Date(limitDateTime);
-                if (server.getLastUpdate().before(limitDate)) { // owning server has not notified itself longer than a limit, taking over the lock
-                    LOG.info("Lock owning backend ({}) has not notified itself longer than a limit, taking over the lock", server.getBackendId());
-                    server.setBackendId(backendId);
-                    server.setLastUpdate(new Date());
-                    hasLock = true;
-                    this.dbExecutionServer.save(server);
-                }
-            } else { // this server already owns the lock, just update timestamp 
-                LOG.debug("This backend ({}) already owns the lock, going to update timestamp", backendId);
-                server.setLastUpdate(new Date());
-                hasLock = true;
-                this.dbExecutionServer.save(server);
-            }
-        } else { // no backend has run yet
-            LOG.info("No backend has ever run with this database, acquiring lock for {}", backendId);
-            server = new ExecutionServer();
-            server.setBackendId(backendId);
-            server.setLastUpdate(new Date());
-            server.setId(1L);
-            hasLock = true;
-            this.dbExecutionServer.save(server);
-        }
-
-        return hasLock;
-    }
-
     @Override
     public ExecutionServer getExecutionServer(String backendId) {
         return this.dbExecutionServer.getExecutionServer(backendId);
     }
 
     @Override
-    public ExecutionServer getExecutionServerSingleActive() {
-        return this.dbExecutionServer.getExecutionServerSingleActive();
-    }
-
-    @Override
     public boolean checkAnyBackendActive() {
-        boolean alive = true;
-        ExecutionServer backend = this.getExecutionServerSingleActive();
-        if (backend == null) {
+        boolean alive = false;
+        List<ExecutionServer> backends = getAllExecutionServers();
+
+        if (backends == null || backends.isEmpty()) {
             LOG.debug("No backend has ever run with this system");
             return false;
         }
 
         Long limitDateTime = System.currentTimeMillis() - (this.backendAliveLimit * 1000);
         Date limitDate = new Date(limitDateTime);
-        if (backend.getLastUpdate().before(limitDate)) {
-            LOG.debug("No backend has been active for {}s. Last active backend was {} at {}",
-                    this.backendAliveLimit, backend.getBackendId(), backend.getLastUpdate());
-            alive = false;
+
+        for (ExecutionServer backend : backends) {
+            if (backend.getLastUpdate().after(limitDate)) {
+                alive = true;
+            }
+        }
+        if (!alive) {
+            LOG.debug("No backend has been active for at least {}s.", this.backendAliveLimit);
         }
 
         return alive;
+    }
+
+    @Override
+    public List<ExecutionServer> getAllExecutionServers() {
+        return this.dbExecutionServer.getAllExecutionServers();
+    }
+
+    @Override
+    @Transactional
+    public void updateBackendTimestamp(String backendId) {
+        ExecutionServer backend = getExecutionServer(backendId);
+        if (backend != null) {
+            backend.setLastUpdate(new Date());
+        } else {
+            backend = new ExecutionServer();
+            backend.setBackendId(backendId);
+            backend.setLastUpdate(new Date());
+        }
+
+        this.dbExecutionServer.save(backend);
     }
 
 }

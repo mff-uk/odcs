@@ -65,4 +65,5 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @return List of pipelines
      */
     public List<Pipeline> getPipelinesForUser(String externalUserId);
+
 }

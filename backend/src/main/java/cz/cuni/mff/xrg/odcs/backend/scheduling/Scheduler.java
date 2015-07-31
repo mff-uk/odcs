@@ -86,11 +86,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
     protected synchronized void timeBasedCheck() {
         LOG.trace("onTimeCheck started");
         // check DB for pipelines based on time scheduling
-        boolean lockOwned = this.executionFacade.obtainLockAndUpdateTimestamp(this.backendID);
-        if (!lockOwned) {
-            LOG.info("Database backend locked not obtained, going to sleep before trying again");
-            return;
-        }
+
         Date now = new Date();
         // get all pipelines that are time based
         LOG.debug("Going to check all time based not queued schedules");

@@ -18,12 +18,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -140,7 +138,6 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     @Async
     @Scheduled(fixedDelay = 2000)
-    @Transactional
     protected void checkJobs() {
         synchronized (LockRunningJobs) {
             LOG.debug(">>> Entering checkJobs()");
@@ -150,32 +147,24 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
                 startUp();
                 return;
             }
-            boolean lockOwned = this.executionFacade.obtainLockAndUpdateTimestamp(this.backendID);
-            if (!lockOwned) {
-                LOG.info("Database backend lock not obtained, going to sleep before trying again");
-                return;
-            }
+
+            // Update backend activity timestamp in DB
+            this.executionFacade.updateBackendTimestamp(this.backendID);
 
             Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
             LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
 
-            LOG.debug("Going to find all QUEUED executions");
-            List<PipelineExecution> jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
+            int nonIgnorePriorityAllocatedLimit = limitOfScheduledPipelines - this.numberOfRunningJobs;
+            int allocated = this.pipelineFacade.allocateQueuedExecutionsForBackend(this.backendID, nonIgnorePriorityAllocatedLimit);
+            LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
+
+            LOG.debug("Going to find all allocated QUEUED executions");
+            List<PipelineExecution> jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED, this.backendID);
             LOG.debug("Found {} executions planned for execution", jobs.size());
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
-                if (job.getOrderNumber() == ScheduledJobsPriority.IGNORE.getValue()) {
-                    run(job);
-                    numberOfRunningJobs++;
-                    continue;
-                }
-
-                if (numberOfRunningJobs < limitOfScheduledPipelines) {
-                    run(job);
-                    numberOfRunningJobs++;
-                } else {
-                    break;
-                }
+                run(job);
+                this.numberOfRunningJobs++;
             }
 
             LOG.debug("<<< Leaving checkJobs: {}");

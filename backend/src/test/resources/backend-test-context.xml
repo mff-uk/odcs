@@ -29,6 +29,18 @@
         </property>
     </bean>
     
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="org.h2.Driver"/>
+        <property name="url" value="jdbc:h2:mem:test;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MVCC=FALSE"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
+    </bean>
+
+	<jdbc:initialize-database ignore-failures="DROPS">
+    	<jdbc:script location="classpath:db/schema.sql" />
+    	<jdbc:script location="classpath:db/data.sql" />
+ 	</jdbc:initialize-database>
+    
     <!-- context, prototype -->
     <bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
           scope="prototype" lazy-init="true"/>
@@ -48,11 +60,6 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="emf"/>
     </bean>
-
-    <jdbc:embedded-database id="dataSource" type="H2">
-        <jdbc:script location="classpath:db/schema.sql"/>
-        <jdbc:script location="classpath:db/data.sql"/>
-    </jdbc:embedded-database>
 
     <!-- engine itself, take care about executing of PipelineExecution -->
     <!--<bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine"/>-->

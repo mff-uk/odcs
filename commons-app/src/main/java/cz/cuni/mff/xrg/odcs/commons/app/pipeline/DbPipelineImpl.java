@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
  * @author Martin Virag
  */
 @Transactional(propagation = Propagation.MANDATORY)
-class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
+class DbPipelineImpl extends DbAccessBase<Pipeline>implements DbPipeline {
 
     protected DbPipelineImpl() {
         super(Pipeline.class);
