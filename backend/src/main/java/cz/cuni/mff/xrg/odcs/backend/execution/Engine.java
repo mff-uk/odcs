@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -153,9 +154,13 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
             Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
             LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
+            LOG.debug("Number of running jobs: {}", this.numberOfRunningJobs);
 
             int nonIgnorePriorityAllocatedLimit = limitOfScheduledPipelines - this.numberOfRunningJobs;
-            int allocated = this.pipelineFacade.allocateQueuedExecutionsForBackend(this.backendID, nonIgnorePriorityAllocatedLimit);
+            if (nonIgnorePriorityAllocatedLimit < 0) {
+                nonIgnorePriorityAllocatedLimit = 0;
+            }
+            int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, nonIgnorePriorityAllocatedLimit);
             LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
 
             LOG.debug("Going to find all allocated QUEUED executions");
@@ -163,8 +168,10 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             LOG.debug("Found {} executions planned for execution", jobs.size());
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
-                run(job);
-                this.numberOfRunningJobs++;
+                if (this.numberOfRunningJobs < limitOfScheduledPipelines || ScheduledJobsPriority.IGNORE.getValue() == job.getOrderNumber()) {
+                    run(job);
+                    this.numberOfRunningJobs++;
+                }
             }
 
             LOG.debug("<<< Leaving checkJobs: {}");

@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
  */
 @Transactional(propagation = Propagation.MANDATORY)
 class DbExecutionImpl extends DbAccessBase<PipelineExecution>implements DbExecution {
+
+    private static Logger LOG = LoggerFactory.getLogger(DbExecutionImpl.class);
 
     protected DbExecutionImpl() {
         super(PipelineExecution.class);
@@ -160,22 +164,4 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution>implements DbExecut
         return count > 0;
     }
 
-    @Override
-    public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
-        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
-                + " WHERE id IN (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d "
-                + " AND e.order_number > %d"
-                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE)";
-        String query = String.format(queryStr, backendID, 0, ScheduledJobsPriority.IGNORE.getValue(), limit);
-        return this.em.createNativeQuery(query).executeUpdate();
-    }
-
-    @Override
-    public int allocateQueuedExecutionsForBackendIgnorePriority(String backendID) {
-        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
-                + " WHERE id IN (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
-                + " AND e.order_number = %d FOR UPDATE)";
-        String query = String.format(queryStr, backendID, 0, ScheduledJobsPriority.IGNORE.getValue());
-        return this.em.createNativeQuery(query).executeUpdate();
-    }
 }

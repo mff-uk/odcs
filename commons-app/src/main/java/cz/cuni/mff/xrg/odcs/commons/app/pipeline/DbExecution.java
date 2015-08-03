@@ -103,8 +103,4 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
-    int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit);
-
-    int allocateQueuedExecutionsForBackendIgnorePriority(String backendID);
-
 }

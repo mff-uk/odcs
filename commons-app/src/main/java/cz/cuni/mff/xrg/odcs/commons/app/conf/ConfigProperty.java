@@ -16,7 +16,6 @@ public enum ConfigProperty {
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
-    BACKEND_TAKEOVER_TIME_LIMIT("backend.takeover.time.limit"),
     BACKEND_ALIVE_LIMIT("backend.alive.limit"),
     BACKEND_ID("backend.id"),
     BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),

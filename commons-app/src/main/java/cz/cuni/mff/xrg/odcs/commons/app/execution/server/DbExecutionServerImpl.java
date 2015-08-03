@@ -2,31 +2,21 @@ package cz.cuni.mff.xrg.odcs.commons.app.execution.server;
 
 import java.util.List;
 
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 
 public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implements DbExecutionServer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DbExecutionServerImpl.class);
+
     public DbExecutionServerImpl() {
         super(ExecutionServer.class);
-    }
-
-    @Override
-    public ExecutionServer getExecutionServerSingleActiveForLock() {
-        final String stringQuery = "SELECT * FROM backend_servers WHERE id = 1 FOR UPDATE";
-        Object result = null;
-        try {
-            result = this.em.createNativeQuery(stringQuery, ExecutionServer.class).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-        if (result != null) {
-            return (ExecutionServer) result;
-        }
-
-        return null;
     }
 
     @Override
@@ -44,8 +34,23 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implemen
     }
 
     @Override
-    public ExecutionServer getExecutionServerSingleActive() {
-        return getInstance(1L);
+    @Transactional
+    public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
+        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
+                + " WHERE id IN ((SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + " AND e.order_number > %d"
+                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE) UNION"
+                + " (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + " AND e.order_number = %d FOR UPDATE))";
+        String query = String.format(queryStr,
+                backendID,
+                0, // = QUEUED
+                ScheduledJobsPriority.IGNORE.getValue(),
+                limit,
+                0, // = QUEUED
+                ScheduledJobsPriority.IGNORE.getValue());
+        LOG.debug(">>> allocate query: {}", query);
+        return this.em.createNativeQuery(query).executeUpdate();
     }
 
 }

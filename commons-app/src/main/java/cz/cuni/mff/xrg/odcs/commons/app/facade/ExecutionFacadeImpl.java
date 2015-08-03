@@ -26,22 +26,12 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
     @Autowired
     private AppConfig appConfig;
 
-    private int backendTakoverLimit;
-
     private int backendAliveLimit;
-
-    private static final int BACKEND_TAKOVER_DEFAULT_LIMIT = 60;
 
     private static final int BACKEND_ALIVE_DEFAULT_LIMIT = 20;
 
     @PostConstruct
     public void init() {
-        try {
-            this.backendTakoverLimit = this.appConfig.getInteger(ConfigProperty.BACKEND_TAKEOVER_TIME_LIMIT);
-        } catch (MissingConfigPropertyException e) {
-            this.backendTakoverLimit = BACKEND_TAKOVER_DEFAULT_LIMIT;
-        }
-
         try {
             this.backendAliveLimit = this.appConfig.getInteger(ConfigProperty.BACKEND_ALIVE_LIMIT);
         } catch (MissingConfigPropertyException e) {
@@ -97,6 +87,11 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
         }
 
         this.dbExecutionServer.save(backend);
+    }
+
+    @Override
+    public int allocateQueuedExecutionsForBackend(String backendID, int limit) {
+        return this.dbExecutionServer.allocateQueuedExecutionsForBackendByPriority(backendID, limit);
     }
 
 }

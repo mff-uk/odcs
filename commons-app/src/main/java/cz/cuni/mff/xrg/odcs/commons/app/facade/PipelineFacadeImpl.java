@@ -642,13 +642,4 @@ class PipelineFacadeImpl implements PipelineFacade {
         return this.pipelineDao.getPipelinesForUser(externalUserId);
     }
 
-    @Override
-    @Transactional
-    public int allocateQueuedExecutionsForBackend(String backendID, int limit) {
-        int allocated = 0;
-        allocated += this.executionDao.allocateQueuedExecutionsForBackendByPriority(backendID, limit);
-        allocated += this.executionDao.allocateQueuedExecutionsForBackendIgnorePriority(backendID);
-
-        return allocated;
-    }
 }

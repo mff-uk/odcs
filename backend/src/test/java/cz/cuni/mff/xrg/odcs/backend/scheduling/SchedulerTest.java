@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -22,6 +23,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 
@@ -150,7 +153,7 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 3);
+        assertEquals(3, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
@@ -166,7 +169,7 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 4);
+        assertEquals(4, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
@@ -198,7 +201,7 @@ public class SchedulerTest {
         engine.setExecutionFacade(this.executionFacade);
 
         engine.doCheck();
-        assertEquals(engine.historyOfExecution.size(), 2);
+        assertEquals(2, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule3.getId());
@@ -212,7 +215,7 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 3);
+        assertEquals(3, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule2.getId());
@@ -227,7 +230,7 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 4);
+        assertEquals(4, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
