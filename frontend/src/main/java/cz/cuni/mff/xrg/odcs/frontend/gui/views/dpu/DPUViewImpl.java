@@ -488,6 +488,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                if (!configLoaded) {
+                    configureDPUDialog();
+                    configLoaded = true;
+                }
+                
                 if (saveDPUTemplate()) {
                     //refresh data in dialog and dpu tree
                     dpuTree.refresh();
