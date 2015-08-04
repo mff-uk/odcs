@@ -48,6 +48,14 @@ public interface ScheduleFacade extends Facade {
     List<Schedule> getAllTimeBasedNotQueuedRunning();
 
     /**
+     * Fetches all {@link Schedule}s which are activated in certain time
+     * and the execution for the scheduled pipeline isn't already running.
+     * 
+     * @return list of all schedules planned to launch on time
+     */
+    List<Schedule> getAllTimeBasedNotQueuedRunningForCluster();
+
+    /**
      * Find Schedule in database by ID and return it.
      * 
      * @param id
@@ -92,6 +100,12 @@ public interface ScheduleFacade extends Facade {
      * @param backendID
      */
     void executeFollowers(String backendID);
+
+    /**
+     * Checks all schedule that run after some execution and run them if all the pre-runs
+     * have been executed
+     */
+    void executeFollowers();
 
     /**
      * Executes all pipelines scheduled to follow given pipeline.

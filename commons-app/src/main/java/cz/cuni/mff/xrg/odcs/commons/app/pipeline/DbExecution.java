@@ -33,10 +33,35 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 
+    /**
+     * Get all executions with given status ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @return List with priority ordered executions
+     */
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
 
+    /**
+     * Get all executions with given status and backend ID ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID);
 
+    /**
+     * Get all executions with given status and backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID);
 
     /**

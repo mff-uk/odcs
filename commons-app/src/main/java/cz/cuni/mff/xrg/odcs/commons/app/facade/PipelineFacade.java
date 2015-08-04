@@ -337,6 +337,15 @@ public interface PipelineFacade extends Facade {
      */
     boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
+    /**
+     * Get all executions with given status and executed by backend with given backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            backend ID
+     * @return List of priority ordered executions
+     */
     List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID);
 
 }

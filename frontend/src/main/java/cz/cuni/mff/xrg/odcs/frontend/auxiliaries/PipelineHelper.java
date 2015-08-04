@@ -2,9 +2,12 @@ package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import java.util.Arrays;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.remoting.RemoteAccessException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Notification;
@@ -12,7 +15,10 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
+import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
@@ -40,6 +46,14 @@ public class PipelineHelper {
 
     @Autowired
     private ExecutionFacade executionFacade;
+
+    @Autowired
+    private AppConfig appConfig;
+
+    @Autowired
+    private CheckDatabaseService checkDatabaseService;
+
+    private boolean backendClusterMode = false;
 
     /**
      * Sets up parameters of pipeline execution and runs the pipeline.
@@ -84,7 +98,7 @@ public class PipelineHelper {
         // run immediately - set higher priority
         pipelineExec.setOrderNumber(orderPosition);
         this.pipelineFacade.save(pipelineExec);
-        if (!this.executionFacade.checkAnyBackendActive()) {
+        if (!checkBackendActive()) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineHelper.backend.offline.dialog.name"),
                     Messages.getString("PipelineHelper.backend.offline.dialog.message"),
@@ -149,6 +163,29 @@ public class PipelineHelper {
             orderNumber = (epoch / priority);
         }
         return orderNumber;
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            this.backendClusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
+        } catch (MissingConfigPropertyException e) {
+            // ignore
+        }
+    }
+
+    private boolean checkBackendActive() {
+        boolean backendActive = true;
+        if (this.backendClusterMode) {
+            backendActive = this.executionFacade.checkAnyBackendActive();
+        } else {
+            try {
+                this.checkDatabaseService.checkDatabase();
+            } catch (RemoteAccessException e) {
+                backendActive = false;
+            }
+        }
+        return backendActive;
     }
 
 }
