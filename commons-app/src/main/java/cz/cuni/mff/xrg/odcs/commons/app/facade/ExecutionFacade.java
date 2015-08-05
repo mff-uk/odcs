@@ -57,4 +57,6 @@ public interface ExecutionFacade extends Facade {
      */
     int allocateQueuedExecutionsForBackend(String backendID, int limit);
 
+    long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+
 }

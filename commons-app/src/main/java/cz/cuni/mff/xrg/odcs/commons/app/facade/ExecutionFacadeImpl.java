@@ -94,4 +94,9 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
         return this.dbExecutionServer.allocateQueuedExecutionsForBackendByPriority(backendID, limit);
     }
 
+    @Override
+    public long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority() {
+        return this.dbExecutionServer.getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+    }
+
 }

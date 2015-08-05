@@ -35,4 +35,11 @@ public interface DbExecutionServer extends DbAccess<ExecutionServer> {
      */
     int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit);
 
+    /**
+     * Get count of unallocated QUEUED executions with IGNORE priority
+     * 
+     * @return Count of unallocated QUEUED executions with IGNORE priority
+     */
+    long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+
 }

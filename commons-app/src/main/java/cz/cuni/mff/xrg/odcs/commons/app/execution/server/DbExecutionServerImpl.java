@@ -6,7 +6,9 @@ import javax.persistence.TypedQuery;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implements DbExecutionServer {
 
@@ -39,6 +41,20 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer>implemen
                 0, // = QUEUED
                 limit);
         return this.em.createNativeQuery(query).executeUpdate();
+    }
+
+    @Override
+    public long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority() {
+        final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
+                + " WHERE e.status = :status"
+                + " AND e.backendId IS NULL"
+                + " AND e.orderNumber = :priority";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("status", PipelineExecutionStatus.QUEUED);
+        query.setParameter("priority", ScheduledJobsPriority.IGNORE.getValue());
+        Long count = (Long) query.getSingleResult();
+
+        return count;
     }
 
 }

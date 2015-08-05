@@ -167,8 +167,16 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             if (this.clusterMode) {
                 // Update backend activity timestamp in DB
                 this.executionFacade.updateBackendTimestamp(this.backendID);
+                int limit = limitOfScheduledPipelines - this.numberOfRunningJobs;
+                if (limit < 0) {
+                    limit = 0;
+                }
+                long countOfUnallocated = this.executionFacade.getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+                if (limit < countOfUnallocated) {
+                    limit = (int) countOfUnallocated;
+                }
 
-                int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, limitOfScheduledPipelines);
+                int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, limit);
                 LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
 
                 LOG.debug("Going to find all allocated QUEUED executions");
