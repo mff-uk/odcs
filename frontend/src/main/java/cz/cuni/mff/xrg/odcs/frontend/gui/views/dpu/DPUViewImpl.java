@@ -524,9 +524,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        dpuName.setReadOnly((selectedDpuWrap.getDPUTemplateRecord().getParent() == null) || !presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        dpuDescription.setReadOnly((selectedDpuWrap.getDPUTemplateRecord().getParent() == null) || !presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
@@ -857,6 +857,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             setGeneralTabValues();
             //Otherwise, the information layout will be shown.
+            
         } else {
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);
