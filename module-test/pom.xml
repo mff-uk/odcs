@@ -87,23 +87,7 @@
 				<version>2.3</version>
 				<configuration>
 					<header>LGPL-3.txt</header>
-					<properties>
-						<license.project.name>UnifiedViews</license.project.name>
-					</properties>
-					<excludes>
-						<exclude>**/README</exclude>
-						<exclude>pom.xml</exclude>
-						<exclude>src/test/resources/**</exclude>
-						<exclude>src/main/resources/**</exclude>
-					</excludes>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 		<resources>

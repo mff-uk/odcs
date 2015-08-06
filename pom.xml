@@ -24,11 +24,11 @@
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.1.1-SNAPSHOT</uv-dpu-api-helpers.version>		
+		<uv-dpu-api-helpers.version>2.1.1-SNAPSHOT</uv-dpu-api-helpers.version>
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.1.1-SNAPSHOT</uv-dataunit-helpers.version>		
+		<uv-dataunit-helpers.version>2.1.1-SNAPSHOT</uv-dataunit-helpers.version>
 
 		<dataunit.version>${project.version}</dataunit.version>
 
@@ -107,8 +107,7 @@
 	</scm>
 
 	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role>
-		</roles> </developer> -->
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> </roles> </developer> -->
 	</developers>
 
 	<contributors>
@@ -176,8 +175,35 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS
-			profile to enable it -->
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<properties>
+						<license.project.name>UnifiedViews</license.project.name>
+					</properties>
+					<excludes>
+						<excludes>**/*.js</excludes>
+						<excludes>**/.*</excludes>
+						<exclude>**/README</exclude>
+						<exclude>pom.xml</exclude>
+						<exclude>src/test/resources/**</exclude>
+						<exclude>src/main/resources/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id />
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -244,7 +270,6 @@
 					<noDeploy>true</noDeploy>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 

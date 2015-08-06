@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * This file is part of UnifiedViews.
  *
  * UnifiedViews is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
 import java.io.File;

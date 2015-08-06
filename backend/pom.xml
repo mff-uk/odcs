@@ -66,6 +66,14 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<header>${project.basedir}/GPL-3.txt</header>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.1</version>
@@ -104,8 +112,7 @@
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-				only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -133,7 +140,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -141,5 +148,13 @@
 			</resource>
 		</resources>
 	</build>
-
+	<!-- define license -->
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<!-- https://maven.apache.org/pom.html#Licenses -->
+		</license>
+	</licenses>
 </project>
