@@ -1089,6 +1089,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         Label lblDaysCount = new Label(Messages.getString("Settings.manage.debugAndWorkingData.txtDaysCount"));
         txtDaysCount = new TextField();
+        txtDaysCount.setValue("7");
         txtDaysCount.setWidth("30");
         Label lblDays = new Label("  " + Messages.getString("Settings.manage.debugAndWorkingData.lblDays") + "  ");
         Button btnDelete = new Button(Messages.getString("Settings.manage.debugAndWorkingData.btnDelete"));
