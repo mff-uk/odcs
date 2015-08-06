@@ -1,5 +1,6 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
@@ -19,6 +20,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
@@ -28,6 +31,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -77,7 +81,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private TextArea dpuDescription; // description of selected DPU Template
 
-    private Upload reloadFile; // button for reload JAR file
+    private Upload replaceFile; // button for reload JAR file
 
     private FileUploadReceiver fileUploadReceiver;
 
@@ -134,6 +138,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private Utils utils;
+
+    private boolean configLoaded = false;
 
     /**
      * Constructor.
@@ -347,13 +353,27 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             if (configDialog == null) {
                 // use some .. dummy component
             } else {
-                // configure
-                configureDPUDialog();
+                // add configuration dialog
                 verticalLayoutConfigure.addComponent(configDialog);
                 configDialog.setHeight(100, Unit.PERCENTAGE);
                 verticalLayoutConfigure.setExpandRatio(configDialog, 1f);
             }
         }
+        
+        configLoaded = false;
+        // configure = lazy loading of abstract dialog tab
+        tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+            private static final long serialVersionUID = -92412994696665593L;
+
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                if (!configLoaded && event.getTabSheet().getSelectedTab().equals(verticalLayoutConfigure)) {
+                    configureDPUDialog();
+                    configLoaded = true;
+                }
+            }
+        });
+        
         //DPU instances tab. Contains pipelines using the given DPU.
         verticalLayoutInstances = buildVerticalLayoutInstances();
 
@@ -468,6 +488,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                if (!configLoaded) {
+                    configureDPUDialog();
+                    configLoaded = true;
+                }
+                
                 if (saveDPUTemplate()) {
                     //refresh data in dialog and dpu tree
                     dpuTree.refresh();
@@ -643,13 +668,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         //reload JAR file button
         fileUploadReceiver = new FileUploadReceiver();
-        reloadFile = new Upload(null, fileUploadReceiver);
-        reloadFile.setImmediate(true);
-        reloadFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
-        reloadFile.addStyleName("horizontalgroup");
-        reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
-        reloadFile.addStartedListener(new Upload.StartedListener() {
+        replaceFile = new Upload(null, fileUploadReceiver);
+        replaceFile.setImmediate(true);
+        replaceFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
+        replaceFile.addStyleName("horizontalgroup");
+        replaceFile.setHeight("40px");
+        replaceFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        replaceFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then
              * an upload status window with upload progress bar will be shown.
@@ -665,7 +690,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 String jar = "jar";
 
                 if (!jar.equals(extension)) {
-                    reloadFile.interruptUpload();
+                    replaceFile.interruptUpload();
                     errorExtension = true;
                     Notification.show(Messages.getString("DPUViewImpl.file.not.jar"), Notification.Type.ERROR_MESSAGE);
                     return;
@@ -678,19 +703,23 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         });
 
-        reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
+        replaceFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 uploadInfoWindow.close();
+                // we have to remember the dir here, because we loose it after the
+                // presenter.dpuUploadedEventHandler is called (view is refreshed)
+                File tmpDirToCleanUp = fileUploadReceiver.getParentDir();
                 if (!errorExtension) {
                     presenter.dpuUploadedEventHandler(fileUploadReceiver.getFile());
                 }
+                ResourceManager.cleanupQuietly(tmpDirToCleanUp);
             }
         }));
 
-        reloadFile.addFailedListener(new Upload.FailedListener() {
+        replaceFile.addFailedListener(new Upload.FailedListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -701,14 +730,15 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 }
 
                 Notification.show(Messages.getString("DPUViewImpl.uploding.failed", event.getFilename()), Notification.Type.ERROR_MESSAGE);
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
             }
         });
 
         // Upload status window
-        uploadInfoWindow = new UploadInfoWindow(reloadFile);
+        uploadInfoWindow = new UploadInfoWindow(replaceFile);
 
         jarPathLayout.addComponent(jarPath);
-        jarPathLayout.addComponent(reloadFile);
+        jarPathLayout.addComponent(replaceFile);
         dpuSettingsLayout.addComponent(jarPathLayout, 1, 3);
 
         // Description of JAR of DPU Template.
@@ -823,7 +853,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             dpuLayout.setExpandRatio(dpuDetailLayout, 5);
 
             // show/hide replace button
-            reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
+            replaceFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
 
             setGeneralTabValues();
             //Otherwise, the information layout will be shown.

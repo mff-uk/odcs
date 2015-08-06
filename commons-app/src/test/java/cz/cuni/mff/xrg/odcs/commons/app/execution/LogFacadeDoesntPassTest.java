@@ -1,12 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ch.qos.logback.classic.Level;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
@@ -46,15 +41,4 @@ public class LogFacadeDoesntPassTest {
         boolean existErro = facade.existLogsGreaterOrEqual(exec, Level.ERROR);
         assertEquals(false, existErro);
     }
-
-    @Test
-    public void testStream() {
-        assertNotNull(facade.getLogsAsStream(null));
-        assertNotNull(facade.getLogsAsStream(Arrays.<Object> asList(Compare.greaterEqual("logLevel", Level.INFO.toInt()))));
-        assertNull(facade.getLogsAsStream(Arrays.<Object> asList(
-                Compare.greaterEqual("logLevel", Level.ERROR.toInt()),
-                Compare.less("logLevel", Level.ERROR.toInt())
-                )));
-    }
-
 }

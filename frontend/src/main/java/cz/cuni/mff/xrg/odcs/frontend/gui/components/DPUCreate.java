@@ -2,8 +2,6 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +31,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -42,7 +39,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ArchiveStructure;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ZipCommons;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.gui.AuthAwareButtonClickWrapper;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.SimpleDialog;
@@ -67,6 +65,9 @@ public class DPUCreate extends Window {
 
     @Autowired
     private Utils utils;
+    
+    @Autowired
+    private ResourceManager resourceManager;
 
     private static final long serialVersionUID = 5345488404880242019L;
 
@@ -153,6 +154,16 @@ public class DPUCreate extends Window {
         this.setContent(tabs);
         setSizeUndefined();
         setWidth("500px");
+        
+        this.addCloseListener(new CloseListener() {
+            private static final long serialVersionUID = 1277786180063490433L;
+
+            @Override
+            public void windowClose(CloseEvent e) {
+                cleanup(fileUploadReceiver, fileUploadReceiverZip);
+                close();
+            }
+        });
     }
 
     private com.vaadin.ui.Component createZipTab() {
@@ -312,24 +323,32 @@ public class DPUCreate extends Window {
                 final File sourceFile = fileUploadReceiverZip.getFile();
                 Collection<File> dpus;
                 List<DPUTemplateRecord> dpusFromXmlFile;
+                File tmpDir = null;
+                
                 try {
-
-                    Path tmpPath = Files.createTempDirectory("dir");
-                    File tmpFile = tmpPath.toFile();
-                    ZipCommons.unpack(sourceFile, tmpFile);
+                    tmpDir = resourceManager.getNewImportTempDir();
+                    ZipCommons.unpack(sourceFile, tmpDir);
                     String[] extensions = { "jar" };
-                    dpus = FileUtils.listFiles(tmpFile, extensions, true);
+                    dpus = FileUtils.listFiles(tmpDir, extensions, true);
 
-                    dpusFromXmlFile = importFromLstFile(tmpFile);
+                    dpusFromXmlFile = importFromLstFile(tmpDir);
                 } catch (IOException e) {
                     String msg = Messages.getString("DPUCreate.load.failed") + sourceFile.getName();
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 } catch (ImportException e) {
                     String msg = Messages.getString("DPUCreate.load.failed.list");
                     LOG.error(msg);
                     Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    ResourceManager.cleanupQuietly(tmpDir);
+                    return;
+                } catch (MissingResourceException e) {
+                    String msg = Messages.getString("DPUCreate.temp.dir.fail");
+                    LOG.error(msg);
+                    Notification.show(msg, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 }
 
@@ -337,6 +356,7 @@ public class DPUCreate extends Window {
                     String msg = Messages.getString("DPUCreate.jars.empty") + sourceFile.getName();
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                     LOG.error(msg);
+                    ResourceManager.cleanupQuietly(tmpDir);
                     return;
                 }
 
@@ -364,17 +384,29 @@ public class DPUCreate extends Window {
                     dpuGeneralSettingsLayoutZip.removeComponent(1, 2);
                     uploadFileZip = new TextField();
                     dpuGeneralSettingsLayoutZip.addComponent(buildUploadLayout(dpuGeneralSettingsLayoutZip, fileUploadReceiverZip, uploadFileZip, "zip", 2), 1, 2);
-                    showResultExecptions(caughtExceptions);
+                    showResultExceptions(caughtExceptions);
                 }
 
+                ResourceManager.cleanupQuietly(tmpDir);
                 // and at the end we can close the dialog ..
                 close();
             }
         }));
         return saveButton;
     }
+    
+    /**
+     * Deletes quietly files or directories (without throwing exception if failed)
+     * 
+     * @param filesOrDirs
+     */
+    private static void cleanup(FileUploadReceiver... filesOrDirs) {
+        for (FileUploadReceiver receiver : filesOrDirs) {
+            ResourceManager.cleanupQuietly(receiver.getParentDir());
+        }
+    }
 
-    private void showResultExecptions(List<DPUCreateException> caughtExceptions) {
+    private void showResultExceptions(List<DPUCreateException> caughtExceptions) {
         VerticalLayout content = new VerticalLayout();
         content.setHeight(99, Unit.PERCENTAGE); // get rid of scrollbar
         content.setWidth(100, Unit.PERCENTAGE);
@@ -470,6 +502,7 @@ public class DPUCreate extends Window {
                     Notification.show(Messages.getString("DPUCreate.create.failed"),
                             e.getMessage(),
                             Notification.Type.ERROR_MESSAGE);
+                    ResourceManager.cleanupQuietly(sourceFile);
                     return;
                 }
                 close();
@@ -488,7 +521,6 @@ public class DPUCreate extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
-
             }
         });
         cancelButton.setWidth("90px");
@@ -580,7 +612,7 @@ public class DPUCreate extends Window {
         selectFile.setButtonCaption(Messages.getString("DPUCreate.file.choose"));
         selectFile.addStyleName("horizontalgroup");
         selectFile.setHeight("40px");
-
+        
         selectFile.addStartedListener(new StartedListener() {
             /**
              * Upload start listener. If selected file has JAR extension then an
@@ -592,6 +624,8 @@ public class DPUCreate extends Window {
 
             @Override
             public void uploadStarted(final StartedEvent event) {
+                cleanup(fileUploadReceiver);
+                
                 String filename = event.getFilename();
                 String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 

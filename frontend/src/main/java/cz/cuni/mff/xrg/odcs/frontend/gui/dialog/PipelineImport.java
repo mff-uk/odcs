@@ -19,6 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
@@ -29,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
  * @author Škoda Petr
  */
 public class PipelineImport extends Window {
+    private static final long serialVersionUID = -8324764730976125541L;
 
     private static final Logger LOG = LoggerFactory.getLogger(
             PipelineImport.class);
@@ -67,7 +69,7 @@ public class PipelineImport extends Window {
      * Service used to import pipelines.
      */
     private final ImportService importService;
-
+    
     public PipelineImport(ImportService importService) {
         super(Messages.getString("PipelineImport.pipeline.import"));
         this.importService = importService;
@@ -125,9 +127,12 @@ public class PipelineImport extends Window {
 
         // assign action to upload
         upload.addStartedListener(new Upload.StartedListener() {
+            private static final long serialVersionUID = -2658235355133996796L;
 
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
+                
                 String ext = FilenameUtils.getExtension(event.getFilename());
                 missingDpusTable.removeAllItems();
                 usedDpusTable.removeAllItems();
@@ -148,6 +153,7 @@ public class PipelineImport extends Window {
             }
         });
         upload.addFailedListener(new Upload.FailedListener() {
+            private static final long serialVersionUID = 6971823433495364693L;
 
             @Override
             public void uploadFailed(Upload.FailedEvent event) {
@@ -160,6 +166,7 @@ public class PipelineImport extends Window {
             }
         });
         upload.addFinishedListener(new Upload.FinishedListener() {
+            private static final long serialVersionUID = -1262281366130671667L;
 
             @Override
             public void uploadFinished(Upload.FinishedEvent event) {
@@ -214,7 +221,6 @@ public class PipelineImport extends Window {
 
                     // show result on table - these dpus which are missing
                     for (Map.Entry<String, DpuItem> entry : missingDpus.entrySet()) {
-                        String key = entry.getKey();
                         DpuItem value = entry.getValue();
                         missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
                     }
@@ -278,6 +284,7 @@ public class PipelineImport extends Window {
         buttonLayout.setWidth("100%");
 
         btnImport = new Button(Messages.getString("PipelineImport.import"), new Button.ClickListener() {
+            private static final long serialVersionUID = 2121846748744770895L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -302,6 +309,8 @@ public class PipelineImport extends Window {
         buttonLayout.setComponentAlignment(btnImport, Alignment.MIDDLE_LEFT);
 
         Button btnCancel = new Button(Messages.getString("PipelineImport.cancel"), new Button.ClickListener() {
+            private static final long serialVersionUID = 6897248228251332624L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -323,6 +332,16 @@ public class PipelineImport extends Window {
         mainLayout.addComponent(buttonLayout);
         mainLayout.setExpandRatio(buttonLayout, 0);
         setContent(mainLayout);
+        
+        this.addCloseListener(new CloseListener() {
+            private static final long serialVersionUID = -1993655234546491505L;
+
+            @Override
+            public void windowClose(CloseEvent e) {
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
+                close();
+            }
+        });
     }
 
     /**
