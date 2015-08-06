@@ -183,14 +183,11 @@
 					<properties>
 						<license.project.name>UnifiedViews</license.project.name>
 					</properties>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
 					<excludes>
-						<exclude>**/*.js</exclude>
-						<exclude>**/.*</exclude>
-						<exclude>**/README</exclude>
 						<exclude>package-info.java</exclude>
-						<exclude>pom.xml</exclude>
-						<exclude>src/test/resources/**</exclude>
-						<exclude>src/main/resources/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
