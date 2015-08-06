@@ -107,8 +107,7 @@
 	</scm>
 
 	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role>
-		</roles> </developer> -->
+		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> </roles> </developer> -->
 	</developers>
 
 	<contributors>
@@ -176,8 +175,32 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS
-			profile to enable it -->
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<properties>
+						<license.project.name>UnifiedViews</license.project.name>
+					</properties>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/package-info.java</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -244,7 +267,6 @@
 					<noDeploy>true</noDeploy>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
