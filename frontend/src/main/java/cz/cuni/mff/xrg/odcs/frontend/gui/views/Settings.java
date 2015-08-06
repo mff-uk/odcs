@@ -113,6 +113,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     private Button shownTab = null;
 
+    private int recordsDeleted;
+
     @Autowired
     private UsersList usersList;
 
@@ -1165,6 +1167,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FAILED));
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_SUCCESS));
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_WARNING));
+                recordsDeleted = 0;
                 for (PipelineExecution fpe : finishedPipelineExecutions) {
                     java.util.Calendar cal = java.util.Calendar.getInstance();
                     java.util.Calendar now = java.util.Calendar.getInstance();
@@ -1175,6 +1178,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                             try {
                                 final File executionDir = resourceManager.getDataUnitWorkingDir(fpe, node.getDpuInstance());
                                 deleteDirectory(executionDir);
+                                recordsDeleted++;
                             } catch (MissingResourceException ex) {
                                 LOG.warn("No resources to delete for Pipeline execution id: " + Long.toString(fpe.getId()), ex);
                             }
@@ -1193,7 +1197,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         UI.getCurrent().setPollInterval(-1);
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String currentDatetime = dateFormat.format(new Date());
-                        lblStatus.setValue(Messages.getString("Settings.manage.debugAndWorkingData.lblStatus.done") + " (" + currentDatetime + ")");
+                        lblStatus.setValue(Messages.getString("Settings.manage.debugAndWorkingData.lblStatus.done") + " (" + currentDatetime + ")"
+                                + "\n" + Messages.getString("Settings.manage.debugAndWorkingData.recordsDeleted") + recordsDeleted);
                     }
                 });
             }
