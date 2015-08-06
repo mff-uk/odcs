@@ -102,7 +102,6 @@ class PipelineFacadeImpl implements PipelineFacade {
     public Pipeline copyPipeline(Pipeline pipeline) {
 
         Pipeline newPipeline = new Pipeline(pipeline);
-
         // determine new name for pipeline
         String oName = pipeline.getName();
         String nName;
@@ -166,7 +165,6 @@ class PipelineFacadeImpl implements PipelineFacade {
             + "AND hasRole('pipeline.setVisibilityPublicRw')))")
     @Override
     public void save(Pipeline pipeline) {
-
         // If pipeline is public, we need to make sure
         // all DPU templates used in this pipeline are
         // public as well.

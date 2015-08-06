@@ -286,7 +286,10 @@ public class Executor implements Runnable {
 
         // we need result state
         ExecutionResult execResult = new ExecutionResult();
-
+        if (!dependencyGraph.iterator().hasNext()) {
+            eventPublisher.publishEvent(PipelineFailedEvent.create(Messages.getString("Executor.execution.blank.pipeline"), Messages.getString("Executor.execution.blank.pipeline.no.dpus"), null, this.execution, this));
+            execResult.failure();
+        }
         // execute pre-executors
         if (!executePreExecutors(dependencyGraph)) {
             execResult.failure();
