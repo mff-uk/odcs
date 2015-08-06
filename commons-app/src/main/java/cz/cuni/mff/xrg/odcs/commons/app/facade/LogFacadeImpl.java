@@ -16,14 +16,9 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.qos.logback.classic.Level;
@@ -80,48 +75,5 @@ class LogFacadeImpl implements LogFacade {
         result.add(Level.TRACE);
 
         return result;
-    }
-
-    @Override
-    public InputStream getLogsAsStream(List<Object> filters) {
-        // apply filters as we have them
-        DbQueryBuilder<Log> builder = logDao.createQueryBuilder();
-
-        if (filters == null) {
-            // no filters, take all the data
-        } else {
-            for (Object filter : filters) {
-                builder.addFilter(filter);
-            }
-        }
-        // get data and transform them into stream
-        List<Log> data = logDao.executeList(builder.getQuery());
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Log log : data) {
-            sb.append(new Date(log.getTimestamp()));
-            sb.append(' ');
-            sb.append(Level.toLevel(log.getLogLevel()));
-            sb.append(' ');
-            sb.append(log.getSource());
-            sb.append(' ');
-            if (log.getStackTrace() == null || log.getStackTrace().isEmpty()) {
-                sb.append(log.getMessage());
-            } else {
-                sb.append(log.getMessage());
-                sb.append("\r\nStack trace:\r\n");
-                // just do replace in stack trace
-                sb.append(log.getStackTrace());
-            }
-            sb.append('\r');
-            sb.append('\n');
-        }
-
-        if (sb.length() == 0) {
-            return null;
-        } else {
-            return new ByteArrayInputStream(sb.toString().getBytes());
-        }
     }
 }

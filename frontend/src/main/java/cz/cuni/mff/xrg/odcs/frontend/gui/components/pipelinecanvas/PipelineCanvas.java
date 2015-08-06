@@ -552,8 +552,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Validate graph.
      */
-    public void validateGraph() {
+    public boolean validateGraph() {
         boolean isGraphValid = true;
+        if (graph.getNodes().isEmpty()) {
+            Notification.show(Messages.getString("PipelineCanvas.pipeline.invalid.blank.pipeline"), Notification.Type.WARNING_MESSAGE);
+            return false;
+        }
         for (Node node : graph.getNodes()) {
             DPUInstanceRecord dpu = node.getDpuInstance();
             boolean isValid = pipelineValidator.checkDPUValidity(dpu);
@@ -563,11 +567,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         try {
             isGraphValid &= pipelineValidator.validateGraphEdges(graph);
             if (isGraphValid) {
-                Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                return true;
             }
         } catch (PipelineValidationException ex) {
             Notification.show(Messages.getString("PipelineCanvas.mandatory.missing"), ex.getMessage(), Notification.Type.WARNING_MESSAGE);
         }
+        return false;
     }
 
     /**

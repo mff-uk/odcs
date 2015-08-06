@@ -150,7 +150,7 @@ public class RDFQueryView extends QueryView {
         }
         formatSelect.setImmediate(true);
         formatSelect.setNullSelectionAllowed(false);
-        formatSelect.select(RDFFormatType.getStringValue(RDFFormatType.RDFXML));
+        formatSelect.select(RDFFormatType.getStringValue(RDFFormatType.TTL));
         runDownload.addComponent(formatSelect);
 
         queryDownloadButton = new Button(Messages.getString("RDFQueryView.run.and.download"));

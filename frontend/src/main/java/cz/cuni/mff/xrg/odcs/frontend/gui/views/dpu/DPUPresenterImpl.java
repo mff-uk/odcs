@@ -424,6 +424,8 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     public void deleteDPUEventHandler() {
         boolean isDeleted = deleteDPU(selectedDpu);
         if (isDeleted) {
+            // clear selection
+            selectedDpu = null;
             // and refresh the layout
             view.refresh();
             view.selectNewDPU(null);

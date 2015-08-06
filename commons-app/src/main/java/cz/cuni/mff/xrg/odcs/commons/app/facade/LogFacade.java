@@ -16,9 +16,7 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import ch.qos.logback.classic.Level;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -48,14 +46,5 @@ public interface LogFacade extends Facade {
      * @return list of all log levels
      */
     ArrayList<Level> getAllLevels();
-
-    /**
-     * Creates an input stream for logging.
-     * 
-     * @param filters
-     *            Filters to apply.
-     * @return Input stream with the logs in text form.
-     */
-    InputStream getLogsAsStream(List<Object> filters);
 
 }

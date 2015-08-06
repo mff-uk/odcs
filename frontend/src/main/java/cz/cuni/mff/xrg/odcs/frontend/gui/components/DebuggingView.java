@@ -16,7 +16,6 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,9 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
@@ -46,8 +43,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
@@ -262,31 +257,6 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("Add Browse tab");
         queryTab = tabs.addTab(browse, Messages.getString("DebuggingView.browse"));
-
-        VerticalLayout options = new VerticalLayout();
-        Button download = new Button(Messages.getString("DebuggingView.download"));
-        FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
-            @Override
-            public String getFilename() {
-                return "log.txt";
-            }
-
-            @Override
-            public InputStream getStream() {
-                LinkedList<Object> filters = new LinkedList<>();
-                for (Filter f : logCoreFilters) {
-                    LOG.debug("Adding log filter to logs download.");
-                    filters.add(f);
-                }
-                LOG.debug("Creating logs stream for download...");
-                return logFacade.getLogsAsStream(filters);
-            }
-        });
-        fileDownloader.extend(download);
-        options.addComponent(download);
-        options.setMargin(true);
-        LOG.debug("Add Options tab");
-        tabs.addTab(options, Messages.getString("DebuggingView.options"));
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);

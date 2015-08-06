@@ -55,6 +55,8 @@ public class IntlibPagedTable extends PagedFilterTable {
 
     private HashMap<Object, Integer> positions;
 
+    private Label totalRecords;
+
     /**
      * Constructor.
      */
@@ -86,6 +88,7 @@ public class IntlibPagedTable extends PagedFilterTable {
         Label separatorLabel = new Label("&nbsp;/&nbsp;", ContentMode.HTML);
         final Label totalPagesLabel = new Label(
                 String.valueOf(getTotalAmountOfPages()), ContentMode.HTML);
+
         currentPageTextField.setStyleName(Reindeer.TEXTFIELD_SMALL);
         currentPageTextField.setImmediate(true);
         currentPageTextField.addValueChangeListener(new ValueChangeListener() {
@@ -99,6 +102,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                     Object value = currentPageTextField.getConvertedValue();
                     int page = (int) value;
                     setCurrentPage(page);
+                    totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + getContainerDataSource().getRealSize());
                 }
             }
         });
@@ -109,6 +113,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 
         HorizontalLayout controlBar = new HorizontalLayout();
         HorizontalLayout pageManagement = new HorizontalLayout();
+        HorizontalLayout recordsStats = new HorizontalLayout();
         final Button first = new Button("<<", new Button.ClickListener() {
             private static final long serialVersionUID = -355520120491283992L;
 
@@ -190,9 +195,21 @@ public class IntlibPagedTable extends PagedFilterTable {
         pageManagement.setComponentAlignment(last, Alignment.MIDDLE_LEFT);
         pageManagement.setWidth(null);
         pageManagement.setSpacing(true);
+
+        totalRecords = new Label("", ContentMode.HTML);
+        totalRecords.setWidth(null);
+        totalRecords.addStyleName("pagedtable-label");
+        recordsStats.addComponent(totalRecords);
+        recordsStats.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        recordsStats.setWidth(null);
+        recordsStats.setSpacing(true);
+
+        controlBar.addComponent(new HorizontalLayout());
         controlBar.addComponent(pageManagement);
+        controlBar.addComponent(recordsStats);
         controlBar.setComponentAlignment(pageManagement,
                 Alignment.MIDDLE_CENTER);
+        controlBar.setComponentAlignment(recordsStats, Alignment.BOTTOM_RIGHT);
         controlBar.setWidth(100, Unit.PERCENTAGE);
         addListener(new PageChangeListener() {
             private boolean inMiddleOfValueChange;
@@ -213,6 +230,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                     totalPagesLabel.setValue(Integer
                             .toString(getTotalAmountOfPages()));
                     inMiddleOfValueChange = false;
+                    totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + getContainerDataSource().getRealSize());
                 }
             }
         });
@@ -254,6 +272,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                 setColumnHeader(id, container.getColumnName((String) id));
             }
             setVisibleColumns();
+            totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + String.valueOf(getContainerDataSource().getContainer().size()));
         }
     }
 
