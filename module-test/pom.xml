@@ -86,7 +86,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<header>LGPL-3.txt</header>
+					<header>${project.basedir}/LGPL-3.txt</header>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -187,7 +187,7 @@
 						<include>**/*.java</include>
 					</includes>
 					<excludes>
-						<exclude>package-info.java</exclude>
+						<exclude>**/package-info.java</exclude>
 					</excludes>
 				</configuration>
 				<executions>
