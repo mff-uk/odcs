@@ -60,6 +60,7 @@ public class SchedulerTest {
     @Transactional
     public void test() {
         Pipeline ppl = pipelineFacade.createPipeline();
+        ppl.getGraph().addDpuInstance(null);
         pipelineFacade.save(ppl);
         Schedule schedule = scheduleFacade.createSchedule();
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -82,6 +83,7 @@ public class SchedulerTest {
     @Transactional
     public void test2() {
         Pipeline ppl = pipelineFacade.createPipeline();
+        ppl.getGraph().addDpuInstance(null);
         pipelineFacade.save(ppl);
 
         Schedule schedule = createSchedule(2, ppl);
@@ -126,6 +128,7 @@ public class SchedulerTest {
     @Transactional
     public void test3() {
         Pipeline ppl = pipelineFacade.createPipeline();
+        ppl.getGraph().addDpuInstance(null);
         pipelineFacade.save(ppl);
         Schedule schedule = createSchedule(0, ppl);
         Schedule schedule2 = createSchedule(0, ppl);
@@ -187,6 +190,7 @@ public class SchedulerTest {
     @Transactional
     public void test4() {
         Pipeline ppl = pipelineFacade.createPipeline();
+        ppl.getGraph().addDpuInstance(null);
         pipelineFacade.save(ppl);
 
         Schedule schedule = createSchedule(2, ppl);

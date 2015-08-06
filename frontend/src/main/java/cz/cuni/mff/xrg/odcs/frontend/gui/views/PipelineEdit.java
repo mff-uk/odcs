@@ -619,7 +619,9 @@ public class PipelineEdit extends ViewComponent {
         buttonValidate.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                pipelineCanvas.validateGraph();
+                if (pipelineCanvas.validateGraph()) {
+                    Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                }
             }
         });
         leftPartOfButtonBar.addComponent(buttonValidate);
@@ -682,8 +684,9 @@ public class PipelineEdit extends ViewComponent {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        savePipelineAsNew();
-                                        paralelInfoLayout.setVisible(false);
+                                        if (savePipelineAsNew()) {
+                                            paralelInfoLayout.setVisible(false);
+                                        }
                                     }
                                 }
                             });
@@ -722,14 +725,16 @@ public class PipelineEdit extends ViewComponent {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        savePipelineAsNew();
-                                        closeView();
+                                        if (savePipelineAsNew()) {
+                                            closeView();
+                                        }
                                     }
                                 }
                             });
                 } else {
-                    savePipelineAsNew();
-                    closeView();
+                    if (savePipelineAsNew()) {
+                        closeView();
+                    }
                 }
             }
         });
@@ -1012,12 +1017,13 @@ public class PipelineEdit extends ViewComponent {
         setupButtons(isModified, this.pipeline.getId() == null);
     }
 
-    private void savePipelineAsNew() {
+    private boolean savePipelineAsNew() {
         if (!pipelineFacade.isUpToDate(pipeline)) {
         }
         if (!validate()) {
-            return;
+            return false;
         }
+
         pipeline.setName(pipelineName.getValue());
         pipelineCanvas.saveGraph(pipeline);
         Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
@@ -1027,6 +1033,7 @@ public class PipelineEdit extends ViewComponent {
         pipeline = copiedPipeline;
         finishSavePipeline(false, ShareType.PRIVATE, "reload");
         setMode(true);
+        return true;
     }
 
     /**
