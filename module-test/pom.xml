@@ -14,12 +14,12 @@
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dpu-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>uv-dataunit-rdf</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -52,7 +52,7 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>dataunit-relational-impl</artifactId>
@@ -80,6 +80,32 @@
 
 	<!-- add license from LICENSE.md to the generated JAR file -->
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<header>LGPL-3.txt</header>
+					<properties>
+						<license.project.name>UnifiedViews</license.project.name>
+					</properties>
+					<excludes>
+						<exclude>**/README</exclude>
+						<exclude>pom.xml</exclude>
+						<exclude>src/test/resources/**</exclude>
+						<exclude>src/main/resources/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<resources>
 			<resource>
 				<directory>${basedir}</directory>
