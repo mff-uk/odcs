@@ -249,6 +249,17 @@
 	</build>
 
 	<profiles>
+    	<profile>
+			<id>debian</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>debian</module>
+			</modules>
+		</profile>
+
+
 		<!-- Profile for compilation with Java 8. -->
 		<profile>
 			<id>java8</id>
