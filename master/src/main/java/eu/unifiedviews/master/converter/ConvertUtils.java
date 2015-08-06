@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.unifiedviews.master.converter;
 
 import java.io.File;
@@ -15,6 +31,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 
 public class ConvertUtils {
@@ -36,7 +53,7 @@ public class ConvertUtils {
             try {
                 result = df.parse(strDate);
             } catch (ParseException e) {
-                throw new ApiException(Response.Status.BAD_REQUEST, String.format("Problem parsing date=%s. Correct date format is: %s", strDate, DATE_FORMAT));
+                throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("date.parse.error"), String.format("Problem parsing date=%s. Correct date format is: %s", strDate, DATE_FORMAT));
             }
         }
         return result;

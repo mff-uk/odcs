@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import java.util.Collection;
@@ -120,6 +136,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         this.setStyleName("pipelineContainer");
 
         registerRpc(new PipelineCanvasServerRpc() {
+            
             @Override
             public void onDetailRequested(int dpuId) {
                 Node node = graph.getNodeById(dpuId);
@@ -150,9 +167,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
             @Override
             public void onDpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
                 //storeHistoryGraph();
-                isModified = true;
-                fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
                 dpuMoved(dpuId, newX, newY, autoAction);
+                fireEvent(new GraphChangedEvent(PipelineCanvas.this, false));
             }
 
             @Override
@@ -462,7 +478,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * @param autoAction
      */
     private void dpuMoved(int dpuId, int newX, int newY, boolean autoAction) {
-        graph.moveNode(dpuId, newX, newY);
+        isModified = graph.moveNode(dpuId, newX, newY);
         if (!autoAction) {
             checkForResize(newX, newY);
         }
@@ -536,8 +552,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Validate graph.
      */
-    public void validateGraph() {
+    public boolean validateGraph() {
         boolean isGraphValid = true;
+        if (graph.getNodes().isEmpty()) {
+            Notification.show(Messages.getString("PipelineCanvas.pipeline.invalid.blank.pipeline"), Notification.Type.WARNING_MESSAGE);
+            return false;
+        }
         for (Node node : graph.getNodes()) {
             DPUInstanceRecord dpu = node.getDpuInstance();
             boolean isValid = pipelineValidator.checkDPUValidity(dpu);
@@ -547,11 +567,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         try {
             isGraphValid &= pipelineValidator.validateGraphEdges(graph);
             if (isGraphValid) {
-                Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                return true;
             }
         } catch (PipelineValidationException ex) {
             Notification.show(Messages.getString("PipelineCanvas.mandatory.missing"), ex.getMessage(), Notification.Type.WARNING_MESSAGE);
         }
+        return false;
     }
 
     /**

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import java.io.File;
@@ -72,7 +88,7 @@ public class ExportService {
      * @return File with exportPipelineed pipeline.
      * @throws ExportException
      */
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.export')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public File exportPipeline(Pipeline pipeline, ExportSetting setting) throws ExportException {
         final File tempDir;
         try {
@@ -107,7 +123,7 @@ public class ExportService {
      * @param authCtx
      * @throws ExportException
      */
-    @PreAuthorize("hasPermission(#pipeline,'pipeline.export')")
+    @PreAuthorize("hasPermission(#pipeline,'pipeline.export') AND hasRole('pipeline.export')")
     public void exportPipeline(Pipeline pipeline, File targetFile, ExportSetting setting, AuthenticationContext authCtx)
             throws ExportException {
 
@@ -386,34 +402,38 @@ public class ExportService {
         xStream.alias("dpus", List.class);
         xStream.alias("dpu", DpuItem.class);
 
-        File serializedTarget;
+        File serializedTarget = null;
         try {
-            serializedTarget = File.createTempFile("temp", ".tmp");
-        } catch (IOException ex2) {
-            throw new ExportException(Messages.getString("ExportService.error"), ex2);
-        }
-        try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
-            xStream.toXML(dpus, foutStream);
-        } catch (IOException ex1) {
-            throw new ExportException(Messages.getString("ExportService.error"), ex1);
-        }
-
-        byte[] buffer = new byte[4096];
-        try {
-            final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
-            zipStream.putNextEntry(ze);
-
-            // move jar file into the zip file
-            try (FileInputStream in = new FileInputStream(serializedTarget)) {
-                int len;
-                while ((len = in.read(buffer)) > 0) {
-                    zipStream.write(buffer, 0, len);
-                }
+            try {
+                serializedTarget = File.createTempFile("temp", ".tmp");
+            } catch (IOException ex2) {
+                throw new ExportException(Messages.getString("ExportService.error"), ex2);
             }
-        } catch (IOException ex) {
-            throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
+            try (FileOutputStream foutStream = new FileOutputStream(serializedTarget)) {
+                xStream.toXML(dpus, foutStream);
+            } catch (IOException ex1) {
+                throw new ExportException(Messages.getString("ExportService.error"), ex1);
+            }
+            
+            byte[] buffer = new byte[4096];
+            try {
+                final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
+                zipStream.putNextEntry(ze);
+                
+                // move jar file into the zip file
+                try (FileInputStream in = new FileInputStream(serializedTarget)) {
+                    int len;
+                    while ((len = in.read(buffer)) > 0) {
+                        zipStream.write(buffer, 0, len);
+                    }
+                }
+            } catch (IOException ex) {
+                throw new ExportException(Messages.getString("ExportService.jarFile.infos.fail"), ex);
+            }
+            LOG.debug("<<< Leaving saveDpusInfo()");
+        } finally {
+            ResourceManager.cleanupQuietly(serializedTarget);
         }
-        LOG.debug("<<< Leaving saveDpusInfo()");
     }
 
     public TreeSet<DpuItem> getDpusInformation(Pipeline pipeline) {

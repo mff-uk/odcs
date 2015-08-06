@@ -1,6 +1,21 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,6 +29,7 @@ import org.vaadin.dialogs.DefaultConfirmDialogFactory;
 import virtuoso.jdbc4.VirtuosoException;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorHandler;
@@ -26,8 +42,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
@@ -41,7 +55,6 @@ import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -82,6 +95,7 @@ public class AppEntry extends com.vaadin.ui.UI {
 
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
+        this.setLocale(LocaleHolder.getLocale());
         // create main application uber-view and set it as app. content
         // in panel, for possible vertical scrolling
         main.build();
@@ -97,34 +111,17 @@ public class AppEntry extends com.vaadin.ui.UI {
             // We change the default order of the buttons
             @Override
             public ConfirmDialog create(String caption, String message,
-                    String okCaption, String cancelCaption) {
+                    String okCaption, String cancelCaption, String notOkCaption) {
                 ConfirmDialog d = super.create(caption, message,
                         okCaption,
-                        cancelCaption);
-
+                        cancelCaption, notOkCaption);
+                d.setCloseShortcut(KeyCode.ESCAPE);
                 LOG.info("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(),
                         d.getWidthUnits(), d.getHeight(), d.getHeightUnits(),
                         caption != null ? caption.length() : 0);
 
-                // we inceare by 1.5 .. so prevent from creating 
-                // unecesary scroll bars on some resolutions and zoom levels
-                // also it should not do somehing bad as at the end the dialog
-                // is just litle bit heigher then originally
-                d.setHeight(d.getHeight() + 1.5f, d.getHeightUnits());
-                if (caption != null && caption.length() > 30) {
-                    // adjust the width as there is not enough space for text
-                    d.setWidth(caption.length() * 0.73f, d.getWidthUnits());
-                }
-
                 // Change the order of buttons
                 d.setContentMode(ConfirmDialog.ContentMode.TEXT);
-
-                Button ok = d.getOkButton();
-                ok.setWidth(120, Unit.PIXELS);
-                HorizontalLayout buttons = (HorizontalLayout) ok.getParent();
-                buttons.removeComponent(ok);
-                buttons.addComponent(ok, 1);
-                buttons.setComponentAlignment(ok, Alignment.MIDDLE_RIGHT);
 
                 return d;
             }
@@ -202,7 +199,6 @@ public class AppEntry extends com.vaadin.ui.UI {
 
             @Override
             public void afterViewChange(ViewChangeListener.ViewChangeEvent event) {
-                main.setActiveMenuItem(event.getViewName());
             }
         });
 
@@ -233,24 +229,25 @@ public class AppEntry extends com.vaadin.ui.UI {
                         pendingViewAndParameters += event
                                 .getParameters();
                     }
-
                     // Prompt the user to save or cancel if the name is changed
-                    ConfirmDialog.show(getUI(),
-                            Messages.getString("AppEntry.confirmDialog.name"), Messages.getString("AppEntry.confirmDialog.text"), Messages.getString("AppEntry.confirmDialog.save"), Messages.getString("AppEntry.confirmDialog.discard"), new ConfirmDialog.Listener() {
+                    ConfirmDialog cd = ConfirmDialog.getFactory().create(Messages.getString("AppEntry.confirmDialog.name"), Messages.getString("AppEntry.confirmDialog.text"), Messages.getString("AppEntry.confirmDialog.save"), Messages.getString("AppEntry.confirmDialog.discard"),
+                            Messages.getString("AppEntry.confirmDialog.cancel"));
+                    cd.show(getUI(),
+                            new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        if (!lastView.saveChanges()) {
-                                            return;
+                                        if (lastView.saveChanges()) {
+                                            forceViewChange = true;
+                                            navigatorHolder.navigateTo(pendingViewAndParameters);
                                         }
-                                    } else {
+                                    } else if (cd.isCanceled()) {
                                         forceViewChange = true;
+                                        navigatorHolder.navigateTo(pendingViewAndParameters);
                                     }
-                                    navigatorHolder.navigateTo(pendingViewAndParameters);
                                 }
-                            });
-                    //Notification.show("Please apply or cancel your changes", Type.WARNING_MESSAGE);
-
+                            }, true);
+                    main.setActiveMenuItem(null);
                     return false;
                 } else {
                     return true;
@@ -260,6 +257,7 @@ public class AppEntry extends com.vaadin.ui.UI {
             @Override
             public void afterViewChange(ViewChangeEvent event) {
                 pendingViewAndParameters = null;
+                main.setActiveMenuItem(event.getViewName());
             }
         });
 

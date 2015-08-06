@@ -1,7 +1,22 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.details;
 
 import java.text.DateFormat;
-import java.util.Locale;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -11,6 +26,7 @@ import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -53,7 +69,7 @@ public class RecordDetail extends Window {
         pipelineExecutionContent.setWidth(100, Unit.PIXELS);
         mainLayout.addComponent(pipelineExecutionContent, 1, 0);
 
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
         formattedDate = df.format(record.getTime());
 
         Label timeLabel = new Label(Messages.getString("RecordDetail.time"));

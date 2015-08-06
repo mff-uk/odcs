@@ -1,5 +1,22 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Locale;
 
@@ -19,6 +36,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
@@ -28,6 +47,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUTemplateWrap;
 import cz.cuni.mff.xrg.odcs.frontend.dpu.wrap.DPUWrapException;
@@ -77,7 +97,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     private TextArea dpuDescription; // description of selected DPU Template
 
-    private Upload reloadFile; // button for reload JAR file
+    private Upload replaceFile; // button for reload JAR file
 
     private FileUploadReceiver fileUploadReceiver;
 
@@ -97,6 +117,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private TabSheet tabSheet;
 
     private OptionGroup groupVisibility; // Visibility of DPU Template: public or private
+
+    private Embedded groupVisibilityHelp;
 
     private HorizontalLayout dpuLayout; // Layout contains DPU Templates tree and DPU Template details.
 
@@ -132,6 +154,8 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
     @Autowired
     private Utils utils;
+
+    private boolean configLoaded = false;
 
     /**
      * Constructor.
@@ -236,8 +260,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void itemClick(final ItemClickEvent event) {
+                    Object oldValue = dpuTree.getValue();
                     if (event.getItemId().getClass() == DPUTemplateRecord.class) {
-                        presenter.selectDPUEventHandler((DPUTemplateRecord) event.getItemId());
+                        presenter.selectDPUEventHandler((DPUTemplateRecord) event.getItemId(), oldValue);
                     }
                 }
             });
@@ -256,6 +281,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         dpuLayout.setExpandRatio(layoutInfo, 1.0f);
 
         return dpuLayout;
+    }
+
+    public void treeSetValue(Object oldValue) {
+        dpuTree.setValue(oldValue);
     }
 
     /**
@@ -285,10 +314,14 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
-                    if (isChanged() || tabname.equals("configuration")) {
+                    try {
+                        if (isChanged() || tabname.equals("configuration")) {
+                            buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+                        } else {
+                            buttonSaveDPU.setEnabled(false);
+                        }
+                    } catch (DPUWrapException ex) {
                         buttonSaveDPU.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
-                    } else {
-                        buttonSaveDPU.setEnabled(false);
                     }
                 }
             }
@@ -336,13 +369,27 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             if (configDialog == null) {
                 // use some .. dummy component
             } else {
-                // configure
-                configureDPUDialog();
+                // add configuration dialog
                 verticalLayoutConfigure.addComponent(configDialog);
                 configDialog.setHeight(100, Unit.PERCENTAGE);
                 verticalLayoutConfigure.setExpandRatio(configDialog, 1f);
             }
         }
+        
+        configLoaded = false;
+        // configure = lazy loading of abstract dialog tab
+        tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+            private static final long serialVersionUID = -92412994696665593L;
+
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                if (!configLoaded && event.getTabSheet().getSelectedTab().equals(verticalLayoutConfigure)) {
+                    configureDPUDialog();
+                    configLoaded = true;
+                }
+            }
+        });
+        
         //DPU instances tab. Contains pipelines using the given DPU.
         verticalLayoutInstances = buildVerticalLayoutInstances();
 
@@ -457,15 +504,21 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                saveDPUTemplate();
-                //refresh data in dialog and dpu tree
-                dpuTree.refresh();
-                setGeneralTabValues();
-                if (!"configuration".equals(tabname)) {
-                    buttonSaveDPU.setEnabled(false);
+                if (!configLoaded) {
+                    configureDPUDialog();
+                    configLoaded = true;
                 }
-                // refresh configuration
-                configureDPUDialog();
+                
+                if (saveDPUTemplate()) {
+                    //refresh data in dialog and dpu tree
+                    dpuTree.refresh();
+                    setGeneralTabValues();
+                    if (!"configuration".equals(tabname)) {
+                        buttonSaveDPU.setEnabled(false);
+                    }
+                    // refresh configuration
+                    configureDPUDialog();
+                }
             }
         });
         buttonDpuBar.addComponent(buttonSaveDPU);
@@ -487,17 +540,19 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        dpuName.setReadOnly((selectedDpuWrap.getDPUTemplateRecord().getParent() == null) || !presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        dpuDescription.setReadOnly((selectedDpuWrap.getDPUTemplateRecord().getParent() == null) || !presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
             groupVisibility.setValue(selecteDpuVisibility);
             groupVisibility.setEnabled(false);
+            groupVisibilityHelp.setEnabled(false);
         } else {
             groupVisibility.setValue(selecteDpuVisibility);
             groupVisibility.setEnabled(true);
+            groupVisibilityHelp.setEnabled(true);
             groupVisibility.addValueChangeListener(new Property.ValueChangeListener() {
                 private static final long serialVersionUID = 1L;
 
@@ -589,7 +644,10 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //Visibility of DPU Template: label & OptionGroup
         Label visibilityLabel = new Label(Messages.getString("DPUViewImpl.visibility"));
         visibilityLabel.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
+        visibilityLabel.setWidth("-1px");
         dpuSettingsLayout.addComponent(visibilityLabel, 0, 2);
+
+        HorizontalLayout visibilityLayout = new HorizontalLayout();
         groupVisibility = new OptionGroup();
         groupVisibility.addStyleName("horizontalgroup");
         groupVisibility.addItem(ShareType.PRIVATE);
@@ -597,7 +655,16 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         groupVisibility.addItem(ShareType.PUBLIC_RO);
         groupVisibility.setItemCaption(ShareType.PUBLIC_RO, Messages.getString(ShareType.PUBLIC_RO.name()));
         groupVisibility.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SET_VISIBILITY));
-        dpuSettingsLayout.addComponent(groupVisibility, 1, 2);
+        visibilityLayout.addComponent(groupVisibility);
+
+        groupVisibilityHelp = new Embedded();
+        groupVisibilityHelp.setHeight("16px");
+        groupVisibilityHelp.setWidth("16px");
+        groupVisibilityHelp.setSource(new ThemeResource("img/question_red.png"));
+        groupVisibilityHelp.setDescription(Messages.getString("DPUViewImpl.visibility.help.public"));
+        visibilityLayout.addComponent(groupVisibilityHelp);
+
+        dpuSettingsLayout.addComponent(visibilityLayout, 1, 2);
 
         // JAR path of DPU Template.
         HorizontalLayout jarPathLayout = new HorizontalLayout();
@@ -617,13 +684,13 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         //reload JAR file button
         fileUploadReceiver = new FileUploadReceiver();
-        reloadFile = new Upload(null, fileUploadReceiver);
-        reloadFile.setImmediate(true);
-        reloadFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
-        reloadFile.addStyleName("horizontalgroup");
-        reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
-        reloadFile.addStartedListener(new Upload.StartedListener() {
+        replaceFile = new Upload(null, fileUploadReceiver);
+        replaceFile.setImmediate(true);
+        replaceFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
+        replaceFile.addStyleName("horizontalgroup");
+        replaceFile.setHeight("40px");
+        replaceFile.setEnabled(presenter.hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT));
+        replaceFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then
              * an upload status window with upload progress bar will be shown.
@@ -639,7 +706,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 String jar = "jar";
 
                 if (!jar.equals(extension)) {
-                    reloadFile.interruptUpload();
+                    replaceFile.interruptUpload();
                     errorExtension = true;
                     Notification.show(Messages.getString("DPUViewImpl.file.not.jar"), Notification.Type.ERROR_MESSAGE);
                     return;
@@ -652,19 +719,23 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             }
         });
 
-        reloadFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
+        replaceFile.addSucceededListener(new AuthAwareUploadSucceededWrapper(new Upload.SucceededListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 uploadInfoWindow.close();
+                // we have to remember the dir here, because we loose it after the
+                // presenter.dpuUploadedEventHandler is called (view is refreshed)
+                File tmpDirToCleanUp = fileUploadReceiver.getParentDir();
                 if (!errorExtension) {
                     presenter.dpuUploadedEventHandler(fileUploadReceiver.getFile());
                 }
+                ResourceManager.cleanupQuietly(tmpDirToCleanUp);
             }
         }));
 
-        reloadFile.addFailedListener(new Upload.FailedListener() {
+        replaceFile.addFailedListener(new Upload.FailedListener() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -675,14 +746,15 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 }
 
                 Notification.show(Messages.getString("DPUViewImpl.uploding.failed", event.getFilename()), Notification.Type.ERROR_MESSAGE);
+                ResourceManager.cleanupQuietly(fileUploadReceiver.getParentDir());
             }
         });
 
         // Upload status window
-        uploadInfoWindow = new UploadInfoWindow(reloadFile);
+        uploadInfoWindow = new UploadInfoWindow(replaceFile);
 
         jarPathLayout.addComponent(jarPath);
-        jarPathLayout.addComponent(reloadFile);
+        jarPathLayout.addComponent(replaceFile);
         dpuSettingsLayout.addComponent(jarPathLayout, 1, 3);
 
         // Description of JAR of DPU Template.
@@ -705,7 +777,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     }
 
     @Override
-    public boolean isChanged() {
+    public boolean isChanged() throws DPUWrapException {
         if (selectedDpuWrap == null) {
             return false;
         }
@@ -713,12 +785,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         try {
             configChanged = selectedDpuWrap.hasConfigChanged();
         } catch (DPUWrapException e) {
-            Notification.show(
-                    Messages.getString("DPUViewImpl.dpu.configuration.changes"),
-                    e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            LOG.error("hasConfigChanged() throws for DPU '{}'",
-                    selectedDpuWrap.getDPUTemplateRecord().getId(), e);
-            return true;
+            throw e;
         }
 
         DPUTemplateRecord selectedDpu = selectedDpuWrap.getDPUTemplateRecord();
@@ -746,17 +813,17 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
      * Store DPU Template record to DB
      */
     @Override
-    public void saveDPUTemplate() {
+    public boolean saveDPUTemplate() {
         //control of the validity of Name field.
         if (!validate()) {
             //Notification.show("Failed to save DPURecord", "Mandatory fields should be filled", Notification.Type.ERROR_MESSAGE);
-            return;
+            return false;
         }
         //saving Name, Description and Visibility
         if (selectedDpuWrap != null
                 && selectedDpuWrap.getDPUTemplateRecord().getId() != null) {
             selectedDpuWrap.getDPUTemplateRecord().setName(dpuName.getValue().trim());
-            if(selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
+            if (selectedDpuWrap.getDPUTemplateRecord().getParent() != null) {
                 // same field is used to edit menu name. Only applied to templates with parents
                 selectedDpuWrap.getDPUTemplateRecord().setMenuName(dpuName.getValue().trim());
             }
@@ -780,7 +847,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             selectedDpuWrap.getDPUTemplateRecord()
                     .setShareType((ShareType) groupVisibility
                             .getValue());
-            presenter.saveDPUEventHandler(selectedDpuWrap);
+            return presenter.saveDPUEventHandler(selectedDpuWrap);
+        } else {
+            throw new IllegalStateException();
         }
     }
 
@@ -800,10 +869,11 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
             dpuLayout.setExpandRatio(dpuDetailLayout, 5);
 
             // show/hide replace button
-            reloadFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
+            replaceFile.setVisible(selectedDpuWrap.getDPUTemplateRecord().jarFileReplacable());
 
             setGeneralTabValues();
             //Otherwise, the information layout will be shown.
+            
         } else {
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);

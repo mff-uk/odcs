@@ -1,7 +1,22 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import java.text.Collator;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +47,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
@@ -84,7 +100,8 @@ public class DPUTree extends CustomComponent {
     private HorizontalLayout topLine;
 
     private Window.CloseListener createDPUCloseListener;
-
+    
+    private boolean isValid = true;
     /**
      * Creates new DPUTree.
      */
@@ -279,7 +296,24 @@ public class DPUTree extends CustomComponent {
         layoutTree.setExpandRatio(filterBar, 0.05f);
 
         // DPURecord tree 
-        dpuTree = new Tree();
+        dpuTree = new Tree() {
+            public void setValue(Object newValue) throws Property.ReadOnlyException {
+                if (isValid) {
+                    super.setValue(newValue);
+                } else {
+                    isValid = true;
+                }
+            };
+            
+            @Override
+            protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws com.vaadin.data.Property.ReadOnlyException {
+                if (isValid) {
+                    super.setValue(newValue, repaintIsNotNeeded);
+                } else {
+                    isValid = true;
+                }
+            }
+        };
         dpuTree.setImmediate(true);
         dpuTree.setHeight("100%");
         //	dpuTree.setHeight(600, Unit.PIXELS);
@@ -303,6 +337,8 @@ public class DPUTree extends CustomComponent {
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
             private static final long serialVersionUID = -3394104490891279840L;
 
+            private Collator collator = Collator.getInstance(LocaleHolder.getLocale());
+
             @Override
             public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
                 //Ignore
@@ -312,15 +348,10 @@ public class DPUTree extends CustomComponent {
             public int compare(Object itemId1, Object itemId2) {
                 DPUTemplateRecord first = (DPUTemplateRecord) itemId1;
                 DPUTemplateRecord second = (DPUTemplateRecord) itemId2;
-                if (first.getId() == null && second.getId() == null) {
+                if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
-                } else {
-                    if (isEmpty(first.getMenuName()) || isEmpty(second.getMenuName())) {
-                        return first.getName().compareTo(second.getName()); // fallback to name
-                    } else {
-                        return first.getMenuName().compareTo(second.getMenuName());
-                    }
                 }
+                return collator.compare(first.getMenuName(), second.getMenuName());
             }
         });
 
@@ -359,6 +390,16 @@ public class DPUTree extends CustomComponent {
         dpuTree.addItemClickListener(itemClickListener);
     }
 
+    public void setValue(Object newValue) {
+        dpuTree.select(null);
+        dpuTree.select(newValue);
+        isValid=false;
+    }
+
+    public Object getValue() {
+        return dpuTree.getValue();
+    }
+
     /**
      * Reloads the contents of the DPUTree.
      */
@@ -378,65 +419,64 @@ public class DPUTree extends CustomComponent {
         tree.removeAllItems();
 
         Item item;
-        DPURecord rootExtractor = new DPUTemplateRecord(Messages.getString("DPUTree.extractors"), null);
-        item = tree.addItem(rootExtractor);
-        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootExtractor.getName());
-
-        DPURecord rootTransformer = new DPUTemplateRecord(Messages.getString("DPUTree.transformers"), null);
-        item = tree.addItem(rootTransformer);
-        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootTransformer.getName());
-
-        DPURecord rootLoader = new DPUTemplateRecord(Messages.getString("DPUTree.loaders"), null);
-        item = tree.addItem(rootLoader);
-        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootLoader.getName());
-
-        DPURecord rootQuality = new DPUTemplateRecord(Messages.getString("DPUTree.quality"), null);
-        item = tree.addItem(rootQuality);
-        item.getItemProperty(MENU_NAME_PROPERTY).setValue(rootQuality.getName());
+        DPURecord rootExtractor = addDPUToTreeRoot(Messages.getString("DPUTree.extractors"), tree);
+        DPURecord rootTransformer = addDPUToTreeRoot(Messages.getString("DPUTree.transformers"), tree);
+        DPURecord rootLoader = addDPUToTreeRoot(Messages.getString("DPUTree.loaders"), tree);
+        DPURecord rootQuality = addDPUToTreeRoot(Messages.getString("DPUTree.quality"), tree);
 
         List<DPUTemplateRecord> dpus = dpuFacade.getAllTemplates();
         for (DPUTemplateRecord dpu : dpus) {
-            if (dpu.getType() != null) {
-                item = tree.addItem(dpu);
-                String caption = (isEmpty(dpu.getMenuName())) ? dpu.getName() : dpu.getMenuName(); // if menu name is not present, fallback to dpu name
-                item.getItemProperty(MENU_NAME_PROPERTY).setValue(caption);
+            addDPUToTree(dpu, tree, rootExtractor, rootTransformer, rootLoader, rootQuality);
+        }
 
-                DPUTemplateRecord parent = dpu.getParent();
-                if (parent != null) {
-//					DPUTemplateRecord parent = null;
-//					for(DPUTemplateRecord candidate : dpus) {
-//						if(candidate.getId() == parentId) {
-//							parent = candidate;
-//							break;
-//						}
-//					}
-                    tree.setParent(dpu, parent);
-                } else {
-                    switch (dpu.getType()) {
-                        case EXTRACTOR:
-                            tree.setParent(dpu, rootExtractor);
-                            break;
-                        case TRANSFORMER:
-                            tree.setParent(dpu, rootTransformer);
-                            break;
-                        case LOADER:
-                            tree.setParent(dpu, rootLoader);
-                            break;
-                        case QUALITY:
-                            tree.setParent(dpu, rootQuality);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(Messages.getString("DPUTree.unknown") + dpu.getType());
-                    }
-                }
-            }
-
-            for (Object itemId : tree.rootItemIds()) {
-                tree.expandItemsRecursively(itemId);
-            }
+        for (Object itemId : tree.rootItemIds()) {
+            tree.expandItemsRecursively(itemId);
         }
 
         ((HierarchicalContainer) tree.getContainerDataSource()).sort(null, null);
+    }
+
+    private DPURecord addDPUToTreeRoot(String name, Tree tree) {
+        DPURecord dpuRecord = new DPUTemplateRecord(name, null);
+        dpuRecord.setMenuName(name);
+        Item item = tree.addItem(dpuRecord);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(name);
+
+        return dpuRecord;
+    }
+
+    private void addDPUToTree(DPUTemplateRecord dpu, Tree tree, DPURecord rootExtractor, DPURecord rootTransformer, DPURecord rootLoader, DPURecord rootQuality) {
+        if (dpu.getType() == null) { // we ignore DPU's without type
+            return;
+        }
+        if (tree.containsId(dpu)) { // if DPU is already in tree, ignore it
+            return;
+        }
+        Item item = tree.addItem(dpu);
+        item.getItemProperty(MENU_NAME_PROPERTY).setValue(dpu.getMenuName());
+
+        DPUTemplateRecord parent = dpu.getParent();
+        if (parent != null) {
+            addDPUToTree(parent, tree, rootExtractor, rootTransformer, rootLoader, rootQuality); // we must ensure that parent is already in tree before we set it as parent to tree
+            tree.setParent(dpu, parent);
+        } else {
+            switch (dpu.getType()) {
+                case EXTRACTOR:
+                    tree.setParent(dpu, rootExtractor);
+                    break;
+                case TRANSFORMER:
+                    tree.setParent(dpu, rootTransformer);
+                    break;
+                case LOADER:
+                    tree.setParent(dpu, rootLoader);
+                    break;
+                case QUALITY:
+                    tree.setParent(dpu, rootQuality);
+                    break;
+                default:
+                    throw new IllegalArgumentException(Messages.getString("DPUTree.unknown") + dpu.getType());
+            }
+        }
     }
 
     private void setTreeState(boolean isStateExpanded) {
