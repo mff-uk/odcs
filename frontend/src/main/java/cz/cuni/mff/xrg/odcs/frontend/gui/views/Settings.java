@@ -803,7 +803,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * @param pressedButton
      *            Tab that was pressed.
      * @param layoutShow
-     *            Layaut will be shown.
+     *            Layout will be shown.
      */
     private void buttonPush(Button pressedButton, VerticalLayout layoutShow) {
 
@@ -925,7 +925,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Show confirmation window in case if user make some changes in Schedule
-     * notifications tab and push anoter tab. User can save changes or discard.
+     * notifications tab and push another tab. User can save changes or discard.
      * After that will be shown another selected tab. If there was no changes, a
      * confirmation window will not be shown.
      *
@@ -1088,12 +1088,15 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         Label lblDaysCount = new Label(Messages.getString("Settings.manage.debugAndWorkingData.txtDaysCount"));
         txtDaysCount = new TextField();
         txtDaysCount.setWidth("30");
-        Label lblDays = new Label(Messages.getString("Settings.manage.debugAndWorkingData.lblDays"));
+        Label lblDays = new Label("  " + Messages.getString("Settings.manage.debugAndWorkingData.lblDays") + "  ");
         Button btnDelete = new Button(Messages.getString("Settings.manage.debugAndWorkingData.btnDelete"));
 
         firstLine.addComponent(lblDaysCount);
+        firstLine.addComponent(new Label("  "));
         firstLine.addComponent(txtDaysCount);
+        firstLine.addComponent(new Label("  "));
         firstLine.addComponent(lblDays);
+        firstLine.addComponent(new Label("  "));
         gl.addComponent(firstLine, 0, 0);
         gl.addComponent(btnDelete, 1, 0);
 
@@ -1176,7 +1179,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                                 LOG.warn("No resources to delete for Pipeline execution id: " + Long.toString(fpe.getId()), ex);
                             }
                         }
-                        logFacade.deleteLogs(fpe);
+                        //logFacade.deleteLogs(fpe);
                         pipelineFacade.delete(fpe);
                     }
                 }
