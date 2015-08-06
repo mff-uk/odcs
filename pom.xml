@@ -184,9 +184,10 @@
 						<license.project.name>UnifiedViews</license.project.name>
 					</properties>
 					<excludes>
-						<excludes>**/*.js</excludes>
-						<excludes>**/.*</excludes>
+						<exclude>**/*.js</exclude>
+						<exclude>**/.*</exclude>
 						<exclude>**/README</exclude>
+						<exclude>package-info.java</exclude>
 						<exclude>pom.xml</exclude>
 						<exclude>src/test/resources/**</exclude>
 						<exclude>src/main/resources/**</exclude>
@@ -194,7 +195,6 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id />
 						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
