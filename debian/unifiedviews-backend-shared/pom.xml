@@ -23,6 +23,11 @@
 	</dependencies>
 
 	<repositories>
+    	<repository>
+			<id>UnifiedViews_Maven_Repo</id>
+			<name>UnifiedViews Git based maven repo</name>
+			<url>https://github.com/UnifiedViews/Maven-Repo/tree/master/</url>
+		</repository>
 		<repository>
 			<id>maven.eea.sk</id>
 			<name>maven.eea.sk-public</name>
@@ -121,7 +126,7 @@
 								</data>
 								<!-- unifiedviews-backend files: lib and dpu -->
 								<data>
-									<src>${basedir}/src/deb/var/lib/unifiedviews/common</src>
+									<src>${basedir}/../../target/lib</src>
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
