@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
@@ -619,7 +635,9 @@ public class PipelineEdit extends ViewComponent {
         buttonValidate.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                pipelineCanvas.validateGraph();
+                if (pipelineCanvas.validateGraph()) {
+                    Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                }
             }
         });
         leftPartOfButtonBar.addComponent(buttonValidate);
@@ -682,8 +700,9 @@ public class PipelineEdit extends ViewComponent {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        savePipelineAsNew();
-                                        paralelInfoLayout.setVisible(false);
+                                        if (savePipelineAsNew()) {
+                                            paralelInfoLayout.setVisible(false);
+                                        }
                                     }
                                 }
                             });
@@ -722,14 +741,16 @@ public class PipelineEdit extends ViewComponent {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        savePipelineAsNew();
-                                        closeView();
+                                        if (savePipelineAsNew()) {
+                                            closeView();
+                                        }
                                     }
                                 }
                             });
                 } else {
-                    savePipelineAsNew();
-                    closeView();
+                    if (savePipelineAsNew()) {
+                        closeView();
+                    }
                 }
             }
         });
@@ -1012,12 +1033,13 @@ public class PipelineEdit extends ViewComponent {
         setupButtons(isModified, this.pipeline.getId() == null);
     }
 
-    private void savePipelineAsNew() {
+    private boolean savePipelineAsNew() {
         if (!pipelineFacade.isUpToDate(pipeline)) {
         }
         if (!validate()) {
-            return;
+            return false;
         }
+
         pipeline.setName(pipelineName.getValue());
         pipelineCanvas.saveGraph(pipeline);
         Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
@@ -1027,6 +1049,7 @@ public class PipelineEdit extends ViewComponent {
         pipeline = copiedPipeline;
         finishSavePipeline(false, ShareType.PRIVATE, "reload");
         setMode(true);
+        return true;
     }
 
     /**

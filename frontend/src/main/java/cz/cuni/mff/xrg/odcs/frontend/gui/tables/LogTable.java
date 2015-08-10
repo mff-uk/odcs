@@ -1,6 +1,29 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.springframework.web.util.HtmlUtils;
@@ -10,9 +33,11 @@ import org.tepi.filtertable.datefilter.DateInterval;
 import ch.qos.logback.classic.Level;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 
@@ -25,10 +50,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.GraphIterator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
+import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Table for displaying {@link Log}s.
@@ -172,9 +200,56 @@ public class LogTable extends CustomComponent {
         table.setFilterBarVisible(true);
         table.setPageLength(pageLenght);
 
+        Button download = new Button(Messages.getString("DebuggingView.download"));
+        FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
+            @Override
+            public String getFilename() {
+                return "log.csv";
+            }
+
+            @Override
+            public InputStream getStream() {
+
+                File fileToDownload;
+                try {
+                    fileToDownload = File.createTempFile("tempfile", "temp");
+                    try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileToDownload), "UTF-8")) {
+                        writer.append("\"DPU\",\"Timestamp\",\"Log Level\",\"Message\"\n");
+                        for (Iterator<?> i = table.getContainerDataSource().getItemIds().iterator(); i.hasNext();) {
+                            StringBuilder sb = new StringBuilder();
+                            Item item = table.getItem(i.next());
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("dpu").getValue()));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("timestamp").getValue()));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(Level.toLevel(Integer.parseInt(String.valueOf(item.getItemProperty("logLevel").getValue()))));
+                            sb.append('\"');
+                            sb.append(',');
+                            sb.append('\"');
+                            sb.append(String.valueOf(item.getItemProperty("message").getValue()));
+                            sb.append('\"');
+                            sb.append('\n');
+                            writer.append(sb.toString());
+                        }
+                        return new DeletingFileInputStream(fileToDownload);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+        fileDownloader.extend(download);
+
         // add to the main layout
         mainLayout.addComponent(table);
         mainLayout.addComponent(table.createControls());
+        mainLayout.addComponent(download);
 
         setCompositionRoot(mainLayout);
     }
