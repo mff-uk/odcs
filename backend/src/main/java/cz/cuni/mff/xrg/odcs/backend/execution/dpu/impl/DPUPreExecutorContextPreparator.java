@@ -17,8 +17,8 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -90,7 +90,7 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         // which take care about this
 
         // looks for edges that lead to our node
-        Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
+        List<Edge> edges = execution.getPipeline().getGraph().getEdges();
         for (Edge edge : edges) {
             if (edge.getTo() == node) {
                 // we are the target .. add data

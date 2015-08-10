@@ -17,8 +17,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +75,8 @@ public class PipelineGraph implements DataObject {
      * Edges are eagerly loaded, because they are needed every time graph is loaded.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "graph", fetch = FetchType.EAGER, orphanRemoval = true)
-    private Set<Edge> edges = new HashSet<>();
+    @OrderBy(value = "id")
+    private List<Edge> edges = new ArrayList<>();
 
     /**
      * Empty constructor for JPA.
@@ -95,7 +96,7 @@ public class PipelineGraph implements DataObject {
 
         // create mapping from old nodes to new nodes to be able to correctly
         // reference source and target nodes for new edges
-        Map<Node, Node> nMap = new HashMap<>(graph.nodes.size());
+        Map<Node, Node> nMap = new LinkedHashMap<>(graph.nodes.size());
         for (Node oldNode : graph.getNodes()) {
             Node newNode = new Node(oldNode);
             newNode.setGraph(this);
@@ -103,7 +104,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // create edges
-        edges = new HashSet(graph.edges.size());
+        edges = new ArrayList<>();
         for (Edge oldEdge : graph.getEdges()) {
             Edge newEdge = new Edge(
                     nMap.get(oldEdge.getFrom()),
@@ -168,7 +169,7 @@ public class PipelineGraph implements DataObject {
      *
      * @return the set of edges for this pipeline graph.
      */
-    public Set<Edge> getEdges() {
+    public List<Edge> getEdges() {
         return edges;
     }
 
@@ -178,7 +179,7 @@ public class PipelineGraph implements DataObject {
      * @param edges
      *            set of edges for pipeline graph.
      */
-    public void setEdges(Set<Edge> edges) {
+    public void setEdges(List<Edge> edges) {
         this.edges = edges;
         for (Edge edge : edges) {
             edge.setGraph(this);
