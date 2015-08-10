@@ -16,8 +16,11 @@
  */
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +93,14 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         // which take care about this
 
         // looks for edges that lead to our node
-        LinkedHashSet<Edge> edges = new LinkedHashSet<>(execution.getPipeline().getGraph().getEdges());
+        List<Edge> edges = new ArrayList<>(execution.getPipeline().getGraph().getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
         for (Edge edge : edges) {
             if (edge.getTo() == node) {
                 // we are the target .. add data

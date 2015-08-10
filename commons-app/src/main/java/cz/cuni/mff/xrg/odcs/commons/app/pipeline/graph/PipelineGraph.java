@@ -17,8 +17,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +67,7 @@ public class PipelineGraph implements DataObject {
      * Nodes are eagerly loaded, because they are needed every time graph is loaded.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "graph", fetch = FetchType.EAGER, orphanRemoval = true)
-    @OrderBy(value = "id")
-    private Set<Node> nodes = new LinkedHashSet<>();
+    private Set<Node> nodes = new HashSet<>();
 
     /**
      * Set of edges which represent data flow between DPUs.
@@ -76,8 +75,7 @@ public class PipelineGraph implements DataObject {
      * Edges are eagerly loaded, because they are needed every time graph is loaded.
      */
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "graph", fetch = FetchType.EAGER, orphanRemoval = true)
-    @OrderBy(value = "id")
-    private Set<Edge> edges = new LinkedHashSet<>();
+    private Set<Edge> edges = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -97,7 +95,7 @@ public class PipelineGraph implements DataObject {
 
         // create mapping from old nodes to new nodes to be able to correctly
         // reference source and target nodes for new edges
-        Map<Node, Node> nMap = new LinkedHashMap<>(graph.nodes.size());
+        Map<Node, Node> nMap = new HashMap<>(graph.nodes.size());
         for (Node oldNode : graph.getNodes()) {
             Node newNode = new Node(oldNode);
             newNode.setGraph(this);
@@ -105,7 +103,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // create edges
-        edges = new LinkedHashSet<>();
+        edges = new HashSet<>();
         for (Edge oldEdge : graph.getEdges()) {
             Edge newEdge = new Edge(
                     nMap.get(oldEdge.getFrom()),
@@ -116,7 +114,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // assign nodes
-        nodes = new LinkedHashSet<>(nMap.values());
+        nodes = new HashSet<>(nMap.values());
     }
 
     /**
@@ -155,7 +153,7 @@ public class PipelineGraph implements DataObject {
      * Set new set of nodes for this pipeline graph.
      *
      * @param newNodes
-     *            set of nodes for pipeline graph. Must be linked hash set to preserve ordering!
+     *            set of nodes for pipeline graph.
      */
     public void setNodes(Set<Node> newNodes) {
         nodes = newNodes;
@@ -181,7 +179,7 @@ public class PipelineGraph implements DataObject {
      *            set of edges for pipeline graph.
      */
     public void setEdges(Set<Edge> edges) {
-        this.edges = new LinkedHashSet<>(edges);
+        this.edges = edges;
         for (Edge edge : edges) {
             edge.setGraph(this);
             nodes.add(edge.getFrom());

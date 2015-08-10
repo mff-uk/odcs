@@ -17,10 +17,13 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Graph of DPURecord dependencies.
@@ -76,15 +79,25 @@ public class DependencyGraph implements Iterable<Node> {
         List<Node> oNodes = getAllAncestors(debugNode);
         oNodes.add(debugNode);
 
-        LinkedHashSet<Edge> nEdges = new LinkedHashSet<>();
-        for (Edge edge : graph.getEdges()) {
+        Set<Edge> nEdges = new HashSet<>();
+        List<Edge> edges = new ArrayList<>(graph.getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        for (Edge edge : edges) {
             if (oNodes.contains(edge.getFrom())
                     && oNodes.contains(edge.getTo())) {
                 // Copy edge so we do not work with the edge from original
                 // graph. Otherwise calling persist/merge on pipeline will
                 // cascade to edge where the trimmed graph might be found
                 // as a new entity. See GH-1156.
-                nEdges.add(new Edge(edge.getFrom(), edge.getTo(), edge.getScript()));
+                Edge edge2 = new Edge(edge.getFrom(), edge.getTo(), edge.getScript());
+                edge2.setId(edge.getId());
+                nEdges.add(edge2);
             }
         }
 
@@ -159,12 +172,29 @@ public class DependencyGraph implements Iterable<Node> {
         ancestorCache = new LinkedHashMap<>(noOfNodes);
 
         // initialize map for dependency nodes
-        for (Node node : graph.getNodes()) {
+        List<Node> nodes = new ArrayList<>(graph.getNodes());
+        Collections.sort(nodes, new Comparator<Node>() {
+
+            @Override
+            public int compare(Node o1, Node o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        for (Node node : nodes) {
             dGraph.put(node, new DependencyNode(node));
         }
 
+        List<Edge> edges = new ArrayList<>(graph.getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+
+        });
         // iterate over all edges and reflect them in dependency nodes
-        for (Edge e : graph.getEdges()) {
+        for (Edge e : edges) {
 
             // find the target node in the dependency graph
             DependencyNode tNode = dGraph.get(e.getTo());
