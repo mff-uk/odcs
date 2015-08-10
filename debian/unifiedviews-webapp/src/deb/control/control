@@ -1,0 +1,10 @@
+Package: unifiedviews-webapp
+Source: unifiedviews-webapp
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: jmc@eea.sk
+Homepage: https://github.com/UnifiedViews/Core
+Depends:  unifiedviews-webapp-mysql (>> 2.1) | unifiedviews-webapp-pgsql  (>> 2.1), unifiedviews-backend (>> 2.1), unifiedviews-backend (<< 2.2)
+Description: The tool uses data processing pipelines for obtaining, processing, and storing RDF data.
