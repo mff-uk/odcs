@@ -10,7 +10,6 @@
 
     <groupId>eu.unifiedviews.packages</groupId>
     <artifactId>unifiedviews-backend-shared</artifactId>
-
     <name>unifiedviews-backend-shared</name>
     <description />
 
@@ -18,17 +17,22 @@
         <dependency>
             <groupId>eu.unifiedviews</groupId>
             <artifactId>backend</artifactId>
-            <version>2.1.2</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>maven.eea.sk</id>
-            <name>maven.eea.sk-public</name>
-            <url>http://maven.eea.sk/artifactory/public/</url>
-        </repository>
-    </repositories>
+	<repositories>
+    	<repository>
+			<id>UnifiedViews_Maven_Repo</id>
+			<name>UnifiedViews Git based maven repo</name>
+			<url>https://github.com/UnifiedViews/Maven-Repo/tree/master/</url>
+		</repository>
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+	</repositories>
 
     <build>
         <finalName>unifiedviews-backend</finalName>
@@ -120,14 +124,14 @@
                                     </mapper>
                                 </data>
                                 <!-- unifiedviews-backend files: lib and dpu -->
-                                <data>
-                                    <src>${basedir}/src/deb/var/lib/unifiedviews/common</src>
-                                    <type>directory</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>/var/lib/unifiedviews/common</prefix>
-                                    </mapper>
-                                </data>
+ 								<data>
+									<src>${basedir}/../../target/lib</src>
+									<type>directory</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/var/lib/unifiedviews/common</prefix>
+									</mapper>
+								</data>
                             </dataSet>
                         </configuration>
                     </execution>
