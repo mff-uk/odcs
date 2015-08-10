@@ -17,7 +17,7 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +90,7 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         // which take care about this
 
         // looks for edges that lead to our node
-        List<Edge> edges = execution.getPipeline().getGraph().getEdges();
+        LinkedHashSet<Edge> edges = new LinkedHashSet<>(execution.getPipeline().getGraph().getEdges());
         for (Edge edge : edges) {
             if (edge.getTo() == node) {
                 // we are the target .. add data

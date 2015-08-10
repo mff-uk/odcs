@@ -18,6 +18,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +76,7 @@ public class DependencyGraph implements Iterable<Node> {
         List<Node> oNodes = getAllAncestors(debugNode);
         oNodes.add(debugNode);
 
-        List<Edge> nEdges = new ArrayList<>();
+        LinkedHashSet<Edge> nEdges = new LinkedHashSet<>();
         for (Edge edge : graph.getEdges()) {
             if (oNodes.contains(edge.getFrom())
                     && oNodes.contains(edge.getTo())) {
