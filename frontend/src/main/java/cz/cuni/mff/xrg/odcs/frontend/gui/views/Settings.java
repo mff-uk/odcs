@@ -1200,7 +1200,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                                 LOG.warn("No resources to delete for Pipeline execution id: " + Long.toString(fpe.getId()), ex);
                             }
                         }
-                        //logFacade.deleteLogs(fpe);
+                        logFacade.deleteLogs(fpe);
                         pipelineFacade.delete(fpe);
                     }
                 }
