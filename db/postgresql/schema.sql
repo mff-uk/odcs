@@ -1,4 +1,4 @@
-﻿DROP SEQUENCE IF EXISTS "seq_dpu_record";
+DROP SEQUENCE IF EXISTS "seq_dpu_record";
 DROP SEQUENCE IF EXISTS "seq_exec_dataunit_info";
 DROP SEQUENCE IF EXISTS "seq_exec_context_pipeline";
 DROP SEQUENCE IF EXISTS "seq_exec_context_dpu";

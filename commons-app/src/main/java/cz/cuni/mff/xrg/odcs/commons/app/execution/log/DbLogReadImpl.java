@@ -31,10 +31,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.Compare;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 
 /**
  * Implementation of {@link DbLogRead}. Provide support for usage of {@link Log#relativeId} for paging.
- * 
+ *
  * @author Petyr
  */
 class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
@@ -107,7 +108,7 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
     public long executeSize(DbQueryCount<Log> query) {
         if (query instanceof DbLogQueryCount) {
             DbLogQueryCount logQuery = (DbLogQueryCount) query;
-            // check if we can use faster approach 
+            // check if we can use faster approach
             if (logQuery.fetchList.isEmpty() && logQuery.filters.size() == 1) {
                 // check that the only filter is equals for execution
                 // in such case we can use getLastRelativeId
@@ -116,7 +117,7 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
                 if (execution != null) {
                     Long size = getLastRelativeIndex(execution);
                     if (size == null) {
-                        // no execution exists, return null 
+                        // no execution exists, return null
                         return 0;
                     } else {
                         return size;
@@ -179,7 +180,7 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
 
     /**
      * If the given filter can be explained as a filter {@link Log#execution} is equal to some value.
-     * 
+     *
      * @param filter
      * @return Value from filter or null in case of wrong filter.
      */
@@ -214,4 +215,11 @@ class DbLogReadImpl extends DbAccessReadBase<Log> implements DbLogRead {
         return null;
     }
 
+    @Transactional
+    @Override
+    public void delete(PipelineExecution execution) {
+        Query query = em.createQuery(
+                "DELETE FROM Log l WHERE l.execution = :execution");
+        query.setParameter("execution", execution.getId()).executeUpdate();
+    }
 }
