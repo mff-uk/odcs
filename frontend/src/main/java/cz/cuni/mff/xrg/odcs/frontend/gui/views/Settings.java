@@ -1107,15 +1107,32 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         txtDaysCount = new TextField();
         txtDaysCount.setValue("7");
         txtDaysCount.setWidth("30");
-        Label lblDays = new Label("  " + Messages.getString("Settings.manage.debugAndWorkingData.lblDays") + "  ");
+        txtDaysCount.addValidator(new Validator() {
+            private static final long serialVersionUID = -2491883908846664890L;
+
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                final String valueStr = (String) value;
+                if (value == null || valueStr.isEmpty()) {
+                    throw new InvalidValueException(Messages.getString("Settings.manage.debugAndWorkingData.txtDayCount.blank"));
+                }
+                try {
+                    int x = Integer.parseInt(valueStr);
+                    if (x < 0) {
+                        throw new InvalidValueException(Messages.getString("Settings.manage.debugAndWorkingData.txtDayCount.negative"));
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new InvalidValueException(Messages.getString("Settings.manage.debugAndWorkingData.txtDayCount.notNumber"));
+                }
+            }
+
+        });
+        Label lblDays = new Label(Messages.getString("Settings.manage.debugAndWorkingData.lblDays"));
         Button btnDelete = new Button(Messages.getString("Settings.manage.debugAndWorkingData.btnDelete"));
 
         firstLine.addComponent(lblDaysCount);
-        firstLine.addComponent(new Label("  "));
         firstLine.addComponent(txtDaysCount);
-        firstLine.addComponent(new Label("  "));
         firstLine.addComponent(lblDays);
-        firstLine.addComponent(new Label("  "));
         gl.addComponent(firstLine, 0, 0);
         gl.addComponent(btnDelete, 1, 0);
 
@@ -1184,6 +1201,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FAILED));
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_SUCCESS));
                 finishedPipelineExecutions.addAll(pipelineFacade.getAllExecutions(PipelineExecutionStatus.FINISHED_WARNING));
+                txtDaysCount.validate();
                 recordsDeleted = 0;
                 for (PipelineExecution fpe : finishedPipelineExecutions) {
                     java.util.Calendar cal = java.util.Calendar.getInstance();
@@ -1204,6 +1222,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                         pipelineFacade.delete(fpe);
                     }
                 }
+            } catch (InvalidValueException ex) {
+                LOG.warn("Invalid input value: ", ex);
+                Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
             } catch (Exception ex) {
                 LOG.warn("Can't delete working directory.", ex);
                 Notification.show(Messages.getString("Settings.manage.debugAndWorkingData.WDdelErr"), ex.getMessage(), Notification.Type.ERROR_MESSAGE);
