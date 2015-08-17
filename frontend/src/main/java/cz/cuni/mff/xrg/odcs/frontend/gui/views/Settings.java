@@ -1213,13 +1213,13 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
                             try {
                                 final File executionDir = resourceManager.getDataUnitWorkingDir(fpe, node.getDpuInstance());
                                 deleteDirectory(executionDir);
-                                recordsDeleted++;
                             } catch (MissingResourceException ex) {
                                 LOG.warn("No resources to delete for Pipeline execution id: " + Long.toString(fpe.getId()), ex);
                             }
                         }
                         logFacade.deleteLogs(fpe);
                         pipelineFacade.delete(fpe);
+                        recordsDeleted++;
                     }
                 }
             } catch (InvalidValueException ex) {
