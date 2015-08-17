@@ -19,7 +19,9 @@ package cz.cuni.mff.xrg.odcs.frontend.monitor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -37,7 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
  * Simple probe for monitoring purposes
- * When servlet called, database connection is checked and if successful,
+ * When servlet called, database connection is checked and if successful (SELECT, INSERT, DELETE)
  * HTTP OK status is sent together with text message
  */
 public class ProbeServlet extends HttpServlet {
@@ -45,6 +47,12 @@ public class ProbeServlet extends HttpServlet {
     private static final long serialVersionUID = 3380633496546339831L;
 
     private static final Logger LOG = LoggerFactory.getLogger(ProbeServlet.class);
+
+    private static final String SELECT_SQL = "SELECT key, value FROM properties";
+
+    private static final String INSERT_SQL = "INSERT INTO properties VALUES (?,?)";
+
+    private static final String DELETE_SQL = "DELETE FROM properties WHERE key = ?";
 
     @Autowired
     private DataSource dataSource;
@@ -62,15 +70,30 @@ public class ProbeServlet extends HttpServlet {
         boolean isRunning = true;
         Connection conn = null;
         Statement stmnt = null;
+        PreparedStatement insert = null;
+        PreparedStatement delete = null;
         try {
             conn = this.dataSource.getConnection();
+            conn.setAutoCommit(false);
+
             stmnt = conn.createStatement();
-            stmnt.execute("SELECT 1");
+            stmnt.execute(SELECT_SQL);
+
+            String name = generateName();
+            insert = conn.prepareStatement(INSERT_SQL);
+            insert.setString(1, name);
+            insert.setString(2, "success");
+            insert.execute();
+
+            delete = conn.prepareStatement(DELETE_SQL);
+            delete.setString(1, name);
+            delete.execute();
         } catch (Exception e) {
             LOG.error("Connection to database could not be obtained", e);
             isRunning = false;
         } finally {
-            tryCloseDbResources(conn, stmnt);
+            tryRollbackConnection(conn);
+            tryCloseDbResources(conn, stmnt, insert, delete);
         }
 
         if (isRunning) {
@@ -83,14 +106,25 @@ public class ProbeServlet extends HttpServlet {
         }
     }
 
-    private static void tryCloseDbResources(Connection conn, Statement stmnt) {
-        if (stmnt != null) {
+    private static void tryRollbackConnection(Connection conn) {
+        if (conn != null) {
             try {
-                stmnt.close();
+                conn.rollback();
             } catch (Exception e) {
-                LOG.warn("Failed to close statement", e);
+                LOG.warn("Failed to rollback connection", e);
             }
         }
+    }
+
+    private static void tryCloseDbResources(Connection conn, Statement... statements) {
+        for (Statement stmnt : statements)
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                } catch (Exception e) {
+                    LOG.warn("Failed to close statement", e);
+                }
+            }
 
         if (conn != null) {
             try {
@@ -99,6 +133,10 @@ public class ProbeServlet extends HttpServlet {
                 LOG.warn("Failed to close connection", e);
             }
         }
+    }
+
+    private static String generateName() {
+        return UUID.randomUUID().toString();
     }
 
 }
