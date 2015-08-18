@@ -27,6 +27,7 @@ nb-configuration.xml
 # Build Directories #
 target/
 bin/
+working/
 
 # Package Files #
 *.war
