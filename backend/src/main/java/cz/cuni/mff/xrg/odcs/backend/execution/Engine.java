@@ -127,7 +127,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         workingDirectory = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-//        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
+        //        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
         LOG.info("Working dir: {}", workingDirectory.toString());
         // make sure that our working directory exist
         if (workingDirectory.isDirectory()) {
@@ -137,7 +137,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
         try {
             this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
         } catch (MissingConfigPropertyException e) {
-            // ignore
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
         }
         if (this.clusterMode) {
             this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);

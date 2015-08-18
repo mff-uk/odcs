@@ -64,7 +64,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         try {
             this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
         } catch (MissingConfigPropertyException e) {
-            // ignore
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
         }
         if (this.clusterMode) {
             this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);

@@ -26,6 +26,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Periodically checks Backend status. As singleton component should prevent
@@ -34,6 +36,11 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
  * @author Škoda Petr
  */
 public class BackendHeartbeat {
+
+    /**
+     * Logger class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(BackendHeartbeat.class);
 
     @Autowired
     private ExecutionFacade executionFacade;
@@ -73,8 +80,8 @@ public class BackendHeartbeat {
         try {
             this.backendClusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
         } catch (MissingConfigPropertyException e) {
-            // ignore
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
+
         }
     }
-
 }
