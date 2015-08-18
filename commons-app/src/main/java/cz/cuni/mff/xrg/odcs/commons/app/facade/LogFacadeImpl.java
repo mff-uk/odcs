@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.io.ByteArrayInputStream;
@@ -7,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.qos.logback.classic.Level;
@@ -20,7 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 /**
  * Facade for fetching persisted entities. Manipulating logs is not implemented,
  * as these should be created immutable by backend only.
- * 
+ *
  * @author Jan Vojt
  */
 @Transactional(readOnly = true)
@@ -32,7 +47,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return true if there exist logs with given level for given dpu instance
      * of given pipeline execution.
-     * 
+     *
      * @param exec
      * @param level
      * @return
@@ -50,7 +65,7 @@ class LogFacadeImpl implements LogFacade {
     /**
      * Return list of all usable log's levels without aggregations. Ordered
      * descending by priority.
-     * 
+     *
      * @return
      */
     @Override
@@ -107,5 +122,11 @@ class LogFacadeImpl implements LogFacade {
         } else {
             return new ByteArrayInputStream(sb.toString().getBytes());
         }
+    }
+
+    @Override
+    public void deleteLogs(PipelineExecution execution) {
+        logDao.delete(execution);
+
     }
 }
