@@ -15,6 +15,7 @@ CREATE TABLE "backend_servers"
 ALTER TABLE "exec_pipeline" ADD COLUMN "backend_id" VARCHAR(128);
 CREATE INDEX "ix_EXEC_PIPELINE_backend_id" ON "exec_pipeline" ("backend_id");
 
+DROP VIEW IF EXISTS "exec_view";
 CREATE VIEW `exec_view` AS
 SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
 exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, owner.full_name AS owner_full_name, exec.stop AS stop, exec.t_last_change AS t_last_change, 
