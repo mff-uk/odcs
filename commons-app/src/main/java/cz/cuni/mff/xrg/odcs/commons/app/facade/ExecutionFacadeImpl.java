@@ -28,7 +28,7 @@ public class ExecutionFacadeImpl implements ExecutionFacade {
 
     private int backendAliveLimit;
 
-    private static final int BACKEND_ALIVE_DEFAULT_LIMIT = 20;
+    private static final int BACKEND_ALIVE_DEFAULT_LIMIT = 10;
 
     @PostConstruct
     public void init() {
