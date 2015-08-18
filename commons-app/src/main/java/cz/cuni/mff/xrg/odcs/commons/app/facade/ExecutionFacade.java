@@ -22,10 +22,8 @@ public interface ExecutionFacade extends Facade {
     ExecutionServer getExecutionServer(String backendId);
 
     /**
-     * Check if any of the backend executions servers registered in the database are active.
-     * <br/>
-     * By default active means, that timestamp for some of the backends have been updated in less than 20s ago
-     * <br/>
+     * Check if any of the backend executions servers registered in the database are active. <br/>
+     * By default active means, that timestamp for some of the backends have been updated in less than 20s ago <br/>
      * Timeout for backend activity can be set via property 'backend.alive.limit'
      * 
      * @return True if at least one backend is active, False if no backend is active
@@ -46,8 +44,7 @@ public interface ExecutionFacade extends Facade {
      * Once allocated execution is further processed only by the allocating backend
      * Other backends will never touch it
      * <p/>
-     * Queued executions with IGNORE priority are all allocated to first backend, and only limited count of non-ignore priority
-     * executions are allocated.
+     * Queued executions with IGNORE priority are all allocated to first backend, and only limited count of non-ignore priority executions are allocated.
      * 
      * @param backendID
      *            Backend ID to allocate executions to
@@ -57,6 +54,11 @@ public interface ExecutionFacade extends Facade {
      */
     int allocateQueuedExecutionsForBackend(String backendID, int limit);
 
+    /**
+     * Get count of unallocated QUEUED executions with IGNORE priority
+     * 
+     * @return Count of unallocated QUEUED executions with IGNORE priority
+     */
     long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
 
 }
