@@ -94,7 +94,7 @@ public class PipelineHelper {
      * @param debugNode
      *            {@link Node} where debug execution should stop. Valid
      *            only for debug mode.
-     * @return {@link PipelineExecution} of given {@link Pipeline}.
+     * @return {@link PipelineExecution} of given {@link Pipeline} or null if backend is offline.
      */
     public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
         final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline,
