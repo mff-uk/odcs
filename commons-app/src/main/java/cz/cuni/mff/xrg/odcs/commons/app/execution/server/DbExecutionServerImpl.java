@@ -50,8 +50,9 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
     @Transactional
     public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
         final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
-                + " WHERE id IN (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
-                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE)";
+                + " WHERE id IN (SELECT id FROM"
+                + " (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE) AS temp)";
         String query = String.format(queryStr,
                 backendID,
                 0, // = QUEUED
