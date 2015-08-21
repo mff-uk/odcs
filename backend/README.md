@@ -1,4 +1,4 @@
-ODCleanStore backend
+UnifiedViews backend
 ==============
 Backend is responsible for pipeline execution. 
 
