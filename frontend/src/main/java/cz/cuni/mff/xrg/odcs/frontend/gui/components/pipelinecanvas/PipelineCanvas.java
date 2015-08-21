@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +34,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -55,7 +57,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 
 /**
  * Component for visualization of the pipeline.
@@ -136,7 +137,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         this.setStyleName("pipelineContainer");
 
         registerRpc(new PipelineCanvasServerRpc() {
-            
+
             @Override
             public void onDetailRequested(int dpuId) {
                 Node node = graph.getNodeById(dpuId);
@@ -212,7 +213,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     public void init() {
         detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils, this.permissionUtils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight,
-                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME));
+                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME),
+                this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG));
     }
 
     /**
