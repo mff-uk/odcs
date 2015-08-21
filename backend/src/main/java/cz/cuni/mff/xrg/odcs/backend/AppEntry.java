@@ -17,15 +17,10 @@
 package cz.cuni.mff.xrg.odcs.backend;
 
 import java.io.File;
-import java.util.Locale;
 
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-import eu.unifiedviews.commons.i18n.DataunitLocaleHolder;
-import org.h2.store.Data;
 import org.h2.store.fs.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -44,7 +39,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 
 /**
  * Backend entry point.
@@ -69,7 +63,7 @@ public class AppEntry {
     private AbstractApplicationContext context = null;
 
     /**
-     * Initialise spring and load configuration.
+     * Initialize spring and load configuration.
      */
     private void initSpring() {
         // load spring
