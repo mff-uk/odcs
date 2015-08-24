@@ -49,7 +49,36 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 
+    /**
+     * Get all executions with given status ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @return List with priority ordered executions
+     */
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
+
+    /**
+     * Get all executions with given status and backend ID ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID);
+
+    /**
+     * Get all executions with given status and backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
+    public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID);
 
     /**
      * @param pipeline
@@ -97,18 +126,22 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
     /**
      * Checks if some of the executions were deleted
      * <p>
-     * @param ids executions to check
+     * 
+     * @param ids
+     *            executions to check
      * @return true if one or more execution were deleted
      */
-	public boolean hasDeleted(List<Long> ids);
+    public boolean hasDeleted(List<Long> ids);
 
-	/**
-	 * Checks if there are executions for selected pipeline with selected statuses
-	 * 
-	 * @param pipeline for which executions we are checking
-	 * @param statuses of executions we are checking
-	 * @return true if there is at least one execution with selected statuses, false otherwise
-	 */
+    /**
+     * Checks if there are executions for selected pipeline with selected statuses
+     * 
+     * @param pipeline
+     *            for which executions we are checking
+     * @param statuses
+     *            of executions we are checking
+     * @return true if there is at least one execution with selected statuses, false otherwise
+     */
     boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
 }

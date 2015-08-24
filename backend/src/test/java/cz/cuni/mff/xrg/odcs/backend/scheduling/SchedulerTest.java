@@ -17,13 +17,17 @@
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,19 +35,21 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.execution.EngineMock;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
-
-import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = { "classpath:backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 public class SchedulerTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SchedulerTest.class);
 
     public static final Integer RUNNIG_PPL_LIMIT = 2;
 
@@ -55,6 +61,9 @@ public class SchedulerTest {
 
     @Autowired
     private ScheduleFacade scheduleFacade;
+
+    @Autowired
+    private ExecutionFacade executionFacade;
 
     private class EngineMockWithLimit extends EngineMock {
         @Override
@@ -82,8 +91,8 @@ public class SchedulerTest {
         scheduler.timeBasedCheck();
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
+        engine.setExecutionFacade(this.executionFacade);
         engine.doCheck();
-
     }
 
     @Test
@@ -102,15 +111,16 @@ public class SchedulerTest {
 
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
+        engine.setExecutionFacade(this.executionFacade);
 
         engine.doCheck();
-        assertEquals(engine.historyOfExecution.size(), 2);
+        assertEquals(2, engine.historyOfExecution.size());
 
         final Set<Long> history = new HashSet<>();
         history.add(schedule4.getId());
         history.add(schedule3.getId());
 
-        for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+        for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
             assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
         }
 
@@ -144,6 +154,7 @@ public class SchedulerTest {
 
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
+        engine.setExecutionFacade(this.executionFacade);
         engine.doCheck();
 
         assertEquals(3, engine.historyOfExecution.size());
@@ -153,7 +164,7 @@ public class SchedulerTest {
             history.add(schedule2.getId());
             history.add(schedule3.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
@@ -161,14 +172,14 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 3);
+        assertEquals(3, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
             history.add(schedule2.getId());
             history.add(schedule3.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
@@ -177,7 +188,7 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 4);
+        assertEquals(4, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
@@ -185,11 +196,10 @@ public class SchedulerTest {
             history.add(schedule3.getId());
             history.add(schedule4.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
-
     }
 
     @Test
@@ -208,15 +218,16 @@ public class SchedulerTest {
 
         EngineMock engine = new EngineMockWithLimit();
         engine.setPipelineFacade(pipelineFacade);
+        engine.setExecutionFacade(this.executionFacade);
 
         engine.doCheck();
-        assertEquals(engine.historyOfExecution.size(), 2);
+        assertEquals(2, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule3.getId());
             history.add(schedule4.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
@@ -224,23 +235,22 @@ public class SchedulerTest {
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 3);
+        assertEquals(3, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule2.getId());
             history.add(schedule3.getId());
             history.add(schedule4.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
 
-
         engine.numberOfRunningJobs--;
         engine.doCheck();
 
-        assertEquals(engine.historyOfExecution.size(), 4);
+        assertEquals(4, engine.historyOfExecution.size());
         {
             final Set<Long> history = new HashSet<>();
             history.add(schedule.getId());
@@ -248,10 +258,9 @@ public class SchedulerTest {
             history.add(schedule3.getId());
             history.add(schedule4.getId());
 
-            for (int i = 0 ; i < engine.historyOfExecution.size(); ++i) {
+            for (int i = 0; i < engine.historyOfExecution.size(); ++i) {
                 assertTrue(history.contains(engine.historyOfExecution.get(i).getSchedule().getId()));
             }
         }
-
     }
 }

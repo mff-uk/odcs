@@ -30,6 +30,8 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -126,6 +128,9 @@ public class DebuggingView extends CustomComponent {
 
     @Autowired
     private LogFacade logFacade;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Constructor.
@@ -257,6 +262,7 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("Add Browse tab");
         queryTab = tabs.addTab(browse, Messages.getString("DebuggingView.browse"));
+        this.queryTab.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG));
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);

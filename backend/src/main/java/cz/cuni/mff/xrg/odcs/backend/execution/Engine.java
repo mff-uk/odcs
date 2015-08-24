@@ -41,7 +41,9 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
@@ -56,9 +58,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 public class Engine implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
+
     private static final Integer DEFAULT_LIMIT_SHEDULED_PPL = 2;
+
     public Integer numberOfRunningJobs = 0;
+
     private final Object LockRunningJobs = new Object();
+
+    private boolean clusterMode = false;
 
     /**
      * Publisher instance.
@@ -83,12 +90,15 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
      */
     @Autowired
     protected PipelineFacade pipelineFacade;
-    
+
     /**
      * Runtime properties facade.
      */
     @Autowired
     protected RuntimePropertiesFacade runtimePropertiesFacade;
+
+    @Autowired
+    protected ExecutionFacade executionFacade;
 
     /**
      * Thread pool.
@@ -105,6 +115,11 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
      */
     protected Boolean startUpDone;
 
+    /**
+     * Backend identifier
+     */
+    protected String backendID;
+
     @PostConstruct
     private void propertySetter() {
         this.executorService = Executors.newCachedThreadPool();
@@ -112,11 +127,21 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         workingDirectory = new File(
                 appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-//        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
+        //        limitOfScheduledPipelines = appConfig.getInteger(ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES);
         LOG.info("Working dir: {}", workingDirectory.toString());
         // make sure that our working directory exist
         if (workingDirectory.isDirectory()) {
             workingDirectory.mkdirs();
+        }
+
+        try {
+            this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
+        } catch (MissingConfigPropertyException e) {
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
+        }
+        if (this.clusterMode) {
+            this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+            LOG.info("Backend ID: {}", this.backendID);
         }
     }
 
@@ -135,11 +160,11 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     /**
      * Check database for new task (PipelineExecutions to run). Can run
-     * concurrently. Check database every 20 seconds.
+     * concurrently. Check database every 2 seconds.
      */
 
     @Async
-    @Scheduled(fixedDelay = 20000)
+    @Scheduled(fixedDelay = 2000)
     protected void checkJobs() {
         synchronized (LockRunningJobs) {
             LOG.debug(">>> Entering checkJobs()");
@@ -152,21 +177,35 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
             Integer limitOfScheduledPipelines = getLimitOfScheduledPipelines();
             LOG.debug("limit of scheduled pipelines: " + limitOfScheduledPipelines);
-            
-            List<PipelineExecution> jobs = pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
-            // run pipeline executions ..
-            for (PipelineExecution job : jobs) {
-                if (job.getOrderNumber() == ScheduledJobsPriority.IGNORE.getValue()) {
-                    run(job);
-                    numberOfRunningJobs++;
-                    continue;
+            LOG.debug("Number of running jobs: {}", this.numberOfRunningJobs);
+
+            List<PipelineExecution> jobs = null;
+            if (this.clusterMode) {
+                // Update backend activity timestamp in DB
+                this.executionFacade.updateBackendTimestamp(this.backendID);
+                int limit = limitOfScheduledPipelines - this.numberOfRunningJobs;
+                if (limit < 0) {
+                    limit = 0;
+                }
+                long countOfUnallocated = this.executionFacade.getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+                if (limit < countOfUnallocated) {
+                    limit = (int) countOfUnallocated;
                 }
 
-                if (numberOfRunningJobs < limitOfScheduledPipelines) {
+                int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, limit);
+                LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
+
+                LOG.debug("Going to find all allocated QUEUED executions");
+                jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED, this.backendID);
+                LOG.debug("Found {} executions planned for execution", jobs.size());
+            } else {
+                jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
+            }
+            // run pipeline executions ..
+            for (PipelineExecution job : jobs) {
+                if (this.numberOfRunningJobs < limitOfScheduledPipelines || ScheduledJobsPriority.IGNORE.getValue() == job.getOrderNumber()) {
                     run(job);
-                    numberOfRunningJobs++;
-                } else {
-                    break;
+                    this.numberOfRunningJobs++;
                 }
             }
 
@@ -186,7 +225,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             return DEFAULT_LIMIT_SHEDULED_PPL;
         }
         try {
-            return Integer.parseInt(limit.getValue());  
+            return Integer.parseInt(limit.getValue());
         } catch (NumberFormatException e) {
             LOG.error("Value not a number of RuntimeProperty: " + ConfigProperty.BACKEND_LIMIT_OF_SCHEDULED_PIPELINES.toString()
                     + ", error: " + e.getMessage());
@@ -210,8 +249,12 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
         ExecutionSanitizer sanitizer = beanFactory.getBean(ExecutionSanitizer.class);
 
         // list executions
-        List<PipelineExecution> running = pipelineFacade
-                .getAllExecutions(PipelineExecutionStatus.RUNNING);
+        List<PipelineExecution> running = null;
+        if (this.clusterMode) {
+            running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING, this.backendID);
+        } else {
+            running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING);
+        }
         for (PipelineExecution execution : running) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
             // hanging pipeline ..
@@ -226,8 +269,12 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
         }
 
-        List<PipelineExecution> cancelling = pipelineFacade
-                .getAllExecutions(PipelineExecutionStatus.CANCELLING);
+        List<PipelineExecution> cancelling = null;
+        if (this.clusterMode) {
+            cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING, this.backendID);
+        } else {
+            cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
+        }
 
         for (PipelineExecution execution : cancelling) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
