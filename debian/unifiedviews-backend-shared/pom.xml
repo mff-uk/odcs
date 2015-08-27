@@ -129,7 +129,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/var/lib/unifiedviews/common</prefix>
+										<prefix>/var/lib/unifiedviews/common/lib</prefix>
 									</mapper>
 								</data>
                             </dataSet>

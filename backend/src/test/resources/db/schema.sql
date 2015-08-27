@@ -99,6 +99,16 @@ CREATE INDEX `ix_EXEC_RECORD_r_type` ON `EXEC_RECORD` (`r_type`);
 CREATE INDEX `ix_EXEC_RECORD_dpu_id` ON `EXEC_RECORD` (`dpu_id`);
 CREATE INDEX `ix_EXEC_RECORD_execution_id` ON `EXEC_RECORD` (`execution_id`);
 
+CREATE SEQUENCE `seq_backend_servers` START 1;
+CREATE TABLE `BACKEND_SERVERS`
+(
+	`id` INTEGER,
+	`backend_id` VARCHAR(128),
+	`last_update` TIMESTAMP,
+	PRIMARY KEY (`id`),
+    UNIQUE (`backend_id`)
+);
+
 CREATE SEQUENCE `seq_exec_pipeline` START WITH 100;
 CREATE TABLE `EXEC_PIPELINE`
 (
@@ -116,6 +126,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `t_last_change` DATETIME,
   `owner_id` INTEGER,
   `user_actor_id` INTEGER,
+  `backend_id` VARCHAR(128),
   PRIMARY KEY (`id`)
 );
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `EXEC_PIPELINE` (`status`);
