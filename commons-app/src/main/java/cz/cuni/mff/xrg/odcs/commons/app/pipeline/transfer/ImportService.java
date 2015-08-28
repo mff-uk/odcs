@@ -229,8 +229,15 @@ public class ImportService {
             User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
                     throws ImportException {
         
-        DPUTemplateRecord parentDpu = dpuFacade.getByDirectory(template.getJarDirectory());
-        DPUTemplateRecord matchingNameDpu = dpuFacade.getByDirectoryAndName(template.getJarDirectory(), template.getName());
+        String dpuDir;
+        try {
+            dpuDir = DPUJarUtils.parseNameFromJarName(jarFile.getName());
+        } catch (DPUJarNameFormatException e) {
+            throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail"), e);
+        }
+        
+        DPUTemplateRecord parentDpu = dpuFacade.getByDirectory(dpuDir);
+        DPUTemplateRecord matchingNameDpu = dpuFacade.getByDirectoryAndName(dpuDir, template.getName());
         DPUTemplateRecord result = null;
         
         if (parentDpu == null) {
