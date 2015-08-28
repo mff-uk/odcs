@@ -16,26 +16,28 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 
 public class ImportedFileInformation {
 
-	private List<DpuItem> usedDpus = new ArrayList<>();
-	private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+	private List<DpuItem> usedDpus;
+	private Map<String, DpuItem> missingDpus;
+	private Map<String, DpuItem> oldDpus;
 
 	boolean userDataFile = false;
 	boolean scheduleFile = false;
 
 	public ImportedFileInformation(List<DpuItem> usedDpus,
-			TreeMap<String, DpuItem> missingDpus, boolean userDataFile, boolean scheduleFile) {
+			Map<String, DpuItem> missingDpus, boolean userDataFile,
+			boolean scheduleFile, Map<String, DpuItem> oldDpus) {
 
 		this.usedDpus = usedDpus;
 		this.missingDpus = missingDpus;
 		this.userDataFile = userDataFile;
 		this.scheduleFile = scheduleFile;
+		this.oldDpus = oldDpus;
 	}
 
 	public List<DpuItem>  getUsedDpus() {
@@ -46,11 +48,11 @@ public class ImportedFileInformation {
 		this.usedDpus = usedDpus;
 	}
 
-	public TreeMap<String, DpuItem> getMissingDpus() {
+	public Map<String, DpuItem> getMissingDpus() {
 		return missingDpus;
 	}
 
-	public void setMissingDpus(TreeMap<String, DpuItem> missingDpus) {
+	public void setMissingDpus(Map<String, DpuItem> missingDpus) {
 		this.missingDpus = missingDpus;
 	}
 
@@ -69,12 +71,21 @@ public class ImportedFileInformation {
 	public void setScheduleFile(boolean scheduleFile) {
 		this.scheduleFile = scheduleFile;
 	}
+	
+    public Map<String, DpuItem> getOldDpus() {
+        return oldDpus;
+    }
 
-	@Override
+    public void setOldDpus(Map<String, DpuItem> oldDpus) {
+        this.oldDpus = oldDpus;
+    }
+
+    @Override
 	public String toString() {
 		return "ImportedFileInformation [usedDpus=" + usedDpus
 				+ ", missingDpus=" + missingDpus + ", userDataFile="
-				+ userDataFile + ", scheduleFile=" + scheduleFile + "]";
+				+ userDataFile + ", scheduleFile=" + scheduleFile
+				+ ", oldDpus=" + oldDpus + "]";
 	}
 	
 	

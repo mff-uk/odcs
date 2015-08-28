@@ -18,10 +18,8 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -54,10 +52,6 @@ public class PipelineImport extends Window {
     private TextField txtUploadFile;
 
     private Pipeline importedPipeline = null;
-
-    private List<DpuItem> usedDpus = new ArrayList<>();
-
-    private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
     private Table usedDpusTable = new Table();
 
@@ -194,10 +188,13 @@ public class PipelineImport extends Window {
                 uploadInfoWindow.close();
                 // hide uploader
                 File zippedFile = fileUploadReceiver.getFile();
+                // disable import buttons
+                btnImport.setEnabled(false);
+                
                 try {
-                    ImportedFileInformation result = importService.getImportedInformation(zippedFile);
-                    usedDpus = result.getUsedDpus();
-                    missingDpus = result.getMissingDpus();
+                    final ImportedFileInformation result = importService.getImportedInformation(zippedFile);
+                    final List<DpuItem> usedDpus = result.getUsedDpus();
+                    final Map<String, DpuItem> missingDpus = result.getMissingDpus();
 
                     chbImportDPUData.setValue(false);
                     chbImportSchedule.setValue(false);
@@ -224,15 +221,13 @@ public class PipelineImport extends Window {
                             usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
                         }
                     }
-
-                    if (missingDpus.size() > 0) {
-                        btnImport.setEnabled(false);
+                    
+                    if (!result.getOldDpus().isEmpty() || !missingDpus.isEmpty()) {
                         Notification.show(Messages.getString("PipelineImport.missing.dpu.fail") +
                                 Messages.getString("PipelineImport.install.dpu"), Notification.Type.ERROR_MESSAGE);
 
                     } else {
                         btnImport.setEnabled(true);
-
                     }
 
                     // show result on table - these dpus which are missing
@@ -335,6 +330,8 @@ public class PipelineImport extends Window {
         buttonLayout.addComponent(btnCancel);
         buttonLayout.setComponentAlignment(btnCancel, Alignment.MIDDLE_RIGHT);
 
+        btnImport.setEnabled(false);
+        
         // add to the main layout
         mainLayout.addComponent(detailLayout);
         mainLayout.setExpandRatio(detailLayout, 1);

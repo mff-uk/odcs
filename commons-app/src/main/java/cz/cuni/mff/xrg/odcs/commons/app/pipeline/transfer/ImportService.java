@@ -18,11 +18,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -44,7 +40,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
-import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUJarNameFormatException;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUJarUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -91,7 +88,8 @@ public class ImportService {
     private AppConfig appConfig;
 
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
-    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) throws ImportException, IOException {
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile)
+            throws ImportException, IOException {
         final File tempDir;
         try {
             tempDir = resourceManager.getNewImportTempDir();
@@ -125,8 +123,6 @@ public class ImportService {
             pipe.setActor(actor);
             pipe.setShareType(ShareType.PRIVATE);
 
-            // TODO skoda: Check for DPU versions here and warn in case of problems
-
             Map<DPUTemplateRecord, DPUTemplateRecord> importedTemplates = new HashMap<>();
             for (Node node : pipe.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
@@ -147,7 +143,7 @@ public class ImportService {
                             ArchiveStructure.DPU_DATA_GLOBAL.getValue() + File.separator
                                     + template.getJarDirectory());
                     // import
-                    templateToUse = importDPUTemplate(template, user, jarFile,
+                    templateToUse = findDPUTemplate(dpu, template, user, jarFile,
                             userDataFile, globalDataFile, importUserDataFile);
                     // add to cache
                     importedTemplates.put(template, templateToUse);
@@ -178,14 +174,14 @@ public class ImportService {
      * @throws ImportException
      */
     @PreAuthorize("hasRole('pipeline.import')")
-    public Pipeline loadPipeline(File baseDir) throws ImportException {
+    public static Pipeline loadPipeline(File baseDir) throws ImportException {
         final XStream xStream = JPAXStream.createForPipeline(new DomDriver("UTF-8"));
         final File sourceFile = new File(baseDir, ArchiveStructure.PIPELINE
                 .getValue());
         try {
             return (Pipeline) xStream.fromXML(sourceFile);
         } catch (Throwable t) {
-            String msg = Messages.getString("ImportService.pipeline.pipeline.file.fail");
+            String msg = Messages.getString("ImportService.pipeline.xml.load.file.fail");
             LOG.error(msg);
             throw new ImportException(msg, t);
         }
@@ -212,7 +208,6 @@ public class ImportService {
             LOG.error(msg);
             throw new ImportException(msg, t);
         }
-
     }
 
     /**
@@ -220,6 +215,7 @@ public class ImportService {
      * If not then import new DPU template into system. In both cases the user
      * and global DPU's data are copied into respective directories.
      *
+     * @param dpu 
      * @param template
      * @param user
      * @param jarFile
@@ -229,30 +225,51 @@ public class ImportService {
      *         given one.
      * @throws ImportException
      */
-    private DPUTemplateRecord importDPUTemplate(DPUTemplateRecord template,
+    private DPUTemplateRecord findDPUTemplate(DPUInstanceRecord dpu, DPUTemplateRecord template,
             User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
-            throws ImportException {
-        // try to detect if there already exist same DPU
-        DPUTemplateRecord result = dpuFacade.getByName(template
-                .getName());
-        if (result == null) {
+                    throws ImportException {
+        
+        DPUTemplateRecord parentDpu = dpuFacade.getByDirectory(template.getJarDirectory());
+        DPUTemplateRecord matchingNameDpu = dpuFacade.getByDirectoryAndName(template.getJarDirectory(), template.getName());
+        DPUTemplateRecord result = null;
+        
+        if (parentDpu == null) {
+            throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.not.found",
+                                                         template.getJarDirectory(),
+                                                         jarFile.getName()));
+        } else {
+            
             try {
-                // we have to import new DPU
-                result = moduleManipulator.create(jarFile, template.getName());
-            } catch (DPUCreateException ex) {
-                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail"), ex);
+                int compareVersion = moduleManipulator.compareVersions(parentDpu.getJarName(), jarFile.getName());
+                
+                if (compareVersion < 0) {
+                    throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.version",
+                                                                jarFile.getName()));
+                }
+            } catch (DPUJarNameFormatException e) {
+                throw new ImportException(e.getMessage(), e);
+            }
+        }
+        
+        if (dpu.isUseTemplateConfig()) {
+            
+            if (matchingNameDpu == null) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.not.found",
+                                                             template.getName(),
+                                                             jarFile.getName()));
+            } else if (haveTheSameConfig(matchingNameDpu, template)) {
+                checkPersmissions(matchingNameDpu, user);
+                result = matchingNameDpu;
+            } else {
+                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.different.config",
+                                                            template.getName(),
+                                                            jarFile.getName()));
             }
         } else {
-            // check visibility
-            if (result.getShareType() == ShareType.PRIVATE && !result
-                    .getOwner().equals(user)) {
-                // is private and not visible to given user
-                result.setShareType(ShareType.PUBLIC_RO);
-                dpuFacade.save(result);
-            }
-
-            // TODO add version check here
+            checkPersmissions(parentDpu, user);
+            result = parentDpu;
         }
+        
         // copy user data
         if (userDataDir.exists() && importUserDataFile) {
             if (!hasUserPermission(EntityPermissions.PIPELINE_IMPORT_USER_DATA)) {
@@ -284,6 +301,21 @@ public class ImportService {
         return result;
     }
 
+    private void checkPersmissions(DPUTemplateRecord dpuTemplate, User user) throws ImportException {
+        // check visibility
+        if (dpuTemplate.getShareType() == ShareType.PRIVATE && !dpuTemplate.getOwner().equals(user)) {
+            throw new ImportException(Messages.getString("ImportService.pipeline.import.dpu.fail.permission"));
+        }
+    }
+
+    private boolean haveTheSameConfig(DPUTemplateRecord matchingNameDpu, DPUTemplateRecord template) {
+        if (matchingNameDpu.getRawConf() == null
+                || !matchingNameDpu.getRawConf().equals(template.getRawConf())) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Load schedules from given file. The given use and pipeline is set to them
      * and then they are imported into system.
@@ -294,6 +326,7 @@ public class ImportService {
      * @param user
      * @throws ImportException
      */
+    @SuppressWarnings("unchecked")
     @PreAuthorize("hasRole('pipeline.importScheduleRules')")
     private void importSchedules(File scheduleFile, Pipeline pipeline, User user)
             throws ImportException {
@@ -327,7 +360,8 @@ public class ImportService {
             Pipeline pipeline = loadPipeline(tempDirectory);
             
             List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
-            TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+            Map<String, DpuItem> missingDpus = new TreeMap<>();
+            Map<String, DpuItem> oldDpus = new TreeMap<>();
             
             if (pipeline != null) {
                 PipelineGraph graph = pipeline.getGraph();
@@ -346,18 +380,47 @@ public class ImportService {
                                 continue;
                             }
                             
-                            // try to detect if dpus are installed
-                            DPUTemplateRecord dpuTemplateRecord = dpuFacade
-                                    .getByName(template.getName());
-                            // TODO jmc add version
                             String version = "unknown";
-                            DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
-                            if (dpuTemplateRecord == null) {
-                                // these dpus is missing
-                                if (!missingDpus.containsKey(dpu.getName())) {
-                                    missingDpus.put(dpu.getName(), dpuItem);
-                                }
+                            String jarDir = null;
+                            
+                            try {
+                                jarDir = DPUJarUtils.parseNameFromJarName(template.getJarName());
+                                version = DPUJarUtils.parseVersionStringFromJarName(template.getJarName());
+                            } catch (DPUJarNameFormatException e) {
+                                throw new ImportException(e.getMessage(), e);
                             }
+                            
+                            DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
+                            DPUTemplateRecord parentDpuTemplate = dpuFacade.getByDirectory(jarDir);
+                            
+                            
+                            try {
+                                // checking version
+                                if (parentDpuTemplate != null 
+                                        && moduleManipulator.compareVersions(parentDpuTemplate.getJarName(), template.getJarName()) < 0) {
+                                    
+                                    missingDpus.put(jarDir, dpuItem);
+                                    oldDpus.put(jarDir, dpuItem);
+                                } else {
+                                    if (dpu.isUseTemplateConfig()) {
+                                        DPUTemplateRecord dpuTemplateRecord = dpuFacade.getByDirectoryAndName(jarDir, template.getName());
+                                        
+                                        if (dpuTemplateRecord == null
+                                                || dpuTemplateRecord.getRawConf() == null
+                                                || !dpuTemplateRecord.getRawConf().equals(template.getRawConf())) {
+                                            
+                                            missingDpus.put(template.getName(), dpuItem);
+                                        }
+                                    } else if (parentDpuTemplate == null) {
+                                        dpuItem.setDpuName(jarDir);
+                                        missingDpus.put(jarDir, dpuItem);
+                                    }
+                                }
+                            } catch (DPUJarNameFormatException e) {
+                                // this DPU will fail to import ...
+                                throw new ImportException(e.getMessage(), e);
+                            }
+                            
                             final File userDataFile = new File(tempDirectory,
                                     ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
                                     + template.getJarDirectory());
@@ -379,7 +442,7 @@ public class ImportService {
             }
             
             ImportedFileInformation result = new ImportedFileInformation(usedDpus,
-                    missingDpus, isUserData, isScheduleFile);
+                    missingDpus, isUserData, isScheduleFile, oldDpus);
             
             LOG.debug("<<< Leaving getImportedInformation: {}", result);
             return result;
