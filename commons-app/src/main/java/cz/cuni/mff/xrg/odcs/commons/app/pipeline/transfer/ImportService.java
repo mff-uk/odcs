@@ -266,7 +266,7 @@ public class ImportService {
                                                              template.getName(),
                                                              jarFile.getName()));
             } else if (haveTheSameConfig(matchingNameDpu, template)) {
-                checkPersmissions(matchingNameDpu, user);
+                checkPermissions(matchingNameDpu, user);
                 result = matchingNameDpu;
             } else {
                 switch (choosenStrategies.get(dpu.getName())) {
@@ -274,7 +274,7 @@ public class ImportService {
                         dpu.setUseTemplateConfig(false);
                         dpu.setRawConf(template.getRawConf());
                     case CHANGE_TO_EXISTING:
-                        checkPersmissions(matchingNameDpu, user);
+                        checkPermissions(matchingNameDpu, user);
                         result = matchingNameDpu;
                         break;
                     default:
@@ -284,7 +284,7 @@ public class ImportService {
                 }
             }
         } else {
-            checkPersmissions(parentDpu, user);
+            checkPermissions(parentDpu, user);
             result = parentDpu;
         }
         
@@ -319,7 +319,7 @@ public class ImportService {
         return result;
     }
 
-    private void checkPersmissions(DPUTemplateRecord dpuTemplate, User user) throws ImportException {
+    private void checkPermissions(DPUTemplateRecord dpuTemplate, User user) throws ImportException {
         // check visibility
         if (dpuTemplate.getShareType() == ShareType.PRIVATE && !dpuTemplate.getOwner().equals(user)) {
             throw new ImportException(Messages.getString("ImportService.pipeline.import.dpu.fail.permission"));
