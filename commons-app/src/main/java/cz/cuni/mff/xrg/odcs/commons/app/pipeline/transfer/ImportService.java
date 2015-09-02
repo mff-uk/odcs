@@ -88,20 +88,26 @@ public class ImportService {
     private AppConfig appConfig;
 
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
-    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile)
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) 
             throws ImportException, IOException {
+        return importPipeline(zipFile, importUserDataFile, importScheduleFile, new HashMap<String, ImportStrategy>(0));
+    }
+    
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
+    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile,
+            Map<String, ImportStrategy> choosenStrategies) throws ImportException, IOException {
         final File tempDir;
         try {
             tempDir = resourceManager.getNewImportTempDir();
         } catch (MissingResourceException ex) {
             throw new ImportException(Messages.getString("ImportService.pipeline.temp.dir.fail"), ex);
         }
-        return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile);
+        return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile, choosenStrategies);
     }
 
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
-    public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
-            throws ImportException, IOException {
+    public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile,
+            Map<String, ImportStrategy> choosenStrategies) throws ImportException, IOException {
         // delete tempDirectory
         ResourceManager.cleanupQuietly(tempDirectory);
 
@@ -123,31 +129,25 @@ public class ImportService {
             pipe.setActor(actor);
             pipe.setShareType(ShareType.PRIVATE);
 
-            Map<DPUTemplateRecord, DPUTemplateRecord> importedTemplates = new HashMap<>();
             for (Node node : pipe.getGraph().getNodes()) {
                 final DPUInstanceRecord dpu = node.getDpuInstance();
                 final DPUTemplateRecord template = dpu.getTemplate();
                 final DPUTemplateRecord templateToUse;
-                if (importedTemplates.containsKey(template)) {
-                    // already imported
-                    templateToUse = importedTemplates.get(template);
-                } else {
-                    // prepare data for import
-                    final File jarFile = new File(tempDirectory,
-                            ArchiveStructure.DPU_JAR.getValue() + File.separator
-                                    + template.getJarPath());
-                    final File userDataFile = new File(tempDirectory,
-                            ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
-                                    + template.getJarDirectory());
-                    final File globalDataFile = new File(tempDirectory,
-                            ArchiveStructure.DPU_DATA_GLOBAL.getValue() + File.separator
-                                    + template.getJarDirectory());
-                    // import
-                    templateToUse = findDPUTemplate(dpu, template, user, jarFile,
-                            userDataFile, globalDataFile, importUserDataFile);
-                    // add to cache
-                    importedTemplates.put(template, templateToUse);
-                }
+                
+                // prepare data for import
+                final File jarFile = new File(tempDirectory,
+                        ArchiveStructure.DPU_JAR.getValue() + File.separator
+                        + template.getJarPath());
+                final File userDataFile = new File(tempDirectory,
+                        ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
+                        + template.getJarDirectory());
+                final File globalDataFile = new File(tempDirectory,
+                        ArchiveStructure.DPU_DATA_GLOBAL.getValue() + File.separator
+                        + template.getJarDirectory());
+                
+                // import
+                templateToUse = findDPUTemplate(dpu, template, user, jarFile,
+                        userDataFile, globalDataFile, importUserDataFile, choosenStrategies);
                 // set DPU instance
                 dpu.setTemplate(templateToUse);
             }
@@ -221,13 +221,14 @@ public class ImportService {
      * @param jarFile
      * @param userDataDir
      * @param globalDataDir
+     * @param choosenStrategies 
      * @return Template that is stored in database and is equivalent to the
      *         given one.
      * @throws ImportException
      */
     private DPUTemplateRecord findDPUTemplate(DPUInstanceRecord dpu, DPUTemplateRecord template,
-            User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile)
-                    throws ImportException {
+            User user, File jarFile, File userDataDir, File globalDataDir, boolean importUserDataFile,
+            Map<String, ImportStrategy> choosenStrategies) throws ImportException {
         
         String dpuDir;
         try {
@@ -268,9 +269,18 @@ public class ImportService {
                 checkPersmissions(matchingNameDpu, user);
                 result = matchingNameDpu;
             } else {
-                throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.different.config",
-                                                            template.getName(),
-                                                            jarFile.getName()));
+                switch (choosenStrategies.get(dpu.getName())) {
+                    case REPLACE_INSTANCE_CONFIG:
+                        dpu.setUseTemplateConfig(false);
+                        dpu.setRawConf(template.getRawConf());
+                    case CHANGE_TO_EXISTING:
+                        result = matchingNameDpu;
+                        break;
+                    default:
+                        throw new ImportException(Messages.getString("ImportService.pipeline.dpu.import.fail.different.config",
+                                template.getName(),
+                                jarFile.getName()));
+                }
             }
         } else {
             checkPersmissions(parentDpu, user);
@@ -369,6 +379,7 @@ public class ImportService {
             List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
             Map<String, DpuItem> missingDpus = new TreeMap<>();
             Map<String, DpuItem> oldDpus = new TreeMap<>();
+            Set<String> toDecideDpus = new HashSet<>();
             
             if (pipeline != null) {
                 PipelineGraph graph = pipeline.getGraph();
@@ -397,30 +408,24 @@ public class ImportService {
                                 throw new ImportException(e.getMessage(), e);
                             }
                             
-                            DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
-                            DPUTemplateRecord parentDpuTemplate = dpuFacade.getByDirectory(jarDir);
-                            
+                            final DpuItem dpuItem = new DpuItem(template.getName(), template.getJarName(), version);
+                            final DPUTemplateRecord parentDpuTemplate = dpuFacade.getByDirectory(jarDir);
                             
                             try {
-                                // checking version
-                                if (parentDpuTemplate != null 
-                                        && moduleManipulator.compareVersions(parentDpuTemplate.getJarName(), template.getJarName()) < 0) {
-                                    
+                                if (parentDpuTemplate == null) {
+                                    missingDpus.put(jarDir, dpuItem);
+                                } else if (moduleManipulator.compareVersions(parentDpuTemplate.getJarName(), template.getJarName()) < 0) {
                                     missingDpus.put(jarDir, dpuItem);
                                     oldDpus.put(jarDir, dpuItem);
                                 } else {
                                     if (dpu.isUseTemplateConfig()) {
                                         DPUTemplateRecord dpuTemplateRecord = dpuFacade.getByDirectoryAndName(jarDir, template.getName());
                                         
-                                        if (dpuTemplateRecord == null
-                                                || dpuTemplateRecord.getRawConf() == null
-                                                || !dpuTemplateRecord.getRawConf().equals(template.getRawConf())) {
-                                            
+                                        if (dpuTemplateRecord == null) {
                                             missingDpus.put(template.getName(), dpuItem);
+                                        } else if (!haveTheSameConfig(dpuTemplateRecord, template)) {
+                                            toDecideDpus.add(dpu.getName());
                                         }
-                                    } else if (parentDpuTemplate == null) {
-                                        dpuItem.setDpuName(jarDir);
-                                        missingDpus.put(jarDir, dpuItem);
                                     }
                                 }
                             } catch (DPUJarNameFormatException e) {
@@ -449,7 +454,7 @@ public class ImportService {
             }
             
             ImportedFileInformation result = new ImportedFileInformation(usedDpus,
-                    missingDpus, isUserData, isScheduleFile, oldDpus);
+                    missingDpus, isUserData, isScheduleFile, oldDpus, toDecideDpus);
             
             LOG.debug("<<< Leaving getImportedInformation: {}", result);
             return result;

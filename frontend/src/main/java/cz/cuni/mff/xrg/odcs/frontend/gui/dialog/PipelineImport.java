@@ -18,8 +18,11 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportStrategy;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
@@ -79,6 +83,8 @@ public class PipelineImport extends Window {
      * Service used to import pipelines.
      */
     private final ImportService importService;
+
+    private Set<String> toDecideDpus;
     
     public PipelineImport(ImportService importService) {
         super(Messages.getString("PipelineImport.pipeline.import"));
@@ -195,6 +201,7 @@ public class PipelineImport extends Window {
                     final ImportedFileInformation result = importService.getImportedInformation(zippedFile);
                     final List<DpuItem> usedDpus = result.getUsedDpus();
                     final Map<String, DpuItem> missingDpus = result.getMissingDpus();
+                    toDecideDpus = Collections.emptySet();
 
                     chbImportDPUData.setValue(false);
                     chbImportSchedule.setValue(false);
@@ -235,6 +242,8 @@ public class PipelineImport extends Window {
                         DpuItem value = entry.getValue();
                         missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
                     }
+                    
+                    toDecideDpus = result.getToDecideDpus();
 
                 } catch (Exception e) {
                     LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
@@ -303,15 +312,10 @@ public class PipelineImport extends Window {
                     Notification.show(Messages.getString("PipelineImport.archive.notSelected"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
-                    // import
-                    final File zipFile = fileUploadReceiver.getFile();
-                    try {
-                        importedPipeline = importService.importPipeline(zipFile, chbImportDPUData.getValue(), chbImportSchedule.getValue());
-                        close();
-                    } catch (ImportException | IOException ex) {
-                        LOG.error("Import failed.", ex);
-                        Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
-                                Notification.Type.ERROR_MESSAGE);
+                    if (!toDecideDpus.isEmpty()) {
+                        openChooseImportStrategyDialog(toDecideDpus);
+                    } else {
+                        startImport(new HashMap<String, ImportStrategy>(0));
                     }
                 }
             }
@@ -355,6 +359,39 @@ public class PipelineImport extends Window {
                 close();
             }
         });
+    }
+    
+    private void startImport(Map<String, ImportStrategy> choosenStrategies) {
+        // import
+        final File zipFile = fileUploadReceiver.getFile();
+        try {
+            importedPipeline = importService.importPipeline(zipFile, chbImportDPUData.getValue(), chbImportSchedule.getValue(), choosenStrategies);
+            close();
+        } catch (ImportException | IOException ex) {
+            LOG.error("Import failed.", ex);
+            Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
+                    Notification.Type.ERROR_MESSAGE);
+        }
+    }
+
+    final void openChooseImportStrategyDialog(Set<String> toDecideDpus) {
+        final ChooseImportStrategyDialog dialog = new ChooseImportStrategyDialog(toDecideDpus);
+        dialog.addCloseListener(new Window.CloseListener() {
+            private static final long serialVersionUID = -5040883763888691197L;
+
+            @Override
+            public void windowClose(CloseEvent e) {
+                Map<String, ImportStrategy> choosenStrategies = dialog.getChoices();
+                if (choosenStrategies.isEmpty()) {
+                    Notification.show(Messages.getString("PipelineImport.import.canceled"));
+                } else {
+                    startImport(choosenStrategies);
+                }
+            }
+        });
+        
+        UI.getCurrent().addWindow(dialog);
+        dialog.bringToFront();
     }
 
     /**
