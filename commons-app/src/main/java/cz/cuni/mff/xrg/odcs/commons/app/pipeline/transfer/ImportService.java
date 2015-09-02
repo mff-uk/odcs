@@ -274,6 +274,7 @@ public class ImportService {
                         dpu.setUseTemplateConfig(false);
                         dpu.setRawConf(template.getRawConf());
                     case CHANGE_TO_EXISTING:
+                        checkPersmissions(matchingNameDpu, user);
                         result = matchingNameDpu;
                         break;
                     default:
