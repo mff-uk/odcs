@@ -22,6 +22,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ import java.util.*;
 
 @Component
 @Path("/users")
+@AuthenticationRequired
 public class UserResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
