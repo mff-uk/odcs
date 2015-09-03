@@ -44,6 +44,9 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineStarted;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -125,11 +128,29 @@ public class Executor implements Runnable {
      */
     private Date lastSuccessfulExTime;
 
+    @Autowired
+    private AppConfig appConfig;
+
+    /**
+     * Backend identifier
+     */
+    private String backendID;
+
+    private boolean clusterMode = false;
+
     /**
      * Sort pre/post executors.
      */
     @PostConstruct
     public void init() {
+        try {
+            this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
+        } catch (MissingConfigPropertyException e) {
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
+        }
+        if (this.clusterMode) {
+            this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+        }
         if (preExecutors != null) {
             Collections.sort(preExecutors,
                     AnnotationAwareOrderComparator.INSTANCE);
@@ -155,6 +176,9 @@ public class Executor implements Runnable {
             // update state and set start time
             this.execution.setStart(new Date());
             this.execution.setStatus(PipelineExecutionStatus.RUNNING);
+            if (this.clusterMode) {
+                this.execution.setBackendId(this.backendID);
+            }
 
             try {
                 pipelineFacade.save(this.execution);

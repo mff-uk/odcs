@@ -71,8 +71,10 @@ public interface PipelineCanvasClientRpc extends ClientRpc {
      *            language in which should be canvas displayed
      * @param frontendTheme
      *            frontend theme name
+     * @param canDebug
+     *            If user has permission to debug pipeline
      */
-    public void init(int width, int height, String language, String frontendTheme);
+    public void init(int width, int height, String language, String frontendTheme, boolean debug);
 
     /**
      * Updates information of given node's DPUInstance.

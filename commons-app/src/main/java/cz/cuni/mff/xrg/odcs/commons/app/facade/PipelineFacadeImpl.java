@@ -360,8 +360,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         Date lastChange = dbPipeline.getLastChange();
         Date myLastChange = pipeline.getLastChange();
-        return lastChange == null ? true :
-                myLastChange == null ? false : !lastChange.after(myLastChange);
+        return lastChange == null ? true : myLastChange == null ? false : !lastChange.after(myLastChange);
     }
 
     /* ******************** Methods for managing PipelineExecutions ********* */
@@ -414,8 +413,20 @@ class PipelineFacadeImpl implements PipelineFacade {
 
     @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
+    public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAll(status, backendID);
+    }
+
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
+    }
+
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
+    public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAllByPriorityLimited(status, backendID);
     }
 
     /**
@@ -581,7 +592,8 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasPermission(#exec, 'pipeline.run')")
+    @PreAuthorize("hasPermission(#exec, 'pipeline.run') "
+            + "AND (!#exec.isDebugging() OR (#exec.isDebugging() AND hasRole('pipeline.runDebug')))")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -644,4 +656,5 @@ class PipelineFacadeImpl implements PipelineFacade {
     public List<Pipeline> getAllPipelines(String externalUserId) {
         return this.pipelineDao.getPipelinesForUser(externalUserId);
     }
+
 }

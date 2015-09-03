@@ -309,6 +309,7 @@ public class ImportService {
             // bind
             schedule.setPipeline(pipeline);
             schedule.setOwner(user);
+            schedule.setActor(user.getUserActor());
             // save into database
             scheduleFacade.save(schedule);
         }

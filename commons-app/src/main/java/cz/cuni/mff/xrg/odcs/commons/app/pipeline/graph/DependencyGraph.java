@@ -16,8 +16,12 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,18 +36,18 @@ public class DependencyGraph implements Iterable<Node> {
      * Structure for building dependency graph mapping nodes to dependency
      * nodes.
      */
-    private Map<Node, DependencyNode> dGraph = new HashMap<>();
+    private Map<Node, DependencyNode> dGraph = new LinkedHashMap<>();
 
     /**
      * List of Extractor nodes - nodes without dependencies
      */
-    private Set<DependencyNode> starters = new HashSet<>();
+    private List<DependencyNode> starters = new ArrayList<>();
 
     /**
      * Cache used for fast searching of node ancestors. A {@link Node} with no
      * ancestor (no incoming {@link Edge}) is not indexed here at all.
      */
-    private Map<Node, Set<Node>> ancestorCache = new HashMap<>();
+    private Map<Node, List<Node>> ancestorCache = new LinkedHashMap<>();
 
     /**
      * Constructs dependency graph from given pipeline graph.
@@ -72,18 +76,28 @@ public class DependencyGraph implements Iterable<Node> {
 
         // now create trimmed PipelineGraph containing only nodes needed to run
         // debugNode
-        Set<Node> oNodes = getAllAncestors(debugNode);
+        List<Node> oNodes = getAllAncestors(debugNode);
         oNodes.add(debugNode);
 
-        Set<Edge> nEdges = new HashSet<>(graph.getEdges().size());
-        for (Edge edge : graph.getEdges()) {
+        Set<Edge> nEdges = new HashSet<>();
+        List<Edge> edges = new ArrayList<>(graph.getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        for (Edge edge : edges) {
             if (oNodes.contains(edge.getFrom())
                     && oNodes.contains(edge.getTo())) {
                 // Copy edge so we do not work with the edge from original
                 // graph. Otherwise calling persist/merge on pipeline will
                 // cascade to edge where the trimmed graph might be found
                 // as a new entity. See GH-1156.
-                nEdges.add(new Edge(edge.getFrom(), edge.getTo(), edge.getScript()));
+                Edge edge2 = new Edge(edge.getFrom(), edge.getTo(), edge.getScript());
+                edge2.setId(edge.getId());
+                nEdges.add(edge2);
             }
         }
 
@@ -114,7 +128,7 @@ public class DependencyGraph implements Iterable<Node> {
     /**
      * @return the extractors without inputs = the nodes which may be run first
      */
-    public Set<DependencyNode> getStarters() {
+    public List<DependencyNode> getStarters() {
         return starters;
     }
 
@@ -124,7 +138,7 @@ public class DependencyGraph implements Iterable<Node> {
      * @param node
      * @return set of ancestors
      */
-    public Set<Node> getAncestors(Node node) {
+    public List<Node> getAncestors(Node node) {
         return ancestorCache.get(node);
     }
 
@@ -134,7 +148,7 @@ public class DependencyGraph implements Iterable<Node> {
      * Always call after dependency graph is built!
      */
     private void findStarters() {
-        starters = new HashSet<>();
+        starters = new ArrayList<>();
         for (DependencyNode node : dGraph.values()) {
             // extractors have no dependencies
             if (node.getDependencies().isEmpty()) {
@@ -154,16 +168,33 @@ public class DependencyGraph implements Iterable<Node> {
 
         // clear all previous data
         int noOfNodes = graph.getNodes().size();
-        dGraph = new HashMap<>(noOfNodes);
-        ancestorCache = new HashMap<>(noOfNodes);
+        dGraph = new LinkedHashMap<>(noOfNodes);
+        ancestorCache = new LinkedHashMap<>(noOfNodes);
 
         // initialize map for dependency nodes
-        for (Node node : graph.getNodes()) {
+        List<Node> nodes = new ArrayList<>(graph.getNodes());
+        Collections.sort(nodes, new Comparator<Node>() {
+
+            @Override
+            public int compare(Node o1, Node o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+        for (Node node : nodes) {
             dGraph.put(node, new DependencyNode(node));
         }
 
+        List<Edge> edges = new ArrayList<>(graph.getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+
+        });
         // iterate over all edges and reflect them in dependency nodes
-        for (Edge e : graph.getEdges()) {
+        for (Edge e : edges) {
 
             // find the target node in the dependency graph
             DependencyNode tNode = dGraph.get(e.getTo());
@@ -188,9 +219,9 @@ public class DependencyGraph implements Iterable<Node> {
      * @param tNode
      */
     private void cacheAncestor(Node sNode, Node tNode) {
-        Set<Node> nodes = ancestorCache.get(tNode);
+        List<Node> nodes = ancestorCache.get(tNode);
         if (nodes == null) {
-            nodes = new HashSet<>();
+            nodes = new ArrayList<>();
             ancestorCache.put(tNode, nodes);
         }
         nodes.add(sNode);
@@ -204,10 +235,10 @@ public class DependencyGraph implements Iterable<Node> {
      * @param node
      * @return all dependencies of given node
      */
-    private Set<Node> getAllAncestors(Node node) {
+    private List<Node> getAllAncestors(Node node) {
 
-        Set<Node> oAncestors = ancestorCache.get(node);
-        Set<Node> ancestors = new HashSet<>();
+        List<Node> oAncestors = ancestorCache.get(node);
+        List<Node> ancestors = new ArrayList<>();
 
         if (oAncestors != null) {
             ancestors.addAll(oAncestors);

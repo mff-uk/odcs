@@ -22,8 +22,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +49,7 @@ public class PipelineGraphTest {
         Node nodeA = new Node();
         Node nodeB = new Node();
         Edge edge = new Edge(nodeA, nodeB);
-        Set<Edge> edges = new HashSet<>(Arrays.asList(edge));
+        LinkedHashSet<Edge> edges = new LinkedHashSet<>(Arrays.asList(edge));
         instance.setEdges(edges);
 
         assertEquals(edges, instance.getEdges());
