@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.Date;
@@ -184,6 +200,15 @@ public interface PipelineFacade extends Facade {
     List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
 
     /**
+     * Fetches all executions with given status and backend ID
+     * 
+     * @param status
+     * @param backendID
+     * @return list of executions
+     */
+    List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID);
+
+    /**
      * Find pipeline execution in database by ID and return it.
      * 
      * @param id
@@ -327,5 +352,16 @@ public interface PipelineFacade extends Facade {
      * @return true if there is at least one execution with selected statuses, false otherwise
      */
     boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
+
+    /**
+     * Get all executions with given status and executed by backend with given backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            backend ID
+     * @return List of priority ordered executions
+     */
+    List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID);
 
 }

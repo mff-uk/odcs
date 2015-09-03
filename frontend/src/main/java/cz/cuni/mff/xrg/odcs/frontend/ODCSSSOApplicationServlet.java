@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend;
 
 import java.io.IOException;
@@ -14,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionException;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -29,7 +43,7 @@ import com.vaadin.server.VaadinServletService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
-import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.LocalizedSystemMessagesProvider;
 
 /**
  * Customized servlet implementation to provide access to original {@link HttpServletRequest} across application.
@@ -51,6 +65,12 @@ public class ODCSSSOApplicationServlet extends SpringVaadinServlet {
         super.init(servletConfig);
 
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletConfig.getServletContext());
+    }
+
+    @Override
+    protected void servletInitialized() throws ServletException {
+        super.servletInitialized();
+        getService().setSystemMessagesProvider(new LocalizedSystemMessagesProvider());
     }
 
     /**

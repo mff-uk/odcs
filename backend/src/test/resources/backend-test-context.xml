@@ -54,6 +54,10 @@
     <!--<bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer"/>-->
 
     <bean id="dpuFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacadeImpl"/>
+    
+    <!-- Facade for managing backend servers  -->
+	<bean id="executionFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacadeImpl"/>
+	<bean id="dbExecutionServer" class="cz.cuni.mff.xrg.odcs.commons.app.execution.server.DbExecutionServerImpl"/>
 
     <!-- Facade for managing pipelines -->
     <bean id="pipelineFacade" class="cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacadeImpl"/>

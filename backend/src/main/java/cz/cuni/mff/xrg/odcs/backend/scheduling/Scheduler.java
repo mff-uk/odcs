@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
 import java.util.Date;
@@ -9,13 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
@@ -28,22 +46,40 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private AppConfig appConfig;
+
+    private boolean clusterMode = false;
+
     /**
      * Schedule facade.
      */
     @Autowired
     private ScheduleFacade scheduleFacade;
 
-    @Autowired
-    private PipelineFacade pipelineFacade;
+    private String backendID;
 
     @PostConstruct
+    private void init() {
+        try {
+            this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
+        } catch (MissingConfigPropertyException e) {
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
+        }
+        if (this.clusterMode) {
+            this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+        }
+        initialCheck();
+
+    }
+
     private void initialCheck() {
         // do initial run-after check 
-        scheduleFacade.executeFollowers();
+        if (this.clusterMode) {
+            this.scheduleFacade.executeFollowers(this.backendID);
+        } else {
+            this.scheduleFacade.executeFollowers();
+        }
     }
 
     /**
@@ -53,19 +89,15 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
      */
     private synchronized void onPipelineFinished(PipelineFinished pipelineFinishedEvent) {
         LOG.trace("onPipelineFinished started");
-        if (pipelineFinishedEvent.sucess()) {
-            // success continue
-        } else {
-            // execution failed -> ignore
-            return;
+        if (!pipelineFinishedEvent.sucess()) {
+            return; // If pipeline not successful, no post-process 
         }
 
         if (pipelineFinishedEvent.getExecution().getSilentMode()) {
             // pipeline run in silent mode .. ignore
         } else {
             scheduleFacade.executeFollowers(
-                    pipelineFinishedEvent.getExecution().getPipeline()
-                    );
+                    pipelineFinishedEvent.getExecution().getPipeline());
         }
         LOG.trace("onPipelineFinished finished");
     }
@@ -76,12 +108,21 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
      */
     @Async
     @Scheduled(fixedDelay = 30000)
+    @Transactional
     protected synchronized void timeBasedCheck() {
         LOG.trace("onTimeCheck started");
         // check DB for pipelines based on time scheduling
+
         Date now = new Date();
         // get all pipelines that are time based
-        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotQueuedRunning();
+        LOG.debug("Going to check all time based not queued schedules");
+        List<Schedule> candidates = null;
+        if (this.clusterMode) {
+            candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
+        } else {
+            candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunning();
+        }
+        LOG.debug("Found {} schedule candidates, that could be executed", candidates.size());
         // check ..
         for (Schedule schedule : candidates) {
             // we use information about next execution

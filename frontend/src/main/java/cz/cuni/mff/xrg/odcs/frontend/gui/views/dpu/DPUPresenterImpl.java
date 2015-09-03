@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.File;
@@ -244,7 +260,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     }
 
     /**
-     * Reload DPU. The new DPU's jar file is accessible through the {@link FileUploadReceiver#path}. The current DPU, which is being replaced
+     * Reload DPU. The new DPU's jar file is accessible through the {@link FileUploadReceiver#getFile()}. The current DPU, which is being replaced
      * , is assumed to be stored in {@link selectedDpu}.
      */
     private void copyToTarget(File newJar, DPUTemplateRecord dpu) {
@@ -265,7 +281,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     }
 
     @Override
-    public void selectDPUEventHandler(final DPUTemplateRecord dpu, final Object oldValue)  {
+    public void selectDPUEventHandler(final DPUTemplateRecord dpu, final Object oldValue) {
         //if the previous selected
         try {
             if (selectedDpu != null && selectedDpu.getId() != null && view.isChanged() && hasPermission(EntityPermissions.DPU_TEMPLATE_EDIT)) {
@@ -274,6 +290,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
                 ConfirmDialog.show(UI.getCurrent(), Messages.getString("DPUPresenterImpl.unsaved.changes"),
                         Messages.getString("DPUPresenterImpl.unsaved.changes.dialog"),
                         Messages.getString("DPUPresenterImpl.unsaved.changes.save"), Messages.getString("DPUPresenterImpl.unsaved.changes.discard"),
+                        Messages.getString("DPUPresenterImpl.unsaved.changes.cancel"),
                         new ConfirmDialog.Listener() {
                             private static final long serialVersionUID = 1L;
 
@@ -282,9 +299,14 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
                                 if (cd.isConfirmed()) {
                                     view.saveDPUTemplate();
                                     view.refresh();
+                                    selectedDpu = dpu;
+                                    view.selectNewDPU(dpu);
+                                } else if (cd.isCanceled()) {
+                                    selectedDpu = dpu;
+                                    view.selectNewDPU(dpu);
+                                } else {
+                                    view.treeSetValue(oldValue);
                                 }
-                                selectedDpu = dpu;
-                                view.selectNewDPU(dpu);
                             }
                         });
 
@@ -297,7 +319,7 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
             final DPUTemplateRecord oldSelectedDpu = selectedDpu;
             ConfirmDialog cd = ConfirmDialog.getFactory().create(Messages.getString("DPUPresenterImpl.unsaved.changes"),
                     Messages.getString("DPUPresenterImpl.unsaved.changes.dialog"),
-                    Messages.getString("DPUPresenterImpl.unsaved.changes.save"), Messages.getString("DPUPresenterImpl.unsaved.changes.discard")
+                    Messages.getString("DPUPresenterImpl.unsaved.changes.save"), Messages.getString("DPUPresenterImpl.unsaved.changes.discard"), Messages.getString("DPUPresenterImpl.unsaved.changes.cancel")
                     );
             cd.show(UI.getCurrent(), new ConfirmDialog.Listener() {
                 private static final long serialVersionUID = 1L;
@@ -309,9 +331,11 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
                         LOG.error("hasConfigChanged() throws for DPU '{}'",
                                 dpu.getId(), ex);
                         view.treeSetValue(oldValue);
-                    } else {
+                    } else if (cd.isCanceled()) {
                         selectedDpu = dpu;
                         view.selectNewDPU(dpu);
+                    } else {
+                        view.treeSetValue(oldValue);
                     }
                 }
             }, true);

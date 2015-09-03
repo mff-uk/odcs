@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
@@ -28,6 +44,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportSetting;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.DeletingFileInputStream;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -124,7 +141,7 @@ public class PipelineExport extends Window {
         Button btnExport = new Button(Messages.getString("PipelineExport.export"));
         buttonLayout.addComponent(btnExport);
         buttonLayout.setComponentAlignment(btnExport, Alignment.MIDDLE_LEFT);
-        Button btnCancel = new Button(Messages.getString("PipelineExport.close"), new Button.ClickListener() {
+        final Button btnCancel = new Button(Messages.getString("PipelineExport.close"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -164,7 +181,8 @@ public class PipelineExport extends Window {
                     return null;
                 }
                 try {
-                    return new FileInputStream(pplFile);
+                    btnCancel.click();
+                    return new DeletingFileInputStream(pplFile);                
                 } catch (FileNotFoundException ex) {
                     LOG.error("Failed to load file with pipeline", ex);
                     Notification.show(Messages.getString("PipelineExport.export.fail2"), Notification.Type.ERROR_MESSAGE);

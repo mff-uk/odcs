@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.unifiedviews.master.api;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
@@ -9,6 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ConvertUtils;
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -59,8 +76,8 @@ public class DPUResource {
         try {
             jarFile = ConvertUtils.inputStreamToFile(inputStream, contentDispositionHeader.getFileName());
         } catch (IOException e) {
-            LOG.error("Exception at reading input stream", e);
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            LOG.error("Exception at reading input stream.", e);
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("general.exception"), e.getMessage());
         }
         // if dpu name is empty, set it to null
         if (StringUtils.isEmpty(dpuName)) {
@@ -74,7 +91,7 @@ public class DPUResource {
                 shareType = ShareType.valueOf(visibility);
             } catch (IllegalArgumentException e) {
                 LOG.error("Exception at parsing share type", e);
-                throw new ApiException(Response.Status.BAD_REQUEST, e.getMessage());
+                throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("visibility.input.error"), "Failed to parse visibility value.");
             }
         }
 
@@ -82,7 +99,7 @@ public class DPUResource {
         String dpuDirName = getDirectoryName(jarFile.getName());
         if (dpuDirName == null) {
             LOG.error("Cannot parse directory name from JAR file: {}", jarFile.getName());
-            throw new ApiException(Response.Status.BAD_REQUEST, "Cannot process DPU name!");
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("dpu.name.parse.error"), String.format("Cannot parse directory name from JAR file: %s", jarFile.getName()));
         }
         DPUTemplateRecord dpuTemplate = dpuFacade.getByDirectory(dpuDirName);
 
@@ -106,7 +123,7 @@ public class DPUResource {
             }
             replaceDpu(dpuTemplate, jarFile);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, "DPU already exists!");
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("dpu.already.exists"), "DPU with this name already exists.");
         }
 
         // now we can delete the file
@@ -120,7 +137,7 @@ public class DPUResource {
             dpuManipulator.replace(dpuTemplate, jarFile);
         } catch (DPUReplaceException e) {
             LOG.error("Exception at replacing DPU", e);
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("dpu.replace.failed"), e.getMessage());
         }
     }
 
@@ -132,7 +149,7 @@ public class DPUResource {
             dpuFacade.save(dpuTemplate);
         } catch (DPUCreateException e) {
             LOG.error("Exception at importing DPU", e);
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("dpu.create.failed"), e.getMessage());
         }
     }
 

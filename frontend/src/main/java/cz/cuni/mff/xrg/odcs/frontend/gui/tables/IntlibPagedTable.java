@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.tables;
 
 import java.text.NumberFormat;
@@ -23,6 +39,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
@@ -37,6 +54,8 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 public class IntlibPagedTable extends PagedFilterTable {
 
     private HashMap<Object, Integer> positions;
+
+    private Label totalRecords;
 
     /**
      * Constructor.
@@ -54,7 +73,7 @@ public class IntlibPagedTable extends PagedFilterTable {
      * @return layout with table controls.
      */
     public HorizontalLayout createControls() {
-
+        this.setLocale(LocaleHolder.getLocale());
         Label pageLabel = new Label(Messages.getString("IntlibPagedTable.page"), ContentMode.HTML);
         final TextField currentPageTextField = new TextField();
         currentPageTextField.setValue(String.valueOf(getCurrentPage()));
@@ -69,6 +88,7 @@ public class IntlibPagedTable extends PagedFilterTable {
         Label separatorLabel = new Label("&nbsp;/&nbsp;", ContentMode.HTML);
         final Label totalPagesLabel = new Label(
                 String.valueOf(getTotalAmountOfPages()), ContentMode.HTML);
+
         currentPageTextField.setStyleName(Reindeer.TEXTFIELD_SMALL);
         currentPageTextField.setImmediate(true);
         currentPageTextField.addValueChangeListener(new ValueChangeListener() {
@@ -82,6 +102,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                     Object value = currentPageTextField.getConvertedValue();
                     int page = (int) value;
                     setCurrentPage(page);
+                    totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + getContainerDataSource().getRealSize());
                 }
             }
         });
@@ -92,6 +113,7 @@ public class IntlibPagedTable extends PagedFilterTable {
 
         HorizontalLayout controlBar = new HorizontalLayout();
         HorizontalLayout pageManagement = new HorizontalLayout();
+        HorizontalLayout recordsStats = new HorizontalLayout();
         final Button first = new Button("<<", new Button.ClickListener() {
             private static final long serialVersionUID = -355520120491283992L;
 
@@ -173,9 +195,21 @@ public class IntlibPagedTable extends PagedFilterTable {
         pageManagement.setComponentAlignment(last, Alignment.MIDDLE_LEFT);
         pageManagement.setWidth(null);
         pageManagement.setSpacing(true);
+
+        totalRecords = new Label("", ContentMode.HTML);
+        totalRecords.setWidth(null);
+        totalRecords.addStyleName("pagedtable-label");
+        recordsStats.addComponent(totalRecords);
+        recordsStats.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        recordsStats.setWidth(null);
+        recordsStats.setSpacing(true);
+
+        controlBar.addComponent(new HorizontalLayout());
         controlBar.addComponent(pageManagement);
+        controlBar.addComponent(recordsStats);
         controlBar.setComponentAlignment(pageManagement,
                 Alignment.MIDDLE_CENTER);
+        controlBar.setComponentAlignment(recordsStats, Alignment.BOTTOM_RIGHT);
         controlBar.setWidth(100, Unit.PERCENTAGE);
         addListener(new PageChangeListener() {
             private boolean inMiddleOfValueChange;
@@ -196,6 +230,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                     totalPagesLabel.setValue(Integer
                             .toString(getTotalAmountOfPages()));
                     inMiddleOfValueChange = false;
+                    totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + getContainerDataSource().getRealSize());
                 }
             }
         });
@@ -237,6 +272,7 @@ public class IntlibPagedTable extends PagedFilterTable {
                 setColumnHeader(id, container.getColumnName((String) id));
             }
             setVisibleColumns();
+            totalRecords.setCaption(Messages.getString("IntlibPagedTable.records") + String.valueOf(getContainerDataSource().getContainer().size()));
         }
     }
 

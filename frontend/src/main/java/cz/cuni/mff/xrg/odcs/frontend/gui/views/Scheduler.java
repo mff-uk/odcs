@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import java.text.DateFormat;
@@ -316,6 +332,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
     public IndexedContainer getTableData(List<Schedule> data) {
 
         IndexedContainer result = new IndexedContainer();
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
 
         for (String p : visibleCols) {
             // setting type of columns
@@ -358,7 +375,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
             result.getContainerProperty(id, "scheduledBy").setValue(getScheduledByDisplayName(item));
 
             if (item.getType().equals(ScheduleType.PERIODICALLY)) {
-                DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, LocaleHolder.getLocale());
+
                 if (item.isJustOnce()) {
                     result.getContainerProperty(id, "rule").setValue(
                             Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution())));

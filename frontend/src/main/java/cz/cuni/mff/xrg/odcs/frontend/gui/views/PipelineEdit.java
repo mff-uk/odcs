@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.QUEUED;
@@ -619,7 +635,9 @@ public class PipelineEdit extends ViewComponent {
         buttonValidate.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                pipelineCanvas.validateGraph();
+                if (pipelineCanvas.validateGraph()) {
+                    Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                }
             }
         });
         leftPartOfButtonBar.addComponent(buttonValidate);
@@ -663,15 +681,28 @@ public class PipelineEdit extends ViewComponent {
         buttonCopy.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                // save current pipeline
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified()) {
                     ConfirmDialog.show(UI.getCurrent(),
-                            Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
+                            Messages.getString("PipelineEdit.copy.unsaved"), Messages.getString("PipelineEdit.copy.unsaved.description"),
+                            Messages.getString("PipelineEdit.copy.unsaved.copyAnyway"), Messages.getString("PipelineEdit.copy.unsaved.cancel"), new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
                                         savePipelineAsNew();
                                         paralelInfoLayout.setVisible(false);
+                                    }
+                                }
+                            });
+                    // save current pipeline
+                } else if (!pipelineFacade.isUpToDate(pipeline)) {
+                    ConfirmDialog.show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copy.notActual"), Messages.getString("PipelineEdit.copy.notActual.description"), Messages.getString("PipelineEdit.copy.notActual.copyAnyway"), Messages.getString("PipelineEdit.copy.notActual.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        if (savePipelineAsNew()) {
+                                            paralelInfoLayout.setVisible(false);
+                                        }
                                     }
                                 }
                             });
@@ -688,7 +719,21 @@ public class PipelineEdit extends ViewComponent {
         buttonCopyAndClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                if (!pipelineFacade.isUpToDate(pipeline)) {
+                if (isModified()) {
+                    ConfirmDialog.show(UI.getCurrent(),
+                            Messages.getString("PipelineEdit.copyClose.unsaved"), Messages.getString("PipelineEdit.copyClose.unsaved.description"),
+                            Messages.getString("PipelineEdit.copyClose.unsaved.copyAnyway"), Messages.getString("PipelineEdit.copyClose.unsaved.cancel"), new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog cd) {
+                                    if (cd.isConfirmed()) {
+                                        savePipelineAsNew();
+                                        paralelInfoLayout.setVisible(false);
+                                        closeView();
+                                    }
+                                }
+                            });
+                    // save current pipeline
+                } else if (!pipelineFacade.isUpToDate(pipeline)) {
                     ConfirmDialog.show(
                             UI.getCurrent(),
                             Messages.getString("PipelineEdit.copyClose.notActual"), Messages.getString("PipelineEdit.copyClose.notActual.description"), Messages.getString("PipelineEdit.copyClose.notActual.copyAnyway"), Messages.getString("PipelineEdit.copyClose.notActual.cancel"),
@@ -696,14 +741,16 @@ public class PipelineEdit extends ViewComponent {
                                 @Override
                                 public void onClose(ConfirmDialog cd) {
                                     if (cd.isConfirmed()) {
-                                        savePipelineAsNew();
-                                        closeView();
+                                        if (savePipelineAsNew()) {
+                                            closeView();
+                                        }
                                     }
                                 }
                             });
                 } else {
-                    savePipelineAsNew();
-                    closeView();
+                    if (savePipelineAsNew()) {
+                        closeView();
+                    }
                 }
             }
         });
@@ -768,6 +815,10 @@ public class PipelineEdit extends ViewComponent {
         buttonExport.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
+                if (pipeline.getId() == null) { // its new, not yet saved pipeline
+                    Notification.show(Messages.getString("PipelineEdit.export.fail.not.saved"), Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 final PipelineExport dialog = new PipelineExport(exportService, pipeline);
                 UI.getCurrent().addWindow(dialog);
                 dialog.bringToFront();
@@ -909,11 +960,21 @@ public class PipelineEdit extends ViewComponent {
         pipelineSettingsLayout.addComponent(pipelineDescription, 1, 1);
 
         Label visibilityLabel = new Label(Messages.getString("PipelineEdit.visibility"));
+        visibilityLabel.setWidth("-1px");
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
             pipelineSettingsLayout.addComponent(visibilityLabel, 0, 2);
         }
 
+        HorizontalLayout pipelineVisibilityLayout = new HorizontalLayout();
+
+        Embedded visibilityHelp = new Embedded();
+        visibilityHelp.setHeight("16px");
+        visibilityHelp.setWidth("16px");
+        visibilityHelp.setSource(new ThemeResource("img/question_red.png"));
+        visibilityHelp.setDescription(Messages.getString("PipelineEdit.visibility.help.public"));
+
         pipelineVisibility = new OptionGroup();
+        pipelineVisibility.setWidth("-1px");
         pipelineVisibility.addStyleName("horizontalgroup");
         pipelineVisibility.addItem(ShareType.PRIVATE);
         pipelineVisibility.setItemCaption(ShareType.PRIVATE, Messages.getString(ShareType.PRIVATE.name()));
@@ -922,6 +983,7 @@ public class PipelineEdit extends ViewComponent {
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY_PUBLIC_RW)) {
             pipelineVisibility.addItem(ShareType.PUBLIC_RW);
             pipelineVisibility.setItemCaption(ShareType.PUBLIC_RW, Messages.getString(ShareType.PUBLIC_RW.name()));
+            visibilityHelp.setDescription(Messages.getString("PipelineEdit.visibility.help.public.rw"));
         }
         pipelineVisibility.setImmediate(true);
         pipelineVisibility.setBuffered(true);
@@ -931,10 +993,13 @@ public class PipelineEdit extends ViewComponent {
                 setupButtons(true);
             }
         });
+        pipelineVisibilityLayout.addComponent(pipelineVisibility);
+        pipelineVisibilityLayout.addComponent(visibilityHelp);
 
         if (permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_SET_VISIBILITY)) {
-            pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
+            pipelineSettingsLayout.addComponent(pipelineVisibilityLayout, 1, 2);
         }
+
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
 
         author = new Label();
@@ -950,8 +1015,8 @@ public class PipelineEdit extends ViewComponent {
 
     @Override
     public boolean isModified() {
-        return (pipelineName.isModified() || pipelineDescription.isModified() 
-                || pipelineCanvas.isModified() || pipelineVisibility.isModified()) 
+        return (pipelineName.isModified() || pipelineDescription.isModified()
+                || pipelineCanvas.isModified() || pipelineVisibility.isModified())
                 && hasPermission(EntityPermissions.PIPELINE_EDIT);
     }
 
@@ -968,12 +1033,13 @@ public class PipelineEdit extends ViewComponent {
         setupButtons(isModified, this.pipeline.getId() == null);
     }
 
-    private void savePipelineAsNew() {
+    private boolean savePipelineAsNew() {
         if (!pipelineFacade.isUpToDate(pipeline)) {
         }
         if (!validate()) {
-            return;
+            return false;
         }
+
         pipeline.setName(pipelineName.getValue());
         pipelineCanvas.saveGraph(pipeline);
         Pipeline copiedPipeline = pipelineFacade.copyPipeline(pipeline);
@@ -983,6 +1049,7 @@ public class PipelineEdit extends ViewComponent {
         pipeline = copiedPipeline;
         finishSavePipeline(false, ShareType.PRIVATE, "reload");
         setMode(true);
+        return true;
     }
 
     /**
@@ -1012,7 +1079,9 @@ public class PipelineEdit extends ViewComponent {
     private void setupButtons(boolean enabled, boolean isNew) {
         buttonSave.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
         buttonSaveAndClose.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT));
-        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT) && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonSaveAndCloseAndDebug.setEnabled(enabled && hasPermission(EntityPermissions.PIPELINE_EDIT)
+                && hasPermission(EntityPermissions.PIPELINE_RUN_DEBUG) && hasRole(EntityPermissions.PIPELINE_RUN_DEBUG));
+        buttonSaveAndCloseAndDebug.setVisible(hasRole(EntityPermissions.PIPELINE_RUN_DEBUG));
         buttonCopy.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonCopyAndClose.setEnabled(!isNew && hasPermission(EntityPermissions.PIPELINE_COPY));
         buttonExport.setEnabled(hasRole(EntityPermissions.PIPELINE_EXPORT) && hasPermission(EntityPermissions.PIPELINE_EXPORT));
@@ -1423,7 +1492,7 @@ public class PipelineEdit extends ViewComponent {
             lblPipelineName.setValue(Messages.getString("PipelineEdit.pipeline.detail", getShortName(this.pipeline.getName(), MAX_NAME_LENGTH_DISPLAYED)));
         }
     }
-    
+
     private String getShortName(String name, int maxLength) {
         if (name == null || name.length() < maxLength) {
             return name;

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import java.io.File;
@@ -89,7 +105,7 @@ public class ImportService {
     public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
         // delete tempDirectory
-        FileUtils.deleteQuietly(tempDirectory);
+        ResourceManager.cleanupQuietly(tempDirectory);
 
         if (authCtx == null) {
             throw new ImportException(Messages.getString("ImportService.pipeline.authenticationContext.null"));
@@ -151,11 +167,7 @@ public class ImportService {
         } catch (ImportException ex) {
             throw ex;
         } finally {
-            // in every case delte temp directory
-            if (!FileUtils.deleteQuietly(tempDirectory)) {
-                // failed to delete directory
-                LOG.warn("Failed to delete temp directory.");
-            }
+            ResourceManager.cleanupQuietly(tempDirectory);
         }
         return pipe;
     }
@@ -297,6 +309,7 @@ public class ImportService {
             // bind
             schedule.setPipeline(pipeline);
             schedule.setOwner(user);
+            schedule.setActor(user.getUserActor());
             // save into database
             scheduleFacade.save(schedule);
         }
@@ -310,66 +323,70 @@ public class ImportService {
         boolean isScheduleFile = false;
 
         File tempDirectory = resourceManager.getNewImportTempDir();
-        ZipCommons.unpack(zipFile, tempDirectory);
-        Pipeline pipeline = loadPipeline(tempDirectory);
-
-        List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
-        TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
-
-        if (pipeline != null) {
-            PipelineGraph graph = pipeline.getGraph();
-            if (graph != null) {
-                Set<Node> nodes = graph.getNodes();
-                if (nodes != null) {
-                    for (Node node : nodes) {
-                        DPUInstanceRecord dpu = node.getDpuInstance();
-                        if (dpu == null) {
-                            continue;
-                        }
-
-                        DPUTemplateRecord template = dpu.getTemplate();
-
-                        if (template == null) {
-                            continue;
-                        }
-
-                        // try to detect if dpus are installed
-                        DPUTemplateRecord dpuTemplateRecord = dpuFacade
-                                .getByName(template.getName());
-                        // TODO jmc add version
-                        String version = "unknown";
-                        DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
-                        if (dpuTemplateRecord == null) {
-                            // these dpus is missing
-                            if (!missingDpus.containsKey(dpu.getName())) {
-                                missingDpus.put(dpu.getName(), dpuItem);
+        try {
+            ZipCommons.unpack(zipFile, tempDirectory);
+            Pipeline pipeline = loadPipeline(tempDirectory);
+            
+            List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
+            TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
+            
+            if (pipeline != null) {
+                PipelineGraph graph = pipeline.getGraph();
+                if (graph != null) {
+                    Set<Node> nodes = graph.getNodes();
+                    if (nodes != null) {
+                        for (Node node : nodes) {
+                            DPUInstanceRecord dpu = node.getDpuInstance();
+                            if (dpu == null) {
+                                continue;
                             }
+                            
+                            DPUTemplateRecord template = dpu.getTemplate();
+                            
+                            if (template == null) {
+                                continue;
+                            }
+                            
+                            // try to detect if dpus are installed
+                            DPUTemplateRecord dpuTemplateRecord = dpuFacade
+                                    .getByName(template.getName());
+                            // TODO jmc add version
+                            String version = "unknown";
+                            DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
+                            if (dpuTemplateRecord == null) {
+                                // these dpus is missing
+                                if (!missingDpus.containsKey(dpu.getName())) {
+                                    missingDpus.put(dpu.getName(), dpuItem);
+                                }
+                            }
+                            final File userDataFile = new File(tempDirectory,
+                                    ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
+                                    + template.getJarDirectory());
+                            
+                            if (userDataFile.exists()) {
+                                isUserData = true;
+                                
+                            }
+                            LOG.debug("userDataFile: " + userDataFile.toString());
                         }
-                        final File userDataFile = new File(tempDirectory,
-                                ArchiveStructure.DPU_DATA_USER.getValue() + File.separator
-                                        + template.getJarDirectory());
-
-                        if (userDataFile.exists()) {
-                            isUserData = true;
-
+                        
+                        final File scheduleFile = new File(tempDirectory,
+                                ArchiveStructure.SCHEDULE.getValue());
+                        if (scheduleFile.exists()) {
+                            isScheduleFile = true;
                         }
-                        LOG.debug("userDataFile: " + userDataFile.toString());
-                    }
-
-                    final File scheduleFile = new File(tempDirectory,
-                            ArchiveStructure.SCHEDULE.getValue());
-                    if (scheduleFile.exists()) {
-                        isScheduleFile = true;
                     }
                 }
             }
+            
+            ImportedFileInformation result = new ImportedFileInformation(usedDpus,
+                    missingDpus, isUserData, isScheduleFile);
+            
+            LOG.debug("<<< Leaving getImportedInformation: {}", result);
+            return result;
+        } finally {
+            ResourceManager.cleanupQuietly(tempDirectory);
         }
-
-        ImportedFileInformation result = new ImportedFileInformation(usedDpus,
-                missingDpus, isUserData, isScheduleFile);
-
-        LOG.debug("<<< Leaving getImportedInformation: {}", result);
-        return result;
     }
 
     public boolean hasUserPermission(String permission) {

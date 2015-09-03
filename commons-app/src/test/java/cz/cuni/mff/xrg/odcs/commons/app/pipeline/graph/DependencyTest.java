@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import static org.junit.Assert.*;
@@ -27,10 +43,10 @@ public class DependencyTest {
     public void testInlineDependencyResolution() {
 
         PipelineGraph graph = buildGraph(5);
-        graph.addEdge(nodes[2], nodes[3]);
-        graph.addEdge(nodes[0], nodes[1]);
-        graph.addEdge(nodes[1], nodes[2]);
-        graph.addEdge(nodes[3], nodes[4]);
+        graph.addEdge(nodes[2], nodes[3]).setId(1L);
+        graph.addEdge(nodes[0], nodes[1]).setId(2L);
+        graph.addEdge(nodes[1], nodes[2]).setId(3L);
+        graph.addEdge(nodes[3], nodes[4]).setId(4L);
 
         DependencyGraph dGraph = new DependencyGraph(graph);
 
@@ -56,10 +72,10 @@ public class DependencyTest {
     public void testComplexDependencyResolution() {
 
         PipelineGraph graph = buildGraph(5);
-        graph.addEdge(nodes[0], nodes[1]);
-        graph.addEdge(nodes[1], nodes[2]);
-        graph.addEdge(nodes[2], nodes[3]);
-        graph.addEdge(nodes[4], nodes[2]);
+        graph.addEdge(nodes[0], nodes[1]).setId(1L);;
+        graph.addEdge(nodes[1], nodes[2]).setId(2L);
+        graph.addEdge(nodes[2], nodes[3]).setId(3L);
+        graph.addEdge(nodes[4], nodes[2]).setId(4L);
 
         DependencyGraph dGraph = new DependencyGraph(graph);
 
@@ -100,11 +116,11 @@ public class DependencyTest {
     public void testCircularDependencyResolution() {
 
         PipelineGraph graph = buildGraph(5);
-        graph.addEdge(nodes[0], nodes[1]);
-        graph.addEdge(nodes[1], nodes[2]);
-        graph.addEdge(nodes[2], nodes[3]);
-        graph.addEdge(nodes[3], nodes[4]);
-        graph.addEdge(nodes[3], nodes[1]);
+        graph.addEdge(nodes[0], nodes[1]).setId(1L);
+        graph.addEdge(nodes[1], nodes[2]).setId(2L);
+        graph.addEdge(nodes[2], nodes[3]).setId(3L);
+        graph.addEdge(nodes[3], nodes[4]).setId(4L);
+        graph.addEdge(nodes[3], nodes[1]).setId(5L);
 
         DependencyGraph dGraph = new DependencyGraph(graph);
         GraphIterator iter = dGraph.iterator();
@@ -152,12 +168,12 @@ public class DependencyTest {
     public void testDebugNodeInComplexGraph() {
 
         PipelineGraph graph = buildGraph(7);
-        graph.addEdge(nodes[0], nodes[1]);
-        graph.addEdge(nodes[1], nodes[2]);
-        graph.addEdge(nodes[2], nodes[3]);
-        graph.addEdge(nodes[4], nodes[5]);
-        graph.addEdge(nodes[5], nodes[1]);
-        graph.addEdge(nodes[6], nodes[2]);
+        graph.addEdge(nodes[0], nodes[1]).setId(1L);
+        graph.addEdge(nodes[1], nodes[2]).setId(2L);
+        graph.addEdge(nodes[2], nodes[3]).setId(3L);
+        graph.addEdge(nodes[4], nodes[5]).setId(4L);
+        graph.addEdge(nodes[5], nodes[1]).setId(5L);
+        graph.addEdge(nodes[6], nodes[2]).setId(6L);
 
         DependencyGraph dGraph = new DependencyGraph(graph, nodes[1]);
         GraphIterator iter = dGraph.iterator();
@@ -191,6 +207,7 @@ public class DependencyTest {
         nodes = new Node[size];
         for (int i = 0; i < size; i++) {
             Node node = new Node();
+            node.setId(Long.valueOf(i));
             nodes[i] = node;
             graph.addNode(node);
         }

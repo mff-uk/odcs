@@ -1,6 +1,21 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,13 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -30,8 +45,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.DecorationHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandFileDownloader;
-import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.NewLogAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
@@ -115,6 +128,9 @@ public class DebuggingView extends CustomComponent {
 
     @Autowired
     private LogFacade logFacade;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Constructor.
@@ -246,31 +262,7 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("Add Browse tab");
         queryTab = tabs.addTab(browse, Messages.getString("DebuggingView.browse"));
-
-        VerticalLayout options = new VerticalLayout();
-        Button download = new Button(Messages.getString("DebuggingView.download"));
-        FileDownloader fileDownloader = new OnDemandFileDownloader(new OnDemandStreamResource() {
-            @Override
-            public String getFilename() {
-                return "log.txt";
-            }
-
-            @Override
-            public InputStream getStream() {
-                LinkedList<Object> filters = new LinkedList<>();
-                for (Filter f : logCoreFilters) {
-                    LOG.debug("Adding log filter to logs download.");
-                    filters.add(f);
-                }
-                LOG.debug("Creating logs stream for download...");
-                return logFacade.getLogsAsStream(filters);
-            }
-        });
-        fileDownloader.extend(download);
-        options.addComponent(download);
-        options.setMargin(true);
-        LOG.debug("Add Options tab");
-        tabs.addTab(options, Messages.getString("DebuggingView.options"));
+        this.queryTab.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG));
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);

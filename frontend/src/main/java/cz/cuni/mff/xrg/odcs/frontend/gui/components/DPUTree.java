@@ -1,11 +1,29 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
+import java.text.Collator;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -30,6 +48,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.transfer.ExportService;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.SimpleTreeFilter;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
@@ -82,8 +101,9 @@ public class DPUTree extends CustomComponent {
     private HorizontalLayout topLine;
 
     private Window.CloseListener createDPUCloseListener;
-    
+
     private boolean isValid = true;
+
     /**
      * Creates new DPUTree.
      */
@@ -286,7 +306,7 @@ public class DPUTree extends CustomComponent {
                     isValid = true;
                 }
             };
-            
+
             @Override
             protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws com.vaadin.data.Property.ReadOnlyException {
                 if (isValid) {
@@ -319,6 +339,8 @@ public class DPUTree extends CustomComponent {
         ((HierarchicalContainer) dpuTree.getContainerDataSource()).setItemSorter(new ItemSorter() {
             private static final long serialVersionUID = -3394104490891279840L;
 
+            private Collator collator = Collator.getInstance(LocaleHolder.getLocale());
+
             @Override
             public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
                 //Ignore
@@ -331,7 +353,9 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
                 }
-                return first.getMenuName().compareTo(second.getMenuName());
+                String firstName = StringUtils.isEmpty(first.getMenuName()) ? first.getName() : first.getMenuName();
+                String secondName = StringUtils.isEmpty(second.getMenuName()) ? second.getName() : second.getMenuName();
+                return collator.compare(firstName, secondName);
             }
         });
 
@@ -373,7 +397,7 @@ public class DPUTree extends CustomComponent {
     public void setValue(Object newValue) {
         dpuTree.select(null);
         dpuTree.select(newValue);
-        isValid=false;
+        isValid = false;
     }
 
     public Object getValue() {

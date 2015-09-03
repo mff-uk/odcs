@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.ArrayList;
@@ -102,7 +118,6 @@ class PipelineFacadeImpl implements PipelineFacade {
     public Pipeline copyPipeline(Pipeline pipeline) {
 
         Pipeline newPipeline = new Pipeline(pipeline);
-
         // determine new name for pipeline
         String oName = pipeline.getName();
         String nName;
@@ -166,7 +181,6 @@ class PipelineFacadeImpl implements PipelineFacade {
             + "AND hasRole('pipeline.setVisibilityPublicRw')))")
     @Override
     public void save(Pipeline pipeline) {
-
         // If pipeline is public, we need to make sure
         // all DPU templates used in this pipeline are
         // public as well.
@@ -346,8 +360,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
         Date lastChange = dbPipeline.getLastChange();
         Date myLastChange = pipeline.getLastChange();
-        return lastChange == null ? true :
-                myLastChange == null ? false : !lastChange.after(myLastChange);
+        return lastChange == null ? true : myLastChange == null ? false : !lastChange.after(myLastChange);
     }
 
     /* ******************** Methods for managing PipelineExecutions ********* */
@@ -400,8 +413,20 @@ class PipelineFacadeImpl implements PipelineFacade {
 
     @PreAuthorize("hasRole('pipelineExecution.read')")
     @Override
+    public List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAll(status, backendID);
+    }
+
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
     public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status) {
         return executionDao.getAllByPriorityLimited(status);
+    }
+
+    @PreAuthorize("hasRole('pipelineExecution.read')")
+    @Override
+    public List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID) {
+        return this.executionDao.getAllByPriorityLimited(status, backendID);
     }
 
     /**
@@ -567,7 +592,8 @@ class PipelineFacadeImpl implements PipelineFacade {
      * @param exec
      */
     @Transactional
-    @PreAuthorize("hasPermission(#exec, 'pipeline.run')")
+    @PreAuthorize("hasPermission(#exec, 'pipeline.run') "
+            + "AND (!#exec.isDebugging() OR (#exec.isDebugging() AND hasRole('pipeline.runDebug')))")
     @Override
     public void save(PipelineExecution exec) {
         exec.setLastChange(new Date());
@@ -630,4 +656,5 @@ class PipelineFacadeImpl implements PipelineFacade {
     public List<Pipeline> getAllPipelines(String externalUserId) {
         return this.pipelineDao.getPipelinesForUser(externalUserId);
     }
+
 }

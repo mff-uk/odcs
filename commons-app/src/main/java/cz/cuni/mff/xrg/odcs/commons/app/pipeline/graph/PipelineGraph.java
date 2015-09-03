@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
@@ -87,7 +103,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // create edges
-        edges = new HashSet(graph.edges.size());
+        edges = new HashSet<>();
         for (Edge oldEdge : graph.getEdges()) {
             Edge newEdge = new Edge(
                     nMap.get(oldEdge.getFrom()),
@@ -98,7 +114,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // assign nodes
-        nodes = new HashSet(nMap.values());
+        nodes = new HashSet<>(nMap.values());
     }
 
     /**
@@ -312,13 +328,17 @@ public class PipelineGraph implements DataObject {
      * @param newY
      *            The value of Y point of node
      */
-    public void moveNode(int dpuId, int newX, int newY) {
+    public boolean moveNode(int dpuId, int newX, int newY) {
         Node node = getNodeById(dpuId);
         if (node == null) {
             throw new IllegalArgumentException(
                     "Node with supplied id was not found!");
         }
+        if ((node.getPosition() != null)&&(node.getPosition().getX() == newX)&&(node.getPosition().getY() == newY)) {
+            return false;
+        }
         node.setPosition(new Position(newX, newY));
+        return true;
     }
 
     /**

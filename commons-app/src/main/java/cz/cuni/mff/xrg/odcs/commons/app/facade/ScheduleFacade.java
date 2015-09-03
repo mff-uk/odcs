@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.List;
@@ -48,6 +64,14 @@ public interface ScheduleFacade extends Facade {
     List<Schedule> getAllTimeBasedNotQueuedRunning();
 
     /**
+     * Fetches all {@link Schedule}s which are activated in certain time
+     * and the execution for the scheduled pipeline isn't already running.
+     * 
+     * @return list of all schedules planned to launch on time
+     */
+    List<Schedule> getAllTimeBasedNotQueuedRunningForCluster();
+
+    /**
      * Find Schedule in database by ID and return it.
      * 
      * @param id
@@ -86,9 +110,16 @@ public interface ScheduleFacade extends Facade {
     void execute(Schedule schedule);
 
     /**
-     * Check for all schedule that run after some execution and run them if all
-     * the the pre-runs has been executed. The call of this function may be
-     * expensive as it check for all runAfter based pipelines.
+     * Checks all schedule that run after some execution and run them if all the pre-runs
+     * have been executed by this backend node
+     * 
+     * @param backendID
+     */
+    void executeFollowers(String backendID);
+
+    /**
+     * Checks all schedule that run after some execution and run them if all the pre-runs
+     * have been executed
      */
     void executeFollowers();
 

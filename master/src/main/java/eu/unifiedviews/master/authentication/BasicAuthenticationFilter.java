@@ -1,9 +1,26 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.unifiedviews.master.authentication;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import org.glassfish.jersey.internal.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +71,12 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
      *
      * @param requestContext request context.
      * @throws java.io.IOException if an I/O exception occurs.
-     * @see PreMatching
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String authorization = requestContext.getHeaderString("authorization");
         if(!isAuthorizationValid(authorization)) {
-            throw new ApiException(Response.Status.UNAUTHORIZED, "Request is not authorized!");
+            throw new ApiException(Response.Status.UNAUTHORIZED, Messages.getString("unauthorized.request"), "Basic authentication from request header is missing or incorrect.");
         }
     }
 

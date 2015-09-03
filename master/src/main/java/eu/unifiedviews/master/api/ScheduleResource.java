@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.unifiedviews.master.api;
 
 import java.util.ArrayList;
@@ -32,9 +48,12 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ScheduleDTOConverter;
 import eu.unifiedviews.master.converter.ScheduledExecutionDTOConverter;
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineScheduleDTO;
 import eu.unifiedviews.master.model.ScheduledExecutionDTO;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 @Component
 @Path("/pipelines")
@@ -50,9 +69,6 @@ public class ScheduleResource {
     @Autowired
     private UserFacade userFacade;
 
-    @Autowired
-    private AppConfig appConfig;
-
     @GET
     @Path("/{pipelineid}/schedules")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -60,21 +76,21 @@ public class ScheduleResource {
         Pipeline pipeline = null;
         List<Schedule> schedules = null;
         if (StringUtils.isBlank(id) || !StringUtils.isNumeric(id)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", id));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", id), String.format("ID=%s is not valid pipeline ID", id));
         }
         try {
             pipeline = pipelineFacade.getPipeline(Long.parseLong(id));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", id));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             schedules = scheduleFacade.getSchedulesFor(pipeline);
-            if (schedules == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
+            if (isEmpty(schedules)) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.get.schedule.general.error"), String.format("null pipeline schedule returned. There is probably a problem with database."));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.schedule.general.error"), e.getMessage());
         }
 
         return ScheduleDTOConverter.convertToDTOs(schedules);
@@ -87,29 +103,29 @@ public class ScheduleResource {
         Pipeline pipeline = null;
         Schedule schedule = null;
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         if (StringUtils.isBlank(scheduleId) || !StringUtils.isNumeric(scheduleId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid schedule ID", scheduleId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.id.invalid", scheduleId), String.format("ID=%s is not valid pipeline schedule ID", scheduleId));
         }
         try {
             pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             schedule = scheduleFacade.getSchedule(Long.parseLong(scheduleId));
             if (schedule == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.schedule.id.not.found", scheduleId), String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.schedule.general.error"), e.getMessage());
         }
         if (schedule.getPipeline().getId().equals(pipeline.getId())) {
             return ScheduleDTOConverter.convertToDTO(schedule);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, String.format("Schedule with id=%s is not for pipeline with id=%s!", scheduleId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.mismatch", scheduleId, pipelineId),String.format("Schedule with id=%s is not schedule of pipeline with id=%s!", scheduleId, pipelineId));
         }
     }
 
@@ -120,29 +136,29 @@ public class ScheduleResource {
         Pipeline pipeline = null;
         Schedule schedule = null;
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         if (StringUtils.isBlank(scheduleId) || !StringUtils.isNumeric(scheduleId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid schedule ID", scheduleId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.id.invalid", scheduleId), String.format("ID=%s is not valid pipeline schedule ID", scheduleId));
         }
         try {
             pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             schedule = scheduleFacade.getSchedule(Long.parseLong(scheduleId));
             if (schedule == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.schedule.id.not.found", scheduleId), String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.schedule.general.error"), e.getMessage());
         }
         if (schedule.getPipeline().getId().equals(pipeline.getId())) {
             return ScheduledExecutionDTOConverter.convert(Arrays.asList(schedule));
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, String.format("Schedule with id=%s is not for pipeline with id=%s!", scheduleId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.mismatch", scheduleId, pipelineId),String.format("Schedule with id=%s is not schedule of pipeline with id=%s!", scheduleId, pipelineId));
         }
     }
 
@@ -152,12 +168,12 @@ public class ScheduleResource {
     public List<ScheduledExecutionDTO> getAllScheduleScheduledExecutions(@PathParam("pipelineid") String pipelineId) {
         Pipeline pipeline = null;
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         try {
             pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
             Collections.sort(schedules, new Comparator<Schedule>() {
@@ -179,10 +195,10 @@ public class ScheduleResource {
                 }
             });
             return ScheduledExecutionDTOConverter.convert(schedules);
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.schedule.general.error"), e.getMessage());
         }
     }
 
@@ -192,19 +208,19 @@ public class ScheduleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineScheduleDTO updatePipelineSchedule(@PathParam("pipelineid") String pipelineId, @PathParam("scheduleid") String scheduleId, PipelineScheduleDTO scheduleToUpdate) {
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         if (StringUtils.isBlank(scheduleId) || !StringUtils.isNumeric(scheduleId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid schedule ID", scheduleId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.id.invalid", scheduleId), String.format("ID=%s is not valid pipeline schedule ID", scheduleId));
         }
         try {
             Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             Schedule schedule = scheduleFacade.getSchedule(Long.parseLong(scheduleId));
             if (schedule == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.schedule.id.not.found", scheduleId), String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
             }
             if (schedule.getPipeline().getId().equals(pipeline.getId())) {
                 List<Pipeline> afterPipelines = null;
@@ -215,7 +231,7 @@ public class ScheduleResource {
                         if (loadedPip != null) {
                             afterPipelines.add(loadedPip);
                         } else {
-                            throw new ApiException(Response.Status.BAD_REQUEST, String.format("Pipeline with id=%d doesn't exist!", pipId));
+                            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
                         }
                     }
                 }
@@ -223,12 +239,12 @@ public class ScheduleResource {
                 scheduleFacade.save(schedule);
                 return ScheduleDTOConverter.convertToDTO(schedule);
             } else {
-                throw new ApiException(Response.Status.BAD_REQUEST, String.format("Schedule with id=%s is not for pipeline with id=%s!", scheduleId, pipelineId));
+                throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.mismatch", scheduleId, pipelineId),String.format("Schedule with id=%s is not schedule of pipeline with id=%s!", scheduleId, pipelineId));
             }
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.update.schedule.general.error"), e.getMessage());
         }
     }
 
@@ -238,25 +254,25 @@ public class ScheduleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineScheduleDTO createPipelineSchedule(@PathParam("pipelineid") String pipelineId, PipelineScheduleDTO scheduleToUpdate) {
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
-            throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         try {
             // try to get pipeline
             Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
             // try to get user
             User user = userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
             if (user == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("schedule.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", scheduleToUpdate.getUserExternalId()));
             }
 
             UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
 
             Schedule schedule = scheduleFacade.createSchedule();
             if (schedule == null) {
-                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.schedule.general.error"), "ScheduleFacade returned null, after creation of schedule");
             }
             schedule.setPipeline(pipeline);
             schedule.setType(scheduleToUpdate.getScheduleType());
@@ -268,11 +284,11 @@ public class ScheduleResource {
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
                 for (Long pipId : scheduleToUpdate.getAfterPipelines()) {
-                    Pipeline loadedPip = pipelineFacade.getPipeline(pipId.longValue());
+                    Pipeline loadedPip = pipelineFacade.getPipeline(pipId);
                     if (loadedPip != null) {
                         afterPipelines.add(loadedPip);
                     } else {
-                        throw new ApiException(Response.Status.BAD_REQUEST, String.format("Pipeline with id=%d doesn't exist!", pipId));
+                        throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
                     }
                 }
             }
@@ -280,10 +296,10 @@ public class ScheduleResource {
             ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
             scheduleFacade.save(schedule);
             return ScheduleDTOConverter.convertToDTO(schedule);
-        } catch (ApiException ex) {
-            throw ex;
-        } catch (RuntimeException exception) {
-            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, exception.getMessage());
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.schedule.general.error"), e.getMessage());
         }
     }
 }

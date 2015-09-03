@@ -1,6 +1,24 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import java.util.Arrays;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +32,10 @@ import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -37,10 +58,18 @@ public class PipelineHelper {
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private CheckDatabaseService checkDatabaseService;
+    private RuntimePropertiesFacade runtimePropertyFacade;
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertyFacade;
+    private ExecutionFacade executionFacade;
+
+    @Autowired
+    private AppConfig appConfig;
+
+    @Autowired
+    private CheckDatabaseService checkDatabaseService;
+
+    private boolean backendClusterMode = false;
 
     /**
      * Sets up parameters of pipeline execution and runs the pipeline.
@@ -65,7 +94,7 @@ public class PipelineHelper {
      * @param debugNode
      *            {@link Node} where debug execution should stop. Valid
      *            only for debug mode.
-     * @return {@link PipelineExecution} of given {@link Pipeline}.
+     * @return {@link PipelineExecution} of given {@link Pipeline} or null if backend is offline.
      */
     public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
         final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline,
@@ -81,35 +110,37 @@ public class PipelineHelper {
             pipelineExec.setDebugNode(debugNode);
         }
 
-        try {
-            Long orderPosition = getOrderPosition();
-            // run immediately - set higher priority
-            pipelineExec.setOrderNumber(orderPosition);
-            pipelineFacade.save(pipelineExec);
-            checkDatabaseService.checkDatabase();
-        } catch (RemoteAccessException e) {
-            ConfirmDialog
-                    .show(UI.getCurrent(),
-                            Messages.getString("PipelineHelper.backend.offline.dialog.name"), Messages.getString("PipelineHelper.backend.offline.dialog.message"), Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
-                            Messages.getString("PipelineHelper.backend.offline.dialog.cancel"), new ConfirmDialog.Listener() {
-                                private static final long serialVersionUID = 1L;
+        Long orderPosition = getOrderPosition();
+        // run immediately - set higher priority
+        pipelineExec.setOrderNumber(orderPosition);
+        this.pipelineFacade.save(pipelineExec);
+        if (!checkBackendActive()) {
+            ConfirmDialog.show(UI.getCurrent(),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.name"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.message"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.cancel"),
+                    new ConfirmDialog.Listener() {
+                        private static final long serialVersionUID = 1L;
 
-                                @Override
-                                public void onClose(ConfirmDialog cd) {
-                                    PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
-                                    if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
-                                        Notification.show(Messages.getString("PipelineHelper.execution.state.title"), Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
-                                        return; // already running
-                                    }
-                                    if (cd.isConfirmed()) {
-                                        pipelineFacade.save(pipelineExec);
-                                    } else {
-                                        pipelineFacade.delete(pipelineExec);
-                                    }
-                                }
-                            });
+                        @Override
+                        public void onClose(ConfirmDialog cd) {
+                            PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
+                            if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
+                                Notification.show(Messages.getString("PipelineHelper.execution.state.title"),
+                                        Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
+                                return; // already running
+                            }
+                            if (cd.isConfirmed()) {
+                                pipelineFacade.save(pipelineExec);
+                            } else {
+                                pipelineFacade.delete(pipelineExec);
+                            }
+                        }
+                    });
             return null;
         }
+
         Notification.show(Messages.getString("PipelineHelper.execution.started"), Notification.Type.HUMANIZED_MESSAGE);
         return pipelineExec;
     }
@@ -148,6 +179,29 @@ public class PipelineHelper {
             orderNumber = (epoch / priority);
         }
         return orderNumber;
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            this.backendClusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
+        } catch (MissingConfigPropertyException e) {
+            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
+        }
+    }
+
+    private boolean checkBackendActive() {
+        boolean backendActive = true;
+        if (this.backendClusterMode) {
+            backendActive = this.executionFacade.checkAnyBackendActive();
+        } else {
+            try {
+                this.checkDatabaseService.checkDatabase();
+            } catch (RemoteAccessException e) {
+                backendActive = false;
+            }
+        }
+        return backendActive;
     }
 
 }
