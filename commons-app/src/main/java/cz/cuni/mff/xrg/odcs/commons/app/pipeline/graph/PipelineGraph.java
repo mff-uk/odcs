@@ -103,7 +103,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // create edges
-        edges = new HashSet(graph.edges.size());
+        edges = new HashSet<>();
         for (Edge oldEdge : graph.getEdges()) {
             Edge newEdge = new Edge(
                     nMap.get(oldEdge.getFrom()),
@@ -114,7 +114,7 @@ public class PipelineGraph implements DataObject {
         }
 
         // assign nodes
-        nodes = new HashSet(nMap.values());
+        nodes = new HashSet<>(nMap.values());
     }
 
     /**
