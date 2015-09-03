@@ -414,12 +414,12 @@ public class ExportService {
             } catch (IOException ex1) {
                 throw new ExportException(Messages.getString("ExportService.error"), ex1);
             }
-            
+
             byte[] buffer = new byte[4096];
             try {
                 final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
                 zipStream.putNextEntry(ze);
-                
+
                 // move jar file into the zip file
                 try (FileInputStream in = new FileInputStream(serializedTarget)) {
                     int len;

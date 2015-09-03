@@ -22,6 +22,8 @@ import java.util.Set;
 
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
  * @author Petyr
  */
 @Transactional(propagation = Propagation.MANDATORY)
-class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecution {
+class DbExecutionImpl extends DbAccessBase<PipelineExecution>implements DbExecution {
+
+    private static Logger LOG = LoggerFactory.getLogger(DbExecutionImpl.class);
 
     protected DbExecutionImpl() {
         super(PipelineExecution.class);
@@ -75,6 +79,17 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         return executeList(query);
     }
 
+    @Override
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID) {
+        final String stringQuery = "SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status and e.backendId = :backendId and e.orderNumber >= :limited_priority "
+                + "order by e.orderNumber ASC , e.id ASC";
+        TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
+        query.setParameter("limited_priority", ScheduledJobsPriority.IGNORE.getValue());
+        query.setParameter("status", status);
+        query.setParameter("backendId", backendID);
+        return executeList(query);
+    }
 
     @Override
     public List<PipelineExecution> getAll(Pipeline pipeline, PipelineExecutionStatus status) {
@@ -83,6 +98,16 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
         query.setParameter("pipe", pipeline);
         query.setParameter("status", status);
+        return executeList(query);
+    }
+
+    @Override
+    public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID) {
+        final String stringQuery = "SELECT e FROM PipelineExecution e"
+                + " WHERE e.status = :status AND e.backendId = :backend";
+        TypedQuery<PipelineExecution> query = createTypedQuery(stringQuery);
+        query.setParameter("status", status);
+        query.setParameter("backend", backendID);
         return executeList(query);
     }
 
@@ -132,17 +157,17 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
 
     @Override
     public boolean hasDeleted(List<Long> ids) {
-    	if (ids == null || ids.isEmpty()) {
-			return false;
-		}
-    	final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
-    			+ " WHERE e.id IN :ids";
-    	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
-    	query.setParameter("ids", ids);
-    	Long number = (Long) query.getSingleResult();
-    	return !number.equals((long)ids.size());
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
+                + " WHERE e.id IN :ids";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("ids", ids);
+        Long number = (Long) query.getSingleResult();
+        return !number.equals((long) ids.size());
     }
-    
+
     @Override
     public boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses) {
         final String stringQuery = "SELECT COUNT(e) FROM PipelineExecution e"
@@ -154,4 +179,5 @@ class DbExecutionImpl extends DbAccessBase<PipelineExecution> implements DbExecu
         Long count = (Long) query.getSingleResult();
         return count > 0;
     }
+
 }

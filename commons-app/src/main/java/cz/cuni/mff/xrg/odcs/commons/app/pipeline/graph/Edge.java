@@ -185,4 +185,7 @@ public class Edge implements DataObject {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
