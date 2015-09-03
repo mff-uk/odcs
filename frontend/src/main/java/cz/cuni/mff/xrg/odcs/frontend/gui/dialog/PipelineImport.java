@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -241,7 +242,11 @@ public class PipelineImport extends Window {
                         missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
                     }
 
+                } catch (ImportException e) {
+                    Notification.show(Messages.getString("PipelineImport.read.info.fail"), e.getMessage(), Type.ERROR_MESSAGE);
+                    LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 } catch (Exception e) {
+                    Notification.show(Messages.getString("PipelineImport.read.info.fail"), Type.ERROR_MESSAGE);
                     LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 }
             }

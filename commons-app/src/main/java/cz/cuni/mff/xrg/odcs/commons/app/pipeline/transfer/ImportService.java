@@ -327,6 +327,10 @@ public class ImportService {
             ZipCommons.unpack(zipFile, tempDirectory);
             Pipeline pipeline = loadPipeline(tempDirectory);
             
+            if (pipelineFacade.hasPipelineWithName(pipeline.getName(), null)) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.exists", pipeline.getName()));
+            }
+            
             List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
             TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
             
