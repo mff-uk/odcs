@@ -108,8 +108,8 @@ public class DPUDetail extends Window {
         setModal(true);
         setResizable(true);
         // set initial size
-        setWidth("800px");
-        setHeight("600px");
+        setWidth("75%");
+        setHeight("75%");
     }
 
     /**
