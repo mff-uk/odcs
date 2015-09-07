@@ -35,7 +35,7 @@ public class ImportedFileInformation {
 	 * DPU's in current system that are of older version as the DPU,
 	 * that system its imported from
 	 */
-	private Map<String, DpuItem> oldDpus;
+	private Map<String, VersionConflictInformation> oldDpus;
 	/**
 	 * 3rd lvl (child) DPU's that use config of their DPU templates,
 	 * are in conflict due to different template configuration between
@@ -49,7 +49,7 @@ public class ImportedFileInformation {
 
 	public ImportedFileInformation(List<DpuItem> usedDpus,
 			Map<String, DpuItem> missingDpus, boolean userDataFile,
-			boolean scheduleFile, Map<String, DpuItem> oldDpus,
+			boolean scheduleFile, Map<String, VersionConflictInformation> oldDpus,
 			Set<String> toDecideDpus) {
 
 		this.usedDpus = usedDpus;
@@ -92,11 +92,11 @@ public class ImportedFileInformation {
 		this.scheduleFile = scheduleFile;
 	}
 	
-    public Map<String, DpuItem> getOldDpus() {
+    public Map<String, VersionConflictInformation> getOldDpus() {
         return oldDpus;
     }
 
-    public void setOldDpus(Map<String, DpuItem> oldDpus) {
+    public void setOldDpus(Map<String, VersionConflictInformation> oldDpus) {
         this.oldDpus = oldDpus;
     }
     

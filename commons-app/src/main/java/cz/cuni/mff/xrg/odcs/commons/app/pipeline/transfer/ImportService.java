@@ -437,7 +437,7 @@ public class ImportService {
             
             final List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
             final Map<String, DpuItem> missingDpus = new TreeMap<>();
-            final Map<String, DpuItem> oldDpus = new TreeMap<>();
+            final Map<String, VersionConflictInformation> oldDpus = new TreeMap<>();
             final Set<String> toDecideDpus = new HashSet<>();
             
             if (pipeline != null) {
@@ -475,12 +475,9 @@ public class ImportService {
                                 if (matchingDpuTemplate == null) {
                                     missingDpus.put(template.getName(), dpuItem);
                                 } else if (moduleManipulator.compareVersions(parentDpuTemplate.getJarName(), template.getJarName()) < 0) {
-                                    missingDpus.put(jarDir, dpuItem);
-                                    oldDpus.put(jarDir, dpuItem);
-                                } else {
-                                    if (dpu.isUseTemplateConfig() && !haveTheSameConfig(matchingDpuTemplate, template)) {
-                                        toDecideDpus.add(dpu.getName());
-                                    }
+                                    oldDpus.put(template.getName(), new VersionConflictInformation(dpuItem, parentDpuTemplate, template));
+                                } else if (dpu.isUseTemplateConfig() && !haveTheSameConfig(matchingDpuTemplate, template)) {
+                                    toDecideDpus.add(dpu.getName());
                                 }
                             } catch (DPUJarNameFormatException e) {
                                 // this DPU will fail to import ...
