@@ -30,13 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**
@@ -50,30 +48,20 @@ public class ProbeServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProbeServlet.class);
 
-    private static final String SELECT_SQL_POSTGRES = "SELECT key, value FROM properties";
+    private static final String SELECT_SQL = "SELECT * FROM properties";
 
     private static final String INSERT_SQL = "INSERT INTO properties VALUES (?,?)";
 
-    private static final String DELETE_SQL_POSTGRES = "DELETE FROM properties WHERE key = ?";
-
-    private static final String SELECT_SQL_MYSQL = "SELECT `key`, value FROM properties";
-
-    private static final String DELETE_SQL_MYSQL = "DELETE FROM properties WHERE `key` = ?";
-
-    private String jdbcDriver;
+    private static final String DELETE_SQL = "DELETE FROM properties WHERE value = ?";
 
     @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private AppConfig appConfig;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletConfig.getServletContext());
-        this.jdbcDriver = this.appConfig.getProperties().getProperty("database.sql.driver");
     }
 
     @Override
@@ -85,35 +73,22 @@ public class ProbeServlet extends HttpServlet {
         PreparedStatement insert = null;
         PreparedStatement delete = null;
 
-        String selectSql = null;
-        String deleteSql = null;
-        if (StringUtils.isNotEmpty(this.jdbcDriver) && this.jdbcDriver.toLowerCase().contains("postgres")) {
-            selectSql = SELECT_SQL_POSTGRES;
-            deleteSql = DELETE_SQL_POSTGRES;
-        } else if (StringUtils.isNotEmpty(this.jdbcDriver) && this.jdbcDriver.toLowerCase().contains("mysql")) {
-            selectSql = SELECT_SQL_MYSQL;
-            deleteSql = DELETE_SQL_MYSQL;
-        } else {
-            LOG.error("Cannot check database access, unknown database driver");
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            return;
-        }
-
         try {
             conn = this.dataSource.getConnection();
             conn.setAutoCommit(false);
 
             stmnt = conn.createStatement();
-            stmnt.execute(selectSql);
+            stmnt.execute(SELECT_SQL);
 
-            String name = generateName();
+            String key = generateStringGUIID();
+            String value = generateStringGUIID();
             insert = conn.prepareStatement(INSERT_SQL);
-            insert.setString(1, name);
-            insert.setString(2, "success");
+            insert.setString(1, key);
+            insert.setString(2, value);
             insert.execute();
 
-            delete = conn.prepareStatement(deleteSql);
-            delete.setString(1, name);
+            delete = conn.prepareStatement(DELETE_SQL);
+            delete.setString(1, value);
             delete.execute();
         } catch (Exception e) {
             LOG.error("Connection to database could not be obtained", e);
@@ -162,7 +137,7 @@ public class ProbeServlet extends HttpServlet {
         }
     }
 
-    private static String generateName() {
+    private static String generateStringGUIID() {
         return UUID.randomUUID().toString();
     }
 
