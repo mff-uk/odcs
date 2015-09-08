@@ -55,11 +55,11 @@ public class ChooseImportStrategyDialog extends Window {
         mainLayout.setSizeFull();
         setContent(mainLayout);
         
-        Table table = new Table();
+        final Table table = new Table();
         table.setWidth(100, Unit.PERCENTAGE);
         table.setHeight(350, Unit.PIXELS);
-        table.addContainerProperty("Name", String.class, null);
-        table.addContainerProperty("Choices", OptionGroup.class, null);
+        table.addContainerProperty(Messages.getString("ChooseImportStrategyDialog.column.name"), String.class, null);
+        table.addContainerProperty(Messages.getString("ChooseImportStrategyDialog.column.options"), OptionGroup.class, null);
 
         final Label instructionLabel = new Label(Messages.getString("ChooseImportStrategyDialog.info.label"));
         instructionLabel.setWidth(100, Unit.PERCENTAGE);
@@ -100,9 +100,9 @@ public class ChooseImportStrategyDialog extends Window {
         buttonLayout.setComponentAlignment(cancelBtn, Alignment.MIDDLE_CENTER);
         
         mainLayout.addComponent(instructionLabel);
-        mainLayout.setExpandRatio(instructionLabel, 1);
+        mainLayout.setExpandRatio(instructionLabel, 2);
         mainLayout.addComponent(table);
-        mainLayout.setExpandRatio(table, 8);
+        mainLayout.setExpandRatio(table, 9);
         mainLayout.addComponent(buttonLayout);
         mainLayout.setExpandRatio(buttonLayout, 0);
         
