@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -152,18 +153,17 @@ public class PipelineImport extends Window {
                 String ext = FilenameUtils.getExtension(event.getFilename());
                 missingDpusTable.removeAllItems();
                 usedDpusTable.removeAllItems();
+                btnImport.setEnabled(false);
 
                 if (ext.compareToIgnoreCase("zip") != 0) {
                     upload.interruptUpload();
                     Notification.show(Messages.getString("PipelineImport.not.zip.file"),
                             Notification.Type.ERROR_MESSAGE);
-                    btnImport.setEnabled(false);
                 } else {
                     // show upload process dialog
                     if (uploadInfoWindow.getParent() == null) {
                         UI.getCurrent().addWindow(uploadInfoWindow);
                     }
-                    btnImport.setEnabled(true);
                     uploadInfoWindow.setClosable(false);
                 }
             }
@@ -226,13 +226,10 @@ public class PipelineImport extends Window {
                     }
 
                     if (missingDpus.size() > 0) {
-                        btnImport.setEnabled(false);
                         Notification.show(Messages.getString("PipelineImport.missing.dpu.fail") +
                                 Messages.getString("PipelineImport.install.dpu"), Notification.Type.ERROR_MESSAGE);
-
                     } else {
                         btnImport.setEnabled(true);
-
                     }
 
                     // show result on table - these dpus which are missing
@@ -241,7 +238,11 @@ public class PipelineImport extends Window {
                         missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
                     }
 
+                } catch (ImportException e) {
+                    Notification.show(e.getMessage(), Type.ERROR_MESSAGE);
+                    LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 } catch (Exception e) {
+                    Notification.show(Messages.getString("PipelineImport.read.info.fail"), Type.ERROR_MESSAGE);
                     LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 }
             }
@@ -321,6 +322,7 @@ public class PipelineImport extends Window {
                 }
             }
         });
+        btnImport.setEnabled(false);
         buttonLayout.addComponent(btnImport);
         buttonLayout.setComponentAlignment(btnImport, Alignment.MIDDLE_LEFT);
 
