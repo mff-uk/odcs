@@ -418,6 +418,7 @@ public class ImportService {
             // bind
             schedule.setPipeline(pipeline);
             schedule.setOwner(user);
+            schedule.setActor(user.getUserActor());
             // save into database
             scheduleFacade.save(schedule);
         }
@@ -434,6 +435,10 @@ public class ImportService {
         try {
             ZipCommons.unpack(zipFile, tempDirectory);
             Pipeline pipeline = loadPipeline(tempDirectory);
+            
+            if (pipelineFacade.hasPipelineWithName(pipeline.getName(), null)) {
+                throw new ImportException(Messages.getString("ImportService.pipeline.exists", pipeline.getName()));
+            }
             
             final List<DpuItem> usedDpus = loadUsedDpus(tempDirectory);
             final Map<String, DpuItem> missingDpus = new TreeMap<>();
