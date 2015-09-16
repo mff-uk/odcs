@@ -198,7 +198,7 @@ public class PipelineEdit extends ViewComponent {
 
     private GridLayout pipelineSettingsLayout;
 
-    private HorizontalLayout buttonBar;
+    private CssLayout buttonBar;
 
     private HorizontalLayout leftPartOfButtonBar;
 
@@ -410,15 +410,15 @@ public class PipelineEdit extends ViewComponent {
                 } else if (c instanceof Panel) {
                     return "position: fixed; left: 20px; top: 300px; max-height:600px; overflow-y:auto; overflow-x: hidden; max-width: 375px";
                 } else if (c instanceof HorizontalLayout) {
-                    if (c.equals(buttonBar)) {
-                        return "position: fixed; bottom: 0px; left: 20px; background: #eee;";
-                    } else if (c.equals(paralelInfoLayout)) {
+                    if (c.equals(paralelInfoLayout)) {
                         return "position: fixed; left:400px; top: 300px;";
-                    } else if (c.equals(leftPartOfButtonBar)) {
-                        return "margin-right: 30px;";
                     }
                 } else if (c instanceof VerticalLayout) {
                     return "position: fixed; right: 40px; top: 300px;";
+                } else if (c instanceof CssLayout) {
+                    if (c.equals(buttonBar)) {
+                        return "position: fixed; bottom: 0px; left: 20px; background: #eee;";
+                    }
                 }
                 return null;
             }
@@ -641,7 +641,21 @@ public class PipelineEdit extends ViewComponent {
 
         layout.addComponent(actionBar);
 
-        buttonBar = new HorizontalLayout();
+        this.buttonBar = new CssLayout() {
+
+            @Override
+            protected String getCss(Component c) {
+                if (c instanceof HorizontalLayout) {
+                    if (c.equals(leftPartOfButtonBar)) {
+                        return "position: relative; margin-left: 100px;";
+                    } else if (c.equals(rightPartOfButtonBar)) {
+                        return "position: relative; margin-left: 100px";
+                    }
+                }
+                return null;
+            }
+
+        };
 
         // ------------------------------------------------------------------------------------
         // Left button bar part
@@ -880,9 +894,8 @@ public class PipelineEdit extends ViewComponent {
         });
 
         rightPartOfButtonBar.addComponent(buttonExport);
-        buttonBar.addComponent(rightPartOfButtonBar);
 
-        buttonBar.setSpacing(true);
+        buttonBar.addComponent(rightPartOfButtonBar);
         layout.addComponent(buttonBar);
 
         mainLayout.addComponent(layout);
@@ -897,12 +910,15 @@ public class PipelineEdit extends ViewComponent {
         int browserHeight = UI.getCurrent().getPage().getBrowserWindowHeight();
         if (pipelineCanvas.getCanvasWidth() < browserWidth) {
             tabSheet.setWidth(pipelineCanvas.getCanvasWidth() + 40, Unit.PIXELS);
+            this.buttonBar.setWidth(pipelineCanvas.getCanvasWidth(), Unit.PIXELS);
         } else {
             tabSheet.setWidth(100, Unit.PERCENTAGE);
+            this.buttonBar.setWidth(100, Unit.PERCENTAGE);
         }
         int tabSheetHeight = browserHeight - (isExpanded ? 305 : 115);
         tabSheet.setHeight(Math.min(tabSheetHeight, pipelineCanvas.getCanvasHeight() + 60), Unit.PIXELS);
         tabSheet.markAsDirty();
+
     }
 
     private void showConflictPipeline() {
