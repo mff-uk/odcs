@@ -119,7 +119,8 @@ public enum ConfigProperty {
     FRONTEND_INITIAL_PAGE("frontend.initial.page"),
     EXTERNAL_MENU_LINK_NAME("external.menu.link.name"),
     EXTERNAL_MENU_LINK_URL("external.menu.link.url"),
-    DPU_INSTANCE_USE_TEMPLATE_CONFIG("dpu.instance.template.config.enabled");
+    DPU_INSTANCE_USE_TEMPLATE_CONFIG("dpu.instance.template.config.enabled"),
+    FRONTEND_PIPELINE_SHOW_COMPOSITE_BUTTONS("frontend.pipeline.composite.buttons.show");
 
     private final String property;
 
