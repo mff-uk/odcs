@@ -159,8 +159,6 @@ public class PipelineEdit extends ViewComponent {
 
     private String canvasMode = DEVELOP_MODE;
 
-    private Tab standardTab;
-
     private Tab developTab;
 
     private Button buttonSave;
@@ -528,8 +526,6 @@ public class PipelineEdit extends ViewComponent {
         });
 
         tabSheet = new TabSheet();
-        standardTab = tabSheet.addTab(new Label(Messages.getString("PipelineEdit.under.construction")), Messages.getString("PipelineEdit.tab.standard"));
-        standardTab.setEnabled(true);
 
         //canvasPanel = new Panel(dadWrapper);
         developTab = tabSheet.addTab(dadWrapper, Messages.getString("PipelineEdit.tab.develop"));
@@ -541,11 +537,9 @@ public class PipelineEdit extends ViewComponent {
                     if (canvasMode.equals(STANDARD_MODE)) {
                         canvasMode = DEVELOP_MODE;
                         developTab.setCaption(Messages.getString("PipelineEdit.standardMode.caption.develop"));
-                        standardTab.setCaption(Messages.getString("PipelineEdit.standardMode.caption.standard"));
-                        tabSheet.setTabPosition(developTab, 1);
+                        tabSheet.setTabPosition(developTab, 0);
                     } else {
                         canvasMode = STANDARD_MODE;
-                        standardTab.setCaption(Messages.getString("PipelineEdit.developMode.caption.develop"));
                         developTab.setCaption(Messages.getString("PipelineEdit.developMode.caption.standard"));
                         tabSheet.setTabPosition(developTab, 0);
                     }
@@ -1480,15 +1474,11 @@ public class PipelineEdit extends ViewComponent {
         readOnlyLabel.setVisible(!isDevelop);
         if (isDevelop) {
             canvasMode = DEVELOP_MODE;
-            standardTab.setCaption(Messages.getString("PipelineEdit.setMode.isDevelop.standard"));
-            standardTab.setEnabled(false);
             developTab.setCaption(Messages.getString("PipelineEdit.setMode.isDevelop.develop"));
             tabSheet.setTabPosition(developTab, 0);
             pipelineCanvas.changeMode(canvasMode);
         } else {
             canvasMode = STANDARD_MODE;
-            standardTab.setCaption(Messages.getString("PipelineEdit.setMode.isStandard.develop"));
-            standardTab.setEnabled(false);
             developTab.setCaption(Messages.getString("PipelineEdit.setMode.isStandard.standard"));
             tabSheet.setTabPosition(developTab, 0);
             pipelineCanvas.changeMode(canvasMode);
