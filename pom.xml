@@ -71,6 +71,7 @@
 		<jersey.version>2.13</jersey.version>
 		<virtuoso.sesame.version>1.21-7-develop-SNAPSHOT</virtuoso.sesame.version> <!-- 1.18-7-develop-SNAPSHOT -->
 		<virtuoso.jdbc.version>3.76-7-develop-SNAPSHOT</virtuoso.jdbc.version> <!-- 3.74-7-develop-SNAPSHOT -->
+		<jetty.server.version>9.3.3.v20150827</jetty.server.version>
 
 		<!-- define output dirs -->
 		<project.output.lib>target/lib/</project.output.lib>

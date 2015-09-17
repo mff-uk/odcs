@@ -102,6 +102,7 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactoryImpl"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager"/>
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager"/>
+    <bean class="eu.unifiedviews.commons.util.DbPropertiesTableUtils"/>
     
     <!-- DAO layer. -->
     <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
