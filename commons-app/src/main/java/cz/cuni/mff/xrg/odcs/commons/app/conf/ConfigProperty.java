@@ -28,6 +28,7 @@ public enum ConfigProperty {
     BACKEND_NAME("backend.name"),
     BACKEND_HOST("backend.host"),
     BACKEND_PORT("backend.port"),
+    BACKEND_HTTP_PROBE_PORT("backend.probe.http.port"),
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),

@@ -91,6 +91,11 @@
     <!-- DPU executor -->
     <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor"
           scope="prototype" lazy-init="true"/>
+          
+    <!-- HTTP probe --> 
+    <bean class="cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.communication.ProbeHandler"/>
+    
 
     <!-- data unit factory class -->
 <!--
