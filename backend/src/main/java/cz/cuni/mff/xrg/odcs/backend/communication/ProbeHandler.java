@@ -32,6 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import eu.unifiedviews.commons.util.DbPropertiesTableUtils;
 
+/**
+ * ProbeHandler for {@link EmbeddedHttpServer}
+ * Checks database access (SELECT, INSERT, DELETE) and returns HTTP OK and predefined string
+ */
 public class ProbeHandler extends AbstractHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProbeHandler.class);
