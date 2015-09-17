@@ -96,26 +96,6 @@
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.PipelineConflicts" scope="prototype"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView" scope="prototype"/>
     
-    <bean id="checkDatabaseService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-        <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/checkDatabase"/>
-        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
-        <property name="refreshStubOnConnectFailure">
-            <value>true</value>
-        </property>
-        <!-- if the RMI servrs is offline on start up then don't die -->
-        <property name="lookupStubOnStartup" value="false"/>
-    </bean>
-
-    <bean id="hearbeatService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-        <property name="serviceUrl" value="rmi://${backend.host}:${backend.port}/heartbeat"/>
-        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
-        <property name="refreshStubOnConnectFailure">
-            <value>true</value>
-        </property>
-        <!-- if the RMI servrs is offline on start up then don't die -->
-        <property name="lookupStubOnStartup" value="false"/>
-    </bean>
-
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ConfigurationValidator"/>

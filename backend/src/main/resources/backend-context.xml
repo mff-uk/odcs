@@ -46,25 +46,6 @@
         <constructor-arg ref="configuration"/>
     </bean>
 
-    <!-- Server services, used to receive request from frontend -->
-    <bean id="checkDatabaseService" class="cz.cuni.mff.xrg.odcs.backend.communication.CheckDatabaseServiceImpl"/>
-    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-        <!-- does not necessarily have to be the same name as the bean to be exported -->
-        <property name="serviceName" value="checkDatabase"/>
-        <property name="service" ref="checkDatabaseService"/>
-        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService"/>
-        <property name="registryPort" value="${backend.port}"/>
-    </bean>
-
-    <bean id="heartbeatService" class="cz.cuni.mff.xrg.odcs.backend.communication.HeartbeatServiceImpl"/>
-    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-        <!-- does not necessarily have to be the same name as the bean to be exported -->
-        <property name="serviceName" value="heartbeat"/>
-        <property name="service" ref="heartbeatService"/>
-        <property name="serviceInterface" value="cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService"/>
-        <property name="registryPort" value="${backend.port}"/>
-    </bean>
-
     <!-- engine itself, take care about executing of PipelineExecution -->
     <bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine"/>
     <bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer"/>
