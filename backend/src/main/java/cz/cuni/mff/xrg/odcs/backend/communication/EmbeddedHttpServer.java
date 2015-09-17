@@ -28,6 +28,10 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 
+/**
+ * Embedded Jetty HTTP server serving as probe for backend process
+ * When called "/probe", database access is checked
+ */
 public class EmbeddedHttpServer {
 
     private static final int DEFAULT_PROBE_HTTP_PORT = 8066;
