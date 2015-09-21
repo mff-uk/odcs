@@ -32,6 +32,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
+import cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
@@ -61,6 +62,11 @@ public class AppEntry {
      * Spring context.
      */
     private AbstractApplicationContext context = null;
+
+    /**
+     * Embedded HTTP probe server for monitoring purposes
+     */
+    private EmbeddedHttpServer httpProbeServer;
 
     /**
      * Initialize spring and load configuration.
@@ -199,6 +205,11 @@ public class AppEntry {
         logbackLogger.addAppender(sqlAppender);
     }
 
+    private void initHttpProbe() throws Exception {
+        this.httpProbeServer = this.context.getBean(EmbeddedHttpServer.class);
+        this.httpProbeServer.startServer();
+    }
+
     /**
      * Main execution method.
      * 
@@ -233,6 +244,9 @@ public class AppEntry {
                 context.close();
                 return;
             }
+
+            // initialize HTTP probe server
+            initHttpProbe();
 
             // print some information ..
             LOG.info("Running ...");
