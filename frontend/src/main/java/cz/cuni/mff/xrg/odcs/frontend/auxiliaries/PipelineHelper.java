@@ -21,7 +21,6 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.remoting.RemoteAccessException;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Notification;
@@ -29,8 +28,8 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -53,10 +52,10 @@ public class PipelineHelper {
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private CheckDatabaseService checkDatabaseService;
+    private RuntimePropertiesFacade runtimePropertyFacade;
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertyFacade;
+    private ExecutionFacade executionFacade;
 
     /**
      * Sets up parameters of pipeline execution and runs the pipeline.
@@ -81,7 +80,7 @@ public class PipelineHelper {
      * @param debugNode
      *            {@link Node} where debug execution should stop. Valid
      *            only for debug mode.
-     * @return {@link PipelineExecution} of given {@link Pipeline}.
+     * @return {@link PipelineExecution} of given {@link Pipeline} or null if backend is offline.
      */
     public PipelineExecution runPipeline(Pipeline pipeline, boolean inDebugMode, Node debugNode) {
         final boolean hasQueuedOrRunning = pipelineFacade.hasExecutionsWithStatus(pipeline,
@@ -97,35 +96,37 @@ public class PipelineHelper {
             pipelineExec.setDebugNode(debugNode);
         }
 
-        try {
-            Long orderPosition = getOrderPosition();
-            // run immediately - set higher priority
-            pipelineExec.setOrderNumber(orderPosition);
-            pipelineFacade.save(pipelineExec);
-            checkDatabaseService.checkDatabase();
-        } catch (RemoteAccessException e) {
-            ConfirmDialog
-                    .show(UI.getCurrent(),
-                            Messages.getString("PipelineHelper.backend.offline.dialog.name"), Messages.getString("PipelineHelper.backend.offline.dialog.message"), Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
-                            Messages.getString("PipelineHelper.backend.offline.dialog.cancel"), new ConfirmDialog.Listener() {
-                                private static final long serialVersionUID = 1L;
+        Long orderPosition = getOrderPosition();
+        // run immediately - set higher priority
+        pipelineExec.setOrderNumber(orderPosition);
+        this.pipelineFacade.save(pipelineExec);
+        if (!checkBackendActive()) {
+            ConfirmDialog.show(UI.getCurrent(),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.name"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.message"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.schedule"),
+                    Messages.getString("PipelineHelper.backend.offline.dialog.cancel"),
+                    new ConfirmDialog.Listener() {
+                        private static final long serialVersionUID = 1L;
 
-                                @Override
-                                public void onClose(ConfirmDialog cd) {
-                                    PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
-                                    if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
-                                        Notification.show(Messages.getString("PipelineHelper.execution.state.title"), Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
-                                        return; // already running
-                                    }
-                                    if (cd.isConfirmed()) {
-                                        pipelineFacade.save(pipelineExec);
-                                    } else {
-                                        pipelineFacade.delete(pipelineExec);
-                                    }
-                                }
-                            });
+                        @Override
+                        public void onClose(ConfirmDialog cd) {
+                            PipelineExecution pplExec = pipelineFacade.getExecution(pipelineExec.getId());
+                            if (pplExec != null && pplExec.getStatus() != PipelineExecutionStatus.QUEUED) {
+                                Notification.show(Messages.getString("PipelineHelper.execution.state.title"),
+                                        Messages.getString("PipelineHelper.execution.state.description"), Type.WARNING_MESSAGE);
+                                return; // already running
+                            }
+                            if (cd.isConfirmed()) {
+                                pipelineFacade.save(pipelineExec);
+                            } else {
+                                pipelineFacade.delete(pipelineExec);
+                            }
+                        }
+                    });
             return null;
         }
+
         Notification.show(Messages.getString("PipelineHelper.execution.started"), Notification.Type.HUMANIZED_MESSAGE);
         return pipelineExec;
     }
@@ -164,6 +165,10 @@ public class PipelineHelper {
             orderNumber = (epoch / priority);
         }
         return orderNumber;
+    }
+
+    private boolean checkBackendActive() {
+        return this.executionFacade.checkAnyBackendActive();
     }
 
 }

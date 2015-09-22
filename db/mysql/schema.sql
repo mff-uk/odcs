@@ -33,6 +33,7 @@ DROP TABLE IF EXISTS `sch_email`;
 DROP TABLE IF EXISTS `rdf_ns_prefix`;
 DROP TABLE IF EXISTS `properties`;
 DROP TABLE IF EXISTS `runtime_properties`;
+DROP TABLE IF EXISTS `backend_servers`;
 
 CREATE TABLE `dpu_instance`
 (
@@ -122,6 +123,15 @@ CREATE INDEX `ix_EXEC_RECORD_r_type` ON `exec_record` (`r_type`);
 CREATE INDEX `ix_EXEC_RECORD_dpu_id` ON `exec_record` (`dpu_id`);
 CREATE INDEX `ix_EXEC_RECORD_execution_id` ON `exec_record` (`execution_id`);
 
+CREATE TABLE `backend_servers`
+(
+	`id` INTEGER AUTO_INCREMENT,
+	`backend_id` VARCHAR(128),
+	`last_update` TIMESTAMP,
+	PRIMARY KEY (`id`),
+    UNIQUE (`backend_id`)
+);
+
 CREATE TABLE `exec_pipeline`
 (
   `id` INTEGER AUTO_INCREMENT,
@@ -139,6 +149,7 @@ CREATE TABLE `exec_pipeline`
   `owner_id` INTEGER,
   `user_actor_id` INTEGER,
  `order_number` BIGINT NOT NULL,
+ `backend_id` VARCHAR(128),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE INDEX `ix_EXEC_PIPELINE_status` ON `exec_pipeline` (`status`);
@@ -150,6 +161,7 @@ CREATE INDEX `ix_EXEC_PIPELINE_context_id` ON `exec_pipeline` (`context_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_schedule_id` ON `exec_pipeline` (`schedule_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_owner_id` ON `exec_pipeline` (`owner_id`);
 CREATE INDEX `ix_EXEC_PIPELINE_user_actor_id` ON `exec_pipeline` (`user_actor_id`);
+CREATE INDEX `ix_EXEC_PIPELINE_backend_id` ON `exec_pipeline` (`backend_id`);
 
 
 CREATE TABLE `exec_schedule`
@@ -685,7 +697,7 @@ LEFT JOIN `user_actor` AS actor ON ppl.user_actor_id = actor.id;
 CREATE VIEW `exec_view` AS
 SELECT exec.id AS id, exec.status AS status, ppl.id AS pipeline_id, ppl.name AS pipeline_name, exec.debug_mode AS debug_mode, exec.t_start AS t_start, 
 exec.t_end AS t_end, exec.schedule_id AS schedule_id, owner.username AS owner_name, owner.full_name AS owner_full_name, exec.stop AS stop, exec.t_last_change AS t_last_change, 
-actor.name AS user_actor_name FROM `exec_pipeline` AS exec
+exec.backend_id AS backend_id, actor.name AS user_actor_name FROM `exec_pipeline` AS exec
 LEFT JOIN `ppl_model` AS ppl ON ppl.id = exec.pipeline_id
 LEFT JOIN `usr_user` AS owner ON owner.id = exec.owner_id
 LEFT JOIN `user_actor` AS actor ON actor.id = exec.user_actor_id;

@@ -28,10 +28,14 @@ public enum ConfigProperty {
     BACKEND_NAME("backend.name"),
     BACKEND_HOST("backend.host"),
     BACKEND_PORT("backend.port"),
+    BACKEND_HTTP_PROBE_PORT("backend.probe.http.port"),
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
+    BACKEND_ALIVE_LIMIT("backend.alive.limit"),
+    BACKEND_ID("backend.id"),
+    BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
@@ -115,7 +119,9 @@ public enum ConfigProperty {
 
     FRONTEND_INITIAL_PAGE("frontend.initial.page"),
     EXTERNAL_MENU_LINK_NAME("external.menu.link.name"),
-    EXTERNAL_MENU_LINK_URL("external.menu.link.url");
+    EXTERNAL_MENU_LINK_URL("external.menu.link.url"),
+    DPU_INSTANCE_USE_TEMPLATE_CONFIG("dpu.instance.template.config.enabled"),
+    FRONTEND_PIPELINE_SHOW_COMPOSITE_BUTTONS("frontend.pipeline.composite.buttons.show");
 
     private final String property;
 

@@ -17,10 +17,9 @@
 package cz.cuni.mff.xrg.odcs.frontend.monitor;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.remoting.RemoteAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 
 /**
  * Periodically checks Backend status. As singleton component should prevent
@@ -31,7 +30,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
 public class BackendHeartbeat {
 
     @Autowired
-    private HeartbeatService heartbeatService;
+    private ExecutionFacade executionFacade;
 
     /**
      * True if backend is alive.
@@ -41,14 +40,14 @@ public class BackendHeartbeat {
     @Scheduled(fixedDelay = 6 * 1000)
     private void check() {
         try {
-            alive = heartbeatService.isAlive();
-        } catch (RemoteAccessException ex) {
-            alive = false;
+            this.alive = this.executionFacade.checkAnyBackendActive();
+        } catch (Exception ex) {
+            this.alive = false;
         }
     }
 
     public boolean checkIsAlive() {
-        return alive;
+        return this.alive;
     }
 
 }

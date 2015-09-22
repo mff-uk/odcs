@@ -14,15 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cz.cuni.mff.xrg.odcs.backend.communication;
+package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
-import cz.cuni.mff.xrg.odcs.commons.app.communication.HeartbeatService;
+public class ApplicationConfigurationException extends Exception {
 
-public class HeartbeatServiceImpl implements HeartbeatService {
+    private static final long serialVersionUID = -1870162854289107624L;
 
-    @Override
-    public boolean isAlive() {
-        return true;
+    public ApplicationConfigurationException(String message) {
+        super(message);
     }
 
 }

@@ -14,22 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cz.cuni.mff.xrg.odcs.backend.communication;
+package cz.cuni.mff.xrg.odcs.commons.app.module;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
+/**
+ * Exception indicating wrong DPU's jar name format
+ * 
+ * @author mvi
+ *
+ */
+public class DPUJarNameFormatException extends Exception {
 
-import cz.cuni.mff.xrg.odcs.backend.execution.event.CheckDatabaseEvent;
-import cz.cuni.mff.xrg.odcs.commons.app.communication.CheckDatabaseService;
+    private static final long serialVersionUID = -1114519630027656944L;
 
-public class CheckDatabaseServiceImpl implements CheckDatabaseService {
     /**
-     * Event publisher used to publicize events.
+     * 
+     * @param cause
+     *          Cause of the {@link DPUJarNameFormatException}
      */
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
-    public void checkDatabase() {
-        eventPublisher.publishEvent(new CheckDatabaseEvent(this));
+    public DPUJarNameFormatException(String cause) {
+        super(cause);
+    }
+    
+    /**
+     * 
+     * @param message
+     *          Description of the error
+     * @param cause
+     *          Cause of the {@link DPUJarNameFormatException}
+     */
+    public DPUJarNameFormatException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

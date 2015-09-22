@@ -44,6 +44,8 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineStarted;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -125,11 +127,20 @@ public class Executor implements Runnable {
      */
     private Date lastSuccessfulExTime;
 
+    @Autowired
+    private AppConfig appConfig;
+
+    /**
+     * Backend identifier
+     */
+    private String backendID;
+
     /**
      * Sort pre/post executors.
      */
     @PostConstruct
     public void init() {
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
         if (preExecutors != null) {
             Collections.sort(preExecutors,
                     AnnotationAwareOrderComparator.INSTANCE);
@@ -155,6 +166,7 @@ public class Executor implements Runnable {
             // update state and set start time
             this.execution.setStart(new Date());
             this.execution.setStatus(PipelineExecutionStatus.RUNNING);
+            this.execution.setBackendId(this.backendID);
 
             try {
                 pipelineFacade.save(this.execution);

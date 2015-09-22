@@ -17,7 +17,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Iterates over dependency graph in an order that satisfies all dependencies.
@@ -30,7 +30,7 @@ public class GraphIterator implements Iterator<Node> {
     /**
      * Stack of nodes used to perform breath-first search.
      */
-    private final Set<DependencyNode> stack;
+    private final List<DependencyNode> stack;
 
     /**
      * Constructs iterator from dependency graph.

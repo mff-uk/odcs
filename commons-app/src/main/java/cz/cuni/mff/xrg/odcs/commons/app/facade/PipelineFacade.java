@@ -73,6 +73,14 @@ public interface PipelineFacade extends Facade {
      * @return List of pipelines
      */
     List<Pipeline> getAllPipelines(String externalUserId);
+    
+    /**
+     * Returns list of pipeline given user owns or that are not private
+     * 
+     * @param externalUserId
+     * @return
+     */
+    List<Pipeline> getAllVisiblePipelines(String externalUserId);
 
     /**
      * Find pipeline in database by ID and return it.
@@ -198,6 +206,15 @@ public interface PipelineFacade extends Facade {
     List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status);
 
     List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status);
+
+    /**
+     * Fetches all executions with given status and backend ID
+     * 
+     * @param status
+     * @param backendID
+     * @return list of executions
+     */
+    List<PipelineExecution> getAllExecutions(PipelineExecutionStatus status, String backendID);
 
     /**
      * Find pipeline execution in database by ID and return it.
@@ -343,5 +360,16 @@ public interface PipelineFacade extends Facade {
      * @return true if there is at least one execution with selected statuses, false otherwise
      */
     boolean hasExecutionsWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
+
+    /**
+     * Get all executions with given status and executed by backend with given backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            backend ID
+     * @return List of priority ordered executions
+     */
+    List<PipelineExecution> getAllExecutionsByPriorityLimited(PipelineExecutionStatus status, String backendID);
 
 }

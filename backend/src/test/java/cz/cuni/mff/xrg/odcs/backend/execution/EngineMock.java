@@ -16,18 +16,21 @@
  */
 package cz.cuni.mff.xrg.odcs.backend.execution;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EngineMock extends Engine {
 
     public EngineMock() {
         this.startUpDone = true;
+        this.backendID = "TestBackend";
     }
+
     public final List<PipelineExecution> historyOfExecution = new ArrayList<>();
 
     @Override
@@ -45,8 +48,11 @@ public class EngineMock extends Engine {
         this.pipelineFacade = pipelineFacade;
     }
 
+    public void setExecutionFacade(ExecutionFacade executionFacade) {
+        this.executionFacade = executionFacade;
+    }
 
-    public void doCheck(){
+    public void doCheck() {
         checkJobs();
     }
 }

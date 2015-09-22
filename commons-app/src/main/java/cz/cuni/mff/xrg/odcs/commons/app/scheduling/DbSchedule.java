@@ -70,6 +70,15 @@ public interface DbSchedule extends DbAccess<Schedule> {
     public List<Schedule> getAllTimeBasedNotQueuedRunning();
 
     /**
+     * Fetches all {@link Schedule}s which are activated in
+     * certain time and the execution for the scheduled pipeline
+     * isn't already queued or running.
+     * 
+     * @return list of schedules
+     */
+    public List<Schedule> getAllTimeBasedNotQueuedRunningForCluster();
+
+    /**
      * Fetches active (enabled) {@link Schedule}s which are activated based on
      * pipelines executions.
      * 
@@ -85,5 +94,15 @@ public interface DbSchedule extends DbAccess<Schedule> {
      * @return list of timestamps
      */
     public List<Date> getLastExecForRunAfter(Schedule schedule);
+
+    /**
+     * Return times of last executions (or null if there has been no successful
+     * execution) of run-after pipelines for runAfter base schedule.
+     * 
+     * @param schedule
+     * @param backendID
+     * @return list of timestamps
+     */
+    public List<Date> getLastExecForRunAfter(Schedule schedule, String backendID);
 
 }
