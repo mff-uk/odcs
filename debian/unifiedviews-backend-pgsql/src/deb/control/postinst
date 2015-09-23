@@ -141,6 +141,15 @@ db_configure() {
         su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
      fi     
 
+    if [ "$version" = "002.001.000" ]
+	then
+		# set db schema version
+		su - postgres -c "psql -d ${dbname}" < \
+		/usr/share/unifiedviews/pgsql/updates/2.2.0-update.sql
+		su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+		su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+	fi  
+
     # update backend config
     sed --in-place \
     -e "s/database.sql.hostname = .*/database.sql.hostname = $address_host/" \
