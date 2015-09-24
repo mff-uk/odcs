@@ -25,4 +25,4 @@ LEFT JOIN `usr_user` AS owner ON owner.id = exec.owner_id
 LEFT JOIN `user_actor` AS actor ON actor.id = exec.user_actor_id;
 
 UPDATE "properties" SET "value" = '002.002.000' WHERE "key" = 'UV.Core.version';
-UPDATE "properties" SET "value" = '002.002.000' WHERE "key" = 'UV.Plugin-DevEnv.version';
+UPDATE "properties" SET "value" = '002.001.004' WHERE "key" = 'UV.Plugin-DevEnv.version';
