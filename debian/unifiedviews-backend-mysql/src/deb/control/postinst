@@ -142,6 +142,13 @@ db_configure() {
        /usr/share/unifiedviews/mysql/2.1.0-update.sql
     fi   
     
+    if [ "$version" = "002.001.000" ]
+	then
+		# set db schema version
+        mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+       /usr/share/unifiedviews/mysql/2.2.0-update.sql
+	fi      
+    
     # set permissions for user uv
     echo "grant all on $DB_NAME.* to '$DBA_USER' identified by '$DBA_PASS';"  | mysql --password=$ROOT_PW || true
     echo "granted all on $DB_NAME for user: $DBA_USER"
