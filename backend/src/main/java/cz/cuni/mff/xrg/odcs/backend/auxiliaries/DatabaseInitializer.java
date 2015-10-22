@@ -20,7 +20,7 @@ public class DatabaseInitializer {
     @Autowired
     private JpaTransactionManager jpaTransactionManager;
 
-    private Collection<Permission> permissions= new ArrayList<>();
+    private Collection<Permission> permissions = new ArrayList<>();
 
     /**
      * Initialization with ..well.. initial data. This is done here because it should be independent from the used
@@ -80,7 +80,7 @@ public class DatabaseInitializer {
         prop3.setName("locale");
         prop3.setValue("en");
 
-        addNewPermissionToRoles("Administrator", adminRole);
+        addNewPermissionToRoles("administrator", adminRole);
         addNewPermissionToRoles("pipeline.delete", adminRole, userRole);
         addNewPermissionToRoles("pipeline.edit", adminRole, userRole);
         addNewPermissionToRoles("pipeline.definePipelineDependencies", adminRole, userRole);
