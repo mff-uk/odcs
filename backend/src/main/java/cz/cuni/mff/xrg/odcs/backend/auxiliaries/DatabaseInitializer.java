@@ -49,6 +49,7 @@ public class DatabaseInitializer {
         admin.setUsername("admin");
         admin.setEmail(adminEmailAddress);
         admin.addRole(adminRole);
+        admin.addRole(userRole);
 
         User user = new User();
         user.setFullName("John User");
