@@ -1,18 +1,10 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 
 /**
  * Represent settings for scheduler notification.
@@ -28,6 +20,7 @@ public abstract class NotificationRecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
     @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -58,7 +51,7 @@ public abstract class NotificationRecord implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

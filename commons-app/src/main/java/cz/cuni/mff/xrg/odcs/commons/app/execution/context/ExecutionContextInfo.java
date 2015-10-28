@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -66,6 +65,7 @@ public class ExecutionContextInfo implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_pipeline")
     @SequenceGenerator(name = "seq_exec_context_pipeline", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -74,13 +74,6 @@ public class ExecutionContextInfo implements DataObject {
      */
     @OneToOne(mappedBy = "context", fetch = FetchType.LAZY)
     private PipelineExecution execution;
-
-    /**
-     * Dummy column, because Virtuoso cannot insert a row without specifying any
-     * column values. Remove when entity has an attribute without default value.
-     */
-    @SuppressWarnings("unused")
-    private Boolean dummy = false;
 
     /**
      * Contexts for DPU's. Indexed by {@link DPUInstanceRecord}.
@@ -235,7 +228,7 @@ public class ExecutionContextInfo implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

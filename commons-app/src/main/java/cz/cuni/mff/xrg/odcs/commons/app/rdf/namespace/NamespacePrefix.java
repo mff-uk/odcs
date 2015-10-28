@@ -1,16 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Entity representing RDF namespace prefix.
@@ -27,12 +20,13 @@ public class NamespacePrefix implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
     @SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Prefix for namespace.
      */
-    @Column(length = 25)
+    @Column(name = "name", length = 25)
     private String name;
 
     /**
@@ -61,7 +55,7 @@ public class NamespacePrefix implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

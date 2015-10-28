@@ -21,6 +21,7 @@ public class Edge implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
     @SequenceGenerator(name = "seq_ppl_edge", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(optional = false)
@@ -163,7 +164,7 @@ public class Edge implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

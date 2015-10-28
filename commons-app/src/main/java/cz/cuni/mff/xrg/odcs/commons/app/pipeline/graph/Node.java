@@ -27,7 +27,7 @@ public class Node implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
     @SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
-    @SuppressWarnings("unused")
+    @Column(name = "id")
     private Long id;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -196,7 +196,7 @@ public class Node implements DataObject {
      * @return the set ID of this node as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

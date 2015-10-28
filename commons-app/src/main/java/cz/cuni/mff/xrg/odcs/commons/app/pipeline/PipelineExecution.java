@@ -1,10 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.*;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
@@ -37,12 +32,14 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
     @SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Actual status for executed pipeline.
      */
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status")
     private PipelineExecutionStatus status;
 
     /**
@@ -163,7 +160,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      * @return the set ID of this pipeline execution as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

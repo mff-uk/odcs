@@ -33,6 +33,7 @@ public class Log implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_logging")
     @SequenceGenerator(name = "seq_logging", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -92,7 +93,7 @@ public class Log implements DataObject {
      * @return Log's id.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

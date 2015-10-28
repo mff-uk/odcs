@@ -26,7 +26,7 @@ public class PipelineGraph implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_graph")
     @SequenceGenerator(name = "seq_ppl_graph", allocationSize = 1)
-    @SuppressWarnings("unused")
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -463,7 +463,7 @@ public class PipelineGraph implements DataObject {
      * @return the set ID of pipeline graph as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

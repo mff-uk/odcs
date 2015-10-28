@@ -1,16 +1,9 @@
 package cz.cuni.mff.xrg.odcs.commons.app.properties;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "runtime_properties")
@@ -23,18 +16,19 @@ public class RuntimeProperty implements Serializable, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_runtime_properties")
     @SequenceGenerator(name = "seq_runtime_properties", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Human-readable property name
      */
-    @Column
+    @Column(name = "name")
     private String name;
 
     /**
      * Human-readable property value
      */
-    @Column
+    @Column(name = "value")
     private String value;
 
     /**
@@ -49,7 +43,7 @@ public class RuntimeProperty implements Serializable, DataObject {
      * @return the set ID of this runtime property as {@link Long} value
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

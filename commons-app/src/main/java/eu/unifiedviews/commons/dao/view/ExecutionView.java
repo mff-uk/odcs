@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class ExecutionView implements DataObject {
 
-    private Long id;
+    private int id;
     private PipelineExecutionStatus status;
 
     //pipeline_id
@@ -46,7 +46,7 @@ public class ExecutionView implements DataObject {
     //t_last_change
     private Date lastChange;
 
-    public ExecutionView(Long id,
+    public ExecutionView(int id,
                          PipelineExecutionStatus status,
                          Long pipelineId,
                          String pipelineName,
@@ -76,11 +76,11 @@ public class ExecutionView implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

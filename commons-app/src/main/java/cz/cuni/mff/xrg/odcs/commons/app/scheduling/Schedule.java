@@ -29,12 +29,13 @@ public class Schedule implements OwnedEntity, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
     @SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Plan's description.
      */
-    @Column
+    @Column(name = "description")
     private String description;
 
     /**
@@ -334,7 +335,7 @@ public class Schedule implements OwnedEntity, DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

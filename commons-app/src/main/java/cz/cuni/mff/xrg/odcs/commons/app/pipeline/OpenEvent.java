@@ -20,6 +20,7 @@ public class OpenEvent implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_open_event")
     @SequenceGenerator(name = "seq_ppl_open_event", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -46,7 +47,7 @@ public class OpenEvent implements DataObject {
     private Date timestamp;
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

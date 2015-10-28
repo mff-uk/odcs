@@ -18,15 +18,16 @@ public class Permission implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
     @SequenceGenerator(name = "seq_permission", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy="permissions")
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "shared_entity_instance_write_required")
     private boolean sharedEntityInstanceWriteRequired;
 
     public Long getId() {

@@ -19,6 +19,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
     @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -100,7 +101,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

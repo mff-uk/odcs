@@ -27,6 +27,7 @@ public class MessageRecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_record")
     @SequenceGenerator(name = "seq_exec_record", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -109,7 +110,7 @@ public class MessageRecord implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

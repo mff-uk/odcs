@@ -33,12 +33,13 @@ public class User implements UserDetails, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
     @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * User name used for login and as a unique identification of User.
      */
-    @Column
+    @Column(name = "user_name")
     private String username;
 
     /**
@@ -223,7 +224,7 @@ public class User implements UserDetails, DataObject {
      * @return the set ID of this user as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

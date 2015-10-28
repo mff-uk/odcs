@@ -38,18 +38,19 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
     @SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Human-readable pipeline name
      */
-    @Column(unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
     /**
      * Human-readable pipeline description
      */
-    @Column
+    @Column(name = "description")
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
@@ -208,7 +209,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * @return the set ID of this pipeline as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

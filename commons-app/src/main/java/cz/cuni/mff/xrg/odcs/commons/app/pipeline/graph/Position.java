@@ -25,6 +25,7 @@ public class Position implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_position")
     @SequenceGenerator(name = "seq_ppl_position", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -139,7 +140,7 @@ public class Position implements DataObject {
      * @return the set ID of this position as {@link Long} value.
      */
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

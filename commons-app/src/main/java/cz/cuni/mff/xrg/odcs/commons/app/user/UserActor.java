@@ -17,12 +17,13 @@ public class UserActor implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user_actor")
     @SequenceGenerator(name = "seq_user_actor", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "id_extuser", unique = true)
     private String externalId;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)
@@ -32,7 +33,7 @@ public class UserActor implements DataObject {
     private Set<Pipeline> pipelines = new HashSet<>();
 
     @Override
-    public Long getId() {
+    public int getId() {
         return this.id;
     }
 

@@ -28,6 +28,7 @@ public abstract class DPURecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
     @SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -160,7 +161,7 @@ public abstract class DPURecord implements DataObject {
     }
 
     @Override
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

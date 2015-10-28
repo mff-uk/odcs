@@ -21,9 +21,10 @@ public class RoleEntity implements DataObject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_role")
 	@SequenceGenerator(name = "seq_role", allocationSize = 1)
+	@Column(name = "id")
 	private Long id;
 
-	@Column
+	@Column(name = "name")
 	private String name;
 
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -42,7 +43,7 @@ public class RoleEntity implements DataObject {
 		}
 	}
 
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 
