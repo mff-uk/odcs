@@ -24,7 +24,7 @@ public class RoleEntity implements DataObject {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "name")
+	@Column(name = "name", nullable = false, unique = true, length = 142)
 	private String name;
 
 	@ManyToMany(fetch = FetchType.EAGER)

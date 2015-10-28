@@ -20,10 +20,10 @@ public class UserActor implements DataObject {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "id_extuser", unique = true)
+    @Column(name = "id_extuser", unique = true, nullable = false)
     private String externalId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)

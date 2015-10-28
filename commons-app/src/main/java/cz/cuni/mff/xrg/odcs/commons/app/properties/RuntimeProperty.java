@@ -22,7 +22,7 @@ public class RuntimeProperty implements Serializable, DataObject {
     /**
      * Human-readable property name
      */
-    @Column(name = "name")
+    @Column(name = "name", unique = true, length = 100)
     private String name;
 
     /**

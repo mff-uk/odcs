@@ -14,6 +14,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "sch_email")
+@org.eclipse.persistence.annotations.Index(name="ix_SCH_EMAIL", columnNames = "email")
 public class EmailAddress implements Comparable<Object>, DataObject {
 
     @Id

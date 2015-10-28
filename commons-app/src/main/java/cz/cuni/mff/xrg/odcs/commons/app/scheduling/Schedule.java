@@ -21,6 +21,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "exec_schedule")
+@org.eclipse.persistence.annotations.Index(name="ix_EXEC_SCHEDULE", columnNames = "pipeline_id, type, user_id, enabled")
 public class Schedule implements OwnedEntity, DataObject {
 
     /**
@@ -35,6 +36,7 @@ public class Schedule implements OwnedEntity, DataObject {
     /**
      * Plan's description.
      */
+    @Lob
     @Column(name = "description")
     private String description;
 
@@ -134,7 +136,7 @@ public class Schedule implements OwnedEntity, DataObject {
     @Column(name = "strict_tolerance")
     private Integer strictToleranceMinutes;
 
-    @Column(name = "priority")
+    @Column(name = "priority", nullable = false)
     private Long priority;
 
     @OneToMany(fetch = FetchType.LAZY)

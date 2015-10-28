@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "logging")
+@org.eclipse.persistence.annotations.Index(name="ix_LOGGING", columnNames = "dpu, execution, relative_id")
 public class Log implements DataObject {
 
     /**
@@ -39,24 +40,25 @@ public class Log implements DataObject {
     /**
      * Level as string, so it can be persisted in DB.
      */
-    @Column(name = "log_level")
+    @Column(name = "log_level", nullable = false)
     private Integer logLevel;
 
     /**
      * Timestamp of log message.
      */
-    @Column(name = "timestmp")
+    @Column(name = "timestmp", nullable = false)
     private Long timestamp;
 
     /**
      * Source class of log message.
      */
-    @Column(name = "logger")
+    @Column(name = "logger", nullable = false)
     private String source;
 
     /**
      * Text of formatted log massage.
      */
+    @Lob
     @Column(name = "message")
     private String message;
 
@@ -69,12 +71,13 @@ public class Log implements DataObject {
     /**
      * Id of execution.
      */
-    @JoinColumn(name = "execution")
+    @JoinColumn(name = "execution", nullable = false)
     private Long execution;
 
     /**
      * Mapping to stack trace.
      */
+    @Lob
     @Column(name = "stack_trace")
     private String stackTrace;
 

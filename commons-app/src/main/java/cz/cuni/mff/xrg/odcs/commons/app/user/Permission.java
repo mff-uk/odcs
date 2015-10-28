@@ -24,7 +24,7 @@ public class Permission implements GrantedAuthority {
     @ManyToMany(fetch = FetchType.EAGER, mappedBy="permissions")
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "shared_entity_instance_write_required")

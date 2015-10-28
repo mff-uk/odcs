@@ -44,12 +44,13 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Human-readable pipeline name
      */
-    @Column(name = "name", unique = true)
+    @Column(name = "name", unique = true, length = 1024)
     private String name;
 
     /**
      * Human-readable pipeline description
      */
+    @Lob
     @Column(name = "description")
     private String description;
 

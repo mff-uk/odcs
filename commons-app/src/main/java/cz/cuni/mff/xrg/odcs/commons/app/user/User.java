@@ -39,7 +39,7 @@ public class User implements UserDetails, DataObject {
     /**
      * User name used for login and as a unique identification of User.
      */
-    @Column(name = "user_name")
+    @Column(name = "user_name", length = 25, unique = true, nullable = false)
     private String username;
 
     /**
@@ -52,13 +52,13 @@ public class User implements UserDetails, DataObject {
     /**
      * Full name.
      */
-    @Column(name = "full_name")
+    @Column(name = "full_name", length = 55)
     private String fullName;
 
     /**
      * Hashed password.
      */
-    @Column(name = "u_password")
+    @Column(name = "u_password", length = 142)
     private String password;
 
     @Column(name = "table_rows")
@@ -92,7 +92,7 @@ public class User implements UserDetails, DataObject {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<OpenEvent> openEvents = new HashSet<>();
 
-    @Column(table = "usr_extuser", name = "id_extuser")
+    @Column(table = "usr_extuser", name = "id_extuser", nullable = false)
     private String externalIdentifier;
 
     @Transient

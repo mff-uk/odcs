@@ -43,7 +43,7 @@ public class DataUnitInfo implements DataObject {
      * Name of DataUnit given to the DataUnit by DPU or changed by user (on the
      * edge).
      */
-    @Column(name = "name")
+    @Column(name = "name", length = 2048)
     private String name;
 
     /**

@@ -39,7 +39,7 @@ public class Edge implements DataObject {
     @JoinColumn(name = "graph_id")
     private PipelineGraph graph;
 
-    @Column(name = "data_unit_name", nullable = true)
+    @Column(name = "data_unit_name", nullable = true, length = 2048)
     private String script;
 
     /**

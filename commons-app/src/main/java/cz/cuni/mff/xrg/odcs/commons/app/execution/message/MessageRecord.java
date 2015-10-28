@@ -19,6 +19,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "exec_record")
+@org.eclipse.persistence.annotations.Index(name="ix_EXEC_RECORD", columnNames = "r_time, r_type, dpu_id, execution_id")
 public class MessageRecord implements DataObject {
 
     /**
@@ -61,12 +62,13 @@ public class MessageRecord implements DataObject {
     /**
      * Short message, should be under 50 characters.
      */
-    @Column(name = "short_message")
+    @Column(name = "short_message", length = 128)
     private String shortMessage;
 
     /**
      * Full message text.
      */
+    @Lob
     @Column(name = "full_message")
     private String fullMessage;
 
