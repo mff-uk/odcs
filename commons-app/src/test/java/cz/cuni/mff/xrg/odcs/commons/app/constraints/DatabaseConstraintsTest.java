@@ -248,11 +248,13 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 UserActor actor = new UserActor();
+                actor.setExternalId("dummy");
+                actor.setName("dummy");
                 Pipeline pipeline = new Pipeline();
                 Schedule schedule = new Schedule();
-
                 schedule.setPipeline(pipeline);
                 schedule.setActor(actor);
+                schedule.setPriority(0l);
 
                 em.persist(pipeline);
                 em.persist(actor);
@@ -273,10 +275,13 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 UserActor actor = new UserActor();
+                actor.setExternalId("dummy");
+                actor.setName("dummy");
                 Pipeline pipeline = new Pipeline();
                 Schedule schedule = new Schedule();
                 schedule.setPipeline(pipeline);
                 schedule.setActor(actor);
+                schedule.setPriority(0l);
 
                 em.persist(pipeline);
                 em.persist(actor);
@@ -595,6 +600,8 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 User user = new User();
+                user.setUsername("dummy");
+                user.setExternalIdentifier("dummy");
                 OpenEvent openEvent = new OpenEvent();
                 openEvent.setTimestamp(new Date());
                 openEvent.setUser(user);
