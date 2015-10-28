@@ -197,8 +197,11 @@ public class DatabaseConstraintsTest {
 
         em.getTransaction().begin();
         RoleEntity role = new RoleEntity();
+        role.setName("dummyRole");
         User user = new User();
         user.getRoles().add(role);
+        user.setUsername("dummyUser");
+        user.setExternalIdentifier("dummy");
 
         em.persist(user);
         em.persist(role);
@@ -227,6 +230,8 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 User user = new User();
+                user.setUsername("dummy");
+                user.setExternalIdentifier("dummy");
                 PipelineExecution pipelineExecution = new PipelineExecution();
                 pipelineExecution.setOwner(user);
 
@@ -303,6 +308,8 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 UserActor actor = new UserActor();
+                actor.setName("dummy");
+                actor.setExternalId("dummy");
                 pipeline.setActor(actor);
 
                 em.persist(pipeline);
@@ -325,6 +332,7 @@ public class DatabaseConstraintsTest {
                 Pipeline pipeline = new Pipeline();
                 Schedule schedule = new Schedule();
                 schedule.setPipeline(pipeline);
+                schedule.setPriority(0l);
 
                 em.persist(pipeline);
                 em.persist(schedule);
@@ -345,9 +353,12 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 User user = new User();
+                user.setUsername("dummy");
+                user.setExternalIdentifier("dummy");
                 Schedule schedule = new Schedule();
                 schedule.setOwner(user);
                 schedule.setPipeline(pipeline);
+                schedule.setPriority(0l);
 
                 em.persist(pipeline);
                 em.persist(user);
@@ -369,6 +380,8 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 User user = new User();
+                user.setUsername("dummy");
+                user.setExternalIdentifier("dummy");
                 pipeline.setUser(user);
 
                 em.persist(pipeline);
@@ -556,6 +569,7 @@ public class DatabaseConstraintsTest {
                 ScheduleNotificationRecord scheduleNotificationRecord = new ScheduleNotificationRecord();
                 schedule.setNotification(scheduleNotificationRecord);
                 schedule.setPipeline(pipeline);
+                schedule.setPriority(0l);
                 scheduleNotificationRecord.setSchedule(schedule);
 
                 em.persist(pipeline);
@@ -580,6 +594,8 @@ public class DatabaseConstraintsTest {
                 User user = new User();
                 UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
                 user.setNotification(userNotificationRecord);
+                user.setUsername("dummy");
+                user.setExternalIdentifier("dummy");
                 userNotificationRecord.setUser(user);
 
                 em.persist(userNotificationRecord);
@@ -669,6 +685,7 @@ public class DatabaseConstraintsTest {
         Pipeline pipeline = new Pipeline();
         Schedule schedule = new Schedule();
         schedule.setPipeline(pipeline);
+        schedule.setPriority(0l);
         PipelineExecution pipelineExecution1 = new PipelineExecution();
         PipelineExecution pipelineExecution2 = new PipelineExecution();
         pipelineExecution1.setSchedule(schedule);
@@ -699,6 +716,8 @@ public class DatabaseConstraintsTest {
         EmailAddress sch_email = new EmailAddress();
         User usr_user = new User();
         usr_user.setEmail(sch_email);
+        usr_user.setUsername("dummy");
+        usr_user.setExternalIdentifier("dummy");
 
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
