@@ -160,7 +160,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      * @return the set ID of this pipeline execution as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

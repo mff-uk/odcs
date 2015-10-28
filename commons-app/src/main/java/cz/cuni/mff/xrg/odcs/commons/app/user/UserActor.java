@@ -33,7 +33,7 @@ public class UserActor implements DataObject {
     private Set<Pipeline> pipelines = new HashSet<>();
 
     @Override
-    public int getId() {
+    public Long getId() {
         return this.id;
     }
 

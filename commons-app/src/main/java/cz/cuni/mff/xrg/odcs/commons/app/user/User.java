@@ -224,7 +224,7 @@ public class User implements UserDetails, DataObject {
      * @return the set ID of this user as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

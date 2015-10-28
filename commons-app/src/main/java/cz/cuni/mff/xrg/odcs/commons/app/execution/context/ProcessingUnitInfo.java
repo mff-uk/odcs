@@ -92,7 +92,7 @@ public class ProcessingUnitInfo implements DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

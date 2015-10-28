@@ -93,7 +93,7 @@ public class Log implements DataObject {
      * @return Log's id.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

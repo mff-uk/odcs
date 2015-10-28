@@ -5,6 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import org.eclipse.persistence.annotations.Index;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dpu_instance")
+@Index(name="ix_DPU_INSTANCE", columnNames = "dpu_id")
 public class DPUInstanceRecord extends DPURecord {
 
     /**
@@ -30,7 +32,7 @@ public class DPUInstanceRecord extends DPURecord {
     /**
      * If true then this instance use owner template configuration.
      */
-    @Column(name = "use_template_config")
+    @Column(name = "use_template_config", nullable = false)
     private boolean useTemplateConfig;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

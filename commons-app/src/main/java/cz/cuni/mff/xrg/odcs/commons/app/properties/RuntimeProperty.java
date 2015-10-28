@@ -43,7 +43,7 @@ public class RuntimeProperty implements Serializable, DataObject {
      * @return the set ID of this runtime property as {@link Long} value
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

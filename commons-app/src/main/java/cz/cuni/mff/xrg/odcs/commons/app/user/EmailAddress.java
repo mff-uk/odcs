@@ -101,7 +101,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

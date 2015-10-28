@@ -335,7 +335,7 @@ public class Schedule implements OwnedEntity, DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

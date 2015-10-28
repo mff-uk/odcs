@@ -47,7 +47,7 @@ public class OpenEvent implements DataObject {
     private Date timestamp;
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

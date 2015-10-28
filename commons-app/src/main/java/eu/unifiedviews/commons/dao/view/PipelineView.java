@@ -53,7 +53,7 @@ public class PipelineView implements Serializable, DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

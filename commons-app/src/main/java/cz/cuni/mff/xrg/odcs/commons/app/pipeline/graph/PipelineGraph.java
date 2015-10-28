@@ -463,7 +463,7 @@ public class PipelineGraph implements DataObject {
      * @return the set ID of pipeline graph as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

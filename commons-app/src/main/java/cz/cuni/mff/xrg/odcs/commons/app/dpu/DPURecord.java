@@ -34,7 +34,7 @@ public abstract class DPURecord implements DataObject {
     /**
      * DPURecord name, provided by DPU, changeable by user.
      */
-    @Column(name = "name")
+    @Column(name = "name", length = 1024)
     private String name;
 
     /**
@@ -54,6 +54,7 @@ public abstract class DPURecord implements DataObject {
     /**
      * DPURecord description, can be provided by user or by the DPU's dialog.
      */
+    @Lob
     @Column(name = "description")
     private String description;
 
@@ -161,7 +162,7 @@ public abstract class DPURecord implements DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

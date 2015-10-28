@@ -140,7 +140,7 @@ public class Position implements DataObject {
      * @return the set ID of this position as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

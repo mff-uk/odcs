@@ -209,7 +209,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * @return the set ID of this pipeline as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

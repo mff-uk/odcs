@@ -43,7 +43,7 @@ public class RoleEntity implements DataObject {
 		}
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 

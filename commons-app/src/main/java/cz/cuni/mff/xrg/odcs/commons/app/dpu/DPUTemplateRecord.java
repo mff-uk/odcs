@@ -6,6 +6,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import org.eclipse.persistence.annotations.Index;
 
 import javax.persistence.*;
 import java.io.File;
@@ -26,9 +27,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dpu_template")
+@Index(name="ix_DPU_TEMPLATE", columnNames = "visibility, jar_description, parent_id, user_id")
 public class DPUTemplateRecord extends DPURecord
-        implements OwnedEntity, SharedEntity {
-
+        implements OwnedEntity, SharedEntity
+{
     /**
      * Visibility in DPUTree.
      */
@@ -39,7 +41,7 @@ public class DPUTemplateRecord extends DPURecord
     /**
      * Description obtained from jar file manifest.
      */
-    @Column(name = "jar_description")
+    @Column(name = "jar_description", length = 1024)
     private String jarDescription;
 
     /**

@@ -164,7 +164,7 @@ public class Edge implements DataObject {
     }
 
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

@@ -13,6 +13,6 @@ public interface DataObject extends Serializable {
     /**
      * @return object's id
      */
-    public abstract int getId();
+    public abstract Long getId();
 
 }

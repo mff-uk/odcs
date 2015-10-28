@@ -196,7 +196,7 @@ public class Node implements DataObject {
      * @return the set ID of this node as {@link Long} value.
      */
     @Override
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
