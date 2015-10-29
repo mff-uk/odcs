@@ -165,14 +165,20 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
+            @SuppressWarnings("unqualified-field-access")
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
-                            || pipelineFacade.hasModifiedExecutions(lastLoad)
-                            || (cachedSource.size() > 0 &&
-                            pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                    boolean hasModifiedPipelines = pipelineFacade.hasModifiedPipelines(lastLoad);
+                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+                    boolean hasDeletedExecutions = cachedSource.size() > 0 && pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size()));
+                    boolean hasModifiedPipelinesOrExecutions = hasModifiedPipelines
+                            || hasModifiedExecutions
+                            || hasDeletedExecutions;
+                    LOG.debug("Last load: {}, hasModifiedPipelines: {}, hasModifiedExecutions: {}, hasDeletedPipelines: {}", lastLoad, hasModifiedPipelines, hasModifiedExecutions,
+                            hasDeletedExecutions);
                     if (hasModifiedPipelinesOrExecutions) {
+                        LOG.debug("Execution / pipeline modified, refreshing ...");
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -181,7 +187,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 }
             }
         });
-        refreshManager.triggerRefresh();
+        this.refreshManager.triggerRefresh();
     }
 
     @Override
