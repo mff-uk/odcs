@@ -65,13 +65,13 @@ public class Log implements DataObject {
     /**
      * Id of given DPU.
      */
-    @JoinColumn(name = "dpu")
+    @Column(name = "dpu")
     private Long dpu;
 
     /**
      * Id of execution.
      */
-    @JoinColumn(name = "execution", nullable = false)
+    @Column(name = "execution", nullable = false)
     private Long execution;
 
     /**

@@ -200,7 +200,7 @@ public class DatabaseConstraintsTest {
         role.setName("dummyRole");
         User user = new User();
         user.getRoles().add(role);
-        user.setUsername("dummyUser");
+        user.setUsername("user_1");
         user.setExternalIdentifier("dummy");
 
         em.persist(user);
@@ -230,7 +230,7 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 User user = new User();
-                user.setUsername("dummy");
+                user.setUsername("user_2");
                 user.setExternalIdentifier("dummy");
                 PipelineExecution pipelineExecution = new PipelineExecution();
                 pipelineExecution.setOwner(user);
@@ -353,7 +353,7 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 User user = new User();
-                user.setUsername("dummy");
+                user.setUsername("user_3");
                 user.setExternalIdentifier("dummy");
                 Schedule schedule = new Schedule();
                 schedule.setOwner(user);
@@ -380,7 +380,7 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 User user = new User();
-                user.setUsername("dummy");
+                user.setUsername("user_4");
                 user.setExternalIdentifier("dummy");
                 pipeline.setUser(user);
 
@@ -594,7 +594,7 @@ public class DatabaseConstraintsTest {
                 User user = new User();
                 UserNotificationRecord userNotificationRecord = new UserNotificationRecord();
                 user.setNotification(userNotificationRecord);
-                user.setUsername("dummy");
+                user.setUsername("user_5");
                 user.setExternalIdentifier("dummy");
                 userNotificationRecord.setUser(user);
 
@@ -616,7 +616,7 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 User user = new User();
-                user.setUsername("dummy");
+                user.setUsername("user_6");
                 user.setExternalIdentifier("dummy");
                 OpenEvent openEvent = new OpenEvent();
                 openEvent.setTimestamp(new Date());
@@ -716,7 +716,7 @@ public class DatabaseConstraintsTest {
         EmailAddress sch_email = new EmailAddress();
         User usr_user = new User();
         usr_user.setEmail(sch_email);
-        usr_user.setUsername("dummy");
+        usr_user.setUsername("user_7");
         usr_user.setExternalIdentifier("dummy");
 
         EntityManager em = factory.createEntityManager();
