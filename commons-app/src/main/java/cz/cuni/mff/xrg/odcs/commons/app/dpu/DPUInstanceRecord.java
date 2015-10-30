@@ -35,7 +35,7 @@ public class DPUInstanceRecord extends DPURecord {
     @Column(name = "use_template_config", nullable = false)
     private boolean useTemplateConfig;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "dpuInstance")
     private Set<MessageRecord> messageRecords = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
