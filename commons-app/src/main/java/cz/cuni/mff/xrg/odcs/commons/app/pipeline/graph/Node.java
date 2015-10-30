@@ -31,7 +31,7 @@ public class Node implements DataObject {
     private Long id;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "instance_id", unique = true)
+    @JoinColumn(name = "instance_id", unique = true, nullable = false)
     private DPUInstanceRecord dpuInstance;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
