@@ -77,7 +77,7 @@ public class DPUTemplateRecord extends DPURecord
     @JoinColumn(name = "parent_id", nullable = true)
     private DPUTemplateRecord parent;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     private Set<DPUTemplateRecord> children = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

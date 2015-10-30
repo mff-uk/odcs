@@ -89,7 +89,7 @@ public class User implements UserDetails, DataObject {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserNotificationRecord notification;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "owner")
     private Set<OpenEvent> openEvents = new HashSet<>();
 
     @Column(table = "usr_extuser", name = "id_extuser", nullable = false)

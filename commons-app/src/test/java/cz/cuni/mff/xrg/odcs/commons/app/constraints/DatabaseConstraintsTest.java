@@ -6,7 +6,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -81,30 +80,6 @@ public class DatabaseConstraintsTest {
             }
 
         }.ensureReferencingInstanceDelete(DPUInstanceRecord.class, DPUTemplateRecord.class);
-    }
-
-    @Test
-    public void ON_DELETE_dpu_instance_DELETE_exec_context_dpu() {
-        new DeleteConstraintTest() {
-
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                DPUTemplateRecord templateRecord = new DPUTemplateRecord();
-                templateRecord.setJarName("testname");
-                DPUInstanceRecord dpuInstanceRecord = new DPUInstanceRecord(templateRecord);
-                ExecutionContextInfo executionContextInfo = new ExecutionContextInfo();
-                executionContextInfo.createDPUInfo(dpuInstanceRecord);
-
-                em.persist(executionContextInfo);
-                em.persist(templateRecord);
-                em.persist(dpuInstanceRecord);
-
-                em.getTransaction().commit();
-                return dpuInstanceRecord;
-            }
-
-        }.ensureReferencingInstanceDelete(ProcessingUnitInfo.class, DPUInstanceRecord.class);
     }
 
     @Test

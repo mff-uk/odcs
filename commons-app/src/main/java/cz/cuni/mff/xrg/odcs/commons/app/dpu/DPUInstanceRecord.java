@@ -1,6 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
@@ -40,9 +39,6 @@ public class DPUInstanceRecord extends DPURecord {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Node node;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<ProcessingUnitInfo> processingUnitInfos = new HashSet<>();
 
     /**
      * Empty constructor because of JPA.
@@ -155,11 +151,4 @@ public class DPUInstanceRecord extends DPURecord {
         this.node = node;
     }
 
-    public Set<ProcessingUnitInfo> getProcessingUnitInfos() {
-        return processingUnitInfos;
-    }
-
-    public void setProcessingUnitInfos(Set<ProcessingUnitInfo> processingUnitInfos) {
-        this.processingUnitInfos = processingUnitInfos;
-    }
 }

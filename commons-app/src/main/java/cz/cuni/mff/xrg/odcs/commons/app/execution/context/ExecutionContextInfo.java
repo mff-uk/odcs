@@ -120,7 +120,6 @@ public class ExecutionContextInfo implements DataObject {
             // unknown context -> add
             ProcessingUnitInfo pui = new ProcessingUnitInfo();
             contexts.put(dpuInstance, pui);
-            dpuInstance.getProcessingUnitInfos().add(pui);
         }
         // return data
         return contexts.get(dpuInstance);

@@ -139,7 +139,7 @@ public class Schedule implements OwnedEntity, DataObject {
     @Column(name = "priority", nullable = false)
     private Long priority;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
     private Set<PipelineExecution> pipelineExecutions = new HashSet<>();
 
     @PreRemove
