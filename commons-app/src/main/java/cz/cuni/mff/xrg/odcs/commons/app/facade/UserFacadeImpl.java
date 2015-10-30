@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.List;
@@ -67,6 +83,48 @@ class UserFacadeImpl implements UserFacade {
         notify.setTypeSuccess(NotificationRecordType.DAILY);
         notify.setTypeStarted(NotificationRecordType.NO_REPORT);
 
+        return user;
+    }
+
+    @Override
+    public User createOrUpdateUser(String userName, String fullUserName, String actorId, String actorName, List<String> roles) {
+        User user = this.getUserByExtId(userName);
+        // create user if does not exist
+        if (user == null) {
+            user = this.createUser(userName, "*****", new EmailAddress(userName + "@nomail.com"));
+            if (fullUserName != null) {
+                user.setFullName(fullUserName);
+            } else {
+                user.setFullName(userName);
+            }
+            user.setExternalIdentifier(userName);
+            user.setTableRows(20);
+            this.saveNoAuth(user);
+        }
+
+        // update user information
+        user.getRoles().clear();
+        for (String rolename : roles) {
+            if (rolename != null) {
+                RoleEntity role = this.getRoleByName(rolename);
+                if (role != null) {
+                    user.addRole(role);
+                }
+            }
+        }
+
+        if (actorId != null) {
+            UserActor actor = this.getUserActorByExternalId(actorId);
+            if (actor == null) {
+                actor = new UserActor();
+                actor.setName(actorName);
+                actor.setExternalId(actorId);
+                this.save(actor);
+            }
+            user.setUserActor(actor);
+        }
+
+        this.save(user);
         return user;
     }
 

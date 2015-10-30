@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.unifiedviews.commons.dao.view;
 
 import java.util.Date;
@@ -95,6 +111,9 @@ public class ExecutionView implements DataObject {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "t_last_change")
     private Date lastChange;
+
+    @Column(name = "backend_id")
+    private String backendId;
 
     @Override
     public Long getId() {
@@ -199,6 +218,14 @@ public class ExecutionView implements DataObject {
 
     public void setOwnerFullName(String ownerFullName) {
         this.ownerFullName = ownerFullName;
+    }
+
+    public String getBackendId() {
+        return this.backendId;
+    }
+
+    public void setBackendId(String backendId) {
+        this.backendId = backendId;
     }
 
     /**

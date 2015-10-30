@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import java.util.Date;
@@ -8,6 +24,7 @@ import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 
@@ -19,7 +36,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
  * @author Martin Virag
  */
 @Transactional(propagation = Propagation.MANDATORY)
-class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
+class DbPipelineImpl extends DbAccessBase<Pipeline>implements DbPipeline {
 
     protected DbPipelineImpl() {
         super(Pipeline.class);
@@ -87,6 +104,17 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
         final String queryStr = "SELECT e FROM Pipeline e WHERE e.owner.externalIdentifier = :userExternalId";
         TypedQuery<Pipeline> query = createTypedQuery(queryStr);
         query.setParameter("userExternalId", userExternalId);
+        return executeList(query);
+    }
+    
+    @Override
+    public List<Pipeline> getAllVisiblePipelines(String userExternalId) {
+        final String queryStr = "SELECT e FROM Pipeline e"
+                + " WHERE e.owner.externalIdentifier = :userExternalId"
+                + " OR e.shareType != :shareType";
+        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
+        query.setParameter("userExternalId", userExternalId);
+        query.setParameter("shareType", ShareType.PRIVATE);
         return executeList(query);
     }
 }

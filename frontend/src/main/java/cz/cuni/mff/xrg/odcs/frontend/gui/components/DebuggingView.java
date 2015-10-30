@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.util.Collection;
@@ -14,6 +30,8 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TabSheet.Tab;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.DbLogRead;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
@@ -110,6 +128,9 @@ public class DebuggingView extends CustomComponent {
 
     @Autowired
     private LogFacade logFacade;
+
+    @Autowired
+    private PermissionUtils permissionUtils;
 
     /**
      * Constructor.
@@ -241,6 +262,7 @@ public class DebuggingView extends CustomComponent {
         }
         LOG.debug("Add Browse tab");
         queryTab = tabs.addTab(browse, Messages.getString("DebuggingView.browse"));
+        this.queryTab.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG));
 
         mainLayout.setSizeFull();
         mainLayout.addComponent(tabs);

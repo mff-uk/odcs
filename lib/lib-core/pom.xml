@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>lib</artifactId>
-		<version>2.2.0-SNAPSHOT</version>
+		<version>2.2.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>lib-core</artifactId>
 	<packaging>pom</packaging>
@@ -25,6 +25,47 @@
 							<outputDirectory>${output.lib.dir}</outputDirectory>
 							<!-- do not use transitivity just what we specify -->
 							<artifactItems>
+								<dependency>
+									<groupId>org.apache.servicemix.bundles</groupId>
+									<artifactId>org.apache.servicemix.bundles.junit</artifactId>
+									<version>4.12_1</version>
+								</dependency>
+								<dependency>
+									<groupId>org.apache.thrift</groupId>
+									<artifactId>libthrift</artifactId>
+									<version>0.9.2</version>
+								</dependency>
+								<dependency>
+									<groupId>org.apache.servicemix.bundles</groupId>
+									<artifactId>org.apache.servicemix.bundles.commons-csv</artifactId>
+									<version>1.0-r706900_3</version>
+								</dependency>
+								<dependency>
+									<groupId>com.github.jsonld-java</groupId>
+									<artifactId>jsonld-java</artifactId>
+									<version>0.5.1</version>
+								</dependency>
+								<dependency>
+									<groupId>com.fasterxml.jackson.core</groupId>
+									<artifactId>jackson-annotations</artifactId>
+									<version>2.6.0</version>
+								</dependency>
+								<dependency>
+									<groupId>com.fasterxml.jackson.core</groupId>
+									<artifactId>jackson-databind</artifactId>
+									<version>2.6.0</version>
+								</dependency>
+								<dependency>
+									<groupId>com.fasterxml.jackson.core</groupId>
+									<artifactId>jackson-core</artifactId>
+									<version>2.6.0</version>
+								</dependency>
+								<dependency>
+									<groupId>org.apache.jena</groupId>
+									<artifactId>jena-osgi</artifactId>
+									<version>2.13.0</version>
+								</dependency>
+
 								<dependency>
 									<groupId>org.apache.commons</groupId>
 									<artifactId>commons-lang3</artifactId>
@@ -77,5 +118,13 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<!-- define license -->
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<!-- https://maven.apache.org/pom.html#Licenses -->
+		</license>
+	</licenses>
 </project>

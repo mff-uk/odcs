@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import org.slf4j.Logger;
@@ -17,6 +33,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
@@ -50,14 +69,26 @@ public class DPUGeneralDetail extends CustomComponent {
      */
     private boolean isReadOnly = false;
 
+    private AppConfig appConfig;
+
+    private boolean dpuTemplateConfigEnabled = true;
+
     /**
      * Used to report change of insight property.
      */
     private ValueChangeListener valueChangeListener = null;
 
-    public DPUGeneralDetail(final DPUConfigHolder instanceConfig) {
+    public DPUGeneralDetail(final DPUConfigHolder instanceConfig, AppConfig appConfig) {
         setWidth("100%");
         setHeight("-1px");
+
+        this.appConfig = appConfig;
+        try {
+            this.dpuTemplateConfigEnabled = this.appConfig.getBoolean(ConfigProperty.DPU_INSTANCE_USE_TEMPLATE_CONFIG);
+        } catch (MissingConfigPropertyException e) {
+            // ignore, optional configuration
+        }
+
         // create subcomponents
         final GridLayout textInputLayout = new GridLayout(2, 3);
         textInputLayout.setWidth("100%");
@@ -121,6 +152,7 @@ public class DPUGeneralDetail extends CustomComponent {
             }
         });
         optionsLayout.addComponent(useTemplateConfiguration);
+        this.useTemplateConfiguration.setVisible(this.dpuTemplateConfigEnabled);
 
         final VerticalLayout mainlayout = new VerticalLayout();
         mainlayout.setSizeFull();
@@ -178,7 +210,7 @@ public class DPUGeneralDetail extends CustomComponent {
 
             dpuTemplateName.setVisible(true);
             useTemplateConfiguration.setValue(instance.isUseTemplateConfig());
-            useTemplateConfiguration.setVisible(true);
+            useTemplateConfiguration.setVisible(this.dpuTemplateConfigEnabled);
 
         } else {
             dpuTemplateName.setVisible(false);

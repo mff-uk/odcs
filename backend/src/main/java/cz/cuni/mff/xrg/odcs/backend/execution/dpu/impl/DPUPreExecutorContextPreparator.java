@@ -1,8 +1,27 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -74,7 +93,14 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         // which take care about this
 
         // looks for edges that lead to our node
-        Set<Edge> edges = execution.getPipeline().getGraph().getEdges();
+        List<Edge> edges = new ArrayList<>(execution.getPipeline().getGraph().getEdges());
+        Collections.sort(edges, new Comparator<Edge>() {
+
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
         for (Edge edge : edges) {
             if (edge.getTo() == node) {
                 // we are the target .. add data

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer;
 
 import java.io.File;
@@ -31,6 +47,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUJarNameFormatException;
+import cz.cuni.mff.xrg.odcs.commons.app.module.DPUJarUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
@@ -157,8 +175,15 @@ public class ExportService {
                         saveDPUDataGlobal(template, zipStream);
                     }
                 }
-                // TODO jmc added version
+
                 String version = "unknown";
+                
+                try {
+                    version = DPUJarUtils.parseVersionStringFromJarName(template.getJarName());
+                } catch (DPUJarNameFormatException e) {
+                    LOG.warn(e.getMessage());
+                }
+                
                 DpuItem dpuItem = new DpuItem(dpu.getName(), template.getJarName(), version);
                 if (!dpusInformation.contains(dpuItem)) {
                     dpusInformation.add(dpuItem);
@@ -398,12 +423,12 @@ public class ExportService {
             } catch (IOException ex1) {
                 throw new ExportException(Messages.getString("ExportService.error"), ex1);
             }
-            
+
             byte[] buffer = new byte[4096];
             try {
                 final ZipEntry ze = new ZipEntry(ArchiveStructure.USED_DPUS.getValue());
                 zipStream.putNextEntry(ze);
-                
+
                 // move jar file into the zip file
                 try (FileInputStream in = new FileInputStream(serializedTarget)) {
                     int len;
@@ -444,6 +469,13 @@ public class ExportService {
 
                         String jarName = template.getJarName();
                         String version = "unknown";
+                        
+                        try {
+                            version = DPUJarUtils.parseVersionStringFromJarName(template.getJarName());
+                        } catch (DPUJarNameFormatException e) {
+                            LOG.warn(e.getMessage());
+                        }
+                        
                         DpuItem dpuItem = new DpuItem(instanceName, jarName, version);
                         if (!dpusInformation.contains(dpuItem)) {
                             dpusInformation.add(dpuItem);

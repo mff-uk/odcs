@@ -85,8 +85,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 
 	/** Registering RPC for calls from server-side**/
 	this.registerRpc({
-		init: function(width, height, locale, frontendTheme) {
-			init(width, height, locale, frontendTheme);
+		init: function(width, height, locale, frontendTheme, debug) {
+			init(width, height, locale, frontendTheme, debug);
 		},
 		addNode: function(dpuId, name, description, type, x, y, isNew) {
 			addDpu(dpuId, name, description, type, x, y, isNew);
@@ -178,6 +178,8 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 	//var formattingActionBar = null;
 
 	var visibleActionBar = null;
+	
+	var canDebug = false;
 
     /**
      * Init function which builds entire stage for pipeline
@@ -186,7 +188,7 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
      * @param {int} height canvas height
      * @param lang UI language
      * */
-	function init(width, height, language, frontendTheme) {
+	function init(width, height, language, frontendTheme, debug) {
 		if (stage === null) {
 			stage = new Kinetic.Stage({
 				container: 'container',
@@ -318,9 +320,9 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
         tooltip = createTooltip('Tooltip');
         dpuLayer.add(tooltip);
 
-
         loadBundles(language);
-
+        
+        setDebugEnabled(debug);
 	}
 
     function loadBundles(language) {
@@ -330,6 +332,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
             mode: 'both',
             language: language
         });
+    }
+    
+    function setDebugEnabled(debugEnabled) {
+    	writeMessage(messageLayer, 'Setting debug mode enabled to: ' + debugEnabled);
+    	canDebug = debugEnabled;
+    	writeMessage(messageLayer, 'Debug mode enabled: ' + canDebug);
     }
 
 	var inSetupSelectionBox = false;
@@ -723,10 +731,11 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			setVisibleActionBar(actionBar, false);
 		});
 
+		var commandYPos = 2;
 		// New Connection command
 		var cmdConnection = new Kinetic.Image({
 			x: 2,
-			y: 2,
+			y: commandYPos,
 			image: addConnectionIcon,
 			width: 16,
 			height: 16,
@@ -767,11 +776,12 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdConnection);
+		commandYPos += 16;
 
 		// DPU Detail command
 		var cmdDetail = new Kinetic.Image({
 			x: 2,
-			y: 18,
+			y: commandYPos,
 			image: detailIcon,
 			width: 16,
 			height: 16,
@@ -800,11 +810,118 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdDetail);
+		commandYPos += 16;
 
+		// Debug command
+		writeMessage(messageLayer, 'Before checking canDebug, canDebug is now: ' + canDebug);
+		if (canDebug) {
+			writeMessage(messageLayer, 'Going to create debug button');
+			var cmdDebug = new Kinetic.Image({
+				x: 2,
+				y: commandYPos,
+				image: debugIcon,
+				width: 16,
+				height: 16,
+				startScale: 1
+			});
+	
+			cmdDebug.on('click', function(evt) {
+				setVisibleActionBar(actionBar, false);
+				dpuLayer.draw();
+				writeMessage(messageLayer, 'Debug requested');
+				rpcProxy.onDebugRequested(dpu.id);
+				evt.cancelBubble = true;
+			});
+			cmdDebug.on('mousedown', function(evt) {
+				evt.cancelBubble = true;
+			});
+			cmdDebug.on('mouseup', function(evt) {
+				evt.cancelBubble = true;
+			});
+			cmdDebug.on('mouseenter', function(evt) {
+				activateTooltip(msgs.pipelinecanvas.dpu.debug);
+				evt.cancelBubble = true;
+			});
+			cmdDebug.on('mouseleave', function(evt) {
+				deactivateTooltip();
+				evt.cancelBubble = true;
+			});
+			actionBar.add(cmdDebug);
+			commandYPos += 16;
+		}
+
+		// DPU copy format
+		var cmdCopy = new Kinetic.Image({
+			x: 2,
+			y: commandYPos,
+			image: copyIcon,
+			width: 16,
+			height: 16,
+			startScale: 1
+		});
+		cmdCopy.on('click', function(evt) {
+			setVisibleActionBar(actionBar, false);
+			dpuLayer.draw();
+			writeMessage(messageLayer, 'Copy clicked');
+			var mousePosition = stage.getPointerPosition();
+			rpcProxy.onDpuCopyRequested(dpu.id, parseInt(mousePosition.x / scale), parseInt(mousePosition.y / scale));
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mouseenter', function(evt) {
+			activateTooltip(msgs.pipelinecanvas.dpu.copy);
+			evt.cancelBubble = true;
+		});
+		cmdCopy.on('mouseleave', function(evt) {
+			deactivateTooltip();
+			evt.cancelBubble = true;
+		});
+		actionBar.add(cmdCopy);
+		commandYPos += 16;
+		
+		// DPU format command
+		var cmdFormat = new Kinetic.Image({
+			x: 2,
+			y: commandYPos,
+			image: formatIcon,
+			width: 16,
+			height: 16,
+			startScale: 1
+		});
+		cmdFormat.on('click', function(evt) {
+			setVisibleActionBar(actionBar, false);
+			dpuLayer.draw();
+			writeMessage(messageLayer, 'Format clicked');
+			stageMode = MULTISELECT_MODE;
+			multiselect(dpu.id);
+			evt.cancelBubble = true;
+		});
+		cmdFormat.on('mousedown', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdFormat.on('mouseup', function(evt) {
+			evt.cancelBubble = true;
+		});
+		cmdFormat.on('mouseenter', function(evt) {
+			activateTooltip(msgs.pipelinecanvas.dpu.layout);
+			evt.cancelBubble = true;
+		});
+		cmdFormat.on('mouseleave', function(evt) {
+			deactivateTooltip();
+			evt.cancelBubble = true;
+		});
+		actionBar.add(cmdFormat);
+		commandYPos += 16;
+		
 		// DPU Remove command
 		var cmdRemove = new Kinetic.Image({
 			x: 2,
-			y: 82,
+			y: commandYPos,
 			image: removeConnectionIcon,
 			width: 16,
 			height: 16,
@@ -834,103 +951,6 @@ cz_cuni_mff_xrg_odcs_frontend_gui_components_pipelinecanvas_PipelineCanvas = fun
 			evt.cancelBubble = true;
 		});
 		actionBar.add(cmdRemove);
-
-		// Debug command
-		var cmdDebug = new Kinetic.Image({
-			x: 2,
-			y: 34,
-			image: debugIcon,
-			width: 16,
-			height: 16,
-			startScale: 1
-		});
-
-		cmdDebug.on('click', function(evt) {
-			setVisibleActionBar(actionBar, false);
-			dpuLayer.draw();
-			writeMessage(messageLayer, 'Debug requested');
-			rpcProxy.onDebugRequested(dpu.id);
-			evt.cancelBubble = true;
-		});
-		cmdDebug.on('mousedown', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdDebug.on('mouseup', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdDebug.on('mouseenter', function(evt) {
-			activateTooltip(msgs.pipelinecanvas.dpu.debug);
-			evt.cancelBubble = true;
-		});
-		cmdDebug.on('mouseleave', function(evt) {
-			deactivateTooltip();
-			evt.cancelBubble = true;
-		});
-		actionBar.add(cmdDebug);
-
-		var cmdFormat = new Kinetic.Image({
-			x: 2,
-			y: 66,
-			image: formatIcon,
-			width: 16,
-			height: 16,
-			startScale: 1
-		});
-		cmdFormat.on('click', function(evt) {
-			setVisibleActionBar(actionBar, false);
-			dpuLayer.draw();
-			writeMessage(messageLayer, 'Format clicked');
-			stageMode = MULTISELECT_MODE;
-			multiselect(dpu.id);
-			evt.cancelBubble = true;
-		});
-		cmdFormat.on('mousedown', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdFormat.on('mouseup', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdFormat.on('mouseenter', function(evt) {
-			activateTooltip(msgs.pipelinecanvas.dpu.layout);
-			evt.cancelBubble = true;
-		});
-		cmdFormat.on('mouseleave', function(evt) {
-			deactivateTooltip();
-			evt.cancelBubble = true;
-		});
-		actionBar.add(cmdFormat);
-
-		var cmdCopy = new Kinetic.Image({
-			x: 2,
-			y: 50,
-			image: copyIcon,
-			width: 16,
-			height: 16,
-			startScale: 1
-		});
-		cmdCopy.on('click', function(evt) {
-			setVisibleActionBar(actionBar, false);
-			dpuLayer.draw();
-			writeMessage(messageLayer, 'Copy clicked');
-			var mousePosition = stage.getPointerPosition();
-			rpcProxy.onDpuCopyRequested(dpu.id, parseInt(mousePosition.x / scale), parseInt(mousePosition.y / scale));
-			evt.cancelBubble = true;
-		});
-		cmdCopy.on('mousedown', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdCopy.on('mouseup', function(evt) {
-			evt.cancelBubble = true;
-		});
-		cmdCopy.on('mouseenter', function(evt) {
-			activateTooltip(msgs.pipelinecanvas.dpu.copy);
-			evt.cancelBubble = true;
-		});
-		cmdCopy.on('mouseleave', function(evt) {
-			deactivateTooltip();
-			evt.cancelBubble = true;
-		});
-		actionBar.add(cmdCopy);
 
 		var invalidStatus = new Kinetic.Image({
 			x: 2,

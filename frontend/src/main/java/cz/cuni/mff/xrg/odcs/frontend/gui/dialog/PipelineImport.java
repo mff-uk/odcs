@@ -1,24 +1,44 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportStrategy;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportedFileInformation;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.VersionConflictInformation;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.FileUploadReceiver;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.UploadInfoWindow;
@@ -38,10 +58,6 @@ public class PipelineImport extends Window {
     private TextField txtUploadFile;
 
     private Pipeline importedPipeline = null;
-
-    private List<DpuItem> usedDpus = new ArrayList<>();
-
-    private TreeMap<String, DpuItem> missingDpus = new TreeMap<>();
 
     private Table usedDpusTable = new Table();
 
@@ -69,6 +85,8 @@ public class PipelineImport extends Window {
      * Service used to import pipelines.
      */
     private final ImportService importService;
+
+    private Set<String> toDecideDpus;
     
     public PipelineImport(ImportService importService) {
         super(Messages.getString("PipelineImport.pipeline.import"));
@@ -136,18 +154,17 @@ public class PipelineImport extends Window {
                 String ext = FilenameUtils.getExtension(event.getFilename());
                 missingDpusTable.removeAllItems();
                 usedDpusTable.removeAllItems();
+                btnImport.setEnabled(false);
 
                 if (ext.compareToIgnoreCase("zip") != 0) {
                     upload.interruptUpload();
                     Notification.show(Messages.getString("PipelineImport.not.zip.file"),
                             Notification.Type.ERROR_MESSAGE);
-                    btnImport.setEnabled(false);
                 } else {
                     // show upload process dialog
                     if (uploadInfoWindow.getParent() == null) {
                         UI.getCurrent().addWindow(uploadInfoWindow);
                     }
-                    btnImport.setEnabled(true);
                     uploadInfoWindow.setClosable(false);
                 }
             }
@@ -178,10 +195,13 @@ public class PipelineImport extends Window {
                 uploadInfoWindow.close();
                 // hide uploader
                 File zippedFile = fileUploadReceiver.getFile();
+                // disable import buttons
+                
                 try {
-                    ImportedFileInformation result = importService.getImportedInformation(zippedFile);
-                    usedDpus = result.getUsedDpus();
-                    missingDpus = result.getMissingDpus();
+                    final ImportedFileInformation result = importService.getImportedInformation(zippedFile);
+                    final List<DpuItem> usedDpus = result.getUsedDpus();
+                    final Map<String, DpuItem> missingDpus = result.getMissingDpus();
+                    toDecideDpus = Collections.emptySet();
 
                     chbImportDPUData.setValue(false);
                     chbImportSchedule.setValue(false);
@@ -208,24 +228,30 @@ public class PipelineImport extends Window {
                             usedDpusTable.addItem(new Object[] { entry.getDpuName(), entry.getJarName(), entry.getVersion() }, null);
                         }
                     }
-
-                    if (missingDpus.size() > 0) {
-                        btnImport.setEnabled(false);
-                        Notification.show(Messages.getString("PipelineImport.missing.dpu.fail") +
-                                Messages.getString("PipelineImport.install.dpu"), Notification.Type.ERROR_MESSAGE);
-
-                    } else {
+                    
+                    if (result.getOldDpus().isEmpty() && missingDpus.isEmpty()) {
                         btnImport.setEnabled(true);
-
                     }
 
+                    // show result on table - these dpus which have older version installed
+                    for (VersionConflictInformation value : result.getOldDpus().values()) {
+                        RowTooltip tooltip = new RowTooltip(Messages.getString("PipelineImport.outdated.version.tooltip", value.getCurrentVersion(), value.getUsedDpuVersion()));
+                        missingDpusTable.addItem(new Object[] { value.getDpuItem().getDpuName(), Messages.getString("PipelineImport.outdated.version") }, tooltip);
+                    }
+                    
                     // show result on table - these dpus which are missing
-                    for (Map.Entry<String, DpuItem> entry : missingDpus.entrySet()) {
-                        DpuItem value = entry.getValue();
-                        missingDpusTable.addItem(new Object[] { value.getDpuName(), value.getJarName(), value.getVersion() }, null);
+                    for (DpuItem value : missingDpus.values()) {
+                        RowTooltip tooltip = new RowTooltip(Messages.getString("PipelineImport.missing.dpu.tooltip", value.getJarName()));
+                        missingDpusTable.addItem(new Object[] { value.getDpuName(), Messages.getString("PipelineImport.missing.dpu") }, tooltip);
                     }
+                    
+                    toDecideDpus = result.getToDecideDpus();
 
+                } catch (ImportException e) {
+                    Notification.show(e.getMessage(), Type.ERROR_MESSAGE);
+                    LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 } catch (Exception e) {
+                    Notification.show(Messages.getString("PipelineImport.read.info.fail"), Type.ERROR_MESSAGE);
                     LOG.error("reading of pipeline from zip: {} failed", zippedFile, e);
                 }
             }
@@ -271,9 +297,20 @@ public class PipelineImport extends Window {
         panelMissingDpus.setHeight("150px");
 
         missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.dpu.template"), String.class, null);
-        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.jarName"), String.class, null);
-        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.version"), String.class, null);
+        missingDpusTable.addContainerProperty(Messages.getString("PipelineImport.missing.descr"), String.class, null);
 
+        missingDpusTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            private static final long serialVersionUID = -403713439427197149L;
+
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                if (itemId instanceof RowTooltip) {
+                    return ((RowTooltip) itemId).tooltip;
+                }
+                return null;
+            }
+        });
+        
         missingDpusTable.setWidth("100%");
         missingDpusTable.setHeight("130px");
         panelMissingDpus.setContent(missingDpusTable);
@@ -292,19 +329,15 @@ public class PipelineImport extends Window {
                     Notification.show(Messages.getString("PipelineImport.archive.notSelected"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
-                    // import
-                    final File zipFile = fileUploadReceiver.getFile();
-                    try {
-                        importedPipeline = importService.importPipeline(zipFile, chbImportDPUData.getValue(), chbImportSchedule.getValue());
-                        close();
-                    } catch (ImportException | IOException ex) {
-                        LOG.error("Import failed.", ex);
-                        Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
-                                Notification.Type.ERROR_MESSAGE);
+                    if (!toDecideDpus.isEmpty()) {
+                        openChooseImportStrategyDialog(toDecideDpus);
+                    } else {
+                        startImport(new HashMap<String, ImportStrategy>(0));
                     }
                 }
             }
         });
+        btnImport.setEnabled(false);
         buttonLayout.addComponent(btnImport);
         buttonLayout.setComponentAlignment(btnImport, Alignment.MIDDLE_LEFT);
 
@@ -343,6 +376,39 @@ public class PipelineImport extends Window {
             }
         });
     }
+    
+    private void startImport(Map<String, ImportStrategy> choosenStrategies) {
+        // import
+        final File zipFile = fileUploadReceiver.getFile();
+        try {
+            importedPipeline = importService.importPipeline(zipFile, chbImportDPUData.getValue(), chbImportSchedule.getValue(), choosenStrategies);
+            close();
+        } catch (ImportException | IOException ex) {
+            LOG.error("Import failed.", ex);
+            Notification.show(Messages.getString("PipelineImport.import.fail") + ex.getMessage(),
+                    Notification.Type.ERROR_MESSAGE);
+        }
+    }
+
+    final void openChooseImportStrategyDialog(Set<String> toDecideDpus) {
+        final ChooseImportStrategyDialog dialog = new ChooseImportStrategyDialog(toDecideDpus);
+        dialog.addCloseListener(new Window.CloseListener() {
+            private static final long serialVersionUID = -5040883763888691197L;
+
+            @Override
+            public void windowClose(CloseEvent e) {
+                Map<String, ImportStrategy> choosenStrategies = dialog.getChoices();
+                if (choosenStrategies.isEmpty()) {
+                    Notification.show(Messages.getString("PipelineImport.import.canceled"));
+                } else {
+                    startImport(choosenStrategies);
+                }
+            }
+        });
+        
+        UI.getCurrent().addWindow(dialog);
+        dialog.bringToFront();
+    }
 
     /**
      * Return imported pipeline or null if no pipeline has been imported.
@@ -353,4 +419,11 @@ public class PipelineImport extends Window {
         return importedPipeline;
     }
 
+    private class RowTooltip {
+        public String tooltip;
+
+        public RowTooltip(String string) {
+            this.tooltip = string;
+        }
+    }
 }

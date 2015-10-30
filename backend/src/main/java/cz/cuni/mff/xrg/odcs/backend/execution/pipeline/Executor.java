@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline;
 
 import java.util.Collections;
@@ -28,6 +44,8 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineAbortedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFailedEvent;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineStarted;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.LogFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -109,11 +127,20 @@ public class Executor implements Runnable {
      */
     private Date lastSuccessfulExTime;
 
+    @Autowired
+    private AppConfig appConfig;
+
+    /**
+     * Backend identifier
+     */
+    private String backendID;
+
     /**
      * Sort pre/post executors.
      */
     @PostConstruct
     public void init() {
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
         if (preExecutors != null) {
             Collections.sort(preExecutors,
                     AnnotationAwareOrderComparator.INSTANCE);
@@ -139,6 +166,7 @@ public class Executor implements Runnable {
             // update state and set start time
             this.execution.setStart(new Date());
             this.execution.setStatus(PipelineExecutionStatus.RUNNING);
+            this.execution.setBackendId(this.backendID);
 
             try {
                 pipelineFacade.save(this.execution);
@@ -286,7 +314,10 @@ public class Executor implements Runnable {
 
         // we need result state
         ExecutionResult execResult = new ExecutionResult();
-
+        if (!dependencyGraph.iterator().hasNext()) {
+            eventPublisher.publishEvent(PipelineFailedEvent.create(Messages.getString("Executor.execution.blank.pipeline"), Messages.getString("Executor.execution.blank.pipeline.no.dpus"), null, this.execution, this));
+            execResult.failure();
+        }
         // execute pre-executors
         if (!executePreExecutors(dependencyGraph)) {
             execResult.failure();
@@ -438,7 +469,7 @@ public class Executor implements Runnable {
         // that the execution finished ..
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
 
-        LOG.trace("Saving pipeline chanegs into SQL ..");
+        LOG.trace("Saving pipeline changes into SQL ..");
 
         // save the execution
         try {

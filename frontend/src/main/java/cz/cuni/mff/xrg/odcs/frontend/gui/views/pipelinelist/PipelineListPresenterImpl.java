@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
@@ -149,14 +165,20 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
+            @SuppressWarnings("unqualified-field-access")
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
-                            || pipelineFacade.hasModifiedExecutions(lastLoad)
-                            || (cachedSource.size() > 0 &&
-                            pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                    boolean hasModifiedPipelines = pipelineFacade.hasModifiedPipelines(lastLoad);
+                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+                    boolean hasDeletedExecutions = cachedSource.size() > 0 && pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size()));
+                    boolean hasModifiedPipelinesOrExecutions = hasModifiedPipelines
+                            || hasModifiedExecutions
+                            || hasDeletedExecutions;
+                    LOG.debug("Last load: {}, hasModifiedPipelines: {}, hasModifiedExecutions: {}, hasDeletedPipelines: {}", lastLoad, hasModifiedPipelines, hasModifiedExecutions,
+                            hasDeletedExecutions);
                     if (hasModifiedPipelinesOrExecutions) {
+                        LOG.debug("Execution / pipeline modified, refreshing ...");
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -165,7 +187,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 }
             }
         });
-        refreshManager.triggerRefresh();
+        this.refreshManager.triggerRefresh();
     }
 
     @Override
@@ -265,7 +287,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     @Override
     public boolean canDebugPipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        return this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
+        return this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG) &&
+                this.permissionUtils.hasPermission(pipeline, EntityPermissions.PIPELINE_RUN_DEBUG);
     }
 
     @Override

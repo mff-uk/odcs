@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
 import java.util.Date;
@@ -33,7 +49,36 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
      */
     public List<PipelineExecution> getAll(PipelineExecutionStatus status);
 
+    /**
+     * Get all executions with given status ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @return List with priority ordered executions
+     */
     public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status);
+
+    /**
+     * Get all executions with given status and backend ID ordered by priority
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
+    public List<PipelineExecution> getAllByPriorityLimited(PipelineExecutionStatus status, String backendID);
+
+    /**
+     * Get all executions with given status and backend ID
+     * 
+     * @param status
+     *            Execution status
+     * @param backendID
+     *            Backend ID
+     * @return List of all executions with given status and backend ID
+     */
+    public List<PipelineExecution> getAll(PipelineExecutionStatus status, String backendID);
 
     /**
      * @param pipeline
@@ -81,18 +126,22 @@ public interface DbExecution extends DbAccess<PipelineExecution> {
     /**
      * Checks if some of the executions were deleted
      * <p>
-     * @param ids executions to check
+     * 
+     * @param ids
+     *            executions to check
      * @return true if one or more execution were deleted
      */
-	public boolean hasDeleted(List<Long> ids);
+    public boolean hasDeleted(List<Long> ids);
 
-	/**
-	 * Checks if there are executions for selected pipeline with selected statuses
-	 * 
-	 * @param pipeline for which executions we are checking
-	 * @param statuses of executions we are checking
-	 * @return true if there is at least one execution with selected statuses, false otherwise
-	 */
+    /**
+     * Checks if there are executions for selected pipeline with selected statuses
+     * 
+     * @param pipeline
+     *            for which executions we are checking
+     * @param statuses
+     *            of executions we are checking
+     * @return true if there is at least one execution with selected statuses, false otherwise
+     */
     boolean hasWithStatus(Pipeline pipeline, List<PipelineExecutionStatus> statuses);
 
 }
