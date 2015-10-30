@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 @Component
 public class DatabaseInitializer {
@@ -62,15 +64,19 @@ public class DatabaseInitializer {
 
         UserNotificationRecord userNotificationRecordAdmin = new UserNotificationRecord();
         userNotificationRecordAdmin.setUser(admin);
-        userNotificationRecordAdmin.setTypeError(NotificationRecordType.INSTANT);
-        userNotificationRecordAdmin.setTypeSuccess(NotificationRecordType.INSTANT);
+        userNotificationRecordAdmin.setTypeError(NotificationRecordType.DAILY);
+        userNotificationRecordAdmin.setTypeSuccess(NotificationRecordType.DAILY);
+        userNotificationRecordAdmin.setTypeStarted(NotificationRecordType.NO_REPORT);
+        userNotificationRecordAdmin.setEmails(new HashSet<>(Arrays.asList(adminEmailAddress)));
+
         userNotificationRecordAdmin.getEmails().add(adminEmailAddress);
 
         UserNotificationRecord userNotificationRecordUser = new UserNotificationRecord();
         userNotificationRecordUser.setUser(user);
-        userNotificationRecordUser.setTypeError(NotificationRecordType.INSTANT);
-        userNotificationRecordUser.setTypeSuccess(NotificationRecordType.INSTANT);
-        userNotificationRecordUser.getEmails().add(userEmailAddress);
+        userNotificationRecordUser.setTypeError(NotificationRecordType.DAILY);
+        userNotificationRecordUser.setTypeSuccess(NotificationRecordType.DAILY);
+        userNotificationRecordUser.setTypeStarted(NotificationRecordType.NO_REPORT);
+        userNotificationRecordUser.setEmails(new HashSet<>(Arrays.asList(userEmailAddress)));
 
         RuntimeProperty prop1 = new RuntimeProperty();
         prop1.setName("backend.scheduledPipelines.limit");
