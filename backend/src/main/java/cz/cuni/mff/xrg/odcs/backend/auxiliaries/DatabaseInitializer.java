@@ -49,6 +49,7 @@ public class DatabaseInitializer {
         admin.setUsername("admin");
         admin.setEmail(adminEmailAddress);
         admin.addRole(adminRole);
+        admin.setExternalIdentifier("http://www.johnadmin.cz");
 
         User user = new User();
         user.setFullName("John User");
@@ -57,6 +58,7 @@ public class DatabaseInitializer {
         user.setUsername("user");
         user.setEmail(userEmailAddress);
         user.addRole(userRole);
+        user.setExternalIdentifier("http://johnuser.at");
 
         UserNotificationRecord userNotificationRecordAdmin = new UserNotificationRecord();
         userNotificationRecordAdmin.setUser(admin);
