@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import static org.junit.Assert.assertEquals;
@@ -6,8 +22,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +49,7 @@ public class PipelineGraphTest {
         Node nodeA = new Node();
         Node nodeB = new Node();
         Edge edge = new Edge(nodeA, nodeB);
-        Set<Edge> edges = new HashSet<>(Arrays.asList(edge));
+        LinkedHashSet<Edge> edges = new LinkedHashSet<>(Arrays.asList(edge));
         instance.setEdges(edges);
 
         assertEquals(edges, instance.getEdges());

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend;
 
 import ch.qos.logback.classic.Level;
@@ -9,6 +25,7 @@ import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.DatabaseInitializer;
+import cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcExecutionLevelFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
@@ -48,6 +65,9 @@ public class AppEntry {
 
     @Autowired
     private DatabaseInitializer databaseInitializer;
+
+    @Autowired
+    private EmbeddedHttpServer httpProbeServer;
 
     private RollingFileAppender createAppender(LoggerContext loggerContext,
             String logDirectory, String logFile, int logHistory) {
@@ -176,7 +196,7 @@ public class AppEntry {
         logbackLogger.addAppender(sqlAppender);
     }
 
-    private void run() {
+    private void run() throws Exception {
         // the log back is not initialised here ..
         // we add file appender
         initLogbackAppender();
@@ -200,9 +220,7 @@ public class AppEntry {
         }
 
         databaseInitializer.initialize();
-
-        // print some information ..
-        LOG.info("Running ...");
+        httpProbeServer.startServer();
 
         // infinite loop
         while (true) {
@@ -213,7 +231,7 @@ public class AppEntry {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         AbstractApplicationContext context = new ClassPathXmlApplicationContext(SPRING_CONFIG_FILE);
         context.registerShutdownHook();
 

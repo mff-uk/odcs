@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.conf;
 
 /**
@@ -12,10 +28,14 @@ public enum ConfigProperty {
     BACKEND_NAME("backend.name"),
     BACKEND_HOST("backend.host"),
     BACKEND_PORT("backend.port"),
+    BACKEND_HTTP_PROBE_PORT("backend.probe.http.port"),
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
+    BACKEND_ALIVE_LIMIT("backend.alive.limit"),
+    BACKEND_ID("backend.id"),
+    BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
@@ -99,7 +119,9 @@ public enum ConfigProperty {
 
     FRONTEND_INITIAL_PAGE("frontend.initial.page"),
     EXTERNAL_MENU_LINK_NAME("external.menu.link.name"),
-    EXTERNAL_MENU_LINK_URL("external.menu.link.url");
+    EXTERNAL_MENU_LINK_URL("external.menu.link.url"),
+    DPU_INSTANCE_USE_TEMPLATE_CONFIG("dpu.instance.template.config.enabled"),
+    FRONTEND_PIPELINE_SHOW_COMPOSITE_BUTTONS("frontend.pipeline.composite.buttons.show");
 
     private final String property;
 

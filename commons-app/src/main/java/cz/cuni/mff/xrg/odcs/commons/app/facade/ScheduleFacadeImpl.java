@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
 import java.util.Date;
@@ -99,6 +115,21 @@ class ScheduleFacadeImpl implements ScheduleFacade {
     @Override
     public List<Schedule> getAllTimeBasedNotQueuedRunning() {
         return scheduleDao.getAllTimeBasedNotQueuedRunning();
+    }
+
+    /**
+     * Fetches all {@link Schedule}s which are activated in
+     * certain time and the execution for the scheduled pipeline
+     * isn't already queued or running.
+     * <br/>
+     * Fetched schedules are locked for update so other backends don't execute them too
+     * 
+     * @return
+     */
+    @PostFilter("hasPermission(filterObject, 'scheduleRule.read')")
+    @Override
+    public List<Schedule> getAllTimeBasedNotQueuedRunningForCluster() {
+        return this.scheduleDao.getAllTimeBasedNotQueuedRunningForCluster();
     }
 
     /**
@@ -204,9 +235,27 @@ class ScheduleFacadeImpl implements ScheduleFacade {
     @Transactional
     @Override
     public void executeFollowers() {
-        List<Schedule> toRun = scheduleDao.getActiveRunAfterBased();
+        List<Schedule> toRun = this.scheduleDao.getActiveRunAfterBased();
         // filter those that should not run
         toRun = filterActiveRunAfter(toRun);
+        // and execute
+        for (Schedule schedule : toRun) {
+            execute(schedule);
+        }
+    }
+
+    /**
+     * Check for all schedule that run after some execution and run them
+     * if all the the pre-runs has been executed. The call of this
+     * function may be expensive as it check for all runAfter based
+     * pipelines.
+     */
+    @Transactional
+    @Override
+    public void executeFollowers(String backendID) {
+        List<Schedule> toRun = this.scheduleDao.getActiveRunAfterBased();
+        // filter those that should not run
+        toRun = filterActiveRunAfter(toRun, backendID);
         // and execute
         for (Schedule schedule : toRun) {
             execute(schedule);
@@ -237,10 +286,24 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      */
     @PreAuthorize("hasRole('scheduleRule.read')")
     private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
+        return filterActiveRunAfter(candidates, null);
+    }
+
+    /**
+     * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE} and that should be executed (all their {@link Schedule#afterPipelines
+     *         after-pipeline} executions finished).
+     */
+    @PreAuthorize("hasRole('scheduleRule.read')")
+    private List<Schedule> filterActiveRunAfter(List<Schedule> candidates, String backendID) {
         List<Schedule> result = new LinkedList<>();
 
         for (Schedule schedule : candidates) {
-            List<Date> times = scheduleDao.getLastExecForRunAfter(schedule);
+            List<Date> times = null;
+            if (backendID != null) {
+                times = this.scheduleDao.getLastExecForRunAfter(schedule, backendID);
+            } else {
+                times = this.scheduleDao.getLastExecForRunAfter(schedule);
+            }
             boolean execute = true;
             for (Date item : times) {
                 if (item == null) {

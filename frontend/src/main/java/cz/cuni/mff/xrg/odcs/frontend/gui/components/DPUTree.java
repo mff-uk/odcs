@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components;
 
 import java.text.Collator;
@@ -7,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -84,8 +101,9 @@ public class DPUTree extends CustomComponent {
     private HorizontalLayout topLine;
 
     private Window.CloseListener createDPUCloseListener;
-    
+
     private boolean isValid = true;
+
     /**
      * Creates new DPUTree.
      */
@@ -215,8 +233,7 @@ public class DPUTree extends CustomComponent {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                DPUTemplatesExport exportWindow =
-                        new DPUTemplatesExport(dpuFacade.getAllTemplates(), exportService);
+                DPUTemplatesExport exportWindow = new DPUTemplatesExport(dpuFacade.getAllTemplates(), exportService);
                 UI.getCurrent().addWindow(exportWindow);
             }
         });
@@ -288,7 +305,7 @@ public class DPUTree extends CustomComponent {
                     isValid = true;
                 }
             };
-            
+
             @Override
             protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws com.vaadin.data.Property.ReadOnlyException {
                 if (isValid) {
@@ -335,7 +352,9 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
                 }
-                return collator.compare(first.getMenuName(), second.getMenuName());
+                String firstName = StringUtils.isEmpty(first.getMenuName()) ? first.getName() : first.getMenuName();
+                String secondName = StringUtils.isEmpty(second.getMenuName()) ? second.getName() : second.getMenuName();
+                return collator.compare(firstName, secondName);
             }
         });
 
@@ -377,7 +396,7 @@ public class DPUTree extends CustomComponent {
     public void setValue(Object newValue) {
         dpuTree.select(null);
         dpuTree.select(newValue);
-        isValid=false;
+        isValid = false;
     }
 
     public Object getValue() {
@@ -466,8 +485,8 @@ public class DPUTree extends CustomComponent {
     private void setTreeState(boolean isStateExpanded) {
         btnMinimize.setVisible(isExpandable && isStateExpanded);
         btnExpand.setVisible(isExpandable && !isStateExpanded);
-        buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
-        exportButton.setVisible(isExpandable && isStateExpanded);
+        buttonCreateDPU.setVisible(isExpandable && isStateExpanded && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
+        exportButton.setVisible(isExpandable && isStateExpanded && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
         layoutTree.setVisible(isStateExpanded);
         mainLayout.setSizeUndefined();
     }
@@ -498,8 +517,8 @@ public class DPUTree extends CustomComponent {
     }
 
     private void setButtonsVisible() {
-        this.buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
-        this.exportButton.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
+        this.buttonCreateDPU.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
+        this.exportButton.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
     }
 
     @Override

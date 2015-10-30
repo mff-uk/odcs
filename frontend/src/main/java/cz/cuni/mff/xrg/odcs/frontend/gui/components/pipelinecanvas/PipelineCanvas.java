@@ -1,10 +1,25 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +34,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeCompiler;
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeFormater;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
@@ -39,7 +57,6 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.EdgeDetail;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 
 /**
  * Component for visualization of the pipeline.
@@ -120,7 +137,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         this.setStyleName("pipelineContainer");
 
         registerRpc(new PipelineCanvasServerRpc() {
-            
+
             @Override
             public void onDetailRequested(int dpuId) {
                 Node node = graph.getNodeById(dpuId);
@@ -196,7 +213,8 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     public void init() {
         detailDialog = new DPUDetail(this.dpuFacade, this.appConfig, this.utils, this.permissionUtils);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight,
-                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME));
+                LocaleHolder.getLocale().getLanguage(), appConfig.getString(ConfigProperty.FRONTEND_THEME),
+                this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG));
     }
 
     /**
@@ -536,8 +554,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     /**
      * Validate graph.
      */
-    public void validateGraph() {
+    public boolean validateGraph() {
         boolean isGraphValid = true;
+        if (graph.getNodes().isEmpty()) {
+            Notification.show(Messages.getString("PipelineCanvas.pipeline.invalid.blank.pipeline"), Notification.Type.WARNING_MESSAGE);
+            return false;
+        }
         for (Node node : graph.getNodes()) {
             DPUInstanceRecord dpu = node.getDpuInstance();
             boolean isValid = pipelineValidator.checkDPUValidity(dpu);
@@ -547,11 +569,12 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
         try {
             isGraphValid &= pipelineValidator.validateGraphEdges(graph);
             if (isGraphValid) {
-                Notification.show(Messages.getString("PipelineCanvas.pipeline.valid"), Notification.Type.WARNING_MESSAGE);
+                return true;
             }
         } catch (PipelineValidationException ex) {
             Notification.show(Messages.getString("PipelineCanvas.mandatory.missing"), ex.getMessage(), Notification.Type.WARNING_MESSAGE);
         }
+        return false;
     }
 
     /**

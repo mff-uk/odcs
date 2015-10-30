@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
 import java.util.Arrays;
@@ -75,6 +91,22 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
         return executeList(query);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Schedule> getAllTimeBasedNotQueuedRunningForCluster() {
+
+        final String queryStr = "SELECT * FROM exec_schedule s"
+                + " WHERE s.type = %d AND s.id NOT IN ("
+                + " SELECT s1.id FROM exec_schedule s1"
+                + " LEFT JOIN exec_pipeline e"
+                + " ON e.id = s1.pipeline_id WHERE e.status IN (%d, %d))"
+                + " ORDER BY s.id ASC"
+                + " FOR UPDATE";
+
+        String query = String.format(queryStr, 1, 0, 1);
+        return this.em.createNativeQuery(query, Schedule.class).getResultList();
+    }
+
     @Override
     public List<Schedule> getActiveRunAfterBased() {
         final String stringQuery = "SELECT s FROM Schedule s"
@@ -101,6 +133,27 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
         TypedQuery<Date> query = em.createQuery(stringQuery, Date.class);
         query.setParameter("schedule", schedule.getId());
         query.setParameter("status", statuses);
+
+        return Collections.checkedList(query.getResultList(), Date.class);
+    }
+
+    @Override
+    public List<Date> getLastExecForRunAfter(Schedule schedule, String backendId) {
+        final String stringQuery = "SELECT max(exec.end)"
+                + " FROM Schedule schedule"
+                + " JOIN schedule.afterPipelines pipeline"
+                + " JOIN PipelineExecution exec ON exec.pipeline = pipeline"
+                + " WHERE schedule.id = :schedule AND exec.status IN :status AND exec.backendId = :backendId"
+                + " GROUP BY pipeline.id";
+
+        Set<PipelineExecutionStatus> statuses = new HashSet<>();
+        statuses.add(PipelineExecutionStatus.FINISHED_SUCCESS);
+        statuses.add(PipelineExecutionStatus.FINISHED_WARNING);
+
+        TypedQuery<Date> query = this.em.createQuery(stringQuery, Date.class);
+        query.setParameter("schedule", schedule.getId());
+        query.setParameter("status", statuses);
+        query.setParameter("backendId", backendId);
 
         return Collections.checkedList(query.getResultList(), Date.class);
     }
