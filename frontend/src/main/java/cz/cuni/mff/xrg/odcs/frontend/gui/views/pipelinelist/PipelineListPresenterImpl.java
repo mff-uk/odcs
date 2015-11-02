@@ -17,8 +17,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +47,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -245,17 +245,15 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         String message = Messages.getString("PipelineListPresenterImpl.delete.dialog", pipeline.getName());
         List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
         if (!schedules.isEmpty()) {
-            HashSet<String> usersWithSchedules = new HashSet<>();
+            List<User> usersWithSchedules = new LinkedList<>();
             for (Schedule schedule : schedules) {
-                usersWithSchedules.add(schedule.getOwner().getUsername());
+                usersWithSchedules.add(schedule.getOwner());
             }
-            Iterator<String> it = usersWithSchedules.iterator();
-            String users = it.next();
-            while (it.hasNext()) {
-                users = users + ", " + it.next();
-            }
+
+            String users = getUserListAsString(usersWithSchedules);
+
             String scheduleMessage = Messages.getString("PipelineListPresenterImpl.pipeline.scheduled", users);
-            message = message + scheduleMessage;
+            message = message + " " + scheduleMessage;
         }
         ConfirmDialog.show(UI.getCurrent(),
                 Messages.getString("PipelineListPresenterImpl.delete.confirmation"), message, Messages.getString("PipelineListPresenterImpl.delete.confirmation.deleteButton"), Messages.getString("PipelineListPresenterImpl.delete.confirmation.cancelButton"), new ConfirmDialog.Listener() {
@@ -267,6 +265,26 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                         }
                     }
                 });
+    }
+
+    private static String getUserListAsString(List<User> userList) {
+        StringBuilder usersString = new StringBuilder();
+        for (User user : userList) {
+            String userName = user.getUsername();
+            if (user.getFullName() != null && !user.getFullName().equals("")) {
+                userName = user.getFullName();
+            }
+            if (user.getUserActor() != null) {
+                userName += " (" + user.getUserActor().getName() + ")";
+            }
+            usersString.append(userName);
+            usersString.append(",");
+        }
+        if (usersString.length() > 1) {
+            usersString.setLength(usersString.length() - 1);
+        }
+
+        return usersString.toString();
     }
 
     @Override
