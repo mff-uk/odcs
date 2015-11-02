@@ -13,12 +13,12 @@
     <logger name="httpclient.wire.header" level="WARN"/>
     <logger name="httpclient.wire.content" level="WARN"/>
 
-	<!-- This is used to log whole HTTP communication. With SparlqEndpoint, that use SparqlRepository,
-	this produce a huge amount of logs per a DPU execution. -->
-	<logger name="org.apache.http.wire" level="WARN"/>
-	<logger name="org.apache.http.headers" level="WARN"/>
+    <!-- This is used to log whole HTTP communication. With SparlqEndpoint, that use SparqlRepository,
+    this produce a huge amount of logs per a DPU execution. -->
+    <logger name="org.apache.http.wire" level="WARN"/>
+    <logger name="org.apache.http.headers" level="WARN"/>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 
