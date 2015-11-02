@@ -40,9 +40,8 @@ public class PipelineGraph implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_graph")
-    @SequenceGenerator(name = "seq_ppl_graph", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

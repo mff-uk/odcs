@@ -34,9 +34,8 @@ import java.util.Objects;
 public class OpenEvent implements DataObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_open_event")
-    @SequenceGenerator(name = "seq_ppl_open_event", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

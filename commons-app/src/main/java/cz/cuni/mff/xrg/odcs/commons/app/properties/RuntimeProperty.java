@@ -30,9 +30,8 @@ public class RuntimeProperty implements Serializable, DataObject {
      * Unique ID for each property
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_runtime_properties")
-    @SequenceGenerator(name = "seq_runtime_properties", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

@@ -32,9 +32,8 @@ public class Permission implements GrantedAuthority {
      * Primary key for entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
-    @SequenceGenerator(name = "seq_permission", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy="permissions")

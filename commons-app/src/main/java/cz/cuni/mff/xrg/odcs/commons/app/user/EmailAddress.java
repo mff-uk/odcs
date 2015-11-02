@@ -34,9 +34,8 @@ import javax.persistence.*;
 public class EmailAddress implements Comparable<Object>, DataObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
-    @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -45,7 +44,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
     @Column(name = "email")
     private String email;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "email")
     private User user;
 
     @PreRemove

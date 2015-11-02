@@ -16,17 +16,16 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+
+import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Hold and manage context for pipeline execution.
@@ -79,9 +78,8 @@ public class ExecutionContextInfo implements DataObject {
      * Unique id of pipeline execution.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_pipeline")
-    @SequenceGenerator(name = "seq_exec_context_pipeline", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

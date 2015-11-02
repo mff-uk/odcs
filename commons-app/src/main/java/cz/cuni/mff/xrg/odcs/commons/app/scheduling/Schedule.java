@@ -44,9 +44,8 @@ public class Schedule implements OwnedEntity, DataObject {
      * Unique ID for each plan.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
-    @SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

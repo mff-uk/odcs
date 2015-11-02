@@ -102,7 +102,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         Date now = new Date();
         // get all pipelines that are time based
         LOG.debug("Going to check all time based not queued schedules");
-        List<Schedule> candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
+        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
         LOG.debug("Found {} schedule candidates, that could be executed", candidates.size());
         // check ..
         for (Schedule schedule : candidates) {

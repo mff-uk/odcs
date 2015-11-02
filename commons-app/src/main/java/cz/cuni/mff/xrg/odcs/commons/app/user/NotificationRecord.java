@@ -34,9 +34,8 @@ public abstract class NotificationRecord implements DataObject {
      * Unique ID for each scheduler notification.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
-    @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
-    @Column(name = "id", columnDefinition = "INT(11)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     /**

@@ -35,9 +35,8 @@ public class RoleEntity implements DataObject {
 	 * Primary key for entity.
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_role")
-	@SequenceGenerator(name = "seq_role", allocationSize = 1)
-	@Column(name = "id", columnDefinition = "INT(11)")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id")
 	private Long id;
 
 	@Column(name = "name", nullable = false, unique = true, length = 142)
