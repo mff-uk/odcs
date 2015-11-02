@@ -53,7 +53,7 @@ public class DPUInstanceRecord extends DPURecord {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "dpuInstance")
     private Set<MessageRecord> messageRecords = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "dpuInstance")
     private Node node;
 
     /**
