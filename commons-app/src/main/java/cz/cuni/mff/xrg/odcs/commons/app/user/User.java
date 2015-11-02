@@ -49,7 +49,7 @@ public class User implements UserDetails, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
     @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

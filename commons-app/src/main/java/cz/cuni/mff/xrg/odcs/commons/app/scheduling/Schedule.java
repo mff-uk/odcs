@@ -46,7 +46,7 @@ public class Schedule implements OwnedEntity, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
     @SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

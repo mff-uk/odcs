@@ -49,7 +49,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_pipeline")
     @SequenceGenerator(name = "seq_exec_pipeline", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

@@ -36,7 +36,7 @@ public class NamespacePrefix implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
     @SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

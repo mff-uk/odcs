@@ -37,7 +37,7 @@ public class Edge implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
     @SequenceGenerator(name = "seq_ppl_edge", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     @ManyToOne(optional = false)

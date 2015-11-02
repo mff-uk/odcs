@@ -54,7 +54,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
     @SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

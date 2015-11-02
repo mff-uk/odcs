@@ -36,7 +36,7 @@ public class EmailAddress implements Comparable<Object>, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
     @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

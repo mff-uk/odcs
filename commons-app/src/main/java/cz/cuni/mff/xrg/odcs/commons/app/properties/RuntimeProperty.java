@@ -32,7 +32,7 @@ public class RuntimeProperty implements Serializable, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_runtime_properties")
     @SequenceGenerator(name = "seq_runtime_properties", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

@@ -34,7 +34,7 @@ public class Permission implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
     @SequenceGenerator(name = "seq_permission", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy="permissions")

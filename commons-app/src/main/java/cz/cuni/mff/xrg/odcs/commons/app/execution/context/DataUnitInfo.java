@@ -46,7 +46,7 @@ public class DataUnitInfo implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_dataunit_info")
     @SequenceGenerator(name = "seq_exec_dataunit_info", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

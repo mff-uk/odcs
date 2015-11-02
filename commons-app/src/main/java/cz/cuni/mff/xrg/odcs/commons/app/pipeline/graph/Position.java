@@ -41,7 +41,7 @@ public class Position implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_position")
     @SequenceGenerator(name = "seq_ppl_position", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

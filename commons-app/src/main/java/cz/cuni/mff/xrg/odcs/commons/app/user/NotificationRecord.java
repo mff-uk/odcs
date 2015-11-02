@@ -36,7 +36,7 @@ public abstract class NotificationRecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
     @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

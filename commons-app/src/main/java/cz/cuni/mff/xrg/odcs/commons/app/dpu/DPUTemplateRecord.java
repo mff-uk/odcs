@@ -65,7 +65,7 @@ public class DPUTemplateRecord extends DPURecord
      * non-root templates.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type")
+    @Column(name = "type", columnDefinition = "SMALLINT(6)")
     private DPUType type;
 
     /**

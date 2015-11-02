@@ -43,7 +43,7 @@ public class Node implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
     @SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -44,7 +44,7 @@ public abstract class DPURecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
     @SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

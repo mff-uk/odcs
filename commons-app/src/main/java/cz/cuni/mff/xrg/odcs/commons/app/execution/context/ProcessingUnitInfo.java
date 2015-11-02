@@ -43,7 +43,7 @@ public class ProcessingUnitInfo implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_dpu")
     @SequenceGenerator(name = "seq_exec_context_dpu", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     /**

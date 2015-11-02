@@ -33,7 +33,7 @@ public class UserActor implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user_actor")
     @SequenceGenerator(name = "seq_user_actor", allocationSize = 1)
-    @Column(name = "id")
+    @Column(name = "id", columnDefinition = "INT(11)")
     private Long id;
 
     @Column(name = "id_extuser", unique = true, nullable = false)
