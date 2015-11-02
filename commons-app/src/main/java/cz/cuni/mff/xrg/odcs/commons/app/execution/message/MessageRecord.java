@@ -42,7 +42,8 @@ public class MessageRecord implements DataObject {
      * Unique id.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_record")
+    @SequenceGenerator(name = "seq_exec_record", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

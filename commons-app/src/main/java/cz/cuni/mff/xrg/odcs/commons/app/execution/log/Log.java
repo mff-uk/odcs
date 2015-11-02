@@ -48,7 +48,8 @@ public class Log implements DataObject {
      * Primary key of message stored in database.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_logging")
+    @SequenceGenerator(name = "seq_logging", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

@@ -41,7 +41,8 @@ public class Node implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
+    @SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

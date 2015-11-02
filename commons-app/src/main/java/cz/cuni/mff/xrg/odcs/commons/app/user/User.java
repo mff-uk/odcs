@@ -47,7 +47,8 @@ public class User implements UserDetails, DataObject {
      * Primary key for entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
+    @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

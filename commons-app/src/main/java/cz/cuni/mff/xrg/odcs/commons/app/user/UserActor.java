@@ -31,7 +31,8 @@ public class UserActor implements DataObject {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_user_actor")
+    @SequenceGenerator(name = "seq_user_actor", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

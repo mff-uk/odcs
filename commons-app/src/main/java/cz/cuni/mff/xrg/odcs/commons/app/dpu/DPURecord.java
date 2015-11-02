@@ -42,7 +42,8 @@ public abstract class DPURecord implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
+    @SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

@@ -32,7 +32,8 @@ public class Permission implements GrantedAuthority {
      * Primary key for entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
+    @SequenceGenerator(name = "seq_permission", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

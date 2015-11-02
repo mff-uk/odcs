@@ -34,7 +34,8 @@ import javax.persistence.*;
 public class EmailAddress implements Comparable<Object>, DataObject {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_email")
+    @SequenceGenerator(name = "seq_sch_email", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

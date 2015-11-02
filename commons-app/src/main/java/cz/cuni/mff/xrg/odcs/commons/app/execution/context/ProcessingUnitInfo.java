@@ -41,7 +41,8 @@ public class ProcessingUnitInfo implements DataObject {
      * Unique id of pipeline execution.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_dpu")
+    @SequenceGenerator(name = "seq_exec_context_dpu", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 

@@ -35,7 +35,8 @@ public class Edge implements DataObject {
      * Primary key of graph stored in db
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_edge")
+    @SequenceGenerator(name = "seq_ppl_edge", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
