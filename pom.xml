@@ -62,7 +62,7 @@
 		<cglib.version>3.0</cglib.version>
 		<asm.util.version>4.0</asm.util.version>
 		<eclipselink.version>2.5.1</eclipselink.version>
-		<mysql.jdbc.version>5.1.6</mysql.jdbc.version>
+		<mysql.jdbc.version>5.1.37</mysql.jdbc.version>
 		<javax.persistence.version>2.1.0</javax.persistence.version>
 		<postgres.jdbc.version>9.3-1102-jdbc41</postgres.jdbc.version>
 		<jasypt.version>1.9.2</jasypt.version>
