@@ -43,13 +43,14 @@ public class ExecutionServer implements Serializable, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_backend_servers")
     @SequenceGenerator(name = "seq_backend_servers", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_update")
     private Date lastUpdate;
 
-    @Column(name = "backend_id")
+    @Column(name = "backend_id", unique = true, length = 128)
     private String backendId;
 
     @Override

@@ -24,7 +24,7 @@ import java.util.Set;
 
 /**
  * Represent settings for scheduler notification.
- *
+ * 
  * @author Maria Kukhar
  */
 @MappedSuperclass
@@ -43,21 +43,21 @@ public abstract class NotificationRecord implements DataObject {
      * Type of notification in case of successful execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_success")
+    @Column(name = "type_success", columnDefinition = "SMALLINT(6)")
     private NotificationRecordType typeSuccess;
 
     /**
      * Type of notification in case of error execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_error")
+    @Column(name = "type_error", columnDefinition = "SMALLINT(6)")
     private NotificationRecordType typeError;
 
     /**
      * Type of notification in case of started execution
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_started")
+    @Column(name = "type_started", columnDefinition = "SMALLINT(6)")
     private NotificationRecordType typeStarted;
 
     /**
@@ -109,7 +109,7 @@ public abstract class NotificationRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -133,7 +133,7 @@ public abstract class NotificationRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

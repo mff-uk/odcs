@@ -43,7 +43,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dpu_template")
-@Index(name="ix_DPU_TEMPLATE", columnNames = "visibility, jar_description, parent_id, user_id")
+@Index(name = "ix_DPU_TEMPLATE", columnNames = "visibility, jar_description, parent_id, user_id")
 public class DPUTemplateRecord extends DPURecord
         implements OwnedEntity, SharedEntity
 {
@@ -51,7 +51,7 @@ public class DPUTemplateRecord extends DPURecord
      * Visibility in DPUTree.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visibility")
+    @Column(name = "visibility", columnDefinition = "SMALLINT(6)")
     private ShareType shareType;
 
     /**
@@ -262,7 +262,8 @@ public class DPUTemplateRecord extends DPURecord
             type = this.getParent().type;
         }
         parent = newParent;
-        if (parent != null) parent.getChildren().add(this);
+        if (parent != null)
+            parent.getChildren().add(this);
     }
 
     /**

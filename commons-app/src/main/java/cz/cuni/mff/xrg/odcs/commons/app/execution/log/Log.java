@@ -20,18 +20,19 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.Index;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 /**
  * Represents log message loaded from database.
- *
+ * 
  * @author Petyr
  */
 @Entity
 @Table(name = "logging")
-@org.eclipse.persistence.annotations.Index(name="ix_LOGGING", columnNames = "dpu, execution, relative_id")
+@Index(name = "ix_LOGGING", columnNames = "dpu, execution, relative_id")
 public class Log implements DataObject {
 
     /**
@@ -75,7 +76,7 @@ public class Log implements DataObject {
      * Text of formatted log massage.
      */
     @Lob
-    @Column(name = "message")
+    @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
     /**
@@ -94,7 +95,7 @@ public class Log implements DataObject {
      * Mapping to stack trace.
      */
     @Lob
-    @Column(name = "stack_trace")
+    @Column(name = "stack_trace", columnDefinition = "TEXT")
     private String stackTrace;
 
     /**
@@ -161,7 +162,7 @@ public class Log implements DataObject {
 
     /**
      * Stack trace for given log if exist.
-     *
+     * 
      * @return Empty string or stack trace. Never return null!
      */
     public String getStackTrace() {
@@ -178,7 +179,7 @@ public class Log implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -202,7 +203,7 @@ public class Log implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
