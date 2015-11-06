@@ -33,13 +33,11 @@
 		</repository>
 
 		<repository>
-			<id>3rdParty</id>
-			<name>3rd Party (PoolParty Development)</name>
-			<url>https://mvn.semantic-web.at/nexus/content/repositories/thirdparty/</url>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -269,12 +267,6 @@
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>1.2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
-			<version>4.0</version>
 		</dependency>
 
 		<!-- Aspect Oriented Programming with AspectJ -->
