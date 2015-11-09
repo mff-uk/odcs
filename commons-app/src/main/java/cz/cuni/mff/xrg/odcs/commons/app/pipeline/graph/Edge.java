@@ -40,11 +40,11 @@ public class Edge implements DataObject {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "node_from_id")
     private Node from;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "node_to_id")
     private Node to;
 
