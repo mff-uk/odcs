@@ -37,13 +37,13 @@ public class Permission implements GrantedAuthority {
     @Column(name = "id")
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy="permissions")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "permissions")
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 142)
     private String name;
 
-    @Column(name = "shared_entity_instance_write_required")
+    @Column(name = "sharedentityinstancewriterequired")
     private boolean sharedEntityInstanceWriteRequired;
 
     public Long getId() {

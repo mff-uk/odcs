@@ -21,6 +21,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.Index;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -29,13 +30,13 @@ import java.util.Objects;
 
 /**
  * Represent a single message created during DPURecord execution.
- *
+ * 
  * @author Petyr
  * @author Bogo
  */
 @Entity
 @Table(name = "exec_record")
-@org.eclipse.persistence.annotations.Index(name="ix_EXEC_RECORD", columnNames = "r_time, r_type, dpu_id, execution_id")
+@Index(name = "ix_EXEC_RECORD", columnNames = "r_time, r_type, dpu_id, execution_id")
 public class MessageRecord implements DataObject {
 
     /**
@@ -85,7 +86,7 @@ public class MessageRecord implements DataObject {
      * Full message text.
      */
     @Lob
-    @Column(name = "full_message")
+    @Column(name = "full_message", columnDefinition = "TEXT")
     private String fullMessage;
 
     /**
@@ -96,7 +97,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Constructor.
-     *
+     * 
      * @param time
      *            Time of creation.
      * @param type
@@ -123,8 +124,10 @@ public class MessageRecord implements DataObject {
         this.fullMessage = fullMessage;
         this.dpuInstance = dpuInstance;
 
-        if (dpuInstance != null) dpuInstance.getMessageRecords().add(this);
-        if (execution != null) execution.getMessages().add(this);
+        if (dpuInstance != null)
+            dpuInstance.getMessageRecords().add(this);
+        if (execution != null)
+            execution.getMessages().add(this);
     }
 
     @Override
@@ -184,7 +187,7 @@ public class MessageRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -208,7 +211,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
