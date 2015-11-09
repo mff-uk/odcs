@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "exec_pipeline")
-@org.eclipse.persistence.annotations.Index(name="ix_EXEC_PIPELINE", columnNames = "status, pipeline_id, context_id, schedule_id, owner_id")
+@org.eclipse.persistence.annotations.Index(name="ix_EXEC_PIPELINE", columnNames = "status, pipeline_id, context_id, schedule_id, owner_id, backend_id")
 public class PipelineExecution implements OwnedEntity, DataObject {
 
     /**
