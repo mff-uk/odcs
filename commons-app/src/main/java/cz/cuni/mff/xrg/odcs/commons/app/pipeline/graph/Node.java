@@ -64,10 +64,10 @@ public class Node implements DataObject {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "debugNode", orphanRemoval = true)
     private Set<PipelineExecution> executions = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "from", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "from", orphanRemoval = true)
     private Set<Edge> startNodeOfEdges = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "to", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "to", orphanRemoval = true)
     private Set<Edge> endNodeOfEdges = new HashSet<>();
 
 
