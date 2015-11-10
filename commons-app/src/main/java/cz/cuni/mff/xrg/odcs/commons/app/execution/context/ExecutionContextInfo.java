@@ -37,7 +37,7 @@ import java.util.Set;
  * ./working/DPU_ID/tmp/ - DPU working directory
  * ./storage/DPU_ID/DATAUNIT_INDEX/ - storage for DataUnit results ./result/ -
  * place for DPU's files that should be accessible to the user
- *
+ * 
  * @author Petyr
  */
 @Entity
@@ -84,6 +84,17 @@ public class ExecutionContextInfo implements DataObject {
     private Long id;
 
     /**
+     * Dummy column, should be removed in the future. Without this dummy attribute,
+     * the list of attributes in this table is empty which causes issues:
+     * "Exception Description: The list of fields to insert into the table [DatabaseTable(exec_context_pipeline)] is empty.
+     * You must define at least one mapping for this table."
+     * In the future, this table should be removed completely.
+     */
+    @SuppressWarnings("unused")
+    @Column(name = "dummy")
+    private Boolean dummy = false;
+
+    /**
      * Id of respective execution. Used to create relative path to the context
      * directory.
      */
@@ -112,7 +123,7 @@ public class ExecutionContextInfo implements DataObject {
 
     /**
      * Create info for given execution.
-     *
+     * 
      * @param execution
      */
     public ExecutionContextInfo(PipelineExecution execution) {
@@ -122,7 +133,7 @@ public class ExecutionContextInfo implements DataObject {
 
     /**
      * Return context for given DPUInstanceRecord. Create new context if need.
-     *
+     * 
      * @param id
      *            DPUInstanceRecord's id.
      * @return DataProcessingUnitInfo
@@ -142,7 +153,7 @@ public class ExecutionContextInfo implements DataObject {
 
     /**
      * Add info record for new input {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
-     *
+     * 
      * @param dpuInstance
      *            The {@link DPUInstanceRecord} which will work with the
      *            DataUnit.
@@ -162,7 +173,7 @@ public class ExecutionContextInfo implements DataObject {
 
     /**
      * Add info record for new output {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}.
-     *
+     * 
      * @param dpuInstance
      *            The {@link DPUInstanceRecord} which will work with the
      *            DataUnit.
@@ -183,7 +194,7 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Delete all data about execution except {@link #id} Use to start execution
      * from the very beginning.
-     *
+     * 
      * @deprecated use {@link ExecutionInfo} instead
      */
     @Deprecated
@@ -195,7 +206,7 @@ public class ExecutionContextInfo implements DataObject {
      * Generate unique id for given DataUnit. If call multiple times for the
      * same dpuInstance and DataUnit's index it return the same id. The id has
      * following format: exec_{exec_id}_dpu_{dpu_id}_du_{du_id}.
-     *
+     * 
      * @param dpuInstance
      *            Owner of the DataUnit.
      * @param index
@@ -221,7 +232,7 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Return context information class {@link ProcessingUnitInfo} for given
      * DPU. If the context does not exist, then create new.
-     *
+     * 
      * @param dpuInstance
      *            Instance of DPU for which retrieve context info.
      * @return {@link ProcessingUnitInfo}
@@ -249,7 +260,7 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Return context information class {@link ProcessingUnitInfo} for given
      * DPU.
-     *
+     * 
      * @param dpuInstance
      *            Instance of DPU for which retrieve context info.
      * @return {@link ProcessingUnitInfo} or null if no records for given
@@ -266,7 +277,6 @@ public class ExecutionContextInfo implements DataObject {
     }
 
     /**
-     *
      * @return respective pipeline execution.
      */
     public PipelineExecution getExecution() {
@@ -280,7 +290,7 @@ public class ExecutionContextInfo implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -304,7 +314,7 @@ public class ExecutionContextInfo implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hash code.
      */
     @Override
