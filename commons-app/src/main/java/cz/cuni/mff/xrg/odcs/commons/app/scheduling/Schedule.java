@@ -81,7 +81,7 @@ public class Schedule implements OwnedEntity, DataObject {
      * Schedule rule type.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type", columnDefinition = "SMALLINT")
     private ScheduleType type;
 
     /**

@@ -66,7 +66,7 @@ public class DataUnitInfo implements DataObject {
      * DataUnit type.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type", columnDefinition = "SMALLINT")
     private ManagableDataUnit.Type type;
 
     /**

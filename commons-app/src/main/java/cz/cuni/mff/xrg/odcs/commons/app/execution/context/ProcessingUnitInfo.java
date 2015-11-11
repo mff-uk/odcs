@@ -50,7 +50,7 @@ public class ProcessingUnitInfo implements DataObject {
      * Describe state of the DPU execution.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "state", columnDefinition = "SMALLINT(6)")
+    @Column(name = "state", columnDefinition = "SMALLINT")
     private DPUExecutionState state = DPUExecutionState.PREPROCESSING;
 
     /**

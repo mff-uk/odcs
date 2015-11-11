@@ -88,7 +88,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * Public vs private shareType.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visibility", columnDefinition = "SMALLINT(6)")
+    @Column(name = "visibility", columnDefinition = "SMALLINT")
     private ShareType shareType;
 
     /**

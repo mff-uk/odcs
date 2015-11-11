@@ -2,16 +2,16 @@ ALTER TABLE dpu_instance MODIFY use_dpu_description tinyint(1) DEFAULT '0';
 ALTER TABLE dpu_instance MODIFY use_template_config tinyint(1) NOT NULL DEFAULT '0';
 
 ALTER TABLE dpu_template MODIFY use_dpu_description tinyint(1) DEFAULT '0';
-ALTER TABLE dpu_template MODIFY visibility smallint(6) DEFAULT NULL;
-ALTER TABLE dpu_template MODIFY type smallint(6) DEFAULT NULL;
+ALTER TABLE dpu_template MODIFY visibility SMALLINT DEFAULT NULL;
+ALTER TABLE dpu_template MODIFY type SMALLINT DEFAULT NULL;
 
 ALTER TABLE exec_dataunit_info MODIFY idx int(11) DEFAULT NULL;
-ALTER TABLE exec_dataunit_info MODIFY type smallint(6) DEFAULT NULL;
+ALTER TABLE exec_dataunit_info MODIFY type SMALLINT DEFAULT NULL;
 ALTER TABLE exec_dataunit_info MODIFY is_input tinyint(1) DEFAULT '0';
 
 ALTER TABLE exec_context_pipeline MODIFY dummy tinyint(1) DEFAULT '0';
 
-ALTER TABLE exec_context_dpu MODIFY state smallint(6) DEFAULT NULL;
+ALTER TABLE exec_context_dpu MODIFY state SMALLINT DEFAULT NULL;
 
 ALTER TABLE exec_record MODIFY r_time datetime DEFAULT NULL;
 ALTER TABLE exec_record MODIFY r_type int(11) DEFAULT NULL;
@@ -38,12 +38,12 @@ ALTER TABLE exec_schedule MODIFY period_unit int(11) DEFAULT NULL;
 ALTER TABLE exec_schedule MODIFY priority bigint(20) NOT NULL;
 ALTER TABLE exec_schedule MODIFY strict_tolerance int(11) DEFAULT NULL;
 ALTER TABLE exec_schedule MODIFY strict_timing tinyint(1) DEFAULT '0';
-ALTER TABLE exec_schedule MODIFY type smallint(6) DEFAULT NULL;
+ALTER TABLE exec_schedule MODIFY type SMALLINT DEFAULT NULL;
 
 ALTER TABLE ppl_model MODIFY description text;
 ALTER TABLE ppl_model MODIFY last_change datetime DEFAULT NULL;
 ALTER TABLE ppl_model MODIFY name varchar(255) DEFAULT NULL;
-ALTER TABLE ppl_model MODIFY visibility smallint(6) DEFAULT NULL;
+ALTER TABLE ppl_model MODIFY visibility SMALLINT DEFAULT NULL;
 
 ALTER TABLE ppl_edge MODIFY data_unit_name varchar(2048) DEFAULT NULL;
 
@@ -55,14 +55,14 @@ UPDATE ppl_position SET ppl_position.NODE_id = (SELECT ppl_node.id FROM ppl_node
 ALTER TABLE runtime_properties MODIFY name varchar(100) DEFAULT NULL;
 ALTER TABLE runtime_properties MODIFY value varchar(100) DEFAULT NULL;
 
-ALTER TABLE sch_sch_notification MODIFY type_error smallint(6) DEFAULT NULL;
-ALTER TABLE sch_sch_notification MODIFY type_started smallint(6) DEFAULT NULL;
-ALTER TABLE sch_sch_notification MODIFY type_success smallint(6) DEFAULT NULL;
+ALTER TABLE sch_sch_notification MODIFY type_error SMALLINT DEFAULT NULL;
+ALTER TABLE sch_sch_notification MODIFY type_started SMALLINT DEFAULT NULL;
+ALTER TABLE sch_sch_notification MODIFY type_success SMALLINT DEFAULT NULL;
 
 ALTER TABLE sch_usr_notification MODIFY report_not_scheduled tinyint(1) DEFAULT '0';
-ALTER TABLE sch_usr_notification MODIFY type_error smallint(6) DEFAULT NULL;
-ALTER TABLE sch_usr_notification MODIFY type_started smallint(6) DEFAULT NULL;
-ALTER TABLE sch_usr_notification MODIFY type_success smallint(6) DEFAULT NULL;
+ALTER TABLE sch_usr_notification MODIFY type_error SMALLINT DEFAULT NULL;
+ALTER TABLE sch_usr_notification MODIFY type_started SMALLINT DEFAULT NULL;
+ALTER TABLE sch_usr_notification MODIFY type_success SMALLINT DEFAULT NULL;
 
 ALTER TABLE sch_email MODIFY email varchar(255) DEFAULT NULL;
 

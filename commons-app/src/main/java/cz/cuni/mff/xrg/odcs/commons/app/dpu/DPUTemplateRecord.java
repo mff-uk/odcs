@@ -51,7 +51,7 @@ public class DPUTemplateRecord extends DPURecord
      * Visibility in DPUTree.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visibility", columnDefinition = "SMALLINT(6)")
+    @Column(name = "visibility", columnDefinition = "SMALLINT")
     private ShareType shareType;
 
     /**
@@ -65,7 +65,7 @@ public class DPUTemplateRecord extends DPURecord
      * non-root templates.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type", columnDefinition = "SMALLINT")
     private DPUType type;
 
     /**

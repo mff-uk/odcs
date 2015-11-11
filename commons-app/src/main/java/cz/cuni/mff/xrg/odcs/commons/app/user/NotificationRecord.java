@@ -43,21 +43,21 @@ public abstract class NotificationRecord implements DataObject {
      * Type of notification in case of successful execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_success", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type_success", columnDefinition = "SMALLINT")
     private NotificationRecordType typeSuccess;
 
     /**
      * Type of notification in case of error execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_error", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type_error", columnDefinition = "SMALLINT")
     private NotificationRecordType typeError;
 
     /**
      * Type of notification in case of started execution
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_started", columnDefinition = "SMALLINT(6)")
+    @Column(name = "type_started", columnDefinition = "SMALLINT")
     private NotificationRecordType typeStarted;
 
     /**
