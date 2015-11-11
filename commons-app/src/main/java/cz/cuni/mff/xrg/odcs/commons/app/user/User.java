@@ -74,7 +74,7 @@ public class User implements UserDetails, DataObject {
     /**
      * Hashed password.
      */
-    @Column(name = "u_password", length = 142)
+    @Column(name = "u_password", length = 142, nullable = false)
     private String password;
 
     @Column(name = "table_rows")

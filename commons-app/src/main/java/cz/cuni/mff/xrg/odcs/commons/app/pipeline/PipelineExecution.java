@@ -80,7 +80,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @Column(name = "debug_mode")
     private boolean isDebugging;
 
-    @Column(name = "order_number")
+    @Column(name = "order_number", nullable = false)
     private Long orderNumber;
 
     /**

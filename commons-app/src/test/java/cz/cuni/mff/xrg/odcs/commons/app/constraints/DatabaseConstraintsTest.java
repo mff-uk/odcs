@@ -126,6 +126,7 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 PipelineExecution pipelineExecution = new PipelineExecution();
+                pipelineExecution.setOrderNumber(1l);
                 MessageRecord messageRecord = new MessageRecord(null, null, null, pipelineExecution, null, null);
 
                 em.persist(pipelineExecution);
@@ -147,6 +148,7 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 Pipeline pipeline = new Pipeline();
                 PipelineExecution pipelineExecution = new PipelineExecution(pipeline);
+                pipelineExecution.setOrderNumber(1l);
 
                 em.persist(pipeline);
                 em.persist(pipelineExecution);
@@ -169,6 +171,7 @@ public class DatabaseConstraintsTest {
                 Node node = new Node(instance);
                 PipelineExecution pipelineExecution = new PipelineExecution();
                 pipelineExecution.setDebugNode(node);
+                pipelineExecution.setOrderNumber(1l);
 
                 em.persist(instance);
                 em.persist(node);
@@ -193,6 +196,7 @@ public class DatabaseConstraintsTest {
         user.getRoles().add(role);
         user.setUsername("user_1");
         user.setExternalIdentifier("dummy");
+        user.setPassword("pwd");
 
         em.persist(user);
         em.persist(role);
@@ -221,10 +225,12 @@ public class DatabaseConstraintsTest {
             Object createReferencedInstance(EntityManager em) {
                 em.getTransaction().begin();
                 User user = new User();
+                user.setPassword("pwd");
                 user.setUsername("user_2");
                 user.setExternalIdentifier("dummy");
                 PipelineExecution pipelineExecution = new PipelineExecution();
                 pipelineExecution.setOwner(user);
+                pipelineExecution.setOrderNumber(1l);
 
                 em.persist(user);
                 em.persist(pipelineExecution);
@@ -346,6 +352,7 @@ public class DatabaseConstraintsTest {
                 User user = new User();
                 user.setUsername("user_3");
                 user.setExternalIdentifier("dummy");
+                user.setPassword("pwd");
                 Schedule schedule = new Schedule();
                 schedule.setOwner(user);
                 schedule.setPipeline(pipeline);
@@ -373,6 +380,7 @@ public class DatabaseConstraintsTest {
                 User user = new User();
                 user.setUsername("user_4");
                 user.setExternalIdentifier("dummy");
+                user.setPassword("pwd");
                 pipeline.setUser(user);
 
                 em.persist(pipeline);
@@ -589,6 +597,7 @@ public class DatabaseConstraintsTest {
                 user.setNotification(userNotificationRecord);
                 user.setUsername("user_5");
                 user.setExternalIdentifier("dummy");
+                user.setPassword("pwd");
                 userNotificationRecord.setUser(user);
 
                 em.persist(userNotificationRecord);
@@ -610,6 +619,7 @@ public class DatabaseConstraintsTest {
                 em.getTransaction().begin();
                 User user = new User();
                 user.setUsername("user_6");
+                user.setPassword("pwd");
                 user.setExternalIdentifier("dummy");
                 OpenEvent openEvent = new OpenEvent();
                 openEvent.setTimestamp(new Date());
@@ -653,6 +663,7 @@ public class DatabaseConstraintsTest {
         PipelineExecution exec_pipeline = new PipelineExecution();
         ExecutionContextInfo exec_context_pipeline = new ExecutionContextInfo(exec_pipeline);
         exec_pipeline.setContext(exec_context_pipeline);
+        exec_pipeline.setOrderNumber(1l);
 
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
@@ -683,6 +694,8 @@ public class DatabaseConstraintsTest {
         PipelineExecution pipelineExecution2 = new PipelineExecution();
         pipelineExecution1.setSchedule(schedule);
         pipelineExecution2.setSchedule(schedule);
+        pipelineExecution1.setOrderNumber(1l);
+        pipelineExecution2.setOrderNumber(1l);
 
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
@@ -711,6 +724,7 @@ public class DatabaseConstraintsTest {
         usr_user.setEmail(sch_email);
         usr_user.setUsername("user_7");
         usr_user.setExternalIdentifier("dummy");
+        usr_user.setPassword("pwd");
 
         EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
