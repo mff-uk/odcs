@@ -90,5 +90,6 @@ ALTER TABLE logging MODIFY stack_trace text;
 ALTER TABLE logging MODIFY timestmp bigint(20) NOT NULL;
 
 DROP TABLE properties;
+DROP VIEW pipeline_view;
 DROP VIEW exec_last_view;
 DROP VIEW exec_view;
