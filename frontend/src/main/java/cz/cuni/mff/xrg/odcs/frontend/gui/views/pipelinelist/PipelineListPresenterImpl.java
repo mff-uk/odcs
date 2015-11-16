@@ -35,7 +35,6 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -53,7 +52,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
@@ -64,8 +63,17 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
-import eu.unifiedviews.commons.dao.DBPipelineView;
 import eu.unifiedviews.commons.dao.view.PipelineView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tepi.filtertable.numberfilter.NumberInterval;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Implementation of {@link PipelineListPresenter}.
@@ -81,9 +89,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Autowired
     private PipelineFacade pipelineFacade;
-
-    @Autowired
-    private DBPipelineView dbPipelineView;
 
     @Autowired
     private PipelineViewAccessor pipelineViewAccessor;
@@ -107,12 +112,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private ImportService importService;
 
     private ClassNavigator navigator;
-
     private PipelineListData dataObject;
-
-    private DbCachedSource<PipelineView> cachedSource;
-
     private RefreshManager refreshManager;
+    private ContainerSourceBase<PipelineView> pipelineViewSource;
 
     private Date lastLoad = new Date(0L);
 
@@ -139,10 +141,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        // prepare data object
-        cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
-
-        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
+        pipelineViewSource = new ContainerSourceBase<>(
+                pipelineHelper.getPipelineViews(),
+                pipelineViewAccessor
+        );
+        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(pipelineViewSource));
 
         // prepare view
         Object viewObject = view.enter(this);
@@ -165,20 +168,13 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
-            @SuppressWarnings("unqualified-field-access")
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedPipelines = pipelineFacade.hasModifiedPipelines(lastLoad);
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    boolean hasDeletedExecutions = cachedSource.size() > 0 && pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size()));
-                    boolean hasModifiedPipelinesOrExecutions = hasModifiedPipelines
-                            || hasModifiedExecutions
-                            || hasDeletedExecutions;
-                    LOG.debug("Last load: {}, hasModifiedPipelines: {}, hasModifiedExecutions: {}, hasDeletedPipelines: {}", lastLoad, hasModifiedPipelines, hasModifiedExecutions,
-                            hasDeletedExecutions);
+                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
+                            || pipelineFacade.hasModifiedExecutions(lastLoad)
+                            || pipelineFacade.hasDeletedPipelines(pipelineViewSource.getItemIds(0, pipelineViewSource.size()));
                     if (hasModifiedPipelinesOrExecutions) {
-                        LOG.debug("Execution / pipeline modified, refreshing ...");
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -187,7 +183,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 }
             }
         });
-        this.refreshManager.triggerRefresh();
+        refreshManager.triggerRefresh();
     }
 
     @Override
@@ -217,7 +213,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public void refreshEventHandler() {
-        cachedSource.invalidate();
+        pipelineViewSource.setDataItems(pipelineHelper.getPipelineViews());
         dataObject.getContainer().refresh();
         view.refreshTableControls();
     }
