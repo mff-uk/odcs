@@ -14,15 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.unifiedviews.commons.dao;
+package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
-import eu.unifiedviews.commons.dao.view.ExecutionView;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.ui.AbstractJavaScriptComponent;
 
-/**
- *
- * @author Škoda Petr
- */
-public interface DBExecutionView extends DbAccess<ExecutionView> {
-
+@JavaScript({ "js_sessionRefresh.js", "jquery-2.0.0.min.js" })
+public class SessionRefresh extends AbstractJavaScriptComponent {
 }
