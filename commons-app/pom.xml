@@ -435,9 +435,24 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
 
-		<resources>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.RSA</exclude>
+                        <exclude>**/*.DSA</exclude>
+                        <exclude>**/*.SF</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+
+        <resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
