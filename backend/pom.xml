@@ -98,6 +98,9 @@
             <version>2.9</version>
             <executions>
                 <execution>
+                    <!-- Dependencies are not just copied, but also unpacked - this is a workaround to solve the eclipselink lazy loading issue, see https://github.com/UnifiedViews/Core/pull/555: 
+                     the eclipselink core packages are signed which causes the backend to fail on start because on backend packaging it copies all the dependencies which somehow messes up the signatures. 
+                     The solution proposed in the web is to  filter the *.SF and *.RSA files from META-INF to remove the signature information when preparing the jar -->
                     <id>unpack-dependencies</id>
                     <phase>package</phase>
                     <goals>
