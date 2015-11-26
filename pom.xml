@@ -91,6 +91,8 @@
 		<!-- application -->
 		<module>frontend</module>
 		<module>backend</module>
+		<!-- application additional libraries -->
+		<module>lib</module>
 		<!-- test environment for modules -->
 		<module>module-test</module>
 		<!-- build modules/plugins/dpus -->
