@@ -11,29 +11,11 @@
 	<name>master</name>
 	<description />
 
-	<repositories>
-		<repository>
-			<id>EclipseLink Repo</id>
-			<url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-			<name>EclipseLink Repo</name>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency> <!-- commons-app project -->
 			<groupId>${project.groupId}</groupId>
 			<artifactId>commons-app</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>eclipselink</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>${javax.persistence.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.ext</groupId>
