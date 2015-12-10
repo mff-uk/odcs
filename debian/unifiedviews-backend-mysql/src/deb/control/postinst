@@ -90,6 +90,9 @@ db_configure() {
     DB_NAME=unifiedviews
     # if database unifiedviews is not exist
     if ! mysql -u $DBA_USER --password=$DBA_PASS -e 'use '$DB_NAME''; then
+    
+        echo -n "INFO: Creating MySQL database (which does not exists)..."
+    
         echo "create database if not exists $DB_NAME;" | mysql --password=$ROOT_PW
         echo "created database: $DB_NAME"
         # create a user if not exists
@@ -104,6 +107,7 @@ db_configure() {
     
     else    
     
+        echo -n "INFO: Updating MySQL database (the database exists)..."
         version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
         if [ "$version" = "001.004.000" ]
         then

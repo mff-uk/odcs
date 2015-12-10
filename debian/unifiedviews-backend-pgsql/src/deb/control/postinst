@@ -74,6 +74,7 @@ db_configure() {
     pass="$3"
     CHK_PG_DB=$(su - postgres -c "psql -t -c \"select count(1) from pg_catalog.pg_database where datname = '${dbname}'\"")
     CHK_PG_USER=$(su - postgres -c "psql -t -c \"select count(1) from pg_user where usename = '${usrname}'\"")
+    echo -n "INFO: Configuring PostgreSQL database..."
 
     if [ ${CHK_PG_USER} -eq 0 ]
         then
@@ -94,7 +95,7 @@ db_configure() {
 
     if [ ${CHK_PG_DB} -eq 0 ]
     then
-        echo -n "INFO: Creating PostgreSQL database..."
+        echo -n "INFO: Creating PostgreSQL database (which does not exists)..."
         su - postgres -c "createdb  -O ${usrname} ${dbname}" 
         
         #su - postgres -c "psql  -d ${dbname}" < \
@@ -111,7 +112,7 @@ db_configure() {
         echo " Done" 
     
     else
-
+         echo -n "INFO: Updating PostgreSQL database (the database exists)..."
          version=`su - postgres -c  "psql -A -t -d unifiedviews -c \"select value from properties WHERE properties.key='UV.Core.version' \""`
          if [ "$version" = "001.005.005" ]
          then
