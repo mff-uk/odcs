@@ -101,7 +101,7 @@ db_configure() {
         #/usr/share/unifiedviews/pgsql/schema.sql
         
         #su - postgres -c "psql  -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/data-core.sql
+        #/usr/share/unifiedviews/pgsql/data-core.sql
 
         #su - postgres -c "psql  -d ${dbname}" < \
         #/usr/share/unifiedviews/pgsql/data-permissions.sql
