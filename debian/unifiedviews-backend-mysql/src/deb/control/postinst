@@ -153,7 +153,15 @@ db_configure() {
                     # set db schema version
             mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
            /usr/share/unifiedviews/mysql/2.2.0-update.sql
-            fi     
+        fi
+    
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.3.0-update.sql
+        fi     
+         
     fi
     
     # set permissions for user uv

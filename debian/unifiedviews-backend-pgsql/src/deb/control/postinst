@@ -150,7 +150,16 @@ db_configure() {
                     /usr/share/unifiedviews/pgsql/updates/2.2.0-update.sql
                     su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
                     su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
-            fi 
+            fi
+        
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+                    su - postgres -c "psql -d ${dbname}" < \
+                    /usr/share/unifiedviews/pgsql/updates/2.3.0-update.sql
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+            fi  
     fi
 
     # update backend config
