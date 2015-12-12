@@ -19,7 +19,7 @@
             <!-- commons-app project -->
             <groupId>eu.unifiedviews</groupId>
             <artifactId>backend</artifactId>
-            <version>2.3.0</version>
+            <version>${backend-version}</version>
         </dependency>
     </dependencies>
 
