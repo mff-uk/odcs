@@ -166,14 +166,33 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
             stmt.close();
             connection.commit();
         } catch (BatchUpdateException sqle) {
+
+            LOG.info("Failed to save logs into database, which may be caused by missing default sequence value. Trying to correct this...");
+
+            try {
+                connection.rollback();
+
+                String alterQuery = "ALTER TABLE logging ALTER COLUMN id SET DEFAULT nextval(\'logging_id_seq\')";
+
+                PreparedStatement stmtAlter = connection.prepareStatement(alterQuery);
+                stmtAlter.execute();
+                stmtAlter.close();
+                connection.commit();
+                return false; //give another try
+            } catch (SQLException ex) {
+                LOG.error("Can't alter table {}", ex.getLocalizedMessage());
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    LOG.error("Cannot rollback transaction {}", ex1.getLocalizedMessage());
+                }
+            }
+
             LOG.error("Failed to save logs into database. Given logs will not be saved.", sqle);
             // also reset the counter, as it may count logs that are not in
             // database .. this will force some queris into database
             // but as we do not know which logs passed and which not we
             // have to do this
-
-            //
-
             relativeIdHolder.resetIdCounters();
             return true;
         } catch (Throwable sqle) {
