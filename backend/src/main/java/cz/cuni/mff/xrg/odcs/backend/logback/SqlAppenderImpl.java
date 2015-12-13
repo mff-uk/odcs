@@ -51,7 +51,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 /**
  * Implementation of log appender. The code is inspired by {@link ch.qos.logback.core.db.DBAppenderBase}.
  * The appender is designed to append into single table in Virtuoso.
- *
+ * 
  * @author Petr Škoda
  */
 public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
@@ -110,7 +110,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Return string that is used as insert query into logging table.
-     *
+     * 
      * @return SQL command used to the insert data to the database.
      */
     private String getInsertSQL() {
@@ -122,7 +122,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     /**
      * Return not null {@link Connection}. If failed to get connection then
      * continue to try until success.
-     *
+     * 
      * @return Connection to the database.
      */
     private Connection getConnection() {
@@ -146,7 +146,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Store given logs into database.
-     *
+     * 
      * @param connection
      * @param logs
      * @return True only if all logs has been saved into database.
@@ -171,6 +171,9 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
             // database .. this will force some queris into database
             // but as we do not know which logs passed and which not we
             // have to do this
+
+            //
+
             relativeIdHolder.resetIdCounters();
             return true;
         } catch (Throwable sqle) {
@@ -292,7 +295,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     /**
      * Do immediate write of given log into database. If the database is down
      * then the log is not saved.
-     *
+     * 
      * @param eventObject
      */
     private void appendImmediate(ILoggingEvent eventObject) {
@@ -374,7 +377,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Bind the parameters to he insert statement.
-     *
+     * 
      * @param event
      * @param stmt
      * @throws Throwable
@@ -448,7 +451,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Convert information about stack trace into text form.
-     *
+     * 
      * @param proxy
      * @param sb
      */
