@@ -57,7 +57,7 @@ db_up() {
  echo " >>> db_up"
 
   #Check if mysql is started
-  service mysql status > /dev/null || service mysql start >/dev/null 2>&1
+  service mysql status  || service mysql start 
 
   echo -n "INFO: Waiting for mysql to be up..."
   echo -n "Password is: "
@@ -68,7 +68,7 @@ db_up() {
   while [ 1 ]
   do
     echo -n "Checking whether db is running:"
-    mysql --password=$ROOT_PW -e ' SELECT "isRunning" '>/dev/null 2>&1
+    mysql --password=$ROOT_PW -e ' SELECT "isRunning" '
     if [ $? -eq 0 ]; then
         echo -n "DB is running"
         break
