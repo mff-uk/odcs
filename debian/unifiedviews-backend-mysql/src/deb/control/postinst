@@ -60,21 +60,27 @@ db_up() {
   service mysql status > /dev/null || service mysql start >/dev/null 2>&1
 
   echo -n "INFO: Waiting for mysql to be up..."
+  echo -n "Password is: "
+  echo -n $ROOT_PW
 
   CPT=0
   TIMEOUT=60
   while [ 1 ]
   do
+    echo -n "Checking whether db is running:"
     mysql --password=$ROOT_PW -e ' SELECT "isRunning" '>/dev/null 2>&1
     if [ $? -eq 0 ]; then
+        echo -n "DB is running"
         break
     fi
 
+    echo -n "DB is NOT running, retrying"
     echo -n "."
     sleep 1
     CPT=$((${CPT}+1))
     if [ ${CPT} -eq ${TIMEOUT} ]
     then
+      echo -n "Timeout reached."
       echo -e "\nERROR: Connection to Mysql has not been established before timeout. Exiting"
       exit 1
     fi
