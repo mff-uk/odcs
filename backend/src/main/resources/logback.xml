@@ -6,12 +6,20 @@
         </encoder>
     </appender>
 
-    <logger name="org.springframework" level="WARN" />
-    <logger name="org.eclipse.persistence" level="INFO" />
-    <logger name="org.eclipse.persistence.logging.metadata" level="WARN" />
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.eclipse.persistence" level="WARN"/>
+    <logger name="org.eclipse.persistence.logging.metadata" level="WARN"/>
+    <logger name="org.apache.commons.httpclient" level="WARN"/>
+    <logger name="httpclient.wire.header" level="WARN"/>
+    <logger name="httpclient.wire.content" level="WARN"/>
 
-    <root level="ALL">	
-        <appender-ref ref="STDOUT" />
-    </root>	
+    <!-- This is used to log whole HTTP communication. With SparlqEndpoint, that use SparqlRepository,
+    this produce a huge amount of logs per a DPU execution. -->
+    <logger name="org.apache.http.wire" level="WARN"/>
+    <logger name="org.apache.http.headers" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
 
 </configuration>

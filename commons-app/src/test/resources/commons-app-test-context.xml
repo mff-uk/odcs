@@ -1,52 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
 						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<!-- Imports application configuration -->
-	<import resource="classpath:commons-app-context.xml" />
-	
-	<!-- System Prerequisities
-		 Sets up a system property so that we know if application is just running tests.
-		 This is important when deciding which DB platform to setup, as tests 
-		 use H2 and normal application run uses Virtuoso RDBMS.
-		 See: VirtuosoSessionCustomizer
-	-->
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" value="#{@systemProperties}" />
-		<property name="targetMethod" value="putAll" />
-		<property name="arguments">
-			<!-- The new Properties -->
-			<util:properties>
-				<prop key="test-run">true</prop>
-			</util:properties>
-		</property>
-	</bean>
+    <!-- Imports application configuration -->
+    <import resource="classpath:commons-app-context.xml"/>
 
-	<!-- Override EntityManager factory with embedde dataSource -->
-	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="odcs"/>
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
-	<!-- Module configuration needs to be defined here,
-		 because it differs from frontend -->
-	<bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
-		<constructor-arg value="BACKEND" />
-	</bean>
+    <!-- System Prerequisities
+         Sets up a system property so that we know if application is just running tests.
+         This is important when deciding which DB platform to setup, as tests
+         use H2 and normal application run uses Virtuoso RDBMS.
+         See: VirtuosoSessionCustomizer
+    -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" value="#{@systemProperties}"/>
+        <property name="targetMethod" value="putAll"/>
+        <property name="arguments">
+            <!-- The new Properties -->
+            <util:properties>
+                <prop key="test-run">true</prop>
+            </util:properties>
+        </property>
+    </bean>
 
-	<!-- Override moduleFacade, do NOT start the OSGI automatically  -->
-	<bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade" />
-	
-	<!-- Creates an in-memory database populated with test data for fast testing -->
-	<jdbc:embedded-database id="dataSource" type="H2">
-		<jdbc:script location="classpath:db/schema.sql"/>
-		<jdbc:script location="classpath:db/data.sql"/>
-	</jdbc:embedded-database>
+    <!-- Override EntityManager factory with embedde dataSource -->
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="odcs"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- Module configuration needs to be defined here,
+         because it differs from frontend -->
+    <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
+        <constructor-arg value="BACKEND"/>
+    </bean>
+
+    <!-- Override moduleFacade, do NOT start the OSGI automatically  -->
+    <bean id="moduleFacade" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacade"/>
+
+    <!-- Creates an in-memory database populated with test data for fast testing -->
+    <jdbc:embedded-database id="dataSource" type="H2">
+        <jdbc:script location="classpath:db/data.sql"/>
+    </jdbc:embedded-database>
 
 </beans>

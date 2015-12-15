@@ -1,4 +1,31 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.container;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.And;
@@ -9,220 +36,194 @@ import com.vaadin.data.util.filter.Like;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.InvalidConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterExplanation;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.FilterTranslator;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.datasource.DataSourceFactory;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Translate Vaadin's filters into {@link javax.persistence.criteria.Predicate}.
- *
+ * 
  * @author Petyr
  * @author bogo
  */
 class VaadinFilterTranslator implements FilterTranslator {
 
-	/**
-	 * SQL syntax for LIKE in WHERE clause specific for given platform.
-	 */
-	private static String SQL_LIKE_ARGUMENT;
+    /**
+     * SQL syntax for LIKE in WHERE clause specific for given platform.
+     */
+    private static String SQL_LIKE_ARGUMENT = "%%%s%%";
 
-	@Autowired
-	private AppConfig config;
+    @Autowired
+    private AppConfig config;
 
-	@PostConstruct
-	public void configurePlatformSpecifics() {
-		// normal run -> determine platform from configuration
-		String dbEngine = config
-				.getSubConfiguration(ConfigProperty.RDBMS)
-				.getString(ConfigProperty.DATABASE_PLATFORM);
+    @Override
+    public Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root) {
 
-		switch (dbEngine) {
-			case DataSourceFactory.MYSQL_VALUE:
-				SQL_LIKE_ARGUMENT = "%%%s%%";
-				break;
-			case DataSourceFactory.VIRTUOSO_VALUE:
-				SQL_LIKE_ARGUMENT = "**%s";
-				break;
-			default:
-				throw new InvalidConfigPropertyException(
-						ConfigProperty.DATABASE_PLATFORM);
-		}
-	}
+        if (filter instanceof Container.Filter) {
+            // ok continue
+        } else {
+            // not our job
+            return null;
+        }
 
-	@Override
-	public Predicate translate(Object filter, CriteriaBuilder cb, Root<?> root) {
+        if (filter instanceof And) {
+            final And and = (And) filter;
+            final List<Container.Filter> filters = new ArrayList<>(and
+                    .getFilters());
 
-		if (filter instanceof Container.Filter) {
-			// ok continue
-		} else {
-			// not our job
-			return null;
-		}
+            Predicate predicate = cb.and(translate(filters.remove(0), cb, root),
+                    translate(filters.remove(0), cb, root));
 
-		if (filter instanceof And) {
-			final And and = (And) filter;
-			final List<Container.Filter> filters = new ArrayList<>(and
-					.getFilters());
+            while (filters.size() > 0) {
+                predicate = cb.and(predicate, translate(filters.remove(0), cb,
+                        root));
+            }
 
-			Predicate predicate = cb.and(translate(filters.remove(0), cb, root),
-					translate(filters.remove(0), cb, root));
+            return predicate;
+        }
 
-			while (filters.size() > 0) {
-				predicate = cb.and(predicate, translate(filters.remove(0), cb,
-						root));
-			}
+        if (filter instanceof Or) {
+            final Or or = (Or) filter;
+            final List<Container.Filter> filters = new ArrayList<>(or
+                    .getFilters());
 
-			return predicate;
-		}
+            Predicate predicate = cb.or(translate(filters.remove(0), cb, root),
+                    translate(filters.remove(0), cb, root));
 
-		if (filter instanceof Or) {
-			final Or or = (Or) filter;
-			final List<Container.Filter> filters = new ArrayList<>(or
-					.getFilters());
+            while (filters.size() > 0) {
+                predicate = cb.or(predicate, translate(filters.remove(0), cb,
+                        root));
+            }
 
-			Predicate predicate = cb.or(translate(filters.remove(0), cb, root),
-					translate(filters.remove(0), cb, root));
+            return predicate;
+        }
 
-			while (filters.size() > 0) {
-				predicate = cb.or(predicate, translate(filters.remove(0), cb,
-						root));
-			}
+        if (filter instanceof Not) {
+            final Not not = (Not) filter;
+            return cb.not(translate(not.getFilter(), cb, root));
+        }
 
-			return predicate;
-		}
+        if (filter instanceof Between) {
+            final Between between = (Between) filter;
+            final Expression property = (Expression) getPropertyPath(root,
+                    between.getPropertyId());
+            return cb.between(property, (Comparable) between.getStartValue(),
+                    (Comparable) between.getEndValue());
+        }
 
-		if (filter instanceof Not) {
-			final Not not = (Not) filter;
-			return cb.not(translate(not.getFilter(), cb, root));
-		}
+        if (filter instanceof Compare) {
+            final Compare compare = (Compare) filter;
+            final Expression<Comparable> property = (Expression) getPropertyPath(
+                    root, compare.getPropertyId());
+            switch (compare.getOperation()) {
+                case EQUAL:
+                    return cb.equal(property, compare.getValue());
+                case GREATER:
+                    return cb.greaterThan(property, (Comparable) compare
+                            .getValue());
+                case GREATER_OR_EQUAL:
+                    return cb.greaterThanOrEqualTo(property,
+                            (Comparable) compare.getValue());
+                case LESS:
+                    return cb
+                            .lessThan(property, (Comparable) compare.getValue());
+                case LESS_OR_EQUAL:
+                    return cb.lessThanOrEqualTo(property, (Comparable) compare
+                            .getValue());
+                default:
+            }
+        }
 
-		if (filter instanceof Between) {
-			final Between between = (Between) filter;
-			final Expression property = (Expression) getPropertyPath(root,
-					between.getPropertyId());
-			return cb.between(property, (Comparable) between.getStartValue(),
-					(Comparable) between.getEndValue());
-		}
+        if (filter instanceof IsNull) {
+            final IsNull isNull = (IsNull) filter;
+            return cb.isNull((Expression) getPropertyPath(root, isNull
+                    .getPropertyId()));
+        }
 
-		if (filter instanceof Compare) {
-			final Compare compare = (Compare) filter;
-			final Expression<Comparable> property = (Expression) getPropertyPath(
-					root, compare.getPropertyId());
-			switch (compare.getOperation()) {
-				case EQUAL:
-					return cb.equal(property, compare.getValue());
-				case GREATER:
-					return cb.greaterThan(property, (Comparable) compare
-							.getValue());
-				case GREATER_OR_EQUAL:
-					return cb.greaterThanOrEqualTo(property,
-							(Comparable) compare.getValue());
-				case LESS:
-					return cb
-							.lessThan(property, (Comparable) compare.getValue());
-				case LESS_OR_EQUAL:
-					return cb.lessThanOrEqualTo(property, (Comparable) compare
-							.getValue());
-				default:
-			}
-		}
+        if (filter instanceof Like) {
+            final Like like = (Like) filter;
+            if (like.isCaseSensitive()) {
+                return cb.like((Expression) getPropertyPath(root, like
+                        .getPropertyId()), like.getValue());
+            } else {
+                return cb.like(cb.lower((Expression) getPropertyPath(root, like
+                        .getPropertyId())),
+                        like.getValue().toLowerCase());
+            }
+        }
 
-		if (filter instanceof IsNull) {
-			final IsNull isNull = (IsNull) filter;
-			return cb.isNull((Expression) getPropertyPath(root, isNull
-					.getPropertyId()));
-		}
+        if (filter instanceof SimpleStringFilter) {
+            final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
+            Expression<String> property = (Expression) getPropertyPath(
+                    root, simpleStringFilter.getPropertyId());
+            if (simpleStringFilter.isIgnoreCase()) {
+                property = cb.lower(property);
+            }
+            return cb.like(property, String.format(
+                    SQL_LIKE_ARGUMENT,
+                    simpleStringFilter.getFilterString()
+                    ));
+        }
 
-		if (filter instanceof Like) {
-			final Like like = (Like) filter;
-			if (like.isCaseSensitive()) {
-				return cb.like((Expression) getPropertyPath(root, like
-						.getPropertyId()), like.getValue());
-			} else {
-				return cb.like(cb.lower((Expression) getPropertyPath(root, like
-						.getPropertyId())),
-						like.getValue().toLowerCase());
-			}
-		}
+        return null;
+    }
 
-		if (filter instanceof SimpleStringFilter) {
-			final SimpleStringFilter simpleStringFilter = (SimpleStringFilter) filter;
-			final Expression<String> property = (Expression) getPropertyPath(
-					root, simpleStringFilter.getPropertyId());
-			return cb.like(property, String.format(
-					SQL_LIKE_ARGUMENT,
-					simpleStringFilter.getFilterString()
-			));
-		}
+    /**
+     * Gets property path.
+     * 
+     * @param root
+     *            the root where path starts form
+     * @param propertyId
+     *            the property ID
+     * @return the path to property
+     */
+    private Path<Object> getPropertyPath(final Root<?> root,
+            final Object propertyId) {
+        final String[] propertyIdParts = ((String) propertyId).split("\\.");
 
-		return null;
-	}
+        Path<Object> path = null;
+        for (final String part : propertyIdParts) {
+            if (path == null) {
+                path = root.get(part);
+            } else {
+                path = path.get(part);
+            }
+        }
+        return path;
+    }
 
-	/**
-	 * Gets property path.
-	 *
-	 * @param root       the root where path starts form
-	 * @param propertyId the property ID
-	 * @return the path to property
-	 */
-	private Path<Object> getPropertyPath(final Root<?> root,
-			final Object propertyId) {
-		final String[] propertyIdParts = ((String) propertyId).split("\\.");
+    @Override
+    public FilterExplanation explain(Object filter) {
+        if (filter instanceof Compare) {
+            final Compare compare = (Compare) filter;
+            String operation;
+            switch (compare.getOperation()) {
+                case EQUAL:
+                    operation = "==";
+                    break;
+                case GREATER:
+                    operation = ">";
+                    break;
+                case GREATER_OR_EQUAL:
+                    operation = ">=";
+                    break;
+                case LESS:
+                    operation = "<";
+                    break;
+                case LESS_OR_EQUAL:
+                    operation = "<=";
+                    break;
+                default:
+                    return null;
+            }
 
-		Path<Object> path = null;
-		for (final String part : propertyIdParts) {
-			if (path == null) {
-				path = root.get(part);
-			} else {
-				path = path.get(part);
-			}
-		}
-		return path;
-	}
-
-	@Override
-	public FilterExplanation explain(Object filter) {
-		if (filter instanceof Compare) {
-			final Compare compare = (Compare) filter;
-			String operation;
-			switch (compare.getOperation()) {
-				case EQUAL:
-					operation = "==";
-					break;
-				case GREATER:
-					operation = ">";
-					break;
-				case GREATER_OR_EQUAL:
-					operation = ">=";
-					break;
-				case LESS:
-					operation = "<";
-					break;
-				case LESS_OR_EQUAL:
-					operation = "<=";
-					break;
-				default:
-					return null;
-			}
-
-			return new FilterExplanation(compare.getPropertyId().toString(),
-					operation,
-					compare.getValue());
-		}
-		// TODO: Add support for more filters
-		return null;
-	}
+            return new FilterExplanation(compare.getPropertyId().toString(),
+                    operation,
+                    compare.getValue());
+        }
+        // TODO: Add support for more filters
+        return null;
+    }
 
 }

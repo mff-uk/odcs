@@ -1,5 +1,22 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.communication;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -17,156 +34,177 @@ import org.slf4j.LoggerFactory;
 
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 
 /**
- * Enable clients to send email. The functionality can be set that the
- * {@link EmailSender} silently ignore send request.
+ * Enable clients to send email. The functionality can be set that the {@link EmailSender} silently ignore send request.
  * 
  * @author Petyr
  */
 public class EmailSender {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
-	/**
-	 * If false outcoming email are silently dropped.
-	 */
-	private final boolean enabled;
+    /**
+     * If false outcoming email are silently dropped.
+     */
+    private final boolean enabled;
 
-	/**
-	 * Address of SMTP server.
-	 */
-	private String smtpHost;
+    /**
+     * Address of SMTP server.
+     */
+    private String smtpHost;
 
-	/**
-	 * Port used by SMTP server.
-	 */
-	private String smtpPort;
+    /**
+     * Port used by SMTP server.
+     */
+    private String smtpPort;
 
-	/**
-	 * True if use TTL.
-	 */
-	private boolean useTLS;
+    /**
+     * True if use TTL.
+     */
+    private boolean useTLS;
 
-	/**
-	 * From email address.
-	 */
-	private String fromEmail;
+    /**
+     * From email address.
+     */
+    private String fromEmail;
 
-	/**
-	 * Use authentication?
-	 */
-	private Boolean authentication;
+    /**
+     * From displayed name
+     */
+    private String fromName;
 
-	/**
-	 * User name for authentication.
-	 */
-	private String username;
+    /**
+     * Use authentication?
+     */
+    private Boolean authentication;
 
-	/**
-	 * User password for authentication.
-	 */
-	private String password;
+    /**
+     * User name for authentication.
+     */
+    private String username;
 
-	/**
-	 * Create email sender based on application configuration.
-	 * 
-	 * @param appConfig Application configuration.
-	 */
-	public EmailSender(AppConfig appConfig) {
+    /**
+     * User password for authentication.
+     */
+    private String password;
 
-		this.enabled = appConfig.getBoolean(ConfigProperty.EMAIL_ENABLED);
-		
-		if (this.enabled) {
-			this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
-			this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
-			this.useTLS = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TLS);
-			this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
-			this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
+    /**
+     * Create email sender based on application configuration.
+     * 
+     * @param appConfig
+     *            Application configuration.
+     */
+    public EmailSender(AppConfig appConfig) {
 
-			if (this.authentication) {
-				// get data for authentication
-				this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
-				this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
-			}
-		}
-	}
+        this.enabled = appConfig.getBoolean(ConfigProperty.EMAIL_ENABLED);
 
-	/**
-	 * Send email with HTML content. If the list of recipients
-	 * is empty then immediately return false.
-	 * 
-	 * @param subject Email subject.
-	 * @param body Email content.
-	 * @param recipients List of recipients.
-	 * @return True if and only if email has been send. 
-	 */
-	public boolean send(String subject, String body, List<String> recipients) {
-		LOG.debug("send({}, , size: {})", subject, recipients.size());
-				
-		if (!enabled || recipients.isEmpty()) {
-			LOG.debug("Email send request has been ignored ... ");
-			return false;
-		}
-				
-		// prepare properties
-		Properties props = new Properties();
-		if (useTLS) {
-			props.put("mail.smtp.starttls.enable", "true");
-		}
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.port", smtpPort);
-		// create session based on authentication
-		
-		props.put("mail.pop3s.ssl.trust","*");
-		
-		Session session;
-		if (authentication) {
-			props.put("mail.smtp.auth", "true");
-			session = Session.getInstance(props,
-					new javax.mail.Authenticator() {
-						@Override
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(username,
-									password);
-						}
-					});
-		} else {
-			props.put("mail.smtp.auth", "false");
-			session = Session.getDefaultInstance(props, null);
-		}
+        if (this.enabled) {
+            this.smtpHost = appConfig.getString(ConfigProperty.EMAIL_SMTP_HOST);
+            this.smtpPort = appConfig.getString(ConfigProperty.EMAIL_SMTP_PORT);
+            this.useTLS = appConfig.getBoolean(ConfigProperty.EMAIL_SMTP_TLS);
+            this.fromEmail = appConfig.getString(ConfigProperty.EMAIL_FROM_EMAIL);
+            this.authentication = appConfig.getBoolean(ConfigProperty.EMAIL_AUTHORIZATION);
 
-		// create message
-		Message msg = new MimeMessage(session);
-		try {
-			msg.setFrom(new InternetAddress(fromEmail));
-			for (String email : recipients) {
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-						email));
-			}
-						
-			msg.setSubject(subject);
-			msg.setContent(body, "text/html");
-			// send message
-			Transport.send(msg);
-		} catch (MessagingException e) {
-			LOG.error("Failed to send email.", e);
-			return false;
-		}
-		LOG.debug("Email has been send");
-		return true;
-	}
-	
-	/**
-	 * Sends email to a single recipient.
-	 * 
-	 * @param subject Email subject.
-	 * @param body Email content.
-	 * @param recipient Email address of a single recipient.
-	 * @return True if and only if email has been send.
-	 */
-	public boolean send(String subject, String body, String recipient) {
-		return send(subject, body, Arrays.asList(recipient));
-	}
+            try {
+                this.fromName = appConfig.getString(ConfigProperty.EMAIL_FROM_NAME);
+            } catch (MissingConfigPropertyException ignore) {
+                // optional parameter - backward compatible
+            }
+
+            if (this.authentication) {
+                // get data for authentication
+                this.username = appConfig.getString(ConfigProperty.EMAIL_USERNAME);
+                this.password = appConfig.getString(ConfigProperty.EMAIL_PASSWORD);
+            }
+        }
+    }
+
+    /**
+     * Send email with HTML content. If the list of recipients
+     * is empty then immediately return false.
+     * 
+     * @param subject
+     *            Email subject.
+     * @param body
+     *            Email content.
+     * @param recipients
+     *            List of recipients.
+     * @return True if and only if email has been send.
+     */
+    public boolean send(String subject, String body, List<String> recipients) {
+        LOG.debug("send({}, , size: {})", subject, recipients.size());
+
+        if (!enabled || recipients.isEmpty()) {
+            LOG.debug("Email send request has been ignored ... ");
+            return false;
+        }
+
+        // prepare properties
+        Properties props = new Properties();
+        if (useTLS) {
+            props.put("mail.smtp.starttls.enable", "true");
+        }
+        props.put("mail.smtp.host", smtpHost);
+        props.put("mail.smtp.port", smtpPort);
+        // create session based on authentication
+
+        props.put("mail.pop3s.ssl.trust", "*");
+
+        Session session;
+        if (authentication) {
+            props.put("mail.smtp.auth", "true");
+            session = Session.getInstance(props,
+                    new javax.mail.Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username,
+                                    password);
+                        }
+                    });
+        } else {
+            props.put("mail.smtp.auth", "false");
+            session = Session.getDefaultInstance(props, null);
+        }
+
+        // create message
+        String encodingOptions = "text/html; charset=UTF-8";
+        Message msg = new MimeMessage(session);
+        try {
+            msg.setHeader("Content-Type", encodingOptions);
+            msg.setFrom(new InternetAddress(this.fromEmail, this.fromName));
+            for (String email : recipients) {
+                msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+                        email));
+            }
+
+            msg.setSubject(subject);
+            msg.setContent(body, encodingOptions);
+            // send message
+            Transport.send(msg);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            LOG.error("Failed to send email.", e);
+            return false;
+        }
+
+        LOG.debug("Email has been send");
+        return true;
+    }
+
+    /**
+     * Sends email to a single recipient.
+     * 
+     * @param subject
+     *            Email subject.
+     * @param body
+     *            Email content.
+     * @param recipient
+     *            Email address of a single recipient.
+     * @return True if and only if email has been send.
+     */
+    public boolean send(String subject, String body, String recipient) {
+        return send(subject, body, Arrays.asList(recipient));
+    }
 
 }

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
 import java.lang.reflect.Field;
@@ -12,165 +28,149 @@ import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
-import cz.cuni.mff.xrg.odcs.backend.execution.dpu.PreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitTypeResolver;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
-import cz.cuni.mff.xrg.odcs.commons.dpu.annotation.OutputDataUnit;
-import cz.cuni.mff.xrg.odcs.dataunit.file.FileDataUnit;
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Examine the given DPU instance for annotations. If there is
- * {@link OutputDataUnit} annotation on field then create or assign suitable
+ * Examine the given DPU instance for annotations. If there is {@link OutputDataUnit} annotation on field then create or assign suitable
  * DataUnit. If there is no {@link DataUnit} suitable then publish event and
  * return false.
- * 
  * Executed for every state.
  * 
  * @author Petyr
- * 
  */
 @Component
-public class AnnotationsOutput implements PreExecutor {
+public class AnnotationsOutput implements DPUPreExecutor {
 
-	public static final int ORDER = ContextPreparator.ORDER + 1000;
-	
-	private static final Logger LOG = LoggerFactory
-			.getLogger(AnnotationsOutput.class);
-	
-	/**
-	 * Event publisher used to publish error event.
-	 */
-	@Autowired
-	private ApplicationEventPublisher eventPublish;
-	
-	@Override
-	public int getOrder() {
-		return ORDER;
-	}
+    public static final int ORDER = DPUPreExecutorContextPreparator.ORDER + 1000;
 
-	@Override
-	public boolean preAction(Node node,
-			Map<Node, Context> contexts,
-			Object dpuInstance,
-			PipelineExecution execution,
-			ProcessingUnitInfo unitInfo,
-			boolean willExecute) {
-		// get current context and DPUInstanceRecord
-		Context context = contexts.get(node);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(AnnotationsOutput.class);
 
-		// OutputDataUnit annotation
-		List<AnnotationContainer<OutputDataUnit>> outputAnnotations = AnnotationGetter
-				.getAnnotations(dpuInstance, OutputDataUnit.class);
-		for (AnnotationContainer<OutputDataUnit> item : outputAnnotations) {
-			if (annotationOutput(item, dpuInstance, context)) {
-				// ok
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Event publisher used to publish error event.
+     */
+    @Autowired
+    private ApplicationEventPublisher eventPublish;
 
-	/**
-	 * Set value to given field for given instance. In case of error publish
-	 * event and return false.
-	 * 
-	 * @param field Field to set.
-	 * @param instance Instance.
-	 * @param value Value to set.
-	 * @param context Used to publish exception.
-	 * @return True if the field has been set.
-	 */
-	protected boolean setDataUnit(Field field,
-			Object instance,
-			Object value,
-			Context context) {
-		try {
-			field.set(instance, value);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			// create message
-			final String message = "Failed to set value for '"
-					+ field.getName() + "' exception: " + e.getMessage();
-			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
-					this, message));
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * Translate {@link Class} into {@link DataUnitType}.
-	 * 
-	 * @param classType
-	 * @return Null if the class can not be translated.
-	 */
-	protected DataUnitType classToDataUnitType(Class<?> classType) {
-		if (classType == RDFDataUnit.class) {
-			return DataUnitType.RDF;
-		}
-                else if (classType == FileDataUnit.class) {
-			return DataUnitType.FILE;
-		}
-		return null;
-	}
-	
-	/**
-	 * Execute the output annotation ie. create output {@link DataUnit} and
-	 * assign it to the annotated field. If annotation is null then instantly
-	 * return true. If error appear then publish event and return false.
-	 * 
-	 * @param annotationContainer Annotation container.
-	 * @param dpuInstance
-	 * @param context
-	 * @return False in case of error.
-	 */
-	protected boolean annotationOutput(AnnotationContainer<OutputDataUnit> annotationContainer,
-			Object dpuInstance,
-			Context context) {
-		if (annotationContainer == null) {
-			return true;
-		}
-		final Field field = annotationContainer.getField();
-		final OutputDataUnit annotation = annotationContainer.getAnnotation();
-                LOG.debug("Data unit name is: {}", annotation.name());
-                
-		// get type
-		final DataUnitType type = classToDataUnitType(field.getType());
-		if (type == null) {
-			final String message = "Unknown type of field: " + field.getName();
-			// type cannot be resolved -> publish event
-			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
-					this, message));
-			return false;
-		}
-                LOG.debug("Data unit type is: {}", type.toString());
-                
-		// let's create dataUnit
-		ManagableDataUnit dataUnit;
-		try {
-			// if the data unit with such name and type already
-			// exist then is returned and reused
-			dataUnit = context.addOutputDataUnit(type, annotation.name());
-		} catch (DataUnitCreateException e) {
-			// create message
-			final String message = "Failed to create DataUnit for '"
-					+ field.getName() + "' exception: " + e.getMessage();
-			eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
-					this, message));
-			return false;
-		}
-		LOG.debug("Create output DataUnit for field: {}", field.getName());
-		// and set it
-		return setDataUnit(field, dpuInstance, dataUnit, context);
-	}
-	
-	
+    @Override
+    public int getOrder() {
+        return ORDER;
+    }
+
+    @Override
+    public boolean preAction(Node node,
+            Map<Node, Context> contexts,
+            Object dpuInstance,
+            PipelineExecution execution,
+            ProcessingUnitInfo unitInfo,
+            boolean willExecute) {
+        // get current context and DPUInstanceRecord
+        Context context = contexts.get(node);
+
+        // OutputDataUnit annotation
+        List<AnnotationContainer<DataUnit.AsOutput>> outputAnnotations = AnnotationGetter
+                .getAnnotations(dpuInstance, DataUnit.AsOutput.class);
+        for (AnnotationContainer<DataUnit.AsOutput> item : outputAnnotations) {
+            if (annotationOutput(item, dpuInstance, context)) {
+                // ok
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Set value to given field for given instance. In case of error publish
+     * event and return false.
+     * 
+     * @param field
+     *            Field to set.
+     * @param instance
+     *            Instance.
+     * @param value
+     *            Value to set.
+     * @param context
+     *            Used to publish exception.
+     * @return True if the field has been set.
+     */
+    protected boolean setDataUnit(Field field,
+            Object instance,
+            Object value,
+            Context context) {
+        try {
+            field.set(instance, value);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            // create message
+            final String message = Messages.getString("AnnotationsOutput.value.set.failed", field.getName(), e.getMessage());
+            eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
+                    this, message));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Execute the output annotation ie. create output {@link DataUnit} and
+     * assign it to the annotated field. If annotation is null then instantly
+     * return true. If error appear then publish event and return false.
+     * 
+     * @param annotationContainer
+     *            Annotation container.
+     * @param dpuInstance
+     * @param context
+     * @return False in case of error.
+     */
+    protected boolean annotationOutput(
+            AnnotationContainer<DataUnit.AsOutput> annotationContainer,
+            Object dpuInstance,
+            Context context) {
+        if (annotationContainer == null) {
+            return true;
+        }
+        final Field field = annotationContainer.getField();
+        final DataUnit.AsOutput annotation = annotationContainer.getAnnotation();
+        LOG.debug("Data unit name is: {}", annotation.name());
+
+        // get type
+        ManagableDataUnit.Type type;
+        type = DataUnitTypeResolver.resolveClassToType(field.getType());
+
+        //classToDataUnitType(field.getType());
+        if (type == null) {
+            final String message = Messages.getString("AnnotationsOutput.unknown.field", field.getName());
+            // type cannot be resolved -> publish event
+            eventPublish.publishEvent(DPUEvent.createPreExecutorFailed(context,
+                    this, message));
+            return false;
+        }
+        LOG.debug("Data unit type is: {}", type.toString());
+
+        // let's create dataUnit
+        ManagableDataUnit dataUnit;
+        // if the data unit with such name and type already
+        // exist then is returned and reused
+        try {
+            dataUnit = context.addOutputDataUnit(type, annotation.name());
+        } catch (DataUnitException ex) {
+            LOG.error("Failed to add output DataUnit", ex);
+            return false;
+        }
+
+        LOG.debug("out: {}.{} = {}", context.getDPU().getName(), field.getName(),
+                dataUnit.getName());
+        // and set it
+        return setDataUnit(field, dpuInstance, dataUnit, context);
+    }
+
 }

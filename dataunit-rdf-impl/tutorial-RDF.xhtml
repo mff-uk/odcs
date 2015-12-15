@@ -1,235 +1,272 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-	<head>
-		<title>RDF tutorial</title>
-		<style type="text/css">
-			.code		{background-color: #f6f9f6;}
-            .inCode		{font-family:"Courier New", Courier, monospace}
-			.comment	{color:green}
-			.module_name{color:blue}
-			h1	{color:darkblue}
-			h2	{color:darkblue}
-			h3 	{color:darkblue}	
-		</style>
-	</head>
-	<body>
-		<h1>RDF repository</h1>
-		<div>For working with data in RDF format is needed special objects called RDF repositories. </div>
-		<br/>
-		<div>
-			<b>Repository</b> is something as special container allowing such operations as loading data from external sources, data modification (often mean some type of data transformation), using quering over given data (efective filtering data and given results), loading data set to data storage, etc...Such repository is nessasary for keeping data and executing described repository operations. 
-		</div>
-		<br/>
-		<div>
-			<b>RDF repository</b> is special type of repository, where are using only RDF data (data in RDF format). 
-		</div>
-		<br/>
-		<div>Access to the repository can be acquired by <b>opening a connection</b> to it. This connection can then be used to query and/or update the contents of the repository. Depending on the implementation of the repository, it may or may not support multiple concurrent connections.</div>
-		<br/>
-		<div>RDF repository is always needs to be <b>initialized</b> and after then can be used. At the end of all it´s using should be <b>shut down - destroy</b> and discarded/garbage collected. Forgetting the latter can result in loss of data (depending on the Repository implementation)</div>
-		<br/>
-		<div>ODCleanStore project use <b><u>2 implemented basic types of repositories:</u></b></div>
-		<ul>
-			<li>Local repository</li>
-			<li>Virtuoso repository</li>
-		</ul>
-		<div>Implementation of repositories is based on use openRDF libraries of Sesame. For more information about openRDF and see oficial pages </div>
-		<ul>
-			<li>
-				<a href="http://www.openrdf.org/">http://www.openrdf.org</a>
-			</li>
-		</ul>
-		<div>Of course is possible to create own type of repository:</div>
-		<ul>
-			<li>See <a href="#own">HOW to CREATE OWN RDF REPOSITORY</a>
-			</li>
-		</ul>
-		<h2>A) Local repository</h2>
-		<h3>1. Repository characteristic</h3>
-		<div>This type of repository keep all RDF triples (1 TRIPLE= subject,predicate, object) in computer memory. It is appropriate to use it only for small data files (max about 10-20 MB). Working and using is very fast and does´t require using database or connection to the Internet. </div>
-		<h3>2. Creating new instance</h3>
-		<ul>
-			<li>Using defaut setting of storage - without parameters</li>
-			<li>Using defined temp directory for storage</li>
-			<li>Using defined path and name of storage</li>
-		</ul>
-		<div><b><u>Example 1:</u></b> - Default creation - using no parameters:</div>
-		<div class="code">
+<head>
+    <title>RDF tutorial</title>
+    <style type="text/css">
+        .code {background-color: #f6f9f6;}
+        .inCode {font-family:"Courier New", Courier, monospace}
+        .comment {color:green}
+        .module_name{color:blue}
+        h1 {color:darkblue}
+        h2 {color:darkblue}
+        h3 {color:darkblue}
+    </style>
+</head>
+<body>
+<h1>RDF repository</h1>
+
+<div>For working with data in RDF format is needed special objects called RDF repositories.</div>
+<br/>
+
+<div>
+    <b>Repository</b> is something as special container allowing such operations as loading data from external sources,
+    data modification (often mean some type of data transformation), using quering over given data (efective filtering
+    data and given results), loading data set to data storage, etc...Such repository is nessasary for keeping data and
+    executing described repository operations.
+</div>
+<br/>
+
+<div>
+    <b>RDF repository</b> is special type of repository, where are using only RDF data (data in RDF format).
+</div>
+<br/>
+
+<div>Access to the repository can be acquired by <b>opening a connection</b> to it. This connection can then be used to
+    query and/or update the contents of the repository. Depending on the implementation of the repository, it may or may
+    not support multiple concurrent connections.
+</div>
+<br/>
+
+<div>RDF repository is always needs to be <b>initialized</b> and after then can be used. At the end of all it´s using
+    should be <b>shut down - destroy</b> and discarded/garbage collected. Forgetting the latter can result in loss of
+    data (depending on the Repository implementation)
+</div>
+<br/>
+
+<div>ODCleanStore project use <b><u>2 implemented basic types of repositories:</u></b></div>
+<ul>
+    <li>Local repository</li>
+    <li>Virtuoso repository</li>
+</ul>
+<div>Implementation of repositories is based on use openRDF libraries of Sesame. For more information about openRDF and
+    see oficial pages
+</div>
+<ul>
+    <li>
+        <a href="http://www.openrdf.org/">http://www.openrdf.org</a>
+    </li>
+</ul>
+<div>Of course is possible to create own type of repository:</div>
+<ul>
+    <li>See <a href="#own">HOW to CREATE OWN RDF REPOSITORY</a>
+    </li>
+</ul>
+<h2>A) Local repository</h2>
+
+<h3>1. Repository characteristic</h3>
+
+<div>This type of repository keep all RDF triples (1 TRIPLE= subject,predicate, object) in computer memory. It is
+    appropriate to use it only for small data files (max about 10-20 MB). Working and using is very fast and does´t
+    require using database or connection to the Internet.
+</div>
+<h3>2. Creating new instance</h3>
+<ul>
+    <li>Using defaut setting of storage - without parameters</li>
+    <li>Using defined temp directory for storage</li>
+    <li>Using defined path and name of storage</li>
+</ul>
+<div><b><u>Example 1:</u></b> - Default creation - using no parameters:</div>
+<div class="code">
 			<pre>
 				<code>
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
-....
-RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo();
+                    import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+                    import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
+                    ....
+                    RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo();
 
-				</code>
+                </code>
 			</pre>
-		</div>
-		
-		<div><b><u>Example 2:</u></b> - Creation using defined temp directory</div>
-		<div class="code">
+</div>
+
+<div><b><u>Example 2:</u></b> - Creation using defined temp directory</div>
+<div class="code">
 			<pre>
 				<code>
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
+                    import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+                    import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 
-....
-String dirName = "name of temp dir";
-String fileName = "name of file constains data in temp dir";
+                    ....
+                    String dirName = "name of temp dir";
+                    String fileName = "name of file constains data in temp dir";
 
-RDFDataRepository localRepository = LocalRDFRepo.createLocalRepoInTempDirectory(dirName,fileName);
+                    RDFDataRepository localRepository = LocalRDFRepo.createLocalRepoInTempDirectory(dirName,fileName);
 
-				</code>
+                </code>
 			</pre>
-		</div>
-		
+</div>
+
 <div><b><u>Example 3:</u></b> - Creation using defined path and name of storage</div>
-		<div class="code">
+<div class="code">
 			<pre>
 				<code>
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
-import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
+                    import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+                    import cz.cuni.mff.xrg.odcs.rdf.impl.LocalRDFRepo;
 
-....
-String repoPath = "path to repository as string";
-String fileName = "name of file constains data in temp dir";
+                    ....
+                    String repoPath = "path to repository as string";
+                    String fileName = "name of file constains data in temp dir";
 
-RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(repoPath,fileName);
+                    RDFDataRepository localRepository = LocalRDFRepo.createLocalRepo(repoPath,fileName);
 
-				</code>
+                </code>
 			</pre>
-		</div>		
-		
-		<h2>B) Virtuoso repository</h2>
-		<h3>1. Repository characteristic</h3>
-		<div>This type of repository save RDF data to VIRTUOSO database. This type can be used for any file size. For seamless using all operation is needed stable connection to database or Internet connection, when Virtuoso is remote storage on the web.</div>
-		<h3>2. Creating new instance</h3>
-		<h3>Posibilities:</h3>
-		<ul>
-			<li>Creating Virtuoso repository (connection to localhost with default setting) - without parameters - </li>
-			<li>Creating Virtuoso where connection using defined parameters</li>
-			</ul>
-		<div><b><u>Example 1:</u></b> - Creating Virtuoso on localhost with default setting</div>
-		<div class="code">
+</div>
+
+<h2>B) Virtuoso repository</h2>
+
+<h3>1. Repository characteristic</h3>
+
+<div>This type of repository save RDF data to VIRTUOSO database. This type can be used for any file size. For seamless
+    using all operation is needed stable connection to database or Internet connection, when Virtuoso is remote storage
+    on the web.
+</div>
+<h3>2. Creating new instance</h3>
+
+<h3>Posibilities:</h3>
+<ul>
+    <li>Creating Virtuoso repository (connection to localhost with default setting) - without parameters -</li>
+    <li>Creating Virtuoso where connection using defined parameters</li>
+</ul>
+<div><b><u>Example 1:</u></b> - Creating Virtuoso on localhost with default setting</div>
+<div class="code">
 			<pre>
 				<code>
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
-import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
+                    import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+                    import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
 
-....
-RDFDataRepository localRepository = VirtuosoRDFRepo.createVirtuosoRDFRepo();
+                    ....
+                    RDFDataRepository localRepository = VirtuosoRDFRepo.createVirtuosoRDFRepo();
 
-				</code>
+                </code>
 			</pre>
-		</div>
-		
-		<div><b><u>Example 2:</u></b> - Creation Virtuoso using defined paremeters</div>
-		<div class="code">
+</div>
+
+<div><b><u>Example 2:</u></b> - Creation Virtuoso using defined paremeters</div>
+<div class="code">
 			<pre>
 				<code>
-import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
-import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
+                    import cz.cuni.mff.xrg.odcs.rdf.interfaces.RDFDataRepository;
+                    import cz.cuni.mff.xrg.odcs.rdf.impl.VirtuosoRDFRepo;
 
-....
-String hostName = "host.web.org"; 		// name of remote host
-String port = "1111";				// string value of number of port to connect to.
-String user = "user_name";				// username needed for connection, empty if not required
-String password = "password";			// password to connection, empty if not required 
-String defautGraph = "http://default";		// name of graph for storage RDF data
+                    ....
+                    String hostName = "host.web.org"; // name of remote host
+                    String port = "1111"; // string value of number of port to connect to.
+                    String user = "user_name"; // username needed for connection, empty if not required
+                    String password = "password"; // password to connection, empty if not required
+                    String defautGraph = "http://default"; // name of graph for storage RDF data
 
-RDFDataRepository virtuosoRepository = VirtuosoRDFRepocreateVirtuosoRDFRepo(hostName, port, user, password,  defaultGraph);
+                    RDFDataRepository virtuosoRepository = VirtuosoRDFRepocreateVirtuosoRDFRepo(hostName, port, user,
+                    password, defaultGraph);
 
-				</code>
+                </code>
 			</pre>
-		</div>
-		
-		<h2>
-			<a name="own">C) HOW to CREATE OWN RDF REPOSITORY</a>
-		</h2>
-		<h3>Possibilities:</h3>
-		<ul>
-			<li>Own class using implementation of <b>RDFDataRepository interface</b></li>
-			<li>Implementation using based on <b>ODCleanStore</b> supported <b>openRDF libraries</b></li>
-			<li>Implementation based on <b>others/own libraries</b> for working with <b>RDF data</b></li>
-		</ul>
-		<h3>Implementation of RDFDataRepository</h3>
-		<ul>
-		<li>Create new class implements interface <b>RDFDataRepository</b> and implement all his methods. </li></ul>
-		<div><b><u>Example 1:</u></b> - Creation new class <b>"MyOwnRepository"</b>:</div>
-		<div class="code">
+</div>
+
+<h2>
+    <a name="own">C) HOW to CREATE OWN RDF REPOSITORY</a>
+</h2>
+
+<h3>Possibilities:</h3>
+<ul>
+    <li>Own class using implementation of <b>RDFDataRepository interface</b></li>
+    <li>Implementation using based on <b>ODCleanStore</b> supported <b>openRDF libraries</b></li>
+    <li>Implementation based on <b>others/own libraries</b> for working with <b>RDF data</b></li>
+</ul>
+<h3>Implementation of RDFDataRepository</h3>
+<ul>
+    <li>Create new class implements interface <b>RDFDataRepository</b> and implement all his methods.</li>
+</ul>
+<div><b><u>Example 1:</u></b> - Creation new class <b>"MyOwnRepository"</b>:</div>
+<div class="code">
 			<pre>
 				<code>
-public class MyOwnRepository implements RDFDataRepository {
-... //implementation of all interface methods
-}
-				</code>
+                    public class MyOwnRepository implements RDFDataRepository {
+                    ... //implementation of all interface methods
+                    }
+                </code>
 			</pre>
-		</div>
-		<h3>Implementation based on openRDF</h3>
-		<ul>
-		<li>Is necessary to create repository object as new instance of <b>openRDF</b> repository.</li>
-		<li><b><u>Available RDF Implementations:</u></b> ContextAwareRepository, DatasetRepository, HTTPRepository, InterceptingRepositoryWrapper, NotifyingRepositoryWrapper, RepositoryWrapper, SailRepository, SystemRepository</li>
-		<li>For more information about repository see oficial javadoc <a href="http://www.openrdf.org/doc/sesame2/2.2/apidocs/org/openrdf/repository/Repository.html">http://www.openrdf.org/doc/sesame2/2.2/apidocs/org/openrdf/repository/Repository.html</a></li>
-		</ul>
+</div>
+<h3>Implementation based on openRDF</h3>
+<ul>
+    <li>Is necessary to create repository object as new instance of <b>openRDF</b> repository.</li>
+    <li><b><u>Available RDF Implementations:</u></b> ContextAwareRepository, DatasetRepository, HTTPRepository,
+        InterceptingRepositoryWrapper, NotifyingRepositoryWrapper, RepositoryWrapper, SailRepository, SystemRepository
+    </li>
+    <li>For more information about repository see oficial javadoc <a
+            href="http://www.openrdf.org/doc/sesame2/2.2/apidocs/org/openrdf/repository/Repository.html">http://www.openrdf.org/doc/sesame2/2.2/apidocs/org/openrdf/repository/Repository.html</a>
+    </li>
+</ul>
 <div><b><u>Example 2:</u></b> - Creation remote http repository - new instance of <b>"HTTPRepository"</b></div>
 <div class="code">
 			<pre>
 				<code>
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.http.HTTPRepository;
+                    import org.openrdf.repository.Repository;
+                    import org.openrdf.repository.http.HTTPRepository;
 
-...
-final String repositoryURL = "http://repositoryURLAddress.org";
+                    ...
+                    final String repositoryURL = "http://repositoryURLAddress.org";
 
-Repository repository = new HTTPRepository(repositoryURL);
+                    Repository repository = new HTTPRepository(repositoryURL);
 
-try {
-	repository.initialize(); 
-	
-} catch (RepositoryException ex) {}
-				</code>
+                    try {
+                    repository.initialize();
+
+                    } catch (RepositoryException ex) {}
+                </code>
 			</pre>
-		</div>
+</div>
 
-<div><b><u>Example 3:</u></b> - Using repository connection needed for call RDF operations on existing repository instance.</div>
+<div><b><u>Example 3:</u></b> - Using repository connection needed for call RDF operations on existing repository
+    instance.
+</div>
 <div class="code">
 			<pre>
 				<code>
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
+                    import org.openrdf.repository.Repository;
+                    import org.openrdf.repository.RepositoryConnection;
 
-...
-try {
+                    ...
+                    try {
 
-	RepositoryConnection connection = repository.getConnection();
-	
-	connection.add(...) // call operation for adding data to repository
-	
-	.... 		//make other operations over repository 
-	
-} catch (RepositoryException e) {
-	logger.debug(e.getMessage());
+                    RepositoryConnection connection = repository.getConnection();
+
+                    connection.add(...) // call operation for adding data to repository
+
+                    .... //make other operations over repository
+
+                    } catch (RepositoryException e) {
+                    logger.debug(e.getMessage());
 
 
-} finally {
-	if (connection != null) {
-	
-		try {
-			connection.close();
-		} catch (RepositoryException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-}
-				</code>
+                    } finally {
+                    if (connection != null) {
+
+                    try {
+                    connection.close();
+                    } catch (RepositoryException ex) {
+                    throw new RuntimeException(ex);
+                    }
+                    }
+                    }
+                </code>
 			</pre>
-		</div>
-		
-		<h3>Implementation based on others/own libraries</h3>
-		<ul>
-			<li>For more implementation details see documentation designed to used library</li>
-		</ul>
-	</body>
+</div>
+
+<h3>Implementation based on others/own libraries</h3>
+<ul>
+    <li>For more implementation details see documentation designed to used library</li>
+</ul>
+</body>
 </html>

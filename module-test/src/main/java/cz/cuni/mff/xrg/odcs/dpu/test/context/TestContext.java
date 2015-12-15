@@ -1,270 +1,314 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.commons.dpu.DPUContext;
-import cz.cuni.mff.xrg.odcs.commons.message.MessageType;
+import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.
  *
  * @author Petyr
- *
  */
 public class TestContext implements DPUContext {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TestContext.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestContext.class);
 
-	/**
-	 * Root directory for execution.
-	 */
-	private File rootDirectory;
+    /**
+     * Root directory for execution.
+     */
+    private File rootDirectory;
 
-	/**
-	 * Date of last execution.
-	 */
-	private Date lastExecution;
+    /**
+     * Date of last execution.
+     */
+    private Date lastExecution;
 
-	/**
-	 * Jar path.
-	 */
-	private String jarPath;
+    /**
+     * Jar path.
+     */
+    private String jarPath;
 
-	/**
-	 * True if DPU that use this context publish warning event.
-	 */
-	private boolean publishedWarning = false;
+    /**
+     * True if DPU that use this context publish warning event.
+     */
+    private boolean publishedWarning = false;
 
-	/**
-	 * True if DPU that use this context publish error event.
-	 */
-	private boolean publishedError = false;
+    /**
+     * True if DPU that use this context publish error event.
+     */
+    private boolean publishedError = false;
 
-	/**
-	 * Working directory, if null then the working subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File workingDirectory = null;
+    /**
+     * Working directory, if null then the working subdirectory in {@link #rootDirectory} is used.
+     */
+    private File workingDirectory = null;
 
-	/**
-	 * Result directory, if null then the result subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File resultDirectory = null;
+    /**
+     * Result directory, if null then the result subdirectory in {@link #rootDirectory} is used.
+     */
+    private File resultDirectory = null;
 
-	/**
-	 * Global DPU directory, if null then the global subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File globalDirectory = null;
+    /**
+     * Global DPU directory, if null then the global subdirectory in {@link #rootDirectory} is used.
+     */
+    private File globalDirectory = null;
 
-	/**
-	 * User DPU directory, if null then the user subdirectory in
-	 * {@link #rootDirectory} is used.
-	 */
-	private File userDirectory = null;
+    /**
+     * User DPU directory, if null then the user subdirectory in {@link #rootDirectory} is used.
+     */
+    private File userDirectory = null;
 
-	public TestContext() {
-	}
+    /**
+     * Environment variables from Core, which are accesible by DPU.
+     */
+    private Map<String, String> environment;
 
-	@Override
-	public void sendMessage(MessageType type, String shortMessage) {
-		sendMessage(type, shortMessage, "");
-	}
+    private File dpuInstanceDirectory = null;
 
-	@Override
-	public void sendMessage(MessageType type,
-			String shortMessage,
-			String fullMessage) {
-		switch (type) {
-			case DEBUG:
-				LOG.debug("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-			case ERROR:
-				LOG.error("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				publishedError = true;
-				break;
-			case INFO:
-				LOG.info("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-			case WARNING:
-				LOG.warn("DPU publish message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				publishedWarning = true;
-				break;
-			case TERMINATION_REQUEST:
-				LOG.info(
-						"DPU publish termination message short: '{}' long: '{}'",
-						shortMessage,
-						fullMessage);
-				break;
-		}
+    public TestContext(File rootDirectory) {
+        this.rootDirectory = rootDirectory;
+        this.environment = new HashMap<>();
+        globalDirectory = new File(rootDirectory, "global");
+        if (!globalDirectory.exists()) {
+            globalDirectory.mkdirs();
+        }
+        userDirectory = new File(rootDirectory, "user");
+        if (!userDirectory.exists()) {
+            userDirectory.mkdirs();
+        }
+        resultDirectory = new File(rootDirectory, "result");
+        if (!resultDirectory.exists()) {
+            resultDirectory.mkdirs();
+        }
+        workingDirectory = new File(rootDirectory, "working");
+        if (!workingDirectory.exists()) {
+            workingDirectory.mkdirs();
+        }
+        dpuInstanceDirectory = new File(rootDirectory, "dpuInstance");
+        if (!dpuInstanceDirectory.exists()) {
+            dpuInstanceDirectory.mkdirs();
+        }
+    }
 
-	}
+    @Override
+    public void sendMessage(MessageType type, String shortMessage) {
+        sendMessage(type, shortMessage, "");
+    }
 
-	@Override
-	public boolean isDebugging() {
-		return false;
-	}
+    @Override
+    public void sendMessage(MessageType type,
+            String shortMessage,
+            String fullMessage) {
+        switch (type) {
+            case DEBUG:
+                LOG.debug("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                break;
+            case ERROR:
+                LOG.error("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                publishedError = true;
+                break;
+            case INFO:
+                LOG.info("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                break;
+            case WARNING:
+                LOG.warn("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage);
+                publishedWarning = true;
+                break;
+        }
 
-	@Override
-	public boolean canceled() {
-		return false;
-	}
+    }
 
-	@Override
-	public File getWorkingDir() {
-		File workingDir;
-		if (workingDirectory == null) {
-			workingDir = new File(rootDirectory, "working");
-		} else {
-			workingDir = workingDirectory;
-		}
+    @Override
+    public void sendMessage(MessageType type, String shortMessage,
+            String fullMessage, Exception exception) {
+        switch (type) {
+            case DEBUG:
+                LOG.debug("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                break;
+            case ERROR:
+                LOG.error("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                publishedError = true;
+                break;
+            case INFO:
+                LOG.info("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                break;
+            case WARNING:
+                LOG.warn("DPU publish message short: '{}' long: '{}'",
+                        shortMessage,
+                        fullMessage,
+                        exception);
+                publishedWarning = true;
+                break;
+        }
+    }
 
-		if (!workingDir.exists()) {
-			workingDir.mkdirs();
-		}
-		return workingDir;
-	}
+    @Override
+    public boolean isDebugging() {
+        return false;
+    }
 
-	@Override
-	public File getResultDir() {
-		File resultDir;
-		if (resultDirectory == null) {
-			resultDir = new File(rootDirectory, "result");
-		} else {
-			resultDir = resultDirectory;
-		}
+    @Override
+    public boolean canceled() {
+        return false;
+    }
 
-		if (!resultDir.exists()) {
-			resultDir.mkdirs();
-		}
-		return resultDir;
-	}
+    @Override
+    public File getJarPath() {
+        if (jarPath == null) {
+            throw new RuntimeException(
+                    "Jar-path has not been set! Use TestEnvironment.setJarPath");
+        } else {
+            return new File(jarPath);
+        }
+    }
 
-	@Override
-	public File getJarPath() {
-		if (jarPath == null) {
-			throw new RuntimeException(
-					"Jar-path has not been set! Use TestEnvironment.setJarPath");
-		} else {
-			return new File(jarPath);
-		}
-	}
+    @Override
+    public Date getLastExecutionTime() {
+        return lastExecution;
+    }
 
-	@Override
-	public Date getLastExecutionTime() {
-		return lastExecution;
-	}
+    /**
+     * @return True if the warning message has been sent via this context.
+     */
+    public boolean isPublishedWarning() {
+        return publishedWarning;
+    }
 
-	@Override
-	public File getGlobalDirectory() {
-		File globalDir;
-		if (globalDirectory == null) {
-			globalDir = new File(rootDirectory, "global");
-		} else {
-			globalDir = globalDirectory;
-		}
+    /**
+     * @return True if the error message has been sent via this context.
+     */
+    public boolean isPublishedError() {
+        return publishedError;
+    }
 
-		if (!globalDir.exists()) {
-			globalDir.mkdirs();
-		}
-		return globalDir;
-	}
+    /**
+     * @param lastExecution
+     *            Date of last execution.
+     */
+    public void setLastExecution(Date lastExecution) {
+        this.lastExecution = lastExecution;
+    }
 
-	@Override
-	public File getUserDirectory() {
-		File userDir;
-		if (userDirectory == null) {
-			userDir = new File(rootDirectory, "user");
-		} else {
-			userDir = userDirectory;
-		}
+    /**
+     * @param jarPath
+     *            Path to the jar file.
+     */
+    public void setJarPath(String jarPath) {
+        this.jarPath = jarPath;
+    }
 
-		if (!userDir.exists()) {
-			userDir.mkdirs();
-		}
-		return userDir;
-	}
+    @Override
+    public File getWorkingDir() {
+        return workingDirectory;
+    }
 
-	/**
-	 *
-	 * @return True if the warning message has been sent via this context.
-	 */
-	public boolean isPublishedWarning() {
-		return publishedWarning;
-	}
+    @Override
+    public File getResultDir() {
+        return resultDirectory;
+    }
 
-	/**
-	 *
-	 * @return True if the error message has been sent via this context.
-	 */
-	public boolean isPublishedError() {
-		return publishedError;
-	}
+    @Override
+    public File getGlobalDirectory() {
+        return globalDirectory;
+    }
 
-	/**
-	 * @param workingDirectory Working directory, use null to use
-	 *                         subdirectory in {@link #rootDirectory}.
-	 */
-	public void setWorkingDirectory(File workingDirectory) {
-		this.workingDirectory = workingDirectory;
-	}
+    @Override
+    public File getUserDirectory() {
+        return userDirectory;
+    }
 
-	/**
-	 * @param resultDirectory Result directory, use null to use
-	 *                        subdirectory in {@link #rootDirectory}.
-	 */
-	public void setResultDirectory(File resultDirectory) {
-		this.resultDirectory = resultDirectory;
-	}
+    @Override
+    public String getDpuInstanceDirectory() {
+        return dpuInstanceDirectory.toURI().toASCIIString();
+    }
 
-	/**
-	 * @param globalDirectory Global directory, use null to use
-	 *                        subdirectory in {@link #rootDirectory}.
-	 */
-	public void setGlobalDirectory(File globalDirectory) {
-		this.globalDirectory = globalDirectory;
-	}
+    @Override
+    public Locale getLocale() {
+        return new Locale("en", "US");
+    }
 
-	/**
-	 * @param userDirectory User directory, use null to use
-	 *                      subdirectory in {@link #rootDirectory}.
-	 */
-	public void setUserDirectory(File userDirectory) {
-		this.userDirectory = userDirectory;
-	}
+    @Override
+    public Long getPipelineId() {
+        return 7L;
+    }
 
-	/**
-	 * @param rootDirectory Root directory.
-	 */
-	public void setRootDirectory(File rootDirectory) {
-		this.rootDirectory = rootDirectory;
-	}
+    @Override
+    public Long getPipelineExecutionId() {
+        return 15L;
+    }
 
-	/**
-	 * @param lastExecution Date of last execution.
-	 */
-	public void setLastExecution(Date lastExecution) {
-		this.lastExecution = lastExecution;
-	}
+    @Override
+    public Long getDpuInstanceId() {
+        return 9L;
+    }
 
-	/**
-	 * @param jarPath Path to the jar file.
-	 */
-	public void setJarPath(String jarPath) {
-		this.jarPath = jarPath;
-	}
+    @Override
+    public Map<String, String> getEnvironment() {
+        return environment;
+    }
 
+    @Override
+    public String getPipelineOwner() {
+        return "test_user";
+    }
+
+    @Override
+    public String getOrganization() {
+        return "test_organization";
+    }
+
+    @Override
+    public String getPipelineExecutionActorExternalId() {
+        return "test_user_actor_id";
+    }
+
+    @Override
+    public String getPipelineExecutionOwner() {
+        return "test_user_executor";
+    }
+
+    @Override
+    public String getPipelineExecutionOwnerExternalId() {
+        return "test_user_executor_id";
+    }
 }

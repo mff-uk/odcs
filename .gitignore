@@ -1,6 +1,7 @@
 # Local configurations
 frontend/src/main/webapp/WEB-INF/config.properties
 *.local.xml
+.attach*
 
 *.class
 
@@ -11,19 +12,29 @@ frontend/src/main/webapp/WEB-INF/config.properties
 .project
 .settings/
 .classpath
+.pmd
 
 # Netbeans files #
 nbactions.xml
 nb-configuration.xml
 
+# IntelliJ IDEA files
+.idea/
+*.iml
+
 # Frontend generated sources
-frontend/src/main/webapp/VAADIN/
 
 # Build Directories #
 target/
 bin/
+working/
 
 # Package Files #
 *.war
 *.jar
 *.ear
+frontend/src/main/webapp/VAADIN/gwt-unitCache
+frontend/src/main/webapp/VAADIN/themes/*/addons.scss
+frontend/src/main/webapp/VAADIN/widgetsets
+build.bat
+eclipse.bat

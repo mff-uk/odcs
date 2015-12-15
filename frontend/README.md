@@ -1,4 +1,4 @@
-ODCleanStore frontend
+UnifiedViews frontend
 ===============
 
 Web frontend deployable on Apache Tomcat server for managing ODCS application.

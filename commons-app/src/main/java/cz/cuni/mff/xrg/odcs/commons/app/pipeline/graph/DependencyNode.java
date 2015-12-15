@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
 import java.util.ArrayList;
@@ -5,7 +21,7 @@ import java.util.List;
 
 /**
  * Represents node in the dependency graph. Contains links to its dependencies.
- *
+ * 
  * @author Jan Vojt
  */
 public class DependencyNode {
@@ -14,14 +30,17 @@ public class DependencyNode {
      * The node in pipeline graph represented by this dependency.
      */
     private Node node;
+
     /**
      * List of dependencies of this node.
      */
     private List<DependencyNode> dependencies = new ArrayList<>();
+
     /**
      * List of nodes that depend on this node
      */
     private List<DependencyNode> dependants = new ArrayList<>();
+
     /**
      * Tells whether this dependency is already satisfied.
      */
@@ -29,7 +48,7 @@ public class DependencyNode {
 
     /**
      * Constructs dependency from node in pipeline graph.
-     *
+     * 
      * @param node
      */
     public DependencyNode(Node node) {
@@ -64,8 +83,9 @@ public class DependencyNode {
 
     /**
      * Checks whether this node already has given dependency
-     *
-     * @param node dependency to check
+     * 
+     * @param node
+     *            dependency to check
      * @return whether this node already has given dependency
      */
     public boolean hasDependency(DependencyNode node) {
@@ -74,8 +94,9 @@ public class DependencyNode {
 
     /**
      * Add a new dependency
-     *
-     * @param node dependency to add
+     * 
+     * @param node
+     *            dependency to add
      */
     public void addDependency(DependencyNode node) {
         if (!hasDependency(node)) {
@@ -91,7 +112,8 @@ public class DependencyNode {
     }
 
     /**
-     * @param dependants the dependants to set
+     * @param dependants
+     *            the dependants to set
      */
     public void setDependants(List<DependencyNode> dependants) {
         this.dependants = dependants;
@@ -99,7 +121,7 @@ public class DependencyNode {
 
     /**
      * Adds dependent node
-     *
+     * 
      * @param node
      */
     public void addDependant(DependencyNode node) {
@@ -110,7 +132,7 @@ public class DependencyNode {
 
     /**
      * Tells whether this node is directly dependent on given node
-     *
+     * 
      * @param node
      * @return whether this node is directly dependent on given node
      */
@@ -126,7 +148,8 @@ public class DependencyNode {
     }
 
     /**
-     * @param executed the executed to set
+     * @param executed
+     *            the executed to set
      */
     public void setExecuted(boolean executed) {
         this.executed = executed;

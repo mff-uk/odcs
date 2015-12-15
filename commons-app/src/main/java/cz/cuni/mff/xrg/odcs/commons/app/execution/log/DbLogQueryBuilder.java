@@ -1,11 +1,30 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.db.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQuery;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryBuilder;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbQueryCount;
 
 /**
  * Special query builder for logs.
@@ -18,13 +37,13 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
      * Holds information about sorting.
      */
     private class SortInformation {
-        
+
         String propertyName = null;
-        
+
         boolean asc = true;
-        
+
     }
-    
+
     /**
      * Filters that should be used in query.
      */
@@ -34,25 +53,25 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
      * Store information about sorting for this query builder.
      */
     private final SortInformation sortInfo = new SortInformation();
-    
-	/**
-	 * List or properties to fetch.
-	 */
-	private final Set<String> fetchList = new HashSet<>();
-	
+
+    /**
+     * List or properties to fetch.
+     */
+    private final Set<String> fetchList = new HashSet<>();
+
     DbLogQueryBuilder() {
 
     }
 
     @Override
     public DbQuery<Log> getQuery() {
-		return new DbLogQuery(filters, fetchList, sortInfo.propertyName, 
-				sortInfo.asc);
+        return new DbLogQuery(filters, fetchList, sortInfo.propertyName,
+                sortInfo.asc);
     }
 
     @Override
     public DbQueryCount<Log> getCountQuery() {
-		return new DbLogQueryCount(filters, fetchList);
+        return new DbLogQueryCount(filters, fetchList);
     }
 
     @Override
@@ -74,19 +93,19 @@ class DbLogQueryBuilder implements DbQueryBuilder<Log> {
         return this;
     }
 
-	@Override
-	public void addFetch(String propertyName) {
-		fetchList.add(propertyName);
-	}
+    @Override
+    public void addFetch(String propertyName) {
+        fetchList.add(propertyName);
+    }
 
-	@Override
-	public void removeFetch(String propertyName) {
-		fetchList.remove(propertyName);
-	}
+    @Override
+    public void removeFetch(String propertyName) {
+        fetchList.remove(propertyName);
+    }
 
-	@Override
-	public void clearFetch() {
-		fetchList.clear();
-	}	
-	
+    @Override
+    public void clearFetch() {
+        fetchList.clear();
+    }
+
 }

@@ -1,3 +1,19 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 import java.io.File;
@@ -8,107 +24,95 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 
 /**
  * Delete and close data for given {@link Context} if data are not loaded then
- * load them first (use {@link ContextRestorer} and then delete them. 
+ * load them first (use {@link ContextRestorer} and then delete them.
  * Also delete related content from {@link ExecutionContextInfo}. The
  * context is in same state as if newly created (empty).
  * 
  * @author Petyr
- * 
  */
 class ContextDeleter {
 
-	private final static Logger LOG = LoggerFactory
-			.getLogger(ContextDeleter.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ContextDeleter.class);
 
-	@Autowired
-	private AppConfig appConfig;
+    @Autowired
+    private ResourceManager resourceManager;
 
-	/**
-	 * @see ContextDeleter
-	 * 
-	 * @param context
-	 * @param preserveContextInfo
-	 */
-	public void delete(Context context, boolean preserveContextInfo) {
-		// delete data
-		delete(context.getInputsManager());
-		delete(context.getOutputsManager());
+    /**
+     * @see ContextDeleter
+     * @param context
+     * @param preserveContextInfo
+     */
+    public void delete(Context context, boolean preserveContextInfo) {
+        // delete data
+        context.getInputsManager().clear();
+        context.getOutputsManager().clear();
+        context.getInputsManager().release();
+        context.getOutputsManager().release();
 
-		// should we delete directories ?
-		if (context.isDebugging()) {
-			// debugging mode .. do not delete nothing
-			return;
-		}
-		// delete all
-		final File backendWorkingDir = new File(
-				appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-		final ExecutionContextInfo contextInfo = context.getContextInfo();
-		final DPUInstanceRecord dpu = context.getDPU();
+        // should we delete directories ?
+        if (context.isDebugging()) {
+            // debugging mode .. do not delete nothing
+            return;
+        }
+        // delete all
+        final ExecutionContextInfo contextInfo = context.getContextInfo();
+        final DPUInstanceRecord dpu = context.getDPU();
 
-		final File workingDir = context.getWorkingDir();
-		deleteDirectory(workingDir);
-		
-		// DataUnits storage directory
-		final File storagePath = new File(backendWorkingDir,
-				contextInfo.getDataUnitRootStoragePath(dpu));
-		deleteDirectory(storagePath);
+        final File workingDir = context.getWorkingDir();
+        deleteDirectory(workingDir);
 
-		// DataUnit temporally directory
-		final File tmpPath = new File(backendWorkingDir,
-				contextInfo.getDataUnitRootTmpPath(dpu));
-		deleteDirectory(tmpPath);
-		
-		// delete execution context info
-		if (preserveContextInfo) {
-			// do not delete context info
-		} else {
-			// delete context info
-			deleteContextInfo(contextInfo);
-		}
-	}
+        // DataUnits working and storage.
+        try {
+            final File executionDir = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpu);
+            deleteDirectory(executionDir);
+        } catch (MissingResourceException ex) {
+            LOG.warn("Can't delete data unit working execution directory.", ex);
+        }
+        try {
+            final File storageDir = resourceManager.getDataUnitStorageDir(context.getExecution(), dpu);
+            deleteDirectory(storageDir);
+        } catch (MissingResourceException ex) {
+            LOG.warn("Can't delete data unit storage execution directory.", ex);
+        }
 
-	/**
-	 * Delete {@link ManagableDataUnit} from given {@link DataUnitManager} and
-	 * delete record about them.
-	 * 
-	 * @param dataUnitManage
-	 */
-	private void delete(DataUnitManager dataUnitManage) {
-		for (ManagableDataUnit dataUnit : dataUnitManage.getDataUnits()) {
-			dataUnit.delete();
-		}
-		dataUnitManage.getDataUnits().clear();
-	}
+        // delete execution context info
+        if (preserveContextInfo) {
+            // do not delete context info
+        } else {
+            // delete context info
+            deleteContextInfo(contextInfo);
+        }
+    }
 
-	/**
-	 * Delete directory if exist. If error occur is logged and silently ignored.
-	 * 
-	 * @param directory
-	 */
-	private void deleteDirectory(File directory) {
-		if (directory.exists()) {
-			try {
-				FileUtils.deleteDirectory(directory);
-			} catch (IOException e) {
-				LOG.error("Can't delete directory {}", directory.toString(), e);
-			}
-		}
-	}
-	
-	/**
-	 * Delete data from given {@link ExecutionContextInfo}.
-	 * @param conteInfo
-	 */
-	private void deleteContextInfo(ExecutionContextInfo contexInfo) {
-		contexInfo.reset();
-	}
+    /**
+     * Delete directory if exist. If error occur is logged and silently ignored.
+     * 
+     * @param directory
+     */
+    private void deleteDirectory(File directory) {
+        if (directory.exists()) {
+            try {
+                FileUtils.deleteDirectory(directory);
+            } catch (IOException e) {
+                LOG.error("Can't delete directory {}", directory.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Delete data from given {@link ExecutionContextInfo}.
+     * 
+     * @param conteInfo
+     */
+    private void deleteContextInfo(ExecutionContextInfo contexInfo) {
+        contexInfo.reset();
+    }
 
 }

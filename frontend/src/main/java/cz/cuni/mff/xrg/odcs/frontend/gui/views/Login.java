@@ -1,4 +1,27 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.TransactionException;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.ViewChangeListener;
@@ -12,25 +35,19 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
-import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.RequestHolder;
+import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
 import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.transaction.TransactionException;
 
 /**
  * LOGIN screen of application.
- *
+ * 
  * @author Bogo
  */
 @org.springframework.stereotype.Component
@@ -38,18 +55,24 @@ import org.springframework.transaction.TransactionException;
 @Address(url = "Login")
 public class Login extends ViewComponent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Login.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(Login.class);
+
     private CssLayout mainLayout;
+
     private VerticalLayout layout;
+
     private TextField login;
+
     private PasswordField password;
-	private CheckBox rememberme;
-	private Label error;
-	
-	@Autowired
-	private AuthenticationService authService;
-	@Autowired
+
+    private CheckBox rememberme;
+
+    private Label error;
+
+    @Autowired
+    private AuthenticationService authService;
+
+    @Autowired
     private AppConfig appConfiguration;
 
     @Override
@@ -80,36 +103,36 @@ public class Login extends ViewComponent {
         layout.setMargin(true);
         layout.setSpacing(true);
         Label logo = new Label();
-        logo.setValue("<h1>ODCleanStore</h1>");
+        logo.setValue(Messages.getString("Login.login"));
         logo.setContentMode(ContentMode.HTML);
         layout.addComponent(logo);
-		
-		error = new Label();
-		error.setStyleName("loginError");
-		error.setVisible(false);
-		layout.addComponent(error);
 
-        login = new TextField("Login:");
-		login.focus();
+        error = new Label();
+        error.setStyleName("loginError");
+        error.setVisible(false);
+        layout.addComponent(error);
+
+        login = new TextField(Messages.getString("Login.user"));
+        login.focus();
         layout.addComponent(login);
 
-        password = new PasswordField("Password:");
+        password = new PasswordField(Messages.getString("Login.password"));
         layout.addComponent(password);
-		
-		rememberme = new CheckBox("Remember me");
-		layout.addComponent(rememberme);
 
-        Button loginButton = new Button("Login", new Button.ClickListener() {
+        rememberme = new CheckBox(Messages.getString("Login.rememberMe"));
+        layout.addComponent(rememberme);
+
+        Button loginButton = new Button(Messages.getString("Login.login.button"), new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 login();
             }
         });
         layout.addComponent(loginButton);
-		password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
-		Label info = new Label(String.format("For account creation, please contact admin at: <a href='mailto:%1$s'>%1$s</a>.", appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
-		info.setContentMode(ContentMode.HTML);
-		layout.addComponent(info);
+        password.addShortcutListener(new Button.ClickShortcut(loginButton, ShortcutAction.KeyCode.ENTER));
+        Label info = new Label(Messages.getString("Login.admin.contact", appConfiguration.getString(ConfigProperty.EMAIL_ADMIN)));
+        info.setContentMode(ContentMode.HTML);
+        layout.addComponent(info);
         layout.setSizeUndefined();
         mainLayout.addComponent(layout);
 
@@ -117,33 +140,33 @@ public class Login extends ViewComponent {
 
     private void login() {
         try {
-			authService.login(login.getValue(), password.getValue(), rememberme.getValue(), RequestHolder.getRequest());
-			
-			error.setVisible(false);
+            authService.login(login.getValue(), password.getValue(), rememberme.getValue(), RequestHolder.getRequest());
 
-			// login is successful
-			AppEntry app = (AppEntry)UI.getCurrent();
-			app.getMain().refreshUserBar();
-			app.navigateAfterLogin();
+            error.setVisible(false);
 
-		} catch (AuthenticationException ex) {
-			password.setValue("");
-			LOG.info("Invalid credentials for username {}.", login.getValue());
-			error.setValue(String.format("Invalid credentials for username %s.", login.getValue()));
-			error.setVisible(true);
-			error.setSizeUndefined();
-		} catch (TransactionException ex) {
-			password.setValue("");
-			LOG.error("SQL error.", ex);
-			error.setValue("Database error, check connection and configuration.");
-			error.setVisible(true);
-			error.setSizeUndefined();
-		}
+            // login is successful
+            AppEntry app = (AppEntry) UI.getCurrent();
+            app.getMain().refreshUserBar();
+            app.navigateAfterLogin();
+
+        } catch (AuthenticationException ex) {
+            password.setValue("");
+            LOG.info("Invalid credentials for username {}.", login.getValue());
+            error.setValue(Messages.getString("Login.invalid.credentials", login.getValue()));
+            error.setVisible(true);
+            error.setSizeUndefined();
+        } catch (TransactionException ex) {
+            password.setValue("");
+            LOG.error("SQL error.", ex);
+            error.setValue(Messages.getString("Login.database.error"));
+            error.setVisible(true);
+            error.setSizeUndefined();
+        }
     }
 
-	@Override
-	public boolean isModified() {
-		//There are no editable fields.
-		return false;
-	}
+    @Override
+    public boolean isModified() {
+        //There are no editable fields.
+        return false;
+    }
 }

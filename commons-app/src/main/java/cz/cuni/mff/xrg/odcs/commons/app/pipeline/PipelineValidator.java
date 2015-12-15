@@ -1,16 +1,34 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
+
+import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.data.DataUnitDescription;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import java.util.List;
 
 /**
  * Class for validating the pipelines.
- *
+ * 
  * @author Bogo
  * @author Petyr
  */
@@ -20,8 +38,7 @@ public class PipelineValidator {
      * Checks if all mandatory inputs and outputs of DPUs in given graph are
      * satisfied. Returns report with found problems or null for successful
      * check.
-     *
-     *
+     * 
      * @param graph
      * @param explorer
      * @return report with found problems or null for success
@@ -48,7 +65,8 @@ public class PipelineValidator {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Input: %s", dpu.getName(), input.getName());
+                    report += "\n";
+                    report += Messages.getString("PipelineValidator.dpu.input", dpu.getName(), input.getName());
                 }
             }
             List<DataUnitDescription> outputs = explorer.getOutputs(dpu);
@@ -69,7 +87,8 @@ public class PipelineValidator {
                     }
                 }
                 if (!found) {
-                    report += String.format("\nDPU: %s, Output: %s", dpu.getName(), output.getName());
+                    report += "\n";
+                    report += Messages.getString("PipelineValidator.dpu.output", dpu.getName(), output.getName());
                 }
             }
         }

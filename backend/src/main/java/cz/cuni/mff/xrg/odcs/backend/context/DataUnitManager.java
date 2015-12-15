@@ -1,7 +1,22 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,317 +25,262 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DpuContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnit;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitCreateException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitException;
-import cz.cuni.mff.xrg.odcs.commons.data.DataUnitType;
-import cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
  * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
  * 
  * @author Petyr
- * 
  */
 final class DataUnitManager {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataUnitManager.class);
-	
-	/**
-	 * Store outputs.
-	 */
-	private final List<ManagableDataUnit> dataUnits;
+    private static final Logger LOG = LoggerFactory.getLogger(DataUnitManager.class);
 
-	/**
-	 * Mapping from {@link outputs} to indexes.
-	 */
-	private final Map<ManagableDataUnit, Integer> indexes;
+    /**
+     * Store outputs.
+     */
+    private final List<ManagableDataUnit> dataUnits;
 
-	/**
-	 * DPUInstanceRecord as owner of this context.
-	 */
-	private final DPUInstanceRecord dpuInstance;
+    /**
+     * Mapping from {@link outputs} to indexes.
+     */
+    private final Map<ManagableDataUnit, Integer> indexes;
 
-	/**
-	 * Used factory.
-	 */
-	private final DataUnitFactory dataUnitFactory;
+    /**
+     * DPUInstanceRecord as owner of this context.
+     */
+    private final DPUInstanceRecord dpuInstance;
 
-	/**
-	 * Manage mapping context into execution's directory.
-	 */
-	private final ExecutionContextInfo context;
+    /**
+     * Used factory.
+     */
+    private final DataUnitFactory dataUnitFactory;
 
-	/**
-	 * Execution working directory.
-	 */
-	private final File workingDir;
+    /**
+     * Manage mapping context into execution's directory.
+     */
+    private final ExecutionContextInfo context;
 
-	/**
-	 * Application configuration.
-	 */
-	private final AppConfig appConfig;
+    /**
+     * True if used for inputs.
+     */
+    private final boolean isInput;
 
-	/**
-	 * True if used for inputs.
-	 */
-	private final boolean isInput;
+    private final ResourceManager resourceManager;
 
-	/**
-	 * Create manager for input {@link DataUnit}s.
-	 * 
-	 * @param dpuInstance
-	 * @param dataUnitFactory
-	 * @param context
-	 * @param workingDir General working directory.
-	 * @param appConfig
-	 * @return
-	 */
-	public static DataUnitManager createInputManager(DPUInstanceRecord dpuInstance,
-			DataUnitFactory dataUnitFactory,
-			ExecutionContextInfo context,
-			File workingDir,
-			AppConfig appConfig) {
-		return new DataUnitManager(dpuInstance, dataUnitFactory, context,
-				workingDir, appConfig, true);
-	}
+    /**
+     * Create manager for input {@link DataUnit}s.
+     * 
+     * @param dpuInstance
+     * @param dataUnitFactory
+     * @param context
+     * @param appConfig
+     * @return resourceManager
+     */
+    public static DataUnitManager createInputManager(DPUInstanceRecord dpuInstance,
+            DataUnitFactory dataUnitFactory,
+            ExecutionContextInfo context,
+            ResourceManager resourceManager) {
+        return new DataUnitManager(dpuInstance, dataUnitFactory, context, true, resourceManager);
+    }
 
-	/**
-	 * Create manager for input {@link DataUnit}s.
-	 * 
-	 * @param dpuInstance
-	 * @param dataUnitFactory
-	 * @param context
-	 * @param workingDir General working directory.
-	 * @param appConfig
-	 * @return
-	 */
-	public static DataUnitManager createOutputManager(DPUInstanceRecord dpuInstance,
-			DataUnitFactory dataUnitFactory,
-			ExecutionContextInfo context,
-			File workingDir,
-			AppConfig appConfig) {
-		return new DataUnitManager(dpuInstance, dataUnitFactory, context,
-				workingDir, appConfig, false);
-	}
+    /**
+     * Create manager for input {@link DataUnit}s.
+     * 
+     * @param dpuInstance
+     * @param dataUnitFactory
+     * @param context
+     * @param resourceManager
+     * @return
+     */
+    public static DataUnitManager createOutputManager(DPUInstanceRecord dpuInstance,
+            DataUnitFactory dataUnitFactory,
+            ExecutionContextInfo context,
+            ResourceManager resourceManager) {
+        return new DataUnitManager(dpuInstance, dataUnitFactory, context, false, resourceManager);
+    }
 
-	private DataUnitManager(DPUInstanceRecord dpuInstance,
-			DataUnitFactory dataUnitFactory,
-			ExecutionContextInfo context,
-			File workingDir,
-			AppConfig appConfig,
-			boolean isInput) {
-		this.dataUnits = new LinkedList<>();
-		this.indexes = new HashMap<>();
-		this.dpuInstance = dpuInstance;
-		this.dataUnitFactory = dataUnitFactory;
-		this.context = context;
-		this.workingDir = workingDir;
-		this.appConfig = appConfig;
-		this.isInput = isInput;
-	}
+    private DataUnitManager(DPUInstanceRecord dpuInstance,
+            DataUnitFactory dataUnitFactory,
+            ExecutionContextInfo context,
+            boolean isInput,
+            ResourceManager resourceManager) {
+        this.dataUnits = new LinkedList<>();
+        this.indexes = new HashMap<>();
+        this.dpuInstance = dpuInstance;
+        this.dataUnitFactory = dataUnitFactory;
+        this.context = context;
+        this.isInput = isInput;
+        this.resourceManager = resourceManager;
+    }
 
-	/**
-	 * Check required type based on application configuration and return
-	 * {@link DataUnitType} that should be created. Can thrown
-	 * {@link DataUnitCreateException} in case of unknown {@link DataUnitType}.
-	 * 
-	 * @param type Required type.
-	 * @return Type to create.
-	 * @throws DataUnitCreateException
-	 */
-	private DataUnitType checkType(DataUnitType type)
-			throws DataUnitCreateException {
-		if (type == DataUnitType.RDF) {
-			// select other DataUnit based on configuration
-			String defRdfRepo = appConfig
-					.getString(ConfigProperty.BACKEND_DEFAULTRDF);
-			if (defRdfRepo == null) {
-				// use local
-				type = DataUnitType.RDF_Local;
-			} else {
-				// choose based on value in appConfig
-				if (defRdfRepo.compareToIgnoreCase("virtuoso") == 0) {
-					// use virtuoso
-					type = DataUnitType.RDF_Virtuoso;
-				} else if (defRdfRepo.compareToIgnoreCase("localRDF") == 0) {
-					// use local
-					type = DataUnitType.RDF_Local;
-				} else {
-					throw new DataUnitCreateException(
-							"The data unit type is unknown."
-									+ "Check the value of the parameter "
-									+ "backend.defaultRDF in config.properties");
-				}
-			}
-		}
-		return type;
-	}
+    /**
+     * Save stored {@link DataUnit}s into {@link #workingDir}.
+     */
+    public void save() {
+        for (ManagableDataUnit item : dataUnits) {
+            try {
+                item.store();
+            } catch (DataUnitException ex) {
+                LOG.error("Failed to save content of data unit.", ex);
+            }
+        }
+    }
 
-	/**
-	 * Save stored {@link DataUnit}s into {@link #workingDir}.
-	 */
-	public void save() {
-		for (ManagableDataUnit item : dataUnits) {
-			try {
-				// get directory
-				File directory = new File(workingDir,
-						context.getDataUnitStoragePath(dpuInstance,
-								indexes.get(item)));
-				// and save into directory
-				item.save(directory);
-			} catch (Exception e) {
-				LOG.error("Can't save DataUnit.", e);
-			}
-		}
-	}
+    /**
+     * Call delete on all stored DataUnits and them delete them from
+     * this instance.
+     */
+    public void clear() {
+        for (ManagableDataUnit item : dataUnits) {
+            try {
+                item.clear();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't clear data unit.", ex);
+            }
 
-	/**
-	 * Call delete on all stored DataUnits and them delete them from 
-	 * this instance.
-	 */
-	@Deprecated
-	public void delete() {
-		for (ManagableDataUnit item : dataUnits) {
-			item.delete();
-		}
-		dataUnits.clear();
-	}
-	
-	/**
-	 * Call release on all stored DataUnit and them delete them from
-	 * this instance.
-	 */
-	@Deprecated
-	public void release() {
-		for (ManagableDataUnit item : dataUnits) {
-			item.release();
-		}
-		dataUnits.clear();
-	}
-	
-	/**
-	 * Check context and create DataUnits that are in context but
-	 * are not instantiated in DataUnitManager. Does not delete or release
-	 * existing DataUnits.
-	 * 
-	 * DataUnit load failures are silently ignored.
-	 * 
-	 * @throws DataUnitException 
-	 */
-	public void reload() throws DataUnitException {
-		ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);
-		if (dpuInfo == null) {
-			// no data for this DPU
-			LOG.trace("No info from, skipped.");
-			return;
-		}
-		
-		LOG.trace("Loading dataUnits input: {}", indexes);
-		
-		List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
-		// check every DataUnit in contextInfo
-		for (DataUnitInfo info : dataUnitsInfo) {
-			if (indexes.containsValue(info.getIndex())) {
-				// DataUnit is already presented
-			} else {
-				if (info.isInput() == isInput) {
-					// ok, it's ours .. 
-					LOG.trace("Loading data unit name: {}", info.getName());
-				} else {
-					// we are out it's in .. orotherwise, just skip
-					LOG.trace("Skip over data unit name: {}", info.getName());
-					continue;
-				}
-				
-				// create new DataUnit
-				Integer index = info.getIndex();
-				String id = 
-						context.generateDataUnitId(dpuInstance, index);
-				File directory = new File(workingDir,
-						context.getDataUnitTmpPath(dpuInstance, index));				
-				ManagableDataUnit dataUnit = dataUnitFactory.create(info.getType(), 
-						id, info.getName(), directory);
-				// add into DataUnitManager
-				dataUnits.add(dataUnit);
-				indexes.put(dataUnit, index);
-				// check for existence of result directory, if exist load
-				File storageDirectory = new File(workingDir,
-						context.getDataUnitStoragePath(dpuInstance, index));
-				if (storageDirectory.exists()) {
-					// load data from directory
-					try {
-						dataUnit.load(storageDirectory);
-					} catch (FileNotFoundException | RuntimeException e) {
-						LOG.error("Failed to load data for DataUnit", e);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Request creating a new DataUnit of given type. If the requested
-	 * {@link DataUnit} can't be created from any reason the 
-	 * {@link DataUnitCreateException} is thrown.
-	 * The DataUnit's name can be further changed. If the {@link DataUnit}
-	 * witch given name and type alredy exist then is returned.
-	 * 
-	 * @param type Type of DataUnit.
-	 * @param name DataUnit's name.
-	 * @return Created DataUnit.
-	 * @throw DataUnitCreateException
-	 */	
-	public ManagableDataUnit addDataUnit(DataUnitType type, String name)
-			throws DataUnitCreateException {
-		// check for type changes only for outputs, the type that should be 
-		// for real use is stored in realType
-		DataUnitType realType = type;
-		if (!isInput) {
-			realType = checkType(type);
-		}
-		// check if we do not already have such DataUnit
-		for (ManagableDataUnit du : dataUnits) {
-			if ( (du.getType() == realType || du.getType() == type) && 
-					du.getDataUnitName().compareTo(name) == 0) {
-				// the DPU already exist .. 
-				LOG.trace("dataUnit with name: {} type: {} already exist", name, realType.toString());
-				return du;
-			}
-		}
-		LOG.trace("create new DPU name: {} type: {} already exist", name, realType.toString());
-		// gather information for new DataUnit
-		Integer index;
-		if (isInput) {
-			index = context.createInput(dpuInstance, name, realType);
-		} else {
-			index = context.createOutput(dpuInstance, name, realType);
-		}
-		String id = context.generateDataUnitId(dpuInstance, index);
-		File directory = new File(workingDir, context.getDataUnitTmpPath(
-				dpuInstance, index));
-		// create instance
-		ManagableDataUnit dataUnit = dataUnitFactory.create(realType, id, name, directory);
-		// add to storage
-		dataUnits.add(dataUnit);
-		indexes.put(dataUnit, index);
-		//
-		return dataUnit;
-	}
-	
-	/**
-	 * Return access to all stored DataUnits.
-	 * @return
-	 */
-	public List<ManagableDataUnit> getDataUnits() {
-		return dataUnits;
-	}
+        }
+    }
+
+    /**
+     * Call release on all stored DataUnit and them delete them from
+     * this instance.
+     */
+    public void release() {
+        for (ManagableDataUnit item : dataUnits) {
+            try {
+                item.release();
+            } catch (DataUnitException ex) {
+                LOG.error("Can't realease data unit.", ex);
+            }
+        }
+        dataUnits.clear();
+    }
+
+    /**
+     * Check context and create DataUnits that are in context but
+     * are not instantiated in DataUnitManager. Does not delete or release
+     * existing DataUnits.
+     * DataUnit load failures are silently ignored.
+     * 
+     * @throws DataUnitException
+     */
+    public void reload() throws DataUnitException {
+        ProcessingUnitInfo dpuInfo = context.getDPUInfo(dpuInstance);
+        if (dpuInfo == null) {
+            // no data for this DPU
+            LOG.trace("dpuInfo == null, not data has been realoded");
+            return;
+        }
+
+        LOG.trace("Loading dataUnits input: {}", indexes);
+
+        List<DataUnitInfo> dataUnitsInfo = dpuInfo.getDataUnits();
+        // check every DataUnit in contextInfo
+        for (DataUnitInfo info : dataUnitsInfo) {
+            if (indexes.containsValue(info.getIndex())) {
+                // DataUnit is already presented
+            } else {
+                if (info.isInput() == isInput) {
+                    // ok, it's ours .. 
+                    LOG.trace("Loading data unit name: {}", info.getName());
+                } else {
+                    // we are out it's in .. orotherwise, just skip
+                    LOG.trace("Skip over data unit name: {}", info.getName());
+                    continue;
+                }
+
+                // create new DataUnit
+                Integer index = info.getIndex();
+                String id = context.generateDataUnitId(dpuInstance, index);
+                ManagableDataUnit dataUnit;
+                try {
+                    final File directory = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpuInstance, index);
+                    dataUnit = dataUnitFactory.create(
+                            info.getType(),
+                            context.getExecutionId(),
+                            GraphUrl.translateDataUnitId(id),
+                            info.getName(),
+                            directory);
+                } catch (RDFException | MissingResourceException ex) {
+                    throw new DataUnitException(ex);
+                }
+                // add into DataUnitManager
+                dataUnits.add(dataUnit);
+                indexes.put(dataUnit, index);
+                // reload
+                dataUnit.load();
+            }
+        }
+    }
+
+    /**
+     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitException} is
+     * thrown.
+     * The DataUnit's name can be further changed. If the {@link DataUnit} witch given name and type alredy exist then is returned.
+     * 
+     * @param type
+     *            Type of DataUnit.
+     * @param name
+     *            DataUnit's name.
+     * @return Created DataUnit.
+     * @throw DataUnitCreateException
+     */
+    public ManagableDataUnit addDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException {
+        // check if we do not already have such DataUnit
+        for (ManagableDataUnit du : dataUnits) {
+            if ((du.getType() == type || du.getType() == type) &&
+                    du.getName().compareTo(name) == 0) {
+                // the DPU already exist .. 
+                LOG.trace("dataUnit with name: {} type: {} already exist", name, type.toString());
+                return du;
+            }
+        }
+        LOG.trace("new dataUnit with name: {} type: {} has been created", name, type.toString());
+        // gather information for new DataUnit
+        Integer index;
+        if (isInput) {
+            index = context.createInput(dpuInstance, name, type);
+        } else {
+            index = context.createOutput(dpuInstance, name, type);
+        }
+        String id = context.generateDataUnitId(dpuInstance, index);
+        // create instance
+        ManagableDataUnit dataUnit;
+        try {
+            final File directory = resourceManager.getDataUnitWorkingDir(context.getExecution(), dpuInstance, index);
+            dataUnit = dataUnitFactory.create(type,
+                    context.getExecutionId(),
+                    GraphUrl.translateDataUnitId(id),
+                    name,
+                    directory);
+        } catch (RDFException | MissingResourceException ex) {
+            throw new DataUnitException(ex);
+        }
+        // add to storage
+        dataUnits.add(dataUnit);
+        indexes.put(dataUnit, index);
+        //
+        return dataUnit;
+    }
+
+    /**
+     * Return access to all stored DataUnits.
+     * 
+     * @return
+     */
+    public List<ManagableDataUnit> getDataUnits() {
+        return dataUnits;
+    }
 }

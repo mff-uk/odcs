@@ -1,90 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-    <import resource="classpath:commons-app-context.xml" />
-
-    <!-- we use annotations to run tasks -->
-    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler" />
-    <!-- Used for asynch calls even for scheduled functions. -->
-	<task:executor id="taskExecutor" pool-size="8" />
-	<!-- Used for Scheduled tasks.-->
-    <task:scheduler id="taskScheduler" pool-size="8" />
-	
-	<!-- Define aspects for managing DB reconnects. -->
-    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect" />
-	
-    <!-- module configuration needs to be defined here, because it differs from 
-    frontend -->
-    <bean id="moduleFacadeConfiguration" parent="abstractModuleFacadeConfig">
-        <constructor-arg value="BACKEND" />
+    <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name ="fileEncoding" value="UTF-8"/>
+        <property name="locations">
+            <list>
+                <value>file:${configFileLocation}</value>
+            </list>
+        </property>
     </bean>
 
-    <!-- TCP/IP server, used to recieve request from frontend -->
-    <bean id="server" class="cz.cuni.mff.xrg.odcs.backend.communication.Server" />
+    <import resource="classpath:commons-app-context.xml"/>
+
+    <!-- we use annotations to run tasks -->
+    <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
+    <!-- Used for asynch calls even for scheduled functions. -->
+    <task:executor id="taskExecutor" pool-size="8"/>
+    <!-- Used for Scheduled tasks.-->
+    <bean id="taskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="8" />
+        <property name="waitForTasksToCompleteOnShutdown" value="false" />
+        <property name="daemon" value="true" />
+    </bean>
+
+    <!-- Define aspects for managing DB reconnects. -->
+    <bean id="facadeAspect" class="cz.cuni.mff.xrg.odcs.backend.db.SQLDatabaseReconnectAspect"/>
+
+    <!-- module configuration needs to be defined here, because it differs from 
+    frontend -->
+    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
+        <constructor-arg ref="configuration"/>
+        <constructor-arg value="BACKEND"/>
+    </bean>
+    
+    <!-- Service responsible for delivering emails -->
+    <bean id="emailSender" class="cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender">
+        <constructor-arg ref="configuration"/>
+    </bean>
 
     <!-- engine itself, take care about executing of PipelineExecution -->
-    <bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer" />
+    <bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.execution.ExecutionSanitizer"/>
 
     <!-- context, prototype, facade and related stuff -->
     <bean id="dpuContext" class="cz.cuni.mff.xrg.odcs.backend.context.Context"
-              scope="prototype" lazy-init="true" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade" />
+          scope="prototype" lazy-init="true"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextFacade"/>
     <!-- we do not use component-scan as we need lookup method  -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator"> 
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCloser"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextCreator">
         <lookup-method name="createPureContext" bean="dpuContext"/>
     </bean>
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSealer" />
-		
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextDeleter"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextMerger"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextRestorer"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.context.ContextSaver"/>
+
     <!-- pipeline executor -->
     <bean id="pipelineExecutor"
-              class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"
-              scope="prototype" lazy-init="true" />
+          class="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.Executor"
+          scope="prototype" lazy-init="true"/>
 
     <!-- DPU executor -->
-    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.Executor"
-              scope="prototype" lazy-init="true" />
-
-    <!-- data unit factory class -->
-    <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory" />
+    <bean id="dpuExecutor" class="cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor"
+          scope="prototype" lazy-init="true"/>
+          
+    <!-- HTTP probe --> 
+    <bean class="cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.communication.ProbeHandler"/>
+    
 
     <!-- store events into database -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase" />
+    <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase"/>
 
     <!-- scheduler -->
-    <bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler" />
-	 
+    <bean id="scheduler" class="cz.cuni.mff.xrg.odcs.backend.scheduling.Scheduler"/>
+
     <!-- log prunner -->
-    <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log" />
-    <bean class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl" />
-        
+    <bean class="cz.cuni.mff.xrg.odcs.backend.pruning.Log"/>
+    <bean class="cz.cuni.mff.xrg.odcs.backend.logback.SqlAppenderImpl"/>
+
     <!-- watcher for DPU changes -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIChangeManager">
-        <constructor-arg name="refreshDatabase" value="false" />
+        <constructor-arg name="refreshDatabase" value="false"/>
     </bean>
 
-    <!-- autodiscovery for DPU's pre/post executors -->
-    <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl" />
-    <!-- autodiscovery for pipeline's pre/post executors -->
-    <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl" />
-    <!-- autodiscovery for monitors -->
-    <context:component-scan
-        base-package="cz.cuni.mff.xrg.odcs.backend.monitor" />
-    <!-- components for sending reports -->
-    <context:component-scan 
-        base-package="cz.cuni.mff.xrg.odcs.backend.report" />        
-        
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend"/>
+
 </beans>

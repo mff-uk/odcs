@@ -1,7 +1,27 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
+
+import java.text.Normalizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * String filter for the DPURecord Tree. Matching tree items that start with or
@@ -11,105 +31,113 @@ import com.vaadin.data.Item;
  */
 public final class SimpleTreeFilter implements Filter {
 
-	private static final long serialVersionUID = -449297335044439900L;
-	final String filterString;
-	final boolean ignoreCase;
-	final boolean onlyMatchPrefix;
+    private static final long serialVersionUID = -449297335044439900L;
 
-	/**
-	 * Constructor of simple tree filter.
-	 * 
-	 * @param filterString Filter value.
-	 * @param ignoreCase Whether to ignore case.
-	 * @param onlyMatchPrefix Whether to match only prefix.
-	 */
-	public SimpleTreeFilter(String filterString,
-			boolean ignoreCase, boolean onlyMatchPrefix) {
+    private final String filterString;
 
-		this.filterString = ignoreCase ? filterString.toLowerCase()
-				: filterString;
-		this.ignoreCase = ignoreCase;
-		this.onlyMatchPrefix = onlyMatchPrefix;
-	}
+    private final boolean ignoreCase;
 
-	@Override
-	public boolean passesFilter(Object itemId, Item item) {
-		final String value = ignoreCase ? itemId.toString()
-				.toLowerCase() : itemId.toString();
-		if (onlyMatchPrefix) {
-			if (!value.startsWith(filterString)) {
-				return false;
-			}
-		} else {
-			if (!value.contains(filterString)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private final boolean onlyMatchPrefix;
 
-	@Override
-	public boolean equals(Object obj) {
+    private final Pattern diacriticsPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
-		// Only ones of the objects of the same class can be equal
-		if (!(obj instanceof SimpleTreeFilter)) {
-			return false;
-		}
-		final SimpleTreeFilter o = (SimpleTreeFilter) obj;
+    private final boolean filterStringContainsDiacritics;
 
-		// Checks the properties one by one
-		if (!filterString.equals(o.filterString) && o.filterString != null
-				&& !o.filterString.equals(filterString)) {
-			return false;
-		}
-		if (ignoreCase != o.ignoreCase) {
-			return false;
-		}
-		if (onlyMatchPrefix != o.onlyMatchPrefix) {
-			return false;
-		}
+    /**
+     * Constructor of simple tree filter.
+     *
+     * @param filterString
+     *            Filter value.
+     * @param ignoreCase
+     *            Whether to ignore case.
+     * @param onlyMatchPrefix
+     *            Whether to match only prefix.
+     */
+    public SimpleTreeFilter(String filterString,
+            boolean ignoreCase, boolean onlyMatchPrefix) {
 
-		return true;
-	}
+        this.filterString = ignoreCase ? filterString.toLowerCase()
+                : filterString;
+        Matcher m = diacriticsPattern.matcher(Normalizer.normalize(filterString, Normalizer.Form.NFD));
+        this.filterStringContainsDiacritics = m.find();
+        this.ignoreCase = ignoreCase;
+        this.onlyMatchPrefix = onlyMatchPrefix;
+    }
 
-	@Override
-	public int hashCode() {
-		return (filterString != null ? filterString.hashCode() : 0);
-	}
+    @Override
+    public boolean passesFilter(Object itemId, Item item) {
+        String value = (ignoreCase) ? item.toString().toLowerCase() : item.toString();
+        if(!filterStringContainsDiacritics) {
+            // remove diacritics
+            value = Normalizer.normalize(value, Normalizer.Form.NFD)
+                    .replaceAll(diacriticsPattern.pattern(), "");
+        }
+        boolean passes = (onlyMatchPrefix) ? value.startsWith(filterString) : value.contains(filterString);
+        return passes;
+    }
 
-	/**
-	 * Returns the filter string.
-	 *
-	 * @return filter string given to the constructor
-	 */
-	public String getFilterString() {
-		return filterString;
-	}
+    @Override
+    public boolean equals(Object obj) {
 
-	/**
-	 * Returns whether the filter is case-insensitive or case-sensitive.
-	 *
-	 * @return true if performing case-insensitive filtering, false for
-	 * case-sensitive
-	 */
-	public boolean isIgnoreCase() {
-		return ignoreCase;
-	}
+        // Only ones of the objects of the same class can be equal
+        if (!(obj instanceof SimpleTreeFilter)) {
+            return false;
+        }
+        final SimpleTreeFilter o = (SimpleTreeFilter) obj;
 
-	/**
-	 * Returns true if the filter only applies to the beginning of the value
-	 * string, false for any location in the value.
-	 *
-	 * @return true if checking for matches at the beginning of the value only,
-	 * false if matching any part of value
-	 */
-	public boolean isOnlyMatchPrefix() {
-		return onlyMatchPrefix;
-	}
+        // Checks the properties one by one
+        if (!filterString.equals(o.filterString) && o.filterString != null
+                && !o.filterString.equals(filterString)) {
+            return false;
+        }
+        if (ignoreCase != o.ignoreCase) {
+            return false;
+        }
+        if (onlyMatchPrefix != o.onlyMatchPrefix) {
+            return false;
+        }
 
-	@Override
-	public boolean appliesToProperty(Object propertyId) {
+        return true;
+    }
 
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        return (filterString != null ? filterString.hashCode() : 0);
+    }
+
+    /**
+     * Returns the filter string.
+     *
+     * @return filter string given to the constructor
+     */
+    public String getFilterString() {
+        return filterString;
+    }
+
+    /**
+     * Returns whether the filter is case-insensitive or case-sensitive.
+     *
+     * @return true if performing case-insensitive filtering, false for
+     *         case-sensitive
+     */
+    public boolean isIgnoreCase() {
+        return ignoreCase;
+    }
+
+    /**
+     * Returns true if the filter only applies to the beginning of the value
+     * string, false for any location in the value.
+     *
+     * @return true if checking for matches at the beginning of the value only,
+     *         false if matching any part of value
+     */
+    public boolean isOnlyMatchPrefix() {
+        return onlyMatchPrefix;
+    }
+
+    @Override
+    public boolean appliesToProperty(Object propertyId) {
+
+        return true;
+    }
 }

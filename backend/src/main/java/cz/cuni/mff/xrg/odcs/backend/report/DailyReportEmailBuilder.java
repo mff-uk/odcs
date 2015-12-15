@@ -1,12 +1,31 @@
+/**
+ * This file is part of UnifiedViews.
+ *
+ * UnifiedViews is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UnifiedViews is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package cz.cuni.mff.xrg.odcs.backend.report;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Create email with daily report.
@@ -15,102 +34,160 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class DailyReportEmailBuilder {
-	
-	@Autowired
-	private AppConfig config;
-	
-	public String build(List<PipelineExecution> executions) {
-		StringBuilder body = new StringBuilder();
 
-		try {
-			final String name = config.getString(ConfigProperty.BACKEND_NAME);
-			body.append("<p>Instance: ");
-			body.append(name);
-			body.append("</p><br/>");
-		} catch (MissingConfigPropertyException e) {
-			// no name is presented
-		}		
-		
-		String urlBase = null;
-		try {
-			urlBase = config.getString(ConfigProperty.FRONTEND_URL);
-			if (!urlBase.endsWith("/")) {
-				urlBase = urlBase + "/";
-			}
-			urlBase = urlBase + "#!ExecutionList/exec=";
-		} catch (MissingConfigPropertyException e) {
-			// no name is presented
-		}
-		
-		body.append("<table border=2 cellpadding=2 >");
-		body.append("<tr bgcolor=\"#C0C0C0\">");
-		body.append("<th>pipeline</th><th>execution</th><th>start</th><th>end</th><th>result</th>");
-		// add column for link
-		if (urlBase != null) {
-			body.append("<th>detail</th>");
-		}
-		body.append("</tr>");
-		
-		for (PipelineExecution exec : executions) {
-			body.append("<tr>");
-			// pipeline
-			body.append("<td>");
-			body.append(exec.getPipeline().getName());
-			body.append("</td>");
-			// execution id
-			body.append("<td>");
-			body.append(exec.getId().toString());
-			body.append("</td>");			
-			// start
-			body.append("<td>");
-			body.append(exec.getStart().toString());
-			body.append("</td>");
-			// end
-			body.append("<td>");
-			body.append(exec.getEnd().toString());
-			body.append("</td>");
-			// result
-			body.append("<td>");
-			switch(exec.getStatus()) {
-				case CANCELLED:
-					body.append("cancelled");
-					break;
-				case CANCELLING:
-					body.append("canceling");
-					break;
-				case FAILED:
-					body.append("failed");
-					break;
-				case FINISHED_SUCCESS:
-					body.append("finished");
-					break;
-				case FINISHED_WARNING:
-					body.append("finished with warning");
-					break;
-				case QUEUED:
-					body.append("queued");
-					break;
-				case RUNNING:
-					body.append("running");
-					break;
-			}
-			body.append("</td>");
-			// link 
-			if (urlBase != null) {
-				body.append("<td> <a href=/");
-				body.append(urlBase);
-				body.append(exec.getId().toString());
-				body.append("\" >Execution detail<a/> </td>");
-			}
-			
-			// end line
-			body.append("</tr>");
-		}		
-		body.append("</table>");
-		
-		body.append("<br>");
-		
-		return body.toString();
-	}
-	
+    @Autowired
+    private AppConfig config;
+
+    public String buildFinishedExecutionsMail(List<PipelineExecution> executions) {
+        StringBuilder body = new StringBuilder();
+
+        addBackendInstanceName(body);
+
+        String urlBase = getUrlBase();
+
+        body.append("<table border=2 cellpadding=2 >");
+        body.append("<tr bgcolor=\"#C0C0C0\">");
+        body.append(Messages.getString("DailyReportEmailBuilder.header"));
+        // add column for link
+        if (urlBase != null) {
+            body.append("<th>");
+            body.append(Messages.getString("DailyReportEmailBuilder.detail"));
+            body.append("</th>");
+        }
+        body.append("</tr>");
+
+        for (PipelineExecution exec : executions) {
+            body.append(EmailUtils.getTableRowHTMLStartTag(exec.getStatus()));
+            // pipeline
+            body.append("<td>");
+            body.append(exec.getPipeline().getName());
+            body.append("</td>");
+            // execution id
+            body.append("<td>");
+            body.append(exec.getId().toString());
+            body.append("</td>");
+            // start
+            body.append("<td>");
+            body.append(EmailUtils.formatDate(exec.getStart()));
+            body.append("</td>");
+            // end
+            body.append("<td>");
+            body.append(EmailUtils.formatDate(exec.getEnd()));
+            body.append("</td>");
+            // executed by
+            body.append("<td>");
+            body.append(EmailUtils.getDisplayedExecutionOwner(exec));
+            body.append("</td>");
+            // result
+            body.append("<td>");
+            body.append(EmailUtils.getStatusAsString(exec.getStatus()));
+            body.append("</td>");
+            // link 
+            if (urlBase != null) {
+                body.append("<td> <a href=/");
+                body.append(urlBase);
+                body.append(exec.getId().toString());
+                body.append("\" >");
+                body.append(Messages.getString("DailyReportEmailBuilder.execution.detail"));
+                body.append("<a/> </td>");
+            }
+
+            // end line
+            body.append("</tr>");
+        }
+        body.append("</table>");
+
+        body.append("<br>");
+
+        return body.toString();
+    }
+
+    public String buildStartedExecutionsMail(List<PipelineExecution> executions) {
+        StringBuilder body = new StringBuilder();
+
+        addBackendInstanceName(body);
+
+        String urlBase = getUrlBase();
+
+        body.append("<table border=2 cellpadding=2 >");
+        body.append("<tr bgcolor=\"#C0C0C0\">");
+        body.append(Messages.getString("DailyReportEmailBuilder.started.header"));
+        // add column for link
+        if (urlBase != null) {
+            body.append("<th>");
+            body.append(Messages.getString("DailyReportEmailBuilder.detail"));
+            body.append("</th>");
+        }
+        body.append("</tr>");
+
+        for (PipelineExecution exec : executions) {
+            body.append(EmailUtils.getTableRowHTMLStartTag(exec.getStatus()));
+            // pipeline
+            body.append("<td>");
+            body.append(exec.getPipeline().getName());
+            body.append("</td>");
+            // execution id
+            body.append("<td>");
+            body.append(exec.getId().toString());
+            body.append("</td>");
+            // start
+            body.append("<td>");
+            body.append(EmailUtils.formatDate(exec.getStart()));
+            body.append("</td>");
+            // executed by
+            body.append("<td>");
+            body.append(EmailUtils.getDisplayedExecutionOwner(exec));
+            body.append("</td>");
+            // status
+            body.append("<td>");
+            body.append(EmailUtils.getStatusAsString(exec.getStatus()));
+            body.append("</td>");
+            // link 
+            if (urlBase != null) {
+                body.append("<td> <a href=/");
+                body.append(urlBase);
+                body.append(exec.getId().toString());
+                body.append("\" >");
+                body.append(Messages.getString("DailyReportEmailBuilder.execution.detail"));
+                body.append("<a/> </td>");
+            }
+
+            // end line
+            body.append("</tr>");
+        }
+        body.append("</table>");
+
+        body.append("<br>");
+
+        return body.toString();
+    }
+
+    private void addBackendInstanceName(StringBuilder body) {
+        try {
+            final String name = this.config.getString(ConfigProperty.BACKEND_NAME);
+            body.append("<p>");
+            body.append(Messages.getString("DailyReportEmailBuilder.instance"));
+            body.append(name);
+            body.append("</p><br/>");
+        } catch (MissingConfigPropertyException e) {
+            // no name is presented
+        }
+    }
+
+    private String getUrlBase() {
+        String urlBase = null;
+        try {
+            urlBase = this.config.getString(ConfigProperty.FRONTEND_URL);
+            if (!urlBase.endsWith("/")) {
+                urlBase = urlBase + "/";
+            }
+            urlBase = urlBase + "#!ExecutionList/exec=";
+        } catch (MissingConfigPropertyException e) {
+            // no name is presented
+        }
+
+        return urlBase;
+
+    }
+
 }
