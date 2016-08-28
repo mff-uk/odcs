@@ -231,7 +231,7 @@ public class PipelineFacadeTest {
 		
 		Pipeline nPpl = facade.copyPipeline(ppl);
 
-		String newName = "Copy of " + ppl.getName();
+		String newName = "Copy #1 of " + ppl.getName();
 		assertNotSame(ppl, nPpl);
 		assertEquals(newName, nPpl.getName());
 		assertEquals(ppl.getDescription(), nPpl.getDescription());
@@ -248,7 +248,7 @@ public class PipelineFacadeTest {
 		Pipeline nPpl = facade.copyPipeline(ppl);
 
 		// test copying for the first time
-		String newName = "Copy of " + ppl.getName();
+		String newName = "Copy #1 of " + ppl.getName();
 		assertNotSame(ppl, nPpl);
 		assertEquals(newName, nPpl.getName());
 		assertEquals(ppl.getDescription(), nPpl.getDescription());
@@ -256,10 +256,27 @@ public class PipelineFacadeTest {
 		Pipeline nPpl1 = facade.copyPipeline(ppl);
 		
 		// test copying for the second time
-		String newName1 = "Copy of " + ppl.getName() + " #1";
+		String newName1 = "Copy #2 of " + ppl.getName();
 		assertNotSame(ppl, nPpl1);
 		assertEquals(newName1, nPpl1.getName());
 		assertEquals(ppl.getDescription(), nPpl1.getDescription());
+
+		Pipeline nPpl2 = facade.copyPipeline(ppl);
+		
+		// test copying for the second time
+		String newName2 = "Copy #3 of " + ppl.getName();
+		assertNotSame(ppl, nPpl2);
+		assertEquals(newName2, nPpl2.getName());
+		assertEquals(ppl.getDescription(), nPpl2.getDescription());
+		
+		Pipeline nPpl3 = facade.copyPipeline(nPpl2);
+		
+		// test copying for the second time
+		String newName3 = "Copy #1 of Copy #3 of " + ppl.getName();
+		assertNotSame(ppl, nPpl3);
+		assertEquals(newName3, nPpl3.getName());
+		assertEquals(ppl.getDescription(), nPpl3.getDescription());
+		
 	}
 	
 //	@Test
