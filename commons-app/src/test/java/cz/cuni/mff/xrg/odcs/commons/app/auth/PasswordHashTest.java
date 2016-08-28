@@ -18,9 +18,16 @@ public class PasswordHashTest {
 
 	@Test
 	public void testCreateHash() throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String hash = createHash("p\r\nassw0Rd!");
+		long time = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			createHash("p\r\nassw0Rd!");
+		}
+		System.out.println(String.valueOf(System.currentTimeMillis() - time));
+		assertTrue(System.currentTimeMillis() - time > 2000L);
+		String hash = createHash("test");
 		assertNotNull(hash);
 		assertFalse(hash.isEmpty());
+		System.out.println("passphrase 'test' hash is: " + hash);
 	}
 	
 	@Test
