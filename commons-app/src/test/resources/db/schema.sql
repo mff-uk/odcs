@@ -252,11 +252,10 @@ CREATE SEQUENCE `seq_sch_email` START WITH 100;
 CREATE TABLE `SCH_EMAIL`
 (
   `id` INTEGER AUTO_INCREMENT,
-  `e_user` VARCHAR(85),
-  `e_domain` VARCHAR(45),
+  `email` VARCHAR(255),
   PRIMARY KEY (`id`)
 );
-CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`e_user`, `e_domain`);
+CREATE INDEX `ix_SCH_EMAIL_email` ON `SCH_EMAIL` (`email`);
 
 CREATE TABLE `SCH_SCH_NOTIFICATION_EMAIL`
 (

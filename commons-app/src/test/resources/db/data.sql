@@ -1,9 +1,9 @@
 
 -- Sample user with admin role
-INSERT INTO SCH_EMAIL(id,e_user,e_domain)
- VALUES(1,'user','example.com');
-INSERT INTO SCH_EMAIL(id,e_user,e_domain)
- VALUES(2,'pdoe','example.com');
+INSERT INTO SCH_EMAIL(id,email)
+ VALUES(1,'user@example.com');
+INSERT INTO SCH_EMAIL(id,email)
+ VALUES(2,'pdoe@example.com');
 
 INSERT INTO USR_USER(id,username,email_id,u_password,full_name)
  VALUES(1,'jdoe',1,'10:34dbe217a123a1501be647832c77571bd0af1c8b584be30404157da1111499b9:f09771bb5a73b35d6d8cd8b5dfb0cf26bf58a71f6d3f4c1a8c92e33fb263aaff','John Doe');
@@ -68,8 +68,8 @@ INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
  VALUES(1,1,1,1);
 INSERT INTO SCH_SCH_NOTIFICATION(id,schedule_id,type_success,type_error)
  VALUES(2,2,1,1);
-INSERT INTO SCH_EMAIL(id,e_user,e_domain)
- VALUES(3,'scheduler','example.com');
+INSERT INTO SCH_EMAIL(id,email)
+ VALUES(3,'scheduler@example.com');
 INSERT INTO SCH_SCH_NOTIFICATION_EMAIL(notification_id,email_id)
  VALUES(1,3);
 

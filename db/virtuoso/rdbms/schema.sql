@@ -272,11 +272,10 @@ sequence_set('seq_sch_email', 100, 1);
 CREATE TABLE "DB"."ODCS"."SCH_EMAIL"
 (
   "id" INTEGER IDENTITY,
-  "e_user" VARCHAR(85),
-  "e_domain" VARCHAR(45),
+  "email" VARCHAR(255),
   PRIMARY KEY ("id")
 );
-CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("e_user", "e_domain");
+CREATE INDEX "ix_SCH_EMAIL_email" ON "DB"."ODCS"."SCH_EMAIL" ("email");
 
 CREATE TABLE "DB"."ODCS"."SCH_SCH_NOTIFICATION_EMAIL"
 (

@@ -167,8 +167,8 @@ INSERT INTO DB.ODCS.PPL_POSITION(id,pos_x,pos_y) VALUES(2,487,132);
 -- SELECT * FROM DB.ODCS.RDF_NS_PREFIX
 -- Table DB.ODCS.RDF_NS_PREFIX 0 rows output.
 -- SELECT * FROM DB.ODCS.SCH_EMAIL
-INSERT INTO DB.ODCS.SCH_EMAIL(id,e_user,e_domain) VALUES(1,'admin','example.com');
-INSERT INTO DB.ODCS.SCH_EMAIL(id,e_user,e_domain) VALUES(2,'user','example.com');
+INSERT INTO DB.ODCS.SCH_EMAIL(id,email) VALUES(1,'admin@example.com');
+INSERT INTO DB.ODCS.SCH_EMAIL(id,email) VALUES(2,'user@example.com');
 -- Table DB.ODCS.SCH_EMAIL 2 rows output.
 -- SELECT * FROM DB.ODCS.SCH_SCH_NOTIFICATION
 -- Table DB.ODCS.SCH_SCH_NOTIFICATION 0 rows output.
